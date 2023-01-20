@@ -1,0 +1,46 @@
+# ASP.NET
+# Build and test ASP.NET projects.
+# Add steps that publish symbols, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+
+trigger:
+- main
+
+variables:
+  solution: '**/*.sln'
+  # Agent VM image name
+  vmImage: ubuntu-latest
+
+steps:
+  - task: UseDotNet@2
+    displayName: "Install .NET Core SDK"
+    inputs:
+      version: 7.x
+      performMultiLevelLookup: true
+      includePreviewVersions: true # Required for preview versions
+
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Restore"
+    inputs:
+      command: "restore"
+      feedsToUse: "select"
+      projects: "**/*.csproj"
+      includeNuGetOrg: true
+
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Build"
+    inputs:
+      command: 'build'
+      projects: '**/*.csproj'
+
+  - task: DotNetCoreCLI@2
+    displayName: Run Unit Tests
+    inputs:
+      command: 'test'
+      projects: '**/*.Tests.Unit.csproj'
+
+  #- task: DotNetCoreCLI@2
+  #  displayName: Acceptance Tests
+  #  inputs:
+  #    command: 'test'
+  #    projects: '**/*.Tests.Acceptance.csproj'

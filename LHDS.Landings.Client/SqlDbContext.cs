@@ -4,9 +4,12 @@
 
 using System.Data.Entity;
 
-
-namespace LHDS.Landings.Client.Migrations
+namespace LHDS.Landings.Client
 {
     public partial class SqlDbContext : DbContext
-    { }
+    {
+        public SqlDbContext()
+        {
+        }
+    }
 }

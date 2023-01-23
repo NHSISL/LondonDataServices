@@ -13,7 +13,7 @@ namespace LHDS.Landings.Client.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "202301231505448_IngestionDb"; }
+            get { return "202301231639002_IngestionDb"; }
         }
         
         string IMigrationMetadata.Source

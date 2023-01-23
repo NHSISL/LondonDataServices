@@ -14,6 +14,11 @@ namespace NEL.DDS.InterfaceLayer.Function.Download.Client.AzureBlobs
         ValueTask<MemoryStream> DownloadFileAsync(string fileName, string container);
         ValueTask CopyFileAsync(string fileName, string sourceContainer, string destinationContainer);
         ValueTask<List<string>> SearchFileNamesAsync(string prefix, string container);
-        ValueTask CopyFileToAlternativeStorageAsync(string filename, string destinationRoot, Stream stream, string destinationContainer);
+
+        ValueTask CopyFileToAlternativeStorageAsync(
+            string filename,
+            string destinationRoot,
+            Stream stream,
+            string destinationContainer);
     }
 }

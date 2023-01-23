@@ -5,9 +5,13 @@
 namespace NEL.DDS.InterfaceLayer.Function.Download.Client.AzureBlobs
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
+    using Azure.Storage.Blobs;
+    using Azure.Storage.Blobs.Models;
     using LHDS.Landings.Client.Brokers.Loggings;
+    using Microsoft.Extensions.Azure;
 
     public class AzureBlobClient : IAzureBlobClient
     {
@@ -15,7 +19,10 @@ namespace NEL.DDS.InterfaceLayer.Function.Download.Client.AzureBlobs
         private readonly BlobServiceClient blobServiceClient;
         private readonly BlobServiceClient copyToBlobServiceClient;
 
-        public AzureBlobClient(ILoggingBroker loggingBroker, BlobServiceClient defaultClient, IAzureClientFactory<BlobServiceClient> blobServiceFactory)
+        public AzureBlobClient(
+            ILoggingBroker loggingBroker,
+            BlobServiceClient defaultClient,
+            IAzureClientFactory<BlobServiceClient> blobServiceFactory)
         {
             this.loggingBroker = loggingBroker;
             this.blobServiceClient = defaultClient;
@@ -40,7 +47,9 @@ namespace NEL.DDS.InterfaceLayer.Function.Download.Client.AzureBlobs
             {
                 ProgressHandler = new Progress<long>(progress =>
                 {
-                    Console.WriteLine($"file: {fileName}, progress: {progress}/{streamLenght}, percent:{Math.Round((double)progress / (double)streamLenght * 100.0, 2)}");
+                    Console.WriteLine(
+                        $"file: {fileName}, progress: {progress}/{streamLenght}, " +
+                        $"percent:{Math.Round((double)progress / (double)streamLenght * 100.0, 2)}");
                 }),
                 TransferOptions = new Azure.Storage.StorageTransferOptions()
                 {
@@ -51,18 +60,34 @@ namespace NEL.DDS.InterfaceLayer.Function.Download.Client.AzureBlobs
             await blobClient.UploadAsync(stream, options);
         }
 
-        public async ValueTask CopyFileToAlternativeStorageAsync(string filename, string destinationRoot, Stream stream, string destinationContainer)
+        public async ValueTask CopyFileToAlternativeStorageAsync(
+            string filename,
+            string destinationRoot,
+            Stream stream,
+            string destinationContainer)
         {
             loggingBroker.LogInformation($"Copying file: {filename}");
-            var destinationBlobClient = this.copyToBlobServiceClient.GetBlobContainerClient(destinationContainer).GetBlobClient($"{destinationRoot}/{filename}");
+
+            var destinationBlobClient = this.copyToBlobServiceClient
+                .GetBlobContainerClient(destinationContainer)
+                    .GetBlobClient($"{destinationRoot}/{filename}");
+
             await destinationBlobClient.UploadAsync(stream, overwrite: true);
         }
 
-        public async ValueTask CopyFileAsync(string fileName, string sourceContainer, string destinationContainer)
+        public async ValueTask CopyFileAsync(
+            string fileName,
+            string sourceContainer,
+            string destinationContainer)
         {
             loggingBroker.LogInformation(fileName);
-            var sourceBlobClient = this.blobServiceClient.GetBlobContainerClient(sourceContainer).GetBlobClient(fileName);
-            var destinationBlobClient = this.blobServiceClient.GetBlobContainerClient(destinationContainer).GetBlobClient(fileName);
+
+            var sourceBlobClient = this.blobServiceClient
+                .GetBlobContainerClient(sourceContainer).GetBlobClient(fileName);
+
+            var destinationBlobClient = this.blobServiceClient
+                .GetBlobContainerClient(destinationContainer).GetBlobClient(fileName);
+
             var copy = await destinationBlobClient.StartCopyFromUriAsync(sourceBlobClient.Uri);
             await copy.WaitForCompletionAsync();
         }

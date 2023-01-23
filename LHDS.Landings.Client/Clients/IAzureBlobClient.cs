@@ -20,5 +20,6 @@ namespace NEL.DDS.InterfaceLayer.Function.Download.Client.AzureBlobs
             string destinationRoot,
             Stream stream,
             string destinationContainer);
+        ValueTask DeleteFileAsync(string fileName, string container);
     }
 }

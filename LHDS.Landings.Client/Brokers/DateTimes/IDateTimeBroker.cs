@@ -2,14 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-namespace LHDS.Landings.Client.Tests.Unit
-{
-    public class UnitTest1
-    {
-        [Fact]
-        public void Test1()
-        {
+using System;
 
-        }
+namespace LHDS.Landings.Client.Brokers.DateTimes
+{
+    public interface IDateTimeBroker
+    {
+        DateTimeOffset GetCurrentDateTimeOffset();
     }
 }

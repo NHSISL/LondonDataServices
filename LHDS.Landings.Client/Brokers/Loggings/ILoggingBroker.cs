@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 
 namespace LHDS.Landings.Client.Brokers.Loggings
@@ -9,5 +13,6 @@ namespace LHDS.Landings.Client.Brokers.Loggings
         void LogDebug(string message);
         void LogWarning(string message);
         void LogError(Exception exception);
+        void LogCritical(Exception exception);
     }
 }

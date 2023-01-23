@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using Microsoft.Extensions.Logging;
 
@@ -24,5 +28,8 @@ namespace LHDS.Landings.Client.Brokers.Loggings
 
         public void LogError(Exception exception) =>
             this.logger.LogError(exception.Message, exception);
+
+        public void LogCritical(Exception exception) =>
+            this.logger.LogCritical(exception, exception.Message);
     }
 }

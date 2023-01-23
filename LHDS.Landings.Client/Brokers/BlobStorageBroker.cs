@@ -22,5 +22,12 @@ namespace LHDS.Landings.Client.Brokers
         public async ValueTask InsertFileAsync(string fileName, Stream stream, string container) =>
             await azureBlobClient.UploadFileAsync(fileName, stream, container);
 
+        public async ValueTask<string> SelectDownloadFileLinkAsync(string fileName, string container)
+        {
+            MemoryStream ms = await azureBlobClient.DownloadFileAsync(fileName, container);
+
+            return ms.ToString();
+        }
+
     }
 }

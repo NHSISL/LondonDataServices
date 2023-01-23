@@ -11,5 +11,8 @@ namespace LHDS.Landings.Client.Brokers.Storages
     public partial class StorageBroker
     {
         public DbSet<IngestionTracking> IngestionTrackings { get; set; }
+
+        public async ValueTask<IngestionTracking> InsertIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
+            await InsertAsync(IngestionTracking);
     }
 }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace LHDS.Landings.Client.Models.IngestionTracking
 {
-    public class IngestionTracking
+    public class IngestionTracking : IKey, IActive, IAudit
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

@@ -12,5 +12,6 @@ namespace LHDS.Landings.Client.Brokers.Storages
     public partial interface IStorageBroker
     {
         ValueTask<IngestionTracking> InsertIngestionTrackingAsync(IngestionTracking ingestionTracking);
+        IQueryable<Discussion> SelectAllDiscussions();
     }
 }

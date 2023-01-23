@@ -19,8 +19,8 @@ namespace LHDS.Landings.Client.Brokers
             this.azureBlobClient = azureBlobClient;
             this.configuration = configuration;
         }
+
         public async ValueTask InsertFileAsync(string fileName, Stream stream, string container) =>
             await azureBlobClient.UploadFileAsync(fileName, stream, container);
-
     }
 }

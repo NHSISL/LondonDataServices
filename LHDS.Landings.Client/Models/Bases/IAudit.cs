@@ -8,9 +8,9 @@ namespace NEL.Premises.Api.Models.Bases
 {
     public interface IAudit
     {
-        string CreatedByUser { get; set; }
+        string CreatedBy { get; set; }
         DateTimeOffset CreatedDate { get; set; }
-        string UpdatedByUser { get; set; }
+        string UpdatedBy { get; set; }
         DateTimeOffset UpdatedDate { get; set; }
     }
 }

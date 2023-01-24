@@ -22,5 +22,8 @@ namespace LHDS.Landings.Client.Brokers.Storages
 
         public async ValueTask<IngestionTracking> UpdateIngestionTrackingnAsync(IngestionTracking ingestionTracking) =>
             await UpdateAsync(IngestionTracking);
+
+        public async ValueTask<IngestionTracking> DeleteIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
+            await DeleteAsync(ingestionTracking);
     }
 }

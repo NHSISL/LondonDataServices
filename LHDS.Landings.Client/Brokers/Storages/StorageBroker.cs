@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions;
 using Microsoft.EntityFrameworkCore;
@@ -46,5 +47,7 @@ namespace LHDS.Landings.Client.Brokers.Storages
 
             return @object;
         }
+
+        private IQueryable<T> ReadAll<T>() where T : class => this.Set<T>();
     }
 }

@@ -35,8 +35,10 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
                 (Rule: IsNotSame(
                     firstUser: ingestionTracking.UpdatedBy,
                     secondUser: ingestionTracking.CreatedBy,
-                    secondUserName: nameof(ingestionTracking.CreatedBy)),
-                Parameter: nameof(ingestionTracking.UpdatedBy)));
+                    secondUserName: nameof(IngestionTracking.CreatedBy)),
+                Parameter: nameof(IngestionTracking.UpdatedBy)),
+
+                (Rule: IsNotRecent(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)));
 
         }
 
@@ -83,6 +85,23 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
                      Condition = firstUser != secondUser,
                      Message = $"User is not the same as {secondUserName}"
                  };
+
+        private dynamic IsNotRecent(DateTimeOffset date) => new
+        {
+            Condition = IsDateNotRecent(date),
+            Message = "Date is not recent"
+        };
+
+        private bool IsDateNotRecent(DateTimeOffset date)
+        {
+            DateTimeOffset currentDateTime =
+                this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+            TimeSpan timeDifference = currentDateTime.Subtract(date);
+            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+
+            return timeDifference.Duration() > oneMinute;
+        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

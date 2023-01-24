@@ -32,8 +32,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                 this.ingestionTrackingService.AddIngestionTrackingAsync(nullIngestionTracking);
 
             IngestionTrackingValidationException actualIngestionTrackingValidationException =
-                await Assert.ThrowsAsync<IngestionTrackingValidationException>(
-                    addIngestionTrackingTask.AsTask);
+                await Assert.ThrowsAsync<IngestionTrackingValidationException>(() =>
+                    addIngestionTrackingTask.AsTask());
 
             // then
             actualIngestionTrackingValidationException.Should()
@@ -98,12 +98,16 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                 this.ingestionTrackingService.AddIngestionTrackingAsync(invalidIngestionTracking);
 
             IngestionTrackingValidationException actualIngestionTrackingValidationException =
-                await Assert.ThrowsAsync<IngestionTrackingValidationException>(
-                    addIngestionTrackingTask.AsTask);
+                await Assert.ThrowsAsync<IngestionTrackingValidationException>(() =>
+                    addIngestionTrackingTask.AsTask());
 
             // then
             actualIngestionTrackingValidationException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -114,6 +118,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                 broker.InsertIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -139,17 +144,25 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             var expectedIngestionTrackingValidationException =
                 new IngestionTrackingValidationException(invalidIngestionTrackingException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<IngestionTracking> addIngestionTrackingTask =
                 this.ingestionTrackingService.AddIngestionTrackingAsync(invalidIngestionTracking);
 
             IngestionTrackingValidationException actualIngestionTrackingValidationException =
-                await Assert.ThrowsAsync<IngestionTrackingValidationException>(
-                    addIngestionTrackingTask.AsTask);
+                await Assert.ThrowsAsync<IngestionTrackingValidationException>(() =>
+                    addIngestionTrackingTask.AsTask());
 
             // then
             actualIngestionTrackingValidationException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -160,6 +173,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                 broker.InsertIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
                     Times.Never);
 
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -183,17 +198,25 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             var expectedIngestionTrackingValidationException =
                 new IngestionTrackingValidationException(invalidIngestionTrackingException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<IngestionTracking> addIngestionTrackingTask =
                 this.ingestionTrackingService.AddIngestionTrackingAsync(invalidIngestionTracking);
 
             IngestionTrackingValidationException actualIngestionTrackingValidationException =
-                await Assert.ThrowsAsync<IngestionTrackingValidationException>(
-                    addIngestionTrackingTask.AsTask);
+                await Assert.ThrowsAsync<IngestionTrackingValidationException>(() =>
+                    addIngestionTrackingTask.AsTask());
 
             // then
             actualIngestionTrackingValidationException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -204,9 +227,9 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                 broker.InsertIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]

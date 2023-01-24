@@ -52,5 +52,13 @@ namespace LHDS.Landings.Client.Brokers.Storages
 
         private async ValueTask<T> ReadAsync<T>(params object[] @objectIds) where T : class =>
             await this.FindAsync<T>(objectIds);
+
+        private async ValueTask<T> UpdateAsync<T>(T @object)
+        {
+            this.Entry(@object).State = EntityState.Modified;
+            await this.SaveChangesAsync();
+
+            return @object;
+        }
     }
 }

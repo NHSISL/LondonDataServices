@@ -13,9 +13,9 @@ namespace LHDS.Landings.Client.Models.IngestionTracking
         public string Name { get; set; }
         public Guid EncryptedBlobId { get; set; }
         public Guid DecryptedBlobId { get; set; }
-        public string CreatedByUserId { get; set; }
+        public string CreatedBy { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
-        public string UpdaterByUserId { get; set; }
+        public string UpdatedBy { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
     }
 }

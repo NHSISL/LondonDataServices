@@ -58,7 +58,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             // given
             var invalidIngestionTracking = new IngestionTracking
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                Name = invalidText,
             };
 
             var invalidIngestionTrackingException =
@@ -68,11 +68,17 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                 key: nameof(IngestionTracking.Id),
                 values: "Id is required");
 
-            //invalidIngestionTrackingException.AddData(
-            //    key: nameof(IngestionTracking.Name),
-            //    values: "Text is required");
+            invalidIngestionTrackingException.AddData(
+                key: nameof(IngestionTracking.Name),
+                values: "Text is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the IngestionTracking model
+            invalidIngestionTrackingException.AddData(
+                key: nameof(IngestionTracking.EncryptedBlobId),
+                values: "Id is required");
+
+            invalidIngestionTrackingException.AddData(
+                key: nameof(IngestionTracking.DecryptedBlobId),
+                values: "Id is required");
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.CreatedDate),
@@ -80,7 +86,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.CreatedBy),
-                values: "User is required");
+                values: "Text is required");
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.UpdatedDate),
@@ -88,7 +94,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.UpdatedBy),
-                values: "User is required");
+                values: "Text is required");
 
             var expectedIngestionTrackingValidationException =
                 new IngestionTrackingValidationException(invalidIngestionTrackingException);

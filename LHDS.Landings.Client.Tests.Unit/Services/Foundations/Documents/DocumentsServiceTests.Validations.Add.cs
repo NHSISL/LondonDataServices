@@ -19,7 +19,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
             Document nullDocument = null;
 
             var nullDocumentException =
-                new NullDocumentException(nullDocument);
+                new NullDocumentException();
 
             var expectedDocumentValidationException =
                 new DocumentValidationException(nullDocumentException);

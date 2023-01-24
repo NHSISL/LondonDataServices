@@ -23,10 +23,15 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
             this.configuration = configuration;
         }
 
-        public async ValueTask AddDocumentAsync(Document document) =>
-           await this.blobStorageBroker.InsertFileAsync(
-               fileName: document.FileName,
-               stream: document.DocumentStream,
-               container: this.configuration.GetValue<string>("blobContainerName"));
+        public ValueTask AddDocumentAsync(Document document) =>
+            TryCatch(async () =>
+            {
+                ValidateDocumentIsNotNull(document);
+
+                await this.blobStorageBroker.InsertFileAsync(
+                   fileName: document.FileName,
+                   stream: document.DocumentStream,
+                   container: this.configuration.GetValue<string>("blobContainerName"));
+            });
     }
 }

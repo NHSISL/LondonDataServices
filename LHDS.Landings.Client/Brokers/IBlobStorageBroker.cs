@@ -10,6 +10,6 @@ namespace LHDS.Landings.Client.Brokers
     public interface IBlobStorageBroker
     {
         ValueTask InsertFileAsync(string fileName, Stream stream, string container);
-        ValueTask<string> SelectDownloadFileLinkAsync(string fileName, string container);
+        ValueTask<string> SelectDownloadFileLinkByFileNameAsync(string fileName, string container);
     }
 }

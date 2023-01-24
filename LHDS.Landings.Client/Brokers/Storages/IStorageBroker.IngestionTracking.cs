@@ -14,6 +14,6 @@ namespace LHDS.Landings.Client.Brokers.Storages
         ValueTask<IngestionTracking> InsertIngestionTrackingAsync(IngestionTracking ingestionTracking);
         IQueryable<IngestionTracking> ReadAllIngestionTracking();
         ValueTask<IngestionTracking> ReadIngestionTrackingByIdAsync(Guid ingestionTrackingId);
-        ValueTask<IngestionTracking> UpdateDiscussionAsync(IngestionTracking ingestionTracking);
+        ValueTask<IngestionTracking> UpdateIngestionTrackingnAsync(IngestionTracking ingestionTracking);
     }
 }

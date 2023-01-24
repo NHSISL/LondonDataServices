@@ -18,9 +18,9 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 
             Validate(
                 (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),
-
-            // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(ingestionTracking.Name), Parameter: nameof(IngestionTracking.Name)),
+                (Rule: IsInvalid(ingestionTracking.EncryptedBlobId), Parameter: nameof(IngestionTracking.EncryptedBlobId)),
+                (Rule: IsInvalid(ingestionTracking.DecryptedBlobId), Parameter: nameof(IngestionTracking.DecryptedBlobId)),
                 (Rule: IsInvalid(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
                 (Rule: IsInvalid(ingestionTracking.CreatedBy), Parameter: nameof(IngestionTracking.CreatedBy)),
                 (Rule: IsInvalid(ingestionTracking.UpdatedDate), Parameter: nameof(IngestionTracking.UpdatedDate)),
@@ -59,7 +59,7 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
         private static dynamic IsInvalid(string text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
-            Message = "User is required"
+            Message = "Text is required"
         };
 
         private static dynamic IsInvalid(DateTimeOffset date) => new

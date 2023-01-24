@@ -2,14 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Data.Entity;
+using System;
 
-namespace LHDS.Landings.Client
+namespace NEL.Premises.Api.Models.Bases
 {
-    public partial class SqlDbContext : DbContext
+    public interface IKey
     {
-        public SqlDbContext()
-        {
-        }
+        Guid Id { get; set; }
     }
 }

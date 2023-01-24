@@ -3,14 +3,11 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using NEL.Premises.Api.Models.Bases;
 
 namespace LHDS.Landings.Client.Models.IngestionTracking
 {
-    public class IngestionTracking : IKey, IAudit
+    public class IngestionTracking : IKey
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

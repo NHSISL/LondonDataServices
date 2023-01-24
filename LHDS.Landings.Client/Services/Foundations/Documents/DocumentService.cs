@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Brokers;
 using LHDS.Landings.Client.Brokers.Loggings;
@@ -24,7 +23,10 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
             this.configuration = configuration;
         }
 
-        public async ValueTask AddDocumentAsync(Document documentName) =>
-            new NotImplementedException();
+        public async ValueTask AddDocumentAsync(Document document) =>
+           await this.blobStorageBroker.InsertFileAsync(
+               fileName: document.FileName,
+               stream: document.DocumentStream,
+               container: this.configuration.GetValue<string>("blobContainerName"));
     }
 }

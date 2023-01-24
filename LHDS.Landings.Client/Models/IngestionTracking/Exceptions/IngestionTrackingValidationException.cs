@@ -9,7 +9,7 @@ namespace LHDS.Landings.Client.Models.IngestionTracking.Exceptions
     public class IngestionTrackingValidationException : Xeption
     {
         public IngestionTrackingValidationException(Xeption innerException)
-            : base(message: "Document validation errors occurred, please try again.",
+            : base(message: "Ingestion tracking validation errors occurred, please try again.",
                   innerException)
         { }
     }

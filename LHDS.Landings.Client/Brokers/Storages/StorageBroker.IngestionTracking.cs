@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Security.Policy;
+using System.Threading.Tasks;
 using LHDS.Landings.Client.Models.IngestionTracking;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,5 +12,8 @@ namespace LHDS.Landings.Client.Brokers.Storages
     public partial class StorageBroker
     {
         public DbSet<IngestionTracking> IngestionTrackings { get; set; }
+
+        public async ValueTask<IngestionTracking> InsertIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
+            await InsertAsync(ingestionTracking);
     }
 }

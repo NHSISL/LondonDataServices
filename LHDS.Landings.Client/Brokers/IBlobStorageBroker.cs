@@ -11,5 +11,6 @@ namespace LHDS.Landings.Client.Brokers
     {
         ValueTask InsertFileAsync(string fileName, Stream stream, string container);
         ValueTask<string> SelectByFileNameAsync(string fileName, string container);
+        ValueTask DeleteFileAsync(string fileName, string container);
     }
 }

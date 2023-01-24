@@ -29,5 +29,8 @@ namespace LHDS.Landings.Client.Brokers
 
             return ms.ToString();
         }
+        
+        public async ValueTask DeleteFileAsync(string fileName, string container) =>
+            await azureBlobClient.DeleteFileAsync(fileName, container);
     }
 }

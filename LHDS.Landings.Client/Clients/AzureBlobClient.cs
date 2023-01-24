@@ -5,7 +5,6 @@
 namespace NEL.DDS.InterfaceLayer.Function.Download.Client.AzureBlobs
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
     using Azure.Storage.Blobs;
@@ -59,65 +58,11 @@ namespace NEL.DDS.InterfaceLayer.Function.Download.Client.AzureBlobs
 
             await blobClient.UploadAsync(stream, options);
         }
-
-        public async ValueTask CopyFileToAlternativeStorageAsync(
-            string filename,
-            string destinationRoot,
-            Stream stream,
-            string destinationContainer)
-        {
-            loggingBroker.LogInformation($"Copying file: {filename}");
-
-            var destinationBlobClient = this.copyToBlobServiceClient
-                .GetBlobContainerClient(destinationContainer)
-                    .GetBlobClient($"{destinationRoot}/{filename}");
-
-            await destinationBlobClient.UploadAsync(stream, overwrite: true);
-        }
-
-        public async ValueTask CopyFileAsync(
-            string fileName,
-            string sourceContainer,
-            string destinationContainer)
+        public async ValueTask DeleteFileAsync(string fileName, string container)
         {
             loggingBroker.LogInformation(fileName);
-
-            var sourceBlobClient = this.blobServiceClient
-                .GetBlobContainerClient(sourceContainer).GetBlobClient(fileName);
-
-            var destinationBlobClient = this.blobServiceClient
-                .GetBlobContainerClient(destinationContainer).GetBlobClient(fileName);
-
-            var copy = await destinationBlobClient.StartCopyFromUriAsync(sourceBlobClient.Uri);
-            await copy.WaitForCompletionAsync();
-        }
-
-        public async ValueTask<List<string>> SearchFileNamesAsync(string prefix, string container)
-        {
-            var sourceBlobClient = this.blobServiceClient.GetBlobContainerClient(container);
-            var resultSegment = sourceBlobClient.GetBlobsByHierarchyAsync(prefix: prefix).AsPages(default, 100);
-            List<string> matchedFiles = new List<string>();
-
-            await foreach (Azure.Page<BlobHierarchyItem> blobPage in resultSegment)
-            {
-                foreach (BlobHierarchyItem blobhierarchyItem in blobPage.Values)
-                {
-                    if (blobhierarchyItem.IsPrefix)
-                    {
-                        // Write out the prefix of the virtual directory.
-                        Console.WriteLine("Virtual directory prefix: {0}", blobhierarchyItem.Prefix);
-                    }
-                    else
-                    {
-                        // Write out the name of the blob.
-                        Console.WriteLine("Blob name: {0}", blobhierarchyItem.Blob.Name);
-
-                        matchedFiles.Add(blobhierarchyItem.Blob.Name);
-                    }
-                }
-            }
-
-            return matchedFiles;
+            var blobClient = this.blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
+            await blobClient.DeleteAsync(DeleteSnapshotsOption.None);
         }
     }
 }

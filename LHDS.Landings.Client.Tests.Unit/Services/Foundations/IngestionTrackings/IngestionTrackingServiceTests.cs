@@ -3,10 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Linq.Expressions;
 using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Brokers.Storages;
@@ -14,6 +11,7 @@ using LHDS.Landings.Client.Models.IngestionTracking;
 using LHDS.Landings.Client.Services.Foundations.IngestionTrackings;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTrackings
 {
@@ -36,6 +34,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
         private static string GetRandomMessage() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
         private static DateTimeOffset GetRandomDateTimeOffset() =>

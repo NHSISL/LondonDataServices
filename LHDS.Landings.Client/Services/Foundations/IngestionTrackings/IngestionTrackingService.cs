@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
@@ -27,7 +28,7 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<IngestionTracking> AddIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<IngestionTracking> AddIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
+            await this.storageBroker.InsertIngestionTrackingAsync(ingestionTracking);
     }
 }

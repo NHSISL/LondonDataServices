@@ -46,5 +46,13 @@ namespace LHDS.Landings.Client.Brokers.Storages
         }
 
         public override void Dispose() { }
+
+        private async ValueTask<T> InsertAsync<T>(T @object)
+        {
+            this.Entry(@object).State = EntityState.Added;
+            await this.SaveChangesAsync();
+
+            return @object;
+        }
     }
 }

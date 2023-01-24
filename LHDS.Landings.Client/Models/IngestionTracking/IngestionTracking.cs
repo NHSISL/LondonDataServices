@@ -7,7 +7,7 @@ using NEL.Premises.Api.Models.Bases;
 
 namespace LHDS.Landings.Client.Models.IngestionTracking
 {
-    public class IngestionTracking : IKey
+    public class IngestionTracking : IKey, IAudit
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

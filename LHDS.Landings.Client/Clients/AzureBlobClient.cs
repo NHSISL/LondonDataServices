@@ -64,11 +64,5 @@ namespace NEL.DDS.InterfaceLayer.Function.Download.Client.AzureBlobs
             var blobClient = this.blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
             await blobClient.DeleteAsync(DeleteSnapshotsOption.None);
         }
-        public async ValueTask DeleteFileAsync(string fileName, string container)
-        {
-            loggingBroker.LogInformation(fileName);
-            var blobClient = this.blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
-            await blobClient.DeleteAsync(DeleteSnapshotsOption.None);
-        }
     }
 }

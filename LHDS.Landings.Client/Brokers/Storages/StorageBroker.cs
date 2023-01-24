@@ -54,5 +54,7 @@ namespace LHDS.Landings.Client.Brokers.Storages
 
             return @object;
         }
+
+        private IQueryable<T> ReadAll<T>() where T : class => this.Set<T>();
     }
 }

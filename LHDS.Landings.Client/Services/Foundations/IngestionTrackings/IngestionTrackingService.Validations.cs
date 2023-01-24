@@ -12,25 +12,31 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 {
     public partial class IngestionTrackingService
     {
-        private void ValidateIngestionTrackingOnAdd(IngestionTracking IngestionTracking)
+        private void ValidateIngestionTrackingOnAdd(IngestionTracking ingestionTracking)
         {
-            ValidateIngestionTrackingIsNotNull(IngestionTracking);
+            ValidateIngestionTrackingIsNotNull(ingestionTracking);
 
             Validate(
-                (Rule: IsInvalid(IngestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),
+                (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),
 
             // TODO: Add any other required validation rules
 
-                (Rule: IsInvalid(IngestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
-                (Rule: IsInvalid(IngestionTracking.CreatedBy), Parameter: nameof(IngestionTracking.CreatedBy)),
-                (Rule: IsInvalid(IngestionTracking.UpdatedDate), Parameter: nameof(IngestionTracking.UpdatedDate)),
-                (Rule: IsInvalid(IngestionTracking.UpdatedBy), Parameter: nameof(IngestionTracking.UpdatedBy)),
+                (Rule: IsInvalid(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
+                (Rule: IsInvalid(ingestionTracking.CreatedBy), Parameter: nameof(IngestionTracking.CreatedBy)),
+                (Rule: IsInvalid(ingestionTracking.UpdatedDate), Parameter: nameof(IngestionTracking.UpdatedDate)),
+                (Rule: IsInvalid(ingestionTracking.UpdatedBy), Parameter: nameof(IngestionTracking.UpdatedBy)),
             
                 (Rule: IsNotSame(
-                    firstDate: IngestionTracking.UpdatedDate,
-                    secondDate: IngestionTracking.CreatedDate,
+                    firstDate: ingestionTracking.UpdatedDate,
+                    secondDate: ingestionTracking.CreatedDate,
                     secondDateName: nameof(IngestionTracking.CreatedDate)),
-                Parameter: nameof(IngestionTracking.UpdatedDate)));
+                Parameter: nameof(IngestionTracking.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    firstUser: ingestionTracking.UpdatedBy,
+                    secondUser: ingestionTracking.CreatedBy,
+                    secondUserName: nameof(ingestionTracking.CreatedBy)),
+                Parameter: nameof(ingestionTracking.UpdatedBy)));
 
         }
 
@@ -68,6 +74,15 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
                 Condition = firstDate != secondDate,
                 Message = $"Date is not the same as {secondDateName}"
             };
+
+        private static dynamic IsNotSame(
+                 string firstUser,
+                 string secondUser,
+                 string secondUserName) => new
+                 {
+                     Condition = firstUser != secondUser,
+                     Message = $"User is not the same as {secondUserName}"
+                 };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

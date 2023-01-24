@@ -2,14 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Data.Entity;
+using System.IO;
+using System.Threading.Tasks;
 
-namespace LHDS.Landings.Client
+namespace LHDS.Landings.Client.Brokers
 {
-    public partial class SqlDbContext : DbContext
+    public interface IBlobStorageBroker
     {
-        public SqlDbContext()
-        {
-        }
+        ValueTask InsertFileAsync(string fileName, Stream stream, string container);
     }
 }

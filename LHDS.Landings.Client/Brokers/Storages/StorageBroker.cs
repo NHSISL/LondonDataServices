@@ -56,5 +56,8 @@ namespace LHDS.Landings.Client.Brokers.Storages
         }
 
         private IQueryable<T> ReadAll<T>() where T : class => this.Set<T>();
+
+        private async ValueTask<T> ReadAsync<T>(params object[] @objectIds) where T : class =>
+            await this.FindAsync<T>(objectIds);
     }
 }

@@ -2,14 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
 using System.Threading.Tasks;
 using EFxceptions;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -28,15 +23,13 @@ namespace LHDS.Landings.Client.Brokers.Storages
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            AddConfigurations(modelBuilder);
         }
 
         private static void AddConfigurations(ModelBuilder modelBuilder)
         {
             AddIngestionTrackingConfigurations(modelBuilder);
         }
-
-        private void AddSeedData(ModelBuilder modelBuilder)
-        { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

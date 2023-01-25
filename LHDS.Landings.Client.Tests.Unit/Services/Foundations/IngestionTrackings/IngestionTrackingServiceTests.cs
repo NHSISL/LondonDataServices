@@ -3,7 +3,10 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Data.SqlClient;
 using System.Linq.Expressions;
+using System.Reflection.Metadata;
+using System.Runtime.Serialization;
 using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Brokers.Storages;
@@ -49,6 +52,9 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             };
         }
 
+        private static SqlException GetSqlException() =>
+            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+
         private static string GetRandomMessage() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
@@ -63,6 +69,9 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
 
         private static int GetRandomNegativeNumber() =>
             -1 * new IntRange(min: 2, max: 10).GetValue();
+
+        private static IngestionTracking CreateRandomIngestionTracking() =>
+            CreateIngestionTrackingFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
         private static IngestionTracking CreateRandomIngestionTracking(DateTimeOffset dateTimeOffset) =>
             CreateIngestionTrackingFiller(dateTimeOffset).Create();

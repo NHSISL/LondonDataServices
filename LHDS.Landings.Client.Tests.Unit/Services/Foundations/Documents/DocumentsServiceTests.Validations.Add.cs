@@ -2,12 +2,14 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
+using LHDS.Landings.Client.Services.Foundations.Downloads;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using NEL.Premises.Api.Models.Documents.Exceptions;
@@ -103,9 +105,21 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
         public async Task ShouldThrowValidationExceptionOnAddIfFileNameIsInvalid(string invalidInput)
         {
             // Given
-            var blobContainerName = invalidInput;
+            var appSettingsStub = new Dictionary<string, string> {
+                {"blobContainerName", invalidInput}
+            };
+
+            var inMemoryConfiguration = new ConfigurationBuilder()
+                .AddInMemoryCollection(appSettingsStub)
+                .Build();
+
+            var documentService = new DocumentService(
+               blobStorageBroker: this.blobStorageBrokerMock.Object,
+               loggingBroker: this.loggingBrokerMock.Object,
+               configuration: inMemoryConfiguration);
 
             string invalidFileName = invalidInput;
+            var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
             Stream validStream = new MemoryStream(Encoding.ASCII.GetBytes(GetRandomString()));
 
             Document document = new Document
@@ -120,11 +134,15 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
                 key: "FileName",
                 values: "Text is required");
 
+            invalidDocumentException.AddData(
+                key: "blobContainerName",
+                values: "Text is required");
+
             var expectedDocumentValidationException
                 = new DocumentValidationException(invalidDocumentException);
 
             // When
-            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document);
+            ValueTask uploadFileTask = documentService.AddDocumentAsync(document);
 
             DocumentValidationException actualDocumentValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(uploadFileTask.AsTask);

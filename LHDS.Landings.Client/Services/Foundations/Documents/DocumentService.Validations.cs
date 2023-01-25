@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.IO;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
@@ -16,7 +17,8 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
             ValidateDocumentIsNotNull(document);
 
             Validate(
-                    (Rule: IsInvalid(document.DocumentStream), Parameter: nameof(Document.DocumentStream))
+                    (Rule: IsInvalid(document.DocumentStream), Parameter: nameof(Document.DocumentStream)),
+                    (Rule: IsInvalid(document.FileName), Parameter: nameof(Document.FileName))
                 );
         }
 
@@ -32,6 +34,12 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
         {
             Condition = (stream == null || stream.Length == 0),
             Message = "Stream is required"
+        };
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = String.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
         };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

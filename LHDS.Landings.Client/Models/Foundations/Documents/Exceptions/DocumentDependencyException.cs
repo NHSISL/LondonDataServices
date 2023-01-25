@@ -1,0 +1,15 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using Xeptions;
+
+namespace LHDS.Landings.Client.Models.Foundations.Documents.Exceptions
+{
+    public class DocumentDependencyException : Xeption
+    {
+        public DocumentDependencyException(Xeption innerException) :
+            base(message: "Document dependency error occurred, contact support.", innerException)
+        { }
+    }
+}

@@ -112,5 +112,55 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            IngestionTracking someIngestionTracking = CreateRandomIngestionTracking();
+            string randomMessage = GetRandomMessage();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidIngestionTrackingReferenceException =
+                new InvalidIngestionTrackingReferenceException(foreignKeyConstraintConflictException);
+
+            var expectedIngestionTrackingValidationException =
+                new IngestionTrackingDependencyValidationException(invalidIngestionTrackingReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<IngestionTracking> addIngestionTrackingTask =
+                this.ingestionTrackingService.AddIngestionTrackingAsync(someIngestionTracking);
+
+            // then
+            IngestionTrackingDependencyValidationException actualIngestionTrackingDependencyValidationException =
+                await Assert.ThrowsAsync<IngestionTrackingDependencyValidationException>(
+                    addIngestionTrackingTask.AsTask);
+
+            actualIngestionTrackingDependencyValidationException.Should().BeEquivalentTo(expectedIngestionTrackingValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedIngestionTrackingValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertIngestionTrackingAsync(someIngestionTracking),
+                    Times.Never());
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

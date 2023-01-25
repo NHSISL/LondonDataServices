@@ -14,7 +14,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
     {
 
         [Fact]
-        public async Task ShouldRetireveFileAsync()
+        public async Task ShouldRetrieveFileAsync()
         {
             // Given
             string randomFileName = GetRandomString();

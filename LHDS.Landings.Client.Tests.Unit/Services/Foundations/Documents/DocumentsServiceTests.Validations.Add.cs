@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Landings.Client.Models.Foundations.Documents;
@@ -90,6 +91,55 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
             this.blobStorageBrokerMock.Verify(broker =>
                 broker.InsertFileAsync(validFileName, invalidStream, blobContainerName),
                     Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public async Task ShouldThrowValidationExceptionOnAddIfFileNameIsInvalid(string invalidInput)
+        {
+            // Given
+            var blobContainerName = invalidInput;
+
+            string invalidFileName = invalidInput;
+            Stream validStream = new MemoryStream(Encoding.ASCII.GetBytes(GetRandomString()));
+
+            Document document = new Document
+            {
+                FileName = invalidFileName,
+                DocumentStream = validStream
+            };
+
+            var invalidDocumentException = new InvalidDocumentException();
+
+            invalidDocumentException.AddData(
+                key: "FileName",
+                values: "Text is required");
+
+            var expectedDocumentValidationException
+                = new DocumentValidationException(invalidDocumentException);
+
+            // When
+            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document);
+
+            DocumentValidationException actualDocumentValidationException =
+                await Assert.ThrowsAsync<DocumentValidationException>(uploadFileTask.AsTask);
+
+            // Then
+            actualDocumentValidationException.Should().BeEquivalentTo(expectedDocumentValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDocumentValidationException))),
+                        Times.Once);
+
+            this.blobStorageBrokerMock.Verify(broker =>
+               broker.InsertFileAsync(invalidFileName, validStream, blobContainerName),
+                   Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

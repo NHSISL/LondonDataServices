@@ -36,7 +36,7 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
                    container: blobContainerName);
             });
 
-        public ValueTask SelectDocumentByFileNameAsync(string fileName) =>
+        public ValueTask RetrieveDocumentByFileNameAsync(string fileName) =>
            throw new NotImplementedException();
 
         public ValueTask RemoveDocumentByFileNameAsync(string fileName) =>

@@ -59,6 +59,13 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 
                 throw CreateAndLogDependencyException(failedIngestionTrackingStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedIngestionTrackingServiceException =
+                    new FailedIngestionTrackingServiceException(exception);
+
+                throw CreateAndLogServiceException(failedIngestionTrackingServiceException);
+            }
         }
 
         private IngestionTrackingValidationException CreateAndLogValidationException(Xeption exception)
@@ -98,5 +105,13 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
             return ingestionTrackingDependencyException;
         }
 
+        private IngestionTrackingServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var ingestionTrackingServiceException = new IngestionTrackingServiceException(exception);
+            this.loggingBroker.LogError(ingestionTrackingServiceException);
+
+            return ingestionTrackingServiceException;
+        }
     }
 }

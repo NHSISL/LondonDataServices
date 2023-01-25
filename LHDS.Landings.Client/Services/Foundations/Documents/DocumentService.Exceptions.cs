@@ -45,8 +45,28 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
             }
         }
 
-        private async ValueTask TryCatch(ReturningDocumentFunction returningDocumentFunction)
+        private async ValueTask<Document> TryCatch(ReturningDocumentFunction returningDocumentFunction)
         {
+            try
+            {
+                return await returningDocumentFunction();
+            }
+            catch (InvalidDocumentException exception)
+            {
+                throw CreateAndLogValidationException(exception);
+            }
+            catch (RequestFailedException requestFailedException)
+            {
+                var failedRequestException = new FailedDocumentRequestException(requestFailedException);
+                throw CreateAndLogDependencyException(failedRequestException);
+            }
+            catch (Exception exception)
+            {
+                var failedDocumentBlobServiceException =
+                   new FailedDocumentServiceException(exception);
+
+                throw CreateAndLogServiceException(failedDocumentBlobServiceException);
+            }
         }
 
         private DocumentValidationException CreateAndLogValidationException(Xeption exception)

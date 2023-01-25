@@ -2,7 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using LHDS.Landings.Client.Models.IngestionTracking;
 using LHDS.Landings.Client.Models.IngestionTracking.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -35,6 +37,13 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 
                 throw CreateAndLogCriticalDependencyException(failedIngestionTrackingStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsIngestionTrackingException =
+                    new AlreadyExistsIngestionTrackingException(duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsIngestionTrackingException);
+            }
         }
 
         private IngestionTrackingValidationException CreateAndLogValidationException(Xeption exception)
@@ -53,6 +62,16 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
             this.loggingBroker.LogCritical(ingestionTrackingDependencyException);
 
             return ingestionTrackingDependencyException;
+        }
+
+        private IngestionTrackingDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var ingestionTrackingDependencyValidationException =
+                new IngestionTrackingDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(ingestionTrackingDependencyValidationException);
+
+            return ingestionTrackingDependencyValidationException;
         }
 
     }

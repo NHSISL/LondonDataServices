@@ -38,7 +38,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
                 values: "Text is required");
 
             invalidDocumentException.AddData(
-                key: "container",
+                key: "blobContainerName",
                 values: "Text is required");
 
             var expectedDocumentValidationException

@@ -37,23 +37,25 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
                    container: blobContainerName);
             });
 
-        public async ValueTask<Document> RetrieveDocumentByFileNameAsync(string fileName)
-        {
-            var blobContainerName = this.configuration.GetValue<string>("blobContainerName");
+        public ValueTask<Document> RetrieveDocumentByFileNameAsync(string fileName) =>
+             TryCatch(async () =>
+             {
+                 var blobContainerName = this.configuration.GetValue<string>("blobContainerName");
+                 ValidateDocumentOnRetrieve(fileName, blobContainerName);
 
-            byte[] retrievedDocument = await this.blobStorageBroker
-                .SelectByFileNameAsync(
-                    fileName: fileName,
-                    container: blobContainerName);
+                 byte[] retrievedDocument = await this.blobStorageBroker
+                     .SelectByFileNameAsync(
+                         fileName: fileName,
+                         container: blobContainerName);
 
-            var document = new Document
-            {
-                FileName = fileName,
-                DocumentData = retrievedDocument
-            };
+                 var document = new Document
+                 {
+                     FileName = fileName,
+                     DocumentData = retrievedDocument
+                 };
 
-            return document;
-        }
+                 return document;
+             });
 
         public ValueTask RemoveDocumentByFileNameAsync(string fileName) =>
             throw new NotImplementedException();

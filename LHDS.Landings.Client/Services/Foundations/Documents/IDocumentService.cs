@@ -10,5 +10,7 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
     public interface IDocumentService
     {
         ValueTask AddDocumentAsync(Document documentName);
+
+        ValueTask AddDocumentAsync(string fileName);
     }
 }

@@ -25,7 +25,8 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
                 (Rule: IsInvalid(ingestionTracking.CreatedBy), Parameter: nameof(IngestionTracking.CreatedBy)),
                 (Rule: IsInvalid(ingestionTracking.UpdatedDate), Parameter: nameof(IngestionTracking.UpdatedDate)),
                 (Rule: IsInvalid(ingestionTracking.UpdatedBy), Parameter: nameof(IngestionTracking.UpdatedBy)),
-            
+                (Rule: IsEqualOrSmallerThan(ingestionTracking.Name, 255), Parameter: nameof(IngestionTracking.Name)),
+
                 (Rule: IsNotSame(
                     firstDate: ingestionTracking.UpdatedDate,
                     secondDate: ingestionTracking.CreatedDate,
@@ -60,6 +61,11 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
+        };
+        private static dynamic IsEqualOrSmallerThan(string text, int maxLength) => new
+        {
+            Condition = (text ?? string.Empty).Length > maxLength,
+            Message = "Text is exceeding max length"
         };
 
         private static dynamic IsInvalid(DateTimeOffset date) => new

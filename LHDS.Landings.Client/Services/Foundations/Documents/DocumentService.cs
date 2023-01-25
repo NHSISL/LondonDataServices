@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Brokers;
 using LHDS.Landings.Client.Brokers.Loggings;
@@ -34,5 +35,11 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
                    stream: document.DocumentStream,
                    container: blobContainerName);
             });
+
+        public ValueTask SelectDocumentByFileNameAsync(string fileName) =>
+           throw new NotImplementedException();
+
+        public ValueTask RemoveDocumentByFileNameAsync(string fileName) =>
+          throw new NotImplementedException();
     }
 }

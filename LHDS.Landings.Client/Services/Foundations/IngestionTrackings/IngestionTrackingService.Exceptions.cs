@@ -8,6 +8,7 @@ using EFxceptions.Models.Exceptions;
 using LHDS.Landings.Client.Models.IngestionTracking;
 using LHDS.Landings.Client.Models.IngestionTracking.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Xeptions;
 
 namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
@@ -51,6 +52,13 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 
                 throw CreateAndLogDependencyValidationException(invalidIngestionTrackingReferenceException);
             }
+            catch (DbUpdateException databaseUpdateException)
+            {
+                var failedIngestionTrackingStorageException =
+                    new FailedIngestionTrackingStorageException(databaseUpdateException);
+
+                throw CreateAndLogDependencyException(failedIngestionTrackingStorageException);
+            }
         }
 
         private IngestionTrackingValidationException CreateAndLogValidationException(Xeption exception)
@@ -79,6 +87,15 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
             this.loggingBroker.LogError(ingestionTrackingDependencyValidationException);
 
             return ingestionTrackingDependencyValidationException;
+        }
+
+        private IngestionTrackingDependencyException CreateAndLogDependencyException(
+            Xeption exception)
+        {
+            var ingestionTrackingDependencyException = new IngestionTrackingDependencyException(exception);
+            this.loggingBroker.LogError(ingestionTrackingDependencyException);
+
+            return ingestionTrackingDependencyException;
         }
 
     }

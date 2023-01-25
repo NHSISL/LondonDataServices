@@ -2,11 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Landings.Client.Models.IngestionTracking;
 using LHDS.Landings.Client.Models.IngestionTracking.Exceptions;
+using Microsoft.Data.SqlClient;
 using Moq;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTrackings

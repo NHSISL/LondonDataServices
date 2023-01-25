@@ -10,7 +10,7 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
     public interface IDocumentService
     {
         ValueTask AddDocumentAsync(Document documentName);
-        ValueTask SelectDocumentByFileNameAsync(string fileName);
+        ValueTask RetrieveDocumentByFileNameAsync(string fileName);
         ValueTask RemoveDocumentByFileNameAsync(string filename);
     }
 }

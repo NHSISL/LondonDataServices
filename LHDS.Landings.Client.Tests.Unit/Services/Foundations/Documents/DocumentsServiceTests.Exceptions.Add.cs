@@ -63,6 +63,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
         [Fact]
         public async Task ShouldThrowServiceExceptionOnUploadFileIfServiceErrorOccursAndLogItAsync()
         {

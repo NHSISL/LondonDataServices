@@ -12,14 +12,14 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
 {
     public partial class DocumentService
     {
-        private static void ValidateDocument(Document document)
+        private static void ValidateDocument(Document document, string blobContainerName)
         {
             ValidateDocumentIsNotNull(document);
 
             Validate(
                     (Rule: IsInvalid(document.DocumentStream), Parameter: nameof(Document.DocumentStream)),
-                    (Rule: IsInvalid(document.FileName), Parameter: nameof(Document.FileName))
-                );
+                    (Rule: IsInvalid(document.FileName), Parameter: nameof(Document.FileName)),
+                    (Rule: IsInvalid(blobContainerName), Parameter: nameof(blobContainerName)));
         }
 
         private static void ValidateDocumentIsNotNull(Document document)

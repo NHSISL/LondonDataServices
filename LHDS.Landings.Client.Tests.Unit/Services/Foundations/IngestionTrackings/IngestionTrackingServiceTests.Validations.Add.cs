@@ -194,16 +194,15 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTimeOffset);
             IngestionTracking invalidIngestionTracking = randomIngestionTracking;
             invalidIngestionTracking.Name = GetRandomMessage(1, 256, 500);
-            invalidIngestionTracking.CreatedBy = GetRandomMessage(1, 256, 500);
-            invalidIngestionTracking.UpdatedBy = GetRandomMessage(1, 256, 500);
-
-            invalidIngestionTracking.UpdatedDate =
-                invalidIngestionTracking.CreatedDate.AddDays(randomNumber);
 
             var invalidIngestionTrackingException = new InvalidIngestionTrackingException();
 
             var expectedIngestionTrackingValidationException =
                 new IngestionTrackingValidationException(invalidIngestionTrackingException);
+
+            invalidIngestionTrackingException.AddData(
+                key: nameof(IngestionTracking.Name),
+                values: "Text is exceeding max length");
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())

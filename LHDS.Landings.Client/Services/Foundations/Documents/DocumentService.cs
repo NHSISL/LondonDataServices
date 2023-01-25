@@ -26,7 +26,7 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
         public ValueTask AddDocumentAsync(Document document) =>
             TryCatch(async () =>
             {
-                ValidateDocumentIsNotNull(document);
+                ValidateDocument(document);
 
                 await this.blobStorageBroker.InsertFileAsync(
                    fileName: document.FileName,

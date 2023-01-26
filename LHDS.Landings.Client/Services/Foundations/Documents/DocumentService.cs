@@ -5,8 +5,8 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using LHDS.Landings.Client.Brokers;
 using LHDS.Landings.Client.Brokers.Loggings;
+using LHDS.Landings.Client.Brokers.Storages.Blobs;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using Microsoft.Extensions.Configuration;
 
@@ -58,6 +58,11 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
              });
 
         public ValueTask RemoveDocumentByFileNameAsync(string fileName) =>
-            throw new NotImplementedException();
+           TryCatch(async () =>
+           {
+               string container = this.configuration.GetValue<string>("blobContainerName");
+               ValidateDeleteArguments(fileName, container);
+               await this.blobStorageBroker.DeleteFileAsync(fileName, container);
+           });
     }
 }

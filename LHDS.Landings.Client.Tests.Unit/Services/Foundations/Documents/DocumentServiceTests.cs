@@ -5,18 +5,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using LHDS.Landings.Client.Brokers;
 using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
+using LHDS.Landings.Client.Brokers.Storages.Blobs;
 using LHDS.Landings.Client.Services.Foundations.Downloads;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
-namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
+namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
 {
-    public partial class DocumentsServiceTests
+    public partial class DocumentServiceTests
     {
         private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
@@ -24,7 +24,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
         private readonly IConfiguration inMemoryConfiguration;
         private readonly IDocumentService documentService;
 
-        public DocumentsServiceTests()
+        public DocumentServiceTests()
         {
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();

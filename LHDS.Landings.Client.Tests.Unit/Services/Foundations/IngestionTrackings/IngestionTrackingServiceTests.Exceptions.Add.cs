@@ -2,16 +2,15 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Reflection.Metadata;
 using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
-using LHDS.Landings.Client.Models.IngestionTracking;
-using LHDS.Landings.Client.Models.IngestionTracking.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using LHDS.Landings.Client.Models.Foundations.IngestionTracking.Exceptions;
+using LHDS.Landings.Client.Models.Foundations.IngestionTracking;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTrackings
 {

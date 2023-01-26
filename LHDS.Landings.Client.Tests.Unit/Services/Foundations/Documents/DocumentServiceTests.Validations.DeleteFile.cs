@@ -2,10 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
 using LHDS.Landings.Client.Services.Foundations.Downloads;
 using Microsoft.Extensions.Configuration;
@@ -20,15 +22,11 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public async Task ShouldThrowValidationExceptionOnSelectByFileNameIfInputsIsInvalid(string invalidInput)
+        public async Task ShouldThrowValidationExceptionOnDeleteFileIfInputsIsInvalid(string invalidInput)
         {
             // Given
+            string fileName = invalidInput;
             string containerName = invalidInput;
-
-            Document document = new Document
-            {
-                FileName = invalidInput
-            };
 
             var invalidDocumentException =
                 new InvalidDocumentException();
@@ -38,14 +36,15 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                 values: "Text is required");
 
             invalidDocumentException.AddData(
-                key: "blobContainerName",
+                key: "container",
                 values: "Text is required");
 
             var expectedDocumentValidationException
                 = new DocumentValidationException(invalidDocumentException);
 
             var appSettingsStub = new Dictionary<string, string> {
-                {"blobContainerName", invalidInput}
+                {"blobContainerName", invalidInput},
+                {"blobUriValidMinutes", "1"}
             };
 
             var inMemoryConfiguration = new ConfigurationBuilder()
@@ -57,14 +56,15 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                     loggingBroker: this.loggingBrokerMock.Object,
                     configuration: inMemoryConfiguration);
 
-            // When
-            ValueTask<Document> getDownloadLinkTask = documentService.RetrieveDocumentByFileNameAsync(document.FileName);
 
-            DocumentValidationException actualDocumentBlobValidationException =
-                await Assert.ThrowsAsync<DocumentValidationException>(getDownloadLinkTask.AsTask);
+            // When
+            ValueTask deleteFileTask = documentService.RemoveDocumentByFileNameAsync(fileName);
+
+            DocumentValidationException actualDocumentValidationException =
+                await Assert.ThrowsAsync<DocumentValidationException>(deleteFileTask.AsTask);
 
             // Then
-            actualDocumentBlobValidationException.Should().BeEquivalentTo(expectedDocumentValidationException);
+            actualDocumentValidationException.Should().BeEquivalentTo(expectedDocumentValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -72,7 +72,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                         Times.Once);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.SelectByFileNameAsync(It.IsAny<string>(), It.IsAny<string>()),
+                broker.DeleteFileAsync(It.IsAny<string>(), It.IsAny<string>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

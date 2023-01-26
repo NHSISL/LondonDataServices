@@ -13,11 +13,10 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
     public interface IIngestionTrackingService
     {
         ValueTask<IngestionTracking> AddIngestionTrackingAsync(IngestionTracking ingestionTracking);
-        ValueTask<Document> AddIngestionTrackingAsync(IngestionTracking ingestionTracking);
-        IQueryable<Document> RetrieveAllIngestionTracking();
-        ValueTask<Document> RetrieveIngestionTrackingByIdAsync(Guid ingestionTrackingId);
-        ValueTask<Document> ModifyIngestionTrackingAsync(IngestionTracking ingestionTracking);
-        ValueTask<Document> RemoveIngestionTrackingByIdAsync(Guid ingestionTrackingId);
+        IQueryable<IngestionTracking> RetrieveAllIngestionTracking();
+        ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(Guid ingestionTrackingId);
+        ValueTask<IngestionTracking> ModifyIngestionTrackingAsync(IngestionTracking ingestionTracking);
+        ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(Guid ingestionTrackingId);
     }
 
 

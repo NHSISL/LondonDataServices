@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using LHDS.Landings.Client.Models.Downloads;
 using LHDS.Landings.Client.Models.Downloads.Exceptions;
@@ -31,6 +32,13 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
 
                 throw CreateAndLogCriticalDependencyException(failedDownloadStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsDownloadException =
+                    new AlreadyExistsDownloadException(duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsDownloadException);
+            }
         }
 
         private DownloadValidationException CreateAndLogValidationException(Xeption exception)
@@ -49,6 +57,16 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
             this.loggingBroker.LogCritical(downloadDependencyException);
 
             return downloadDependencyException;
+        }
+
+        private DownloadDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var downloadDependencyValidationException =
+                new DownloadDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(downloadDependencyValidationException);
+
+            return downloadDependencyValidationException;
         }
     }
 }

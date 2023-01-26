@@ -23,7 +23,7 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
                 (Rule: IsInvalid(ingestionTracking.UpdatedDate), Parameter: nameof(IngestionTracking.UpdatedDate)),
                 (Rule: IsInvalid(ingestionTracking.UpdatedBy), Parameter: nameof(IngestionTracking.UpdatedBy)),
                 (Rule: IsEqualOrSmallerThan(ingestionTracking.Name, 255), Parameter: nameof(IngestionTracking.Name)),
-                //(Rule: IsInvalid(ingestionTracking.DecryptedBlobId),Parameter: nameof(IngestionTracking.DecryptedBlobId)),
+                (Rule: IsInvalid(ingestionTracking.DecryptedBlobId), Parameter: nameof(IngestionTracking.DecryptedBlobId)),
 
                 (Rule: IsNotSame(
                     firstDate: ingestionTracking.UpdatedDate,

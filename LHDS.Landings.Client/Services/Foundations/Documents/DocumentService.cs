@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Brokers;
 using LHDS.Landings.Client.Brokers.Loggings;
@@ -28,18 +29,35 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
             TryCatch(async () =>
             {
                 var blobContainerName = this.configuration.GetValue<string>("blobContainerName");
-                ValidateDocument(document, blobContainerName);
+                ValidateDocumentOnAdd(document, blobContainerName);
 
                 await this.blobStorageBroker.InsertFileAsync(
                    fileName: document.FileName,
-                   stream: document.DocumentStream,
+                   stream: new MemoryStream(document.DocumentData),
                    container: blobContainerName);
             });
 
-        public ValueTask RetrieveDocumentByFileNameAsync(string fileName) =>
-           throw new NotImplementedException();
+        public ValueTask<Document> RetrieveDocumentByFileNameAsync(string fileName) =>
+             TryCatch(async () =>
+             {
+                 var blobContainerName = this.configuration.GetValue<string>("blobContainerName");
+                 ValidateDocumentOnRetrieve(fileName, blobContainerName);
+
+                 byte[] retrievedDocument = await this.blobStorageBroker
+                     .SelectByFileNameAsync(
+                         fileName: fileName,
+                         container: blobContainerName);
+
+                 var document = new Document
+                 {
+                     FileName = fileName,
+                     DocumentData = retrievedDocument
+                 };
+
+                 return document;
+             });
 
         public ValueTask RemoveDocumentByFileNameAsync(string fileName) =>
-          throw new NotImplementedException();
+            throw new NotImplementedException();
     }
 }

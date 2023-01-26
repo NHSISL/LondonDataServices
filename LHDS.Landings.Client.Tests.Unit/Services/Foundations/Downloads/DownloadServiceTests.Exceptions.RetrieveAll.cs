@@ -49,5 +49,46 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomMessage();
+            var serviceException = new Exception(exceptionMessage);
+
+            var failedDownloadServiceException =
+                new FailedDownloadServiceException(serviceException);
+
+            var expectedDownloadServiceException =
+                new DownloadServiceException(failedDownloadServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllDownloads())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllDownloadsAction = () =>
+                this.downloadService.RetrieveAllDownloads();
+
+            DownloadServiceException actualDownloadServiceException =
+                Assert.Throws<DownloadServiceException>(retrieveAllDownloadsAction);
+
+            // then
+            actualDownloadServiceException.Should()
+                .BeEquivalentTo(expectedDownloadServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllDownloads(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDownloadServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

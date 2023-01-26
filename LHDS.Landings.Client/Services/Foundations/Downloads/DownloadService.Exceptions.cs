@@ -78,6 +78,13 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
                     new FailedDownloadStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedDownloadStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedDownloadServiceException =
+                    new FailedDownloadServiceException(exception);
+
+                throw CreateAndLogServiceException(failedDownloadServiceException);
+            }
         }
 
         private DownloadValidationException CreateAndLogValidationException(Xeption exception)

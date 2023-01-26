@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -203,6 +204,53 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedDownloadDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Download someDownload = CreateRandomDownload();
+            var serviceException = new Exception();
+
+            var failedDownloadServiceException =
+                new FailedDownloadServiceException(serviceException);
+
+            var expectedDownloadServiceException =
+                new DownloadServiceException(failedDownloadServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<Download> addDownloadTask =
+                this.downloadService.AddDownloadAsync(someDownload);
+
+            DownloadServiceException actualDownloadServiceException =
+                await Assert.ThrowsAsync<DownloadServiceException>(
+                    addDownloadTask.AsTask);
+
+            // then
+            actualDownloadServiceException.Should()
+                .BeEquivalentTo(expectedDownloadServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDownloadAsync(It.IsAny<Download>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDownloadServiceException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

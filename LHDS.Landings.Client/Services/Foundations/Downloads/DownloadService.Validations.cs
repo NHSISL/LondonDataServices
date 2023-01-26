@@ -1,3 +1,4 @@
+using System;
 using LHDS.Landings.Client.Models.Downloads;
 using LHDS.Landings.Client.Models.Downloads.Exceptions;
 
@@ -8,6 +9,16 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
         private void ValidateDownloadOnAdd(Download download)
         {
             ValidateDownloadIsNotNull(download);
+
+            Validate(
+                (Rule: IsInvalid(download.Id), Parameter: nameof(Download.Id)),
+
+                // TODO: Add any other required validation rules
+
+                (Rule: IsInvalid(download.CreatedDate), Parameter: nameof(Download.CreatedDate)),
+                (Rule: IsInvalid(download.CreatedByUserId), Parameter: nameof(Download.CreatedByUserId)),
+                (Rule: IsInvalid(download.UpdatedDate), Parameter: nameof(Download.UpdatedDate)),
+                (Rule: IsInvalid(download.UpdatedByUserId), Parameter: nameof(Download.UpdatedByUserId)));
         }
 
         private static void ValidateDownloadIsNotNull(Download download)
@@ -16,6 +27,35 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
             {
                 throw new NullDownloadException();
             }
+        }
+
+        private static dynamic IsInvalid(Guid id) => new
+        {
+            Condition = id == Guid.Empty,
+            Message = "Id is required"
+        };
+
+        private static dynamic IsInvalid(DateTimeOffset date) => new
+        {
+            Condition = date == default,
+            Message = "Date is required"
+        };
+
+        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        {
+            var invalidDownloadException = new InvalidDownloadException();
+
+            foreach ((dynamic rule, string parameter) in validations)
+            {
+                if (rule.Condition)
+                {
+                    invalidDownloadException.UpsertDataList(
+                        key: parameter,
+                        value: rule.Message);
+                }
+            }
+
+            invalidDownloadException.ThrowIfContainsErrors();
         }
     }
 }

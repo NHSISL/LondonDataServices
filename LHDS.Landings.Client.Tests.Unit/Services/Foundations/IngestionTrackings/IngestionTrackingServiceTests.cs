@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Brokers.Storages;
-using LHDS.Landings.Client.Models.IngestionTracking;
+using LHDS.Landings.Client.Models.Foundations.IngestionTracking;
 using LHDS.Landings.Client.Services.Foundations.IngestionTrackings;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -84,8 +84,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user);
-
-            // TODO: Complete the filler setup e.g. ignore related properties etc...
 
             return filler;
         }

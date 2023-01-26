@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Landings.Client.Models.IngestionTracking;
+using LHDS.Landings.Client.Models.Foundations.IngestionTracking;
 using Moq;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTrackings

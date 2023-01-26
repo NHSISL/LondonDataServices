@@ -10,7 +10,7 @@ using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
 using NEL.Premises.Api.Models.Documents.Exceptions;
 using Xeptions;
 
-namespace LHDS.Landings.Client.Services.Foundations.Downloads
+namespace LHDS.Landings.Client.Services.Foundations.Documents
 {
     public partial class DocumentService
     {

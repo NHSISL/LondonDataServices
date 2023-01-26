@@ -5,7 +5,7 @@
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 
-namespace LHDS.Landings.Client.Services.Foundations.Downloads
+namespace LHDS.Landings.Client.Services.Foundations.Documents
 {
     public interface IDocumentService
     {

@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Brokers.Storages.Blobs;
-using LHDS.Landings.Client.Services.Foundations.Downloads;
+using LHDS.Landings.Client.Services.Foundations.Documents;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Tynamix.ObjectFiller;

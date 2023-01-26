@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Linq;
+using System;
 using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Brokers.DateTimes;
@@ -35,5 +37,17 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 
                 return await this.storageBroker.InsertIngestionTrackingAsync(ingestionTracking);
             });
+
+        public IQueryable<IngestionTracking> RetrieveAllIngestionTracking() =>
+            throw new System.NotImplementedException();
+
+        public ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
+            throw new System.NotImplementedException();
+
+        public ValueTask<IngestionTracking> ModifyIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
+            throw new System.NotImplementedException();
+
+        public ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
+            throw new System.NotImplementedException();
     }
 }

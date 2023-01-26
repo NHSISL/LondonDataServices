@@ -39,6 +39,13 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsDownloadException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidDownloadReferenceException =
+                    new InvalidDownloadReferenceException(foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidDownloadReferenceException);
+            }
         }
 
         private DownloadValidationException CreateAndLogValidationException(Xeption exception)

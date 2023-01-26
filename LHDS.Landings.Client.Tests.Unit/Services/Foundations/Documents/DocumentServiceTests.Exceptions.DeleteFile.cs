@@ -65,5 +65,51 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnDeleteFileIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string randomFileName = GetRandomString();
+            var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
+            var randomMessage = GetRandomString();
+
+            Document randomDocument = new Document
+            {
+                FileName = randomFileName,
+                DocumentData = Encoding.ASCII.GetBytes(GetRandomString())
+            };
+
+            var serviceException = new Exception(randomMessage);
+            var failedDocumentServiceException = new FailedDocumentServiceException(serviceException);
+
+            var expectedDocumentServiceException =
+                new DocumentServiceException(failedDocumentServiceException);
+
+            this.blobStorageBrokerMock.Setup(broker =>
+                 broker.DeleteFileAsync(randomDocument.FileName, blobContainerName))
+                     .Throws(failedDocumentServiceException);
+
+            // when
+            ValueTask getDocumentTask = this.documentService.RemoveDocumentByFileNameAsync(randomDocument.FileName);
+
+            var actualServiceException =
+                 await Assert.ThrowsAsync<DocumentServiceException>(getDocumentTask.AsTask);
+
+            // then
+            actualServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                 broker.DeleteFileAsync(randomDocument.FileName, blobContainerName),
+                     Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedDocumentServiceException))),
+                         Times.Once);
+
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

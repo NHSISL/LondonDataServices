@@ -53,5 +53,48 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedDownloadServiceException =
+                new FailedDownloadServiceException(serviceException);
+
+            var expectedDownloadServiceException =
+                new DownloadServiceException(failedDownloadServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectDownloadByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<Download> retrieveDownloadByIdTask =
+                this.downloadService.RetrieveDownloadByIdAsync(someId);
+
+            DownloadServiceException actualDownloadServiceException =
+                await Assert.ThrowsAsync<DownloadServiceException>(
+                    retrieveDownloadByIdTask.AsTask);
+
+            // then
+            actualDownloadServiceException.Should()
+                .BeEquivalentTo(expectedDownloadServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDownloadByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedDownloadServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

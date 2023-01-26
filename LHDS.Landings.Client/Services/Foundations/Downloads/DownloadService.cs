@@ -32,6 +32,6 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
             });
 
         public IQueryable<Download> RetrieveAllDownloads() =>
-            throw new System.NotImplementedException();
+            this.storageBroker.SelectAllDownloads();
     }
 }

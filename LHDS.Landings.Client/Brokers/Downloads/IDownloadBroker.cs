@@ -9,9 +9,9 @@ using System.Text;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 
-namespace LHDS.Landings.Client.Providers.Downloads
+namespace LHDS.Landings.Client.Brokers.Downloads
 {
-    public interface IDownloadAbstractProvider
+    public interface IDownloadBroker
     {
         ValueTask<List<Document>> GetListOfDocumentsToProcessAsync();
         ValueTask<Document> GetDocumentAsync();

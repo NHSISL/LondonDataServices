@@ -22,7 +22,7 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<Download> AddDownloadAsync(Download download) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<Download> AddDownloadAsync(Download download) =>
+            await this.storageBroker.InsertDownloadAsync(download);
     }
 }

@@ -2,15 +2,15 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 
-namespace LHDS.Landings.Client.Services.Foundations.Documents
+namespace LHDS.Landings.Client.Providers.Downloads
 {
-    public interface IDocumentService
+    public interface IDownloadProvider
     {
-        ValueTask AddDocumentAsync(Document documentName);
-        ValueTask<Document> RetrieveDocumentByFileNameAsync(string fileName);
-        ValueTask RemoveDocumentByFileNameAsync(string filename);
+        ValueTask<List<Document>> GetListOfDocumentsToProcessAsync();
+        ValueTask<Document> GetDocumentAsync();
     }
 }

@@ -15,7 +15,7 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 {
     public partial class IngestionTrackingService : IIngestionTrackingService
     {
-        
+
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;

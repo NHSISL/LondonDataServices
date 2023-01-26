@@ -5,7 +5,7 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace LHDS.Landings.Client.Brokers
+namespace LHDS.Landings.Client.Brokers.Storages.Blobs
 {
     public interface IBlobStorageBroker
     {

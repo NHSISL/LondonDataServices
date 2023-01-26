@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
+using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.IngestionTracking;
 using LHDS.Landings.Client.Models.Foundations.IngestionTracking.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -83,7 +84,7 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 
                 throw CreateAndLogCriticalDependencyException(failedIngestionTrackingStorageException);
             }
-        }
+}
 
         private IngestionTrackingValidationException CreateAndLogValidationException(Xeption exception)
         {

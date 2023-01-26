@@ -7,6 +7,7 @@ using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
 using LHDS.Landings.Client.Models.Foundations.IngestionTracking.Exceptions;
+using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTrackings
 {
@@ -51,6 +52,47 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomMessage();
+            var serviceException = new Exception(exceptionMessage);
+
+            var failedIngestionTrackingServiceException =
+                new FailedIngestionTrackingServiceException(serviceException);
+
+            var expectedIngestionTrackingServiceException =
+                new IngestionTrackingServiceException(failedIngestionTrackingServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.ReadAllIngestionTracking())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllIngestionTrackingsAction = () =>
+                this.ingestionTrackingService.RetrieveAllIngestionTracking();
+
+            IngestionTrackingServiceException actualIngestionTrackingServiceException =
+                Assert.Throws<IngestionTrackingServiceException>(retrieveAllIngestionTrackingsAction);
+
+            // then
+            actualIngestionTrackingServiceException.Should()
+                .BeEquivalentTo(expectedIngestionTrackingServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.ReadAllIngestionTracking(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedIngestionTrackingServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using Azure;
+using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
 using NEL.Premises.Api.Models.Documents.Exceptions;
 using Xeptions;
@@ -14,6 +15,7 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
     public partial class DocumentService
     {
         private delegate ValueTask ReturningNothingFunction();
+        private delegate ValueTask<Document> ReturningDocumentFunction();
 
         private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
         {
@@ -40,6 +42,30 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
                    new FailedDocumentServiceException(exception);
 
                 throw CreateAndLogServiceException(failedDocumentServiceException);
+            }
+        }
+
+        private async ValueTask<Document> TryCatch(ReturningDocumentFunction returningDocumentFunction)
+        {
+            try
+            {
+                return await returningDocumentFunction();
+            }
+            catch (InvalidDocumentException exception)
+            {
+                throw CreateAndLogValidationException(exception);
+            }
+            catch (RequestFailedException requestFailedException)
+            {
+                var failedRequestException = new FailedDocumentRequestException(requestFailedException);
+                throw CreateAndLogDependencyException(failedRequestException);
+            }
+            catch (Exception exception)
+            {
+                var failedDocumentBlobServiceException =
+                   new FailedDocumentServiceException(exception);
+
+                throw CreateAndLogServiceException(failedDocumentBlobServiceException);
             }
         }
 

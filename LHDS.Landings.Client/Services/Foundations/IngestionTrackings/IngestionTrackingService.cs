@@ -39,7 +39,7 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
             });
 
         public IQueryable<IngestionTracking> RetrieveAllIngestionTracking() =>
-            this.storageBroker.ReadAllIngestionTracking();
+            TryCatch(() => this.storageBroker.ReadAllIngestionTracking());
 
         public ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
             throw new System.NotImplementedException();

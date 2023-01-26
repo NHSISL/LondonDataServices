@@ -1,21 +1,37 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using EFxceptions.Models.Exceptions;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using LHDS.Landings.Client.Models.Downloads;
 using LHDS.Landings.Client.Models.Downloads.Exceptions;
+using LHDS.Landings.Client.Models.Foundations.Documents;
 using Xeptions;
 
 namespace LHDS.Landings.Client.Services.Foundations.Downloads
 {
     public partial class DownloadService
     {
-        private delegate ValueTask<Download> ReturningDownloadFunction();
-        private delegate IQueryable<Download> ReturningDownloadsFunction();
+        private delegate ValueTask<List<Document>> ReturningDownloadsFunction();
+        private delegate ValueTask<Document> ReturningDownloadFunction();
 
-        private async ValueTask<Download> TryCatch(ReturningDownloadFunction returningDownloadFunction)
+        private async ValueTask<List<Document>> TryCatch(ReturningDownloadsFunction returningDownloadsFunction)
+        {
+            try
+            {
+                return await returningDownloadsFunction();
+            }
+            catch (Exception exception)
+            {
+                var failedDownloadServiceException =
+                    new FailedDownloadServiceException(exception);
+
+                throw CreateAndLogServiceException(failedDownloadServiceException);
+            }
+        }
+
+        private async ValueTask<Document> TryCatch(ReturningDownloadFunction returningDownloadFunction)
         {
             try
             {
@@ -29,34 +45,6 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
             {
                 throw CreateAndLogValidationException(invalidDownloadException);
             }
-            catch (SqlException sqlException)
-            {
-                var failedDownloadStorageException =
-                    new FailedDownloadStorageException(sqlException);
-
-                throw CreateAndLogCriticalDependencyException(failedDownloadStorageException);
-            }
-            catch (DuplicateKeyException duplicateKeyException)
-            {
-                var alreadyExistsDownloadException =
-                    new AlreadyExistsDownloadException(duplicateKeyException);
-
-                throw CreateAndLogDependencyValidationException(alreadyExistsDownloadException);
-            }
-            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
-            {
-                var invalidDownloadReferenceException =
-                    new InvalidDownloadReferenceException(foreignKeyConstraintConflictException);
-
-                throw CreateAndLogDependencyValidationException(invalidDownloadReferenceException);
-            }
-            catch (DbUpdateException databaseUpdateException)
-            {
-                var failedDownloadStorageException =
-                    new FailedDownloadStorageException(databaseUpdateException);
-
-                throw CreateAndLogDependencyException(failedDownloadStorageException);
-            }
             catch (Exception exception)
             {
                 var failedDownloadServiceException =
@@ -66,26 +54,7 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
             }
         }
 
-        private IQueryable<Download> TryCatch(ReturningDownloadsFunction returningDownloadsFunction)
-        {
-            try
-            {
-                return returningDownloadsFunction();
-            }
-            catch (SqlException sqlException)
-            {
-                var failedDownloadStorageException =
-                    new FailedDownloadStorageException(sqlException);
-                throw CreateAndLogCriticalDependencyException(failedDownloadStorageException);
-            }
-            catch (Exception exception)
-            {
-                var failedDownloadServiceException =
-                    new FailedDownloadServiceException(exception);
 
-                throw CreateAndLogServiceException(failedDownloadServiceException);
-            }
-        }
 
         private DownloadValidationException CreateAndLogValidationException(Xeption exception)
         {

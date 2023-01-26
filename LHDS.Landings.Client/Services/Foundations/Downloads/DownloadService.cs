@@ -1,37 +1,35 @@
-using System.Linq;
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using LHDS.Landings.Client.Brokers.DateTimes;
+using LHDS.Landings.Client.Brokers.Downloads;
 using LHDS.Landings.Client.Brokers.Loggings;
-using LHDS.Landings.Client.Brokers.Storages;
-using LHDS.Landings.Client.Models.Downloads;
+using LHDS.Landings.Client.Models.Foundations.Documents;
 
 namespace LHDS.Landings.Client.Services.Foundations.Downloads
 {
     public partial class DownloadService : IDownloadService
     {
-        private readonly IStorageBroker storageBroker;
-        private readonly IDateTimeBroker dateTimeBroker;
+        private readonly IDownloadBroker downloadBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public DownloadService(
-            IStorageBroker storageBroker,
-            IDateTimeBroker dateTimeBroker,
+            IDownloadBroker downloadBroker,
             ILoggingBroker loggingBroker)
         {
-            this.storageBroker = storageBroker;
-            this.dateTimeBroker = dateTimeBroker;
+            this.downloadBroker = downloadBroker;
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<Download> AddDownloadAsync(Download download) =>
+        public ValueTask<List<Document>> RetrieveListOfDocumentsToProcessAsync() =>
             TryCatch(async () =>
             {
-                ValidateDownloadOnAdd(download);
-
-                return await this.storageBroker.InsertDownloadAsync(download);
+                return await this.downloadBroker.GetListOfDocumentsToProcessAsync();
             });
 
-        public IQueryable<Download> RetrieveAllDownloads() =>
-            TryCatch(() => this.storageBroker.SelectAllDownloads());
+        public ValueTask<Document> RetrieveDocumentAsync() =>
+            throw new System.NotImplementedException();
     }
 }

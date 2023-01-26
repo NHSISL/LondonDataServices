@@ -36,6 +36,10 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
 
                 throw CreateAndLogCriticalDependencyException(failedDownloadStorageException);
             }
+            catch (NotFoundDownloadException notFoundDownloadException)
+            {
+                throw CreateAndLogValidationException(notFoundDownloadException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsDownloadException =

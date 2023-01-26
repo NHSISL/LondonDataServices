@@ -43,6 +43,8 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
                 Download maybeDownload = await this.storageBroker
                     .SelectDownloadByIdAsync(downloadId);
 
+                ValidateStorageDownload(maybeDownload, downloadId);
+
                 return maybeDownload;
             });
     }

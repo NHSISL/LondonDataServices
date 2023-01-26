@@ -77,10 +77,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                 values: "Id is required");
 
             invalidIngestionTrackingException.AddData(
-                key: nameof(IngestionTracking.DecryptedBlobId),
-                values: "Needs to be GUID");
-
-            invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.CreatedDate),
                 values: "Date is required");
 

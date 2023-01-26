@@ -1,0 +1,16 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using Xeptions;
+
+namespace LHDS.Landings.Client.Models.Foundations.Documents.Exceptions
+{
+    public class DocumentServiceException : Xeption
+    {
+        public DocumentServiceException(Xeption innerException)
+          : base(message: "Document service error occurred, contact support.",
+                innerException)
+        { }
+    }
+}

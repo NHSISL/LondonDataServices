@@ -2,14 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
-using LHDS.Landings.Client.Services.Foundations.Downloads;
+using LHDS.Landings.Client.Services.Foundations.Documents;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using NEL.Premises.Api.Models.Documents.Exceptions;

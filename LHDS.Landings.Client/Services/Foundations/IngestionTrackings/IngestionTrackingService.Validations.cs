@@ -3,10 +3,8 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Reflection.Metadata;
-using System.Xml.Linq;
-using LHDS.Landings.Client.Models.IngestionTracking;
-using LHDS.Landings.Client.Models.IngestionTracking.Exceptions;
+using LHDS.Landings.Client.Models.Foundations.IngestionTracking;
+using LHDS.Landings.Client.Models.Foundations.IngestionTracking.Exceptions;
 
 namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 {
@@ -25,10 +23,7 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
                 (Rule: IsInvalid(ingestionTracking.UpdatedDate), Parameter: nameof(IngestionTracking.UpdatedDate)),
                 (Rule: IsInvalid(ingestionTracking.UpdatedBy), Parameter: nameof(IngestionTracking.UpdatedBy)),
                 (Rule: IsEqualOrSmallerThan(ingestionTracking.Name, 255), Parameter: nameof(IngestionTracking.Name)),
-                
-                (Rule: IsInvalid(
-                    decryptedBlobId: ingestionTracking.DecryptedBlobId), 
-                Parameter: nameof(IngestionTracking.DecryptedBlobId)),
+                //(Rule: IsInvalid(ingestionTracking.DecryptedBlobId),Parameter: nameof(IngestionTracking.DecryptedBlobId)),
 
                 (Rule: IsNotSame(
                     firstDate: ingestionTracking.UpdatedDate,
@@ -59,22 +54,11 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
             Message = "Id is required"
         };
 
-        private static dynamic IsInvalid(Guid? decryptedBlobId) => new
+        private static dynamic IsInvalid(Guid? id) => new
         {
-            Condition = HasValue(decryptedBlobId),
-            Message = "DecryptedBlobId needs to be GUID."
+            Condition = id.HasValue && id == Guid.Empty,
+            Message = "Id is required"
         };
-
-        private static bool HasValue(Guid? decryptedBlobId)
-        {
-            if (
-                (decryptedBlobId.HasValue == true))
-            {
-                return true;
-            }
-
-            return false;
-        }
 
         private static dynamic IsInvalid(string text) => new
         {

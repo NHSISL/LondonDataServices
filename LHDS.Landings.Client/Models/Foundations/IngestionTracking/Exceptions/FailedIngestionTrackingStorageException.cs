@@ -5,7 +5,7 @@
 using System;
 using Xeptions;
 
-namespace LHDS.Landings.Client.Models.IngestionTracking.Exceptions
+namespace LHDS.Landings.Client.Models.Foundations.IngestionTracking.Exceptions
 {
     public class FailedIngestionTrackingStorageException : Xeption
     {

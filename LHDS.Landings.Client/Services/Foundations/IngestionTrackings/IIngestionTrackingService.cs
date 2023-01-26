@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection.Metadata;
 using System;
 using System.Threading.Tasks;
-using LHDS.Landings.Client.Models.IngestionTracking;
+using LHDS.Landings.Client.Models.Foundations.IngestionTracking;
 
 namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 {
@@ -18,7 +18,4 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
         ValueTask<IngestionTracking> ModifyIngestionTrackingAsync(IngestionTracking ingestionTracking);
         ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(Guid ingestionTrackingId);
     }
-
-
-}
 }

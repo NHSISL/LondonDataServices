@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Landings.Client.Models.Downloads;
 using LHDS.Landings.Client.Models.Downloads.Exceptions;
@@ -139,7 +140,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
                 await Assert.ThrowsAsync<DownloadDependencyValidationException>(
                     addDownloadTask.AsTask);
 
-            actualDownloadDependencyValidationException.Should().BeEquivalentTo(expectedDownloadValidationException);
+            actualDownloadDependencyValidationException.Should()
+                .BeEquivalentTo(expectedDownloadValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -157,6 +159,55 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnAddIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            Download someDownload = CreateRandomDownload();
+
+            var databaseUpdateException =
+                new DbUpdateException();
+
+            var failedDownloadStorageException =
+                new FailedDownloadStorageException(databaseUpdateException);
+
+            var expectedDownloadDependencyException =
+                new DownloadDependencyException(failedDownloadStorageException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<Download> addDownloadTask =
+                this.downloadService.AddDownloadAsync(someDownload);
+
+            DownloadDependencyException actualDownloadDependencyException =
+                await Assert.ThrowsAsync<DownloadDependencyException>(
+                    addDownloadTask.AsTask);
+
+            // then
+            actualDownloadDependencyException.Should()
+                .BeEquivalentTo(expectedDownloadDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDownloadAsync(It.IsAny<Download>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDownloadDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

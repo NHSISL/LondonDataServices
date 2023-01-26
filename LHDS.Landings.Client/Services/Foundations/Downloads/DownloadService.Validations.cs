@@ -24,7 +24,13 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
                     firstDate: download.UpdatedDate,
                     secondDate: download.CreatedDate,
                     secondDateName: nameof(Download.CreatedDate)),
-                Parameter: nameof(Download.UpdatedDate)));
+                Parameter: nameof(Download.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    firstId: download.UpdatedByUserId,
+                    secondId: download.CreatedByUserId,
+                    secondIdName: nameof(Download.CreatedByUserId)),
+                Parameter: nameof(Download.UpdatedByUserId)));
         }
 
         private static void ValidateDownloadIsNotNull(Download download)
@@ -54,6 +60,15 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
             {
                 Condition = firstDate != secondDate,
                 Message = $"Date is not the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            Guid firstId,
+            Guid secondId,
+            string secondIdName) => new
+            {
+                Condition = firstId != secondId,
+                Message = $"Id is not the same as {secondIdName}"
             };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

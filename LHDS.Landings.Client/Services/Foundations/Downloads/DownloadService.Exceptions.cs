@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
     public partial class DownloadService
     {
         private delegate ValueTask<Download> ReturningDownloadFunction();
+        private delegate IQueryable<Download> ReturningDownloadsFunction();
 
         private async ValueTask<Download> TryCatch(ReturningDownloadFunction returningDownloadFunction)
         {
@@ -61,6 +63,20 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
                     new FailedDownloadServiceException(exception);
 
                 throw CreateAndLogServiceException(failedDownloadServiceException);
+            }
+        }
+
+        private IQueryable<Download> TryCatch(ReturningDownloadsFunction returningDownloadsFunction)
+        {
+            try
+            {
+                return returningDownloadsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedDownloadStorageException =
+                    new FailedDownloadStorageException(sqlException);
+                throw CreateAndLogCriticalDependencyException(failedDownloadStorageException);
             }
         }
 

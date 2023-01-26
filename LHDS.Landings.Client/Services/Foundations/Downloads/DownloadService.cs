@@ -35,7 +35,7 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
         public IQueryable<Download> RetrieveAllDownloads() =>
             TryCatch(() => this.storageBroker.SelectAllDownloads());
 
-        public ValueTask<Download> RetrieveDownloadByIdAsync(Guid downloadId) =>
-            throw new NotImplementedException();
+        public async ValueTask<Download> RetrieveDownloadByIdAsync(Guid downloadId) =>
+            await this.storageBroker.SelectDownloadByIdAsync(downloadId);
     }
 }

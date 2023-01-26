@@ -108,5 +108,55 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            Download someDownload = CreateRandomDownload();
+            string randomMessage = GetRandomMessage();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidDownloadReferenceException =
+                new InvalidDownloadReferenceException(foreignKeyConstraintConflictException);
+
+            var expectedDownloadValidationException =
+                new DownloadDependencyValidationException(invalidDownloadReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<Download> addDownloadTask =
+                this.downloadService.AddDownloadAsync(someDownload);
+
+            // then
+            DownloadDependencyValidationException actualDownloadDependencyValidationException =
+                await Assert.ThrowsAsync<DownloadDependencyValidationException>(
+                    addDownloadTask.AsTask);
+
+            actualDownloadDependencyValidationException.Should().BeEquivalentTo(expectedDownloadValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDownloadValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDownloadAsync(someDownload),
+                    Times.Never());
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

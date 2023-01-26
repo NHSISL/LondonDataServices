@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using NEL.DDS.InterfaceLayer.Function.Download.Client.AzureBlobs;
 
-namespace LHDS.Landings.Client.Brokers
+namespace LHDS.Landings.Client.Brokers.Storages.Blobs
 {
     public class BlobStorageBroker : IBlobStorageBroker
     {

@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
-using LHDS.Landings.Client.Services.Foundations.Downloads;
+using LHDS.Landings.Client.Services.Foundations.Documents;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using NEL.Premises.Api.Models.Documents.Exceptions;
 
-namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
+namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
 {
-    public partial class DocumentsServiceTests
+    public partial class DocumentServiceTests
     {
         [Fact]
         public async Task ShouldThrowValidationExceptionsOnAddIfDocumentIsNullAndLogItAsync()

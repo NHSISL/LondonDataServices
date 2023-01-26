@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -54,6 +55,13 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
 
                 throw CreateAndLogDependencyException(failedDownloadStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedDownloadServiceException =
+                    new FailedDownloadServiceException(exception);
+
+                throw CreateAndLogServiceException(failedDownloadServiceException);
+            }
         }
 
         private DownloadValidationException CreateAndLogValidationException(Xeption exception)
@@ -91,6 +99,15 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
             this.loggingBroker.LogError(downloadDependencyException);
 
             return downloadDependencyException;
+        }
+
+        private DownloadServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var downloadServiceException = new DownloadServiceException(exception);
+            this.loggingBroker.LogError(downloadServiceException);
+
+            return downloadServiceException;
         }
     }
 }

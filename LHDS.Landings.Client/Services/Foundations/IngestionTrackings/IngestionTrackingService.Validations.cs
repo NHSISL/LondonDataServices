@@ -40,6 +40,9 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
                 (Rule: IsNotRecent(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)));
         }
 
+        public void ValidateIngestionTrackingId(Guid IngestionTrackingId) =>
+            Validate((Rule: IsInvalid(IngestionTrackingId), Parameter: nameof(IngestionTracking.Id)));
+
         private static void ValidateIngestionTrackingIsNotNull(IngestionTracking ingestionTracking)
         {
             if (ingestionTracking is null)

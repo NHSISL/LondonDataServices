@@ -10,6 +10,7 @@ using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Brokers.Storages;
 using LHDS.Landings.Client.Models.Foundations.IngestionTracking;
+using LHDS.Landings.Client.Models.Foundations.Documents;
 
 namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 {
@@ -41,8 +42,16 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
         public IQueryable<IngestionTracking> RetrieveAllIngestionTracking() =>
             TryCatch(() => this.storageBroker.ReadAllIngestionTracking());
 
-        public async ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
-            await this.storageBroker.ReadIngestionTrackingByIdAsync(ingestionTrackingId);
+        public ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
+        TryCatch(async () =>
+        {
+            ValidateIngestionTrackingId(ingestionTrackingId);
+
+            IngestionTracking maybeIngestionTracking = await this.storageBroker
+                .ReadIngestionTrackingByIdAsync(ingestionTrackingId);
+
+            return maybeIngestionTracking;
+        });
 
         public ValueTask<IngestionTracking> ModifyIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
             throw new System.NotImplementedException();

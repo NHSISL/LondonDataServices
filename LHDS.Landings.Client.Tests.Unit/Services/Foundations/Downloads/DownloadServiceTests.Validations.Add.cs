@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -83,6 +84,53 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
             invalidDownloadException.AddData(
                 key: nameof(Download.UpdatedByUserId),
                 values: "Id is required");
+
+            var expectedDownloadValidationException =
+                new DownloadValidationException(invalidDownloadException);
+
+            // when
+            ValueTask<Download> addDownloadTask =
+                this.downloadService.AddDownloadAsync(invalidDownload);
+
+            DownloadValidationException actualDownloadValidationException =
+                await Assert.ThrowsAsync<DownloadValidationException>(
+                    addDownloadTask.AsTask);
+
+            // then
+            actualDownloadValidationException.Should()
+                .BeEquivalentTo(expectedDownloadValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDownloadValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDownloadAsync(It.IsAny<Download>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateDatesIsNotSameAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNumber();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Download randomDownload = CreateRandomDownload(randomDateTimeOffset);
+            Download invalidDownload = randomDownload;
+
+            invalidDownload.UpdatedDate =
+                invalidDownload.CreatedDate.AddDays(randomNumber);
+
+            var invalidDownloadException = new InvalidDownloadException();
+
+            invalidDownloadException.AddData(
+                key: nameof(Download.UpdatedDate),
+                values: $"Date is not the same as {nameof(Download.CreatedDate)}");
 
             var expectedDownloadValidationException =
                 new DownloadValidationException(invalidDownloadException);

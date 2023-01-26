@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.IO;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
 using NEL.Premises.Api.Models.Documents.Exceptions;
@@ -12,13 +11,20 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
 {
     public partial class DocumentService
     {
-        private static void ValidateDocument(Document document, string blobContainerName)
+        private static void ValidateDocumentOnAdd(Document document, string blobContainerName)
         {
             ValidateDocumentIsNotNull(document);
 
             Validate(
-                    (Rule: IsInvalid(document.DocumentStream), Parameter: nameof(Document.DocumentStream)),
+                    (Rule: IsInvalid(document.DocumentData), Parameter: nameof(Document.DocumentData)),
                     (Rule: IsInvalid(document.FileName), Parameter: nameof(Document.FileName)),
+                    (Rule: IsInvalid(blobContainerName), Parameter: nameof(blobContainerName)));
+        }
+
+        private static void ValidateDocumentOnRetrieve(string fileName, string blobContainerName)
+        {
+            Validate(
+                    (Rule: IsInvalid(fileName), Parameter: nameof(fileName)),
                     (Rule: IsInvalid(blobContainerName), Parameter: nameof(blobContainerName)));
         }
 
@@ -30,10 +36,10 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
             }
         }
 
-        private static dynamic IsInvalid(Stream stream) => new
+        private static dynamic IsInvalid(byte[] data) => new
         {
-            Condition = (stream == null || stream.Length == 0),
-            Message = "Stream is required"
+            Condition = (data == null || data.Length == 0),
+            Message = "Data is required"
         };
 
         private static dynamic IsInvalid(string text) => new

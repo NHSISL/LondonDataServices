@@ -18,7 +18,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
     public partial class IngestionTrackingServiceTests
     {
         [Fact]
-        public async Task ShouldAddIngestionTrackingAsync()
+        public async Task ShouldAddIngestionTrackingAsyncShouldAddIngestionTrackingAsync()
         {
             // given
             DateTimeOffset randomDateTimeOffset =

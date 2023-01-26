@@ -18,12 +18,12 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
                 (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),
                 (Rule: IsInvalid(ingestionTracking.Name), Parameter: nameof(IngestionTracking.Name)),
                 (Rule: IsInvalid(ingestionTracking.EncryptedBlobId), Parameter: nameof(IngestionTracking.EncryptedBlobId)),
+                (Rule: IsInvalid(ingestionTracking.DecryptedBlobId), Parameter: nameof(IngestionTracking.DecryptedBlobId)),
                 (Rule: IsInvalid(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
                 (Rule: IsInvalid(ingestionTracking.CreatedBy), Parameter: nameof(IngestionTracking.CreatedBy)),
                 (Rule: IsInvalid(ingestionTracking.UpdatedDate), Parameter: nameof(IngestionTracking.UpdatedDate)),
                 (Rule: IsInvalid(ingestionTracking.UpdatedBy), Parameter: nameof(IngestionTracking.UpdatedBy)),
                 (Rule: IsEqualOrSmallerThan(ingestionTracking.Name, 255), Parameter: nameof(IngestionTracking.Name)),
-                (Rule: IsInvalid(ingestionTracking.DecryptedBlobId), Parameter: nameof(IngestionTracking.DecryptedBlobId)),
 
                 (Rule: IsNotSame(
                     firstDate: ingestionTracking.UpdatedDate,
@@ -65,6 +65,7 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
         };
+        
         private static dynamic IsEqualOrSmallerThan(string text, int maxLength) => new
         {
             Condition = (text ?? string.Empty).Length > maxLength,

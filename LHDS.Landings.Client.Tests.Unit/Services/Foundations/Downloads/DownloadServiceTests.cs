@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 using Moq;
 using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
@@ -6,6 +7,7 @@ using LHDS.Landings.Client.Brokers.Storages;
 using LHDS.Landings.Client.Models.Downloads;
 using LHDS.Landings.Client.Services.Foundations.Downloads;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
 {
@@ -27,6 +29,9 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();

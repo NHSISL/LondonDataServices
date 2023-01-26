@@ -12,11 +12,10 @@ using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Moq;
 
-namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
+namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
 {
-    public partial class DocumentsServiceTests
+    public partial class DocumentServiceTests
     {
-
         [Fact]
         public async Task ShouldThrowDependencyExceptionOnSelectFileAndLogItAsync()
         {

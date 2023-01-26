@@ -16,7 +16,6 @@ namespace NEL.DDS.InterfaceLayer.Function.Download.Client.AzureBlobs
     {
         private readonly ILoggingBroker loggingBroker;
         private readonly BlobServiceClient blobServiceClient;
-        private readonly BlobServiceClient copyToBlobServiceClient;
 
         public AzureBlobClient(
             ILoggingBroker loggingBroker,
@@ -58,7 +57,7 @@ namespace NEL.DDS.InterfaceLayer.Function.Download.Client.AzureBlobs
 
             await blobClient.UploadAsync(stream, options);
         }
-        
+
         public async ValueTask DeleteFileAsync(string fileName, string container)
         {
             loggingBroker.LogInformation(fileName);

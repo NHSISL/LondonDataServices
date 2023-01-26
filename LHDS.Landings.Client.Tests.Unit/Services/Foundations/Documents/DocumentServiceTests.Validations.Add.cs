@@ -51,27 +51,26 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Theory]
-        [InlineData(null)]
-        public async Task ShouldThrowValidationExceptionOnAddIfDocumentStreamIsInvalidAndLogItAsync(Stream invalidInput)
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfDocumentDataIsInvalidAndLogItAsync()
         {
             // Given
             var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
 
             string validFileName = GetRandomString();
-            Stream invalidStream = invalidInput;
+            byte[] invalidData = null;
 
             Document document = new Document
             {
                 FileName = validFileName,
-                DocumentStream = invalidStream
+                DocumentData = invalidData
             };
 
             var invalidDocumentException = new InvalidDocumentException();
 
             invalidDocumentException.AddData(
-                 key: "DocumentStream",
-                 values: "Stream is required");
+                 key: "DocumentData",
+                 values: "Data is required");
 
             var expectedDocumentValidationException
                 = new DocumentValidationException(invalidDocumentException);
@@ -91,7 +90,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                         Times.Once);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.InsertFileAsync(validFileName, invalidStream, blobContainerName),
+                broker.InsertFileAsync(validFileName, It.IsAny<Stream>(), blobContainerName),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -120,13 +119,14 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
 
             string invalidFileName = invalidInput;
             var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
-            Stream validStream = new MemoryStream(Encoding.ASCII.GetBytes(GetRandomString()));
 
             Document document = new Document
             {
                 FileName = invalidFileName,
-                DocumentStream = validStream
+                DocumentData = Encoding.ASCII.GetBytes(GetRandomString())
             };
+
+            Stream validStream = new MemoryStream(document.DocumentData);
 
             var invalidDocumentException = new InvalidDocumentException();
 

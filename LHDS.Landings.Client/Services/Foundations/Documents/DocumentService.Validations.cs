@@ -48,6 +48,13 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
             Message = "Text is required"
         };
 
+        private void ValidateDeleteArguments(string fileName, string container)
+        {
+            Validate(
+               (Rule: IsInvalid(fileName), Parameter: nameof(fileName)),
+               (Rule: IsInvalid(container), Parameter: nameof(container)));
+        }
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidDocumentException = new InvalidDocumentException();

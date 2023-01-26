@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Azure;
@@ -12,49 +13,48 @@ using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Moq;
 
-namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
+namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
 {
-    public partial class DocumentsServiceTests
+    public partial class DocumentServiceTests
     {
-
         [Fact]
-        public async Task ShouldThrowDependencyExceptionOnSelectFileAndLogItAsync()
+        public async Task ShouldThrowDependencyExceptionOnUploadFileAndLogItAsync()
         {
             // given
-            var randomFileName = GetRandomString();
+            var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
+            var randomString = GetRandomString();
+            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomMessage = GetRandomString();
 
-            Document randomDocument = new Document
+            Document document = new Document
             {
-                FileName = randomFileName,
-                DocumentData = Encoding.ASCII.GetBytes(GetRandomString())
+                FileName = randomString,
+                DocumentData = randomBytes
             };
 
-            var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
-
-            var randomMessage = GetRandomString();
             var requestFailedException = new RequestFailedException(randomMessage);
-
-            var failedDocumentRequestException =
-                new FailedDocumentRequestException(requestFailedException);
+            var failedDocumentRequestException = new FailedDocumentRequestException(requestFailedException);
 
             var expectedDependencyException =
                  new DocumentDependencyException(failedDocumentRequestException);
 
+            var stream = new MemoryStream(document.DocumentData);
+
             this.blobStorageBrokerMock.Setup(broker =>
-                 broker.SelectByFileNameAsync(randomDocument.FileName, blobContainerName))
+                 broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), blobContainerName))
                     .Throws(requestFailedException);
 
             // when
-            ValueTask<Document> getDownloadFileTask = this.documentService.RetrieveDocumentByFileNameAsync(randomDocument.FileName);
+            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document);
 
             var actualDependencyException =
-                 await Assert.ThrowsAsync<DocumentDependencyException>(getDownloadFileTask.AsTask);
+                 await Assert.ThrowsAsync<DocumentDependencyException>(uploadFileTask.AsTask);
 
             // then
             actualDependencyException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                 broker.SelectByFileNameAsync(randomDocument.FileName, blobContainerName),
+                 broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), blobContainerName),
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -67,20 +67,19 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnRetrieveFileIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnUploadFileIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            var randomFileName = GetRandomString();
-
-            Document randomDocument = new Document
-            {
-                FileName = randomFileName,
-                DocumentData = Encoding.ASCII.GetBytes(GetRandomString())
-            };
-
             var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
-
+            var randomString = GetRandomString();
+            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
             var randomMessage = GetRandomString();
+
+            Document document = new Document
+            {
+                FileName = randomString,
+                DocumentData = randomBytes
+            };
 
             var serviceException = new Exception(randomMessage);
             var failedDocumentServiceException = new FailedDocumentServiceException(serviceException);
@@ -88,22 +87,23 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
             var expectedDocumentServiceException =
                 new DocumentServiceException(failedDocumentServiceException);
 
-            this.blobStorageBrokerMock.Setup(broker =>
-                broker.SelectByFileNameAsync(randomDocument.FileName, blobContainerName))
-                   .Throws(failedDocumentServiceException);
+            var stream = new MemoryStream(document.DocumentData);
 
+            this.blobStorageBrokerMock.Setup(broker =>
+                 broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), blobContainerName))
+                     .Throws(failedDocumentServiceException);
 
             // when
-            ValueTask<Document> getDownloadFileTask = this.documentService.RetrieveDocumentByFileNameAsync(randomFileName);
+            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document);
 
             var actualServiceException =
-                 await Assert.ThrowsAsync<DocumentServiceException>(getDownloadFileTask.AsTask);
+                 await Assert.ThrowsAsync<DocumentServiceException>(uploadFileTask.AsTask);
 
             // then
             actualServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.SelectByFileNameAsync(randomDocument.FileName, blobContainerName),
+                broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), blobContainerName),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -111,7 +111,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
                      expectedDocumentServiceException))),
                          Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

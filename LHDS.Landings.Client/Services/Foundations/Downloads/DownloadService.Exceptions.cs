@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using LHDS.Landings.Client.Models.Downloads;
 using LHDS.Landings.Client.Models.Downloads.Exceptions;
 using Xeptions;
@@ -46,6 +47,13 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
 
                 throw CreateAndLogDependencyValidationException(invalidDownloadReferenceException);
             }
+            catch (DbUpdateException databaseUpdateException)
+            {
+                var failedDownloadStorageException =
+                    new FailedDownloadStorageException(databaseUpdateException);
+
+                throw CreateAndLogDependencyException(failedDownloadStorageException);
+            }
         }
 
         private DownloadValidationException CreateAndLogValidationException(Xeption exception)
@@ -74,6 +82,15 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
             this.loggingBroker.LogError(downloadDependencyValidationException);
 
             return downloadDependencyValidationException;
+        }
+
+        private DownloadDependencyException CreateAndLogDependencyException(
+            Xeption exception)
+        {
+            var downloadDependencyException = new DownloadDependencyException(exception);
+            this.loggingBroker.LogError(downloadDependencyException);
+
+            return downloadDependencyException;
         }
     }
 }

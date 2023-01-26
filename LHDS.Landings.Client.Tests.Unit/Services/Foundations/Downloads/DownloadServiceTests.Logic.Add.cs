@@ -22,6 +22,10 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
             Download storageDownload = inputDownload;
             Download expectedDownload = storageDownload.DeepClone();
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertDownloadAsync(inputDownload))
                     .ReturnsAsync(storageDownload);
@@ -33,13 +37,17 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
             // then
             actualDownload.Should().BeEquivalentTo(expectedDownload);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertDownloadAsync(inputDownload),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

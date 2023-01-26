@@ -27,8 +27,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
                 this.downloadService.AddDownloadAsync(nullDownload);
 
             DownloadValidationException actualDownloadValidationException =
-                await Assert.ThrowsAsync<DownloadValidationException>(
-                    addDownloadTask.AsTask);
+                await Assert.ThrowsAsync<DownloadValidationException>(() =>
+                    addDownloadTask.AsTask());
 
             // then
             actualDownloadValidationException.Should()
@@ -93,12 +93,16 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
                 this.downloadService.AddDownloadAsync(invalidDownload);
 
             DownloadValidationException actualDownloadValidationException =
-                await Assert.ThrowsAsync<DownloadValidationException>(
-                    addDownloadTask.AsTask);
+                await Assert.ThrowsAsync<DownloadValidationException>(() =>
+                    addDownloadTask.AsTask());
 
             // then
             actualDownloadValidationException.Should()
                 .BeEquivalentTo(expectedDownloadValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -135,17 +139,25 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
             var expectedDownloadValidationException =
                 new DownloadValidationException(invalidDownloadException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<Download> addDownloadTask =
                 this.downloadService.AddDownloadAsync(invalidDownload);
 
             DownloadValidationException actualDownloadValidationException =
-                await Assert.ThrowsAsync<DownloadValidationException>(
-                    addDownloadTask.AsTask);
+                await Assert.ThrowsAsync<DownloadValidationException>(() =>
+                    addDownloadTask.AsTask());
 
             // then
             actualDownloadValidationException.Should()
                 .BeEquivalentTo(expectedDownloadValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -156,9 +168,9 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
                 broker.InsertDownloadAsync(It.IsAny<Download>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -180,17 +192,25 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
             var expectedDownloadValidationException =
                 new DownloadValidationException(invalidDownloadException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<Download> addDownloadTask =
                 this.downloadService.AddDownloadAsync(invalidDownload);
 
             DownloadValidationException actualDownloadValidationException =
-                await Assert.ThrowsAsync<DownloadValidationException>(
-                    addDownloadTask.AsTask);
+                await Assert.ThrowsAsync<DownloadValidationException>(() =>
+                    addDownloadTask.AsTask());
 
             // then
             actualDownloadValidationException.Should()
                 .BeEquivalentTo(expectedDownloadValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -239,8 +259,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
                 this.downloadService.AddDownloadAsync(invalidDownload);
 
             DownloadValidationException actualDownloadValidationException =
-                await Assert.ThrowsAsync<DownloadValidationException>(
-                    addDownloadTask.AsTask);
+                await Assert.ThrowsAsync<DownloadValidationException>(() =>
+                    addDownloadTask.AsTask());
 
             // then
             actualDownloadValidationException.Should()

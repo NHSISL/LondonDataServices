@@ -78,7 +78,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.DecryptedBlobId),
-                values: "Id is required");
+                values: "Needs to be GUID");
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.CreatedDate),
@@ -266,8 +266,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                 this.ingestionTrackingService.AddIngestionTrackingAsync(invalidIngestionTracking);
 
             IngestionTrackingValidationException actualIngestionTrackingValidationException =
-                await Assert.ThrowsAsync<IngestionTrackingValidationException>(() =>
-                    addIngestionTrackingTask.AsTask());
+                await Assert.ThrowsAsync<IngestionTrackingValidationException>(
+                    addIngestionTrackingTask.AsTask);
 
             // then
             actualIngestionTrackingValidationException.Should()

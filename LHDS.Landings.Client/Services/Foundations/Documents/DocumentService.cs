@@ -5,8 +5,8 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using LHDS.Landings.Client.Brokers;
 using LHDS.Landings.Client.Brokers.Loggings;
+using LHDS.Landings.Client.Brokers.Storages.Blobs;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using Microsoft.Extensions.Configuration;
 

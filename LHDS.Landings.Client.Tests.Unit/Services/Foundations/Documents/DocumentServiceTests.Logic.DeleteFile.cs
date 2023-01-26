@@ -22,7 +22,7 @@ public partial class DocumentServiceTests
         Document randomDocument = new Document
         {
             FileName = randomFileName,
-            DocumentStream = new MemoryStream(Encoding.ASCII.GetBytes(GetRandomString()))
+            DocumentData = Encoding.ASCII.GetBytes(GetRandomString())
         };
 
         // When

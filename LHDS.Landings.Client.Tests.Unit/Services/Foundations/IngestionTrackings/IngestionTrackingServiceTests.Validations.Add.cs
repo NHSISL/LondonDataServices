@@ -7,8 +7,8 @@ using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Landings.Client.Models.IngestionTracking;
-using LHDS.Landings.Client.Models.IngestionTracking.Exceptions;
+using LHDS.Landings.Client.Models.Foundations.IngestionTracking;
+using LHDS.Landings.Client.Models.Foundations.IngestionTracking.Exceptions;
 using Moq;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTrackings
@@ -326,6 +326,59 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             IngestionTrackingValidationException actualIngestionTrackingValidationException =
                 await Assert.ThrowsAsync<IngestionTrackingValidationException>(() =>
                     addIngestionTrackingTask.AsTask());
+
+            // then
+            actualIngestionTrackingValidationException.Should()
+                .BeEquivalentTo(expectedIngestionTrackingValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedIngestionTrackingValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfDecryptedBlobIdIsInvalidAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTimeOffset);
+            randomIngestionTracking.DecryptedBlobId = Guid.Empty;
+            IngestionTracking inputIngestionTracking = randomIngestionTracking;
+
+            var invalidIngestionTrackingException =
+                new InvalidIngestionTrackingException();
+
+            invalidIngestionTrackingException.AddData(
+                key: nameof(IngestionTracking.DecryptedBlobId),
+                values: "Id is required");
+
+            var expectedIngestionTrackingValidationException =
+                new IngestionTrackingValidationException(invalidIngestionTrackingException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<IngestionTracking> addIngestionTrackingTask =
+                this.ingestionTrackingService.AddIngestionTrackingAsync(inputIngestionTracking);
+
+            IngestionTrackingValidationException actualIngestionTrackingValidationException =
+                await Assert.ThrowsAsync<IngestionTrackingValidationException>(
+                    addIngestionTrackingTask.AsTask);
 
             // then
             actualIngestionTrackingValidationException.Should()

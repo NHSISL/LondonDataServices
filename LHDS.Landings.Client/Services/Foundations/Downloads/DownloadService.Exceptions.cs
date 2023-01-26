@@ -19,6 +19,10 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
             {
                 throw CreateAndLogValidationException(nullDownloadException);
             }
+            catch (InvalidDownloadException invalidDownloadException)
+            {
+                throw CreateAndLogValidationException(invalidDownloadException);
+            }
         }
 
         private DownloadValidationException CreateAndLogValidationException(Xeption exception)

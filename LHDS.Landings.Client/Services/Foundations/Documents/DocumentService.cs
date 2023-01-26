@@ -40,6 +40,11 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
            throw new NotImplementedException();
 
         public ValueTask RemoveDocumentByFileNameAsync(string fileName) =>
-          throw new NotImplementedException();
+           TryCatch(async () =>
+           {
+               string container = this.configuration.GetValue<string>("blobContainerName");
+               ValidateDeleteArguments(fileName, container);
+               await this.blobStorageBroker.DeleteFileAsync(fileName, container);
+           });
     }
 }

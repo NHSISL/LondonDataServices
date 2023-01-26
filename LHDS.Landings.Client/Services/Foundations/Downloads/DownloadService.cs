@@ -1,0 +1,28 @@
+using System.Threading.Tasks;
+using LHDS.Landings.Client.Brokers.DateTimes;
+using LHDS.Landings.Client.Brokers.Loggings;
+using LHDS.Landings.Client.Brokers.Storages;
+using LHDS.Landings.Client.Models.Downloads;
+
+namespace LHDS.Landings.Client.Services.Foundations.Downloads
+{
+    public partial class DownloadService : IDownloadService
+    {
+        private readonly IStorageBroker storageBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ILoggingBroker loggingBroker;
+
+        public DownloadService(
+            IStorageBroker storageBroker,
+            IDateTimeBroker dateTimeBroker,
+            ILoggingBroker loggingBroker)
+        {
+            this.storageBroker = storageBroker;
+            this.dateTimeBroker = dateTimeBroker;
+            this.loggingBroker = loggingBroker;
+        }
+
+        public ValueTask<Download> AddDownloadAsync(Download download) =>
+            throw new System.NotImplementedException();
+    }
+}

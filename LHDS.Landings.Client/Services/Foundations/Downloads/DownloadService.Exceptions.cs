@@ -54,8 +54,6 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
             }
         }
 
-
-
         private DownloadValidationException CreateAndLogValidationException(Xeption exception)
         {
             var downloadValidationException =

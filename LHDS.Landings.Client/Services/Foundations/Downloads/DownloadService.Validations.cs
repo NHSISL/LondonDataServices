@@ -35,6 +35,9 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
                 (Rule: IsNotRecent(download.CreatedDate), Parameter: nameof(Download.CreatedDate)));
         }
 
+        public void ValidateDownloadId(Guid downloadId) =>
+            Validate((Rule: IsInvalid(downloadId), Parameter: nameof(Download.Id)));
+
         private static void ValidateDownloadIsNotNull(Download download)
         {
             if (download is null)

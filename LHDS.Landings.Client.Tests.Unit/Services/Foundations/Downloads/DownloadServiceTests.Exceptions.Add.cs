@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -50,6 +51,57 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
                     expectedDownloadDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfDownloadAlreadyExsitsAndLogItAsync()
+        {
+            // given
+            Download randomDownload = CreateRandomDownload();
+            Download alreadyExistsDownload = randomDownload;
+            string randomMessage = GetRandomMessage();
+
+            var duplicateKeyException =
+                new DuplicateKeyException(randomMessage);
+
+            var alreadyExistsDownloadException =
+                new AlreadyExistsDownloadException(duplicateKeyException);
+
+            var expectedDownloadDependencyValidationException =
+                new DownloadDependencyValidationException(alreadyExistsDownloadException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(duplicateKeyException);
+
+            // when
+            ValueTask<Download> addDownloadTask =
+                this.downloadService.AddDownloadAsync(alreadyExistsDownload);
+
+            // then
+            DownloadDependencyValidationException actualDownloadDependencyValidationException =
+                await Assert.ThrowsAsync<DownloadDependencyValidationException>(
+                    addDownloadTask.AsTask);
+
+            actualDownloadDependencyValidationException.Should()
+                .BeEquivalentTo(expectedDownloadDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDownloadAsync(It.IsAny<Download>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDownloadDependencyValidationException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

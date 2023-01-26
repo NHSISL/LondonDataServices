@@ -1,5 +1,7 @@
 using System;
 using System.Linq.Expressions;
+using System.Runtime.Serialization;
+using Microsoft.Data.SqlClient;
 using Moq;
 using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
@@ -46,6 +48,9 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
             };
         }
 
+        private static SqlException GetSqlException() =>
+            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
@@ -54,6 +59,9 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static Download CreateRandomDownload() =>
+            CreateDownloadFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
         private static Download CreateRandomDownload(DateTimeOffset dateTimeOffset) =>
             CreateDownloadFiller(dateTimeOffset).Create();

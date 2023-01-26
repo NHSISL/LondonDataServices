@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using Azure;
@@ -39,26 +40,22 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
             var expectedDependencyException =
                  new DocumentDependencyException(failedDocumentRequestException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                 broker.GetCurrentDateTimeOffset())
+            this.blobStorageBrokerMock.Setup(broker =>
+                 broker.SelectByFileNameAsync(randomDocument.FileName, blobContainerName))
                     .Throws(requestFailedException);
 
             // when
-            ValueTask<Document> getDownloadLinkTask = this.documentService.RetrieveDocumentByFileNameAsync(randomDocument.FileName);
+            ValueTask<Document> getDownloadFileTask = this.documentService.RetrieveDocumentByFileNameAsync(randomDocument.FileName);
 
             var actualDependencyException =
-                 await Assert.ThrowsAsync<DocumentDependencyException>(getDownloadLinkTask.AsTask);
+                 await Assert.ThrowsAsync<DocumentDependencyException>(getDownloadFileTask.AsTask);
 
             // then
             actualDependencyException.Should().BeEquivalentTo(expectedDependencyException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                 broker.GetCurrentDateTimeOffset(),
-                     Times.Once);
-
             this.blobStorageBrokerMock.Verify(broker =>
                  broker.SelectByFileNameAsync(randomDocument.FileName, blobContainerName),
-                     Times.Never);
+                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
@@ -69,5 +66,43 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveFileIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            var randomFileName = GetRandomString();
+            string inputFileName = randomFileName;
+            var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
+           
+            var randomMessage = GetRandomString();
+
+            var serviceException = new Exception(randomMessage);
+            var failedDocumentServiceException = new FailedDocumentServiceException(serviceException);
+
+            var expectedDocumentServiceException =
+                new DocumentServiceException(failedDocumentServiceException);
+
+            // when
+            ValueTask<Document> getDownloadFileTask = this.documentService.RetrieveDocumentByFileNameAsync(randomFileName);
+
+            var actualServiceException =
+                 await Assert.ThrowsAsync<DocumentServiceException>(getDownloadFileTask.AsTask);
+
+            // then
+            actualServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
+
+             this.blobStorageBrokerMock.Verify(broker =>
+                 broker.SelectByFileNameAsync(inputFileName, blobContainerName),
+                     Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedDocumentServiceException))),
+                         Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

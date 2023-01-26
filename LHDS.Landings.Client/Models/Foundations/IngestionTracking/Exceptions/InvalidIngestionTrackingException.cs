@@ -9,12 +9,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Xeptions;
 
-namespace LHDS.Landings.Client.Models.IngestionTracking.Exceptions
+namespace LHDS.Landings.Client.Models.Foundations.IngestionTracking.Exceptions
 {
-    public class NullIngestionTrackingException : Xeption
+    public class InvalidIngestionTrackingException : Xeption
     {
-        public NullIngestionTrackingException() 
-            : base(message: "Ingestion tracking is null.")
+        public InvalidIngestionTrackingException()
+            : base(message: "Invalid ingestion tracking. Please investigate.")
         { }
     }
 }

@@ -4,11 +4,11 @@
 
 using Xeptions;
 
-namespace LHDS.Landings.Client.Models.IngestionTracking.Exceptions
+namespace LHDS.Landings.Client.Models.Foundations.IngestionTracking.Exceptions
 {
     public class IngestionTrackingDependencyException : Xeption
     {
-        public IngestionTrackingDependencyException(Xeption innerException) 
+        public IngestionTrackingDependencyException(Xeption innerException)
             : base(message: "Ingestion tracking dependency error occurred, contact support.")
         { }
     }

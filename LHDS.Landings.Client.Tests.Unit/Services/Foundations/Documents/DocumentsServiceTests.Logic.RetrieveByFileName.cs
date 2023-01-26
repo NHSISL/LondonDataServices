@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Models.Foundations.Documents;
@@ -15,7 +14,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
     {
 
         [Fact]
-        public async Task ShouldAddFileAsync()
+        public async Task ShouldRetrieveFileAsync()
         {
             // Given
             string randomFileName = GetRandomString();
@@ -27,15 +26,19 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
                 DocumentData = Encoding.ASCII.GetBytes(GetRandomString())
             };
 
-            var stream = new MemoryStream(randomDocument.DocumentData);
+            Document expectedDocument = randomDocument;
+
+            this.blobStorageBrokerMock.Setup(broker =>
+                broker.SelectByFileNameAsync(randomDocument.FileName, blobContainerName))
+                    .ReturnsAsync(randomDocument.DocumentData);
 
             // When
-            await this.documentService.AddDocumentAsync(randomDocument);
+            Document actualDocument = await this.documentService.RetrieveDocumentByFileNameAsync(randomDocument.FileName);
 
             // Then
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.InsertFileAsync(randomDocument.FileName, It.IsAny<Stream>(), blobContainerName),
-                Times.Once);
+                broker.SelectByFileNameAsync(randomDocument.FileName, blobContainerName),
+                    Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

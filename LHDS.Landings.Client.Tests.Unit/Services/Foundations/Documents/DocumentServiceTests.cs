@@ -14,9 +14,9 @@ using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
-namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
+namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
 {
-    public partial class DocumentsServiceTests
+    public partial class DocumentServiceTests
     {
         private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
@@ -24,7 +24,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
         private readonly IConfiguration inMemoryConfiguration;
         private readonly IDocumentService documentService;
 
-        public DocumentsServiceTests()
+        public DocumentServiceTests()
         {
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();

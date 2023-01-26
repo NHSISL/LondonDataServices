@@ -24,29 +24,29 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
             Document randomDocument = CreateRandomDocument();
             Document inputDocument = randomDocument;
 
-            IngestionTracking randomIngestionTracking = CreateRandomDocument();
-            IngestionTracking inputIngestionTracking = randomIngestionTracking;
-            IngestionTracking externalIngestionTrackingFound = null;
+            //IngestionTracking randomIngestionTracking = CreateRandomDocument();
+            //IngestionTracking inputIngestionTracking = randomIngestionTracking;
+            //IngestionTracking externalIngestionTrackingFound = null;
 
-            this.downloadServiceMock.Setup(service =>
-               service.RetrieveListOfDocumentsToProcessAsync())
-                   .ReturnsAsync(externalDocuments);
+            //this.downloadServiceMock.Setup(service =>
+            //   service.RetrieveListOfDocumentsToProcessAsync())
+            //       .ReturnsAsync(externalDocuments);
 
 
-            foreach (var document in randomDocuments)
-            {
-                this.ingestionTrackingServiceMock.Setup(service =>
-                    service.RetrieveIngestionTrackingByIdAsync(inputId))
-                        .ReturnsAsync(externalIngestionTrackingFound);
+            //foreach (var document in randomDocuments)
+            //{
+            //    this.ingestionTrackingServiceMock.Setup(service =>
+            //        service.RetrieveIngestionTrackingByIdAsync(inputId))
+            //            .ReturnsAsync(externalIngestionTrackingFound);
 
-                this.ingestionTrackingServiceMock.Setup(service =>
-                    service.AddIngestionTrackingAsync(inputIngestionTracking))
-                        .ReturnsAsync(externalIngestionTrackingFound);
+            //    this.ingestionTrackingServiceMock.Setup(service =>
+            //        service.AddIngestionTrackingAsync(inputIngestionTracking))
+            //            .ReturnsAsync(externalIngestionTrackingFound);
 
-                this.documentServiceMock.Setup(service =>
-                    service.AddDocumentAsync(inputDocument))
-                        .ReturnsAsync(externalIngestionTrackingFound);
-            }
+            //    this.documentServiceMock.Setup(service =>
+            //        service.AddDocumentAsync(inputDocument))
+            //            .ReturnsAsync(externalIngestionTrackingFound);
+            //}
 
 
 

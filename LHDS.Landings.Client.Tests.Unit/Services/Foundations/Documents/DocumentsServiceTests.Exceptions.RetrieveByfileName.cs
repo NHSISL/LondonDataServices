@@ -71,7 +71,13 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
         {
             // given
             var randomFileName = GetRandomString();
-            string inputFileName = randomFileName;
+
+            Document randomDocument = new Document
+            {
+                FileName = randomFileName,
+                DocumentData = Encoding.ASCII.GetBytes(GetRandomString())
+            };
+
             var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
            
             var randomMessage = GetRandomString();
@@ -81,6 +87,11 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
 
             var expectedDocumentServiceException =
                 new DocumentServiceException(failedDocumentServiceException);
+
+            this.blobStorageBrokerMock.Setup(broker =>
+                broker.SelectByFileNameAsync(randomDocument.FileName, blobContainerName))
+                   .Throws(failedDocumentServiceException);
+
 
             // when
             ValueTask<Document> getDownloadFileTask = this.documentService.RetrieveDocumentByFileNameAsync(randomFileName);
@@ -92,7 +103,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
             actualServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
 
              this.blobStorageBrokerMock.Verify(broker =>
-                 broker.SelectByFileNameAsync(inputFileName, blobContainerName),
+                 broker.SelectByFileNameAsync(randomDocument.FileName, blobContainerName),
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

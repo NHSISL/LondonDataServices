@@ -40,7 +40,6 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
                 Parameter: nameof(IngestionTracking.UpdatedBy)),
 
                 (Rule: IsNotRecent(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)));
-
         }
 
         private static void ValidateIngestionTrackingIsNotNull(IngestionTracking ingestionTracking)

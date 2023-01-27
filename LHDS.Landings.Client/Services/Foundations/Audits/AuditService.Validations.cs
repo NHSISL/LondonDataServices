@@ -47,7 +47,13 @@ namespace LHDS.Landings.Client.Services.Foundations.Audits
                 (Rule: IsInvalid(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)),
                 (Rule: IsInvalid(audit.CreatedByUserId), Parameter: nameof(Audit.CreatedByUserId)),
                 (Rule: IsInvalid(audit.UpdatedDate), Parameter: nameof(Audit.UpdatedDate)),
-                (Rule: IsInvalid(audit.UpdatedByUserId), Parameter: nameof(Audit.UpdatedByUserId)));
+                (Rule: IsInvalid(audit.UpdatedByUserId), Parameter: nameof(Audit.UpdatedByUserId)),
+
+                (Rule: IsSame(
+                    firstDate: audit.UpdatedDate,
+                    secondDate: audit.CreatedDate,
+                    secondDateName: nameof(Audit.CreatedDate)),
+                Parameter: nameof(Audit.UpdatedDate)));
         }
 
         public void ValidateAuditId(Guid auditId) =>
@@ -80,6 +86,15 @@ namespace LHDS.Landings.Client.Services.Foundations.Audits
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,

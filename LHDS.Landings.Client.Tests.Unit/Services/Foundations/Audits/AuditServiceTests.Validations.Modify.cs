@@ -84,7 +84,11 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Audits
 
             invalidAuditException.AddData(
                 key: nameof(Audit.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(Audit.CreatedDate)}"
+                });
 
             invalidAuditException.AddData(
                 key: nameof(Audit.UpdatedByUserId),

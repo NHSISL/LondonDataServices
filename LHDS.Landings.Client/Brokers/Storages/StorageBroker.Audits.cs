@@ -31,5 +31,13 @@ namespace LHDS.Landings.Client.Brokers.Storages
 
             return broker.Audits;
         }
+
+        public async ValueTask<Audit> SelectAuditByIdAsync(Guid auditId)
+        {
+            using var broker =
+                new StorageBroker(this.configuration);
+
+            return await broker.Audits.FindAsync(auditId);
+        }
     }
 }

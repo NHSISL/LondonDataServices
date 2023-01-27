@@ -1,36 +1,36 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
+using LHDS.Landings.Client.Brokers.Downloads;
+using LHDS.Landings.Client.Brokers.Loggings;
+using LHDS.Landings.Client.Models.Foundations.Documents;
+using LHDS.Landings.Client.Services.Foundations.Downloads;
 using Microsoft.Data.SqlClient;
 using Moq;
-using LHDS.Landings.Client.Brokers.DateTimes;
-using LHDS.Landings.Client.Brokers.Loggings;
-using LHDS.Landings.Client.Brokers.Storages;
-using LHDS.Landings.Client.Models.Downloads;
-using LHDS.Landings.Client.Services.Foundations.Downloads;
 using Tynamix.ObjectFiller;
 using Xeptions;
-using Xunit;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
 {
     public partial class DownloadServiceTests
     {
-        private readonly Mock<IStorageBroker> storageBrokerMock;
-        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<IDownloadBroker> downloadBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IDownloadService downloadService;
 
         public DownloadServiceTests()
         {
-            this.storageBrokerMock = new Mock<IStorageBroker>();
-            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.downloadBrokerMock = new Mock<IDownloadBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.downloadService = new DownloadService(
-                storageBroker: this.storageBrokerMock.Object,
-                dateTimeBroker: this.dateTimeBrokerMock.Object,
+                downloadBroker: this.downloadBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
@@ -61,33 +61,20 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
         private static int GetRandomNegativeNumber() =>
             -1 * new IntRange(min: 2, max: 10).GetValue();
 
-        private static DateTimeOffset GetRandomDateTimeOffset() =>
-            new DateTimeRange(earliestDate: new DateTime()).GetValue();
-
-        private static IQueryable<Download> CreateRandomDownloads()
+        private static List<Document> CreateRandomDocuments()
         {
-            return CreateDownloadFiller(dateTimeOffset: GetRandomDateTimeOffset())
+            return CreateDocumentFiller()
                 .Create(count: GetRandomNumber())
-                    .AsQueryable();
+                    .ToList();
         }
 
-        private static Download CreateRandomDownload() =>
-            CreateDownloadFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+        private static Document CreateRandomDocument() =>
+            CreateDocumentFiller().Create();
 
-        private static Download CreateRandomDownload(DateTimeOffset dateTimeOffset) =>
-            CreateDownloadFiller(dateTimeOffset).Create();
-
-        private static Filler<Download> CreateDownloadFiller(DateTimeOffset dateTimeOffset)
+        private static Filler<Document> CreateDocumentFiller()
         {
-            Guid userId = Guid.NewGuid();
-            var filler = new Filler<Download>();
-
-            filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(download => download.CreatedByUserId).Use(userId)
-                .OnProperty(download => download.UpdatedByUserId).Use(userId);
-
-            // TODO: Complete the filler setup e.g. ignore related properties etc...
+            var filler = new Filler<Document>();
+            filler.Setup();
 
             return filler;
         }

@@ -2,20 +2,18 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Linq;
 using System;
-using System.Reflection.Metadata;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Brokers.Storages;
-using LHDS.Landings.Client.Models.IngestionTracking;
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 
 namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 {
     public partial class IngestionTrackingService : IIngestionTrackingService
     {
-
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
@@ -31,12 +29,20 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
         }
 
         public ValueTask<IngestionTracking> AddIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
-            throw new System.NotImplementedException();
+            TryCatch(async () =>
+            {
+                ValidateIngestionTrackingOnAdd(ingestionTracking);
+
+                return await this.storageBroker.InsertIngestionTrackingAsync(ingestionTracking);
+            });
 
         public IQueryable<IngestionTracking> RetrieveAllIngestionTracking() =>
             throw new System.NotImplementedException();
 
         public ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
+            throw new System.NotImplementedException();
+
+        public ValueTask<IngestionTracking> RetrieveIngestionTrackingByFileNameAsync(string fileName) =>
             throw new System.NotImplementedException();
 
         public ValueTask<IngestionTracking> ModifyIngestionTrackingAsync(IngestionTracking ingestionTracking) =>

@@ -10,7 +10,6 @@ using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Brokers.Storages;
 using LHDS.Landings.Client.Models.Foundations.IngestionTracking;
-using LHDS.Landings.Client.Models.Foundations.Documents;
 
 namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 {
@@ -49,6 +48,8 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 
             IngestionTracking maybeIngestionTracking = await this.storageBroker
                 .ReadIngestionTrackingByIdAsync(ingestionTrackingId);
+
+            ValidateStorageIngestionTracking(maybeIngestionTracking, ingestionTrackingId);
 
             return maybeIngestionTracking;
         });

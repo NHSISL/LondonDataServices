@@ -43,6 +43,14 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
         public void ValidateIngestionTrackingId(Guid IngestionTrackingId) =>
             Validate((Rule: IsInvalid(IngestionTrackingId), Parameter: nameof(IngestionTracking.Id)));
 
+        private static void ValidateStorageIngestionTracking(IngestionTracking maybeIngestionTracking, Guid ingestionTrackingId)
+        {
+            if (maybeIngestionTracking is null)
+            {
+                throw new NotFoundIngestionTrackingException(ingestionTrackingId);
+            }
+        }
+
         private static void ValidateIngestionTrackingIsNotNull(IngestionTracking ingestionTracking)
         {
             if (ingestionTracking is null)

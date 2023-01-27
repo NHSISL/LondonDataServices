@@ -8,12 +8,17 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Models\Processings\**" />
+	  <EmbeddedResource Remove="Models\Processings\**" />
+	  <None Remove="Models\Processings\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Compile Remove="Program.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<Folder Include="Migrations\" />
-		<Folder Include="Models\Processings\" />
 		<Folder Include="Services\Orchestrations\" />
 	</ItemGroup>
 

@@ -5,10 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Models.Foundations.Documents;
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using LHDS.Landings.Client.Services.Foundations.Documents;
 using LHDS.Landings.Client.Services.Foundations.Downloads;
 using LHDS.Landings.Client.Services.Foundations.IngestionTrackings;
@@ -61,5 +60,31 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
             return filler;
         }
 
+        private static string GetRandomString() =>
+          new MnemonicString().GetValue();
+
+        private static string GetRandomMessage() =>
+           new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+
+        private static DateTimeOffset GetRandomDateTimeOffset() =>
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static IngestionTracking CreateRandomIngestionTracking(DateTimeOffset dateTimeOffset) =>
+            CreateIngestionTrackingFiller(dateTimeOffset).Create();
+
+        private static Filler<IngestionTracking> CreateIngestionTrackingFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = GetRandomMessage();
+            var filler = new Filler<IngestionTracking>();
+            Guid? nullGuid = null;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<Guid?>().Use(nullGuid)
+                .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
+                .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user);
+
+            return filler;
+        }
     }
 }

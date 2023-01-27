@@ -36,6 +36,10 @@ namespace LHDS.Landings.Client.Services.Foundations.Audits
 
                 throw CreateAndLogCriticalDependencyException(failedAuditStorageException);
             }
+            catch (NotFoundAuditException notFoundAuditException)
+            {
+                throw CreateAndLogValidationException(notFoundAuditException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsAuditException =

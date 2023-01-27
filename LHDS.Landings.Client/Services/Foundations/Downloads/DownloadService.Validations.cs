@@ -4,34 +4,36 @@
 
 using System;
 using LHDS.Landings.Client.Models.Downloads.Exceptions;
+using LHDS.Landings.Client.Models.Foundations.Documents;
+using LHDS.Landings.Client.Models.Foundations.Downloads.Exceptions;
 
 namespace LHDS.Landings.Client.Services.Foundations.Downloads
 {
     public partial class DownloadService
     {
-        public void ValidateDownloValidateDownloadArgsadId(Guid downloadId) =>
-            Validate((Rule: IsInvalid(downloadId), Parameter: nameof(Download.Id)));
+        public void ValidateDownloadArgs(string fileName) =>
+            Validate((Rule: IsInvalid(fileName), Parameter: nameof(Document.FileName)));
 
-        private static void ValidateStorageDownload(Download maybeDownload, Guid downloadId)
+        private static void ValidateStorageDownload(Document maybeDocument, string fileName)
         {
-            if (maybeDownload is null)
+            if (maybeDocument is null)
             {
-                throw new NotFoundDownloadException(downloadId);
+                throw new NotFoundDownloadException(fileName);
             }
         }
 
-        private static void ValidateDownloadIsNotNull(Download download)
+        private static void ValidateDownloadIsNotNull(Document document)
         {
-            if (download is null)
+            if (document is null)
             {
                 throw new NullDownloadException();
             }
         }
 
-        private static dynamic IsInvalid(Guid id) => new
+        private static dynamic IsInvalid(string text) => new
         {
-            Condition = id == Guid.Empty,
-            Message = "Id is required"
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
         };
 
         private static dynamic IsInvalid(DateTimeOffset date) => new

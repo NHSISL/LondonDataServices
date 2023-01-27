@@ -10,5 +10,6 @@ namespace LHDS.Landings.Client.Services.Foundations.Audits
         ValueTask<Audit> AddAuditAsync(Audit audit);
         IQueryable<Audit> RetrieveAllAudits();
         ValueTask<Audit> RetrieveAuditByIdAsync(Guid auditId);
+        ValueTask<Audit> ModifyAuditAsync(Audit audit);
     }
 }

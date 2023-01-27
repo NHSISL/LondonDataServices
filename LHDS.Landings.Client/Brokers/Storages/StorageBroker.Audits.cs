@@ -52,5 +52,18 @@ namespace LHDS.Landings.Client.Brokers.Storages
 
             return auditEntityEntry.Entity;
         }
+
+        public async ValueTask<Audit> DeleteAuditAsync(Audit audit)
+        {
+            using var broker =
+                new StorageBroker(this.configuration);
+
+            EntityEntry<Audit> auditEntityEntry =
+                broker.Audits.Remove(audit);
+
+            await broker.SaveChangesAsync();
+
+            return auditEntityEntry.Entity;
+        }
     }
 }

@@ -11,5 +11,6 @@ namespace LHDS.Landings.Client.Brokers.Storages
         IQueryable<Audit> SelectAllAudits();
         ValueTask<Audit> SelectAuditByIdAsync(Guid auditId);
         ValueTask<Audit> UpdateAuditAsync(Audit audit);
+        ValueTask<Audit> DeleteAuditAsync(Audit audit);
     }
 }

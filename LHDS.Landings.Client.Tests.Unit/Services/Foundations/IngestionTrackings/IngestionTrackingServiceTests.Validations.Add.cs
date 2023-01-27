@@ -60,6 +60,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             var invalidIngestionTracking = new IngestionTracking
             {
                 Name = invalidText,
+                CreatedBy = invalidText,
+                UpdatedBy = invalidText,
             };
 
             var invalidIngestionTrackingException =

@@ -16,6 +16,7 @@ namespace NEL.DDS.InterfaceLayer.Function.Download.Client.AzureBlobs
     {
         private readonly ILoggingBroker loggingBroker;
         private readonly BlobServiceClient blobServiceClient;
+        private readonly BlobServiceClient copyToBlobServiceClient;
 
         public AzureBlobClient(
             ILoggingBroker loggingBroker,

@@ -6,8 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Landings.Client.Models.Downloads.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.Documents;
+using LHDS.Landings.Client.Models.Foundations.Downloads.Exceptions;
 using Moq;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads

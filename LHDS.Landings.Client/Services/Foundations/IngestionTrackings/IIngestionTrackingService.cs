@@ -2,20 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-<<<<<<< HEAD
-using System.Linq;
-using System.Reflection.Metadata;
+
 using System;
-using System.Threading.Tasks;
-using LHDS.Landings.Client.Models.Foundations.IngestionTracking;
-=======
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
->>>>>>> origin/main
 
 namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 {
@@ -27,8 +18,4 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
         ValueTask<IngestionTracking> ModifyIngestionTrackingAsync(IngestionTracking ingestionTracking);
         ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(Guid ingestionTrackingId);
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/main

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -54,6 +55,13 @@ namespace LHDS.Landings.Client.Services.Foundations.Audits
 
                 throw CreateAndLogDependencyException(failedAuditStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedAuditServiceException =
+                    new FailedAuditServiceException(exception);
+
+                throw CreateAndLogServiceException(failedAuditServiceException);
+            }
         }
 
         private AuditValidationException CreateAndLogValidationException(Xeption exception)
@@ -91,6 +99,15 @@ namespace LHDS.Landings.Client.Services.Foundations.Audits
             this.loggingBroker.LogError(auditDependencyException);
 
             return auditDependencyException;
+        }
+
+        private AuditServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var auditServiceException = new AuditServiceException(exception);
+            this.loggingBroker.LogError(auditServiceException);
+
+            return auditServiceException;
         }
     }
 }

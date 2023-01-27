@@ -3,14 +3,10 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Landings.Client.Models.Foundations.IngestionTracking;
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using Moq;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTrackings
@@ -18,7 +14,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
     public partial class IngestionTrackingServiceTests
     {
         [Fact]
-        public async Task ShouldAddIngestionTrackingAsyncShouldAddIngestionTrackingAsync()
+        public async Task ShouldAddIngestionTrackingAsync()
         {
             // given
             DateTimeOffset randomDateTimeOffset =

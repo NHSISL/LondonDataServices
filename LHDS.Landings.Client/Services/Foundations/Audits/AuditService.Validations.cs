@@ -38,6 +38,16 @@ namespace LHDS.Landings.Client.Services.Foundations.Audits
         private void ValidateAuditOnModify(Audit audit)
         {
             ValidateAuditIsNotNull(audit);
+
+            Validate(
+                (Rule: IsInvalid(audit.Id), Parameter: nameof(Audit.Id)),
+
+                // TODO: Add any other required validation rules
+
+                (Rule: IsInvalid(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)),
+                (Rule: IsInvalid(audit.CreatedByUserId), Parameter: nameof(Audit.CreatedByUserId)),
+                (Rule: IsInvalid(audit.UpdatedDate), Parameter: nameof(Audit.UpdatedDate)),
+                (Rule: IsInvalid(audit.UpdatedByUserId), Parameter: nameof(Audit.UpdatedByUserId)));
         }
 
         public void ValidateAuditId(Guid auditId) =>

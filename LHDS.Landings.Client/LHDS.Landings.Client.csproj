@@ -13,6 +13,8 @@
 
 	<ItemGroup>
 		<Folder Include="Migrations\" />
+		<Folder Include="Models\Processings\" />
+		<Folder Include="Services\Orchestrations\" />
 	</ItemGroup>
 
 	<ItemGroup>

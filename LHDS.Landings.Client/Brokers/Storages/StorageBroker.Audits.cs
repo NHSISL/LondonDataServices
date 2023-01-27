@@ -23,5 +23,13 @@ namespace LHDS.Landings.Client.Brokers.Storages
 
             return auditEntityEntry.Entity;
         }
+
+        public IQueryable<Audit> SelectAllAudits()
+        {
+            using var broker =
+                new StorageBroker(this.configuration);
+
+            return broker.Audits;
+        }
     }
 }

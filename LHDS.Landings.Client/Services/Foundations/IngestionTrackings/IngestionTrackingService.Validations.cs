@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using LHDS.Landings.Client.Models.Foundations.IngestionTracking.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
 
@@ -19,6 +20,17 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
                 (Rule: IsInvalid(ingestionTrackings.FileName), Parameter: nameof(IngestionTracking.FileName)),
                 (Rule: IsInvalid(ingestionTrackings.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
                 (Rule: IsNotRecent(ingestionTrackings.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)));
+        }
+
+        public void ValidateIngestionTrackingId(string ingestionTrackingsId) =>
+            Validate((Rule: IsInvalid(ingestionTrackingsId), Parameter: nameof(IngestionTracking.Id)));
+
+        private static void ValidateStorageIngestionTracking(IngestionTracking maybeIngestionTracking, string ingestionTrackingId)
+        {
+            if (maybeIngestionTracking is null)
+            {
+                throw new NotFoundIngestionTrackingException(ingestionTrackingId);
+            }
         }
 
         private static void ValidateIngestionTrackingIsNotNull(IngestionTracking ingestionTrackings)

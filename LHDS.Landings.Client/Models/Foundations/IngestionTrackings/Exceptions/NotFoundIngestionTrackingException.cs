@@ -9,7 +9,7 @@ namespace LHDS.Landings.Client.Models.Foundations.IngestionTracking.Exceptions
 {
     public class NotFoundIngestionTrackingException : Xeption
     {
-        public NotFoundIngestionTrackingException(Guid ingestionTrackingId)
+        public NotFoundIngestionTrackingException(string ingestionTrackingId)
             : base(message: $"Couldn't find ingestion tracking with ingestionTrackingId: {ingestionTrackingId}.")
         { }
     }

@@ -39,5 +39,18 @@ namespace LHDS.Landings.Client.Brokers.Storages
 
             return await broker.Audits.FindAsync(auditId);
         }
+
+        public async ValueTask<Audit> UpdateAuditAsync(Audit audit)
+        {
+            using var broker =
+                new StorageBroker(this.configuration);
+
+            EntityEntry<Audit> auditEntityEntry =
+                broker.Audits.Update(audit);
+
+            await broker.SaveChangesAsync();
+
+            return auditEntityEntry.Entity;
+        }
     }
 }

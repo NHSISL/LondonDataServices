@@ -9,13 +9,21 @@ using System.Threading.Tasks;
 using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Brokers.Storages;
+<<<<<<< HEAD
 using LHDS.Landings.Client.Models.Foundations.IngestionTracking;
+=======
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
+>>>>>>> origin/main
 
 namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 {
     public partial class IngestionTrackingService : IIngestionTrackingService
     {
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> origin/main
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
@@ -31,12 +39,16 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
         }
 
         public ValueTask<IngestionTracking> AddIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
+<<<<<<< HEAD
             TryCatch(async () =>
             {
                 ValidateIngestionTrackingOnAdd(ingestionTracking);
 
                 return await this.storageBroker.InsertIngestionTrackingAsync(ingestionTracking);
             });
+=======
+            throw new System.NotImplementedException();
+>>>>>>> origin/main
 
         public IQueryable<IngestionTracking> RetrieveAllIngestionTracking() =>
             throw new System.NotImplementedException();

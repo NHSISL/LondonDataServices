@@ -7,7 +7,7 @@ using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
 using NEL.Premises.Api.Models.Documents.Exceptions;
 
-namespace LHDS.Landings.Client.Services.Foundations.Downloads
+namespace LHDS.Landings.Client.Services.Foundations.Documents
 {
     public partial class DocumentService
     {
@@ -47,6 +47,13 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
         };
+
+        private void ValidateDeleteArguments(string fileName, string container)
+        {
+            Validate(
+               (Rule: IsInvalid(fileName), Parameter: nameof(fileName)),
+               (Rule: IsInvalid(container), Parameter: nameof(container)));
+        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

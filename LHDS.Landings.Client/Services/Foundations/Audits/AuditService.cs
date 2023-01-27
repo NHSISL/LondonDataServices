@@ -48,7 +48,12 @@ namespace LHDS.Landings.Client.Services.Foundations.Audits
                 return maybeAudit;
             });
 
-        public async ValueTask<Audit> ModifyAuditAsync(Audit audit) =>
-            await this.storageBroker.UpdateAuditAsync(audit);
+        public ValueTask<Audit> ModifyAuditAsync(Audit audit) =>
+            TryCatch(async () =>
+            {
+                ValidateAuditOnModify(audit);
+
+                return await this.storageBroker.UpdateAuditAsync(audit);
+            });
     }
 }

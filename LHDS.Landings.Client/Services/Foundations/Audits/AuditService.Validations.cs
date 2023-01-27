@@ -35,6 +35,11 @@ namespace LHDS.Landings.Client.Services.Foundations.Audits
                 (Rule: IsNotRecent(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)));
         }
 
+        private void ValidateAuditOnModify(Audit audit)
+        {
+            ValidateAuditIsNotNull(audit);
+        }
+
         public void ValidateAuditId(Guid auditId) =>
             Validate((Rule: IsInvalid(auditId), Parameter: nameof(Audit.Id)));
 

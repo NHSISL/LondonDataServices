@@ -7,8 +7,9 @@ using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Landings.Client.Models.Foundations.IngestionTracking;
-using LHDS.Landings.Client.Models.Foundations.IngestionTracking.Exceptions;
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
 using Moq;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTrackings

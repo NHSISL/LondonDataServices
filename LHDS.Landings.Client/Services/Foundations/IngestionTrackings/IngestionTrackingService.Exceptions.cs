@@ -5,11 +5,11 @@
 using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
-using LHDS.Landings.Client.Models.Foundations.IngestionTracking;
-using LHDS.Landings.Client.Models.Foundations.IngestionTracking.Exceptions;
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Xeptions;
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
 
 namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 {

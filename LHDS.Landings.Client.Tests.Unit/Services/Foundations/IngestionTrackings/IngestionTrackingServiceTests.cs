@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Brokers.Storages;
-using LHDS.Landings.Client.Models.Foundations.IngestionTracking;
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using LHDS.Landings.Client.Services.Foundations.IngestionTrackings;
 using Microsoft.Data.SqlClient;
 using Moq;

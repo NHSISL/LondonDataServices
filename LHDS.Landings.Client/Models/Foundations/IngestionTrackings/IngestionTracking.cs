@@ -5,11 +5,7 @@
 using System;
 using NEL.Premises.Api.Models.Bases;
 
-<<<<<<<< HEAD:LHDS.Landings.Client/Models/Foundations/IngestionTracking/IngestionTracking.cs
-namespace LHDS.Landings.Client.Models.Foundations.IngestionTracking
-========
 namespace LHDS.Landings.Client.Models.Foundations.IngestionTrackings
->>>>>>>> origin/main:LHDS.Landings.Client/Models/Foundations/IngestionTrackings/IngestionTracking.cs
 {
     public class IngestionTracking : IKey, IAudit
     {

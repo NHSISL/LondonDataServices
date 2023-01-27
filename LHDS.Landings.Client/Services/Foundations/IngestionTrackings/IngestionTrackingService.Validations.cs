@@ -16,27 +16,8 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 
             Validate(
                 (Rule: IsInvalid(ingestionTrackings.Id), Parameter: nameof(IngestionTracking.Id)),
-                (Rule: IsInvalid(ingestionTrackings.Name), Parameter: nameof(IngestionTracking.Name)),
-                (Rule: IsInvalid(ingestionTrackings.EncryptedBlobId), Parameter: nameof(IngestionTracking.EncryptedBlobId)),
-                (Rule: IsInvalid(ingestionTrackings.DecryptedBlobId), Parameter: nameof(IngestionTracking.DecryptedBlobId)),
+                (Rule: IsInvalid(ingestionTrackings.FileName), Parameter: nameof(IngestionTracking.FileName)),
                 (Rule: IsInvalid(ingestionTrackings.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
-                (Rule: IsInvalid(ingestionTrackings.CreatedBy), Parameter: nameof(IngestionTracking.CreatedBy)),
-                (Rule: IsInvalid(ingestionTrackings.UpdatedDate), Parameter: nameof(IngestionTracking.UpdatedDate)),
-                (Rule: IsInvalid(ingestionTrackings.UpdatedBy), Parameter: nameof(IngestionTracking.UpdatedBy)),
-                (Rule: IsEqualOrSmallerThan(ingestionTrackings.Name, 255), Parameter: nameof(IngestionTracking.Name)),
-
-                (Rule: IsNotSame(
-                    firstDate: ingestionTrackings.UpdatedDate,
-                    secondDate: ingestionTrackings.CreatedDate,
-                    secondDateName: nameof(IngestionTracking.CreatedDate)),
-                Parameter: nameof(IngestionTracking.UpdatedDate)),
-
-                (Rule: IsNotSame(
-                    firstUser: ingestionTrackings.UpdatedBy,
-                    secondUser: ingestionTrackings.CreatedBy,
-                    secondUserName: nameof(IngestionTracking.CreatedBy)),
-                Parameter: nameof(IngestionTracking.UpdatedBy)),
-
                 (Rule: IsNotRecent(ingestionTrackings.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)));
         }
 
@@ -65,7 +46,7 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
         };
-        
+
         private static dynamic IsEqualOrSmallerThan(string text, int maxLength) => new
         {
             Condition = (text ?? string.Empty).Length > maxLength,

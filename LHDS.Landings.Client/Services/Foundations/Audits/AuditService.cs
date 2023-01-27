@@ -32,6 +32,6 @@ namespace LHDS.Landings.Client.Services.Foundations.Audits
             });
 
         public IQueryable<Audit> RetrieveAllAudits() =>
-            this.storageBroker.SelectAllAudits();
+            TryCatch(() => this.storageBroker.SelectAllAudits());
     }
 }

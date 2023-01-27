@@ -9,5 +9,6 @@ namespace LHDS.Landings.Client.Brokers.Storages
     {
         ValueTask<Audit> InsertAuditAsync(Audit audit);
         IQueryable<Audit> SelectAllAudits();
+        ValueTask<Audit> SelectAuditByIdAsync(Guid auditId);
     }
 }

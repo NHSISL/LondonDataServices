@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using LHDS.Landings.Client.Models.Audits;
 using LHDS.Landings.Client.Models.Audits.Exceptions;
@@ -31,6 +32,13 @@ namespace LHDS.Landings.Client.Services.Foundations.Audits
 
                 throw CreateAndLogCriticalDependencyException(failedAuditStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsAuditException =
+                    new AlreadyExistsAuditException(duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsAuditException);
+            }
         }
 
         private AuditValidationException CreateAndLogValidationException(Xeption exception)
@@ -49,6 +57,16 @@ namespace LHDS.Landings.Client.Services.Foundations.Audits
             this.loggingBroker.LogCritical(auditDependencyException);
 
             return auditDependencyException;
+        }
+
+        private AuditDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var auditDependencyValidationException =
+                new AuditDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(auditDependencyValidationException);
+
+            return auditDependencyValidationException;
         }
     }
 }

@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,12 +24,12 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<Download> AddDownloadAsync(Download download) =>
+        public ValueTask<Document> AddDownloadAsync(Document document) =>
             TryCatch(async () =>
             {
-                ValidateDownloadOnAdd(download);
+                ValidateDownloadOnAdd(document);
 
-                return await this.storageBroker.InsertDownloadAsync(download);
+                return await this.storageBroker.InsertDownloadAsync(document);
             });
 
         public IQueryable<Download> RetrieveAllDownloads() =>

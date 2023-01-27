@@ -1,41 +1,15 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
-using LHDS.Landings.Client.Models.Downloads;
 using LHDS.Landings.Client.Models.Downloads.Exceptions;
 
 namespace LHDS.Landings.Client.Services.Foundations.Downloads
 {
     public partial class DownloadService
     {
-        private void ValidateDownloadOnAdd(Download download)
-        {
-            ValidateDownloadIsNotNull(download);
-
-            Validate(
-                (Rule: IsInvalid(download.Id), Parameter: nameof(Download.Id)),
-
-                // TODO: Add any other required validation rules
-
-                (Rule: IsInvalid(download.CreatedDate), Parameter: nameof(Download.CreatedDate)),
-                (Rule: IsInvalid(download.CreatedByUserId), Parameter: nameof(Download.CreatedByUserId)),
-                (Rule: IsInvalid(download.UpdatedDate), Parameter: nameof(Download.UpdatedDate)),
-                (Rule: IsInvalid(download.UpdatedByUserId), Parameter: nameof(Download.UpdatedByUserId)),
-
-                (Rule: IsNotSame(
-                    firstDate: download.UpdatedDate,
-                    secondDate: download.CreatedDate,
-                    secondDateName: nameof(Download.CreatedDate)),
-                Parameter: nameof(Download.UpdatedDate)),
-
-                (Rule: IsNotSame(
-                    firstId: download.UpdatedByUserId,
-                    secondId: download.CreatedByUserId,
-                    secondIdName: nameof(Download.CreatedByUserId)),
-                Parameter: nameof(Download.UpdatedByUserId)),
-
-                (Rule: IsNotRecent(download.CreatedDate), Parameter: nameof(Download.CreatedDate)));
-        }
-
-        public void ValidateDownloadId(Guid downloadId) =>
+        public void ValidateDownloValidateDownloadArgsadId(Guid downloadId) =>
             Validate((Rule: IsInvalid(downloadId), Parameter: nameof(Download.Id)));
 
         private static void ValidateStorageDownload(Download maybeDownload, Guid downloadId)

@@ -49,5 +49,46 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Audits
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomMessage();
+            var serviceException = new Exception(exceptionMessage);
+
+            var failedAuditServiceException =
+                new FailedAuditServiceException(serviceException);
+
+            var expectedAuditServiceException =
+                new AuditServiceException(failedAuditServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllAudits())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllAuditsAction = () =>
+                this.auditService.RetrieveAllAudits();
+
+            AuditServiceException actualAuditServiceException =
+                Assert.Throws<AuditServiceException>(retrieveAllAuditsAction);
+
+            // then
+            actualAuditServiceException.Should()
+                .BeEquivalentTo(expectedAuditServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllAudits(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAuditServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

@@ -18,7 +18,7 @@ namespace LHDS.Landings.Functions.Emis
             _logger = loggerFactory.CreateLogger<EmisLandingFunction>();
         }
 
-        [Function("Function1")]
+        [Function("EmisLandingFunction")]
         public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");

@@ -11,6 +11,6 @@ namespace LHDS.Landings.Client.Brokers.Downloads
     public interface IDownloadBroker
     {
         ValueTask<List<Document>> GetListOfDocumentsToProcessAsync();
-        ValueTask<Document> GetDocumentAsync();
+        ValueTask<Document> GetDocumentByFileNameAsync(string fileName);
     }
 }

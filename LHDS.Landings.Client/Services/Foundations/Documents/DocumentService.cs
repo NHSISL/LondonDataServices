@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.IO;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Brokers.Loggings;
@@ -10,7 +9,7 @@ using LHDS.Landings.Client.Brokers.Storages.Blobs;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using Microsoft.Extensions.Configuration;
 
-namespace LHDS.Landings.Client.Services.Foundations.Downloads
+namespace LHDS.Landings.Client.Services.Foundations.Documents
 {
     public partial class DocumentService : IDocumentService
     {
@@ -18,7 +17,10 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
         private readonly ILoggingBroker loggingBroker;
         private readonly IConfiguration configuration;
 
-        public DocumentService(IBlobStorageBroker blobStorageBroker, ILoggingBroker loggingBroker, IConfiguration configuration)
+        public DocumentService(
+            IBlobStorageBroker blobStorageBroker,
+            ILoggingBroker loggingBroker,
+            IConfiguration configuration)
         {
             this.blobStorageBroker = blobStorageBroker;
             this.loggingBroker = loggingBroker;

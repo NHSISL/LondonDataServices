@@ -10,9 +10,9 @@ namespace LHDS.Landings.Client.Providers.Downloads
 {
     public class DownloadAbstractProvider
     {
-        private readonly RestProvider provider;
+        private readonly IDownloadProvider provider;
 
-        public DownloadAbstractProvider(RestProvider provider)
+        public DownloadAbstractProvider(IDownloadProvider provider)
         {
             this.provider = provider;
         }

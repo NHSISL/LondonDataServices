@@ -1,26 +1,22 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Landings.Client.Brokers.DateTimes;
+using LHDS.Landings.Client.Brokers.Downloads;
 using LHDS.Landings.Client.Brokers.Loggings;
-using LHDS.Landings.Client.Brokers.Storages;
-using LHDS.Landings.Client.Models.Downloads;
+using LHDS.Landings.Client.Models.Foundations.Documents;
 
 namespace LHDS.Landings.Client.Services.Foundations.Downloads
 {
     public partial class DownloadService : IDownloadService
     {
-        private readonly IStorageBroker storageBroker;
-        private readonly IDateTimeBroker dateTimeBroker;
+        private readonly IDownloadBroker downloadBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public DownloadService(
-            IStorageBroker storageBroker,
-            IDateTimeBroker dateTimeBroker,
+            IDownloadBroker downloadBroker,
             ILoggingBroker loggingBroker)
         {
-            this.storageBroker = storageBroker;
-            this.dateTimeBroker = dateTimeBroker;
+            this.downloadBroker = downloadBroker;
             this.loggingBroker = loggingBroker;
         }
 

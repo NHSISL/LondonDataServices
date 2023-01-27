@@ -2,8 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using LHDS.Landings.Client.Models.Downloads.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.Documents;
+using LHDS.Landings.Client.Models.Foundations.Downloads.Exceptions;
 
 namespace LHDS.Landings.Client.Services.Foundations.Downloads
 {

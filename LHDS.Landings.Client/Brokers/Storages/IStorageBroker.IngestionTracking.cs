@@ -5,7 +5,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Landings.Client.Models.Foundations.IngestionTracking;
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 
 namespace LHDS.Landings.Client.Brokers.Storages
 {

@@ -61,5 +61,8 @@ namespace LHDS.Landings.Client.Services.Foundations.Audits
 
                 return await this.storageBroker.UpdateAuditAsync(audit);
             });
+
+        public ValueTask<Audit> RemoveAuditByIdAsync(Guid auditId) =>
+            throw new NotImplementedException();
     }
 }

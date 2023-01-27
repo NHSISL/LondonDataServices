@@ -14,7 +14,6 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 {
     public partial class IngestionTrackingService : IIngestionTrackingService
     {
-
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
@@ -30,12 +29,20 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
         }
 
         public ValueTask<IngestionTracking> AddIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
-            throw new System.NotImplementedException();
+            TryCatch(async () =>
+            {
+                ValidateIngestionTrackingOnAdd(ingestionTracking);
+
+                return await this.storageBroker.InsertIngestionTrackingAsync(ingestionTracking);
+            });
 
         public IQueryable<IngestionTracking> RetrieveAllIngestionTracking() =>
             throw new System.NotImplementedException();
 
         public ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
+            throw new System.NotImplementedException();
+
+        public ValueTask<IngestionTracking> RetrieveIngestionTrackingByFileNameAsync(string fileName) =>
             throw new System.NotImplementedException();
 
         public ValueTask<IngestionTracking> ModifyIngestionTrackingAsync(IngestionTracking ingestionTracking) =>

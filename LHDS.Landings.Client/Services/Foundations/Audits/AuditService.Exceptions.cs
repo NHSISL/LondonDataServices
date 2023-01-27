@@ -54,6 +54,12 @@ namespace LHDS.Landings.Client.Services.Foundations.Audits
 
                 throw CreateAndLogDependencyValidationException(invalidAuditReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedAuditException = new LockedAuditException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedAuditException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedAuditStorageException =

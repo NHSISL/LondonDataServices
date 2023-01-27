@@ -2,9 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Linq;
 using System;
-using System.Reflection.Metadata;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
@@ -44,5 +43,10 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 
         public ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
             throw new System.NotImplementedException();
+
+        public ValueTask<IngestionTracking> RetrieveIngestionTrackingByFileNameAsync(string fileName) =>
+          throw new System.NotImplementedException();
+
+
     }
 }

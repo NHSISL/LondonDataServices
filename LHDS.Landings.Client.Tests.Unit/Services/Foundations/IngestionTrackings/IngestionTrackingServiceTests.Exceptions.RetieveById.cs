@@ -10,6 +10,8 @@ using LHDS.Landings.Client.Models.Foundations.IngestionTracking.Exceptions;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Models.Foundations.IngestionTracking;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTrackings
 {
@@ -19,7 +21,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
         public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveByIdIfSqlErrorOccursAndLogItAsync()
         {
             // given
-            Guid someId = Guid.NewGuid();
+            string someId = Guid.NewGuid().ToString();
             SqlException sqlException = GetSqlException();
 
             var failedIngestionTrackingStorageException =
@@ -29,7 +31,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                 new IngestionTrackingDependencyException(failedIngestionTrackingStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.ReadIngestionTrackingByIdAsync(It.IsAny<Guid>()))
+                broker.ReadIngestionTrackingByIdAsync(It.IsAny<string>()))
                     .ThrowsAsync(sqlException);
 
             // when
@@ -45,7 +47,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                 .BeEquivalentTo(expectedIngestionTrackingDependencyException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.ReadIngestionTrackingByIdAsync(It.IsAny<Guid>()),
+                broker.ReadIngestionTrackingByIdAsync(It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -62,7 +64,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
         public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            Guid someId = Guid.NewGuid();
+            string someId = Guid.NewGuid().ToString();
             var serviceException = new Exception();
 
             var failedIngestionTrackingServiceException =
@@ -72,7 +74,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                 new IngestionTrackingServiceException(failedIngestionTrackingServiceException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.ReadIngestionTrackingByIdAsync(It.IsAny<Guid>()))
+                broker.ReadIngestionTrackingByIdAsync(It.IsAny<string>()))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -88,7 +90,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                 .BeEquivalentTo(expectedIngestionTrackingServiceException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.ReadIngestionTrackingByIdAsync(It.IsAny<Guid>()),
+                broker.ReadIngestionTrackingByIdAsync(It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

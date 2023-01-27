@@ -39,7 +39,7 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
         public IQueryable<IngestionTracking> RetrieveAllIngestionTracking() =>
             TryCatch(() => this.storageBroker.ReadAllIngestionTracking());
 
-        public ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
+        public ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(string ingestionTrackingId) =>
         TryCatch(async () =>
         {
             ValidateIngestionTrackingId(ingestionTrackingId);
@@ -58,7 +58,7 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
         public ValueTask<IngestionTracking> ModifyIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
             throw new System.NotImplementedException();
 
-        public ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
+        public ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(string ingestionTrackingId) =>
             throw new System.NotImplementedException();
     }
 }

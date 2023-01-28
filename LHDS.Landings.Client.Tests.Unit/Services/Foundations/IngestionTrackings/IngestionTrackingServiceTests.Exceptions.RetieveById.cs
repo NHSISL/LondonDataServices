@@ -6,10 +6,7 @@ using System;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
-using LHDS.Landings.Client.Models.Foundations.IngestionTracking.Exceptions;
 using System.Threading.Tasks;
-using LHDS.Landings.Client.Models.Foundations.IngestionTracking;
-using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 

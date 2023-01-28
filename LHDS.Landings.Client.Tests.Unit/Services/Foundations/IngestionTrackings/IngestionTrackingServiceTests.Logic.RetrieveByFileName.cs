@@ -1,0 +1,45 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System.Text;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Force.DeepCloner;
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
+using Moq;
+
+namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTrackings
+{
+    public partial class IngestionTrackingServiceTests
+    {
+        [Fact]
+        public async Task ShouldRetrieveIngestionTrackingByFileNameAsync()
+        {
+            // given
+            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();
+            IngestionTracking inputIngestionTracking = randomIngestionTracking;
+            IngestionTracking storageIngestionTracking = randomIngestionTracking;
+            IngestionTracking expectedIngestionTracking = storageIngestionTracking.DeepClone();
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.ReadIngestionTrackingByFileNameAsync(inputIngestionTracking.FileName))
+                    .ReturnsAsync(storageIngestionTracking);
+
+            // when
+            IngestionTracking actualIngestionTracking =
+                await this.ingestionTrackingService.RetrieveIngestionTrackingByFileNameAsync(inputIngestionTracking.FileName);
+
+            // then
+            actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.ReadIngestionTrackingByFileNameAsync(inputIngestionTracking.FileName),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

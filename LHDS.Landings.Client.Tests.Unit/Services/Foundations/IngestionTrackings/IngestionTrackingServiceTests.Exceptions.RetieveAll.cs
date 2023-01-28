@@ -4,10 +4,9 @@
 
 using System;
 using FluentAssertions;
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
-using LHDS.Landings.Client.Models.Foundations.IngestionTracking.Exceptions;
-using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTrackings
 {

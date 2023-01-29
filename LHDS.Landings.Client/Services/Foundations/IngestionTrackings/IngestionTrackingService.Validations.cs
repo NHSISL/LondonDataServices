@@ -36,6 +36,14 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
             }
         }
 
+        private static void ValidateStorageIngestionTrackingForFileName(IngestionTracking maybeIngestionTracking, string fileName)
+        {
+            if (maybeIngestionTracking is null)
+            {
+                throw new NotFoundIngestionTrackingForFileNameException(fileName);
+            }
+        }
+
         private static void ValidateIngestionTrackingIsNotNull(IngestionTracking ingestionTrackings)
         {
             if (ingestionTrackings is null)

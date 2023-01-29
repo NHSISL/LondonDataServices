@@ -25,6 +25,9 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
         public void ValidateIngestionTrackingId(string ingestionTrackingsId) =>
             Validate((Rule: IsInvalid(ingestionTrackingsId), Parameter: nameof(IngestionTracking.Id)));
 
+        public void ValidateFileName(string FileName) =>
+            Validate((Rule: IsInvalid(FileName), Parameter: nameof(IngestionTracking.FileName)));
+
         private static void ValidateStorageIngestionTracking(IngestionTracking maybeIngestionTracking, string ingestionTrackingId)
         {
             if (maybeIngestionTracking is null)

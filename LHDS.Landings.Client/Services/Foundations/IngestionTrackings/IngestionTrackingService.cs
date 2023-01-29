@@ -60,6 +60,8 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
                  IngestionTracking maybeIngestionTracking = await this.storageBroker
                      .ReadIngestionTrackingByFileNameAsync(fileName);
 
+                 ValidateStorageIngestionTrackingForFileName(maybeIngestionTracking, fileName);
+
                  return maybeIngestionTracking;
              });
 

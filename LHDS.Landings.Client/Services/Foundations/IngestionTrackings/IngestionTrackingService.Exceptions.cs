@@ -45,6 +45,10 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
             {
                 throw CreateAndLogValidationException(notFoundIngestionTrackingException);
             }
+            catch (NotFoundIngestionTrackingForFileNameException notFoundIngestionTrackingForFileNameException)
+            {
+                throw CreateAndLogValidationException(notFoundIngestionTrackingForFileNameException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsIngestionTrackingException =

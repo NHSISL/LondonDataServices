@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using LHDS.Landings.Client.Models.Audits;
 using LHDS.Landings.Client.Models.Audits.Exceptions;
@@ -12,26 +16,9 @@ namespace LHDS.Landings.Client.Services.Foundations.Audits
 
             Validate(
                 (Rule: IsInvalid(audit.Id), Parameter: nameof(Audit.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(audit.IngestionTrackingId), Parameter: nameof(Audit.IngestionTrackingId)),
+                (Rule: IsInvalid(audit.Message), Parameter: nameof(Audit.Message)),
                 (Rule: IsInvalid(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)),
-                (Rule: IsInvalid(audit.CreatedByUserId), Parameter: nameof(Audit.CreatedByUserId)),
-                (Rule: IsInvalid(audit.UpdatedDate), Parameter: nameof(Audit.UpdatedDate)),
-                (Rule: IsInvalid(audit.UpdatedByUserId), Parameter: nameof(Audit.UpdatedByUserId)),
-
-                (Rule: IsNotSame(
-                    firstDate: audit.UpdatedDate,
-                    secondDate: audit.CreatedDate,
-                    secondDateName: nameof(Audit.CreatedDate)),
-                Parameter: nameof(Audit.UpdatedDate)),
-
-                (Rule: IsNotSame(
-                    firstId: audit.UpdatedByUserId,
-                    secondId: audit.CreatedByUserId,
-                    secondIdName: nameof(Audit.CreatedByUserId)),
-                Parameter: nameof(Audit.UpdatedByUserId)),
-
                 (Rule: IsNotRecent(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)));
         }
 
@@ -41,21 +28,9 @@ namespace LHDS.Landings.Client.Services.Foundations.Audits
 
             Validate(
                 (Rule: IsInvalid(audit.Id), Parameter: nameof(Audit.Id)),
-
-                // TODO: Add any other required validation rules
-
-                (Rule: IsInvalid(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)),
-                (Rule: IsInvalid(audit.CreatedByUserId), Parameter: nameof(Audit.CreatedByUserId)),
-                (Rule: IsInvalid(audit.UpdatedDate), Parameter: nameof(Audit.UpdatedDate)),
-                (Rule: IsInvalid(audit.UpdatedByUserId), Parameter: nameof(Audit.UpdatedByUserId)),
-
-                (Rule: IsSame(
-                    firstDate: audit.UpdatedDate,
-                    secondDate: audit.CreatedDate,
-                    secondDateName: nameof(Audit.CreatedDate)),
-                Parameter: nameof(Audit.UpdatedDate)),
-
-                (Rule: IsNotRecent(audit.UpdatedDate), Parameter: nameof(audit.UpdatedDate)));
+                (Rule: IsInvalid(audit.IngestionTrackingId), Parameter: nameof(Audit.IngestionTrackingId)),
+                (Rule: IsInvalid(audit.Message), Parameter: nameof(Audit.Message)),
+                (Rule: IsInvalid(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)));
         }
 
         public void ValidateAuditId(Guid auditId) =>
@@ -84,25 +59,19 @@ namespace LHDS.Landings.Client.Services.Foundations.Audits
                     firstDate: inputAudit.CreatedDate,
                     secondDate: storageAudit.CreatedDate,
                     secondDateName: nameof(Audit.CreatedDate)),
-                Parameter: nameof(Audit.CreatedDate)),
-
-                (Rule: IsNotSame(
-                    firstId: inputAudit.CreatedByUserId,
-                    secondId: storageAudit.CreatedByUserId,
-                    secondIdName: nameof(Audit.CreatedByUserId)),
-                Parameter: nameof(Audit.CreatedByUserId)),
-
-                (Rule: IsSame(
-                    firstDate: inputAudit.UpdatedDate,
-                    secondDate: storageAudit.UpdatedDate,
-                    secondDateName: nameof(Audit.UpdatedDate)),
-                Parameter: nameof(Audit.UpdatedDate)));
+                Parameter: nameof(Audit.CreatedDate)));
         }
 
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
             Message = "Id is required"
+        };
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = String.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
         };
 
         private static dynamic IsInvalid(DateTimeOffset date) => new

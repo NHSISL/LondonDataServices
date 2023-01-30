@@ -1,17 +1,20 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
-using Microsoft.Data.SqlClient;
-using Moq;
 using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Brokers.Storages;
 using LHDS.Landings.Client.Models.Audits;
 using LHDS.Landings.Client.Services.Foundations.Audits;
+using Microsoft.Data.SqlClient;
+using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
-using Xunit;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Audits
 {
@@ -90,15 +93,10 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Audits
 
         private static Filler<Audit> CreateAuditFiller(DateTimeOffset dateTimeOffset)
         {
-            Guid userId = Guid.NewGuid();
             var filler = new Filler<Audit>();
 
             filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(audit => audit.CreatedByUserId).Use(userId)
-                .OnProperty(audit => audit.UpdatedByUserId).Use(userId);
-
-            // TODO: Complete the filler setup e.g. ignore related properties etc...
+                .OnType<DateTimeOffset>().Use(dateTimeOffset);
 
             return filler;
         }

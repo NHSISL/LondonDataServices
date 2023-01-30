@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Landings.Client.Models.Foundations.Documents;
@@ -15,11 +14,11 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
     public partial class DownloadServiceTests
     {
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            string exceptionMessage = GetRandomMessage();
-            var serviceException = new Exception(exceptionMessage);
+            string someId = GetRandomMessage();
+            var serviceException = new Exception();
 
             var failedDownloadServiceException =
                 new FailedDownloadServiceException(serviceException);
@@ -28,31 +27,33 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
                 new DownloadServiceException(failedDownloadServiceException);
 
             this.downloadBrokerMock.Setup(broker =>
-                broker.GetListOfDocumentsToProcessAsync())
+                broker.GetDocumentByFileNameAsync(It.IsAny<string>()))
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<List<Document>> RetrieveListOfDocumentsToProcessTask =
-                this.downloadService.RetrieveListOfDocumentsToProcessAsync();
+            ValueTask<Document> retrieveDownloadByIdTask =
+                this.downloadService.RetrieveDownloadByFileNameAsync(someId);
 
             DownloadServiceException actualDownloadServiceException =
-                await Assert.ThrowsAsync<DownloadServiceException>(RetrieveListOfDocumentsToProcessTask.AsTask);
+                await Assert.ThrowsAsync<DownloadServiceException>(
+                    retrieveDownloadByIdTask.AsTask);
 
             // then
             actualDownloadServiceException.Should()
                 .BeEquivalentTo(expectedDownloadServiceException);
 
             this.downloadBrokerMock.Verify(broker =>
-                broker.GetListOfDocumentsToProcessAsync(),
+                broker.GetDocumentByFileNameAsync(It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedDownloadServiceException))),
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedDownloadServiceException))),
                         Times.Once);
 
             this.downloadBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

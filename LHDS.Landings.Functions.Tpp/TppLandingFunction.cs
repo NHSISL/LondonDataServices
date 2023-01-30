@@ -18,7 +18,7 @@ namespace LHDS.Landings.Functions.Tpp
             _logger = loggerFactory.CreateLogger<TppLandingFunction>();
         }
 
-        [Function("Function1")]
+        [Function("TppLandingFunction")]
         public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");

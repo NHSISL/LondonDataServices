@@ -4,8 +4,6 @@
 
 using System.Linq;
 using FluentAssertions;
-using Force.DeepCloner;
-using LHDS.Landings.Client.Models.Foundations.IngestionTracking;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using Moq;
 

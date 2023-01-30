@@ -65,7 +65,12 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
                  return maybeIngestionTracking;
              });
 
-        public ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(string ingestionTrackingId) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(string ingestionTrackingId)
+        {
+            IngestionTracking maybeIngestionTracking = await this.storageBroker
+                    .ReadIngestionTrackingByIdAsync(ingestionTrackingId);
+
+            return await this.storageBroker.DeleteIngestionTrackingAsync(maybeIngestionTracking);
+        }
     }
 }

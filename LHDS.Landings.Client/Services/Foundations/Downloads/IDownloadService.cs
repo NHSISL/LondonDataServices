@@ -11,6 +11,6 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
     public interface IDownloadService
     {
         ValueTask<List<Document>> RetrieveListOfDocumentsToProcessAsync();
-        ValueTask<Document> RetrieveDocumentAsync();
+        ValueTask<Document> RetrieveDocumentByFileNameAsync(string fileName);
     }
 }

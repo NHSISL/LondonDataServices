@@ -121,7 +121,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
             List<Document> randomDocuments = CreateRandomDocuments();
             List<Document> externalDocuments = randomDocuments;
 
-            IngestionTracking externalIngestionTrackingFound = null;
+            IngestionTracking externalIngestionTrackingFound = CreateRandomIngestionTracking(randomDateTime);
 
             this.downloadServiceMock.Setup(service =>
                service.RetrieveListOfDocumentsToProcessAsync())

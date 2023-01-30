@@ -53,26 +53,26 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Download
                     await this.ingestionTrackingService
                         .RetrieveIngestionTrackingByFileNameAsync(document.FileName);
 
-                //if (maybeIngestionTracking != null)
-                //{
-                Document retrievedDocument =
-                    await this.downloadService.RetrieveDownloadByFileNameAsync(document.FileName);
+                if (maybeIngestionTracking == null)
+                {
+                    Document retrievedDocument =
+                        await this.downloadService.RetrieveDownloadByFileNameAsync(document.FileName);
 
-                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                    var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
-                IngestionTracking newIngestionTracking =
-                    new IngestionTracking
-                    {
-                        Id = document.FileName,
-                        FileName = document.FileName,
-                        Decrypted = false,
-                        CreatedDate = currentDateTime,
-                    };
+                    IngestionTracking newIngestionTracking =
+                        new IngestionTracking
+                        {
+                            Id = document.FileName,
+                            FileName = document.FileName,
+                            Decrypted = false,
+                            CreatedDate = currentDateTime,
+                        };
 
-                await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
-                await this.documentService.AddDocumentAsync(document);
-                LogAudit(document, currentDateTime);
-                //}
+                    await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
+                    await this.documentService.AddDocumentAsync(retrievedDocument);
+                    LogAudit(document, currentDateTime);
+                }
             }
         }
 

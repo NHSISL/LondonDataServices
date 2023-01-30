@@ -13,6 +13,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using NEL.Premises.Api.Models.Documents.Exceptions;
+using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTrackings
 {
@@ -154,6 +155,49 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
                     expectedIngestionTrackingDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRemoveIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string someIngestionTrackingId = Guid.NewGuid().ToString();
+            var serviceException = new Exception();
+
+            var failedIngestionTrackingServiceException =
+                new FailedIngestionTrackingServiceException(serviceException);
+
+            var expectedIngestionTrackingServiceException =
+                new IngestionTrackingServiceException(failedIngestionTrackingServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.ReadIngestionTrackingByIdAsync(It.IsAny<string>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<IngestionTracking> removeIngestionTrackingByIdTask =
+                this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(someIngestionTrackingId);
+
+            IngestionTrackingServiceException actualIngestionTrackingServiceException =
+                await Assert.ThrowsAsync<IngestionTrackingServiceException>(
+                    removeIngestionTrackingByIdTask.AsTask);
+
+            // then
+            actualIngestionTrackingServiceException.Should()
+                .BeEquivalentTo(expectedIngestionTrackingServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.ReadIngestionTrackingByIdAsync(It.IsAny<string>()),
+                        Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedIngestionTrackingServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

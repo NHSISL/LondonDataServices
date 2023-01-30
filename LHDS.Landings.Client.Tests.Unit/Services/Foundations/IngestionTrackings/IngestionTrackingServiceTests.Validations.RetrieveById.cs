@@ -5,7 +5,6 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Landings.Client.Models.Foundations.IngestionTracking.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
 using Moq;

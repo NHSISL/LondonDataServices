@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
+using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Downloads;
 using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Models.Foundations.Documents;
@@ -21,16 +22,19 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
     public partial class DownloadServiceTests
     {
         private readonly Mock<IDownloadBroker> downloadBrokerMock;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IDownloadService downloadService;
 
         public DownloadServiceTests()
         {
             this.downloadBrokerMock = new Mock<IDownloadBroker>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.downloadService = new DownloadService(
                 downloadBroker: this.downloadBrokerMock.Object,
+                dateTimeBroker: this.dateTimeBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
@@ -16,6 +17,7 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
     public partial class IngestionTrackingService
     {
         private delegate ValueTask<IngestionTracking> ReturningIngestionTrackingFunction();
+        private delegate IQueryable<IngestionTracking> ReturningIngestionTrackingsFunction();
 
         private async ValueTask<IngestionTracking> TryCatch(ReturningIngestionTrackingFunction returningIngestionTrackingFunction)
         {
@@ -58,6 +60,28 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
                     new FailedIngestionTrackingStorageException(databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedIngestionTrackingStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedIngestionTrackingServiceException =
+                    new FailedIngestionTrackingServiceException(exception);
+
+                throw CreateAndLogServiceException(failedIngestionTrackingServiceException);
+            }
+        }
+
+        private IQueryable<IngestionTracking> TryCatch(ReturningIngestionTrackingsFunction returningIngestionTrackingFunction)
+        {
+            try
+            {
+                return returningIngestionTrackingFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedIngestionTrackingStorageException =
+                    new FailedIngestionTrackingStorageException(sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedIngestionTrackingStorageException);
             }
             catch (Exception exception)
             {

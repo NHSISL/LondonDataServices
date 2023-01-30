@@ -2,10 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Landings.Client.Models.Foundations.IngestionTracking;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using Moq;
 
@@ -14,29 +13,31 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
     public partial class IngestionTrackingServiceTests
     {
         [Fact]
-        public void ShouldReturnIngestionTrackings()
+        public async Task ShouldRetrieveIngestionTrackingByIdAsync()
         {
             // given
-            IQueryable<IngestionTracking> randomIngestionTracking = CreateRandomIngestionTrackings();
-            IQueryable<IngestionTracking> storageIngestionTracking = randomIngestionTracking;
-            IQueryable<IngestionTracking> expectedIngestionTracking = storageIngestionTracking;
+            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();
+            IngestionTracking inputIngestionTracking = randomIngestionTracking;
+            IngestionTracking storageIngestionTracking = randomIngestionTracking;
+            IngestionTracking expectedIngestionTracking = storageIngestionTracking.DeepClone();
 
             this.storageBrokerMock.Setup(broker =>
-                broker.ReadAllIngestionTracking())
-                    .Returns(storageIngestionTracking);
+                broker.ReadIngestionTrackingByIdAsync(inputIngestionTracking.Id))
+                    .ReturnsAsync(storageIngestionTracking);
 
             // when
-            IQueryable<IngestionTracking> actualIngestionTracking =
-                this.ingestionTrackingService.RetrieveAllIngestionTracking();
+            IngestionTracking actualIngestionTracking =
+                await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(inputIngestionTracking.Id);
 
             // then
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.ReadAllIngestionTracking(),
+                broker.ReadIngestionTrackingByIdAsync(inputIngestionTracking.Id),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

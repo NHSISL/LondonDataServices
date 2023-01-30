@@ -40,7 +40,15 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
             TryCatch(() => this.storageBroker.ReadAllIngestionTracking());
 
         public ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(string ingestionTrackingId) =>
-            throw new System.NotImplementedException();
+        TryCatch(async () =>
+        {
+            ValidateIngestionTrackingId(ingestionTrackingId);
+
+            IngestionTracking maybeIngestionTracking = await this.storageBroker
+                .ReadIngestionTrackingByIdAsync(ingestionTrackingId);
+
+            return maybeIngestionTracking;
+        });
 
         public ValueTask<IngestionTracking> RetrieveIngestionTrackingByFileNameAsync(string fileName) =>
             throw new System.NotImplementedException();

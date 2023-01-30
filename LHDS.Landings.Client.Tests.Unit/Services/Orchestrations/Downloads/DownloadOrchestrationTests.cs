@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
@@ -23,6 +24,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
         private readonly Mock<IDownloadService> downloadServiceMock;
         private readonly Mock<IIngestionTrackingService> ingestionTrackingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly IDownloadOrchestrationService downloadOrchestrationService;
 
         public DownloadOrchestrationTests()
@@ -31,12 +33,15 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
             downloadServiceMock = new Mock<IDownloadService>();
             ingestionTrackingServiceMock = new Mock<IIngestionTrackingService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
+            dateTimeBrokerMock = new Mock<IDateTimeBroker>();
 
             this.downloadOrchestrationService = new DownloadOrchestrationService(
                 documentService: documentServiceMock.Object,
                 downloadService: downloadServiceMock.Object,
                 ingestionTrackingService: ingestionTrackingServiceMock.Object,
-                loggingBroker: loggingBrokerMock.Object);
+                loggingBroker: loggingBrokerMock.Object,
+                dateTimeBroker: dateTimeBrokerMock.Object
+                );
         }
 
         private static int GetRandomNumber() =>
@@ -45,7 +50,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
         private static List<Document> CreateRandomDocuments()
         {
             return CreateDocumentFiller()
-                .Create(count: GetRandomNumber())
+                .Create(count: 1)
                     .ToList();
         }
 
@@ -74,15 +79,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(DateTimeOffset dateTimeOffset)
         {
-            string user = GetRandomMessage();
             var filler = new Filler<IngestionTracking>();
-            Guid? nullGuid = null;
-
-            filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<Guid?>().Use(nullGuid)
-                .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
-                .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user);
+            filler.Setup().OnType<DateTimeOffset>().Use(dateTimeOffset);
 
             return filler;
         }

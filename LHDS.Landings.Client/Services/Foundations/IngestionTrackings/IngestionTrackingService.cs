@@ -51,9 +51,5 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
         public ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
             throw new System.NotImplementedException();
 
-        public ValueTask<IngestionTracking> RetrieveIngestionTrackingByFileNameAsync(string fileName) =>
-          throw new System.NotImplementedException();
-
-
     }
 }

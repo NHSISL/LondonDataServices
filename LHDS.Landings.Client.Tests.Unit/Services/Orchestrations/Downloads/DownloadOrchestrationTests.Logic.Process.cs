@@ -24,10 +24,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
 
             Document randomDocument = CreateRandomDocument();
             Document inputDocument = randomDocument;
-
-            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTime);
-            IngestionTracking inputIngestionTracking = randomIngestionTracking;
-            IngestionTracking storageIngestionTracking = inputIngestionTracking.DeepClone();
             IngestionTracking externalIngestionTrackingFound = null;
 
             this.downloadServiceMock.Setup(service =>
@@ -40,8 +36,23 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
                     service.RetrieveIngestionTrackingByFileNameAsync(document.FileName))
                         .ReturnsAsync(externalIngestionTrackingFound);
 
+                this.dateTimeBrokerMock.Setup(broker =>
+                    broker.GetCurrentDateTimeOffset())
+                        .Returns(randomDateTime);
+
+                IngestionTracking newIngestionTracking =
+                    new IngestionTracking
+                    {
+                        Id = document.FileName,
+                        FileName = document.FileName,
+                        Decrypted = false,
+                        CreatedDate = randomDateTime,
+                    };
+
+                IngestionTracking storageIngestionTracking = newIngestionTracking.DeepClone();
+
                 this.ingestionTrackingServiceMock.Setup(service =>
-                    service.AddIngestionTrackingAsync(inputIngestionTracking))
+                    service.AddIngestionTrackingAsync(newIngestionTracking))
                         .ReturnsAsync(storageIngestionTracking);
             }
 
@@ -59,8 +70,23 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
                     service.RetrieveIngestionTrackingByFileNameAsync(document.FileName),
                         Times.Once);
 
+                this.dateTimeBrokerMock.Verify(broker =>
+                    broker.GetCurrentDateTimeOffset(),
+                        Times.Exactly(externalDocuments.Count));
+
+                IngestionTracking newIngestionTracking =
+                  new IngestionTracking
+                  {
+                      Id = document.FileName,
+                      FileName = document.FileName,
+                      Decrypted = false,
+                      CreatedDate = randomDateTime,
+                  };
+
+                IngestionTracking storageIngestionTracking = newIngestionTracking.DeepClone();
+
                 this.ingestionTrackingServiceMock.Verify(service =>
-                    service.AddIngestionTrackingAsync(inputIngestionTracking),
+                    service.AddIngestionTrackingAsync(storageIngestionTracking),
                         Times.Once);
 
                 this.documentServiceMock.Verify(service =>
@@ -69,6 +95,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
             }
 
             this.documentServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

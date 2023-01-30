@@ -29,7 +29,7 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
                 return await this.downloadBroker.GetListOfDocumentsToProcessAsync();
             });
 
-        public ValueTask<Document> RetrieveDocumentAsync() =>
+        public ValueTask<Document> RetrieveDocumentByFileNameAsync(string fileName) =>
             throw new System.NotImplementedException();
     }
 }

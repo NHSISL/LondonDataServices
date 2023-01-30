@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Force.DeepCloner;
+using LHDS.Landings.Client.Models.Audits;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using Moq;
@@ -22,8 +23,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
             List<Document> randomDocuments = CreateRandomDocuments();
             List<Document> externalDocuments = randomDocuments;
 
-            Document randomDocument = CreateRandomDocument();
-            Document inputDocument = randomDocument;
             IngestionTracking externalIngestionTrackingFound = null;
 
             this.downloadServiceMock.Setup(service =>
@@ -86,11 +85,16 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
                 IngestionTracking storageIngestionTracking = newIngestionTracking.DeepClone();
 
                 this.ingestionTrackingServiceMock.Verify(service =>
-                    service.AddIngestionTrackingAsync(storageIngestionTracking),
-                        Times.Once);
+                    service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(
+                        storageIngestionTracking))),
+                            Times.Once);
 
                 this.documentServiceMock.Verify(service =>
-                    service.AddDocumentAsync(inputDocument),
+                    service.AddDocumentAsync(document),
+                        Times.Once);
+
+                this.auditServiceMock.Verify(service =>
+                    service.AddAuditAsync(It.IsAny<Audit>()),
                         Times.Once);
             }
 

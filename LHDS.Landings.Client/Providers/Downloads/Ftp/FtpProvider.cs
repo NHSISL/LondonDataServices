@@ -11,7 +11,7 @@ namespace LHDS.Landings.Client.Providers.Downloads
 {
     public class FtpProvider : IDownloadProvider
     {
-        public ValueTask<Document> GetDocumentAsync() =>
+        public ValueTask<Document> GetDocumentByFileNameAsync(string fileName) =>
             throw new NotImplementedException();
 
         public ValueTask<List<Document>> GetListOfDocumentsToProcessAsync() =>

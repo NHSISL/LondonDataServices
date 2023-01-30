@@ -13,9 +13,9 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
     {
         ValueTask<IngestionTracking> AddIngestionTrackingAsync(IngestionTracking ingestionTracking);
         IQueryable<IngestionTracking> RetrieveAllIngestionTracking();
-        ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(Guid ingestionTrackingId);
+        ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(string ingestionTrackingId);
         ValueTask<IngestionTracking> RetrieveIngestionTrackingByFileNameAsync(string fileName);
         ValueTask<IngestionTracking> ModifyIngestionTrackingAsync(IngestionTracking ingestionTracking);
-        ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(Guid ingestionTrackingId);
+        ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(string ingestionTrackingId);
     }
 }

@@ -8,7 +8,7 @@ using LHDS.Landings.Client.Models.Foundations.Documents;
 
 namespace LHDS.Landings.Client.Providers.Downloads
 {
-    public class DownloadAbstractProvider
+    public class DownloadAbstractProvider : IDownloadAbstractProvider
     {
         private readonly IDownloadProvider provider;
 
@@ -20,7 +20,7 @@ namespace LHDS.Landings.Client.Providers.Downloads
         public async ValueTask<List<Document>> GetListOfDocumentsToProcessAsync() =>
             await this.provider.GetListOfDocumentsToProcessAsync();
 
-        public async ValueTask<Document> GetDocumentAsync() =>
-            await this.provider.GetDocumentAsync();
+        public async ValueTask<Document> GetDocumentByFileNameAsync(string fileName) =>
+            await this.provider.GetDocumentByFileNameAsync(fileName);
     }
 }

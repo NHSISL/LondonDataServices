@@ -29,7 +29,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
 
             this.downloadBrokerMock.Setup(broker =>
                 broker.GetListOfDocumentsToProcessAsync())
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<List<Document>> RetrieveListOfDocumentsToProcessTask =

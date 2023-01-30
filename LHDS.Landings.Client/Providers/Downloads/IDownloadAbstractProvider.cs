@@ -11,6 +11,6 @@ namespace LHDS.Landings.Client.Providers.Downloads
     public interface IDownloadAbstractProvider
     {
         ValueTask<List<Document>> GetListOfDocumentsToProcessAsync();
-        ValueTask<Document> GetDocumentAsync();
+        ValueTask<Document> GetDocumentByFileNameAsync(string fileName);
     }
 }

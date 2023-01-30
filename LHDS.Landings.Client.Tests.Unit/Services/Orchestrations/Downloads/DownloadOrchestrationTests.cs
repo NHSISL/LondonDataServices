@@ -5,10 +5,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using KellermanSoftware.CompareNetObjects;
 using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
+using LHDS.Landings.Client.Services.Foundations.Audits;
 using LHDS.Landings.Client.Services.Foundations.Documents;
 using LHDS.Landings.Client.Services.Foundations.Downloads;
 using LHDS.Landings.Client.Services.Foundations.IngestionTrackings;
@@ -23,22 +26,27 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
         private readonly Mock<IDocumentService> documentServiceMock;
         private readonly Mock<IDownloadService> downloadServiceMock;
         private readonly Mock<IIngestionTrackingService> ingestionTrackingServiceMock;
+        private readonly Mock<IAuditService> auditServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly IDownloadOrchestrationService downloadOrchestrationService;
+        private readonly ICompareLogic compareLogic;
 
         public DownloadOrchestrationTests()
         {
             documentServiceMock = new Mock<IDocumentService>();
             downloadServiceMock = new Mock<IDownloadService>();
             ingestionTrackingServiceMock = new Mock<IIngestionTrackingService>();
+            auditServiceMock = new Mock<IAuditService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.compareLogic = new CompareLogic();
 
             this.downloadOrchestrationService = new DownloadOrchestrationService(
                 documentService: documentServiceMock.Object,
                 downloadService: downloadServiceMock.Object,
                 ingestionTrackingService: ingestionTrackingServiceMock.Object,
+                auditService: auditServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object
                 );
@@ -76,6 +84,14 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
 
         private static IngestionTracking CreateRandomIngestionTracking(DateTimeOffset dateTimeOffset) =>
             CreateIngestionTrackingFiller(dateTimeOffset).Create();
+
+        private Expression<Func<IngestionTracking, bool>> SameIngestionTrackingAs(
+            IngestionTracking exprectedIngestionTracking)
+        {
+            return actualIngestionTracking =>
+                this.compareLogic.Compare(exprectedIngestionTracking, actualIngestionTracking)
+                    .AreEqual;
+        }
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(DateTimeOffset dateTimeOffset)
         {

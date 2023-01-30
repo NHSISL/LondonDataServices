@@ -51,7 +51,15 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
         });
 
         public ValueTask<IngestionTracking> RetrieveIngestionTrackingByFileNameAsync(string fileName) =>
-            throw new System.NotImplementedException();
+             TryCatch(async () =>
+             {
+                 ValidateFileName(fileName);
+
+                 IngestionTracking maybeIngestionTracking = await this.storageBroker
+                     .ReadIngestionTrackingByFileNameAsync(fileName);
+
+                 return maybeIngestionTracking;
+             });
 
         public ValueTask<IngestionTracking> ModifyIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
             throw new System.NotImplementedException();

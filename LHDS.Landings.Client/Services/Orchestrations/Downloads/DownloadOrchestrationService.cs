@@ -53,6 +53,8 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Download
                     await this.ingestionTrackingService
                         .RetrieveIngestionTrackingByFileNameAsync(document.FileName);
 
+                //if (maybeIngestionTracking != null)
+                //{
                 Document retrievedDocument =
                     await this.downloadService.RetrieveDownloadByFileNameAsync(document.FileName);
 
@@ -70,6 +72,7 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Download
                 await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
                 await this.documentService.AddDocumentAsync(document);
                 LogAudit(document, currentDateTime);
+                //}
             }
         }
 

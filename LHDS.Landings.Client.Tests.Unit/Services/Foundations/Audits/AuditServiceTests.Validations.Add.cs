@@ -1,10 +1,13 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Landings.Client.Models.Audits;
 using LHDS.Landings.Client.Models.Audits.Exceptions;
-using Xunit;
+using Moq;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Audits
 {
@@ -53,7 +56,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Audits
             // given
             var invalidAudit = new Audit
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                IngestionTrackingId = invalidText,
+                Message = invalidText,
             };
 
             var invalidAuditException =
@@ -63,27 +67,17 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Audits
                 key: nameof(Audit.Id),
                 values: "Id is required");
 
-            //invalidAuditException.AddData(
-            //    key: nameof(Audit.Name),
-            //    values: "Text is required");
+            invalidAuditException.AddData(
+                key: nameof(Audit.IngestionTrackingId),
+                values: "Text is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the Audit model
+            invalidAuditException.AddData(
+                key: nameof(Audit.Message),
+                values: "Text is required");
 
             invalidAuditException.AddData(
                 key: nameof(Audit.CreatedDate),
                 values: "Date is required");
-
-            invalidAuditException.AddData(
-                key: nameof(Audit.CreatedByUserId),
-                values: "Id is required");
-
-            invalidAuditException.AddData(
-                key: nameof(Audit.UpdatedDate),
-                values: "Date is required");
-
-            invalidAuditException.AddData(
-                key: nameof(Audit.UpdatedByUserId),
-                values: "Id is required");
 
             var expectedAuditValidationException =
                 new AuditValidationException(invalidAuditException);

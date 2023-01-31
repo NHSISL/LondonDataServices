@@ -30,7 +30,10 @@ namespace LHDS.Landings.Client.Services.Foundations.Decryptions
             this.loggingBroker = loggingBroker;
         }
 
-        public async Task<byte[]> DecryptAsync(byte[] data) =>
-            throw new System.NotImplementedException();
+        public async Task<byte[]> DecryptAsync(byte[] data)
+        {
+            return await decryptionBroker.DecryptAsync(data);
+        }
+
     }
 }

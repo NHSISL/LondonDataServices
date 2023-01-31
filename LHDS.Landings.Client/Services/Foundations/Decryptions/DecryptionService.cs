@@ -20,7 +20,7 @@ namespace LHDS.Landings.Client.Services.Foundations.Decryptions
 
         public DecryptionService(
             IDecryptionBroker decryptionBroker,
-        IStorageBroker storageBroker,
+            IStorageBroker storageBroker,
             IDateTimeBroker dateTimeBroker,
             ILoggingBroker loggingBroker)
         {
@@ -30,10 +30,13 @@ namespace LHDS.Landings.Client.Services.Foundations.Decryptions
             this.loggingBroker = loggingBroker;
         }
 
-        public async Task<byte[]> DecryptAsync(byte[] data)
+        public Task<byte[]> DecryptAsync(byte[] data) =>
+        TryCatch(async () =>
         {
-            return await decryptionBroker.DecryptAsync(data);
-        }
+            ValidateDecryptionOnDecrypt(data);
+
+            return await this.decryptionBroker.DecryptAsync(data);
+        });
 
     }
 }

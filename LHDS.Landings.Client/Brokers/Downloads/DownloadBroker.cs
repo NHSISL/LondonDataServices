@@ -21,7 +21,7 @@ namespace LHDS.Landings.Client.Brokers.Downloads
         public ValueTask<List<Document>> GetListOfDocumentsToProcessAsync() =>
             this.downloadAbstractProvider.GetListOfDocumentsToProcessAsync();
 
-        public ValueTask<Document> GetDocumentAsync() =>
-            this.downloadAbstractProvider.GetDocumentAsync();
+        public ValueTask<Document> GetDocumentByFileNameAsync(string fileName) =>
+            this.downloadAbstractProvider.GetDocumentByFileNameAsync(fileName);
     }
 }

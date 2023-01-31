@@ -4,7 +4,7 @@
 
 using System.Threading.Tasks;
 
-namespace LHDS.Landings.Client.Services.Orchestrations.Download
+namespace LHDS.Landings.Client.Services.Orchestrations.Downloads
 {
     public interface IDownloadOrchestrationService
     {

@@ -120,6 +120,25 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
             };
         }
 
+        public static TheoryData DownloadDependancyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DocumentDependencyException(innerException),
+                new DocumentServiceException(innerException),
+                new DownloadDependencyException(innerException),
+                new DownloadServiceException(innerException),
+                new IngestionTrackingDependencyException(innerException),
+                new IngestionTrackingServiceException(innerException),
+                new AuditDependencyException(innerException),
+                new AuditServiceException(innerException)
+            };
+        }
+
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(DateTimeOffset dateTimeOffset)
         {
             var filler = new Filler<IngestionTracking>();

@@ -49,5 +49,43 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DownloadDependancyExceptions))]
+        public async Task ShouldThrowDependancyExceptionOnProcessIfDependancyExceptionOccursAndLogItAsync(
+           Xeption dependancyException)
+        {
+            // given
+            var expectedDependancyException =
+                new DownloadOrchestrationDependancyException(
+                    dependancyException.InnerException as Xeption);
+
+            this.downloadServiceMock.Setup(service =>
+              service.RetrieveListOfDocumentsToProcessAsync())
+                  .ThrowsAsync(dependancyException);
+
+            // when
+            ValueTask processTask = this.downloadOrchestrationService.ProcessAsync();
+
+            DownloadOrchestrationDependancyException actualException =
+                await Assert.ThrowsAsync<DownloadOrchestrationDependancyException>(processTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDependancyException);
+
+            this.downloadServiceMock.Verify(service =>
+              service.RetrieveListOfDocumentsToProcessAsync(),
+                Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedDependancyException))),
+                       Times.Once);
+
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

@@ -40,7 +40,10 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Decryptions
                     loggingBroker: this.loggingBrokerMock.Object);
             }
 
-            private static string GetRandomMessage() =>
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
+
+        private static string GetRandomMessage() =>
                 new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
             private static int GetRandomNumber() =>

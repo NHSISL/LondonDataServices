@@ -13,7 +13,6 @@
 
 	<ItemGroup>
 		<Folder Include="Migrations\" />
-		<Folder Include="Models\Foundations\Decryptions\" />
 		<Folder Include="Models\Processings\" />
 	</ItemGroup>
 

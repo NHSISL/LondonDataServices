@@ -11,6 +11,7 @@ using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using NEL.Premises.Api.Models.Documents.Exceptions;
 using Xeptions;
 
 namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
@@ -62,6 +63,12 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
                     new InvalidIngestionTrackingReferenceException(foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidIngestionTrackingReferenceException);
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedIngestionTrackingException = new LockedIngestionTrackingException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedIngestionTrackingException);
             }
             catch (DbUpdateException databaseUpdateException)
             {

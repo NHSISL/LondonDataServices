@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Azure;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
@@ -17,6 +18,56 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
 {
     public partial class DocumentServiceTests
     {
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfDocumentAlreadyExsitsAndLogItAsync()
+        {
+            // given
+            var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
+            var randomString = GetRandomString();
+            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomMessage = GetRandomString();
+
+            Document document = new Document
+            {
+                FileName = randomString,
+                DocumentData = randomBytes
+            };
+
+            var duplicateKeyException =
+              new DuplicateKeyException(randomMessage);
+
+            var alreadyExistsDocumentException =
+                new AlreadyExistsDocumentException(duplicateKeyException);
+
+            var expectedDocumentDependencyValidationException =
+                new DocumentDependencyValidationException(alreadyExistsDocumentException);
+
+            this.blobStorageBrokerMock.Setup(broker =>
+                broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), blobContainerName))
+                   .Throws(duplicateKeyException);
+            // when
+            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document);
+
+            var actualDependencyException =
+                 await Assert.ThrowsAsync<DocumentDependencyValidationException>(uploadFileTask.AsTask);
+
+            // then
+            actualDependencyException.Should().BeEquivalentTo(expectedDocumentDependencyValidationException);
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                 broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), blobContainerName),
+                     Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedDocumentDependencyValidationException))),
+                         Times.Once);
+
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+
+        }
+
         [Fact]
         public async Task ShouldThrowDependencyExceptionOnUploadFileAndLogItAsync()
         {

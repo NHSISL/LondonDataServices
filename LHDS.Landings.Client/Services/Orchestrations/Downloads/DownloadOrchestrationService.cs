@@ -15,7 +15,7 @@ using LHDS.Landings.Client.Services.Foundations.Documents;
 using LHDS.Landings.Client.Services.Foundations.Downloads;
 using LHDS.Landings.Client.Services.Foundations.IngestionTrackings;
 
-namespace LHDS.Landings.Client.Services.Orchestrations.Download
+namespace LHDS.Landings.Client.Services.Orchestrations.Downloads
 {
     public partial class DownloadOrchestrationService : IDownloadOrchestrationService
     {
@@ -42,39 +42,40 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Download
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async ValueTask ProcessAsync()
-        {
-            List<Document> retrievedDocuments =
+        public ValueTask ProcessAsync() =>
+            TryCatch(async () =>
+            {
+                List<Document> retrievedDocuments =
                 await this.downloadService.RetrieveListOfDocumentsToProcessAsync();
 
-            foreach (var document in retrievedDocuments)
-            {
-                IngestionTracking maybeIngestionTracking =
-                    await this.ingestionTrackingService
-                        .RetrieveIngestionTrackingByFileNameAsync(document.FileName);
-
-                if (maybeIngestionTracking == null)
+                foreach (var document in retrievedDocuments)
                 {
-                    Document retrievedDocument =
-                        await this.downloadService.RetrieveDownloadByFileNameAsync(document.FileName);
+                    IngestionTracking maybeIngestionTracking =
+                        await this.ingestionTrackingService
+                            .RetrieveIngestionTrackingByFileNameAsync(document.FileName);
 
-                    var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                    if (maybeIngestionTracking == null)
+                    {
+                        Document retrievedDocument =
+                            await this.downloadService.RetrieveDownloadByFileNameAsync(document.FileName);
 
-                    IngestionTracking newIngestionTracking =
-                        new IngestionTracking
-                        {
-                            Id = document.FileName,
-                            FileName = document.FileName,
-                            Decrypted = false,
-                            CreatedDate = currentDateTime,
-                        };
+                        var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
-                    await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
-                    await this.documentService.AddDocumentAsync(retrievedDocument);
-                    LogAudit(document, currentDateTime);
+                        IngestionTracking newIngestionTracking =
+                            new IngestionTracking
+                            {
+                                Id = document.FileName,
+                                FileName = document.FileName,
+                                Decrypted = false,
+                                CreatedDate = currentDateTime,
+                            };
+
+                        await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
+                        await this.documentService.AddDocumentAsync(retrievedDocument);
+                        LogAudit(document, currentDateTime);
+                    }
                 }
-            }
-        }
+            });
 
         private void LogAudit(Document document, DateTimeOffset currentDateTime)
         {

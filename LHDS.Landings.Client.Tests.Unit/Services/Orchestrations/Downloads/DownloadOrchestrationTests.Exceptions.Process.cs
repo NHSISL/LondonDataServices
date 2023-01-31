@@ -39,6 +39,11 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
               service.RetrieveListOfDocumentsToProcessAsync(),
                 Times.Once);
 
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedDependancyException))),
+                       Times.Once);
+
             this.documentServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();

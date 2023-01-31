@@ -19,7 +19,7 @@ using LHDS.Landings.Client.Services.Foundations.Audits;
 using LHDS.Landings.Client.Services.Foundations.Documents;
 using LHDS.Landings.Client.Services.Foundations.Downloads;
 using LHDS.Landings.Client.Services.Foundations.IngestionTrackings;
-using LHDS.Landings.Client.Services.Orchestrations.Download;
+using LHDS.Landings.Client.Services.Orchestrations.Downloads;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -97,6 +97,9 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
                 this.compareLogic.Compare(exprectedIngestionTracking, actualIngestionTracking)
                     .AreEqual;
         }
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+          actualException => actualException.SameExceptionAs(expectedException);
 
         public static TheoryData DownloadDependancyValidationExceptions()
         {

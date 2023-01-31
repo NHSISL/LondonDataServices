@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 
-namespace LHDS.Landings.Client.Providers.Downloads
+namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
 {
-    public class RestProvider : IDownloadProvider
+    public class FtpDownloadProvider : IDownloadProvider
     {
         public ValueTask<Document> GetDocumentByFileNameAsync(string fileName) =>
             throw new NotImplementedException();

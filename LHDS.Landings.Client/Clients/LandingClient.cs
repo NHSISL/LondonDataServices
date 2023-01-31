@@ -5,7 +5,8 @@
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Models.Clients.LandingClient;
-using LHDS.Landings.Client.Services.Orchestrations.Download;
+using LHDS.Landings.Client.Models.Orchestrations.Downloads.Exceptions;
+using LHDS.Landings.Client.Services.Orchestrations.Downloads;
 using Xeptions;
 
 namespace LHDS.Landings.Client.Clients

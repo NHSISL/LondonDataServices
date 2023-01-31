@@ -4,10 +4,10 @@
 
 using System.Threading.Tasks;
 
-namespace LHDS.Landings.Client.Services.Orchestrations.Downloads
+namespace LHDS.Landings.Client.Providers.Decryptions
 {
-    public interface IDownloadOrchestrationService
+    public interface IDecryptionAbstractProvider
     {
-        ValueTask ProcessAsync();
+        ValueTask<byte[]> DecryptAsync(byte[] data);
     }
 }

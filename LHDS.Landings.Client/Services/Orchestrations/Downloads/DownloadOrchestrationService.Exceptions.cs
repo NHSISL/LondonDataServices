@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Models.Audits.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
@@ -86,6 +87,24 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Downloads
             {
                 throw CreateAndLogAuditServiceException(auditServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedBoroughServiceException =
+                    new FailedDownloadOrchestrationServiceException(exception);
+
+                throw CreateAndLogServiceException(failedBoroughServiceException);
+            }
+        }
+
+        private DownloadOrchestrationServiceException CreateAndLogServiceException(
+           Xeption exception)
+        {
+            var downloadServiceException =
+                new DownloadOrchestrationServiceException(exception);
+
+            this.loggingBroker.LogError(downloadServiceException);
+
+            return downloadServiceException;
         }
 
         private DownloadOrchestrationDependancyValidationException CreateAndLogDocumentValidationException(Xeption exception)

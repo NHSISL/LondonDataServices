@@ -18,7 +18,6 @@ using LHDS.Landings.Client.Services.Foundations.Documents;
 using LHDS.Landings.Client.Services.Foundations.Downloads;
 using LHDS.Landings.Client.Services.Foundations.IngestionTrackings;
 using LHDS.Landings.Client.Services.Orchestrations.Downloads;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -56,11 +55,6 @@ namespace LHDS.Landings.Client.Clients.Extensions
                     serviceUri: new Uri(blobServiceUri),
                     credential: new DefaultAzureCredential(),
                     options: blobServiceClientOptions));
-
-            services.AddSingleton(new BlobServiceClient(
-                new Uri(blobServiceUri), new DefaultAzureCredential(), clientOptions));
-
-            services.AddTransient<IAzureClientFactory<BlobServiceClient>, DownloadAbstractProvider>();
 
             return services;
         }

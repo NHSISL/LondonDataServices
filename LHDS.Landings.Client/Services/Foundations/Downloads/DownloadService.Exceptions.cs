@@ -5,8 +5,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LHDS.Landings.Client.Models.Downloads.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.Downloads.Exceptions;
+using Microsoft.Data.SqlClient;
 using Xeptions;
 
 namespace LHDS.Landings.Client.Services.Foundations.Downloads
@@ -15,21 +17,6 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
     {
         private delegate ValueTask<List<Document>> ReturningDownloadsFunction();
         private delegate ValueTask<Document> ReturningDownloadFunction();
-
-        private async ValueTask<List<Document>> TryCatch(ReturningDownloadsFunction returningDownloadsFunction)
-        {
-            try
-            {
-                return await returningDownloadsFunction();
-            }
-            catch (Exception exception)
-            {
-                var failedDownloadServiceException =
-                    new FailedDownloadServiceException(exception);
-
-                throw CreateAndLogServiceException(failedDownloadServiceException);
-            }
-        }
 
         private async ValueTask<Document> TryCatch(ReturningDownloadFunction returningDownloadFunction)
         {
@@ -44,6 +31,31 @@ namespace LHDS.Landings.Client.Services.Foundations.Downloads
             catch (InvalidDownloadException invalidDownloadException)
             {
                 throw CreateAndLogValidationException(invalidDownloadException);
+            }
+            catch (NotFoundDownloadException notFoundDownloadException)
+            {
+                throw CreateAndLogValidationException(notFoundDownloadException);
+            }
+            catch (Exception exception)
+            {
+                var failedDownloadServiceException =
+                    new FailedDownloadServiceException(exception);
+
+                throw CreateAndLogServiceException(failedDownloadServiceException);
+            }
+        }
+
+        private async ValueTask<List<Document>> TryCatch(ReturningDownloadsFunction returningDownloadsFunction)
+        {
+            try
+            {
+                return await returningDownloadsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedDownloadStorageException =
+                    new FailedDownloadStorageException(sqlException);
+                throw CreateAndLogCriticalDependencyException(failedDownloadStorageException);
             }
             catch (Exception exception)
             {

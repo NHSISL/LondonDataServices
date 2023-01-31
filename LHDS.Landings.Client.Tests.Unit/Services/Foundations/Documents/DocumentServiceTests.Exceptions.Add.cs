@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Data.SqlClient;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -112,6 +113,55 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedDependencyException))),
                          Times.Once);
+
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowCriticalDependencyExceptionOnAddIfSqlErrorOccursAndLogItAsync()
+        {
+            // given
+            var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
+            var randomString = GetRandomString();
+            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomMessage = GetRandomString();
+            SqlException sqlException = GetSqlException();
+
+            Document document = new Document
+            {
+                FileName = randomString,
+                DocumentData = randomBytes
+            };
+
+            var failedDocumentStorageException =
+              new FailedDocumentStorageException(sqlException);
+
+            var expectedDocumentDependencyException =
+                new DocumentDependencyException(failedDocumentStorageException);
+
+            this.blobStorageBrokerMock.Setup(broker =>
+                 broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), blobContainerName))
+                     .Throws(sqlException);
+
+            // when
+            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document);
+
+            DocumentDependencyException actualDocumentDependencyException =
+                await Assert.ThrowsAsync<DocumentDependencyException>(
+                    uploadFileTask.AsTask);
+
+            // then
+            actualDocumentDependencyException.Should().BeEquivalentTo(expectedDocumentDependencyException);
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), blobContainerName),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDocumentDependencyException))),
+                        Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

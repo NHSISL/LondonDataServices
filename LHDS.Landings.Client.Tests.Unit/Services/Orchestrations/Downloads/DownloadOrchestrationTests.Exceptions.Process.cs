@@ -5,7 +5,6 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Landings.Client.Models.Audits.Exceptions;
 using LHDS.Landings.Client.Models.Orchestrations.Downloads.Exceptions;
 using Moq;
 using Xeptions;
@@ -97,14 +96,14 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
             var serviceException = new Exception();
 
             var failedDownloadOrchestrationServiceException =
-               new FailedDownloadOrchestrationServiceException(serviceException);
+                new FailedDownloadOrchestrationServiceException(serviceException);
 
             var expectedDownloadOrchestrationServiceException =
                 new DownloadOrchestrationServiceException(failedDownloadOrchestrationServiceException);
 
             this.downloadServiceMock.Setup(service =>
-             service.RetrieveListOfDocumentsToProcessAsync())
-                 .ThrowsAsync(serviceException);
+                service.RetrieveListOfDocumentsToProcessAsync())
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask processTask = this.downloadOrchestrationService.ProcessAsync();
@@ -116,13 +115,13 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
             actualException.Should().BeEquivalentTo(expectedDownloadOrchestrationServiceException);
 
             this.downloadServiceMock.Verify(service =>
-              service.RetrieveListOfDocumentsToProcessAsync(),
-                Times.Once);
+                service.RetrieveListOfDocumentsToProcessAsync(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
-                   expectedDownloadOrchestrationServiceException))),
-                       Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDownloadOrchestrationServiceException))),
+                        Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

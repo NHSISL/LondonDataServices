@@ -49,10 +49,10 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
             ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document);
 
             var actualDependencyException =
-                 await Assert.ThrowsAsync<DocumentDependencyException>(uploadFileTask.AsTask);
+                 await Assert.ThrowsAsync<DocumentDependencyValidationException>(uploadFileTask.AsTask);
 
             // then
-            actualDependencyException.Should().BeEquivalentTo(alreadyExistsDocumentException);
+            actualDependencyException.Should().BeEquivalentTo(expectedDocumentDependencyValidationException);
 
             this.blobStorageBrokerMock.Verify(broker =>
                  broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), blobContainerName),

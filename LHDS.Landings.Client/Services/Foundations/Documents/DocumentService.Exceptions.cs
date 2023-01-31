@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using Azure;
+using EFxceptions.Models.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
 using NEL.Premises.Api.Models.Documents.Exceptions;
@@ -35,6 +36,13 @@ namespace LHDS.Landings.Client.Services.Foundations.Documents
             {
                 var failedRequestException = new FailedDocumentRequestException(requestFailedException);
                 throw CreateAndLogDependencyException(failedRequestException);
+            }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsDocumentException =
+                    new AlreadyExistsDocumentException(duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsDocumentException);
             }
             catch (Exception exception)
             {
@@ -92,6 +100,16 @@ namespace LHDS.Landings.Client.Services.Foundations.Documents
             this.loggingBroker.LogError(documentDependencyException);
 
             return documentDependencyException;
+        }
+
+        private DocumentDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var documentDependencyValidationException =
+                new DocumentDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(documentDependencyValidationException);
+
+            return documentDependencyValidationException;
         }
     }
 }

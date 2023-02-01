@@ -2,18 +2,21 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
+using LHDS.Landings.Client.Providers.Decryptions;
 
 namespace LHDS.Landings.Client.Brokers.Decryptions
 {
     public class DecryptionBroker : IDecryptionBroker
     {
-        //private readonly IDecryptionAbstractProvider decryptionAbstractProvider;
+        private readonly IDecryptionAbstractProvider decryptionAbstractProvider;
 
-        public ValueTask<byte[]> DecryptAsync(byte[] data)
+        public DecryptionBroker(IDecryptionAbstractProvider decryptionAbstractProvider)
         {
-            throw new NotImplementedException();
+            this.decryptionAbstractProvider = decryptionAbstractProvider;
         }
+
+        public ValueTask<byte[]> DecryptAsync(byte[] data) =>
+            this.decryptionAbstractProvider.DecryptAsync(data);
     }
 }

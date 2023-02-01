@@ -38,7 +38,7 @@ namespace LHDS.Landings.Functions.Emis
 
             builder.Services
                 .AddLandingClient(configuration)
-                .UseFtpDownloadProvider(builder => builder.AddFtpDownloadProvider());
+                .UseFtpDownloadProvider(configuration, builder => builder.AddFtpDownloadProvider());
         }
     }
 }

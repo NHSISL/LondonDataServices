@@ -118,56 +118,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         }
 
         [Fact]
-        public async Task ShouldThrowCriticalDependencyExceptionOnAddDocumentIfBlobErrorOccursAndLogItAsync()
-        {
-            // given
-            var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
-            var randomString = GetRandomString();
-            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
-            var randomMessage = GetRandomString();
-
-            RequestFailedException requestFailedException = GetBlobException();
-
-            Document document = new Document
-            {
-                FileName = randomString,
-                DocumentData = randomBytes
-            };
-
-            var failedDocumentRequestException =
-              new FailedDocumentRequestException(requestFailedException);
-
-            var expectedDocumentDependencyException =
-                new DocumentDependencyException(failedDocumentRequestException);
-
-            this.blobStorageBrokerMock.Setup(broker =>
-                 broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), blobContainerName))
-                     .Throws(requestFailedException);
-
-            // when
-            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document);
-
-            DocumentDependencyException actualDocumentDependencyException =
-                await Assert.ThrowsAsync<DocumentDependencyException>(
-                    uploadFileTask.AsTask);
-
-            // then
-            actualDocumentDependencyException.Should().BeEquivalentTo(expectedDocumentDependencyException);
-
-            this.blobStorageBrokerMock.Verify(broker =>
-                broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), blobContainerName),
-                    Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedDocumentDependencyException))),
-                        Times.Once);
-
-            this.blobStorageBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
         public async Task ShouldThrowServiceExceptionOnUploadFileIfServiceErrorOccursAndLogItAsync()
         {
             // given

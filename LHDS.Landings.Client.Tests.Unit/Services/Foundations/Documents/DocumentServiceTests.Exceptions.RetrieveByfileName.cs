@@ -21,6 +21,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         {
             // given
             var randomFileName = GetRandomString();
+            var isDecrypted = false;
 
             Document randomDocument = new Document
             {
@@ -28,7 +29,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                 DocumentData = Encoding.ASCII.GetBytes(GetRandomString())
             };
 
-            var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
+            var blobContainerName = this.inMemoryConfiguration
+                .GetValue<string>("blobStorage:encryptedBlobContainerName");
 
             var randomMessage = GetRandomString();
             var requestFailedException = new RequestFailedException(randomMessage);
@@ -44,7 +46,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                     .Throws(requestFailedException);
 
             // when
-            ValueTask<Document> getDownloadFileTask = this.documentService.RetrieveDocumentByFileNameAsync(randomDocument.FileName);
+            ValueTask<Document> getDownloadFileTask =
+                this.documentService.RetrieveDocumentByFileNameAsync(randomDocument.FileName, isDecrypted);
 
             var actualDependencyException =
                  await Assert.ThrowsAsync<DocumentDependencyException>(getDownloadFileTask.AsTask);
@@ -70,6 +73,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         {
             // given
             var randomFileName = GetRandomString();
+            var isDecrypted = false;
 
             Document randomDocument = new Document
             {
@@ -77,7 +81,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                 DocumentData = Encoding.ASCII.GetBytes(GetRandomString())
             };
 
-            var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
+            var blobContainerName = this.inMemoryConfiguration
+                .GetValue<string>("blobStorage:encryptedBlobContainerName");
 
             var randomMessage = GetRandomString();
 
@@ -93,7 +98,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
 
 
             // when
-            ValueTask<Document> getDownloadFileTask = this.documentService.RetrieveDocumentByFileNameAsync(randomFileName);
+            ValueTask<Document> getDownloadFileTask =
+                this.documentService.RetrieveDocumentByFileNameAsync(randomFileName, isDecrypted);
 
             var actualServiceException =
                  await Assert.ThrowsAsync<DocumentServiceException>(getDownloadFileTask.AsTask);

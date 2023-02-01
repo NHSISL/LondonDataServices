@@ -22,7 +22,9 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldThrowDependencyValidationExceptionOnAddIfDocumentAlreadyExsitsAndLogItAsync()
         {
             // given
-            var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
+            var blobContainerName = this.inMemoryConfiguration
+                .GetValue<string>("blobStorage:encryptedBlobContainerName");
+
             var randomString = GetRandomString();
             var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
             var randomMessage = GetRandomString();
@@ -74,7 +76,9 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldThrowDependencyExceptionOnUploadFileAndLogItAsync()
         {
             // given
-            var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
+            var blobContainerName = this.inMemoryConfiguration
+                .GetValue<string>("blobStorage:encryptedBlobContainerName");
+
             var randomString = GetRandomString();
             var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
             var randomMessage = GetRandomString();
@@ -124,11 +128,13 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldThrowServiceExceptionOnUploadFileIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
             var randomString = GetRandomString();
             var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
             var randomMessage = GetRandomString();
             var isDecrypted = false;
+
+            var blobContainerName = this.inMemoryConfiguration
+                .GetValue<string>("blobStorage:encryptedBlobContainerName");
 
             Document document = new Document
             {

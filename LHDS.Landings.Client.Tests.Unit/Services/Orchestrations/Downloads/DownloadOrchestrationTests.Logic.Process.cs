@@ -19,7 +19,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
         {
             // given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-
+            var isDecrypted = false;
             List<Document> randomDocuments = CreateRandomDocuments();
             List<Document> externalDocuments = randomDocuments;
 
@@ -98,7 +98,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
                         Times.Once);
 
                 this.documentServiceMock.Verify(service =>
-                    service.AddDocumentAsync(document),
+                    service.AddDocumentAsync(document, isDecrypted),
                         Times.Once);
 
                 this.auditServiceMock.Verify(service =>
@@ -117,10 +117,9 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
         {
             // given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-
+            var isDecrypted = false;
             List<Document> randomDocuments = CreateRandomDocuments();
             List<Document> externalDocuments = randomDocuments;
-
             IngestionTracking externalIngestionTrackingFound = CreateRandomIngestionTracking(randomDateTime);
 
             this.downloadServiceMock.Setup(service =>
@@ -196,7 +195,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
                        Times.Never);
 
                 this.documentServiceMock.Verify(service =>
-                    service.AddDocumentAsync(document),
+                    service.AddDocumentAsync(document, isDecrypted),
                         Times.Never);
 
                 this.auditServiceMock.Verify(service =>

@@ -4,6 +4,8 @@
 
 using System;
 using LHDS.Landings.Client.Providers.Downloads.Builders;
+using LHDS.Landings.Client.Providers.Downloads.FtpDownloads;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LHDS.Landings.Client.Providers.Downloads.Extensions
@@ -12,9 +14,15 @@ namespace LHDS.Landings.Client.Providers.Downloads.Extensions
     {
         public static IServiceCollection UseFtpDownloadProvider(
             this IServiceCollection services,
+            IConfiguration configuration,
             Action<FtpProviderRegistrationBuilder> builderAction)
         {
-            FtpProviderRegistrationBuilder builder = new();
+            IFtpDownloadProviderSettings ftpDownloadProviderSettings =
+                new FtpDownloadProviderSettings(configuration);
+
+            FtpProviderRegistrationBuilder builder =
+                new FtpProviderRegistrationBuilder(ftpDownloadProviderSettings);
+
             builderAction(builder);
 
             return services;

@@ -16,7 +16,10 @@ public partial class DocumentServiceTests
     {
         // Given
         string randomFileName = GetRandomString();
-        var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
+        var isDecrypted = false;
+
+        var blobContainerName = this.inMemoryConfiguration
+            .GetValue<string>("blobStorage:encryptedBlobContainerName");
 
         Document randomDocument = new Document
         {
@@ -25,7 +28,7 @@ public partial class DocumentServiceTests
         };
 
         // When
-        await this.documentService.RemoveDocumentByFileNameAsync(randomDocument.FileName);
+        await this.documentService.RemoveDocumentByFileNameAsync(randomDocument.FileName, isDecrypted);
 
         // Then
         this.blobStorageBrokerMock.Verify(broker =>

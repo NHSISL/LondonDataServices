@@ -31,12 +31,12 @@ namespace LHDS.Landings.Client.Services.Foundations.Decryptions
         }
 
         public Task<byte[]> DecryptAsync(byte[] data) =>
-        TryCatch(async () =>
-        {
-            ValidateDecryptionOnDecrypt(data);
+            TryCatch(async () =>
+            {
+                ValidateDecryptionOnDecrypt(data);
 
-            return await this.decryptionBroker.DecryptAsync(data);
-        });
+                return await this.decryptionBroker.DecryptAsync(data);
+            });
 
     }
 }

@@ -2,12 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 
-namespace LHDS.Landings.Client.Brokers.Storages
+namespace LHDS.Landings.Client.Brokers.Storages.Sql
 {
     public partial interface IStorageBroker
     {

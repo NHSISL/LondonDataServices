@@ -1,0 +1,44 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System.IO;
+using LHDS.Landings.Client.Clients.Extensions;
+using LHDS.Landings.Client.Providers.Downloads.Extensions;
+using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+
+[assembly: FunctionsStartup(typeof(LHDS.Landings.Functions.Emis.Startup))]
+namespace LHDS.Landings.Functions.Emis
+{
+    /// <summary>
+    /// The Startup class for the Azure Function.
+    /// </summary>
+    public class Startup : FunctionsStartup
+    {
+        /// <summary>
+        /// The Configuration Method.
+        /// </summary>
+        /// <param name="builder">The Builder.</param>
+        public override void Configure(IFunctionsHostBuilder builder)
+        {
+            FunctionsHostBuilderContext context = builder.GetContext();
+
+            var configurationBuilder = new ConfigurationBuilder()
+                   .AddJsonFile(
+                        path: Path.Combine(context.ApplicationRootPath, "local.settings.json"),
+                        optional: true, reloadOnChange: true)
+                   .AddJsonFile(path: Path.Combine(context.ApplicationRootPath, "appsettings.json"))
+                   .AddJsonFile(
+                        path: Path.Combine(context.ApplicationRootPath, $"appsettings.{context.EnvironmentName}.json"),
+                        optional: true)
+                   .AddEnvironmentVariables();
+
+            IConfiguration configuration = configurationBuilder.Build();
+
+            builder.Services
+                .AddLandingClient(configuration)
+                .UseFtpDownloadProvider(builder => builder.AddFtpDownloadProvider());
+        }
+    }
+}

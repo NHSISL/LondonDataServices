@@ -19,6 +19,9 @@
 
 	<ItemGroup>
 		<Folder Include="Migrations\" />
+		<Folder Include="Models\Clients\Config\Builders\" />
+		<Folder Include="Models\Clients\Config\Extensions\" />
+		<Folder Include="Models\Processings\" />
 	</ItemGroup>
 
 	<ItemGroup>

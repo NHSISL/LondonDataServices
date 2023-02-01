@@ -42,7 +42,7 @@ namespace LHDS.Landings.Client.Clients.Extensions
             services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<IDownloadAbstractProvider, DownloadAbstractProvider>();
 
-            var blobServiceUri = configuration["blobStorage:AzureBlobStoreUri"];
+            var blobServiceUri = configuration["blobStorage:azureBlobStoreUri"];
 
             var blobServiceClientOptions = new BlobClientOptions()
             {

@@ -45,11 +45,6 @@ namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
         string TempFolder { get; }
 
         /// <summary>
-        /// Gets a value indicating whether to run the service in test mode.
-        /// </summary>
-        bool TestMode { get; }
-
-        /// <summary>
         /// Gets the root folder for the FTP server.
         /// </summary>
         string FtpRootFolder { get; }

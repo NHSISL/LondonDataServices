@@ -19,6 +19,7 @@ using LHDS.Landings.Client.Services.Foundations.Audits;
 using LHDS.Landings.Client.Services.Foundations.Documents;
 using LHDS.Landings.Client.Services.Foundations.Downloads;
 using LHDS.Landings.Client.Services.Foundations.IngestionTrackings;
+using LHDS.Landings.Client.Services.Orchestrations.Download;
 using LHDS.Landings.Client.Services.Orchestrations.Downloads;
 using Moq;
 using Tynamix.ObjectFiller;

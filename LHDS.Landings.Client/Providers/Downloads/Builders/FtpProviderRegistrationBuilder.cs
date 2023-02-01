@@ -15,13 +15,13 @@ namespace LHDS.Landings.Client.Providers.Downloads.Builders
 
         public FtpProviderRegistrationBuilder(IFtpDownloadProviderSettings ftpDownloadProviderSettings)
         {
-            downloadProviderRegistrations = new();
+            downloadProviderRegistrations = new List<IDownloadProvider>();
             this.ftpDownloadProviderSettings = ftpDownloadProviderSettings;
         }
 
         public void AddFtpDownloadProvider()
         {
-            FtpDownloadProvider ftpDownloadProvider = new(ftpDownloadProviderSettings);
+            var ftpDownloadProvider = new FtpDownloadProvider(ftpDownloadProviderSettings);
 
             if (downloadProviderRegistrations.Count > 0)
             {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
-using LHDS.Landings.Client.Brokers.Storages;
+using LHDS.Landings.Client.Brokers.Storages.Sql;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 
 namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings

@@ -39,7 +39,7 @@ namespace LHDS.Landings.Functions.Tpp
             builder.Services.AddTransient<IConfiguration>(_ => configuration);
 
             builder.Services
-                .AddLandingClient()
+                .AddLandingClient(configuration)
                 .UseRestDownloadProvider(builder => builder.AddRestDownloadProvider());
         }
     }

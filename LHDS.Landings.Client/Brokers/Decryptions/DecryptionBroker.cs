@@ -4,14 +4,12 @@
 
 using System;
 using System.Threading.Tasks;
-using LHDS.Landings.Client.Providers.Decryptions;
 
 namespace LHDS.Landings.Client.Brokers.Decryptions
 {
     public class DecryptionBroker : IDecryptionBroker
     {
-        private readonly IDecryptionAbstractProvider decryptionAbstractProvider;
-
+        //private readonly IDecryptionAbstractProvider decryptionAbstractProvider;
 
         public ValueTask<byte[]> DecryptAsync(byte[] data)
         {

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Azure;
 using EFxceptions.Models.Exceptions;
@@ -31,6 +32,13 @@ namespace LHDS.Landings.Client.Services.Foundations.Documents
             catch (InvalidDocumentException invalidDocumentException)
             {
                 throw CreateAndLogValidationException(invalidDocumentException);
+            }
+            catch (SqlException sqlException)
+            {
+                var failedDocumentStorageException =
+                    new FailedDocumentStorageException(sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedDocumentStorageException);
             }
             catch (RequestFailedException requestFailedException)
             {
@@ -110,6 +118,14 @@ namespace LHDS.Landings.Client.Services.Foundations.Documents
             this.loggingBroker.LogError(documentDependencyValidationException);
 
             return documentDependencyValidationException;
+        }
+
+        private DocumentDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        {
+            var documentDependencyException = new DocumentDependencyException(exception);
+            this.loggingBroker.LogCritical(documentDependencyException);
+
+            return documentDependencyException;
         }
     }
 }

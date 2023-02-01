@@ -9,8 +9,8 @@ namespace LHDS.Landings.Client.Services.Foundations.Documents
 {
     public interface IDocumentService
     {
-        ValueTask AddDocumentAsync(Document documentName);
-        ValueTask<Document> RetrieveDocumentByFileNameAsync(string fileName);
-        ValueTask RemoveDocumentByFileNameAsync(string filename);
+        ValueTask AddDocumentAsync(Document document, bool isDecrypted);
+        ValueTask<Document> RetrieveDocumentByFileNameAsync(string fileName, bool isDecrypted);
+        ValueTask RemoveDocumentByFileNameAsync(string filename, bool isDecrypted);
     }
 }

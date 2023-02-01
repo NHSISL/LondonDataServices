@@ -1,0 +1,56 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Force.DeepCloner;
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
+using Moq;
+
+namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTrackings
+{
+    public partial class IngestionTrackingServiceTests
+    {
+        [Fact]
+        public async Task ShouldRemoveIngestionTrackingByIdAsync()
+        {
+            // given
+            string randomIngestionTrackingId = Guid.NewGuid().ToString();
+            string inputIngestionTrackingId = randomIngestionTrackingId;
+            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();
+            IngestionTracking storageIngestionTracking = randomIngestionTracking;
+            IngestionTracking expectedInputIngestionTracking = storageIngestionTracking;
+            IngestionTracking deletedIngestionTracking = expectedInputIngestionTracking;
+            IngestionTracking expectedIngestionTracking = deletedIngestionTracking.DeepClone();
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.ReadIngestionTrackingByIdAsync(inputIngestionTrackingId))
+                    .ReturnsAsync(storageIngestionTracking);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.DeleteIngestionTrackingAsync(expectedInputIngestionTracking))
+                    .ReturnsAsync(deletedIngestionTracking);
+
+            // when
+            IngestionTracking actualIngestionTracking = await this.ingestionTrackingService
+                .RemoveIngestionTrackingByIdAsync(inputIngestionTrackingId);
+
+            // then
+            actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.ReadIngestionTrackingByIdAsync(inputIngestionTrackingId),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.DeleteIngestionTrackingAsync(expectedInputIngestionTracking),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

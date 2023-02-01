@@ -24,6 +24,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         {
             // Given
             string containerName = invalidInput;
+            var isDecrypted = false;
 
             Document document = new Document
             {
@@ -58,7 +59,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                     configuration: inMemoryConfiguration);
 
             // When
-            ValueTask<Document> getDownloadLinkTask = documentService.RetrieveDocumentByFileNameAsync(document.FileName);
+            ValueTask<Document> getDownloadLinkTask =
+                documentService.RetrieveDocumentByFileNameAsync(document.FileName, isDecrypted);
 
             DocumentValidationException actualDocumentBlobValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(getDownloadLinkTask.AsTask);

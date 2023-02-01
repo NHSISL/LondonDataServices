@@ -134,11 +134,11 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                 DocumentData = randomBytes
             };
 
-            var failedDocumentStorageException =
-              new FailedDocumentStorageException(requestFailedException);
+            var failedDocumentRequestException =
+              new FailedDocumentRequestException(requestFailedException);
 
             var expectedDocumentDependencyException =
-                new DocumentDependencyException(failedDocumentStorageException);
+                new DocumentDependencyException(failedDocumentRequestException);
 
             this.blobStorageBrokerMock.Setup(broker =>
                  broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), blobContainerName))

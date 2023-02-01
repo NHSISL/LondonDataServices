@@ -60,4 +60,3 @@ namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
         bool IncludeSubDirectories { get; }
     }
 }
-}

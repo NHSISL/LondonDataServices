@@ -1,11 +1,15 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Landings.Client.Models.Audits;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using LHDS.Landings.Client.Models.Audits;
 
-namespace LHDS.Landings.Client.Brokers.Storages
+namespace LHDS.Landings.Client.Brokers.Storages.Sql
 {
     public partial class StorageBroker
     {

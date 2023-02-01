@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
-using LHDS.Landings.Client.Brokers.Storages;
+using LHDS.Landings.Client.Brokers.Storages.Sql;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 
 namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
@@ -60,15 +60,15 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
                  return maybeIngestionTracking;
              });
 
-        public  ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(string ingestionTrackingId) =>
+        public ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(string ingestionTrackingId) =>
             TryCatch(async () =>
             {
-            ValidateIngestionTrackingId(ingestionTrackingId);
+                ValidateIngestionTrackingId(ingestionTrackingId);
 
-            IngestionTracking maybeIngestionTracking = await this.storageBroker
-                .ReadIngestionTrackingByIdAsync(ingestionTrackingId);
+                IngestionTracking maybeIngestionTracking = await this.storageBroker
+                    .ReadIngestionTrackingByIdAsync(ingestionTrackingId);
 
-            return await this.storageBroker.DeleteIngestionTrackingAsync(maybeIngestionTracking);
-        });
+                return await this.storageBroker.DeleteIngestionTrackingAsync(maybeIngestionTracking);
+            });
     }
 }

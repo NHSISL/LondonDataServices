@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Data.SqlClient;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -119,14 +118,15 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         }
 
         [Fact]
-        public async Task ShouldThrowCriticalDependencyExceptionOnAddIfSqlErrorOccursAndLogItAsync()
+        public async Task ShouldThrowCriticalDependencyExceptionOnAddDocumentIfBlobErrorOccursAndLogItAsync()
         {
             // given
             var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
             var randomString = GetRandomString();
             var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
             var randomMessage = GetRandomString();
-            SqlException sqlException = GetSqlException();
+
+            RequestFailedException requestFailedException = GetBlobException();
 
             Document document = new Document
             {
@@ -135,14 +135,14 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
             };
 
             var failedDocumentStorageException =
-              new FailedDocumentStorageException(sqlException);
+              new FailedDocumentStorageException(requestFailedException);
 
             var expectedDocumentDependencyException =
                 new DocumentDependencyException(failedDocumentStorageException);
 
             this.blobStorageBrokerMock.Setup(broker =>
                  broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), blobContainerName))
-                     .Throws(sqlException);
+                     .Throws(requestFailedException);
 
             // when
             ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document);

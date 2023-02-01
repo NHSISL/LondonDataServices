@@ -107,174 +107,174 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Downloads
             return downloadServiceException;
         }
 
-        private DownloadOrchestrationDependancyValidationException CreateAndLogDocumentValidationException(Xeption exception)
+        private DownloadOrchestrationDependencyValidationException CreateAndLogDocumentValidationException(Xeption exception)
         {
-            var downloadOrchestrationDependancyValidationException =
-                new DownloadOrchestrationDependancyValidationException(exception.InnerException as Xeption);
+            var downloadOrchestrationDependencyValidationException =
+                new DownloadOrchestrationDependencyValidationException(exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(downloadOrchestrationDependancyValidationException);
+            this.loggingBroker.LogError(downloadOrchestrationDependencyValidationException);
 
-            return downloadOrchestrationDependancyValidationException;
+            return downloadOrchestrationDependencyValidationException;
         }
 
-        private DownloadOrchestrationDependancyValidationException
+        private DownloadOrchestrationDependencyValidationException
             CreateAndLogDocumentDependencyValidationException(Xeption exception)
         {
-            var downloadOrchestrationDependancyValidationException =
-                new DownloadOrchestrationDependancyValidationException(exception.InnerException as Xeption);
-            this.loggingBroker.LogError(downloadOrchestrationDependancyValidationException);
+            var downloadOrchestrationDependencyValidationException =
+                new DownloadOrchestrationDependencyValidationException(exception.InnerException as Xeption);
+            this.loggingBroker.LogError(downloadOrchestrationDependencyValidationException);
 
-            return downloadOrchestrationDependancyValidationException;
+            return downloadOrchestrationDependencyValidationException;
         }
 
-        private DownloadOrchestrationDependancyValidationException
+        private DownloadOrchestrationDependencyValidationException
             CreateAndLogDownloadValidationException(Xeption exception)
         {
-            var downloadOrchestrationDependancyValidationException =
-                new DownloadOrchestrationDependancyValidationException(exception.InnerException as Xeption);
+            var downloadOrchestrationDependencyValidationException =
+                new DownloadOrchestrationDependencyValidationException(exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(downloadOrchestrationDependancyValidationException);
+            this.loggingBroker.LogError(downloadOrchestrationDependencyValidationException);
 
-            return downloadOrchestrationDependancyValidationException;
+            return downloadOrchestrationDependencyValidationException;
         }
 
-        private DownloadOrchestrationDependancyValidationException
+        private DownloadOrchestrationDependencyValidationException
             CreateAndLogDownloadDependencyValidationException(Xeption exception)
         {
-            var downloadOrchestrationDependancyValidationException =
-                new DownloadOrchestrationDependancyValidationException(exception.InnerException as Xeption);
+            var downloadOrchestrationDependencyValidationException =
+                new DownloadOrchestrationDependencyValidationException(exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(downloadOrchestrationDependancyValidationException);
+            this.loggingBroker.LogError(downloadOrchestrationDependencyValidationException);
 
-            return downloadOrchestrationDependancyValidationException;
+            return downloadOrchestrationDependencyValidationException;
         }
 
-        private DownloadOrchestrationDependancyValidationException
+        private DownloadOrchestrationDependencyValidationException
             CreateAndLogIngestionTrackingDependencyValidationException(Xeption exception)
         {
-            var downloadOrchestrationDependancyValidationException =
-                new DownloadOrchestrationDependancyValidationException(exception.InnerException as Xeption);
+            var downloadOrchestrationDependencyValidationException =
+                new DownloadOrchestrationDependencyValidationException(exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(downloadOrchestrationDependancyValidationException);
+            this.loggingBroker.LogError(downloadOrchestrationDependencyValidationException);
 
-            return downloadOrchestrationDependancyValidationException;
+            return downloadOrchestrationDependencyValidationException;
         }
 
-        private DownloadOrchestrationDependancyValidationException
+        private DownloadOrchestrationDependencyValidationException
             CreateAndLogIngestionTrackingValidationException(Xeption exception)
         {
-            var downloadOrchestrationDependancyValidationException =
-                new DownloadOrchestrationDependancyValidationException(exception.InnerException as Xeption);
+            var downloadOrchestrationDependencyValidationException =
+                new DownloadOrchestrationDependencyValidationException(exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(downloadOrchestrationDependancyValidationException);
+            this.loggingBroker.LogError(downloadOrchestrationDependencyValidationException);
 
-            return downloadOrchestrationDependancyValidationException;
+            return downloadOrchestrationDependencyValidationException;
         }
 
-        private DownloadOrchestrationDependancyValidationException
+        private DownloadOrchestrationDependencyValidationException
             CreateAndLogAuditValidationException(Xeption exception)
         {
-            var downloadOrchestrationDependancyValidationException =
-                new DownloadOrchestrationDependancyValidationException(exception.InnerException as Xeption);
+            var downloadOrchestrationDependencyValidationException =
+                new DownloadOrchestrationDependencyValidationException(exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(downloadOrchestrationDependancyValidationException);
+            this.loggingBroker.LogError(downloadOrchestrationDependencyValidationException);
 
-            return downloadOrchestrationDependancyValidationException;
+            return downloadOrchestrationDependencyValidationException;
         }
 
-        private DownloadOrchestrationDependancyValidationException
+        private DownloadOrchestrationDependencyValidationException
             CreateAndLogAuditDependencyValidationException(Xeption exception)
         {
-            var downloadOrchestrationDependancyValidationException =
-                new DownloadOrchestrationDependancyValidationException(exception.InnerException as Xeption);
+            var downloadOrchestrationDependencyValidationException =
+                new DownloadOrchestrationDependencyValidationException(exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(downloadOrchestrationDependancyValidationException);
+            this.loggingBroker.LogError(downloadOrchestrationDependencyValidationException);
 
-            return downloadOrchestrationDependancyValidationException;
+            return downloadOrchestrationDependencyValidationException;
         }
 
-        private DownloadOrchestrationDependancyException
+        private DownloadOrchestrationDependencyException
             CreateAndLogDocumentDependencyException(Xeption exception)
         {
             var documentOrchestrationDependencyException =
-                new DownloadOrchestrationDependancyException(exception.InnerException as Xeption);
+                new DownloadOrchestrationDependencyException(exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(documentOrchestrationDependencyException);
 
             throw documentOrchestrationDependencyException;
         }
 
-        private DownloadOrchestrationDependancyException
+        private DownloadOrchestrationDependencyException
             CreateAndLogDocumentServiceException(Xeption exception)
         {
             var documentOrchestrationDependencyException =
-                new DownloadOrchestrationDependancyException(exception.InnerException as Xeption);
+                new DownloadOrchestrationDependencyException(exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(documentOrchestrationDependencyException);
 
             throw documentOrchestrationDependencyException;
         }
 
-        private DownloadOrchestrationDependancyException
+        private DownloadOrchestrationDependencyException
             CreateAndLogDownloadDependencyException(Xeption exception)
         {
             var documentOrchestrationDependencyException =
-                new DownloadOrchestrationDependancyException(exception.InnerException as Xeption);
+                new DownloadOrchestrationDependencyException(exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(documentOrchestrationDependencyException);
 
             throw documentOrchestrationDependencyException;
         }
 
-        private DownloadOrchestrationDependancyException
+        private DownloadOrchestrationDependencyException
             CreateAndLogDownloadServiceException(Xeption exception)
         {
             var documentOrchestrationDependencyException =
-                new DownloadOrchestrationDependancyException(exception.InnerException as Xeption);
+                new DownloadOrchestrationDependencyException(exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(documentOrchestrationDependencyException);
 
             throw documentOrchestrationDependencyException;
         }
 
-        private DownloadOrchestrationDependancyException
+        private DownloadOrchestrationDependencyException
            CreateAndLogIngestionTrackingDependencyException(Xeption exception)
         {
             var documentOrchestrationDependencyException =
-                new DownloadOrchestrationDependancyException(exception.InnerException as Xeption);
+                new DownloadOrchestrationDependencyException(exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(documentOrchestrationDependencyException);
 
             throw documentOrchestrationDependencyException;
         }
 
-        private DownloadOrchestrationDependancyException
+        private DownloadOrchestrationDependencyException
             CreateAndLogIngestionTrackingServiceException(Xeption exception)
         {
             var documentOrchestrationDependencyException =
-                new DownloadOrchestrationDependancyException(exception.InnerException as Xeption);
+                new DownloadOrchestrationDependencyException(exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(documentOrchestrationDependencyException);
 
             throw documentOrchestrationDependencyException;
         }
 
-        private DownloadOrchestrationDependancyException
+        private DownloadOrchestrationDependencyException
           CreateAndLogAuditDependencyException(Xeption exception)
         {
             var documentOrchestrationDependencyException =
-                new DownloadOrchestrationDependancyException(exception.InnerException as Xeption);
+                new DownloadOrchestrationDependencyException(exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(documentOrchestrationDependencyException);
 
             throw documentOrchestrationDependencyException;
         }
 
-        private DownloadOrchestrationDependancyException
+        private DownloadOrchestrationDependencyException
             CreateAndLogAuditServiceException(Xeption exception)
         {
             var documentOrchestrationDependencyException =
-                new DownloadOrchestrationDependancyException(exception.InnerException as Xeption);
+                new DownloadOrchestrationDependencyException(exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(documentOrchestrationDependencyException);
 

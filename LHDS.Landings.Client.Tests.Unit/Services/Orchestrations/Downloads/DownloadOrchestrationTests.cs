@@ -101,7 +101,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
 
-        public static TheoryData DownloadDependancyValidationExceptions()
+        public static TheoryData DownloadDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -120,7 +120,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
             };
         }
 
-        public static TheoryData DownloadDependancyExceptions()
+        public static TheoryData DownloadDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;

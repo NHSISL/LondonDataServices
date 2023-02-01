@@ -6,12 +6,11 @@ using Xeptions;
 
 namespace LHDS.Landings.Client.Models.Orchestrations.Downloads.Exceptions
 {
-    public class DownloadOrchestrationDependancyException : Xeption
+    public class DownloadOrchestrationValidationException : Xeption
     {
-        public DownloadOrchestrationDependancyException(Xeption innerException)
-         : base(
-                message: "Download orchestration dependency error occurred, fix the errors and try again.",
-                innerException)
+        public DownloadOrchestrationValidationException(Xeption innerException)
+            : base(message: "Download orchestration validation errors occurred, please try again.",
+                  innerException)
         { }
     }
 }

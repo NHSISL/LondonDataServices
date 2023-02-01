@@ -14,13 +14,13 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
     public partial class DownloadOrchestrationTests
     {
         [Theory]
-        [MemberData(nameof(DownloadDependancyValidationExceptions))]
-        public async Task ShouldThrowDependancyValidationOnProcessIfDependancyValidationOccursAndLogItAsync(
+        [MemberData(nameof(DownloadDependencyValidationExceptions))]
+        public async Task ShouldThrowDependencyValidationOnProcessIfDependencyValidationOccursAndLogItAsync(
             Xeption dependancyValidationException)
         {
             // given
-            var expectedDependancyException =
-                new DownloadOrchestrationDependancyValidationException(
+            var expectedDependencyException =
+                new DownloadOrchestrationDependencyValidationException(
                     dependancyValidationException.InnerException as Xeption);
 
             this.downloadServiceMock.Setup(service =>
@@ -30,11 +30,11 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
             // when
             ValueTask processTask = this.downloadOrchestrationService.ProcessAsync();
 
-            DownloadOrchestrationDependancyValidationException actualException =
-                await Assert.ThrowsAsync<DownloadOrchestrationDependancyValidationException>(processTask.AsTask);
+            DownloadOrchestrationDependencyValidationException actualException =
+                await Assert.ThrowsAsync<DownloadOrchestrationDependencyValidationException>(processTask.AsTask);
 
             // then
-            actualException.Should().BeEquivalentTo(expectedDependancyException);
+            actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.downloadServiceMock.Verify(service =>
               service.RetrieveListOfDocumentsToProcessAsync(),
@@ -42,7 +42,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(
-                   expectedDependancyException))),
+                   expectedDependencyException))),
                        Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();
@@ -52,13 +52,13 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
         }
 
         [Theory]
-        [MemberData(nameof(DownloadDependancyExceptions))]
-        public async Task ShouldThrowDependancyExceptionOnProcessIfDependancyExceptionOccursAndLogItAsync(
+        [MemberData(nameof(DownloadDependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnProcessIfDependencyExceptionOccursAndLogItAsync(
            Xeption dependancyException)
         {
             // given
-            var expectedDependancyException =
-                new DownloadOrchestrationDependancyException(
+            var expectedDependencyException =
+                new DownloadOrchestrationDependencyException(
                     dependancyException.InnerException as Xeption);
 
             this.downloadServiceMock.Setup(service =>
@@ -68,11 +68,11 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
             // when
             ValueTask processTask = this.downloadOrchestrationService.ProcessAsync();
 
-            DownloadOrchestrationDependancyException actualException =
-                await Assert.ThrowsAsync<DownloadOrchestrationDependancyException>(processTask.AsTask);
+            DownloadOrchestrationDependencyException actualException =
+                await Assert.ThrowsAsync<DownloadOrchestrationDependencyException>(processTask.AsTask);
 
             // then
-            actualException.Should().BeEquivalentTo(expectedDependancyException);
+            actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.downloadServiceMock.Verify(service =>
               service.RetrieveListOfDocumentsToProcessAsync(),
@@ -80,7 +80,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(
-                   expectedDependancyException))),
+                   expectedDependencyException))),
                        Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();

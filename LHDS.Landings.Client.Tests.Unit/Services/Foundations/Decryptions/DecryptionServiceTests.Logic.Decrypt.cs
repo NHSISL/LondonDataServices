@@ -19,7 +19,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Decryptions
             byte[] randomDecryption = CreateRandomDecryption();
             byte[] inputDecryption = randomDecryption;
 
-
             // When
             await this.decryptionService.DecryptAsync(randomDecryption);
 

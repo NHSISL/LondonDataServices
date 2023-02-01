@@ -20,25 +20,25 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Decryptions
 {
     public partial class DecryptionServiceTests
     {
-            private readonly Mock<IDecryptionBroker> decryptionBrokerMock;
-            private readonly Mock<IStorageBroker> storageBrokerMock;
-            private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
-            private readonly Mock<ILoggingBroker> loggingBrokerMock;
-            private readonly IDecryptionService decryptionService;
+        private readonly Mock<IDecryptionBroker> decryptionBrokerMock;
+        private readonly Mock<IStorageBroker> storageBrokerMock;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly IDecryptionService decryptionService;
 
-            public DecryptionServiceTests()
-            {
-                this.decryptionBrokerMock = new Mock<IDecryptionBroker>();
-                this.storageBrokerMock = new Mock<IStorageBroker>();
-                this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
-                this.loggingBrokerMock = new Mock<ILoggingBroker>();
+        public DecryptionServiceTests()
+        {
+            this.decryptionBrokerMock = new Mock<IDecryptionBroker>();
+            this.storageBrokerMock = new Mock<IStorageBroker>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
-                this.decryptionService = new DecryptionService(
-                    decryptionBroker: this.decryptionBrokerMock.Object,
-                    storageBroker: this.storageBrokerMock.Object,
-                    dateTimeBroker: this.dateTimeBrokerMock.Object,
-                    loggingBroker: this.loggingBrokerMock.Object);
-            }
+            this.decryptionService = new DecryptionService(
+                decryptionBroker: this.decryptionBrokerMock.Object,
+                storageBroker: this.storageBrokerMock.Object,
+                dateTimeBroker: this.dateTimeBrokerMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object);
+        }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);

@@ -7,15 +7,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 
-namespace LHDS.Landings.Client.Brokers.Storages
+namespace LHDS.Landings.Client.Brokers.Storages.Sql
+
+public partial interface IStorageBroker
 {
-    public partial interface IStorageBroker
-    {
-        ValueTask<IngestionTracking> InsertIngestionTrackingAsync(IngestionTracking ingestionTracking);
-        IQueryable<IngestionTracking> ReadAllIngestionTracking();
-        ValueTask<IngestionTracking> ReadIngestionTrackingByIdAsync(string ingestionTrackingId);
-        ValueTask<IngestionTracking> ReadIngestionTrackingByFileNameAsync(string fileName);
-        ValueTask<IngestionTracking> UpdateIngestionTrackingnAsync(IngestionTracking ingestionTracking);
-        ValueTask<IngestionTracking> DeleteIngestionTrackingAsync(IngestionTracking ingestionTracking);
-    }
+    ValueTask<IngestionTracking> InsertIngestionTrackingAsync(IngestionTracking ingestionTracking);
+    IQueryable<IngestionTracking> ReadAllIngestionTracking();
+    ValueTask<IngestionTracking> ReadIngestionTrackingByIdAsync(string ingestionTrackingId);
+    ValueTask<IngestionTracking> ReadIngestionTrackingByFileNameAsync(string fileName);
+    ValueTask<IngestionTracking> UpdateIngestionTrackingnAsync(IngestionTracking ingestionTracking);
+    ValueTask<IngestionTracking> DeleteIngestionTrackingAsync(IngestionTracking ingestionTracking);
 }

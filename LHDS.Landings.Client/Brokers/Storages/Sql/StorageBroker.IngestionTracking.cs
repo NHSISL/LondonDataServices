@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using Microsoft.EntityFrameworkCore;
 
-namespace LHDS.Landings.Client.Brokers.Storages
+namespace LHDS.Landings.Client.Brokers.Storages.Sql
 {
     public partial class StorageBroker
     {

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using LHDS.Landings.Client.Models.Audits;
 
-namespace LHDS.Landings.Client.Brokers.Storages
+namespace LHDS.Landings.Client.Brokers.Storages.Sql
 {
     public partial class StorageBroker
     {

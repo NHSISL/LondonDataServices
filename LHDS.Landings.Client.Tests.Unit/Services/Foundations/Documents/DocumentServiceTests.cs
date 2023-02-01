@@ -31,7 +31,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
 
             var appSettingsStub = new Dictionary<string, string> {
-                {"blobContainerName", GetRandomString()}
+                {"blobStorage:encryptedBlobContainerName", GetRandomString()},
+                {"blobStorage:decryptedBlobContainerName", GetRandomString()},
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()

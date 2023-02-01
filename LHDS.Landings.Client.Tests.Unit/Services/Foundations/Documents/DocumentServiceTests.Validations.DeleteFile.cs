@@ -24,6 +24,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
             // Given
             string fileName = invalidInput;
             string containerName = invalidInput;
+            var isDecrypted = false;
 
             var invalidDocumentException =
                 new InvalidDocumentException();
@@ -55,7 +56,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
 
 
             // When
-            ValueTask deleteFileTask = documentService.RemoveDocumentByFileNameAsync(fileName);
+            ValueTask deleteFileTask = documentService.RemoveDocumentByFileNameAsync(fileName, isDecrypted);
 
             DocumentValidationException actualDocumentValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(deleteFileTask.AsTask);

@@ -21,8 +21,11 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         {
             // given
             string randomFileName = GetRandomString();
-            var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
             var randomMessage = GetRandomString();
+            var isDecrypted = false;
+
+            var blobContainerName = this.inMemoryConfiguration
+                .GetValue<string>("blobStorage:encryptedBlobContainerName");
 
             Document randomDocument = new Document
             {
@@ -43,7 +46,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                     .Throws(requestFailedException);
 
             // when
-            ValueTask getDocumentTask = this.documentService.RemoveDocumentByFileNameAsync(randomFileName);
+            ValueTask getDocumentTask = this.documentService.RemoveDocumentByFileNameAsync(randomFileName, isDecrypted);
 
             var actualDependencyException =
                  await Assert.ThrowsAsync<DocumentDependencyException>(getDocumentTask.AsTask);
@@ -69,8 +72,11 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         {
             // given
             string randomFileName = GetRandomString();
-            var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
             var randomMessage = GetRandomString();
+            var isDecrypted = false;
+
+            var blobContainerName = this.inMemoryConfiguration
+                .GetValue<string>("blobStorage:encryptedBlobContainerName");
 
             Document randomDocument = new Document
             {
@@ -89,7 +95,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                      .Throws(failedDocumentServiceException);
 
             // when
-            ValueTask getDocumentTask = this.documentService.RemoveDocumentByFileNameAsync(randomDocument.FileName);
+            ValueTask getDocumentTask =
+                this.documentService.RemoveDocumentByFileNameAsync(randomDocument.FileName, isDecrypted);
 
             var actualServiceException =
                  await Assert.ThrowsAsync<DocumentServiceException>(getDocumentTask.AsTask);

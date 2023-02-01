@@ -11,15 +11,17 @@ namespace LHDS.Landings.Client.Providers.Downloads.Builders
     public class FtpProviderRegistrationBuilder
     {
         private readonly List<IDownloadProvider> downloadProviderRegistrations;
+        private readonly IFtpDownloadProviderSettings ftpDownloadProviderSettings;
 
-        public FtpProviderRegistrationBuilder()
+        public FtpProviderRegistrationBuilder(IFtpDownloadProviderSettings ftpDownloadProviderSettings)
         {
-            downloadProviderRegistrations = new();
+            downloadProviderRegistrations = new List<IDownloadProvider>();
+            this.ftpDownloadProviderSettings = ftpDownloadProviderSettings;
         }
 
         public void AddFtpDownloadProvider()
         {
-            FtpDownloadProvider ftpDownloadProvider = new();
+            var ftpDownloadProvider = new FtpDownloadProvider(ftpDownloadProviderSettings);
 
             if (downloadProviderRegistrations.Count > 0)
             {

@@ -19,7 +19,10 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         {
             // Given
             string randomFileName = GetRandomString();
-            var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
+            var isDecrypted = false;
+
+            var blobContainerName = this.inMemoryConfiguration
+                .GetValue<string>("blobStorage:encryptedBlobContainerName");
 
             Document randomDocument = new Document
             {
@@ -30,7 +33,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
             var stream = new MemoryStream(randomDocument.DocumentData);
 
             // When
-            await this.documentService.AddDocumentAsync(randomDocument);
+            await this.documentService.AddDocumentAsync(randomDocument, isDecrypted);
 
             // Then
             this.blobStorageBrokerMock.Verify(broker =>

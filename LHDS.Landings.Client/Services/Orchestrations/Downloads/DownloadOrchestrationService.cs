@@ -71,7 +71,7 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Downloads
                             };
 
                         await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
-                        await this.documentService.AddDocumentAsync(retrievedDocument);
+                        await this.documentService.AddDocumentAsync(retrievedDocument, false);
                         LogAudit(document, currentDateTime);
                     }
                 }

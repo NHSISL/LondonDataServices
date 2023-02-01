@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
 {
     /// <summary>
-    /// The Settings Class.
+    /// The FtpDownloadProviderSettings Class.
     /// </summary>
     public class FtpDownloadProviderSettings : IFtpDownloadProviderSettings
     {
@@ -66,6 +66,7 @@ namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
         private string GetSettings(string configurationKey, bool mandatory = true)
         {
             var value = this.Configuration[configurationKey];
+
             if (string.IsNullOrEmpty(value))
             {
                 if (mandatory)

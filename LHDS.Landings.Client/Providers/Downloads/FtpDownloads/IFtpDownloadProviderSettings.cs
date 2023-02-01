@@ -5,7 +5,7 @@
 namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
 {
     /// <summary>
-    /// The Settings Interface.
+    /// The FtpDownloadProviderSettings Interface.
     /// </summary>
     public interface IFtpDownloadProviderSettings
     {

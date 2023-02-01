@@ -9,7 +9,6 @@ using Azure;
 using FluentAssertions;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
-using Microsoft.Extensions.Configuration;
 using Moq;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
@@ -23,9 +22,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
             string randomFileName = GetRandomString();
             var randomMessage = GetRandomString();
             var isDecrypted = false;
-
-            var blobContainerName = this.inMemoryConfiguration
-                .GetValue<string>("blobStorage:encryptedBlobContainerName");
 
             Document randomDocument = new Document
             {
@@ -42,7 +38,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                  new DocumentDependencyException(failedDocumentRequestException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                 broker.DeleteFileAsync(randomDocument.FileName, blobContainerName))
+                 broker.DeleteFileAsync(randomDocument.FileName, isDecrypted))
                     .Throws(requestFailedException);
 
             // when
@@ -55,7 +51,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
             actualDependencyException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                 broker.DeleteFileAsync(randomDocument.FileName, blobContainerName),
+                 broker.DeleteFileAsync(randomDocument.FileName, isDecrypted),
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -75,9 +71,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
             var randomMessage = GetRandomString();
             var isDecrypted = false;
 
-            var blobContainerName = this.inMemoryConfiguration
-                .GetValue<string>("blobStorage:encryptedBlobContainerName");
-
             Document randomDocument = new Document
             {
                 FileName = randomFileName,
@@ -91,7 +84,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                 new DocumentServiceException(failedDocumentServiceException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                 broker.DeleteFileAsync(randomDocument.FileName, blobContainerName))
+                 broker.DeleteFileAsync(randomDocument.FileName, isDecrypted))
                      .Throws(failedDocumentServiceException);
 
             // when
@@ -105,7 +98,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
             actualServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                 broker.DeleteFileAsync(randomDocument.FileName, blobContainerName),
+                 broker.DeleteFileAsync(randomDocument.FileName, isDecrypted),
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

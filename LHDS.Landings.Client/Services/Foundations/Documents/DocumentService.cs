@@ -30,13 +30,12 @@ namespace LHDS.Landings.Client.Services.Foundations.Documents
         public ValueTask AddDocumentAsync(Document document, bool isDecrypted) =>
             TryCatch(async () =>
             {
-                string blobContainerName = GetConatinerName(isDecrypted);
-                ValidateDocumentOnAdd(document, blobContainerName);
+                ValidateDocumentOnAdd(document);
 
                 await this.blobStorageBroker.InsertFileAsync(
                    fileName: document.FileName,
                    stream: new MemoryStream(document.DocumentData),
-                   container: blobContainerName);
+                   isDecrypted: isDecrypted);
             });
 
 
@@ -44,13 +43,12 @@ namespace LHDS.Landings.Client.Services.Foundations.Documents
         public ValueTask<Document> RetrieveDocumentByFileNameAsync(string fileName, bool isDecrypted) =>
              TryCatch(async () =>
              {
-                 var blobContainerName = GetConatinerName(isDecrypted);
-                 ValidateDocumentOnRetrieve(fileName, blobContainerName);
+                 ValidateDocumentOnRetrieve(fileName);
 
                  byte[] retrievedDocument = await this.blobStorageBroker
                      .SelectByFileNameAsync(
                          fileName: fileName,
-                         container: blobContainerName);
+                         isDecrypted: isDecrypted);
 
                  var document = new Document
                  {
@@ -64,24 +62,8 @@ namespace LHDS.Landings.Client.Services.Foundations.Documents
         public ValueTask RemoveDocumentByFileNameAsync(string fileName, bool isDecrypted) =>
            TryCatch(async () =>
            {
-               var blobContainerName = GetConatinerName(isDecrypted);
-               ValidateDeleteArguments(fileName, blobContainerName);
-               await this.blobStorageBroker.DeleteFileAsync(fileName, blobContainerName);
+               ValidateDeleteArguments(fileName);
+               await this.blobStorageBroker.DeleteFileAsync(fileName, isDecrypted);
            });
-
-        private string GetConatinerName(bool isDecrypted)
-        {
-            var encryptedBlobContainerName =
-                this.configuration.GetValue<string>("blobStorage:encryptedBlobContainerName");
-
-            var decryptedBlobContainerName =
-                this.configuration.GetValue<string>("blobStorage:decryptedBlobContainerName");
-
-            var blobContainerName = isDecrypted
-                ? decryptedBlobContainerName
-                : encryptedBlobContainerName;
-
-            return blobContainerName;
-        }
     }
 }

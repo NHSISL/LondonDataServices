@@ -33,10 +33,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                 key: "fileName",
                 values: "Text is required");
 
-            invalidDocumentException.AddData(
-                key: "container",
-                values: "Text is required");
-
             var expectedDocumentValidationException
                 = new DocumentValidationException(invalidDocumentException);
 
@@ -70,7 +66,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                         Times.Once);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.DeleteFileAsync(It.IsAny<string>(), It.IsAny<string>()),
+                broker.DeleteFileAsync(It.IsAny<string>(), It.IsAny<bool>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

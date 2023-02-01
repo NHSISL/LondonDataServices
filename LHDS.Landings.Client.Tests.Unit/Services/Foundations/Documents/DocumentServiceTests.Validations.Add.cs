@@ -56,7 +56,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldThrowValidationExceptionOnAddIfDocumentDataIsInvalidAndLogItAsync()
         {
             // Given
-            var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
             var isDecrypted = false;
             string validFileName = GetRandomString();
             byte[] invalidData = null;
@@ -91,7 +90,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                         Times.Once);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.InsertFileAsync(validFileName, It.IsAny<Stream>(), blobContainerName),
+                broker.InsertFileAsync(validFileName, It.IsAny<Stream>(), isDecrypted),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -121,7 +120,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                configuration: inMemoryConfiguration);
 
             string invalidFileName = invalidInput;
-            var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
 
             Document document = new Document
             {
@@ -135,10 +133,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
 
             invalidDocumentException.AddData(
                 key: "FileName",
-                values: "Text is required");
-
-            invalidDocumentException.AddData(
-                key: "blobContainerName",
                 values: "Text is required");
 
             var expectedDocumentValidationException
@@ -159,7 +153,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                         Times.Once);
 
             this.blobStorageBrokerMock.Verify(broker =>
-               broker.InsertFileAsync(invalidFileName, validStream, blobContainerName),
+               broker.InsertFileAsync(invalidFileName, validStream, isDecrypted),
                    Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

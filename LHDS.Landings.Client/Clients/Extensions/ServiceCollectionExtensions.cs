@@ -13,6 +13,7 @@ using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Brokers.Storages.Blobs;
 using LHDS.Landings.Client.Brokers.Storages.Sql;
 using LHDS.Landings.Client.Providers.Downloads;
+using LHDS.Landings.Client.Providers.Downloads.FtpDownloads;
 using LHDS.Landings.Client.Services.Foundations.Audits;
 using LHDS.Landings.Client.Services.Foundations.Documents;
 using LHDS.Landings.Client.Services.Foundations.Downloads;
@@ -40,9 +41,10 @@ namespace LHDS.Landings.Client.Clients.Extensions
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IDownloadBroker, DownloadBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
+            services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
             services.AddTransient<IDownloadAbstractProvider, DownloadAbstractProvider>();
 
-            var blobServiceUri = configuration["blobStorage:azureBlobStoreUri"];
+            var blobServiceUri = GetSettings(configuration, "blobStorage:azureBlobStoreUri", true);
 
             var blobServiceClientOptions = new BlobClientOptions()
             {
@@ -57,6 +59,21 @@ namespace LHDS.Landings.Client.Clients.Extensions
                     options: blobServiceClientOptions));
 
             return services;
+        }
+
+        private static string GetSettings(IConfiguration configuration, string configurationKey, bool mandatory = true)
+        {
+            var value = configuration[configurationKey];
+
+            if (string.IsNullOrEmpty(value))
+            {
+                if (mandatory)
+                {
+                    throw new Exception($"Configuration value {configurationKey} does not exist");
+                }
+            }
+
+            return value;
         }
     }
 }

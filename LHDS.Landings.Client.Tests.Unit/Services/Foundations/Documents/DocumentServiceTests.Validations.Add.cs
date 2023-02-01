@@ -23,6 +23,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         {
             // given
             Document nullDocument = null;
+            var isDecrypted = false;
 
             var nullDocumentException =
                 new NullDocumentException();
@@ -32,7 +33,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
 
             // when
             ValueTask AddDocumentTask =
-                this.documentService.AddDocumentAsync(nullDocument);
+                this.documentService.AddDocumentAsync(nullDocument, isDecrypted);
 
             DocumentValidationException actualDocumentValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(AddDocumentTask.AsTask);
@@ -56,7 +57,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         {
             // Given
             var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
-
+            var isDecrypted = false;
             string validFileName = GetRandomString();
             byte[] invalidData = null;
 
@@ -76,7 +77,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                 = new DocumentValidationException(invalidDocumentException);
 
             // When
-            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document);
+            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document, isDecrypted);
 
             DocumentValidationException actualDocumentValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(uploadFileTask.AsTask);
@@ -104,6 +105,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldThrowValidationExceptionOnAddIfFileNameIsInvalid(string invalidInput)
         {
             // Given
+            var isDecrypted = false;
+
             var appSettingsStub = new Dictionary<string, string> {
                 {"blobContainerName", invalidInput}
             };
@@ -142,7 +145,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                 = new DocumentValidationException(invalidDocumentException);
 
             // When
-            ValueTask uploadFileTask = documentService.AddDocumentAsync(document);
+            ValueTask uploadFileTask = documentService.AddDocumentAsync(document, isDecrypted);
 
             DocumentValidationException actualDocumentValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(uploadFileTask.AsTask);

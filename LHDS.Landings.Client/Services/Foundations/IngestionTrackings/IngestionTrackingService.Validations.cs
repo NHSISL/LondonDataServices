@@ -11,16 +11,37 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 {
     public partial class IngestionTrackingService
     {
-        private void ValidateIngestionTrackingOnAdd(IngestionTracking ingestionTrackings)
+        private void ValidateIngestionTrackingOnAdd(IngestionTracking ingestionTracking)
         {
-            ValidateIngestionTrackingIsNotNull(ingestionTrackings);
+            ValidateIngestionTrackingIsNotNull(ingestionTracking);
 
             Validate(
-                (Rule: IsInvalid(ingestionTrackings.Id), Parameter: nameof(IngestionTracking.Id)),
-                (Rule: IsInvalid(ingestionTrackings.FileName), Parameter: nameof(IngestionTracking.FileName)),
-                (Rule: IsInvalid(ingestionTrackings.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
-                (Rule: IsNotRecent(ingestionTrackings.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)));
+                (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),
+                (Rule: IsInvalid(ingestionTracking.FileName), Parameter: nameof(IngestionTracking.FileName)),
+                (Rule: IsInvalid(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
+                (Rule: IsNotRecent(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)));
         }
+
+        private void ValidateIngestionTrackingOnModify(IngestionTracking ingestionTracking)
+        {
+            ValidateIngestionTrackingIsNotNull(ingestionTracking);
+
+            Validate(
+                (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),
+                (Rule: IsInvalid(ingestionTracking.FileName), Parameter: nameof(IngestionTracking.FileName)),
+                (Rule: IsInvalid(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)));
+        }
+
+        private static void ValidateAgainstStorageIngestionTrackingOnModify(IngestionTracking inputIngestionTracking, IngestionTracking storageIngestionTracking)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputIngestionTracking.CreatedDate,
+                    secondDate: storageIngestionTracking.CreatedDate,
+                    secondDateName: nameof(IngestionTracking.CreatedDate)),
+                Parameter: nameof(IngestionTracking.CreatedDate)));
+        }
+
 
         public void ValidateIngestionTrackingId(string ingestionTrackingsId) =>
             Validate((Rule: IsInvalid(ingestionTrackingsId), Parameter: nameof(IngestionTracking.Id)));

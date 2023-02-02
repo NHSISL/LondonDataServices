@@ -24,10 +24,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
             byte[] randomDecryptedString = Encoding.ASCII.GetBytes(GetRandomMessage());
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             var isDecrypted = false;
-            Document randomDocument = new Document { FileName=randomFileName, DocumentData=randomEncryptedString};
-
-            //setup documentservice mock
-            //
+            Document randomDocument = new Document { FileName = randomFileName, DocumentData = randomEncryptedString };
 
             IngestionTracking externalIngestionTrackingFound = null;
 
@@ -36,8 +33,12 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
                     .ReturnsAsync(randomDocument);
 
             this.decryptionServiceMock.Setup(service =>
-                service.DecryptAsync(randomDocument.DocumentData))
+                service.DecryptAsync(randomEncryptedString))
                     .ReturnsAsync(randomDecryptedString);
+
+            this.dateTimeBrokerMock.Setup(broker => 
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTime);
 
             IngestionTracking ingestionTracking = new IngestionTracking
             {
@@ -60,17 +61,22 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
                     Times.Once);
 
             this.decryptionServiceMock.Verify(service =>
-                service.DecryptAsync(randomDocument.DocumentData),
+                service.DecryptAsync(randomEncryptedString),
                     Times.Once);
 
             this.documentServiceMock.Verify(service =>
                 service.AddDocumentAsync(randomDocument, true),
                     Times.Once);
 
-            //this.ingestionTrackingServiceMock.Verify(service =>
-            //    service.RetrieveIngestionTrackingByFileNameAsync(randomDocument.FileName),
-            //        Times.Once);
-            
+            this.dateTimeBrokerMock.Verify(broker => 
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.RetrieveIngestionTrackingByFileNameAsync(randomDocument.FileName),
+                    Times.Once);
+
             this.auditServiceMock.Verify(service =>
                 service.AddAuditAsync(It.IsAny<Audit>()),
                     Times.Once);

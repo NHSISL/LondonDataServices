@@ -12,44 +12,43 @@ using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Models.Audits.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
-using LHDS.Landings.Client.Models.Foundations.Downloads.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
-using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Landings.Client.Services.Foundations.Audits;
+using LHDS.Landings.Client.Services.Foundations.Decryptions;
 using LHDS.Landings.Client.Services.Foundations.Documents;
-using LHDS.Landings.Client.Services.Foundations.Downloads;
 using LHDS.Landings.Client.Services.Foundations.IngestionTrackings;
-using LHDS.Landings.Client.Services.Orchestrations.Downloads;
+using LHDS.Landings.Client.Services.Orchestrations.Decryptions;
+using LHDS.Landings.Client.Services.Orchestrations.Decryptions.LHDS.Landings.Client.Services.Foundations.Decryptions;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
-namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
+namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
 {
-    public partial class DownloadOrchestrationTests
+    public partial class DecryptionOrchestrationTests
     {
         private readonly Mock<IDocumentService> documentServiceMock;
-        private readonly Mock<IDownloadService> downloadServiceMock;
+        private readonly Mock<IDecryptionService> decryptionServiceMock;
         private readonly Mock<IIngestionTrackingService> ingestionTrackingServiceMock;
         private readonly Mock<IAuditService> auditServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
-        private readonly IDownloadOrchestrationService downloadOrchestrationService;
+        private readonly IDecryptionOrchestrationService decryptionOrchestrationService;
         private readonly ICompareLogic compareLogic;
 
-        public DownloadOrchestrationTests()
+        public DecryptionOrchestrationTests()
         {
             documentServiceMock = new Mock<IDocumentService>();
-            downloadServiceMock = new Mock<IDownloadService>();
+            decryptionServiceMock = new Mock<IDecryptionService>();
             ingestionTrackingServiceMock = new Mock<IIngestionTrackingService>();
             auditServiceMock = new Mock<IAuditService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.compareLogic = new CompareLogic();
 
-            this.downloadOrchestrationService = new DownloadOrchestrationService(
+            this.decryptionOrchestrationService = new DecryptionOrchestrationService(
                 documentService: documentServiceMock.Object,
-                downloadService: downloadServiceMock.Object,
+                decryptionService: decryptionServiceMock.Object,
                 ingestionTrackingService: ingestionTrackingServiceMock.Object,
                 auditService: auditServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
@@ -60,12 +59,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
-        private static List<Document> CreateRandomDocuments()
-        {
-            return CreateDocumentFiller()
-                .Create(count: 1)
-                    .ToList();
-        }
 
         private static Document CreateRandomDocument() =>
             CreateDocumentFiller().Create();
@@ -101,43 +94,43 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
 
-        public static TheoryData DownloadDependencyValidationExceptions()
-        {
-            string randomMessage = GetRandomString();
-            string exceptionMessage = randomMessage;
-            var innerException = new Xeption(exceptionMessage);
+        //public static TheoryData DownloadDependencyValidationExceptions()
+        //{
+        //    string randomMessage = GetRandomString();
+        //    string exceptionMessage = randomMessage;
+        //    var innerException = new Xeption(exceptionMessage);
 
-            return new TheoryData<Xeption>
-            {
-                new DocumentValidationException(innerException),
-                new DocumentDependencyValidationException(innerException),
-                new DownloadValidationException(innerException),
-                new DownloadDependencyValidationException(innerException),
-                new IngestionTrackingValidationException(innerException),
-                new IngestionTrackingDependencyValidationException(innerException),
-                new AuditValidationException(innerException),
-                new AuditDependencyValidationException(innerException)
-            };
-        }
+        //    return new TheoryData<Xeption>
+        //    {
+        //        new DocumentValidationException(innerException),
+        //        new DocumentDependencyValidationException(innerException),
+        //        new DownloadValidationException(innerException),
+        //        new DownloadDependencyValidationException(innerException),
+        //        new IngestionTrackingValidationException(innerException),
+        //        new IngestionTrackingDependencyValidationException(innerException),
+        //        new AuditValidationException(innerException),
+        //        new AuditDependencyValidationException(innerException)
+        //    };
+        //}
 
-        public static TheoryData DownloadDependencyExceptions()
-        {
-            string randomMessage = GetRandomString();
-            string exceptionMessage = randomMessage;
-            var innerException = new Xeption(exceptionMessage);
+        //public static TheoryData DownloadDependencyExceptions()
+        //{
+        //    string randomMessage = GetRandomString();
+        //    string exceptionMessage = randomMessage;
+        //    var innerException = new Xeption(exceptionMessage);
 
-            return new TheoryData<Xeption>
-            {
-                new DocumentDependencyException(innerException),
-                new DocumentServiceException(innerException),
-                new DownloadDependencyException(innerException),
-                new DownloadServiceException(innerException),
-                new IngestionTrackingDependencyException(innerException),
-                new IngestionTrackingServiceException(innerException),
-                new AuditDependencyException(innerException),
-                new AuditServiceException(innerException)
-            };
-        }
+        //    return new TheoryData<Xeption>
+        //    {
+        //        new DocumentDependencyException(innerException),
+        //        new DocumentServiceException(innerException),
+        //        new DownloadDependencyException(innerException),
+        //        new DownloadServiceException(innerException),
+        //        new IngestionTrackingDependencyException(innerException),
+        //        new IngestionTrackingServiceException(innerException),
+        //        new AuditDependencyException(innerException),
+        //        new AuditServiceException(innerException)
+        //    };
+        //}
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(DateTimeOffset dateTimeOffset)
         {

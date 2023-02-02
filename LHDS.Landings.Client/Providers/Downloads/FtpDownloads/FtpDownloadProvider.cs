@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Providers.FtpDownloads.Exceptions;
 using Renci.SshNet;
+using Renci.SshNet.Common;
 
 namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
 {
@@ -88,17 +89,25 @@ namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
 
         private void EnsureClientIsConnected()
         {
-            if (client.IsConnected)
+            try
             {
-                return;
+                if (client.IsConnected)
+                {
+                    return;
+                }
+
+                client.Connect();
+
+                if (!client.IsConnected)
+                {
+                    throw new FailedToConnectSftpClientException();
+                }
             }
-
-            client.Connect();
-
-            if (!client.IsConnected)
+            catch (SshOperationTimeoutException ex)
             {
-                throw new FailedToConnectSftpClientException();
+                EnsureClientIsConnected();
             }
+            
         }
 
         private ConnectionInfo GetConnectionInfo(IFtpDownloadProviderSettings ftpDownloadProviderSettings)
@@ -128,6 +137,7 @@ namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
         private PrivateKeyFile GetKeyFromB64(string encodedKey, string passPhrase)
         {
             byte[] bytes = Convert.FromBase64String(encodedKey);
+
             using (MemoryStream stream = new(bytes))
             {
                 var privateKeyFile = new PrivateKeyFile(stream, passPhrase);

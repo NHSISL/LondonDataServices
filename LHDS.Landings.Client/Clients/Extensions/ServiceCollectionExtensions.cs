@@ -19,8 +19,10 @@ using LHDS.Landings.Client.Services.Foundations.Documents;
 using LHDS.Landings.Client.Services.Foundations.Downloads;
 using LHDS.Landings.Client.Services.Foundations.IngestionTrackings;
 using LHDS.Landings.Client.Services.Orchestrations.Downloads;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NEL.DDS.InterfaceLayer.Function.Download.Client.AzureBlobs;
 
 namespace LHDS.Landings.Client.Clients.Extensions
 {
@@ -30,20 +32,6 @@ namespace LHDS.Landings.Client.Clients.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            services.AddTransient<ILandingClient, LandingClient>();
-            services.AddTransient<IDownloadOrchestrationService, DownloadOrchestrationService>();
-            services.AddTransient<ILoggingBroker, LoggingBroker>();
-            services.AddTransient<IDocumentService, DocumentService>();
-            services.AddTransient<IDownloadService, DownloadService>();
-            services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
-            services.AddTransient<IAuditService, AuditService>();
-            services.AddTransient<IDateTimeBroker, DateTimeBroker>();
-            services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
-            services.AddTransient<IDownloadBroker, DownloadBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
-            services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
-            services.AddTransient<IDownloadAbstractProvider, DownloadAbstractProvider>();
-
             var blobServiceUri = GetSettings(configuration, "blobStorage:azureBlobStoreUri", true);
 
             var blobServiceClientOptions = new BlobClientOptions()
@@ -57,6 +45,21 @@ namespace LHDS.Landings.Client.Clients.Extensions
                     serviceUri: new Uri(blobServiceUri),
                     credential: new DefaultAzureCredential(),
                     options: blobServiceClientOptions));
+
+            services.AddTransient<ILandingClient, LandingClient>();
+            services.AddTransient<IDownloadOrchestrationService, DownloadOrchestrationService>();
+            services.AddTransient<ILoggingBroker, LoggingBroker>();
+            services.AddTransient<IDocumentService, DocumentService>();
+            services.AddTransient<IDownloadService, DownloadService>();
+            services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
+            services.AddTransient<IAuditService, AuditService>();
+            services.AddTransient<IDateTimeBroker, DateTimeBroker>();
+            services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
+            services.AddTransient<IDownloadBroker, DownloadBroker>();
+            services.AddTransient<IStorageBroker, StorageBroker>();
+            services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
+            services.AddTransient<IDownloadAbstractProvider, DownloadAbstractProvider>();
+            services.AddTransient<IAzureBlobClient, AzureBlobClient>();
 
             return services;
         }

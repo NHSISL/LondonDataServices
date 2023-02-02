@@ -364,5 +364,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/NEL.Premises.Web/ClientApp/cypress/e2e/Config/boroughs.cy.ts
-/NEL.Premises.Web/ClientApp/cypress/e2e/Config/contactTypes.cy.ts
+
+# Local Settings
+local.settings.json

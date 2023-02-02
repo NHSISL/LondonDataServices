@@ -37,6 +37,5 @@ namespace LHDS.Landings.Client.Services.Foundations.Decryptions
 
                 return await this.decryptionBroker.DecryptAsync(data);
             });
-
     }
 }

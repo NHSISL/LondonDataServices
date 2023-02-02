@@ -38,6 +38,7 @@ namespace LHDS.Landings.Client.Tests.Manual
                 if (landingClient != null)
                 {
                     Task.Run(async () => await landingClient.ProcessAsync());
+                    Console.ReadLine();
                 }
             }
             catch (global::System.Exception ex)

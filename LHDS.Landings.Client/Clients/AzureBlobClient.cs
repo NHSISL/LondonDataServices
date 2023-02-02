@@ -19,8 +19,7 @@ namespace NEL.DDS.InterfaceLayer.Function.Download.Client.AzureBlobs
 
         public AzureBlobClient(
             ILoggingBroker loggingBroker,
-            BlobServiceClient defaultClient,
-            IAzureClientFactory<BlobServiceClient> blobServiceFactory)
+            BlobServiceClient defaultClient)
         {
             this.loggingBroker = loggingBroker;
             this.blobServiceClient = defaultClient;

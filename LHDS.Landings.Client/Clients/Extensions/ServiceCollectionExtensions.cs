@@ -46,13 +46,14 @@ namespace LHDS.Landings.Client.Clients.Extensions
                     credential: new DefaultAzureCredential(),
                     options: blobServiceClientOptions));
 
+            services.AddSingleton<IConfiguration>(_ => configuration);
             services.AddTransient<ILandingClient, LandingClient>();
             services.AddTransient<IDownloadOrchestrationService, DownloadOrchestrationService>();
-            services.AddTransient<ILoggingBroker, LoggingBroker>();
+            services.AddSingleton<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IDownloadService, DownloadService>();
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
-            services.AddTransient<IAuditService, AuditService>();
+            services.AddSingleton<IAuditService, AuditService>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IDownloadBroker, DownloadBroker>();

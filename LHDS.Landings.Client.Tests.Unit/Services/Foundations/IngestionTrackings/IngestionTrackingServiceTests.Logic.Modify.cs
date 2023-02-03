@@ -2,8 +2,8 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using Moq;
-using LHDS.Landings.Client.Models.IngestionTrackings;
 using Xunit;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTrackings
@@ -18,17 +18,16 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             IngestionTracking randomIngestionTracking = CreateRandomModifyIngestionTracking(randomDateTimeOffset);
             IngestionTracking inputIngestionTracking = randomIngestionTracking;
             IngestionTracking storageIngestionTracking = inputIngestionTracking.DeepClone();
-            storageIngestionTracking.UpdatedDate = randomIngestionTracking.CreatedDate;
             IngestionTracking updatedIngestionTracking = inputIngestionTracking;
             IngestionTracking expectedIngestionTracking = updatedIngestionTracking.DeepClone();
-            Guid ingestionTrackingId = inputIngestionTracking.Id;
+            string ingestionTrackingId = inputIngestionTracking.Id;
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectIngestionTrackingByIdAsync(ingestionTrackingId))
+                broker.ReadIngestionTrackingByIdAsync(ingestionTrackingId))
                     .ReturnsAsync(storageIngestionTracking);
 
             this.storageBrokerMock.Setup(broker =>
@@ -44,10 +43,10 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
-                    Times.Once);
+                    Times.Never);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(inputIngestionTracking.Id),
+                broker.ReadIngestionTrackingByIdAsync(inputIngestionTracking.Id),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

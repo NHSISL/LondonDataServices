@@ -23,7 +23,7 @@ namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
         {
             this.ftpDownloadProviderSettings = ftpDownloadProviderSettings;
             client = new SftpClient(GetConnectionInfo(ftpDownloadProviderSettings));
-            this.EnsureClientIsConnected();
+            //this.EnsureClientIsConnected();
         }
 
         public async ValueTask<Document> GetDocumentByFileNameAsync(string fileName)

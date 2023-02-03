@@ -7,45 +7,45 @@ using LHDS.Landings.Client.Clients.Extensions;
 using LHDS.Landings.Client.Providers.Downloads.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NEL.DDS.InterfaceLayer.Function.Download.Client.AzureBlobs;
 
 namespace LHDS.Landings.Client.Tests.Manual
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            try
+            var environmentName = args.FirstOrDefault() ?? "Development";
+
+            var configurationBuilder = new ConfigurationBuilder()
+                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true);
+
+            IConfiguration configuration = configurationBuilder.Build();
+
+            //setup our DI
+            var serviceProvider = new ServiceCollection()
+                .AddLogging()
+                .AddLandingClient(configuration)
+                .UseFtpDownloadProvider(configuration, builder => builder.AddFtpDownloadProvider())
+                .BuildServiceProvider();
+
+
+            //var landingClient = serviceProvider.GetService<ILandingClient>();
+
+            /*if (landingClient != null)
             {
-                var environmentName = args.FirstOrDefault() ?? "Development";
+                Task.Run(async () => await landingClient.ProcessAsync());
+            }*/
 
-                var configurationBuilder = new ConfigurationBuilder()
-                    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                    .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true);
-
-                IConfiguration configuration = configurationBuilder.Build();
-
-                //setup our DI
-                var serviceProvider = new ServiceCollection()
-                    .AddLogging()
-                    .AddLandingClient(configuration)
-                    .UseFtpDownloadProvider(configuration, builder => builder.AddFtpDownloadProvider())
-                    .BuildServiceProvider();
+            var blobClient = serviceProvider.GetService<IAzureBlobClient>();
+            var testFile = File.ReadAllBytes(@"\\alpha\dfscorp\home\david.cunliffe\Desktop\EMIS - IM1 Bulk and Partner Extract Service - Guidelines to establish SFTP Connection to Production Environment v1.0.pdf");
+            await blobClient.UploadFileAsync("test1.pdf", new MemoryStream(testFile), "emislanding");
+            await blobClient.UploadFileAsync("test2.pdf", new MemoryStream(testFile), "emislanding");
+            await blobClient.UploadFileAsync("test3.pdf", new MemoryStream(testFile), "emislanding");
 
 
-                var landingClient = serviceProvider.GetService<ILandingClient>();
-
-                if (landingClient != null)
-                {
-                    Task.Run(async () => await landingClient.ProcessAsync());
-                    Console.ReadLine();
-                }
-            }
-            catch (global::System.Exception ex)
-            {
-                throw ex;
-            }
-            
         }
     }
 }

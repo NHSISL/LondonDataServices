@@ -89,6 +89,7 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Downloads
             Audit newAudit =
                 new Audit
                 {
+                    Id = Guid.NewGuid(),
                     IngestionTrackingId = document.FileName,
                     Message = $"Landed document - {document.FileName}",
                     CreatedDate = currentDateTime

@@ -7,7 +7,6 @@ using LHDS.Landings.Client.Clients.Extensions;
 using LHDS.Landings.Client.Providers.Downloads.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NEL.DDS.InterfaceLayer.Function.Download.Client.AzureBlobs;
 
 namespace LHDS.Landings.Client.Tests.Manual
 {
@@ -38,14 +37,6 @@ namespace LHDS.Landings.Client.Tests.Manual
             {
                 await landingClient.ProcessAsync();
             }
-
-            var blobClient = serviceProvider.GetService<IAzureBlobClient>();
-            var testFile = File.ReadAllBytes(@"C:\Temp\LHDS\LHDS.pdf");
-            await blobClient.UploadFileAsync("test4.pdf", new MemoryStream(testFile), "emislanding");
-            await blobClient.UploadFileAsync("test5.pdf", new MemoryStream(testFile), "emislanding");
-            await blobClient.UploadFileAsync("test6.pdf", new MemoryStream(testFile), "emislanding");
-
-
         }
     }
 }

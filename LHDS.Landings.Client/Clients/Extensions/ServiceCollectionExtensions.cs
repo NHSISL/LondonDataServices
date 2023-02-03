@@ -43,7 +43,7 @@ namespace LHDS.Landings.Client.Clients.Extensions
             services.AddSingleton(
                 new BlobServiceClient(
                     serviceUri: new Uri(blobServiceUri),
-                    credential: new InteractiveBrowserCredential(),
+                    credential: new DefaultAzureCredential(),
                     options: blobServiceClientOptions));
 
             services.AddSingleton<IConfiguration>(_ => configuration);

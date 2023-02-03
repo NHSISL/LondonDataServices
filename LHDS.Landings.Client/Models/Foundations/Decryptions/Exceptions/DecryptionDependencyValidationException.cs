@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace LHDS.Landings.Client.Models.Foundations.Downloads.Exceptions
+namespace LHDS.Landings.Client.Models.Foundations.Decryptions.Exceptions
 {
     public class DecryptionDependencyValidationException : Xeption
     {

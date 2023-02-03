@@ -5,7 +5,6 @@
 using System;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Models.Foundations.Decryptions.Exceptions;
-using LHDS.Landings.Client.Models.Foundations.Decryptions.Exceptions;
 using Xeptions;
 
 namespace LHDS.Landings.Client.Services.Foundations.Decryptions

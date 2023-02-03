@@ -1,14 +1,16 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using NEL.Premises.Api.Models.Documents.Exceptions;
-using Xunit;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTrackings
 {
@@ -19,7 +21,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
         {
             // given
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();
-            SqlException sqlException = GetSqlException();
+            var sqlException = GetSqlException();
 
             var failedIngestionTrackingStorageException =
                 new FailedIngestionTrackingStorageException(sqlException);
@@ -27,8 +29,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             var expectedIngestionTrackingDependencyException =
                 new IngestionTrackingDependencyException(failedIngestionTrackingStorageException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+            this.storageBrokerMock.Setup(broker =>
+                broker.ReadIngestionTrackingByIdAsync(randomIngestionTracking.Id))
                     .Throws(sqlException);
 
             // when
@@ -43,13 +45,9 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             actualIngestionTrackingDependencyException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingDependencyException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Once);
-
             this.storageBrokerMock.Verify(broker =>
                 broker.ReadIngestionTrackingByIdAsync(randomIngestionTracking.Id),
-                    Times.Never);
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
@@ -58,6 +56,10 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateIngestionTrackingAsync(randomIngestionTracking),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -82,8 +84,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             IngestionTrackingDependencyValidationException expectedIngestionTrackingDependencyValidationException =
                 new IngestionTrackingDependencyValidationException(invalidIngestionTrackingReferenceException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+            this.storageBrokerMock.Setup(broker =>
+                broker.ReadIngestionTrackingByIdAsync(someIngestionTracking.Id))
                     .Throws(foreignKeyConstraintConflictException);
 
             // when
@@ -98,13 +100,9 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             actualIngestionTrackingDependencyValidationException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingDependencyValidationException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Once);
-
             this.storageBrokerMock.Verify(broker =>
                 broker.ReadIngestionTrackingByIdAsync(someIngestionTracking.Id),
-                    Times.Never);
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(expectedIngestionTrackingDependencyValidationException))),
@@ -112,6 +110,10 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateIngestionTrackingAsync(someIngestionTracking),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -132,8 +134,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             var expectedIngestionTrackingDependencyException =
                 new IngestionTrackingDependencyException(failedIngestionTrackingStorageException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+            this.storageBrokerMock.Setup(broker =>
+                broker.ReadIngestionTrackingByIdAsync(randomIngestionTracking.Id))
                     .Throws(databaseUpdateException);
 
             // when
@@ -148,13 +150,9 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             actualIngestionTrackingDependencyException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingDependencyException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Once);
-
             this.storageBrokerMock.Verify(broker =>
                 broker.ReadIngestionTrackingByIdAsync(randomIngestionTracking.Id),
-                    Times.Never);
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -163,6 +161,10 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateIngestionTrackingAsync(randomIngestionTracking),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -183,8 +185,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             var expectedIngestionTrackingDependencyValidationException =
                 new IngestionTrackingDependencyValidationException(lockedIngestionTrackingException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+            this.storageBrokerMock.Setup(broker =>
+                broker.ReadIngestionTrackingByIdAsync(randomIngestionTracking.Id))
                     .Throws(databaseUpdateConcurrencyException);
 
             // when
@@ -199,13 +201,9 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             actualIngestionTrackingDependencyValidationException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingDependencyValidationException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Once);
-
             this.storageBrokerMock.Verify(broker =>
                 broker.ReadIngestionTrackingByIdAsync(randomIngestionTracking.Id),
-                    Times.Never);
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -214,6 +212,10 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateIngestionTrackingAsync(randomIngestionTracking),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -234,8 +236,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             var expectedIngestionTrackingServiceException =
                 new IngestionTrackingServiceException(failedIngestionTrackingServiceException);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
+            this.storageBrokerMock.Setup(broker =>
+                broker.ReadIngestionTrackingByIdAsync(randomIngestionTracking.Id))
                     .Throws(serviceException);
 
             // when
@@ -250,13 +252,9 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             actualIngestionTrackingServiceException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingServiceException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Once);
-
             this.storageBrokerMock.Verify(broker =>
                 broker.ReadIngestionTrackingByIdAsync(randomIngestionTracking.Id),
-                    Times.Never);
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -265,6 +263,10 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateIngestionTrackingAsync(randomIngestionTracking),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

@@ -17,7 +17,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         {
             // Given
             string randomFileName = GetRandomString();
-            var isDecrypted = false;
 
             Document randomDocument = new Document
             {
@@ -28,17 +27,17 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
             Document expectedDocument = randomDocument;
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.SelectByFileNameAsync(randomDocument.FileName, isDecrypted))
+                broker.SelectByFileNameAsync(randomDocument.FileName))
                     .ReturnsAsync(randomDocument.DocumentData);
 
             // When
             Document actualDocument =
                 await this.documentService
-                    .RetrieveDocumentByFileNameAsync(randomDocument.FileName, isDecrypted);
+                    .RetrieveDocumentByFileNameAsync(randomDocument.FileName);
 
             // Then
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.SelectByFileNameAsync(randomDocument.FileName, isDecrypted),
+                broker.SelectByFileNameAsync(randomDocument.FileName),
                     Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

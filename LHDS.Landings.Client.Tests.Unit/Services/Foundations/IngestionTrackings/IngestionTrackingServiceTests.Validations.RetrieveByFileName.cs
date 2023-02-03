@@ -31,7 +31,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
 
             // when
             ValueTask<IngestionTracking> retrieveIngestionTrackingByFileNameTask =
-                this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(fileName);
+                this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(fileName);
 
             IngestionTrackingValidationException actualIngestionTrackingValidationException =
                 await Assert.ThrowsAsync<IngestionTrackingValidationException>(

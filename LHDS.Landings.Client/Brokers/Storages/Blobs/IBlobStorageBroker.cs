@@ -9,8 +9,8 @@ namespace LHDS.Landings.Client.Brokers.Storages.Blobs
 {
     public interface IBlobStorageBroker
     {
-        ValueTask InsertFileAsync(string fileName, Stream stream, bool isDecrypted);
-        ValueTask<byte[]> SelectByFileNameAsync(string fileName, bool isDecrypted);
-        ValueTask DeleteFileAsync(string fileName, bool isDecrypted);
+        ValueTask InsertFileAsync(string fileName, Stream stream);
+        ValueTask<byte[]> SelectByFileNameAsync(string fileName);
+        ValueTask DeleteFileAsync(string fileName);
     }
 }

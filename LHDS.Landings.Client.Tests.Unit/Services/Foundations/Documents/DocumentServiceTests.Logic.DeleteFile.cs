@@ -15,7 +15,6 @@ public partial class DocumentServiceTests
     {
         // Given
         string randomFileName = GetRandomString();
-        var isDecrypted = false;
 
         Document randomDocument = new Document
         {
@@ -24,11 +23,11 @@ public partial class DocumentServiceTests
         };
 
         // When
-        await this.documentService.RemoveDocumentByFileNameAsync(randomDocument.FileName, isDecrypted);
+        await this.documentService.RemoveDocumentByFileNameAsync(randomDocument.FileName);
 
         // Then
         this.blobStorageBrokerMock.Verify(broker =>
-            broker.DeleteFileAsync(randomDocument.FileName, isDecrypted),
+            broker.DeleteFileAsync(randomDocument.FileName),
                 Times.Once);
 
         this.blobStorageBrokerMock.VerifyNoOtherCalls();

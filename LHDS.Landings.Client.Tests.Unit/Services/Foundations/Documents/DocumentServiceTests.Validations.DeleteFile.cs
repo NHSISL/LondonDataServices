@@ -24,7 +24,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
             // Given
             string fileName = invalidInput;
             string containerName = invalidInput;
-            var isDecrypted = false;
 
             var invalidDocumentException =
                 new InvalidDocumentException();
@@ -50,9 +49,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                     loggingBroker: this.loggingBrokerMock.Object,
                     configuration: inMemoryConfiguration);
 
-
             // When
-            ValueTask deleteFileTask = documentService.RemoveDocumentByFileNameAsync(fileName, isDecrypted);
+            ValueTask deleteFileTask = documentService.RemoveDocumentByFileNameAsync(fileName);
 
             DocumentValidationException actualDocumentValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(deleteFileTask.AsTask);
@@ -66,7 +64,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                         Times.Once);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.DeleteFileAsync(It.IsAny<string>(), It.IsAny<bool>()),
+                broker.DeleteFileAsync(It.IsAny<string>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

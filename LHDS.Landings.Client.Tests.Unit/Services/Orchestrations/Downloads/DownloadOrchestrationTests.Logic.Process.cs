@@ -19,7 +19,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
         {
             // given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            var isDecrypted = false;
             List<Document> randomDocuments = CreateRandomDocuments();
             List<Document> externalDocuments = randomDocuments;
 
@@ -32,7 +31,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
             foreach (var document in externalDocuments)
             {
                 this.ingestionTrackingServiceMock.Setup(service =>
-                    service.RemoveIngestionTrackingByIdAsync(document.FileName))
+                    service.RetrieveIngestionTrackingByIdAsync(document.FileName))
                         .ReturnsAsync(externalIngestionTrackingFound);
 
                 this.downloadServiceMock.Setup(service =>
@@ -71,7 +70,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
             foreach (var document in externalDocuments)
             {
                 this.ingestionTrackingServiceMock.Verify(service =>
-                    service.RemoveIngestionTrackingByIdAsync(document.FileName),
+                    service.RetrieveIngestionTrackingByIdAsync(document.FileName),
                         Times.Once);
 
                 this.dateTimeBrokerMock.Verify(broker =>
@@ -100,7 +99,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
                         Times.Once);
 
                 this.documentServiceMock.Verify(service =>
-                    service.AddDocumentAsync(document, isDecrypted),
+                    service.AddDocumentAsync(document),
                         Times.Once);
 
                 this.auditServiceMock.Verify(service =>
@@ -131,7 +130,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
             foreach (var document in externalDocuments)
             {
                 this.ingestionTrackingServiceMock.Setup(service =>
-                    service.RemoveIngestionTrackingByIdAsync(document.FileName))
+                    service.RetrieveIngestionTrackingByIdAsync(document.FileName))
                         .ReturnsAsync(externalIngestionTrackingFound);
 
                 this.downloadServiceMock.Setup(service =>
@@ -170,7 +169,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
             foreach (var document in externalDocuments)
             {
                 this.ingestionTrackingServiceMock.Verify(service =>
-                    service.RemoveIngestionTrackingByIdAsync(document.FileName),
+                    service.RetrieveIngestionTrackingByIdAsync(document.FileName),
                         Times.Once);
 
                 this.dateTimeBrokerMock.Verify(broker =>
@@ -199,7 +198,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
                        Times.Never);
 
                 this.documentServiceMock.Verify(service =>
-                    service.AddDocumentAsync(document, isDecrypted),
+                    service.AddDocumentAsync(document),
                         Times.Never);
 
                 this.auditServiceMock.Verify(service =>

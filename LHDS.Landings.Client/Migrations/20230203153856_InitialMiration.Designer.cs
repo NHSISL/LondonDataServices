@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LHDS.Landings.Client.Migrations
 {
     [DbContext(typeof(StorageBroker))]
-    [Migration("20230201141147_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20230203153856_InitialMiration")]
+    partial class InitialMiration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,7 +59,12 @@ namespace LHDS.Landings.Client.Migrations
                     b.Property<bool>("Decrypted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("FileName")
+                    b.Property<string>("DecryptedFileName")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("EncryptedFileName")
                         .IsRequired()
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");

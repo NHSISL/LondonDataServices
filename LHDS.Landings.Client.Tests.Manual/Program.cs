@@ -19,7 +19,8 @@ namespace LHDS.Landings.Client.Tests.Manual
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true);
+                .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
 

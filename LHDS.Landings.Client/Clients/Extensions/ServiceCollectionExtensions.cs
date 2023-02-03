@@ -32,6 +32,7 @@ namespace LHDS.Landings.Client.Clients.Extensions
             IConfiguration configuration)
         {
             var blobServiceUri = GetSettings(configuration, "blobStorage:azureBlobStoreUri", true);
+            var azureTenantId = GetSettings(configuration, "blobStorage:azureTenantId", true);
 
             var blobServiceClientOptions = new BlobClientOptions()
             {
@@ -43,7 +44,11 @@ namespace LHDS.Landings.Client.Clients.Extensions
             services.AddSingleton(
                 new BlobServiceClient(
                     serviceUri: new Uri(blobServiceUri),
-                    credential: new DefaultAzureCredential(),
+                    credential: new DefaultAzureCredential(
+                        new DefaultAzureCredentialOptions
+                        {
+                            VisualStudioTenantId = azureTenantId,
+                        }),
                     options: blobServiceClientOptions));
 
             services.AddSingleton<IConfiguration>(_ => configuration);

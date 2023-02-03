@@ -7,8 +7,13 @@ using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
+using LHDS.Landings.Client.Models.Audits.Exceptions;
+using LHDS.Landings.Client.Models.Foundations.Decryptions.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.Documents;
+using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
+using LHDS.Landings.Client.Models.Foundations.Downloads.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Landings.Client.Services.Foundations.Audits;
 using LHDS.Landings.Client.Services.Foundations.Decryptions;
 using LHDS.Landings.Client.Services.Foundations.Documents;
@@ -89,43 +94,24 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
 
-        //public static TheoryData DownloadDependencyValidationExceptions()
-        //{
-        //    string randomMessage = GetRandomString();
-        //    string exceptionMessage = randomMessage;
-        //    var innerException = new Xeption(exceptionMessage);
+        public static TheoryData DecryptionDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
 
-        //    return new TheoryData<Xeption>
-        //    {
-        //        new DocumentValidationException(innerException),
-        //        new DocumentDependencyValidationException(innerException),
-        //        new DownloadValidationException(innerException),
-        //        new DownloadDependencyValidationException(innerException),
-        //        new IngestionTrackingValidationException(innerException),
-        //        new IngestionTrackingDependencyValidationException(innerException),
-        //        new AuditValidationException(innerException),
-        //        new AuditDependencyValidationException(innerException)
-        //    };
-        //}
-
-        //public static TheoryData DownloadDependencyExceptions()
-        //{
-        //    string randomMessage = GetRandomString();
-        //    string exceptionMessage = randomMessage;
-        //    var innerException = new Xeption(exceptionMessage);
-
-        //    return new TheoryData<Xeption>
-        //    {
-        //        new DocumentDependencyException(innerException),
-        //        new DocumentServiceException(innerException),
-        //        new DownloadDependencyException(innerException),
-        //        new DownloadServiceException(innerException),
-        //        new IngestionTrackingDependencyException(innerException),
-        //        new IngestionTrackingServiceException(innerException),
-        //        new AuditDependencyException(innerException),
-        //        new AuditServiceException(innerException)
-        //    };
-        //}
+            return new TheoryData<Xeption>
+            {
+                new DocumentValidationException(innerException),
+                new DocumentDependencyValidationException(innerException),
+                new DecryptionValidationException(innerException),
+                new DecryptionDependencyValidationException(innerException),
+                new IngestionTrackingValidationException(innerException),
+                new IngestionTrackingDependencyValidationException(innerException),
+                new AuditValidationException(innerException),
+                new AuditDependencyValidationException(innerException)
+            };
+        }
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(DateTimeOffset dateTimeOffset)
         {

@@ -42,7 +42,6 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
                 Parameter: nameof(IngestionTracking.CreatedDate)));
         }
 
-
         public void ValidateIngestionTrackingId(string ingestionTrackingsId) =>
             Validate((Rule: IsInvalid(ingestionTrackingsId), Parameter: nameof(IngestionTracking.Id)));
 

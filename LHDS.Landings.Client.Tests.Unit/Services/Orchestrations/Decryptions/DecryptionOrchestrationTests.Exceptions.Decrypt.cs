@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.Downloads.Exceptions;
-using LHDS.Landings.Client.Models.Orchestrations.Decryptions.Exceptions;
+using LHDS.Landings.Client.Models.Orchestrations.Decryptions;
 using LHDS.Landings.Client.Models.Orchestrations.Downloads.Exceptions;
 using Moq;
 using Xeptions;
@@ -41,8 +41,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
             // when
             ValueTask decryptTask = this.decryptionOrchestrationService.DecryptAsync(randomFileName);
 
-            DownloadOrchestrationDependencyValidationException actualException =
-                await Assert.ThrowsAsync<DownloadOrchestrationDependencyValidationException>(decryptTask.AsTask);
+            DecryptionOrchestrationDependencyValidationException actualException =
+                await Assert.ThrowsAsync<DecryptionOrchestrationDependencyValidationException>(decryptTask.AsTask);
 
             // then
             actualException.Should()

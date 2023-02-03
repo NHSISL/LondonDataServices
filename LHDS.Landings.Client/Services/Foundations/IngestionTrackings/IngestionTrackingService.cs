@@ -49,17 +49,6 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
             return maybeIngestionTracking;
         });
 
-        public ValueTask<IngestionTracking> RetrieveIngestionTrackingByFileNameAsync(string fileName) =>
-             TryCatch(async () =>
-             {
-                 ValidateFileName(fileName);
-
-                 IngestionTracking maybeIngestionTracking = await this.storageBroker
-                     .ReadIngestionTrackingByFileNameAsync(fileName);
-
-                 return maybeIngestionTracking;
-             });
-
         public ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(string ingestionTrackingId) =>
             TryCatch(async () =>
             {

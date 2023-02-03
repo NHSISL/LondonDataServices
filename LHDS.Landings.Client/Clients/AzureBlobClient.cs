@@ -10,7 +10,6 @@ namespace NEL.DDS.InterfaceLayer.Function.Download.Client.AzureBlobs
     using Azure.Storage.Blobs;
     using Azure.Storage.Blobs.Models;
     using LHDS.Landings.Client.Brokers.Loggings;
-    using Microsoft.Extensions.Azure;
 
     public class AzureBlobClient : IAzureBlobClient
     {
@@ -28,7 +27,10 @@ namespace NEL.DDS.InterfaceLayer.Function.Download.Client.AzureBlobs
         public async ValueTask<MemoryStream> DownloadFileAsync(string fileName, string container)
         {
             loggingBroker.LogInformation(fileName);
-            var blobClient = this.blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
+
+            var blobClient = this.blobServiceClient
+                .GetBlobContainerClient(container).GetBlobClient(fileName);
+
             var memoryStream = new MemoryStream();
             await blobClient.DownloadToAsync(memoryStream);
             return memoryStream;

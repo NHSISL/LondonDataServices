@@ -32,7 +32,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
             foreach (var document in externalDocuments)
             {
                 this.ingestionTrackingServiceMock.Setup(service =>
-                    service.RetrieveIngestionTrackingByFileNameAsync(document.FileName))
+                    service.RemoveIngestionTrackingByIdAsync(document.FileName))
                         .ReturnsAsync(externalIngestionTrackingFound);
 
                 this.downloadServiceMock.Setup(service =>
@@ -47,7 +47,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
                     new IngestionTracking
                     {
                         Id = document.FileName,
-                        FileName = document.FileName,
+                        EncryptedFileName = $"encrypted\\{document.FileName}",
+                        DecryptedFileName = $"decrypted\\{document.FileName}",
                         Decrypted = false,
                         CreatedDate = randomDateTime,
                     };
@@ -70,7 +71,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
             foreach (var document in externalDocuments)
             {
                 this.ingestionTrackingServiceMock.Verify(service =>
-                    service.RetrieveIngestionTrackingByFileNameAsync(document.FileName),
+                    service.RemoveIngestionTrackingByIdAsync(document.FileName),
                         Times.Once);
 
                 this.dateTimeBrokerMock.Verify(broker =>
@@ -81,7 +82,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
                   new IngestionTracking
                   {
                       Id = document.FileName,
-                      FileName = document.FileName,
+                      EncryptedFileName = $"encrypted\\{document.FileName}",
+                      DecryptedFileName = $"decrypted\\{document.FileName}",
                       Decrypted = false,
                       CreatedDate = randomDateTime,
                   };
@@ -129,7 +131,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
             foreach (var document in externalDocuments)
             {
                 this.ingestionTrackingServiceMock.Setup(service =>
-                    service.RetrieveIngestionTrackingByFileNameAsync(document.FileName))
+                    service.RemoveIngestionTrackingByIdAsync(document.FileName))
                         .ReturnsAsync(externalIngestionTrackingFound);
 
                 this.downloadServiceMock.Setup(service =>
@@ -144,7 +146,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
                     new IngestionTracking
                     {
                         Id = document.FileName,
-                        FileName = document.FileName,
+                        EncryptedFileName = $"encrypted\\{document.FileName}",
+                        DecryptedFileName = $"decrypted\\{document.FileName}",
                         Decrypted = false,
                         CreatedDate = randomDateTime,
                     };
@@ -167,7 +170,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
             foreach (var document in externalDocuments)
             {
                 this.ingestionTrackingServiceMock.Verify(service =>
-                    service.RetrieveIngestionTrackingByFileNameAsync(document.FileName),
+                    service.RemoveIngestionTrackingByIdAsync(document.FileName),
                         Times.Once);
 
                 this.dateTimeBrokerMock.Verify(broker =>
@@ -178,7 +181,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
                   new IngestionTracking
                   {
                       Id = document.FileName,
-                      FileName = document.FileName,
+                      EncryptedFileName = $"encrypted\\{document.FileName}",
+                      DecryptedFileName = $"decrypted\\{document.FileName}",
                       Decrypted = false,
                       CreatedDate = randomDateTime,
                   };

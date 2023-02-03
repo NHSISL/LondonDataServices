@@ -52,7 +52,7 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Downloads
                 {
                     IngestionTracking maybeIngestionTracking =
                         await this.ingestionTrackingService
-                            .RetrieveIngestionTrackingByFileNameAsync(document.FileName);
+                            .RemoveIngestionTrackingByIdAsync(document.FileName);
 
                     if (maybeIngestionTracking == null)
                     {
@@ -65,7 +65,8 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Downloads
                             new IngestionTracking
                             {
                                 Id = document.FileName,
-                                FileName = document.FileName,
+                                EncryptedFileName = $"encrypted\\{document.FileName}",
+                                DecryptedFileName = $"decrypted\\{document.FileName}",
                                 Decrypted = false,
                                 CreatedDate = currentDateTime,
                             };

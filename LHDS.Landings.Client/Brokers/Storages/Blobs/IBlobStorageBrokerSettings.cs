@@ -8,8 +8,6 @@ namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
     {
         string AzureBlobStoreUri { get; }
 
-        string EncryptedBlobContainerName { get; }
-
-        string DecryptedBlobContainerName { get; }
+        string BlobContainerName { get; }
     }
 }

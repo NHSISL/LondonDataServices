@@ -21,28 +21,17 @@ namespace LHDS.Landings.Client.Brokers.Storages.Blobs
         }
 
         public async ValueTask InsertFileAsync(string fileName, Stream stream, bool isDecrypted) =>
-            await azureBlobClient.UploadFileAsync(fileName, stream, GetConatinerName(isDecrypted));
+            await azureBlobClient.UploadFileAsync(fileName, stream, blobStorageBrokerSettings.BlobContainerName);
 
         public async ValueTask<byte[]> SelectByFileNameAsync(string fileName, bool isDecrypted)
         {
-            MemoryStream ms = await azureBlobClient.DownloadFileAsync(fileName, GetConatinerName(isDecrypted));
+            MemoryStream ms = await azureBlobClient
+                .DownloadFileAsync(fileName, blobStorageBrokerSettings.BlobContainerName);
 
             return ms.ToArray();
         }
 
         public async ValueTask DeleteFileAsync(string fileName, bool isDecrypted) =>
-            await azureBlobClient.DeleteFileAsync(fileName, GetConatinerName(isDecrypted));
-
-        private string GetConatinerName(bool isDecrypted)
-        {
-            var encryptedBlobContainerName = blobStorageBrokerSettings.EncryptedBlobContainerName;
-            var decryptedBlobContainerName = blobStorageBrokerSettings.DecryptedBlobContainerName;
-
-            var blobContainerName = isDecrypted
-                ? decryptedBlobContainerName
-                : encryptedBlobContainerName;
-
-            return blobContainerName;
-        }
+            await azureBlobClient.DeleteFileAsync(fileName, blobStorageBrokerSettings.BlobContainerName);
     }
 }

@@ -17,7 +17,12 @@ namespace LHDS.Landings.Client.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<IngestionTracking>()
-                .Property(ingestionTracking => ingestionTracking.FileName)
+                .Property(ingestionTracking => ingestionTracking.EncryptedFileName)
+                .HasMaxLength(450)
+                .IsRequired();
+
+            modelBuilder.Entity<IngestionTracking>()
+                .Property(ingestionTracking => ingestionTracking.DecryptedFileName)
                 .HasMaxLength(450)
                 .IsRequired();
         }

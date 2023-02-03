@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using LHDS.Landings.Client.Clients;
 using LHDS.Landings.Client.Clients.Extensions;
 using LHDS.Landings.Client.Providers.Downloads.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -31,18 +32,18 @@ namespace LHDS.Landings.Client.Tests.Manual
                 .BuildServiceProvider();
 
 
-            //var landingClient = serviceProvider.GetService<ILandingClient>();
+            var landingClient = serviceProvider.GetService<ILandingClient>();
 
-            /*if (landingClient != null)
+            if (landingClient != null)
             {
-                Task.Run(async () => await landingClient.ProcessAsync());
-            }*/
+                await landingClient.ProcessAsync();
+            }
 
             var blobClient = serviceProvider.GetService<IAzureBlobClient>();
             var testFile = File.ReadAllBytes(@"C:\Temp\LHDS\LHDS.pdf");
-            await blobClient.UploadFileAsync("test1.pdf", new MemoryStream(testFile), "emislanding");
-            await blobClient.UploadFileAsync("test2.pdf", new MemoryStream(testFile), "emislanding");
-            await blobClient.UploadFileAsync("test3.pdf", new MemoryStream(testFile), "emislanding");
+            await blobClient.UploadFileAsync("test4.pdf", new MemoryStream(testFile), "emislanding");
+            await blobClient.UploadFileAsync("test5.pdf", new MemoryStream(testFile), "emislanding");
+            await blobClient.UploadFileAsync("test6.pdf", new MemoryStream(testFile), "emislanding");
 
 
         }

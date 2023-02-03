@@ -17,7 +17,10 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 
             Validate(
                 (Rule: IsInvalid(ingestionTrackings.Id), Parameter: nameof(IngestionTracking.Id)),
-                (Rule: IsInvalid(ingestionTrackings.FileName), Parameter: nameof(IngestionTracking.FileName)),
+                (Rule: IsInvalid(ingestionTrackings.EncryptedFileName),
+                    Parameter: nameof(IngestionTracking.EncryptedFileName)),
+                (Rule: IsInvalid(ingestionTrackings.DecryptedFileName),
+                    Parameter: nameof(IngestionTracking.DecryptedFileName)),
                 (Rule: IsInvalid(ingestionTrackings.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
                 (Rule: IsNotRecent(ingestionTrackings.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)));
         }
@@ -26,7 +29,7 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
             Validate((Rule: IsInvalid(ingestionTrackingsId), Parameter: nameof(IngestionTracking.Id)));
 
         public void ValidateFileName(string FileName) =>
-            Validate((Rule: IsInvalid(FileName), Parameter: nameof(IngestionTracking.FileName)));
+            Validate((Rule: IsInvalid(FileName), Parameter: nameof(IngestionTracking.Id)));
 
         private static void ValidateStorageIngestionTracking(IngestionTracking maybeIngestionTracking, string ingestionTrackingId)
         {

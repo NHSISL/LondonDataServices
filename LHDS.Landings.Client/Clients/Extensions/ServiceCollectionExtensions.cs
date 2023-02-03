@@ -37,12 +37,13 @@ namespace LHDS.Landings.Client.Clients.Extensions
             {
                 Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
                 Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
+                EnableTenantDiscovery = true
             };
 
             services.AddSingleton(
                 new BlobServiceClient(
                     serviceUri: new Uri(blobServiceUri),
-                    credential: new DefaultAzureCredential(),
+                    credential: new InteractiveBrowserCredential(),
                     options: blobServiceClientOptions));
 
             services.AddSingleton<IConfiguration>(_ => configuration);

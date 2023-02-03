@@ -24,11 +24,7 @@ namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
         /// <inheritdoc/>
         public string AzureBlobStoreUri => this.GetSettings("blobStorage:azureBlobStoreUri", true);
 
-        /// <inheritdoc/>
-        public string EncryptedBlobContainerName => this.GetSettings("blobStorage:encryptedBlobContainerName", true);
-
-        /// <inheritdoc/>
-        public string DecryptedBlobContainerName => this.GetSettings("blobStorage:decryptedBlobContainerName", true);
+        public string BlobContainerName => this.GetSettings("blobStorage:blobContainerName", true);
 
         private IConfiguration Configuration { get; }
 

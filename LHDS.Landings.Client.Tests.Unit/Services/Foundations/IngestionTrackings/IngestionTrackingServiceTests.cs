@@ -90,5 +90,16 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
 
             return filler;
         }
+
+        private static IngestionTracking CreateRandomModifyIngestionTracking(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(dateTimeOffset);
+
+            randomIngestionTracking.CreatedDate =
+                randomIngestionTracking.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomIngestionTracking;
+        }
     }
 }

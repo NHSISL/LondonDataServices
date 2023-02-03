@@ -56,7 +56,12 @@ namespace LHDS.Landings.Client.Migrations
                     b.Property<bool>("Decrypted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("FileName")
+                    b.Property<string>("EncryptedFileName")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("DecryptedFileName")
                         .IsRequired()
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");

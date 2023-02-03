@@ -35,21 +35,6 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
             {
                 throw CreateAndLogValidationException(invalidIngestionTrackingException);
             }
-            catch (SqlException sqlException)
-            {
-                var failedIngestionTrackingStorageException =
-                    new FailedIngestionTrackingStorageException(sqlException);
-
-                throw CreateAndLogCriticalDependencyException(failedIngestionTrackingStorageException);
-            }
-            catch (NotFoundIngestionTrackingException notFoundIngestionTrackingException)
-            {
-                throw CreateAndLogValidationException(notFoundIngestionTrackingException);
-            }
-            catch (NotFoundIngestionTrackingForFileNameException notFoundIngestionTrackingForFileNameException)
-            {
-                throw CreateAndLogValidationException(notFoundIngestionTrackingForFileNameException);
-            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsIngestionTrackingException =
@@ -57,12 +42,27 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsIngestionTrackingException);
             }
+            catch (SqlException sqlException)
+            {
+                var failedIngestionTrackingStorageException =
+                    new FailedIngestionTrackingStorageException(sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedIngestionTrackingStorageException);
+            }
+            catch (NotFoundIngestionTrackingForFileNameException notFoundIngestionTrackingForFileNameException)
+            {
+                throw CreateAndLogValidationException(notFoundIngestionTrackingForFileNameException);
+            }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
                 var invalidIngestionTrackingReferenceException =
                     new InvalidIngestionTrackingReferenceException(foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidIngestionTrackingReferenceException);
+            }
+            catch (NotFoundIngestionTrackingException notFoundIngestionTrackingException)
+            {
+                throw CreateAndLogValidationException(notFoundIngestionTrackingException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {

@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using LHDS.Landings.Client.Clients;
 using LHDS.Landings.Client.Clients.Extensions;
 using LHDS.Landings.Client.Providers.Downloads.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -40,7 +39,7 @@ namespace LHDS.Landings.Client.Tests.Manual
             }*/
 
             var blobClient = serviceProvider.GetService<IAzureBlobClient>();
-            var testFile = File.ReadAllBytes(@"\\alpha\dfscorp\home\david.cunliffe\Desktop\EMIS - IM1 Bulk and Partner Extract Service - Guidelines to establish SFTP Connection to Production Environment v1.0.pdf");
+            var testFile = File.ReadAllBytes(@"C:\Temp\LHDS\LHDS.pdf");
             await blobClient.UploadFileAsync("test1.pdf", new MemoryStream(testFile), "emislanding");
             await blobClient.UploadFileAsync("test2.pdf", new MemoryStream(testFile), "emislanding");
             await blobClient.UploadFileAsync("test3.pdf", new MemoryStream(testFile), "emislanding");

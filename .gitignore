@@ -367,4 +367,4 @@ FodyWeavers.xsd
 
 # Local Settings
 local.settings.json
-/LHDS.Landings.Client.Tests.Manual/local.appsettings.json
+local.appsettings.json

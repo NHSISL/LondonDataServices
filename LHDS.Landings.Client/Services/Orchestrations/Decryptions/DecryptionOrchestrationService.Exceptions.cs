@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using LHDS.Landings.Client.Models.Audits.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.Decryptions.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
+using LHDS.Landings.Client.Models.Foundations.Downloads.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Landings.Client.Models.Orchestrations.Decryptions.Exceptions;
+using LHDS.Landings.Client.Models.Orchestrations.Downloads.Exceptions;
 using Xeptions;
 
 namespace LHDS.Landings.Client.Services.Orchestrations.Decryptions
@@ -53,6 +55,38 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Decryptions
             catch (AuditDependencyValidationException auditDependencyValidationException)
             {
                 throw CreateAndLogAuditDependencyValidationException(auditDependencyValidationException);
+            }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                throw CreateAndLogDocumentDependencyException(documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                throw CreateAndLogDocumentServiceException(documentServiceException);
+            }
+            catch (DownloadDependencyException downloadDependencyException)
+            {
+                throw CreateAndLogDownloadDependencyException(downloadDependencyException);
+            }
+            catch (DownloadServiceException downloadServiceException)
+            {
+                throw CreateAndLogDownloadServiceException(downloadServiceException);
+            }
+            catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
+            {
+                throw CreateAndLogIngestionTrackingDependencyException(ingestionTrackingDependencyException);
+            }
+            catch (IngestionTrackingServiceException ingestionTrackingServiceException)
+            {
+                throw CreateAndLogIngestionTrackingServiceException(ingestionTrackingServiceException);
+            }
+            catch (AuditDependencyException auditDependencyException)
+            {
+                throw CreateAndLogAuditDependencyException(auditDependencyException);
+            }
+            catch (AuditServiceException auditServiceException)
+            {
+                throw CreateAndLogAuditServiceException(auditServiceException);
             }
         }
 
@@ -141,6 +175,94 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Decryptions
 
             return decryptionOrchestrationDependencyValidationException;
         }
+        private DownloadOrchestrationDependencyException
+             CreateAndLogDocumentDependencyException(Xeption exception)
+        {
+            var documentOrchestrationDependencyException =
+                new DownloadOrchestrationDependencyException(exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(documentOrchestrationDependencyException);
+
+            throw documentOrchestrationDependencyException;
+        }
+
+        private DownloadOrchestrationDependencyException
+            CreateAndLogDocumentServiceException(Xeption exception)
+        {
+            var documentOrchestrationDependencyException =
+                new DownloadOrchestrationDependencyException(exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(documentOrchestrationDependencyException);
+
+            throw documentOrchestrationDependencyException;
+        }
+
+        private DownloadOrchestrationDependencyException
+            CreateAndLogDownloadDependencyException(Xeption exception)
+        {
+            var documentOrchestrationDependencyException =
+                new DownloadOrchestrationDependencyException(exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(documentOrchestrationDependencyException);
+
+            throw documentOrchestrationDependencyException;
+        }
+
+        private DownloadOrchestrationDependencyException
+            CreateAndLogDownloadServiceException(Xeption exception)
+        {
+            var documentOrchestrationDependencyException =
+                new DownloadOrchestrationDependencyException(exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(documentOrchestrationDependencyException);
+
+            throw documentOrchestrationDependencyException;
+        }
+
+        private DownloadOrchestrationDependencyException
+           CreateAndLogIngestionTrackingDependencyException(Xeption exception)
+        {
+            var documentOrchestrationDependencyException =
+                new DownloadOrchestrationDependencyException(exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(documentOrchestrationDependencyException);
+
+            throw documentOrchestrationDependencyException;
+        }
+
+        private DownloadOrchestrationDependencyException
+            CreateAndLogIngestionTrackingServiceException(Xeption exception)
+        {
+            var documentOrchestrationDependencyException =
+                new DownloadOrchestrationDependencyException(exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(documentOrchestrationDependencyException);
+
+            throw documentOrchestrationDependencyException;
+        }
+
+        private DownloadOrchestrationDependencyException
+          CreateAndLogAuditDependencyException(Xeption exception)
+        {
+            var documentOrchestrationDependencyException =
+                new DownloadOrchestrationDependencyException(exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(documentOrchestrationDependencyException);
+
+            throw documentOrchestrationDependencyException;
+        }
+
+        private DownloadOrchestrationDependencyException
+            CreateAndLogAuditServiceException(Xeption exception)
+        {
+            var documentOrchestrationDependencyException =
+                new DownloadOrchestrationDependencyException(exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(documentOrchestrationDependencyException);
+
+            throw documentOrchestrationDependencyException;
+        }
     }
 }
+
 

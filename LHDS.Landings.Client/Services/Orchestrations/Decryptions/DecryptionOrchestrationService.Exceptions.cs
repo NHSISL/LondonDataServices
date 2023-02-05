@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Models.Audits.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.Decryptions.Exceptions;
@@ -88,6 +89,24 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Decryptions
             {
                 throw CreateAndLogAuditServiceException(auditServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedBoroughServiceException =
+                    new FailedDecryptionOrchestrationServiceException(exception);
+
+                throw CreateAndLogServiceException(failedBoroughServiceException);
+            }
+        }
+
+        private DecryptionOrchestrationServiceException CreateAndLogServiceException(
+           Xeption exception)
+        {
+            var DecryptionServiceException =
+                new DecryptionOrchestrationServiceException(exception);
+
+            this.loggingBroker.LogError(DecryptionServiceException);
+
+            return DecryptionServiceException;
         }
 
         private DecryptionOrchestrationDependencyValidationException CreateAndLogDocumentValidationException(Xeption exception)

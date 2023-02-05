@@ -38,14 +38,14 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Decryptions
             {
                 throw CreateAndLogDecryptionDependencyValidationException(DecryptionDependencyValidationException);
             }
-            //catch (IngestionTrackingValidationException ingestionTrackingValidationException)
-            //{
-            //    throw CreateAndLogIngestionTrackingValidationException(ingestionTrackingValidationException);
-            //}
-            //catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
-            //{
-            //    throw CreateAndLogIngestionTrackingDependencyValidationException(ingestionTrackingDependencyValidationException);
-            //}
+            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
+            {
+                throw CreateAndLogIngestionTrackingValidationException(ingestionTrackingValidationException);
+            }
+            catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
+            {
+                throw CreateAndLogIngestionTrackingDependencyValidationException(ingestionTrackingDependencyValidationException);
+            }
             catch (AuditValidationException auditValidationException)
             {
                 throw CreateAndLogAuditValidationException(auditValidationException);

@@ -52,6 +52,10 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
                 service.RetrieveIngestionTrackingByFileNameAsync(randomDocument.FileName))
                     .ReturnsAsync(ingestionTracking);
 
+            this.ingestionTrackingServiceMock.Setup(service =>
+                service.ModifyIngestionTrackingAsync(ingestionTracking))
+                    .ReturnsAsync(ingestionTracking);
+
             // when
             await this.decryptionOrchestrationService.DecryptAsync(randomFileName);
 
@@ -72,9 +76,12 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
                 broker.GetCurrentDateTimeOffset(),
                     Times.Once);
 
-
             this.ingestionTrackingServiceMock.Verify(service =>
                 service.RetrieveIngestionTrackingByFileNameAsync(randomDocument.FileName),
+                    Times.Once);
+
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.ModifyIngestionTrackingAsync(ingestionTracking),
                     Times.Once);
 
             this.auditServiceMock.Verify(service =>

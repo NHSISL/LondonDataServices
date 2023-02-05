@@ -52,7 +52,6 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Decryptions
                 await this.documentService.AddDocumentAsync(document, true);
                 DateTimeOffset currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
-
                 IngestionTracking newIngestionTracking =
                     new IngestionTracking
                     {

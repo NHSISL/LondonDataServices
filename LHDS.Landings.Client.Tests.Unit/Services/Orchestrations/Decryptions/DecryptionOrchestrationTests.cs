@@ -113,6 +113,25 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
             };
         }
 
+        public static TheoryData DecryptionDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DocumentDependencyException(innerException),
+                new DocumentServiceException(innerException),
+                new DecryptionDependencyException(innerException),
+                new DecryptionServiceException(innerException),
+                new IngestionTrackingDependencyException(innerException),
+                new IngestionTrackingServiceException(innerException),
+                new AuditDependencyException(innerException),
+                new AuditServiceException(innerException)
+            };
+        }
+
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(DateTimeOffset dateTimeOffset)
         {
             var filler = new Filler<IngestionTracking>();

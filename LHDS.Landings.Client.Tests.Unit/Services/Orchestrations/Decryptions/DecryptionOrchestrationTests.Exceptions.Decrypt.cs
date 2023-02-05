@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.Downloads.Exceptions;
-using LHDS.Landings.Client.Models.Orchestrations.Decryptions;
+using LHDS.Landings.Client.Models.Orchestrations.Decryptions.Exceptions;
 using LHDS.Landings.Client.Models.Orchestrations.Downloads.Exceptions;
 using Moq;
 using Xeptions;
@@ -49,7 +49,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
                  .BeEquivalentTo(expectedDependencyException);
 
             this.decryptionServiceMock.Verify(service =>
-              service.DecryptAsync(randomEncryptedString),
+              service.DecryptAsync(randomDecryptedString),
                 Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -64,5 +64,49 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
             this.auditServiceMock.VerifyNoOtherCalls();
         }
 
+        [Theory]
+        [MemberData(nameof(DecryptionDependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnProcessIfDependencyExceptionOccursAndLogItAsync(
+            Xeption dependancyException)
+        {
+            // given
+            string randomFileName = GetRandomMessage();
+            byte[] randomEncryptedString = Encoding.ASCII.GetBytes(GetRandomMessage());
+            byte[] randomDecryptedString = Encoding.ASCII.GetBytes(GetRandomMessage());
+            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+            var isDecrypted = false;
+            Document randomDocument = new Document { FileName = randomFileName, DocumentData = randomEncryptedString };
+
+            var expectedDependencyException =
+                new DecryptionOrchestrationDependencyException(
+                    dependancyException.InnerException as Xeption);
+
+            this.decryptionServiceMock.Setup(service =>
+              service.DecryptAsync(randomEncryptedString))
+                  .ThrowsAsync(dependancyException);
+
+            // when
+            ValueTask decryptTask = this.decryptionOrchestrationService.DecryptAsync(randomFileName);
+
+            DecryptionOrchestrationDependencyException actualException =
+                await Assert.ThrowsAsync<DecryptionOrchestrationDependencyException>(decryptTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDependencyException);
+
+            this.decryptionServiceMock.Verify(service =>
+              service.DecryptAsync(randomDecryptedString),
+                Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedDependencyException))),
+                       Times.Once);
+
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

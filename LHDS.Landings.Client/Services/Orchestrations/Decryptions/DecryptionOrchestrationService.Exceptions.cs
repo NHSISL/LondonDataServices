@@ -7,7 +7,7 @@ using LHDS.Landings.Client.Models.Audits.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.Decryptions.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
-using LHDS.Landings.Client.Models.Orchestrations.Decryptions;
+using LHDS.Landings.Client.Models.Orchestrations.Decryptions.Exceptions;
 using Xeptions;
 
 namespace LHDS.Landings.Client.Services.Orchestrations.Decryptions

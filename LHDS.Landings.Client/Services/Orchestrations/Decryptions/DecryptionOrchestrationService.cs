@@ -9,6 +9,7 @@ using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Models.Audits;
 using LHDS.Landings.Client.Models.Foundations.Documents;
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using LHDS.Landings.Client.Services.Foundations.Audits;
 using LHDS.Landings.Client.Services.Foundations.Decryptions;
 using LHDS.Landings.Client.Services.Foundations.Documents;
@@ -49,8 +50,24 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Decryptions
                 byte[] decryptedData = await this.decryptionService.DecryptAsync(document.DocumentData);
                 document.DocumentData = decryptedData;
                 await this.documentService.AddDocumentAsync(document, true);
-                //await this.ingestionTrackingService.RetrieveIngestionTrackingByFileNameAsync(fileName);
-                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                DateTimeOffset currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+
+                IngestionTracking newIngestionTracking =
+                    new IngestionTracking
+                    {
+                        Id = document.FileName,
+                        FileName = document.FileName,
+                        Decrypted = true,
+                        CreatedDate = currentDateTime,
+                    };
+
+                await this.ingestionTrackingService
+                        .RetrieveIngestionTrackingByFileNameAsync(fileName);
+
+                await this.ingestionTrackingService
+                    .ModifyIngestionTrackingAsync(newIngestionTracking);
+
                 LogAudit(document, currentDateTime);
             });
 

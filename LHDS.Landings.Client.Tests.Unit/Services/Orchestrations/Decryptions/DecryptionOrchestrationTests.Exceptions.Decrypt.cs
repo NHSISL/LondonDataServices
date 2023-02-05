@@ -108,5 +108,52 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnProcessIfServiceErrorOccursAndLogItAsync()
+        {
+            //Given
+            string randomFileName = GetRandomMessage();
+            byte[] randomEncryptedString = Encoding.ASCII.GetBytes(GetRandomMessage());
+            byte[] randomDecryptedString = Encoding.ASCII.GetBytes(GetRandomMessage());
+            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+            var isDecrypted = false;
+            Document randomDocument = new Document { FileName = randomFileName, DocumentData = randomEncryptedString };
+
+            var serviceException = new Exception();
+
+            var failedDecryptionOrchestrationServiceException =
+                new FailedDecryptionOrchestrationServiceException(serviceException);
+
+            var expectedDecryptionOrchestrationServiceException =
+                new DecryptionOrchestrationServiceException(failedDecryptionOrchestrationServiceException);
+
+            this.decryptionServiceMock.Setup(service =>
+                service.DecryptAsync(randomEncryptedString))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask processTask = this.decryptionOrchestrationService.DecryptAsync(randomFileName);
+
+            DecryptionOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<DecryptionOrchestrationServiceException>(processTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDecryptionOrchestrationServiceException);
+
+            this.decryptionServiceMock.Verify(service =>
+                service.DecryptAsync(randomDecryptedString),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDecryptionOrchestrationServiceException))),
+                        Times.Once);
+
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

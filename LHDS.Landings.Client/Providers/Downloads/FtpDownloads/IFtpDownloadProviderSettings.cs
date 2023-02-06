@@ -5,7 +5,7 @@
 namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
 {
     /// <summary>
-    /// The Settings Interface.
+    /// The FtpDownloadProviderSettings Interface.
     /// </summary>
     public interface IFtpDownloadProviderSettings
     {
@@ -43,11 +43,6 @@ namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
         /// Gets the temp folder path.
         /// </summary>
         string TempFolder { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether to run the service in test mode.
-        /// </summary>
-        bool TestMode { get; }
 
         /// <summary>
         /// Gets the root folder for the FTP server.

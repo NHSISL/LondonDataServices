@@ -26,7 +26,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             IngestionTracking expectedIngestionTracking = deletedIngestionTracking.DeepClone();
 
             this.storageBrokerMock.Setup(broker =>
-                broker.ReadIngestionTrackingByIdAsync(inputIngestionTrackingId))
+                broker.SelectIngestionTrackingByIdAsync(inputIngestionTrackingId))
                     .ReturnsAsync(storageIngestionTracking);
 
             this.storageBrokerMock.Setup(broker =>
@@ -41,7 +41,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.ReadIngestionTrackingByIdAsync(inputIngestionTrackingId),
+                broker.SelectIngestionTrackingByIdAsync(inputIngestionTrackingId),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

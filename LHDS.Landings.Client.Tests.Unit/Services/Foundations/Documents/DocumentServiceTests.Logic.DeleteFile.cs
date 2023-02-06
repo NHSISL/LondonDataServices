@@ -5,7 +5,6 @@
 using System.Text;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Models.Foundations.Documents;
-using Microsoft.Extensions.Configuration;
 using Moq;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents;
@@ -16,10 +15,6 @@ public partial class DocumentServiceTests
     {
         // Given
         string randomFileName = GetRandomString();
-        var isDecrypted = false;
-
-        var blobContainerName = this.inMemoryConfiguration
-            .GetValue<string>("blobStorage:encryptedBlobContainerName");
 
         Document randomDocument = new Document
         {
@@ -28,11 +23,11 @@ public partial class DocumentServiceTests
         };
 
         // When
-        await this.documentService.RemoveDocumentByFileNameAsync(randomDocument.FileName, isDecrypted);
+        await this.documentService.RemoveDocumentByFileNameAsync(randomDocument.FileName);
 
         // Then
         this.blobStorageBrokerMock.Verify(broker =>
-            broker.DeleteFileAsync(randomDocument.FileName, blobContainerName),
+            broker.DeleteFileAsync(randomDocument.FileName),
                 Times.Once);
 
         this.blobStorageBrokerMock.VerifyNoOtherCalls();

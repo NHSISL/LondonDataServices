@@ -98,6 +98,14 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
                     .AreEqual;
         }
 
+        private Expression<Func<Document, bool>> SameDocumentAs(
+            Document expectedDocument)
+        {
+            return actualDocument =>
+                this.compareLogic.Compare(expectedDocument, actualDocument)
+                    .AreEqual;
+        }
+
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
 

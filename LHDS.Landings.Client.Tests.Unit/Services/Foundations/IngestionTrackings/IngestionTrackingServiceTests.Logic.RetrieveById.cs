@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
@@ -22,7 +22,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             IngestionTracking expectedIngestionTracking = storageIngestionTracking.DeepClone();
 
             this.storageBrokerMock.Setup(broker =>
-                broker.ReadIngestionTrackingByIdAsync(inputIngestionTracking.Id))
+                broker.SelectIngestionTrackingByIdAsync(inputIngestionTracking.Id))
                     .ReturnsAsync(storageIngestionTracking);
 
             // when
@@ -33,7 +33,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.ReadIngestionTrackingByIdAsync(inputIngestionTracking.Id),
+                broker.SelectIngestionTrackingByIdAsync(inputIngestionTracking.Id),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

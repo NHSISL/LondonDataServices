@@ -11,10 +11,29 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 {
     public partial class IngestionTrackingService
     {
-        private void ValidateIngestionTrackingOnAdd(IngestionTracking ingestionTrackings)
+        private void ValidateIngestionTrackingOnAdd(IngestionTracking ingestionTracking)
         {
-            ValidateIngestionTrackingIsNotNull(ingestionTrackings);
+            ValidateIngestionTrackingIsNotNull(ingestionTracking);
 
+            Validate(
+                (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),
+                (Rule: IsInvalid(ingestionTracking.FileName), Parameter: nameof(IngestionTracking.FileName)),
+                (Rule: IsInvalid(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
+                (Rule: IsNotRecent(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)));
+        }
+
+        private void ValidateIngestionTrackingOnModify(IngestionTracking ingestionTracking)
+        {
+            ValidateIngestionTrackingIsNotNull(ingestionTracking);
+
+            Validate(
+                (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),
+                (Rule: IsInvalid(ingestionTracking.FileName), Parameter: nameof(IngestionTracking.FileName)),
+                (Rule: IsInvalid(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)));
+        }
+
+        private static void ValidateAgainstStorageIngestionTrackingOnModify(IngestionTracking inputIngestionTracking, IngestionTracking storageIngestionTracking)
+        {
             Validate(
                 (Rule: IsInvalid(ingestionTrackings.Id), Parameter: nameof(IngestionTracking.Id)),
                 (Rule: IsInvalid(ingestionTrackings.EncryptedFileName),

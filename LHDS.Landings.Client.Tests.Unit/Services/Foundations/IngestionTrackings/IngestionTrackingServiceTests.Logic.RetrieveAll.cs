@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
@@ -15,23 +15,23 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
         public void ShouldReturnIngestionTrackings()
         {
             // given
-            IQueryable<IngestionTracking> randomIngestionTracking = CreateRandomIngestionTrackings();
-            IQueryable<IngestionTracking> storageIngestionTracking = randomIngestionTracking;
-            IQueryable<IngestionTracking> expectedIngestionTracking = storageIngestionTracking;
+            IQueryable<IngestionTracking> randomIngestionTrackings = CreateRandomIngestionTrackings();
+            IQueryable<IngestionTracking> storageIngestionTrackings = randomIngestionTrackings;
+            IQueryable<IngestionTracking> expectedIngestionTrackings = storageIngestionTrackings;
 
             this.storageBrokerMock.Setup(broker =>
-                broker.ReadAllIngestionTracking())
-                    .Returns(storageIngestionTracking);
+                broker.SelectAllIngestionTracking())
+                    .Returns(storageIngestionTrackings);
 
             // when
-            IQueryable<IngestionTracking> actualIngestionTracking =
+            IQueryable<IngestionTracking> actualIngestionTrackings =
                 this.ingestionTrackingService.RetrieveAllIngestionTracking();
 
             // then
-            actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
+            actualIngestionTrackings.Should().BeEquivalentTo(expectedIngestionTrackings);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.ReadAllIngestionTracking(),
+                broker.SelectAllIngestionTracking(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

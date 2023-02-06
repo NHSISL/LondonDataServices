@@ -5,7 +5,7 @@
 using System;
 using Xeptions;
 
-namespace NEL.Premises.Api.Models.Documents.Exceptions
+namespace LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptionss
 {
     public class LockedIngestionTrackingException : Xeption
     {

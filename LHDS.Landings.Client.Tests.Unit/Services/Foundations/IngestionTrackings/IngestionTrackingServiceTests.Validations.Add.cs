@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
@@ -51,13 +51,14 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnAddIfIngestionTrackingIsInvalidAndLogItAsync(
-            string invalidText)
+        public async Task ShouldThrowValidationExceptionOnAddIfIngestionTrackingIsInvalidAndLogItAsync(string invalidText)
         {
             // given
             var invalidIngestionTracking = new IngestionTracking
             {
-                FileName = invalidText,
+                Id = invalidText,
+                EncryptedFileName = invalidText,
+                DecryptedFileName = invalidText,
             };
 
             var invalidIngestionTrackingException =
@@ -68,7 +69,11 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                 values: "Text is required");
 
             invalidIngestionTrackingException.AddData(
-                key: nameof(IngestionTracking.FileName),
+                key: nameof(IngestionTracking.EncryptedFileName),
+                values: "Text is required");
+
+            invalidIngestionTrackingException.AddData(
+                key: nameof(IngestionTracking.DecryptedFileName),
                 values: "Text is required");
 
             invalidIngestionTrackingException.AddData(
@@ -103,15 +108,15 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                 broker.InsertIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
         [MemberData(nameof(MinutesBeforeOrAfter))]
         public async Task ShouldThrowValidationExceptionOnAddIfCreatedDateIsNotRecentAndLogItAsync(
-             int minutesBeforeOrAfter)
+            int minutesBeforeOrAfter)
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();

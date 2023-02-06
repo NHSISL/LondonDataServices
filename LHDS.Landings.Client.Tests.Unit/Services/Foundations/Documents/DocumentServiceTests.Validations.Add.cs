@@ -23,7 +23,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         {
             // given
             Document nullDocument = null;
-            var isDecrypted = false;
 
             var nullDocumentException =
                 new NullDocumentException();
@@ -33,7 +32,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
 
             // when
             ValueTask AddDocumentTask =
-                this.documentService.AddDocumentAsync(nullDocument, isDecrypted);
+                this.documentService.AddDocumentAsync(nullDocument);
 
             DocumentValidationException actualDocumentValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(AddDocumentTask.AsTask);
@@ -56,8 +55,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldThrowValidationExceptionOnAddIfDocumentDataIsInvalidAndLogItAsync()
         {
             // Given
-            var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
-            var isDecrypted = false;
             string validFileName = GetRandomString();
             byte[] invalidData = null;
 
@@ -77,7 +74,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                 = new DocumentValidationException(invalidDocumentException);
 
             // When
-            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document, isDecrypted);
+            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document);
 
             DocumentValidationException actualDocumentValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(uploadFileTask.AsTask);
@@ -91,7 +88,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                         Times.Once);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.InsertFileAsync(validFileName, It.IsAny<Stream>(), blobContainerName),
+                broker.InsertFileAsync(validFileName, It.IsAny<Stream>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -105,8 +102,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldThrowValidationExceptionOnAddIfFileNameIsInvalid(string invalidInput)
         {
             // Given
-            var isDecrypted = false;
-
             var appSettingsStub = new Dictionary<string, string> {
                 {"blobContainerName", invalidInput}
             };
@@ -121,7 +116,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                configuration: inMemoryConfiguration);
 
             string invalidFileName = invalidInput;
-            var blobContainerName = this.inMemoryConfiguration.GetValue<string>("blobContainerName");
 
             Document document = new Document
             {
@@ -137,15 +131,11 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                 key: "FileName",
                 values: "Text is required");
 
-            invalidDocumentException.AddData(
-                key: "blobContainerName",
-                values: "Text is required");
-
             var expectedDocumentValidationException
                 = new DocumentValidationException(invalidDocumentException);
 
             // When
-            ValueTask uploadFileTask = documentService.AddDocumentAsync(document, isDecrypted);
+            ValueTask uploadFileTask = documentService.AddDocumentAsync(document);
 
             DocumentValidationException actualDocumentValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(uploadFileTask.AsTask);
@@ -159,7 +149,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                         Times.Once);
 
             this.blobStorageBrokerMock.Verify(broker =>
-               broker.InsertFileAsync(invalidFileName, validStream, blobContainerName),
+               broker.InsertFileAsync(invalidFileName, validStream),
                    Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

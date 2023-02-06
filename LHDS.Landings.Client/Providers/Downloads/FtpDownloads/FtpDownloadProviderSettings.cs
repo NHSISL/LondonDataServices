@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
 {
     /// <summary>
-    /// The Settings Class.
+    /// The FtpDownloadProviderSettings Class.
     /// </summary>
     public class FtpDownloadProviderSettings : IFtpDownloadProviderSettings
     {
@@ -22,7 +22,7 @@ namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
         }
 
         /// <inheritdoc/>
-        public string FtpServer => this.GetSettings("FtpDownload:FtpServer");
+        public string FtpServer => this.GetSettings("ftpDownload:ftpServer");
 
         /// <inheritdoc/>
         public int FtpPort
@@ -31,7 +31,7 @@ namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
             {
                 try
                 {
-                    return int.Parse(this.GetSettings("FtpDownload:FtpPort"));
+                    return int.Parse(this.GetSettings("ftpDownload:ftpPort"));
                 }
                 catch
                 {
@@ -41,40 +41,32 @@ namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
         }
 
         /// <inheritdoc/>
-        public string FtpPassword => this.GetSettings("FtpDownload:FtpPassword", false);
+        public string FtpPassword => this.GetSettings("ftpDownload:ftpPassword", false);
 
         /// <inheritdoc/>
-        public string FtpUserName => this.GetSettings("FtpDownload:FtpUserName");
+        public string FtpUserName => this.GetSettings("ftpDownload:ftpUserName");
 
         /// <inheritdoc/>
-        public string TempFolder => this.GetSettings("FtpDownload:TempFolder");
+        public string TempFolder => this.GetSettings("ftpDownload:tempFolder");
 
         /// <inheritdoc/>
-        public bool TestMode
-        {
-            get
-            {
-                return Convert.ToBoolean(this.GetSettings("FtpDownload:TestMode"));
-            }
-        }
+        public string FtpKey => this.GetSettings("ftpDownload:ftpKey", false);
 
         /// <inheritdoc/>
-        public string FtpKey => this.GetSettings("FtpDownload:FtpKey", false);
+        public string FtpPassPhrase => this.GetSettings("ftpDownload:ftpPassPhrase", false);
 
         /// <inheritdoc/>
-        public string FtpPassPhrase => this.GetSettings("FtpDownload:FtpPassPhrase", false);
-
-        /// <inheritdoc/>
-        public string FtpRootFolder => this.GetSettings("FtpDownload:FtpRootFolder", false) ?? "/";
+        public string FtpRootFolder => this.GetSettings("ftpDownload:ftpRootFolder", false) ?? "/";
 
         public bool IncludeSubDirectories =>
-            Convert.ToBoolean(this.GetSettings("FtpDownload:IncludeSubDirectories", false) ?? "true");
+            Convert.ToBoolean(this.GetSettings("ftpDownload:includeSubDirectories", false) ?? "true");
 
         private IConfiguration Configuration { get; }
 
         private string GetSettings(string configurationKey, bool mandatory = true)
         {
             var value = this.Configuration[configurationKey];
+
             if (string.IsNullOrEmpty(value))
             {
                 if (mandatory)

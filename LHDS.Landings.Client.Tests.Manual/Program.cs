@@ -31,6 +31,7 @@ namespace LHDS.Landings.Client.Tests.Manual
                 .UseFtpDownloadProvider(configuration, builder => builder.AddFtpDownloadProvider())
                 .BuildServiceProvider();
 
+
             var landingClient = serviceProvider.GetService<ILandingClient>();
 
             if (landingClient != null)

@@ -8,13 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="local.appsettings.json" />
     <None Remove="local.settings.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="local.appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <ItemGroup>

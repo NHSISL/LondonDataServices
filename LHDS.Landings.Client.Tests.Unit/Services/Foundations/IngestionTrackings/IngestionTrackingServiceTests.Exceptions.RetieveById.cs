@@ -28,7 +28,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                 new IngestionTrackingDependencyException(failedIngestionTrackingStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.ReadIngestionTrackingByIdAsync(It.IsAny<string>()))
+                broker.SelectIngestionTrackingByIdAsync(It.IsAny<string>()))
                     .ThrowsAsync(sqlException);
 
             // when
@@ -44,7 +44,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                 .BeEquivalentTo(expectedIngestionTrackingDependencyException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.ReadIngestionTrackingByIdAsync(It.IsAny<string>()),
+                broker.SelectIngestionTrackingByIdAsync(It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -71,7 +71,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                 new IngestionTrackingServiceException(failedIngestionTrackingServiceException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.ReadIngestionTrackingByIdAsync(It.IsAny<string>()))
+                broker.SelectIngestionTrackingByIdAsync(It.IsAny<string>()))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -87,7 +87,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                 .BeEquivalentTo(expectedIngestionTrackingServiceException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.ReadIngestionTrackingByIdAsync(It.IsAny<string>()),
+                broker.SelectIngestionTrackingByIdAsync(It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

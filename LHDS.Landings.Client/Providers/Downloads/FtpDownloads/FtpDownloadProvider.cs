@@ -22,11 +22,12 @@ namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
         {
             this.ftpDownloadProviderSettings = ftpDownloadProviderSettings;
             client = new SftpClient(GetConnectionInfo(ftpDownloadProviderSettings));
-            this.EnsureClientIsConnected();
         }
 
         public async ValueTask<Document> GetDocumentByFileNameAsync(string fileName)
         {
+            this.EnsureClientIsConnected();
+
             var attrs = client.GetAttributes(fileName);
             MemoryStream stream = new MemoryStream();
             this.client.DownloadFile(fileName, stream);
@@ -43,6 +44,8 @@ namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
 
         public async ValueTask<List<Document>> GetListOfDocumentsToProcessAsync()
         {
+            this.EnsureClientIsConnected();
+
             return await this.GetListOfDocumentsToProcessAsync(
                 path: ftpDownloadProviderSettings.FtpRootFolder,
                 includeSubDirectories: ftpDownloadProviderSettings.IncludeSubDirectories);
@@ -128,6 +131,7 @@ namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
         private PrivateKeyFile GetKeyFromB64(string encodedKey, string passPhrase)
         {
             byte[] bytes = Convert.FromBase64String(encodedKey);
+
             using (MemoryStream stream = new(bytes))
             {
                 var privateKeyFile = new PrivateKeyFile(stream, passPhrase);

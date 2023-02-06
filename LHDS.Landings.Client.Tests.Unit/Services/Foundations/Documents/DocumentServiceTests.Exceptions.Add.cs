@@ -11,7 +11,6 @@ using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
-using Microsoft.Extensions.Configuration;
 using Moq;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
@@ -22,13 +21,9 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldThrowDependencyValidationExceptionOnAddIfDocumentAlreadyExsitsAndLogItAsync()
         {
             // given
-            var blobContainerName = this.inMemoryConfiguration
-                .GetValue<string>("blobStorage:encryptedBlobContainerName");
-
             var randomString = GetRandomString();
             var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
             var randomMessage = GetRandomString();
-            var isDecrypted = false;
 
             Document document = new Document
             {
@@ -46,11 +41,11 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                 new DocumentDependencyValidationException(alreadyExistsDocumentException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), blobContainerName))
+                broker.InsertFileAsync(document.FileName, It.IsAny<Stream>()))
                    .Throws(duplicateKeyException);
 
             // when
-            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document, isDecrypted);
+            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document);
 
             var actualDependencyException =
                  await Assert.ThrowsAsync<DocumentDependencyValidationException>(uploadFileTask.AsTask);
@@ -59,7 +54,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
             actualDependencyException.Should().BeEquivalentTo(expectedDocumentDependencyValidationException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                 broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), blobContainerName),
+                 broker.InsertFileAsync(document.FileName, It.IsAny<Stream>()),
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -76,13 +71,9 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldThrowDependencyExceptionOnUploadFileAndLogItAsync()
         {
             // given
-            var blobContainerName = this.inMemoryConfiguration
-                .GetValue<string>("blobStorage:encryptedBlobContainerName");
-
             var randomString = GetRandomString();
             var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
             var randomMessage = GetRandomString();
-            var isDecrypted = false;
 
             Document document = new Document
             {
@@ -99,11 +90,11 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
             var stream = new MemoryStream(document.DocumentData);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                 broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), blobContainerName))
+                 broker.InsertFileAsync(document.FileName, It.IsAny<Stream>()))
                     .Throws(requestFailedException);
 
             // when
-            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document, isDecrypted);
+            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document);
 
             var actualDependencyException =
                  await Assert.ThrowsAsync<DocumentDependencyException>(uploadFileTask.AsTask);
@@ -112,7 +103,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
             actualDependencyException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                 broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), blobContainerName),
+                 broker.InsertFileAsync(document.FileName, It.IsAny<Stream>()),
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -131,10 +122,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
             var randomString = GetRandomString();
             var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
             var randomMessage = GetRandomString();
-            var isDecrypted = false;
-
-            var blobContainerName = this.inMemoryConfiguration
-                .GetValue<string>("blobStorage:encryptedBlobContainerName");
 
             Document document = new Document
             {
@@ -151,11 +138,11 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
             var stream = new MemoryStream(document.DocumentData);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                 broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), blobContainerName))
+                 broker.InsertFileAsync(document.FileName, It.IsAny<Stream>()))
                      .Throws(failedDocumentServiceException);
 
             // when
-            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document, isDecrypted);
+            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document);
 
             var actualServiceException =
                  await Assert.ThrowsAsync<DocumentServiceException>(uploadFileTask.AsTask);
@@ -164,7 +151,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
             actualServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.InsertFileAsync(document.FileName, It.IsAny<Stream>(), blobContainerName),
+                broker.InsertFileAsync(document.FileName, It.IsAny<Stream>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

@@ -11,21 +11,19 @@ namespace LHDS.Landings.Client.Services.Foundations.Documents
 {
     public partial class DocumentService
     {
-        private static void ValidateDocumentOnAdd(Document document, string blobContainerName)
+        private static void ValidateDocumentOnAdd(Document document)
         {
             ValidateDocumentIsNotNull(document);
 
             Validate(
                     (Rule: IsInvalid(document.DocumentData), Parameter: nameof(Document.DocumentData)),
-                    (Rule: IsInvalid(document.FileName), Parameter: nameof(Document.FileName)),
-                    (Rule: IsInvalid(blobContainerName), Parameter: nameof(blobContainerName)));
+                    (Rule: IsInvalid(document.FileName), Parameter: nameof(Document.FileName)));
         }
 
-        private static void ValidateDocumentOnRetrieve(string fileName, string blobContainerName)
+        private static void ValidateDocumentOnRetrieve(string fileName)
         {
             Validate(
-                    (Rule: IsInvalid(fileName), Parameter: nameof(fileName)),
-                    (Rule: IsInvalid(blobContainerName), Parameter: nameof(blobContainerName)));
+                    (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
         private static void ValidateDocumentIsNotNull(Document document)
@@ -48,11 +46,10 @@ namespace LHDS.Landings.Client.Services.Foundations.Documents
             Message = "Text is required"
         };
 
-        private void ValidateDeleteArguments(string fileName, string container)
+        private void ValidateDeleteArguments(string fileName)
         {
             Validate(
-               (Rule: IsInvalid(fileName), Parameter: nameof(fileName)),
-               (Rule: IsInvalid(container), Parameter: nameof(container)));
+               (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

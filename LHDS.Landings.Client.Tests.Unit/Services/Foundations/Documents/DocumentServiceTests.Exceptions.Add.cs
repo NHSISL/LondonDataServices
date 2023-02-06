@@ -64,7 +64,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-
         }
 
         [Fact]

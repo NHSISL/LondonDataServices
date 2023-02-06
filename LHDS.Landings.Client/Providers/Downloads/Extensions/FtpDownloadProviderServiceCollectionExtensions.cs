@@ -28,7 +28,6 @@ namespace LHDS.Landings.Client.Providers.Downloads.Extensions
             services.AddTransient<IFtpDownloadProviderSettings>(_ => ftpDownloadProviderSettings);
             services.AddTransient<IDownloadProvider, FtpDownloadProvider>();
 
-
             return services;
         }
     }

@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
@@ -9,9 +9,9 @@ using EFxceptions.Models.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.IngestionTracking.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptionss;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using NEL.Premises.Api.Models.Documents.Exceptions;
 using Xeptions;
 
 namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
@@ -49,9 +49,9 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
 
                 throw CreateAndLogCriticalDependencyException(failedIngestionTrackingStorageException);
             }
-            catch (NotFoundIngestionTrackingForFileNameException notFoundIngestionTrackingForFileNameException)
+            catch (NotFoundIngestionTrackingException notFoundIngestionTrackingException)
             {
-                throw CreateAndLogValidationException(notFoundIngestionTrackingForFileNameException);
+                throw CreateAndLogValidationException(notFoundIngestionTrackingException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
@@ -59,10 +59,6 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
                     new InvalidIngestionTrackingReferenceException(foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidIngestionTrackingReferenceException);
-            }
-            catch (NotFoundIngestionTrackingException notFoundIngestionTrackingException)
-            {
-                throw CreateAndLogValidationException(notFoundIngestionTrackingException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
@@ -86,17 +82,16 @@ namespace LHDS.Landings.Client.Services.Foundations.IngestionTrackings
             }
         }
 
-        private IQueryable<IngestionTracking> TryCatch(ReturningIngestionTrackingsFunction returningIngestionTrackingFunction)
+        private IQueryable<IngestionTracking> TryCatch(ReturningIngestionTrackingsFunction returningIngestionTrackingsFunction)
         {
             try
             {
-                return returningIngestionTrackingFunction();
+                return returningIngestionTrackingsFunction();
             }
             catch (SqlException sqlException)
             {
                 var failedIngestionTrackingStorageException =
                     new FailedIngestionTrackingStorageException(sqlException);
-
                 throw CreateAndLogCriticalDependencyException(failedIngestionTrackingStorageException);
             }
             catch (Exception exception)

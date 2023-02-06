@@ -16,13 +16,10 @@ namespace LHDS.Landings.Client.Brokers.Storages.Sql
         public async ValueTask<IngestionTracking> InsertIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
             await InsertAsync(ingestionTracking);
 
-        public IQueryable<IngestionTracking> ReadAllIngestionTracking() => ReadAll<IngestionTracking>();
+        public IQueryable<IngestionTracking> SelectAllIngestionTracking() => ReadAll<IngestionTracking>();
 
-        public async ValueTask<IngestionTracking> ReadIngestionTrackingByIdAsync(string ingestionTrackingId) =>
+        public async ValueTask<IngestionTracking> SelectIngestionTrackingByIdAsync(string ingestionTrackingId) =>
             await ReadAsync<IngestionTracking>(ingestionTrackingId);
-
-        public async ValueTask<IngestionTracking> ReadIngestionTrackingByFileNameAsync(string fileName) =>
-            await ReadAsync<IngestionTracking>(fileName);
 
         public async ValueTask<IngestionTracking> UpdateIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
             await UpdateAsync(ingestionTracking);

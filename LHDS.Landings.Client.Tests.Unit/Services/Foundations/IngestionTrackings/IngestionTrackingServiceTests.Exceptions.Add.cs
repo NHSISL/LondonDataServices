@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
@@ -144,7 +144,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                 await Assert.ThrowsAsync<IngestionTrackingDependencyValidationException>(
                     addIngestionTrackingTask.AsTask);
 
-            actualIngestionTrackingDependencyValidationException.Should().BeEquivalentTo(expectedIngestionTrackingValidationException);
+            actualIngestionTrackingDependencyValidationException.Should()
+                .BeEquivalentTo(expectedIngestionTrackingValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),

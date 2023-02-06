@@ -9,7 +9,6 @@ using Azure;
 using FluentAssertions;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
-using Microsoft.Extensions.Configuration;
 using Moq;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
@@ -21,16 +20,12 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         {
             // given
             var randomFileName = GetRandomString();
-            var isDecrypted = false;
 
             Document randomDocument = new Document
             {
                 FileName = randomFileName,
                 DocumentData = Encoding.ASCII.GetBytes(GetRandomString())
             };
-
-            var blobContainerName = this.inMemoryConfiguration
-                .GetValue<string>("blobStorage:encryptedBlobContainerName");
 
             var randomMessage = GetRandomString();
             var requestFailedException = new RequestFailedException(randomMessage);
@@ -42,12 +37,12 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                  new DocumentDependencyException(failedDocumentRequestException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                 broker.SelectByFileNameAsync(randomDocument.FileName, blobContainerName))
+                 broker.SelectByFileNameAsync(randomDocument.FileName))
                     .Throws(requestFailedException);
 
             // when
             ValueTask<Document> getDownloadFileTask =
-                this.documentService.RetrieveDocumentByFileNameAsync(randomDocument.FileName, isDecrypted);
+                this.documentService.RetrieveDocumentByFileNameAsync(randomDocument.FileName);
 
             var actualDependencyException =
                  await Assert.ThrowsAsync<DocumentDependencyException>(getDownloadFileTask.AsTask);
@@ -56,7 +51,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
             actualDependencyException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                 broker.SelectByFileNameAsync(randomDocument.FileName, blobContainerName),
+                 broker.SelectByFileNameAsync(randomDocument.FileName),
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -73,16 +68,12 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         {
             // given
             var randomFileName = GetRandomString();
-            var isDecrypted = false;
 
             Document randomDocument = new Document
             {
                 FileName = randomFileName,
                 DocumentData = Encoding.ASCII.GetBytes(GetRandomString())
             };
-
-            var blobContainerName = this.inMemoryConfiguration
-                .GetValue<string>("blobStorage:encryptedBlobContainerName");
 
             var randomMessage = GetRandomString();
 
@@ -93,13 +84,12 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                 new DocumentServiceException(failedDocumentServiceException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.SelectByFileNameAsync(randomDocument.FileName, blobContainerName))
+                broker.SelectByFileNameAsync(randomDocument.FileName))
                    .Throws(failedDocumentServiceException);
-
 
             // when
             ValueTask<Document> getDownloadFileTask =
-                this.documentService.RetrieveDocumentByFileNameAsync(randomFileName, isDecrypted);
+                this.documentService.RetrieveDocumentByFileNameAsync(randomFileName);
 
             var actualServiceException =
                  await Assert.ThrowsAsync<DocumentServiceException>(getDownloadFileTask.AsTask);
@@ -108,7 +98,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
             actualServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.SelectByFileNameAsync(randomDocument.FileName, blobContainerName),
+                broker.SelectByFileNameAsync(randomDocument.FileName),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

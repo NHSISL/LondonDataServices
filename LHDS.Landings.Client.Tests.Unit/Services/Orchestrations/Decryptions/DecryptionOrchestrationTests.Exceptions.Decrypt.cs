@@ -3,10 +3,8 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Orchestrations.Decryptions.Exceptions;
 using Moq;
 using Xeptions;
@@ -102,10 +100,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
         {
             //Given
             string randomFileName = GetRandomMessage();
-            byte[] randomEncryptedString = Encoding.ASCII.GetBytes(GetRandomMessage());
-            byte[] randomDecryptedString = Encoding.ASCII.GetBytes(GetRandomMessage());
-            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            Document randomDocument = new Document { FileName = randomFileName, DocumentData = randomEncryptedString };
 
             var serviceException = new Exception();
 
@@ -115,8 +109,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
             var expectedDecryptionOrchestrationServiceException =
                 new DecryptionOrchestrationServiceException(failedDecryptionOrchestrationServiceException);
 
-            this.decryptionServiceMock.Setup(service =>
-                service.DecryptAsync(randomEncryptedString))
+            this.ingestionTrackingServiceMock.Setup(service =>
+                service.RetrieveIngestionTrackingByIdAsync(randomFileName))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -128,8 +122,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
             // then
             actualException.Should().BeEquivalentTo(expectedDecryptionOrchestrationServiceException);
 
-            this.decryptionServiceMock.Verify(service =>
-                service.DecryptAsync(randomDecryptedString),
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.RetrieveIngestionTrackingByIdAsync(randomFileName),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

@@ -5,6 +5,7 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using Force.DeepCloner;
 using LHDS.Landings.Client.Models.Audits;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using Moq;
@@ -19,74 +20,78 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
         public async Task ShouldProcessDecryptedDocumentAsync()
         {
             // given
-            string randomFileName = GetRandomMessage();
-            byte[] randomEncryptedString = Encoding.ASCII.GetBytes(GetRandomMessage());
-            byte[] randomDecryptedString = Encoding.ASCII.GetBytes(GetRandomMessage());
-            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            Models.Foundations.Documents.Document randomDocument = new Document { FileName = randomFileName, DocumentData = randomEncryptedString };
+            DateTimeOffset randomDateTimeOffset =
+                  GetRandomDateTimeOffset();
 
-            IngestionTracking externalIngestionTrackingFound = null;
+            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTimeOffset);
+            IngestionTracking storageIngestionTracking = randomIngestionTracking;
+
+            string randomFileName = GetRandomMessage();
+            byte[] randomEncryptedBytes = Encoding.ASCII.GetBytes(GetRandomMessage());
+            byte[] randomDecryptedBytes = Encoding.ASCII.GetBytes(GetRandomMessage());
+            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+
+            Document randomDocument =
+                new Document { FileName = randomFileName, DocumentData = randomEncryptedBytes };
+
+            Document encryptedDocument = randomDocument;
+
+            Document decryptedDocument = new Document
+            {
+                DocumentData = randomDecryptedBytes,
+                FileName = storageIngestionTracking.DecryptedFileName
+            };
+
+            this.ingestionTrackingServiceMock.Setup(service =>
+               service.RetrieveIngestionTrackingByIdAsync(randomDocument.FileName))
+                   .ReturnsAsync(storageIngestionTracking);
 
             this.documentServiceMock.Setup(service =>
-                service.RetrieveDocumentByFileNameAsync(randomFileName))
-                    .ReturnsAsync(randomDocument);
+                service.RetrieveDocumentByFileNameAsync(storageIngestionTracking.EncryptedFileName))
+                    .ReturnsAsync(encryptedDocument);
 
             this.decryptionServiceMock.Setup(service =>
-                service.DecryptAsync(randomEncryptedString))
-                    .ReturnsAsync(randomDecryptedString);
+                service.DecryptAsync(encryptedDocument.DocumentData))
+                    .ReturnsAsync(randomDecryptedBytes);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
-            .Returns(randomDateTime);
+                    .Returns(randomDateTime);
 
-            var filename = randomDocument.FileName.StartsWith('/')
-            ? randomDocument.FileName
-                     : "/" + randomDocument.FileName;
-
-            IngestionTracking ingestionTracking =
-              new IngestionTracking
-              {
-                  Id = randomDocument.FileName,
-                  EncryptedFileName = $"/encrypted{filename}",
-                  DecryptedFileName = $"/decrypted{filename}",
-                  Decrypted = false,
-                  CreatedDate = randomDateTime,
-              };
+            var updatedIngestionTracking = storageIngestionTracking.DeepClone();
+            updatedIngestionTracking.Decrypted = true;
+            var outputIngestionTracking = updatedIngestionTracking.DeepClone();
 
             this.ingestionTrackingServiceMock.Setup(service =>
-                service.RetrieveIngestionTrackingByIdAsync(randomDocument.FileName))
-                    .ReturnsAsync(ingestionTracking);
-
-            this.ingestionTrackingServiceMock.Setup(service =>
-                service.ModifyIngestionTrackingAsync(ingestionTracking))
-                    .ReturnsAsync(ingestionTracking);
+                service.ModifyIngestionTrackingAsync(updatedIngestionTracking))
+                    .ReturnsAsync(outputIngestionTracking);
 
             // when
             await this.decryptionOrchestrationService.DecryptAsync(randomFileName);
 
             // then
+            this.ingestionTrackingServiceMock.Verify(service =>
+              service.RetrieveIngestionTrackingByIdAsync(randomDocument.FileName),
+                  Times.Once);
+
             this.documentServiceMock.Verify(service =>
-                service.RemoveDocumentByFileNameAsync(randomFileName),
+                service.RetrieveDocumentByFileNameAsync(storageIngestionTracking.EncryptedFileName),
                     Times.Once);
 
             this.decryptionServiceMock.Verify(service =>
-                service.DecryptAsync(randomEncryptedString),
+                service.DecryptAsync(encryptedDocument.DocumentData),
                     Times.Once);
 
             this.documentServiceMock.Verify(service =>
-                service.AddDocumentAsync(randomDocument),
+                service.AddDocumentAsync(It.Is(SameDocumentAs(decryptedDocument))),
+                    Times.Once);
+
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(updatedIngestionTracking))),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
-                    Times.Once);
-
-            this.ingestionTrackingServiceMock.Verify(service =>
-                service.RetrieveIngestionTrackingByIdAsync(randomDocument.FileName),
-                    Times.Once);
-
-            this.ingestionTrackingServiceMock.Verify(service =>
-                service.ModifyIngestionTrackingAsync(ingestionTracking),
                     Times.Once);
 
             this.auditServiceMock.Verify(service =>
@@ -94,8 +99,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
                     Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

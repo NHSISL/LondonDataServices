@@ -7,9 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Landings.Client.Models.Foundations.Documents;
-using LHDS.Landings.Client.Models.Foundations.Downloads.Exceptions;
 using LHDS.Landings.Client.Models.Orchestrations.Decryptions.Exceptions;
-using LHDS.Landings.Client.Models.Orchestrations.Downloads.Exceptions;
 using Moq;
 using Xeptions;
 
@@ -27,7 +25,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
             byte[] randomEncryptedString = Encoding.ASCII.GetBytes(GetRandomMessage());
             byte[] randomDecryptedString = Encoding.ASCII.GetBytes(GetRandomMessage());
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            var isDecrypted = false;
             Document randomDocument = new Document { FileName = randomFileName, DocumentData = randomEncryptedString };
 
             var expectedDependencyException =
@@ -74,7 +71,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
             byte[] randomEncryptedString = Encoding.ASCII.GetBytes(GetRandomMessage());
             byte[] randomDecryptedString = Encoding.ASCII.GetBytes(GetRandomMessage());
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            var isDecrypted = false;
             Document randomDocument = new Document { FileName = randomFileName, DocumentData = randomEncryptedString };
 
             var expectedDependencyException =
@@ -117,7 +113,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
             byte[] randomEncryptedString = Encoding.ASCII.GetBytes(GetRandomMessage());
             byte[] randomDecryptedString = Encoding.ASCII.GetBytes(GetRandomMessage());
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            var isDecrypted = false;
             Document randomDocument = new Document { FileName = randomFileName, DocumentData = randomEncryptedString };
 
             var serviceException = new Exception();

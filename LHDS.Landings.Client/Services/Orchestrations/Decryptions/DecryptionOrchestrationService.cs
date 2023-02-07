@@ -3,13 +3,11 @@
 // ---------------------------------------------------------------
 
 
-using System;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Brokers.DateTimes;
 using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Models.Audits;
 using LHDS.Landings.Client.Models.Foundations.Documents;
-using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using LHDS.Landings.Client.Services.Foundations.Audits;
 using LHDS.Landings.Client.Services.Foundations.Decryptions;
 using LHDS.Landings.Client.Services.Foundations.Documents;
@@ -45,38 +43,35 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Decryptions
         public ValueTask DecryptAsync(string fileName) =>
             TryCatch(async () =>
             {
-                Document document = await this.documentService.RetrieveDocumentByFileNameAsync(fileName);
+
+                var ingestionTracking = await this.ingestionTrackingService
+                    .RetrieveIngestionTrackingByIdAsync(fileName);
+
+                Document document = await this.documentService
+                    .RetrieveDocumentByFileNameAsync(ingestionTracking.EncryptedFileName);
+
                 byte[] decryptedData = await this.decryptionService.DecryptAsync(document.DocumentData);
-                document.DocumentData = decryptedData;
-                await this.documentService.AddDocumentAsync(document);
-                DateTimeOffset currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
-                var filename = document.FileName.StartsWith('/')
-                           ? document.FileName
-                           : "/" + document.FileName;
+                Document newDecryptedDocument = new Document
+                {
+                    DocumentData = decryptedData,
+                    FileName = ingestionTracking.DecryptedFileName
+                };
 
-                IngestionTracking newIngestionTracking =
-                  new IngestionTracking
-                  {
-                      Id = document.FileName,
-                      EncryptedFileName = $"/encrypted{filename}",
-                      DecryptedFileName = $"/decrypted{filename}",
-                      Decrypted = false,
-                      CreatedDate = currentDateTime,
-                  };
+                await this.documentService.AddDocumentAsync(newDecryptedDocument);
 
+                ingestionTracking.Decrypted = true;
 
                 await this.ingestionTrackingService
-                        .RetrieveIngestionTrackingByIdAsync(fileName);
+                    .ModifyIngestionTrackingAsync(ingestionTracking);
 
-                await this.ingestionTrackingService
-                    .ModifyIngestionTrackingAsync(newIngestionTracking);
-
-                LogAudit(document, currentDateTime);
+                LogAudit(document);
             });
 
-        private void LogAudit(Document document, DateTimeOffset currentDateTime)
+        private void LogAudit(Document document)
         {
+            var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
             Audit newAudit =
                 new Audit
                 {

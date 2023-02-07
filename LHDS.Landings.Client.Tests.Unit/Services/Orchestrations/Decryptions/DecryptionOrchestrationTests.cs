@@ -11,7 +11,6 @@ using LHDS.Landings.Client.Models.Audits.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.Decryptions.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
-using LHDS.Landings.Client.Models.Foundations.Downloads.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Landings.Client.Services.Foundations.Audits;
@@ -80,9 +79,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static IngestionTracking CreateRandomIngestionTracking(DateTimeOffset dateTimeOffset) =>
-            CreateIngestionTrackingFiller(dateTimeOffset).Create();
-
         private Expression<Func<IngestionTracking, bool>> SameIngestionTrackingAs(
             IngestionTracking exprectedIngestionTracking)
         {
@@ -93,6 +89,14 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
+
+        private Expression<Func<Document, bool>> SameDocumentAs(
+          Document expectedDocument)
+        {
+            return actualDocument =>
+                this.compareLogic.Compare(expectedDocument, actualDocument)
+                    .AreEqual;
+        }
 
         public static TheoryData DecryptionDependencyValidationExceptions()
         {
@@ -131,6 +135,12 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
                 new AuditServiceException(innerException)
             };
         }
+
+        private static IngestionTracking CreateRandomIngestionTracking() =>
+            CreateIngestionTrackingFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+
+        private static IngestionTracking CreateRandomIngestionTracking(DateTimeOffset dateTimeOffset) =>
+            CreateIngestionTrackingFiller(dateTimeOffset).Create();
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(DateTimeOffset dateTimeOffset)
         {

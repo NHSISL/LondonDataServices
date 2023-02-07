@@ -12,6 +12,8 @@ namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
     /// </summary>
     public class FtpDownloadProviderSettings : IFtpDownloadProviderSettings
     {
+        private IConfiguration Configuration { get; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Settings"/> class.
         /// </summary>
@@ -60,8 +62,6 @@ namespace LHDS.Landings.Client.Providers.Downloads.FtpDownloads
 
         public bool IncludeSubDirectories =>
             Convert.ToBoolean(this.GetSettings("ftpDownload:includeSubDirectories", false) ?? "true");
-
-        private IConfiguration Configuration { get; }
 
         private string GetSettings(string configurationKey, bool mandatory = true)
         {

@@ -8,6 +8,7 @@ using FluentAssertions;
 using LHDS.Landings.Client.Models.Orchestrations.Downloads.Exceptions;
 using Moq;
 using Xeptions;
+using Xunit;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
 {

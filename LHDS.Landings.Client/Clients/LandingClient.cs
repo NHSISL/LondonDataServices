@@ -5,6 +5,7 @@
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Models.Clients.LandingClient;
+using LHDS.Landings.Client.Models.Orchestrations.Decryptions.Exceptions;
 using LHDS.Landings.Client.Models.Orchestrations.Downloads.Exceptions;
 using LHDS.Landings.Client.Services.Orchestrations.Downloads;
 using Xeptions;
@@ -30,7 +31,7 @@ namespace LHDS.Landings.Client.Clients
             {
                 await this.downloadOrchestrationService.ProcessAsync();
             }
-            catch (DownloadOrchestrationValidationException downloadOrchestrationValidationException)
+            catch (DecryptionOrchestrationValidationException downloadOrchestrationValidationException)
             {
                 throw new LandingClientValidationException(
                     downloadOrchestrationValidationException.InnerException as Xeption);

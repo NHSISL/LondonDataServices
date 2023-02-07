@@ -9,6 +9,7 @@ using LHDS.Landings.Client.Models.Foundations.Decryptions.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Landings.Client.Models.Orchestrations.Decryptions.Exceptions;
+using LHDS.Landings.Client.Models.Orchestrations.Downloads.Exceptions;
 using Xeptions;
 
 namespace LHDS.Landings.Client.Services.Orchestrations.Decryptions
@@ -22,6 +23,10 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Decryptions
             try
             {
                 await returningDecryptFunction();
+            }
+            catch (NullDecryptionOrchestrationFileNameException nullDecryptionOrchestrationFileNameException)
+            {
+                throw CreateAndLogValidationException(nullDecryptionOrchestrationFileNameException);
             }
             catch (DocumentValidationException documentValidationException)
             {
@@ -94,6 +99,16 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Decryptions
 
                 throw CreateAndLogServiceException(failedDecryptServiceException);
             }
+        }
+
+        private DecryptionOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
+        {
+            var decryptionOrchestrationValidationException =
+                new DecryptionOrchestrationValidationException(exception);
+
+            this.loggingBroker.LogError(decryptionOrchestrationValidationException);
+
+            return decryptionOrchestrationValidationException;
         }
 
         private DecryptionOrchestrationServiceException CreateAndLogServiceException(

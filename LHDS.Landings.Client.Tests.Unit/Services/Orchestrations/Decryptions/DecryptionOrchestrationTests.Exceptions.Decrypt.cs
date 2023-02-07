@@ -63,22 +63,20 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
 
         [Theory]
         [MemberData(nameof(DecryptionDependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnProcessIfDependencyExceptionOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnDycryptIfDependencyExceptionOccursAndLogItAsync(
             Xeption dependancyException)
         {
             // given
             string randomFileName = GetRandomMessage();
-            byte[] randomEncryptedString = Encoding.ASCII.GetBytes(GetRandomMessage());
-            byte[] randomDecryptedString = Encoding.ASCII.GetBytes(GetRandomMessage());
-            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            Document randomDocument = new Document { FileName = randomFileName, DocumentData = randomEncryptedString };
+            //byte[] randomEncryptedBytes = Encoding.ASCII.GetBytes(GetRandomMessage());
+            //byte[] randomDecryptedBytes = Encoding.ASCII.GetBytes(GetRandomMessage());
 
             var expectedDependencyException =
                 new DecryptionOrchestrationDependencyException(
                     dependancyException.InnerException as Xeption);
 
-            this.decryptionServiceMock.Setup(service =>
-              service.DecryptAsync(randomEncryptedString))
+            this.ingestionTrackingServiceMock.Setup(service =>
+              service.RetrieveIngestionTrackingByIdAsync(randomFileName))
                   .ThrowsAsync(dependancyException);
 
             // when
@@ -90,9 +88,9 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
             // then
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
-            this.decryptionServiceMock.Verify(service =>
-              service.DecryptAsync(randomDecryptedString),
-                Times.Once);
+            this.ingestionTrackingServiceMock.Verify(service =>
+             service.RetrieveIngestionTrackingByIdAsync(randomFileName),
+                 Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(
@@ -100,8 +98,8 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
                        Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 

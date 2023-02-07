@@ -89,10 +89,10 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Downloads
             }
             catch (Exception exception)
             {
-                var failedBoroughServiceException =
+                var failedDownloadServiceException =
                     new FailedDownloadOrchestrationServiceException(exception);
 
-                throw CreateAndLogServiceException(failedBoroughServiceException);
+                throw CreateAndLogServiceException(failedDownloadServiceException);
             }
         }
 

@@ -14,7 +14,6 @@ using LHDS.Landings.Client.Services.Foundations.Audits;
 using LHDS.Landings.Client.Services.Foundations.Decryptions;
 using LHDS.Landings.Client.Services.Foundations.Documents;
 using LHDS.Landings.Client.Services.Foundations.IngestionTrackings;
-using LHDS.Landings.Client.Services.Orchestrations.Decryptions;
 
 namespace LHDS.Landings.Client.Services.Orchestrations.Decryptions
 {
@@ -46,23 +45,29 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Decryptions
         public ValueTask DecryptAsync(string fileName) =>
             TryCatch(async () =>
             {
-                Document document = await this.documentService.RetrieveDocumentByFileNameAsync(fileName, false);
+                Document document = await this.documentService.RetrieveDocumentByFileNameAsync(fileName);
                 byte[] decryptedData = await this.decryptionService.DecryptAsync(document.DocumentData);
                 document.DocumentData = decryptedData;
-                await this.documentService.AddDocumentAsync(document, true);
+                await this.documentService.AddDocumentAsync(document);
                 DateTimeOffset currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
+                var filename = document.FileName.StartsWith('/')
+                           ? document.FileName
+                           : "/" + document.FileName;
+
                 IngestionTracking newIngestionTracking =
-                    new IngestionTracking
-                    {
-                        Id = document.FileName,
-                        FileName = document.FileName,
-                        Decrypted = true,
-                        CreatedDate = currentDateTime,
-                    };
+                  new IngestionTracking
+                  {
+                      Id = document.FileName,
+                      EncryptedFileName = $"/encrypted{filename}",
+                      DecryptedFileName = $"/decrypted{filename}",
+                      Decrypted = false,
+                      CreatedDate = currentDateTime,
+                  };
+
 
                 await this.ingestionTrackingService
-                        .RetrieveIngestionTrackingByFileNameAsync(fileName);
+                        .RetrieveIngestionTrackingByIdAsync(fileName);
 
                 await this.ingestionTrackingService
                     .ModifyIngestionTrackingAsync(newIngestionTracking);

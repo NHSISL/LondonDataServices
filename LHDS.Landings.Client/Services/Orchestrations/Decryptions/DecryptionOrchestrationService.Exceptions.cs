@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using LHDS.Landings.Client.Models.Audits.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.Decryptions.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
-using LHDS.Landings.Client.Models.Foundations.Downloads.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Landings.Client.Models.Orchestrations.Decryptions.Exceptions;
 using Xeptions;
@@ -64,13 +63,13 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Decryptions
             {
                 throw CreateAndLogDocumentServiceException(documentServiceException);
             }
-            catch (DownloadDependencyException downloadDependencyException)
+            catch (DecryptionDependencyException decryptionDependencyException)
             {
-                throw CreateAndLogDownloadDependencyException(downloadDependencyException);
+                throw CreateAndLogDownloadDependencyException(decryptionDependencyException);
             }
-            catch (DownloadServiceException downloadServiceException)
+            catch (DecryptionServiceException decryptionServiceException)
             {
-                throw CreateAndLogDownloadServiceException(downloadServiceException);
+                throw CreateAndLogDownloadServiceException(decryptionServiceException);
             }
             catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
             {
@@ -90,10 +89,10 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Decryptions
             }
             catch (Exception exception)
             {
-                var failedBoroughServiceException =
+                var failedDecryptServiceException =
                     new FailedDecryptionOrchestrationServiceException(exception);
 
-                throw CreateAndLogServiceException(failedBoroughServiceException);
+                throw CreateAndLogServiceException(failedDecryptServiceException);
             }
         }
 
@@ -282,5 +281,3 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Decryptions
         }
     }
 }
-
-

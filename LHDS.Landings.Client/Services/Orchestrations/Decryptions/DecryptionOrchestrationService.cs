@@ -43,7 +43,7 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Decryptions
         public ValueTask DecryptAsync(string fileName) =>
             TryCatch(async () =>
             {
-
+                //Validate filename is null
                 var ingestionTracking = await this.ingestionTrackingService
                     .RetrieveIngestionTrackingByIdAsync(fileName);
 

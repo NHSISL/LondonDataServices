@@ -24,7 +24,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
         {
             // Given
             string containerName = invalidInput;
-            var isDecrypted = false;
 
             Document document = new Document
             {
@@ -36,10 +35,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
 
             invalidDocumentException.AddData(
                 key: "fileName",
-                values: "Text is required");
-
-            invalidDocumentException.AddData(
-                key: "blobContainerName",
                 values: "Text is required");
 
             var expectedDocumentValidationException
@@ -60,7 +55,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
 
             // When
             ValueTask<Document> getDownloadLinkTask =
-                documentService.RetrieveDocumentByFileNameAsync(document.FileName, isDecrypted);
+                documentService.RetrieveDocumentByFileNameAsync(document.FileName);
 
             DocumentValidationException actualDocumentBlobValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(getDownloadLinkTask.AsTask);
@@ -74,7 +69,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
                         Times.Once);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.SelectByFileNameAsync(It.IsAny<string>(), It.IsAny<string>()),
+                broker.SelectByFileNameAsync(It.IsAny<string>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

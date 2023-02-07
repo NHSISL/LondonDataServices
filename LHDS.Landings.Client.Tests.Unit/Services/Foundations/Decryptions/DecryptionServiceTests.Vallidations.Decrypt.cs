@@ -4,8 +4,8 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Landings.Client.Models.Foundations.Decryptions.Exceptions;
+using Moq;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Decryptions
 {

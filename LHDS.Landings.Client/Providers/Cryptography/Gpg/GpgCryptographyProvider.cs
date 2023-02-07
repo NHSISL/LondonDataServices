@@ -24,31 +24,39 @@ namespace LHDS.Landings.Client.Providers.Cryptography
         {
             var publicKeyDecoded = Convert.FromBase64String(this.gpgCryptographyProviderSettings.PublicKey);
 
-            using (Stream publicKeyStream = new MemoryStream(publicKeyDecoded))
+            using (Stream inputFileStream = new MemoryStream(data))
+            using (Stream publicKeyFileStream = new MemoryStream(publicKeyDecoded))
+            using (MemoryStream encryptedFileStream = new MemoryStream())
             {
-                PgpPublicKey publicKey = ReadPublicKey(publicKeyStream);
+                // Load the public key
+                PgpPublicKey publicKey = ReadPublicKey(publicKeyFileStream);
 
-                using (MemoryStream encryptedDataStream = new MemoryStream())
-                {
-                    PgpCompressedDataGenerator compressor =
-                        new PgpCompressedDataGenerator(CompressionAlgorithmTag.Zip);
+                // Encrypt the file
+                PgpEncryptedDataGenerator encryptedDataGenerator =
+                    new PgpEncryptedDataGenerator(SymmetricKeyAlgorithmTag.Cast5, true, new SecureRandom());
 
-                    PgpEncryptedDataGenerator encryptedDataGenerator =
-                        new PgpEncryptedDataGenerator(SymmetricKeyAlgorithmTag.Cast5, true, new SecureRandom());
+                encryptedDataGenerator.AddMethod(publicKey);
+                Stream encryptedStream = encryptedDataGenerator.Open(encryptedFileStream, new byte[1 << 16]);
 
-                    encryptedDataGenerator.AddMethod(publicKey);
+                PgpCompressedDataGenerator compressedDataGenerator =
+                    new PgpCompressedDataGenerator(CompressionAlgorithmTag.Zip);
 
-                    using (Stream encryptedDataWriter =
-                        encryptedDataGenerator.Open(compressor.Open(encryptedDataStream), new byte[1 << 16]))
-                    {
-                        encryptedDataWriter.Write(data, 0, data.Length);
-                    }
+                Stream compressedStream = compressedDataGenerator.Open(encryptedStream);
+                PgpLiteralDataGenerator literalDataGenerator = new PgpLiteralDataGenerator();
 
-                    encryptedDataStream.Position = 0;
-                    return await ValueTask.FromResult(encryptedDataStream.ToArray());
-                }
+                Stream literalStream = literalDataGenerator
+                    .Open(compressedStream, PgpLiteralData.Binary, string.Empty, inputFileStream.Length, DateTime.UtcNow);
+
+                inputFileStream.CopyTo(literalStream);
+                literalStream.Close();
+                compressedStream.Close();
+                encryptedStream.Close();
+                var result = encryptedFileStream.ToArray();
+
+                return await ValueTask.FromResult(result);
             }
         }
+
 
         public async ValueTask<byte[]> DecryptAsync(byte[] data)
         {

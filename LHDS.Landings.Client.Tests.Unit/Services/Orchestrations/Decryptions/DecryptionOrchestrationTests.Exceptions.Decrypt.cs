@@ -22,18 +22,14 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
         {
             // given
             string randomFileName = GetRandomMessage();
-            byte[] randomEncryptedString = Encoding.ASCII.GetBytes(GetRandomMessage());
-            byte[] randomDecryptedString = Encoding.ASCII.GetBytes(GetRandomMessage());
-            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            Document randomDocument = new Document { FileName = randomFileName, DocumentData = randomEncryptedString };
 
             var expectedDependencyException =
                 new DecryptionOrchestrationDependencyValidationException(
                     dependancyValidationException.InnerException as Xeption);
 
-            this.decryptionServiceMock.Setup(service =>
-              service.DecryptAsync(randomEncryptedString))
-                  .ThrowsAsync(dependancyValidationException);
+            this.ingestionTrackingServiceMock.Setup(service =>
+               service.RetrieveIngestionTrackingByIdAsync(randomFileName))
+                   .ThrowsAsync(dependancyValidationException);
 
             // when
             ValueTask decryptTask = this.decryptionOrchestrationService.DecryptAsync(randomFileName);
@@ -45,9 +41,9 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
             actualException.Should()
                  .BeEquivalentTo(expectedDependencyException);
 
-            this.decryptionServiceMock.Verify(service =>
-              service.DecryptAsync(randomDecryptedString),
-                Times.Once);
+            this.ingestionTrackingServiceMock.Verify(service =>
+             service.RetrieveIngestionTrackingByIdAsync(randomFileName),
+                 Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(
@@ -68,8 +64,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
         {
             // given
             string randomFileName = GetRandomMessage();
-            //byte[] randomEncryptedBytes = Encoding.ASCII.GetBytes(GetRandomMessage());
-            //byte[] randomDecryptedBytes = Encoding.ASCII.GetBytes(GetRandomMessage());
 
             var expectedDependencyException =
                 new DecryptionOrchestrationDependencyException(

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using Moq;
+using Xunit;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
 {

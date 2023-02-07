@@ -8,6 +8,7 @@ using FluentAssertions;
 using LHDS.Landings.Client.Models.Audits;
 using LHDS.Landings.Client.Models.Audits.Exceptions;
 using Moq;
+using Xunit;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Audits
 {

@@ -44,6 +44,5 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
-
     }
 }

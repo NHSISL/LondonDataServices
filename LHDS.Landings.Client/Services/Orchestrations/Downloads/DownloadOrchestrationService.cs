@@ -52,7 +52,7 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Downloads
                 {
                     IngestionTracking maybeIngestionTracking =
                         await this.ingestionTrackingService
-                            .RetrieveIngestionTrackingByFileNameAsync(document.FileName);
+                            .RetrieveIngestionTrackingByIdAsync(document.FileName);
 
                     if (maybeIngestionTracking == null)
                     {
@@ -61,17 +61,28 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Downloads
 
                         var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
+                        var filename = document.FileName.StartsWith('/')
+                            ? document.FileName
+                            : "/" + document.FileName;
+
                         IngestionTracking newIngestionTracking =
-                            new IngestionTracking
-                            {
-                                Id = document.FileName,
-                                FileName = document.FileName,
-                                Decrypted = false,
-                                CreatedDate = currentDateTime,
-                            };
+                          new IngestionTracking
+                          {
+                              Id = document.FileName,
+                              EncryptedFileName = $"/encrypted{filename}",
+                              DecryptedFileName = $"/decrypted{filename}",
+                              Decrypted = false,
+                              CreatedDate = currentDateTime,
+                          };
+
+                        Document newBlobDocument = new Document
+                        {
+                            DocumentData = retrievedDocument.DocumentData,
+                            FileName = newIngestionTracking.EncryptedFileName
+                        };
 
                         await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
-                        await this.documentService.AddDocumentAsync(retrievedDocument, false);
+                        await this.documentService.AddDocumentAsync(newBlobDocument);
                         LogAudit(document, currentDateTime);
                     }
                 }
@@ -82,6 +93,7 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Downloads
             Audit newAudit =
                 new Audit
                 {
+                    Id = Guid.NewGuid(),
                     IngestionTrackingId = document.FileName,
                     Message = $"Landed document - {document.FileName}",
                     CreatedDate = currentDateTime

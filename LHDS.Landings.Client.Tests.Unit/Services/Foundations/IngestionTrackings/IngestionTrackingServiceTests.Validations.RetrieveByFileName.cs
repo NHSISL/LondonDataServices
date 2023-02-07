@@ -5,7 +5,6 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Landings.Client.Models.Foundations.IngestionTracking.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
 using Moq;
@@ -18,13 +17,13 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
         public async Task ShouldThrowValidationExceptionOnRetrieveByFileNameIfFileNameIsInvalidAndLogItAsync()
         {
             // given
-            string FileName = String.Empty;
+            string fileName = String.Empty;
 
             var invalidIngestionTrackingException =
                 new InvalidIngestionTrackingException();
 
             invalidIngestionTrackingException.AddData(
-                key: nameof(IngestionTracking.FileName),
+                key: nameof(IngestionTracking.Id),
                 values: "Text is required");
 
             var expectedIngestionTrackingValidationException =
@@ -32,7 +31,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
 
             // when
             ValueTask<IngestionTracking> retrieveIngestionTrackingByFileNameTask =
-                this.ingestionTrackingService.RetrieveIngestionTrackingByFileNameAsync(FileName);
+                this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(fileName);
 
             IngestionTrackingValidationException actualIngestionTrackingValidationException =
                 await Assert.ThrowsAsync<IngestionTrackingValidationException>(
@@ -48,7 +47,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.ReadIngestionTrackingByFileNameAsync(It.IsAny<string>()),
+                broker.SelectIngestionTrackingByIdAsync(It.IsAny<string>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

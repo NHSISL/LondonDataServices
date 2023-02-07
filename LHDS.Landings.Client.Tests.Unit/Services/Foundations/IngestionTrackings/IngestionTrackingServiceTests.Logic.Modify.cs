@@ -1,10 +1,13 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using Moq;
-using Xunit;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTrackings
 {
@@ -27,7 +30,7 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.ReadIngestionTrackingByIdAsync(ingestionTrackingId))
+                broker.SelectIngestionTrackingByIdAsync(ingestionTrackingId))
                     .ReturnsAsync(storageIngestionTracking);
 
             this.storageBrokerMock.Setup(broker =>
@@ -41,17 +44,17 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTracking
             // then
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Never);
-
             this.storageBrokerMock.Verify(broker =>
-                broker.ReadIngestionTrackingByIdAsync(inputIngestionTracking.Id),
+                broker.SelectIngestionTrackingByIdAsync(inputIngestionTracking.Id),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateIngestionTrackingAsync(inputIngestionTracking),
                     Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

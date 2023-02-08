@@ -11,21 +11,26 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
 {
     public partial class DecryptionOrchestrationTests
     {
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnDecryptIfFileNameIsNullAndLogItAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnDecryptIfFileNameIsNullAndLogItAsync(string invalidText)
         {
             // given
-            string nullFileName = null;
+            var invalidArgumentDecryptionOrchestrationException =
+                new InvalidArgumentDecryptionOrchestrationException();
 
-            var nullFileNameException =
-                new NullDecryptionOrchestrationFileNameException();
+            invalidArgumentDecryptionOrchestrationException.AddData(
+               key: "FileName",
+               values: "Text is required");
 
             var expectedDecryptionOrchestrationFileNameValidationException =
-                new DecryptionOrchestrationValidationException(nullFileNameException);
+                new DecryptionOrchestrationValidationException(invalidArgumentDecryptionOrchestrationException);
 
             // when
             ValueTask decryptTask =
-                this.decryptionOrchestrationService.DecryptAsync(nullFileName);
+                this.decryptionOrchestrationService.DecryptAsync(invalidText);
 
             DecryptionOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<DecryptionOrchestrationValidationException>(decryptTask.AsTask);

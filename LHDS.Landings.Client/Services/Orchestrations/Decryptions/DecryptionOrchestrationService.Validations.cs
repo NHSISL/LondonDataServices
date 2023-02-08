@@ -10,10 +10,30 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Decryptions
     {
         private static void ValidateFileNameIsNotNull(string fileName)
         {
-            if (fileName is null)
+            Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));
+        }
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
+        };
+
+        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        {
+            var invalidArgumentDecryptionOrchestrationException = new InvalidArgumentDecryptionOrchestrationException();
+
+            foreach ((dynamic rule, string parameter) in validations)
             {
-                throw new NullDecryptionOrchestrationFileNameException();
+                if (rule.Condition)
+                {
+                    invalidArgumentDecryptionOrchestrationException.UpsertDataList(
+                        key: parameter,
+                        value: rule.Message);
+                }
             }
+
+            invalidArgumentDecryptionOrchestrationException.ThrowIfContainsErrors();
         }
     }
 }

@@ -4,6 +4,8 @@
 
 using System.Threading.Tasks;
 using LHDS.Landings.Client.Clients;
+using LHDS.Landings.Client.Models.Clients.DecryptionClient;
+using LHDS.Landings.Client.Models.Orchestrations.Decryptions.Exceptions;
 using LHDS.Landings.Client.Services.Orchestrations.Decryptions;
 using Xeptions;
 

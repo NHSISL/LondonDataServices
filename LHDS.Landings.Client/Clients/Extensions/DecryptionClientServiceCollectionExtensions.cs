@@ -13,6 +13,7 @@ using LHDS.Landings.Client.Brokers.Downloads;
 using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Brokers.Storages.Blobs;
 using LHDS.Landings.Client.Brokers.Storages.Sql;
+using LHDS.Landings.Client.Providers.Cryptography;
 using LHDS.Landings.Client.Providers.Downloads;
 using LHDS.Landings.Client.Providers.Downloads.FtpDownloads;
 using LHDS.Landings.Client.Services.Foundations.Audits;
@@ -66,7 +67,7 @@ namespace LHDS.Landings.Client.Clients.Extensions
             services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
             services.AddTransient<IDownloadAbstractProvider, DownloadAbstractProvider>();
-            services.AddTransient<ICryptographyAbstractProvider, DownloadAbstractProvider>();
+            services.AddTransient<ICryptographyAbstractProvider, CryptographyAbstractProvider>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
 
             return services;

@@ -20,12 +20,9 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
         public async Task ShouldProcessDecryptedDocumentAsync()
         {
             // given
-            DateTimeOffset randomDateTimeOffset =
-                  GetRandomDateTimeOffset();
-
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTimeOffset);
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
-
             string randomFileName = GetRandomMessage();
             byte[] randomEncryptedBytes = Encoding.ASCII.GetBytes(GetRandomMessage());
             byte[] randomDecryptedBytes = Encoding.ASCII.GetBytes(GetRandomMessage());

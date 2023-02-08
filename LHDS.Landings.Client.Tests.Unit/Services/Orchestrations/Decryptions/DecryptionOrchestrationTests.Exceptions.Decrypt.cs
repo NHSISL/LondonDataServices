@@ -100,7 +100,6 @@ namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Decryptions
         {
             //Given
             string randomFileName = GetRandomMessage();
-
             var serviceException = new Exception();
 
             var failedDecryptionOrchestrationServiceException =

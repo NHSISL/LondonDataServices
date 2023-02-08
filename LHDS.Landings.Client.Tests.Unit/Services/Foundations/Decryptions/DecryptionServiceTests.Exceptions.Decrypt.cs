@@ -2,12 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Landings.Client.Models.Foundations.Decryptions.Exceptions;
-using System;
-using LHDS.Landings.Client.Models.Foundations.Downloads.Exceptions;
+using Moq;
+using Xunit;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Decryptions
 {

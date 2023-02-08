@@ -3,15 +3,15 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
-using LHDS.Landings.Client.Providers.Decryptions;
+using LHDS.Landings.Client.Providers.Cryptography;
 
 namespace LHDS.Landings.Client.Brokers.Decryptions
 {
     public class DecryptionBroker : IDecryptionBroker
     {
-        private readonly IDecryptionAbstractProvider decryptionAbstractProvider;
+        private readonly ICryptographyAbstractProvider decryptionAbstractProvider;
 
-        public DecryptionBroker(IDecryptionAbstractProvider decryptionAbstractProvider)
+        public DecryptionBroker(ICryptographyAbstractProvider decryptionAbstractProvider)
         {
             this.decryptionAbstractProvider = decryptionAbstractProvider;
         }

@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Net;
+using LHDS.Landings.Client.Clients;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
@@ -11,24 +11,23 @@ namespace LHDS.Functions.Decryption
 {
     public class DecryptionFunction
     {
-        private readonly ILogger _logger;
+        private readonly ILogger logger;
+        private readonly IDecryptionClient decryptionClient;
 
-        public DecryptionFunction(ILoggerFactory loggerFactory)
+        public DecryptionFunction(ILoggerFactory loggerFactory, IDecryptionClient decryptionClient)
         {
-            _logger = loggerFactory.CreateLogger<DecryptionFunction>();
+            logger = loggerFactory.CreateLogger<DecryptionFunction>();
+            this.decryptionClient = decryptionClient;
         }
 
         [Function("DecryptionFunction")]
-        public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
+        public async ValueTask Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
         {
-            _logger.LogInformation("C# HTTP trigger function processed a request.");
+            //logger.LogInformation($"Decrypting document: {name}");
 
-            var response = req.CreateResponse(HttpStatusCode.OK);
-            response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
+            //TODO: Change to blob trigger 
+            //await this.decryptionClient.DecryptAsync(nameame);
 
-            response.WriteString("Decrypting document");
-
-            return response;
         }
     }
 }

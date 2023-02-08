@@ -6,10 +6,10 @@ using Xeptions;
 
 namespace LHDS.Landings.Client.Models.Orchestrations.Decryptions.Exceptions
 {
-    public class NullDecryptionOrchestrationFileNameException : Xeption
+    public class InvalidArgumentDecryptionOrchestrationException : Xeption
     {
-        public NullDecryptionOrchestrationFileNameException()
-            : base(message: "Filename is null.")
+        public InvalidArgumentDecryptionOrchestrationException()
+            : base(message: "Invalid decryption orchestration argument(s), please correct the errors and try again.")
         { }
     }
 }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using Moq;
+using Xunit;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Downloads
 {

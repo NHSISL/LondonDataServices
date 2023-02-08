@@ -11,6 +11,7 @@ using LHDS.Landings.Client.Services.Foundations.Documents;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using NEL.Premises.Api.Models.Documents.Exceptions;
+using Xunit;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
 {

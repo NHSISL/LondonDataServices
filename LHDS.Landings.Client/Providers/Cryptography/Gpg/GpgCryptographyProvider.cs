@@ -15,6 +15,7 @@ namespace LHDS.Landings.Client.Providers.Cryptography
     public class GpgCryptographyProvider : ICryptographyProvider
     {
         private readonly IGpgCryptographyProviderSettings gpgCryptographyProviderSettings;
+
         public GpgCryptographyProvider(IGpgCryptographyProviderSettings gpgCryptographyProviderSettings)
         {
             this.gpgCryptographyProviderSettings = gpgCryptographyProviderSettings;
@@ -56,7 +57,6 @@ namespace LHDS.Landings.Client.Providers.Cryptography
                 return await ValueTask.FromResult(result);
             }
         }
-
 
         public async ValueTask<byte[]> DecryptAsync(byte[] data)
         {

@@ -131,8 +131,7 @@ namespace LHDS.Landings.Client.Services.Orchestrations.Decryptions
             throw decryptionOrchestrationDependencyException;
         }
 
-        private DecryptionOrchestrationServiceException CreateAndLogServiceException(
-         Xeption exception)
+        private DecryptionOrchestrationServiceException CreateAndLogServiceException(Xeption exception)
         {
             var decryptionServiceException =
                 new DecryptionOrchestrationServiceException(exception);

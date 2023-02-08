@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
-using LHDS.Landings.Client.Brokers.Loggings;
 using LHDS.Landings.Client.Models.Clients.LandingClient;
 using LHDS.Landings.Client.Models.Orchestrations.Decryptions.Exceptions;
 using LHDS.Landings.Client.Models.Orchestrations.Downloads.Exceptions;
@@ -15,14 +14,11 @@ namespace LHDS.Landings.Client.Clients
     public class LandingClient : ILandingClient
     {
         private readonly IDownloadOrchestrationService downloadOrchestrationService;
-        private readonly ILoggingBroker loggingBroker;
 
         public LandingClient(
-            IDownloadOrchestrationService downloadOrchestrationService,
-            ILoggingBroker loggingBroker)
+            IDownloadOrchestrationService downloadOrchestrationService)
         {
             this.downloadOrchestrationService = downloadOrchestrationService;
-            this.loggingBroker = loggingBroker;
         }
 
         public async ValueTask ProcessAsync()

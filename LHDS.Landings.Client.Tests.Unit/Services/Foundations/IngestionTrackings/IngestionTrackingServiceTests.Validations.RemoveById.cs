@@ -2,14 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
 using Moq;
-using NEL.Premises.Api.Models.Documents.Exceptions;
+using Xunit;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTrackings
 {

@@ -12,6 +12,7 @@ using FluentAssertions;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.Documents.Exceptions;
 using Moq;
+using Xunit;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.Documents
 {

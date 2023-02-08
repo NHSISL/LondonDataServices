@@ -7,6 +7,7 @@ using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using Moq;
+using Xunit;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTrackings
 {

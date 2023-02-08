@@ -4,16 +4,19 @@
 
 using System.Threading.Tasks;
 
-namespace LHDS.Landings.Client.Providers.Decryptions
+namespace LHDS.Landings.Client.Providers.Cryptography
 {
-    public class DecryptionAbstractProvider : IDecryptionAbstractProvider
+    public class CryptographyAbstractProvider : ICryptographyAbstractProvider
     {
-        private readonly IDecryptionProvider provider;
+        private readonly ICryptographyProvider provider;
 
-        public DecryptionAbstractProvider(IDecryptionProvider provider)
+        public CryptographyAbstractProvider(ICryptographyProvider provider)
         {
             this.provider = provider;
         }
+
+        public async ValueTask<byte[]> EncryptAsync(byte[] data) =>
+            await this.provider.EncryptAsync(data);
 
         public async ValueTask<byte[]> DecryptAsync(byte[] data) =>
             await this.provider.DecryptAsync(data);

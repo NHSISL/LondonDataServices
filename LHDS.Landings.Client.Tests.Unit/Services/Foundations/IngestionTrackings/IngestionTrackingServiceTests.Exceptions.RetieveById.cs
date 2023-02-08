@@ -3,12 +3,13 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
+using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
-using System.Threading.Tasks;
-using LHDS.Landings.Client.Models.Foundations.IngestionTrackings.Exceptions;
-using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
+using Xunit;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Foundations.IngestionTrackings
 {

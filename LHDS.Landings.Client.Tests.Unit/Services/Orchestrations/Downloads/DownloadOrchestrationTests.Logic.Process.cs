@@ -9,6 +9,7 @@ using LHDS.Landings.Client.Models.Audits;
 using LHDS.Landings.Client.Models.Foundations.Documents;
 using LHDS.Landings.Client.Models.Foundations.IngestionTrackings;
 using Moq;
+using Xunit;
 
 namespace LHDS.Landings.Client.Tests.Unit.Services.Orchestrations.Downloads
 {

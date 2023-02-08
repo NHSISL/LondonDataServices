@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using LHDS.Landings.Client.Clients.Extensions;
+using LHDS.Landings.Client.Providers.Cryptography.Extensions;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,13 +35,12 @@ namespace LHDS.Functions.Decryption
                    .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
-
             builder.Services.AddTransient<IConfiguration>(_ => configuration);
 
-            //builder.Services
-            //    .AddLogging()
-            //    .AddLandingClient(configuration)
-            //    .UseRestDownloadProvider(builder => builder.AddRestDownloadProvider());
+            builder.Services
+                .AddLogging()
+                .AddDecryptionClient(configuration)
+                .UseGpgCryptographyProvider(configuration, builder => builder.AddGpgCryptographyProvider());
         }
     }
 }

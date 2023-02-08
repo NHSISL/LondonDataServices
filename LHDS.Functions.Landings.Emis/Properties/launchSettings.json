@@ -1,8 +1,8 @@
 {
   "profiles": {
-    "LHDS.Landings.Functions.Tpp": {
+    "LHDS.Functions.Landings.Emis": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7211",
+      "commandLineArgs": "--port 7130",
       "launchBrowser": false
     }
   }

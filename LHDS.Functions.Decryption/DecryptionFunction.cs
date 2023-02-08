@@ -7,18 +7,18 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 
-namespace LHDS.Landings.Functions.Emis
+namespace LHDS.Functions.Decryption
 {
-    public class EmisLandingFunction
+    public class DecryptionFunction
     {
         private readonly ILogger _logger;
 
-        public EmisLandingFunction(ILoggerFactory loggerFactory)
+        public DecryptionFunction(ILoggerFactory loggerFactory)
         {
-            _logger = loggerFactory.CreateLogger<EmisLandingFunction>();
+            _logger = loggerFactory.CreateLogger<DecryptionFunction>();
         }
 
-        [Function("EmisLandingFunction")]
+        [Function("Function1")]
         public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
@@ -26,7 +26,7 @@ namespace LHDS.Landings.Functions.Emis
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
 
-            response.WriteString("Welcome to Azure Functions!");
+            response.WriteString("Decrypting document");
 
             return response;
         }

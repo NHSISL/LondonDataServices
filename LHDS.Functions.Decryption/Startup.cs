@@ -2,14 +2,14 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.IO;
 using LHDS.Landings.Client.Clients.Extensions;
-using LHDS.Landings.Client.Providers.Downloads.Extensions;
+using LHDS.Landings.Client.Providers.Cryptography.Extensions;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
-[assembly: FunctionsStartup(typeof(LHDS.Landings.Functions.Emis.Startup))]
-namespace LHDS.Landings.Functions.Emis
+[assembly: FunctionsStartup(typeof(LHDS.Functions.Decryption.Startup))]
+namespace LHDS.Functions.Decryption
 {
     /// <summary>
     /// The Startup class for the Azure Function.
@@ -35,10 +35,12 @@ namespace LHDS.Landings.Functions.Emis
                    .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
+            builder.Services.AddTransient<IConfiguration>(_ => configuration);
 
             builder.Services
-                .AddLandingClient(configuration)
-                .UseFtpDownloadProvider(configuration, builder => builder.AddFtpDownloadProvider());
+                .AddLogging()
+                .AddDecryptionClient(configuration)
+                .UseGpgCryptographyProvider(configuration, builder => builder.AddGpgCryptographyProvider());
         }
     }
 }

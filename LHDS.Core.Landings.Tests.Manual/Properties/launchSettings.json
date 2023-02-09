@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "LHDS.Core.Tests.Manual": {
+    "LHDS.Core.Landings.Tests.Manual": {
       "commandName": "Project",
       "environmentVariables": {
         "AZURE_TENANT_ID": "8076439c-5b1f-4e15-91ea-a0bff0b3bf16"

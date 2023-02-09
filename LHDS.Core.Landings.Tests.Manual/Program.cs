@@ -8,7 +8,7 @@ using LHDS.Core.Providers.Downloads.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LHDS.Core.Tests.Manual
+namespace LHDS.Core.Landings.Tests.Manual
 {
     internal class Program
     {

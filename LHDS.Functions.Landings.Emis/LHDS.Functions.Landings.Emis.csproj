@@ -19,6 +19,10 @@
 	</ItemGroup>
 	
 	<ItemGroup>
+	  <ProjectReference Include="..\LHDS.Core\LHDS.Core.csproj" />
+	</ItemGroup>
+	
+	<ItemGroup>
 		<None Update="host.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
@@ -30,9 +34,5 @@
 	
 	<ItemGroup>
 		<Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\LHDS.Landings.Client\LHDS.Landings.Client.csproj" />
 	</ItemGroup>
 </Project>

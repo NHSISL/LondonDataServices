@@ -30,8 +30,4 @@
 		</PackageReference>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <ProjectReference Include="..\LHDS.Landings.Client\LHDS.Landings.Client.csproj" />
-	</ItemGroup>
-
 </Project>

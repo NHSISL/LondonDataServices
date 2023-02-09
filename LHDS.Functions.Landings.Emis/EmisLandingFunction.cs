@@ -4,7 +4,7 @@
 
 using System.Net;
 using System.Threading.Tasks;
-using LHDS.Landings.Client.Clients;
+using LHDS.Core.Clients;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;

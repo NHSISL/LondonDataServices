@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using LHDS.Landings.Client.Clients;
+using LHDS.Core.Clients;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
@@ -24,10 +24,8 @@ namespace LHDS.Functions.Decryption
         public async ValueTask Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
         {
             //logger.LogInformation($"Decrypting document: {name}");
-
             //TODO: Change to blob trigger 
-            //await this.decryptionClient.DecryptAsync(nameame);
-
+            await this.decryptionClient.DecryptAsync(string.Empty);
         }
     }
 }

@@ -2,8 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using LHDS.Landings.Client.Clients.Extensions;
-using LHDS.Landings.Client.Providers.Cryptography.Extensions;
+using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Providers.Cryptography.Extensions;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

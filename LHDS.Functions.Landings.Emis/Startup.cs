@@ -3,8 +3,8 @@
 // ---------------------------------------------------------------
 
 using System.IO;
-using LHDS.Landings.Client.Clients.Extensions;
-using LHDS.Landings.Client.Providers.Downloads.Extensions;
+using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Providers.Downloads.Extensions;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

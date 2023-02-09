@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "LHDS.Functions.Decryption": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7178",
+      "launchBrowser": false
+    }
+  }
+}

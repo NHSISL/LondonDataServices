@@ -9,7 +9,8 @@ using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LHDS.Landings.Functions.Tpp
+[assembly: FunctionsStartup(typeof(LHDS.Functions.Landings.Emis.Startup))]
+namespace LHDS.Functions.Landings.Emis
 {
     /// <summary>
     /// The Startup class for the Azure Function.
@@ -35,12 +36,12 @@ namespace LHDS.Landings.Functions.Tpp
                    .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
-
             builder.Services.AddTransient<IConfiguration>(_ => configuration);
 
             builder.Services
+                .AddLogging()
                 .AddLandingClient(configuration)
-                .UseRestDownloadProvider(builder => builder.AddRestDownloadProvider());
+                .UseFtpDownloadProvider(configuration, builder => builder.AddFtpDownloadProvider());
         }
     }
 }

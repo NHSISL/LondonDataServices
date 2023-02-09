@@ -10,6 +10,7 @@ using LHDS.Core.Providers.Cryptography.Extensions;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace LHDS.Clients.Tests.Decryption.Manual
 {
@@ -29,7 +30,10 @@ namespace LHDS.Clients.Tests.Decryption.Manual
 
             //setup our DI
             var serviceProvider = new ServiceCollection()
-                .AddLogging()
+                .AddLogging(builder => {
+                    builder.AddConsole();
+                    builder.AddApplicationInsights();
+                })
                 .AddDecryptionClient(configuration)
                 .UseGpgCryptographyProvider(configuration, builder => builder.AddGpgCryptographyProvider())
                 .BuildServiceProvider();
@@ -37,10 +41,10 @@ namespace LHDS.Clients.Tests.Decryption.Manual
             var decryptionClient = serviceProvider.GetService<IDecryptionClient>();
 
             IIngestionTrackingService ingestionTrackingService =
-                (IIngestionTrackingService)serviceProvider.GetServices<IIngestionTrackingService>();
+                serviceProvider.GetService<IIngestionTrackingService>();
 
             var items = ingestionTrackingService.RetrieveAllIngestionTracking()
-                .Where(ingestionTrackingService => ingestionTrackingService.Decrypted == true);
+                .Where(ingestionTrackingService => ingestionTrackingService.Decrypted == false);
 
             foreach (IngestionTracking item in items)
             {

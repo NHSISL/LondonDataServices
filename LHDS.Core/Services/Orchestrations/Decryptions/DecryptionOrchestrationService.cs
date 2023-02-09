@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -75,6 +76,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             Audit newAudit =
                 new Audit
                 {
+                    Id = Guid.NewGuid(),
                     IngestionTrackingId = document.FileName,
                     Message = $"Decrypted document - {document.FileName}",
                     CreatedDate = currentDateTime

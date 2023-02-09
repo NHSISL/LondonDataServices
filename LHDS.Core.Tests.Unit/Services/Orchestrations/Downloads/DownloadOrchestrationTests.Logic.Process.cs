@@ -52,7 +52,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                   {
                       Id = document.FileName,
                       EncryptedFileName = $"/encrypted{filename}",
-                      DecryptedFileName = $"/decrypted{filename}",
+                      DecryptedFileName = 
+                        $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
                       Decrypted = false,
                       CreatedDate = randomDateTime,
                   };
@@ -91,7 +92,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                   {
                       Id = document.FileName,
                       EncryptedFileName = $"/encrypted{filename}",
-                      DecryptedFileName = $"/decrypted{filename}",
+                      DecryptedFileName =
+                        $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
                       Decrypted = false,
                       CreatedDate = randomDateTime,
                   };
@@ -164,7 +166,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                   {
                       Id = document.FileName,
                       EncryptedFileName = $"/encrypted{filename}",
-                      DecryptedFileName = $"/decrypted{filename}",
+                      DecryptedFileName =
+                        $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
                       Decrypted = false,
                       CreatedDate = randomDateTime,
                   };
@@ -203,7 +206,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                   {
                       Id = document.FileName,
                       EncryptedFileName = $"/encrypted{filename}",
-                      DecryptedFileName = $"/decrypted{filename}",
+                      DecryptedFileName =
+                        $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
                       Decrypted = false,
                       CreatedDate = randomDateTime,
                   };

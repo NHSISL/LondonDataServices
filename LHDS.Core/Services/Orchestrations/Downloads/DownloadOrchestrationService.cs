@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -45,46 +46,63 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         public ValueTask ProcessAsync() =>
             TryCatch(async () =>
             {
+                var exceptions = new List<Exception>();
+
                 List<Document> retrievedDocuments =
                 await this.downloadService.RetrieveListOfDocumentsToProcessAsync();
 
                 foreach (var document in retrievedDocuments)
                 {
-                    IngestionTracking maybeIngestionTracking =
+                    try
+                    {
+                        IngestionTracking maybeIngestionTracking =
                         await this.ingestionTrackingService
                             .RetrieveIngestionTrackingByIdAsync(document.FileName);
 
-                    if (maybeIngestionTracking == null)
-                    {
-                        Document retrievedDocument =
-                            await this.downloadService.RetrieveDownloadByFileNameAsync(document.FileName);
-
-                        var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-
-                        var filename = document.FileName.StartsWith('/')
-                            ? document.FileName
-                            : "/" + document.FileName;
-
-                        IngestionTracking newIngestionTracking =
-                          new IngestionTracking
-                          {
-                              Id = document.FileName,
-                              EncryptedFileName = $"/encrypted{filename}",
-                              DecryptedFileName = $"/decrypted{filename}",
-                              Decrypted = false,
-                              CreatedDate = currentDateTime,
-                          };
-
-                        Document newBlobDocument = new Document
+                        if (maybeIngestionTracking == null)
                         {
-                            DocumentData = retrievedDocument.DocumentData,
-                            FileName = newIngestionTracking.EncryptedFileName
-                        };
+                            Document retrievedDocument =
+                                await this.downloadService.RetrieveDownloadByFileNameAsync(document.FileName);
 
-                        await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
-                        await this.documentService.AddDocumentAsync(newBlobDocument);
-                        LogAudit(document, currentDateTime);
+                            var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                            var filename = document.FileName.StartsWith('/')
+                                ? document.FileName
+                                : "/" + document.FileName;
+
+                            IngestionTracking newIngestionTracking =
+                              new IngestionTracking
+                              {
+                                  Id = document.FileName,
+                                  EncryptedFileName = $"/encrypted{filename}",
+                                  DecryptedFileName = 
+                                    $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                                  Decrypted = false,
+                                  CreatedDate = currentDateTime,
+                              };
+
+                            Document newBlobDocument = new Document
+                            {
+                                DocumentData = retrievedDocument.DocumentData,
+                                FileName = newIngestionTracking.EncryptedFileName
+                            };
+
+                            await this.documentService.AddDocumentAsync(newBlobDocument);
+                            await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
+                            LogAudit(document, currentDateTime);
+                        }
                     }
+                    catch (Exception ex)
+                    {
+                        this.loggingBroker.LogError(ex);
+                        Console.WriteLine($"Unable to land document: {document.FileName}");
+                        exceptions.Add(ex);
+                    }
+                }
+
+                if(exceptions.Any())
+                {
+                    throw new AggregateException($"Unable to land {exceptions.Count} document(s)", exceptions);
                 }
             });
 

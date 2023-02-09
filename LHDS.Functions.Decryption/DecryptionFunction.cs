@@ -24,10 +24,8 @@ namespace LHDS.Functions.Decryption
         public async ValueTask Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
         {
             //logger.LogInformation($"Decrypting document: {name}");
-
             //TODO: Change to blob trigger 
-            //await this.decryptionClient.DecryptAsync(nameame);
-
+            await this.decryptionClient.DecryptAsync(string.Empty);
         }
     }
 }

@@ -91,16 +91,23 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
 
         private void EnsureClientIsConnected()
         {
-            if (client.IsConnected)
+            try
             {
-                return;
+                if (client.IsConnected)
+                {
+                    return;
+                }
+
+                client.Connect();
+
+                if (!client.IsConnected)
+                {
+                    throw new FailedToConnectSftpClientException();
+                }
             }
-
-            client.Connect();
-
-            if (!client.IsConnected)
+            catch (Exception)
             {
-                throw new FailedToConnectSftpClientException();
+                this.EnsureClientIsConnected();
             }
         }
 

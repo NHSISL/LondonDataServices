@@ -38,25 +38,34 @@ namespace LHDS.Decryptions.Client.Clients
 
         public async ValueTask UploadFileAsync(string fileName, Stream stream, string container)
         {
-            loggingBroker.LogInformation($"file:{fileName}, size:{stream.Length}, container:{container}");
-            var blobClient = this.blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
-            var streamLenght = stream.Length;
-
-            var options = new BlobUploadOptions
+            try
             {
-                ProgressHandler = new Progress<long>(progress =>
-                {
-                    Console.WriteLine(
-                        $"file: {fileName}, progress: {progress}/{streamLenght}, " +
-                        $"percent:{Math.Round((double)progress / (double)streamLenght * 100.0, 2)}");
-                }),
-                TransferOptions = new Azure.Storage.StorageTransferOptions()
-                {
-                    InitialTransferSize = stream.Length
-                }
-            };
+                loggingBroker.LogInformation($"file:{fileName}, size:{stream.Length}, container:{container}");
+                var blobClient = this.blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
+                var streamLenght = stream.Length;
 
-            await blobClient.UploadAsync(stream, options);
+                var options = new BlobUploadOptions
+                {
+                    ProgressHandler = new Progress<long>(progress =>
+                    {
+                        Console.WriteLine(
+                            $"file: {fileName}, progress: {progress}/{streamLenght}, " +
+                            $"percent:{Math.Round((double)progress / (double)streamLenght * 100.0, 2)}");
+                    }),
+                    TransferOptions = new Azure.Storage.StorageTransferOptions()
+                    {
+                        InitialTransferSize = stream.Length
+                    }
+                };
+
+                await blobClient.UploadAsync(stream, options);
+            }
+            catch (Exception ex)
+            {
+                this.loggingBroker.LogError(ex);
+                Console.WriteLine($"Unable to write blob: {fileName}");
+                throw;
+            }
         }
 
         public async ValueTask DeleteFileAsync(string fileName, string container)

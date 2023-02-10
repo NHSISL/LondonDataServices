@@ -8,6 +8,7 @@ using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Decryptions;
 using LHDS.Core.Brokers.Downloads;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
@@ -16,6 +17,7 @@ using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Providers.Downloads.FtpDownloads;
 using LHDS.Core.Services.Foundations.Audits;
+using LHDS.Core.Services.Foundations.Decryptions;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
@@ -54,7 +56,9 @@ namespace LHDS.Core.Clients.Extensions
 
             services.AddSingleton<IConfiguration>(_ => configuration);
             services.AddTransient<IDecryptionClient, DecryptionClient>();
+            services.AddTransient<IDecryptionBroker, DecryptionBroker>();
             services.AddTransient<IDecryptionOrchestrationService, DecryptionOrchestrationService>();
+            services.AddTransient<IDecryptionService, DecryptionService>();
             services.AddSingleton<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IDownloadService, DownloadService>();

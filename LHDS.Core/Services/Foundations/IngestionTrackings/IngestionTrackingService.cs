@@ -46,8 +46,6 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 IngestionTracking maybeIngestionTracking = await this.storageBroker
                     .SelectIngestionTrackingByIdAsync(ingestionTrackingId);
 
-                ValidateStorageIngestionTracking(maybeIngestionTracking, ingestionTrackingId);
-
                 return maybeIngestionTracking;
             });
 

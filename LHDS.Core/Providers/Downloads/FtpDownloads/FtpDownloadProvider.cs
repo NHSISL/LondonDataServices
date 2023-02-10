@@ -91,8 +91,12 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
 
         private void EnsureClientIsConnected()
         {
-            try
+            var attempts = 0;
+
+            while (true)
             {
+                attempts++;
+
                 if (client.IsConnected)
                 {
                     return;
@@ -100,14 +104,10 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
 
                 client.Connect();
 
-                if (!client.IsConnected)
+                if (!client.IsConnected && attempts > 3)
                 {
                     throw new FailedToConnectSftpClientException();
                 }
-            }
-            catch (Exception)
-            {
-                this.EnsureClientIsConnected();
             }
         }
 

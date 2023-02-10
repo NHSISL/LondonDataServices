@@ -55,42 +55,45 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 {
                     try
                     {
-                        IngestionTracking maybeIngestionTracking =
-                        await this.ingestionTrackingService
-                            .RetrieveIngestionTrackingByIdAsync(document.FileName);
-
-                        if (maybeIngestionTracking == null)
+                        await TryCatch(async () =>
                         {
-                            Document retrievedDocument =
-                                await this.downloadService.RetrieveDownloadByFileNameAsync(document.FileName);
+                            IngestionTracking maybeIngestionTracking =
+                            await this.ingestionTrackingService
+                                .RetrieveIngestionTrackingByIdAsync(document.FileName);
 
-                            var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-
-                            var filename = document.FileName.StartsWith('/')
-                                ? document.FileName
-                                : "/" + document.FileName;
-
-                            IngestionTracking newIngestionTracking =
-                              new IngestionTracking
-                              {
-                                  Id = document.FileName,
-                                  EncryptedFileName = $"/encrypted{filename}",
-                                  DecryptedFileName = 
-                                    $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
-                                  Decrypted = false,
-                                  CreatedDate = currentDateTime,
-                              };
-
-                            Document newBlobDocument = new Document
+                            if (maybeIngestionTracking == null)
                             {
-                                DocumentData = retrievedDocument.DocumentData,
-                                FileName = newIngestionTracking.EncryptedFileName
-                            };
+                                Document retrievedDocument =
+                                    await this.downloadService.RetrieveDownloadByFileNameAsync(document.FileName);
 
-                            await this.documentService.AddDocumentAsync(newBlobDocument);
-                            await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
-                            LogAudit(document, currentDateTime);
-                        }
+                                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                                var filename = document.FileName.StartsWith('/')
+                                    ? document.FileName
+                                    : "/" + document.FileName;
+
+                                IngestionTracking newIngestionTracking =
+                                  new IngestionTracking
+                                  {
+                                      Id = document.FileName,
+                                      EncryptedFileName = $"/encrypted{filename}",
+                                      DecryptedFileName =
+                                        $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                                      Decrypted = false,
+                                      CreatedDate = currentDateTime,
+                                  };
+
+                                Document newBlobDocument = new Document
+                                {
+                                    DocumentData = retrievedDocument.DocumentData,
+                                    FileName = newIngestionTracking.EncryptedFileName
+                                };
+
+                                await this.documentService.AddDocumentAsync(newBlobDocument);
+                                await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
+                                LogAudit(document, currentDateTime);
+                            }
+                        });
                     }
                     catch (Exception ex)
                     {
@@ -100,7 +103,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     }
                 }
 
-                if(exceptions.Any())
+                if (exceptions.Any())
                 {
                     throw new AggregateException($"Unable to land {exceptions.Count} document(s)", exceptions);
                 }

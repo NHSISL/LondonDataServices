@@ -22,7 +22,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
     {
         private readonly IDocumentService documentService;
         private readonly IDownloadService downloadService;
-        private readonly IIngestionTrackingService ingestionTrackingService;
+        private readonly IIngestionTrackingBroker ingestionTrackingService;
         private readonly IAuditService auditService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
@@ -30,7 +30,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         public DownloadOrchestrationService(
             IDocumentService documentService,
             IDownloadService downloadService,
-            IIngestionTrackingService ingestionTrackingService,
+            IIngestionTrackingBroker ingestionTrackingService,
             IAuditService auditService,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker)

@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
-        private readonly IIngestionTrackingService ingestionTrackingService;
+        private readonly IIngestionTrackingBroker ingestionTrackingService;
 
         public IngestionTrackingServiceTests()
         {

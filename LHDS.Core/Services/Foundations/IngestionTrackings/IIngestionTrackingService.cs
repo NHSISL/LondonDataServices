@@ -8,7 +8,7 @@ using LHDS.Core.Models.Foundations.IngestionTrackings;
 
 namespace LHDS.Core.Services.Foundations.IngestionTrackings
 {
-    public interface IIngestionTrackingService
+    public interface IIngestionTrackingBroker
     {
         ValueTask<IngestionTracking> AddIngestionTrackingAsync(IngestionTracking ingestionTracking);
         IQueryable<IngestionTracking> RetrieveAllIngestionTracking();

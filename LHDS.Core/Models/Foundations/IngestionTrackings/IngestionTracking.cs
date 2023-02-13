@@ -13,5 +13,9 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings
         public string DecryptedFileName { get; set; }
         public bool Decrypted { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
+        public DateTimeOffset LastSeen { get; set; }
+        public bool fileDeleted { get; set; }
+        public int records { get; set; }
+        public int fileSize { get; set; }
     }
 }

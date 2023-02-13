@@ -19,7 +19,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
     {
         private readonly IDocumentService documentService;
         private readonly IDecryptionService decryptionService;
-        private readonly IIngestionTrackingService ingestionTrackingService;
+        private readonly IIngestionTrackingBroker ingestionTrackingService;
         private readonly IAuditService auditService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
@@ -27,7 +27,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
         public DecryptionOrchestrationService(
             IDocumentService documentService,
             IDecryptionService decryptionService,
-            IIngestionTrackingService ingestionTrackingService,
+            IIngestionTrackingBroker ingestionTrackingService,
             IAuditService auditService,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker)

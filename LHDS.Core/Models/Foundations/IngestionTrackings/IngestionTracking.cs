@@ -15,7 +15,7 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset LastSeen { get; set; }
         public bool fileDeleted { get; set; }
-        public int records { get; set; }
+        public int fileCount { get; set; }
         public int fileSize { get; set; }
     }
 }

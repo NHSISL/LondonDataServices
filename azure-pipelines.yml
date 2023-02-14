@@ -35,6 +35,13 @@ steps:
       arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
 
   - task: DotNetCoreCLI@2
+    displayName: "Dotnet Build"
+    inputs:
+      command: 'build'
+      projects: '**/LHDS.Functions.Landings.Emis.csproj'
+      arguments: --output $(System.DefaultWorkingDirectory)/publish_output_emis_func --configuration Release
+
+  - task: DotNetCoreCLI@2
     displayName: Run Unit Tests
     inputs:
       command: 'test'
@@ -49,11 +56,11 @@ steps:
   - task: ArchiveFiles@2
     displayName: 'Archive files'
     inputs:
-      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output'
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_emis_func'
       includeRootFolder: false
       archiveType: zip
-      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_emis_func.zip
       replaceExistingArchive: true
 
-  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)*.zip
     artifact: drop

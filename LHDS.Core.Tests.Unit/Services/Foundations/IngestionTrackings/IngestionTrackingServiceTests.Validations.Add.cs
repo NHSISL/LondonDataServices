@@ -81,6 +81,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 key: nameof(IngestionTracking.CreatedDate),
                 values: "Date is required");
 
+            invalidIngestionTrackingException.AddData(
+                key: nameof(IngestionTracking.LastSeen),
+                values: "Date is required");
+
+            invalidIngestionTrackingException.AddData(
+                key: nameof(IngestionTracking.fileCount),
+                values: "Number is required");
+
+            invalidIngestionTrackingException.AddData(
+                key: nameof(IngestionTracking.fileSize),
+                values: "Number is required");
+
             var expectedIngestionTrackingValidationException =
                 new IngestionTrackingValidationException(invalidIngestionTrackingException);
 

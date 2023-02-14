@@ -32,6 +32,7 @@ steps:
     inputs:
       command: 'build'
       projects: '**/*.csproj'
+      arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
 
   - task: DotNetCoreCLI@2
     displayName: Run Unit Tests
@@ -44,3 +45,15 @@ steps:
   #  inputs:
   #    command: 'test'
   #    projects: '**/*.Tests.Acceptance.csproj'
+
+  - task: ArchiveFiles@2
+    displayName: 'Archive files'
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output'
+      includeRootFolder: false
+      archiveType: zip
+      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      replaceExistingArchive: true
+
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+    artifact: drop

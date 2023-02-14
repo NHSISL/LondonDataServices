@@ -27,12 +27,12 @@ steps:
       projects: "**/*.csproj"
       includeNuGetOrg: true
 
-  - task: DotNetCoreCLI@2
-    displayName: "Dotnet Build"
-    inputs:
-      command: 'build'
-      projects: '**/*.csproj'
-      arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
+ # - task: DotNetCoreCLI@2
+ #   displayName: "Dotnet Build"
+ #   inputs:
+ #     command: 'build'
+ #     projects: '**/*.csproj'
+ #     arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Build (EMIS Download)"

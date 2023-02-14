@@ -35,7 +35,7 @@ steps:
       arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
 
   - task: DotNetCoreCLI@2
-    displayName: "Dotnet Build"
+    displayName: "Dotnet Build (EMIS Download)"
     inputs:
       command: 'build'
       projects: '**/LHDS.Functions.Landings.Emis.csproj'

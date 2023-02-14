@@ -24,7 +24,7 @@ namespace LHDS.Functions.Decryption
             [BlobTrigger("emislanding/encrypted/{name}", Connection = "ConnectionString")] string myBlob, string name)
         {
             logger.LogInformation($"Decrypting document: {name}");
-            await this.decryptionClient.DecryptAsync(name);
+            //await this.decryptionClient.DecryptAsync(name);
         }
     }
 }

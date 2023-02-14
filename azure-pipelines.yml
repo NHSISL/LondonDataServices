@@ -32,6 +32,7 @@ steps:
     inputs:
       command: 'build'
       projects: '**/*.csproj'
+      arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
 
   - task: DotNetCoreCLI@2
     displayName: Run Unit Tests

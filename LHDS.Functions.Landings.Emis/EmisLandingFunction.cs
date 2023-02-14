@@ -32,10 +32,10 @@ namespace LHDS.Functions.Landings.Emis
 
             response.WriteString("Processing EMIS documents");
 
-            if (landingClient != null)
-            {
-                await this.landingClient.ProcessAsync();
-            }
+            /*      if (landingClient != null)
+                  {
+                      await this.landingClient.ProcessAsync();
+                  }*/
 
             return response;
         }

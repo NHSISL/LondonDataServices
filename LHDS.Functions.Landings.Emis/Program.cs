@@ -2,10 +2,44 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
+using System.IO;
+using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Providers.Downloads.Extensions;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
+    .ConfigureAppConfiguration(config =>
+    {
+        var env = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT");
+        config.SetBasePath(Directory.GetCurrentDirectory())
+
+                    .AddJsonFile(path: "appsettings.json")
+                   .AddJsonFile(
+                        path: $"appsettings.{Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT")}.json",
+                        optional: true)
+                .AddJsonFile(
+                        path: "appsettings.local.json",
+                        optional: true,
+                        reloadOnChange: true)
+                .AddEnvironmentVariables();
+    })
+    .ConfigureServices((context, services) =>
+     {
+
+         services
+             .AddLogging(setup =>
+             {
+                 setup.AddApplicationInsights();
+             })
+            .AddLandingClient(context.Configuration)
+            .UseFtpDownloadProvider(context.Configuration, builder => builder.AddFtpDownloadProvider());
+     })
+    .UseDefaultServiceProvider(options => options.ValidateScopes = false)
     .Build();
 
 host.Run();

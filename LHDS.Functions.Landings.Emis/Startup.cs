@@ -8,6 +8,7 @@ using LHDS.Core.Providers.Downloads.Extensions;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 [assembly: FunctionsStartup(typeof(LHDS.Functions.Landings.Emis.Startup))]
 namespace LHDS.Functions.Landings.Emis
@@ -39,7 +40,10 @@ namespace LHDS.Functions.Landings.Emis
             builder.Services.AddTransient<IConfiguration>(_ => configuration);
 
             builder.Services
-                .AddLogging()
+                .AddLogging(setup =>
+                {
+                    setup.AddApplicationInsights();
+                })
                 .AddLandingClient(configuration)
                 .UseFtpDownloadProvider(configuration, builder => builder.AddFtpDownloadProvider());
         }

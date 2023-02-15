@@ -38,7 +38,10 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                     Parameter: nameof(IngestionTracking.EncryptedFileName)),
                 (Rule: IsInvalid(ingestionTracking.DecryptedFileName),
                     Parameter: nameof(IngestionTracking.DecryptedFileName)),
-                (Rule: IsInvalid(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)));
+                (Rule: IsInvalid(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
+                (Rule: IsInvalid(ingestionTracking.LastSeen), Parameter: nameof(IngestionTracking.LastSeen)),
+                (Rule: IsInvalid(ingestionTracking.FileCount), Parameter: nameof(IngestionTracking.FileCount)),
+                (Rule: IsInvalid(ingestionTracking.FileSize), Parameter: nameof(IngestionTracking.FileSize)));
         }
 
         private static void ValidateAgainstStorageIngestionTrackingOnModify(

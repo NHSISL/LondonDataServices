@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Providers.Cryptography.Extensions;
 using LHDS.Core.Providers.Downloads.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,6 +38,8 @@ var host = new HostBuilder()
                  setup.AddApplicationInsights();
              })
             .AddLandingClient(context.Configuration)
+            .AddDecryptionClient(context.Configuration)
+            .UseGpgCryptographyProvider(context.Configuration, builder => builder.AddGpgCryptographyProvider())
             .UseFtpDownloadProvider(context.Configuration, builder => builder.AddFtpDownloadProvider());
      })
     .UseDefaultServiceProvider(options => options.ValidateScopes = false)

@@ -35,16 +35,9 @@ namespace LHDS.Functions.Decryption
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "text/json; charset=utf-8");
 
-            try
+            if (blobName != null)
             {
-                if (blobName != null)
-                {
-                    await this.decryptionClient.DecryptAsync(blobName);
-                }
-            } catch (Exception ex)
-            {
-                response.StatusCode = HttpStatusCode.InternalServerError;
-                await response.WriteStringAsync("HELLO");
+                await this.decryptionClient.DecryptAsync(blobName);
             }
 
             return response;

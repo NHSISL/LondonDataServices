@@ -2,6 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
+using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using LHDS.Core.Clients;
@@ -23,16 +26,28 @@ namespace LHDS.Functions.Decryption
         }
 
         [Function("DecryptionFunction")]
-        public async ValueTask Run(
+        public async ValueTask<HttpResponseData> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
         {
             var query = HttpUtility.ParseQueryString(req.Url.Query);
             var blobName = query["name"];
             logger.LogInformation($"Decrypting document: {blobName}");
-            if(blobName != null)
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            response.Headers.Add("Content-Type", "text/json; charset=utf-8");
+
+            try
             {
-                await this.decryptionClient.DecryptAsync(blobName);
+                if (blobName != null)
+                {
+                    await this.decryptionClient.DecryptAsync(blobName);
+                }
+            } catch (Exception ex)
+            {
+                response.StatusCode = HttpStatusCode.InternalServerError;
+                await response.WriteStringAsync("HELLO");
             }
+
+            return response;
         }
     }
 }

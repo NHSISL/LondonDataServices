@@ -45,14 +45,10 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             {
                 ValidateFileNameIsNotNull(fileName);
 
-                this.loggingBroker.LogInformation("Passed FileNameIsNotNull");
-
                 var ingestionTracking = await this.ingestionTrackingService
                     .RetrieveIngestionTrackingByIdAsync(fileName);
 
-                this.loggingBroker.LogInformation($"Encrypted file name: {ingestionTracking.EncryptedFileName}");
-
-                Document document = await this.documentService
+               Document document = await this.documentService
                     .RetrieveDocumentByFileNameAsync(ingestionTracking.EncryptedFileName);
 
                 byte[] decryptedData = await this.decryptionService.DecryptAsync(document.DocumentData);
@@ -89,6 +85,8 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 };
 
             this.auditService.AddAuditAsync(newAudit);
+
+
         }
     }
 }

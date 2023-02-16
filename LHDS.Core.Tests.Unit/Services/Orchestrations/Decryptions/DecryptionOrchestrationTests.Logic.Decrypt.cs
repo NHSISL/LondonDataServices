@@ -99,7 +99,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             this.documentServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
+            //this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

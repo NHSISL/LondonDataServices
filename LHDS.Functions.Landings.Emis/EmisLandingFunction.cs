@@ -16,12 +16,12 @@ namespace LHDS.Functions.Landings.Emis
         private readonly ILogger _logger;
         private readonly ILandingClient landingClient;
 
-      /*  public EmisLandingFunction(ILoggerFactory loggerFactory, ILandingClient landingClient)
+        public EmisLandingFunction(ILoggerFactory loggerFactory, ILandingClient landingClient)
         {
             _logger = loggerFactory.CreateLogger<EmisLandingFunction>();
             this.landingClient = landingClient;
-        }*/
-
+        }
+        
         [Function("EmisLandingFunction")]
         public async ValueTask<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
         {
@@ -32,10 +32,10 @@ namespace LHDS.Functions.Landings.Emis
 
             response.WriteString("Processing EMIS documents");
 
-            /*      if (landingClient != null)
-                  {
-                      await this.landingClient.ProcessAsync();
-                  }*/
+            if (landingClient != null)
+            {
+                await this.landingClient.ProcessAsync();
+            }
 
             return response;
         }

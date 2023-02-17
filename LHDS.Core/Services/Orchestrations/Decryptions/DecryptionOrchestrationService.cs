@@ -48,12 +48,10 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 var ingestionTracking = await this.ingestionTrackingService
                     .RetrieveIngestionTrackingByIdAsync(fileName);
 
-               Document document = await this.documentService
-                    .RetrieveDocumentByFileNameAsync(ingestionTracking.EncryptedFileName);
+                Document document = await this.documentService
+                     .RetrieveDocumentByFileNameAsync(ingestionTracking.EncryptedFileName);
 
                 byte[] decryptedData = await this.decryptionService.DecryptAsync(document.DocumentData);
-
-                this.loggingBroker.LogInformation($"decrypted document length: {decryptedData.Length}");
 
                 Document newDecryptedDocument = new Document
                 {
@@ -85,8 +83,6 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 };
 
             this.auditService.AddAuditAsync(newAudit);
-
-
         }
     }
 }

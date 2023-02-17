@@ -45,4 +45,4 @@ var host = new HostBuilder()
     .UseDefaultServiceProvider(options => options.ValidateScopes = false)
     .Build();
 
-host.Run();
+await host.RunAsync();

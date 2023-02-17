@@ -4,7 +4,6 @@
 
 using System;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using LHDS.Core.Clients;
@@ -26,7 +25,7 @@ namespace LHDS.Functions.Decryption
         }
 
         [Function("DecryptionFunction")]
-        public async ValueTask<HttpResponseData> Run(
+        public HttpResponseData Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
         {
             var query = HttpUtility.ParseQueryString(req.Url.Query);
@@ -35,11 +34,20 @@ namespace LHDS.Functions.Decryption
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "text/json; charset=utf-8");
 
-            if (blobName != null)
+            try
             {
-                await this.decryptionClient.DecryptAsync(blobName);
+                Task.Run(async () =>
+                {
+                    await this.decryptionClient.DecryptAsync(blobName);
+                }).Wait();
+            }
+            catch (Exception ex)
+            {
+                response.WriteString(ex.ToString());
+                return response;
             }
 
+            response.WriteString($"Sucessfully Processed: {blobName}", System.Text.Encoding.UTF8);
             return response;
         }
     }

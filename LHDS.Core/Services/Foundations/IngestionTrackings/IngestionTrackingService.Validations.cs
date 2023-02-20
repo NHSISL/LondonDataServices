@@ -25,7 +25,8 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 (Rule: IsNotRecent(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
                 (Rule: IsInvalid(ingestionTracking.LastSeen), Parameter: nameof(IngestionTracking.LastSeen)),
                 (Rule: IsInvalid(ingestionTracking.FileCount), Parameter: nameof(IngestionTracking.FileCount)),
-                (Rule: IsInvalid(ingestionTracking.FileSize), Parameter: nameof(IngestionTracking.FileSize)));
+                (Rule: IsInvalid(ingestionTracking.EncryptedFileSize), Parameter: nameof(IngestionTracking.EncryptedFileSize)),
+                (Rule: IsInvalid(ingestionTracking.DecryptedFileSize), Parameter: nameof(IngestionTracking.DecryptedFileSize)));
         }
 
         private void ValidateIngestionTrackingOnModify(IngestionTracking ingestionTracking)
@@ -41,7 +42,8 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 (Rule: IsInvalid(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
                 (Rule: IsInvalid(ingestionTracking.LastSeen), Parameter: nameof(IngestionTracking.LastSeen)),
                 (Rule: IsInvalid(ingestionTracking.FileCount), Parameter: nameof(IngestionTracking.FileCount)),
-                (Rule: IsInvalid(ingestionTracking.FileSize), Parameter: nameof(IngestionTracking.FileSize)));
+                (Rule: IsInvalid(ingestionTracking.EncryptedFileSize), Parameter: nameof(IngestionTracking.EncryptedFileSize)),
+                (Rule: IsInvalid(ingestionTracking.DecryptedFileSize), Parameter: nameof(IngestionTracking.DecryptedFileSize)));
         }
 
         private static void ValidateAgainstStorageIngestionTrackingOnModify(

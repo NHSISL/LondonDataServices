@@ -69,7 +69,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 EncryptedFileName = invalidText,
                 DecryptedFileName = invalidText,
                 FileCount  = 0,
-                FileSize = 0,
+                EncryptedFileSize = 0,
+                DecryptedFileSize = 0,
             };
 
             var invalidIngestionTrackingException = new InvalidIngestionTrackingException();
@@ -99,7 +100,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 values: "Non-zero value is required");
 
             invalidIngestionTrackingException.AddData(
-                key: nameof(IngestionTracking.FileSize),
+                key: nameof(IngestionTracking.EncryptedFileSize),
+                values: "Non-zero value is required");
+
+            invalidIngestionTrackingException.AddData(
+                key: nameof(IngestionTracking.DecryptedFileSize),
                 values: "Non-zero value is required");
 
             var expectedIngestionTrackingValidationException =

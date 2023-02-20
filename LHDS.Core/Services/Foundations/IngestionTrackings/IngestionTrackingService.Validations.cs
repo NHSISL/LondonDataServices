@@ -22,7 +22,11 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 (Rule: IsInvalid(ingestionTracking.DecryptedFileName),
                     Parameter: nameof(IngestionTracking.DecryptedFileName)),
                 (Rule: IsInvalid(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
-                (Rule: IsNotRecent(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)));
+                (Rule: IsNotRecent(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
+                (Rule: IsInvalid(ingestionTracking.LastSeen), Parameter: nameof(IngestionTracking.LastSeen)),
+                (Rule: IsInvalid(ingestionTracking.FileCount), Parameter: nameof(IngestionTracking.FileCount)),
+                (Rule: IsInvalid(ingestionTracking.EncryptedFileSize), Parameter: nameof(IngestionTracking.EncryptedFileSize)),
+                (Rule: IsInvalid(ingestionTracking.DecryptedFileSize), Parameter: nameof(IngestionTracking.DecryptedFileSize)));
         }
 
         private void ValidateIngestionTrackingOnModify(IngestionTracking ingestionTracking)
@@ -35,7 +39,11 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                     Parameter: nameof(IngestionTracking.EncryptedFileName)),
                 (Rule: IsInvalid(ingestionTracking.DecryptedFileName),
                     Parameter: nameof(IngestionTracking.DecryptedFileName)),
-                (Rule: IsInvalid(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)));
+                (Rule: IsInvalid(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
+                (Rule: IsInvalid(ingestionTracking.LastSeen), Parameter: nameof(IngestionTracking.LastSeen)),
+                (Rule: IsInvalid(ingestionTracking.FileCount), Parameter: nameof(IngestionTracking.FileCount)),
+                (Rule: IsInvalid(ingestionTracking.EncryptedFileSize), Parameter: nameof(IngestionTracking.EncryptedFileSize)),
+                (Rule: IsInvalid(ingestionTracking.DecryptedFileSize), Parameter: nameof(IngestionTracking.DecryptedFileSize)));
         }
 
         private static void ValidateAgainstStorageIngestionTrackingOnModify(
@@ -96,6 +104,12 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
+        };
+
+        private static dynamic IsInvalid(int number) => new
+        {
+            Condition = number == 0,
+            Message = "Non-zero value is required"
         };
 
         private static dynamic IsEqualOrSmallerThan(string text, int maxLength) => new

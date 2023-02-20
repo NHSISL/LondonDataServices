@@ -43,11 +43,14 @@ namespace LHDS.Functions.Decryption
             }
             catch (Exception ex)
             {
+                logger.LogError(ex, ex.Message);
                 response.WriteString(ex.ToString());
                 return response;
             }
 
+            logger.LogInformation($"Sucessfully Processed: {blobName}");
             response.WriteString($"Sucessfully Processed: {blobName}", System.Text.Encoding.UTF8);
+
             return response;
         }
     }

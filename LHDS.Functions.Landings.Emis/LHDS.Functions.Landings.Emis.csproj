@@ -6,6 +6,9 @@
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Remove="DecryptionBlobEventFunction.cs" />
+	</ItemGroup>
 	
 	<ItemGroup>
 		<PackageReference Include="EFxceptions" Version="0.4.5" />

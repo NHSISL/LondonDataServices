@@ -1,0 +1,8 @@
+{
+    "azureFunctions.projectSubpath": "LHDS.Functions.Landings.Emis",
+    "azureFunctions.deploySubpath": "LHDS.Functions.Landings.Emis/bin/Release/net7.0/publish",
+    "azureFunctions.projectLanguage": "C#",
+    "azureFunctions.projectRuntime": "~4",
+    "debug.internalConsoleOptions": "neverOpen",
+    "azureFunctions.preDeployTask": "publish (functions)"
+}

@@ -21,23 +21,16 @@ namespace LHDS.Functions.Landings.Emis
             _logger = loggerFactory.CreateLogger<EmisLandingFunction>();
             this.landingClient = landingClient;
         }
-
+        
         [Function("EmisLandingFunction")]
-        public async ValueTask<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
+        public async ValueTask Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
-
-            var response = req.CreateResponse(HttpStatusCode.OK);
-            response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
-
-            response.WriteString("Processing EMIS documents");
 
             if (landingClient != null)
             {
                 await this.landingClient.ProcessAsync();
             }
-
-            return response;
         }
     }
 }

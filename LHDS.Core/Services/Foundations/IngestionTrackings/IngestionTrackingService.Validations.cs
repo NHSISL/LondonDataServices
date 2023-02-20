@@ -108,7 +108,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
         private static dynamic IsInvalid(int number) => new
         {
-            Condition = number == 0,
+            Condition = number < 0,
             Message = "Non-zero value is required"
         };
 

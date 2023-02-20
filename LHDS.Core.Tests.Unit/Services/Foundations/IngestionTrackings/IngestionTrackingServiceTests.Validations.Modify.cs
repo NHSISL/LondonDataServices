@@ -68,9 +68,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 Id = invalidText,
                 EncryptedFileName = invalidText,
                 DecryptedFileName = invalidText,
-                FileCount  = 0,
-                EncryptedFileSize = 0,
-                DecryptedFileSize = 0,
+                FileCount  = -1,
+                EncryptedFileSize = -1,
+                DecryptedFileSize = -1,
             };
 
             var invalidIngestionTrackingException = new InvalidIngestionTrackingException();

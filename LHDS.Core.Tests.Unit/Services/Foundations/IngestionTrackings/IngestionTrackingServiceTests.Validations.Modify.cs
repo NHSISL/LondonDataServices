@@ -68,6 +68,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 Id = invalidText,
                 EncryptedFileName = invalidText,
                 DecryptedFileName = invalidText,
+                FileCount  = 0,
+                EncryptedFileSize = 0,
+                DecryptedFileSize = 0,
             };
 
             var invalidIngestionTrackingException = new InvalidIngestionTrackingException();
@@ -87,6 +90,22 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.CreatedDate),
                 values: "Date is required");
+
+            invalidIngestionTrackingException.AddData(
+                key: nameof(IngestionTracking.LastSeen),
+                values: "Date is required");
+
+            invalidIngestionTrackingException.AddData(
+                key: nameof(IngestionTracking.FileCount),
+                values: "Non-zero value is required");
+
+            invalidIngestionTrackingException.AddData(
+                key: nameof(IngestionTracking.EncryptedFileSize),
+                values: "Non-zero value is required");
+
+            invalidIngestionTrackingException.AddData(
+                key: nameof(IngestionTracking.DecryptedFileSize),
+                values: "Non-zero value is required");
 
             var expectedIngestionTrackingValidationException =
                 new IngestionTrackingValidationException(invalidIngestionTrackingException);

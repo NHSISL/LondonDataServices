@@ -49,7 +49,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                     .RetrieveIngestionTrackingByIdAsync(fileName);
 
                 Document document = await this.documentService
-                     .RetrieveDocumentByFileNameAsync(ingestionTracking.EncryptedFileName);
+                    .RetrieveDocumentByFileNameAsync(ingestionTracking.EncryptedFileName);
 
                 byte[] decryptedData = await this.decryptionService.DecryptAsync(document.DocumentData);
 

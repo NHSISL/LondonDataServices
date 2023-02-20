@@ -4,7 +4,6 @@
 
 using LHDS.Core.Clients;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 
 namespace LHDS.Functions.Decryption
@@ -21,11 +20,11 @@ namespace LHDS.Functions.Decryption
         }
 
         [Function("DecryptionFunction")]
-        public async ValueTask Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
+        public async ValueTask Run(
+            [BlobTrigger("emislanding/encrypted/{name}", Connection = "ConnectionString")] string myBlob, string name)
         {
-            //logger.LogInformation($"Decrypting document: {name}");
-            //TODO: Change to blob trigger 
-            await this.decryptionClient.DecryptAsync(string.Empty);
+            logger.LogInformation($"Decrypting document: {name}");
+            await this.decryptionClient.DecryptAsync(name);
         }
     }
 }

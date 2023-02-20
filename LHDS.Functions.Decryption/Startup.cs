@@ -7,6 +7,7 @@ using LHDS.Core.Providers.Cryptography.Extensions;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 [assembly: FunctionsStartup(typeof(LHDS.Functions.Decryption.Startup))]
 namespace LHDS.Functions.Decryption
@@ -38,7 +39,10 @@ namespace LHDS.Functions.Decryption
             builder.Services.AddTransient<IConfiguration>(_ => configuration);
 
             builder.Services
-                .AddLogging()
+                .AddLogging(setup =>
+                {
+                    setup.AddApplicationInsights();
+                })
                 .AddDecryptionClient(configuration)
                 .UseGpgCryptographyProvider(configuration, builder => builder.AddGpgCryptographyProvider());
         }

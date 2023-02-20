@@ -81,6 +81,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                         $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
                                       Decrypted = false,
                                       CreatedDate = currentDateTime,
+                                      LastSeen = currentDateTime,
+                                      FileDeleted = false,
+                                      FileCount = -1,
+                                      EncryptedFileSize = retrievedDocument.DocumentData.Length,
+                                      DecryptedFileSize = -1,
                                   };
 
                                 Document newBlobDocument = new Document
@@ -91,7 +96,12 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                                 await this.documentService.AddDocumentAsync(newBlobDocument);
                                 await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
-                                LogAudit(document, currentDateTime);
+                                LogAudit(document, currentDateTime, "Landed");
+                            }
+                            else
+                            {
+                                maybeIngestionTracking.LastSeen = dateTimeBroker.GetCurrentDateTimeOffset();
+                                await ingestionTrackingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);
                             }
                         });
                     }
@@ -109,14 +119,14 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 }
             });
 
-        private void LogAudit(Document document, DateTimeOffset currentDateTime)
+        private void LogAudit(Document document, DateTimeOffset currentDateTime, string message)
         {
             Audit newAudit =
                 new Audit
                 {
                     Id = Guid.NewGuid(),
                     IngestionTrackingId = document.FileName,
-                    Message = $"Landed document - {document.FileName}",
+                    Message = $"{message} document - {document.FileName}",
                     CreatedDate = currentDateTime
                 };
 

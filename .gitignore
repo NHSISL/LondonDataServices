@@ -369,3 +369,5 @@ FodyWeavers.xsd
 local.settings.json
 local.appsettings.json
 /LHDS.Functions.Landings.Emis/appsettings.local.json
+/LHDS.Functions.Landings.Emis/local.settings.json
+/LHDS.Functions.Landings.Emis/appsettings.development.json

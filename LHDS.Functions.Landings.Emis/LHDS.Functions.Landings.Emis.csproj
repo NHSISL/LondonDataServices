@@ -5,6 +5,7 @@
 		<OutputType>Exe</OutputType>
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
+		<UserSecretsId>aefb00d8-4a27-4635-bca4-a67908131c35</UserSecretsId>
 	</PropertyGroup>
 	<ItemGroup>
 	  <Compile Remove="DecryptionBlobEventFunction.cs" />
@@ -23,6 +24,7 @@
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.7.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.3" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.21.0" />
 	</ItemGroup>
@@ -47,6 +49,9 @@
 		<None Update="appsettings.local.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
+		</None>
+		<None Update="local.settings.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 	

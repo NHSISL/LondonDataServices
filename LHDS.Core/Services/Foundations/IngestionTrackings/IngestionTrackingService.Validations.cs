@@ -23,10 +23,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                     Parameter: nameof(IngestionTracking.DecryptedFileName)),
                 (Rule: IsInvalid(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
                 (Rule: IsNotRecent(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
-                (Rule: IsInvalid(ingestionTracking.LastSeen), Parameter: nameof(IngestionTracking.LastSeen)),
-                (Rule: IsInvalid(ingestionTracking.FileCount), Parameter: nameof(IngestionTracking.FileCount)),
-                (Rule: IsInvalid(ingestionTracking.EncryptedFileSize), Parameter: nameof(IngestionTracking.EncryptedFileSize)),
-                (Rule: IsInvalid(ingestionTracking.DecryptedFileSize), Parameter: nameof(IngestionTracking.DecryptedFileSize)));
+                (Rule: IsInvalid(ingestionTracking.LastSeen), Parameter: nameof(IngestionTracking.LastSeen)));
         }
 
         private void ValidateIngestionTrackingOnModify(IngestionTracking ingestionTracking)
@@ -40,10 +37,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 (Rule: IsInvalid(ingestionTracking.DecryptedFileName),
                     Parameter: nameof(IngestionTracking.DecryptedFileName)),
                 (Rule: IsInvalid(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
-                (Rule: IsInvalid(ingestionTracking.LastSeen), Parameter: nameof(IngestionTracking.LastSeen)),
-                (Rule: IsInvalid(ingestionTracking.FileCount), Parameter: nameof(IngestionTracking.FileCount)),
-                (Rule: IsInvalid(ingestionTracking.EncryptedFileSize), Parameter: nameof(IngestionTracking.EncryptedFileSize)),
-                (Rule: IsInvalid(ingestionTracking.DecryptedFileSize), Parameter: nameof(IngestionTracking.DecryptedFileSize)));
+                (Rule: IsInvalid(ingestionTracking.LastSeen), Parameter: nameof(IngestionTracking.LastSeen)));
         }
 
         private static void ValidateAgainstStorageIngestionTrackingOnModify(

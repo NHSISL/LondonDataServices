@@ -52,6 +52,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                     .RetrieveDocumentByFileNameAsync(ingestionTracking.EncryptedFileName);
 
                 byte[] decryptedData = await this.decryptionService.DecryptAsync(document.DocumentData);
+                string[] lines = System.Text.Encoding.UTF8.GetString(decryptedData).Split('\n');
 
                 Document newDecryptedDocument = new Document
                 {
@@ -62,6 +63,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 await this.documentService.AddDocumentAsync(newDecryptedDocument);
 
                 ingestionTracking.Decrypted = true;
+                ingestionTracking.RecordCount = lines.Length - 1;
 
                 await this.ingestionTrackingService
                     .ModifyIngestionTrackingAsync(ingestionTracking);

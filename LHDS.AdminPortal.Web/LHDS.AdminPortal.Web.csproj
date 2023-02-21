@@ -25,9 +25,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ClientApp\src\brokers\" />
+    <Folder Include="ClientApp\dependencies\guid-typescript\node_modules\%40types\" />
     <Folder Include="ClientApp\src\models\" />
-    <Folder Include="ClientApp\src\pages\" />
+    <Folder Include="ClientApp\src\hooks\" />
+    <Folder Include="ClientApp\src\styles\" />
     <Folder Include="ClientApp\src\services\foundations\" />
     <Folder Include="ClientApp\src\services\views\" />
   </ItemGroup>

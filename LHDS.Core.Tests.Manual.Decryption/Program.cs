@@ -40,8 +40,8 @@ namespace LHDS.Clients.Tests.Decryption.Manual
 
             var decryptionClient = serviceProvider.GetService<IDecryptionClient>();
 
-            IIngestionTrackingBroker ingestionTrackingService =
-                serviceProvider.GetService<IIngestionTrackingBroker>();
+            IIngestionTrackingService ingestionTrackingService =
+                serviceProvider.GetService<IIngestionTrackingService>();
 
             var items = ingestionTrackingService.RetrieveAllIngestionTracking()
                 .Where(ingestionTrackingService => ingestionTrackingService.Decrypted == false);

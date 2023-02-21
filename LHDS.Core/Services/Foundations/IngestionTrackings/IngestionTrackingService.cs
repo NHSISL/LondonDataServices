@@ -11,7 +11,7 @@ using LHDS.Core.Models.Foundations.IngestionTrackings;
 
 namespace LHDS.Core.Services.Foundations.IngestionTrackings
 {
-    public partial class IngestionTrackingService : IIngestionTrackingBroker
+    public partial class IngestionTrackingService : IIngestionTrackingService
     {
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;

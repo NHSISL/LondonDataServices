@@ -1,6 +1,6 @@
 {
-  "short_name": "LHDS.Web",
-  "name": "LHDS.Web",
+  "short_name": "LHDS.AdminPortal.Web",
+  "name": "LHDS.AdminPortal.Web",
   "icons": [
     {
       "src": "favicon.ico",

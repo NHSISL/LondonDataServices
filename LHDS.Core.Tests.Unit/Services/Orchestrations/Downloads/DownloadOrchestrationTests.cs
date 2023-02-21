@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
     {
         private readonly Mock<IDocumentService> documentServiceMock;
         private readonly Mock<IDownloadService> downloadServiceMock;
-        private readonly Mock<IIngestionTrackingBroker> ingestionTrackingServiceMock;
+        private readonly Mock<IIngestionTrackingService> ingestionTrackingServiceMock;
         private readonly Mock<IAuditService> auditServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         {
             documentServiceMock = new Mock<IDocumentService>();
             downloadServiceMock = new Mock<IDownloadService>();
-            ingestionTrackingServiceMock = new Mock<IIngestionTrackingBroker>();
+            ingestionTrackingServiceMock = new Mock<IIngestionTrackingService>();
             auditServiceMock = new Mock<IAuditService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();

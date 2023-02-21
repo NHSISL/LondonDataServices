@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 new Document { FileName = randomFileName, DocumentData = randomEncryptedBytes };
 
             Document encryptedDocument = randomDocument;
-
+            
             Document decryptedDocument = new Document
             {
                 DocumentData = randomDecryptedBytes,
@@ -52,12 +52,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 service.DecryptAsync(encryptedDocument.DocumentData))
                     .ReturnsAsync(randomDecryptedBytes);
 
+            string[] lines = Encoding.UTF8.GetString(randomDecryptedBytes).Split('\n');
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
                     .Returns(randomDateTime);
 
             var updatedIngestionTracking = storageIngestionTracking.DeepClone();
             updatedIngestionTracking.Decrypted = true;
+            updatedIngestionTracking.RecordCount = lines.Length - 1;
             var outputIngestionTracking = updatedIngestionTracking.DeepClone();
 
             this.ingestionTrackingServiceMock.Setup(service =>

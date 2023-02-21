@@ -8,6 +8,7 @@ using LHDS.Core.Providers.Downloads.Extensions;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 [assembly: FunctionsStartup(typeof(LHDS.Functions.Landings.Tpp.Startup))]
 namespace LHDS.Functions.Landings.Tpp
@@ -39,7 +40,10 @@ namespace LHDS.Functions.Landings.Tpp
             builder.Services.AddTransient<IConfiguration>(_ => configuration);
 
             builder.Services
-                .AddLogging()
+                .AddLogging(setup =>
+                {
+                    setup.AddApplicationInsights();
+                })
                 .AddLandingClient(configuration)
                 .UseRestDownloadProvider(builder => builder.AddRestDownloadProvider());
         }

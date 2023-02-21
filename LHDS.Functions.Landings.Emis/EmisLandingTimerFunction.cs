@@ -7,38 +7,55 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
 
 namespace LHDS.Functions.Landings.Emis
 {
-    public class EmisLandingFunction
+    public class EmisLandingTimerFunction
     {
         private readonly ILoggingBroker loggingBroker;
         private readonly ILandingClient landingClient;
 
-        public EmisLandingFunction(ILoggingBroker loggingBroker, ILandingClient landingClient)
+        public EmisLandingTimerFunction(ILoggingBroker loggingBroker, ILandingClient landingClient)
         {
             this.loggingBroker = loggingBroker;
             this.landingClient = landingClient;
         }
 
-        [Function("EmisLandingFunction")]
-        public async ValueTask Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
+        [Function("EmisLandingTimerFunction")]
+        public void Run([TimerTrigger("0 */15 * * * *")] MyInfo myTimer)
         {
-            this.loggingBroker.LogInformation("C# HTTP trigger function processed a request.");
+            this.loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
             try
             {
-                if (landingClient != null)
+                Task.Run(async () =>
                 {
                     await this.landingClient.ProcessAsync();
-                }
+                }).Wait();
             }
             catch (Exception ex)
             {
                 this.loggingBroker.LogError(ex);
                 throw;
             }
+
+            this.loggingBroker.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
         }
+    }
+
+    public class MyInfo
+    {
+        public MyScheduleStatus ScheduleStatus { get; set; }
+
+        public bool IsPastDue { get; set; }
+    }
+
+    public class MyScheduleStatus
+    {
+        public DateTime Last { get; set; }
+
+        public DateTime Next { get; set; }
+
+        public DateTime LastUpdated { get; set; }
     }
 }

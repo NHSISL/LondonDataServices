@@ -27,11 +27,19 @@ steps:
       projects: "**/*.csproj"
       includeNuGetOrg: true
 
+ # - task: DotNetCoreCLI@2
+ #   displayName: "Dotnet Build"
+ #   inputs:
+ #     command: 'build'
+ #     projects: '**/*.csproj'
+ #     arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
+
   - task: DotNetCoreCLI@2
-    displayName: "Dotnet Build"
+    displayName: "Dotnet Build (EMIS Download)"
     inputs:
       command: 'build'
-      projects: '**/*.csproj'
+      projects: '**/LHDS.Functions.Landings.Emis.csproj'
+      arguments: --output $(System.DefaultWorkingDirectory)/publish_output_emis_func --configuration Release
 
   - task: DotNetCoreCLI@2
     displayName: Run Unit Tests
@@ -44,3 +52,15 @@ steps:
   #  inputs:
   #    command: 'test'
   #    projects: '**/*.Tests.Acceptance.csproj'
+
+  - task: ArchiveFiles@2
+    displayName: 'Archive files'
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_emis_func'
+      includeRootFolder: false
+      archiveType: zip
+      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_emis_func.zip
+      replaceExistingArchive: true
+
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_emis_func.zip
+    artifact: drop

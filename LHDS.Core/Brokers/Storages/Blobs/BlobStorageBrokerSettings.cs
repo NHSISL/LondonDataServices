@@ -5,7 +5,7 @@
 using System;
 using Microsoft.Extensions.Configuration;
 
-namespace LHDS.Core.Providers.Downloads.FtpDownloads
+namespace LHDS.Core.Brokers.Storages.Blobs
 {
     /// <summary>
     /// The Settings Class.
@@ -18,19 +18,19 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
         /// <param name="configuration">The configuration.</param>
         public BlobStorageBrokerSettings(IConfiguration configuration)
         {
-            this.Configuration = configuration;
+            Configuration = configuration;
         }
 
         /// <inheritdoc/>
-        public string AzureBlobStoreUri => this.GetSettings("blobStorage:azureBlobStoreUri", true);
+        public string AzureBlobStoreUri => GetSettings("blobStorage:azureBlobStoreUri", true);
 
-        public string BlobContainerName => this.GetSettings("blobStorage:blobContainerName", true);
+        public string BlobContainerName => GetSettings("blobStorage:blobContainerName", true);
 
         private IConfiguration Configuration { get; }
 
         private string GetSettings(string configurationKey, bool mandatory = true)
         {
-            var value = this.Configuration[configurationKey];
+            var value = Configuration[configurationKey];
 
             if (string.IsNullOrEmpty(value))
             {

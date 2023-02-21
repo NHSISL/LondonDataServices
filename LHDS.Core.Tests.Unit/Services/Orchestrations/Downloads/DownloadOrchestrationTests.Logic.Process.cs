@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                       CreatedDate = randomDateTime,
                       LastSeen = randomDateTime,
                       FileDeleted = false,
-                      FileCount = 0,
+                      RecordCount = 0,
                       EncryptedFileSize = document.DocumentData.Length,
                       DecryptedFileSize = 0,
                   };
@@ -103,7 +103,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                       CreatedDate = randomDateTime,
                       LastSeen = randomDateTime,
                       FileDeleted = false,
-                      FileCount = 0,
+                      RecordCount = 0,
                       EncryptedFileSize = document.DocumentData.Length,
                       DecryptedFileSize = 0,
                   };

@@ -56,6 +56,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                         $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
                       Decrypted = false,
                       CreatedDate = randomDateTime,
+                      LastSeen = randomDateTime,
+                      FileDeleted = false,
+                      FileCount = 0,
+                      EncryptedFileSize = document.DocumentData.Length,
+                      DecryptedFileSize = 0,
                   };
 
                 IngestionTracking storageIngestionTracking = newIngestionTracking.DeepClone();
@@ -96,6 +101,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                         $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
                       Decrypted = false,
                       CreatedDate = randomDateTime,
+                      LastSeen = randomDateTime,
+                      FileDeleted = false,
+                      FileCount = 0,
+                      EncryptedFileSize = document.DocumentData.Length,
+                      DecryptedFileSize = 0,
                   };
 
                 IngestionTracking storageIngestionTracking = newIngestionTracking.DeepClone();
@@ -161,21 +171,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     ? document.FileName
                     : "/" + document.FileName;
 
-                IngestionTracking newIngestionTracking =
-                  new IngestionTracking
-                  {
-                      Id = document.FileName,
-                      EncryptedFileName = $"/encrypted{filename}",
-                      DecryptedFileName =
-                        $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
-                      Decrypted = false,
-                      CreatedDate = randomDateTime,
-                  };
-
-                IngestionTracking storageIngestionTracking = newIngestionTracking.DeepClone();
+                IngestionTracking storageIngestionTracking = externalIngestionTrackingFound.DeepClone();
+                IngestionTracking modifiedIngestionTracking = storageIngestionTracking.DeepClone();
+                modifiedIngestionTracking.LastSeen = randomDateTime;
 
                 this.ingestionTrackingServiceMock.Setup(service =>
-                    service.AddIngestionTrackingAsync(newIngestionTracking))
+                    service.ModifyIngestionTrackingAsync(externalIngestionTrackingFound))
                         .ReturnsAsync(storageIngestionTracking);
             }
 
@@ -189,47 +190,26 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
             foreach (var document in externalDocuments)
             {
+                IngestionTracking storageIngestionTracking = externalIngestionTrackingFound.DeepClone();
+                IngestionTracking modifiedIngestionTracking = storageIngestionTracking.DeepClone();
+                modifiedIngestionTracking.LastSeen = randomDateTime;
+
                 this.ingestionTrackingServiceMock.Verify(service =>
                     service.RetrieveIngestionTrackingByIdAsync(document.FileName),
                         Times.Once);
 
                 this.dateTimeBrokerMock.Verify(broker =>
                     broker.GetCurrentDateTimeOffset(),
-                        Times.Never);
-
-                var filename = document.FileName.StartsWith('/')
-                    ? document.FileName
-                    : "/" + document.FileName;
-
-                IngestionTracking newIngestionTracking =
-                  new IngestionTracking
-                  {
-                      Id = document.FileName,
-                      EncryptedFileName = $"/encrypted{filename}",
-                      DecryptedFileName =
-                        $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
-                      Decrypted = false,
-                      CreatedDate = randomDateTime,
-                  };
-
-                IngestionTracking storageIngestionTracking = newIngestionTracking.DeepClone();
+                        Times.Once);
 
                 this.ingestionTrackingServiceMock.Verify(service =>
-                    service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(
-                        storageIngestionTracking))),
-                            Times.Never);
+                    service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(
+                        modifiedIngestionTracking))),
+                            Times.Once);
 
                 this.downloadServiceMock.Verify(service =>
                    service.RetrieveDownloadByFileNameAsync(document.FileName),
                        Times.Never);
-
-                this.documentServiceMock.Verify(service =>
-                    service.AddDocumentAsync(document),
-                        Times.Never);
-
-                this.auditServiceMock.Verify(service =>
-                    service.AddAuditAsync(It.IsAny<Audit>()),
-                        Times.Never);
             }
 
             this.documentServiceMock.VerifyNoOtherCalls();

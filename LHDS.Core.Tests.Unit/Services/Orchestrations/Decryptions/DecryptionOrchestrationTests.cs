@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
     {
         private readonly Mock<IDocumentService> documentServiceMock;
         private readonly Mock<IDecryptionService> decryptionServiceMock;
-        private readonly Mock<IIngestionTrackingBroker> ingestionTrackingServiceMock;
+        private readonly Mock<IIngestionTrackingService> ingestionTrackingServiceMock;
         private readonly Mock<IAuditService> auditServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
@@ -40,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
         {
             documentServiceMock = new Mock<IDocumentService>();
             decryptionServiceMock = new Mock<IDecryptionService>();
-            ingestionTrackingServiceMock = new Mock<IIngestionTrackingBroker>();
+            ingestionTrackingServiceMock = new Mock<IIngestionTrackingService>();
             auditServiceMock = new Mock<IAuditService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();

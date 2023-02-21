@@ -4,7 +4,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace LHDS.Web.Controllers
+namespace LHDS.AdminPortal.Web.Controllers
 {
     [ApiController]
     [Route("[controller]")]

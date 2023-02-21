@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-namespace LHDS.Web
+namespace LHDS.AdminPortal.Web
 {
     public class WeatherForecast
     {

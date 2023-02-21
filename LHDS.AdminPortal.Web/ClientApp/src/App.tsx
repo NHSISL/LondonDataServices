@@ -15,9 +15,7 @@ import { AppInsightsContext, ReactPlugin } from '@microsoft/applicationinsights-
 var reactPlugin = new ReactPlugin();
 var appInsights = new ApplicationInsights({
     config: {
-        connectionString: process.env.REACT_APP_AI_CONNECTIONSTRING,
-        enableAutoRouteTracking: true,
-        extensions: [reactPlugin],
+       
     }
 });
 appInsights.loadAppInsights();

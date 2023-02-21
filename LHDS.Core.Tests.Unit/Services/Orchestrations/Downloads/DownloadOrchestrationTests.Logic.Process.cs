@@ -58,9 +58,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                       CreatedDate = randomDateTime,
                       LastSeen = randomDateTime,
                       FileDeleted = false,
-                      FileCount = -1,
+                      FileCount = 10,
                       EncryptedFileSize = document.DocumentData.Length,
-                      DecryptedFileSize = -1,
+                      DecryptedFileSize = 10,
                   };
 
                 IngestionTracking storageIngestionTracking = newIngestionTracking.DeepClone();
@@ -103,9 +103,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                       CreatedDate = randomDateTime,
                       LastSeen = randomDateTime,
                       FileDeleted = false,
-                      FileCount = -1,
+                      FileCount = 0,
                       EncryptedFileSize = document.DocumentData.Length,
-                      DecryptedFileSize = -1,
+                      DecryptedFileSize = 0,
                   };
 
                 IngestionTracking storageIngestionTracking = newIngestionTracking.DeepClone();

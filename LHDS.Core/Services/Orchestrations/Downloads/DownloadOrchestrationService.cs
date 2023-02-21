@@ -83,9 +83,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                       CreatedDate = currentDateTime,
                                       LastSeen = currentDateTime,
                                       FileDeleted = false,
-                                      FileCount = -1,
+                                      FileCount = 0,
                                       EncryptedFileSize = retrievedDocument.DocumentData.Length,
-                                      DecryptedFileSize = -1,
+                                      DecryptedFileSize = 0,
                                   };
 
                                 Document newBlobDocument = new Document

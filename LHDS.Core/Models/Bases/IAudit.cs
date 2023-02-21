@@ -4,7 +4,7 @@
 
 using System;
 
-namespace NEL.Premises.Api.Models.Bases
+namespace LHDS.Core.Models.Bases
 {
     public interface IAudit
     {

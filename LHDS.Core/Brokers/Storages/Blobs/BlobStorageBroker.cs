@@ -4,8 +4,7 @@
 
 using System.IO;
 using System.Threading.Tasks;
-using LHDS.Core.Providers.Downloads.FtpDownloads;
-using LHDS.Decryptions.Client.Clients;
+using LHDS.Core.Clients;
 
 namespace LHDS.Core.Brokers.Storages.Blobs
 {

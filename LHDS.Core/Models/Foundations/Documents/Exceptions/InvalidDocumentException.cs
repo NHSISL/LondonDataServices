@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace NEL.Premises.Api.Models.Documents.Exceptions
+namespace LHDS.Core.Models.Foundations.Documents.Exceptions
 {
     public class InvalidDocumentException : Xeption
     {

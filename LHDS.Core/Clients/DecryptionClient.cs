@@ -3,13 +3,12 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
-using LHDS.Core.Clients;
-using LHDS.Core.Models.Clients.DecryptionClient;
+using LHDS.Core.Models.Clients.DecryptClient;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
 using LHDS.Core.Services.Orchestrations.Decryptions;
 using Xeptions;
 
-namespace LHDS.Decryptions.Client.Clients
+namespace LHDS.Core.Clients
 {
     public class DecryptionClient : IDecryptionClient
     {
@@ -24,7 +23,7 @@ namespace LHDS.Decryptions.Client.Clients
         {
             try
             {
-                await this.decryptionOrchestrationService.DecryptAsync(fileName);
+                await decryptionOrchestrationService.DecryptAsync(fileName);
             }
             catch (DecryptionOrchestrationValidationException decryptionOrchestrationValidationException)
             {

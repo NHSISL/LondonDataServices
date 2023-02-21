@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Net;
 using System.Threading.Tasks;
 using LHDS.Core.Clients;
 using Microsoft.Azure.Functions.Worker;
@@ -21,7 +20,7 @@ namespace LHDS.Functions.Landings.Emis
             _logger = loggerFactory.CreateLogger<EmisLandingFunction>();
             this.landingClient = landingClient;
         }
-        
+
         [Function("EmisLandingFunction")]
         public async ValueTask Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
         {

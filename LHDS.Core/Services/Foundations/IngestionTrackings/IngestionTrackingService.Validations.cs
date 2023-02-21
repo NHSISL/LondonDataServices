@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using LHDS.Core.Models.Foundations.IngestionTracking.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 

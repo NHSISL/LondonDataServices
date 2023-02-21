@@ -5,12 +5,11 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using LHDS.Core.Providers.Cryptography.Gpg;
 using Org.BouncyCastle.Bcpg;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using Org.BouncyCastle.Security;
 
-namespace LHDS.Core.Providers.Cryptography
+namespace LHDS.Core.Providers.Cryptography.Gpg
 {
     public class GpgCryptographyProvider : ICryptographyProvider
     {
@@ -23,7 +22,7 @@ namespace LHDS.Core.Providers.Cryptography
 
         public async ValueTask<byte[]> EncryptAsync(byte[] data)
         {
-            var publicKeyDecoded = Convert.FromBase64String(this.gpgCryptographyProviderSettings.PublicKey);
+            var publicKeyDecoded = Convert.FromBase64String(gpgCryptographyProviderSettings.PublicKey);
 
             using (Stream inputFileStream = new MemoryStream(data))
             using (Stream publicKeyFileStream = new MemoryStream(publicKeyDecoded))
@@ -60,8 +59,8 @@ namespace LHDS.Core.Providers.Cryptography
 
         public async ValueTask<byte[]> DecryptAsync(byte[] data)
         {
-            var privateKeyDecoded = Convert.FromBase64String(this.gpgCryptographyProviderSettings.PrivateKey);
-            char[] privateKeyPassphrase = this.gpgCryptographyProviderSettings.Passphrase.ToCharArray();
+            var privateKeyDecoded = Convert.FromBase64String(gpgCryptographyProviderSettings.PrivateKey);
+            char[] privateKeyPassphrase = gpgCryptographyProviderSettings.Passphrase.ToCharArray();
 
             using (Stream encryptedFileStream = new MemoryStream(data))
             using (Stream privateKeyFileStream = new MemoryStream(privateKeyDecoded))

@@ -4,10 +4,9 @@
 
 using System;
 using System.Collections.Generic;
-using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Cryptography.Gpg;
 
-namespace LHDS.Core.Providers.Downloads.Builders
+namespace LHDS.Core.Providers.Cryptography.Builders
 {
     public class GpgProviderRegistrationBuilder
     {

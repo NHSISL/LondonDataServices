@@ -47,7 +47,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             TryCatch(async () =>
             {
                 var exceptions = new List<Exception>();
-
                 List<Document> retrievedDocuments =
                 await this.downloadService.RetrieveListOfDocumentsToProcessAsync();
 

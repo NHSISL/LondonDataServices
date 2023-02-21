@@ -9,7 +9,6 @@ using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Services.Foundations.Documents;
 using Microsoft.Extensions.Configuration;
 using Moq;
-using NEL.Premises.Api.Models.Documents.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents

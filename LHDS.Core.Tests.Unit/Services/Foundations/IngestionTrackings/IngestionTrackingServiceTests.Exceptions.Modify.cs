@@ -8,7 +8,6 @@ using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
-using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptionss;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;

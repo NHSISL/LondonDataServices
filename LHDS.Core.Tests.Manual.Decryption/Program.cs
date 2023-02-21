@@ -30,7 +30,8 @@ namespace LHDS.Clients.Tests.Decryption.Manual
 
             //setup our DI
             var serviceProvider = new ServiceCollection()
-                .AddLogging(builder => {
+                .AddLogging(builder =>
+                {
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })

@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Foundations.IngestionTracking.Exceptions
+namespace LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions
 {
     public class NotFoundIngestionTrackingForFileNameException : Xeption
     {

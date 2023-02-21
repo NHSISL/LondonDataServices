@@ -5,7 +5,6 @@
 using System;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
-using NEL.Premises.Api.Models.Documents.Exceptions;
 
 namespace LHDS.Core.Services.Foundations.Documents
 {

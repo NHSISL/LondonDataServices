@@ -8,7 +8,6 @@ using Azure;
 using EFxceptions.Models.Exceptions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
-using NEL.Premises.Api.Models.Documents.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.Documents

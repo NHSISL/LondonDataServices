@@ -52,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                   {
                       Id = document.FileName,
                       EncryptedFileName = $"/encrypted{filename}",
-                      DecryptedFileName = 
+                      DecryptedFileName =
                         $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
                       Decrypted = false,
                       CreatedDate = randomDateTime,

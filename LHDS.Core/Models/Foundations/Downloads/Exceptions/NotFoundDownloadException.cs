@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Downloads.Exceptions
+namespace LHDS.Core.Models.Foundations.Downloads.Exceptions
 {
     public class NotFoundDownloadException : Xeption
     {

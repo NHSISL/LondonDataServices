@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using LHDS.Core.Models.Downloads.Exceptions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 

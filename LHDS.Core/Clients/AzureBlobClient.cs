@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-namespace LHDS.Decryptions.Client.Clients
+namespace LHDS.Core.Clients
 {
     using System;
     using System.IO;
@@ -21,14 +21,14 @@ namespace LHDS.Decryptions.Client.Clients
             BlobServiceClient defaultClient)
         {
             this.loggingBroker = loggingBroker;
-            this.blobServiceClient = defaultClient;
+            blobServiceClient = defaultClient;
         }
 
         public async ValueTask<MemoryStream> DownloadFileAsync(string fileName, string container)
         {
             loggingBroker.LogInformation(fileName);
 
-            var blobClient = this.blobServiceClient
+            var blobClient = blobServiceClient
                 .GetBlobContainerClient(container).GetBlobClient(fileName);
 
             var memoryStream = new MemoryStream();
@@ -41,7 +41,7 @@ namespace LHDS.Decryptions.Client.Clients
             try
             {
                 loggingBroker.LogInformation($"file:{fileName}, size:{stream.Length}, container:{container}");
-                var blobClient = this.blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
+                var blobClient = blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
                 var streamLenght = stream.Length;
 
                 var options = new BlobUploadOptions
@@ -50,7 +50,7 @@ namespace LHDS.Decryptions.Client.Clients
                     {
                         Console.WriteLine(
                             $"file: {fileName}, progress: {progress}/{streamLenght}, " +
-                            $"percent:{Math.Round((double)progress / (double)streamLenght * 100.0, 2)}");
+                            $"percent:{Math.Round(progress / (double)streamLenght * 100.0, 2)}");
                     }),
                     TransferOptions = new Azure.Storage.StorageTransferOptions()
                     {
@@ -62,7 +62,7 @@ namespace LHDS.Decryptions.Client.Clients
             }
             catch (Exception ex)
             {
-                this.loggingBroker.LogError(ex);
+                loggingBroker.LogError(ex);
                 Console.WriteLine($"Unable to write blob: {fileName}");
                 throw;
             }
@@ -71,7 +71,7 @@ namespace LHDS.Decryptions.Client.Clients
         public async ValueTask DeleteFileAsync(string fileName, string container)
         {
             loggingBroker.LogInformation(fileName);
-            var blobClient = this.blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
+            var blobClient = blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
             await blobClient.DeleteAsync(DeleteSnapshotsOption.None);
         }
     }

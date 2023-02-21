@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-namespace LHDS.Decryptions.Client.Clients
+namespace LHDS.Core.Clients
 {
     using System.IO;
     using System.Threading.Tasks;

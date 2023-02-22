@@ -1,10 +1,14 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
+using LHDS.Core.Models.Foundations.Suppliers;
+using LHDS.Core.Models.Suppliers.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using LHDS.Core.Models.Suppliers;
-using LHDS.Core.Models.Suppliers.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.Suppliers

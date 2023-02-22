@@ -24,7 +24,13 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                     firstDate: supplier.UpdatedDate,
                     secondDate: supplier.CreatedDate,
                     secondDateName: nameof(Supplier.CreatedDate)),
-                Parameter: nameof(Supplier.UpdatedDate)));
+                Parameter: nameof(Supplier.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    firstId: supplier.UpdatedByUserId,
+                    secondId: supplier.CreatedByUserId,
+                    secondIdName: nameof(Supplier.CreatedByUserId)),
+                Parameter: nameof(Supplier.UpdatedByUserId)));
         }
 
         private static void ValidateSupplierIsNotNull(Supplier supplier)
@@ -54,6 +60,15 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             {
                 Condition = firstDate != secondDate,
                 Message = $"Date is not the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            Guid firstId,
+            Guid secondId,
+            string secondIdName) => new
+            {
+                Condition = firstId != secondId,
+                Message = $"Id is not the same as {secondIdName}"
             };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

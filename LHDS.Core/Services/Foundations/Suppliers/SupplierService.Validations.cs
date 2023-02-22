@@ -53,7 +53,9 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                     firstDate: supplier.UpdatedDate,
                     secondDate: supplier.CreatedDate,
                     secondDateName: nameof(Supplier.CreatedDate)),
-                Parameter: nameof(Supplier.UpdatedDate)));
+                Parameter: nameof(Supplier.UpdatedDate)),
+
+                (Rule: IsNotRecent(supplier.UpdatedDate), Parameter: nameof(supplier.UpdatedDate)));
         }
 
         public void ValidateSupplierId(Guid supplierId) =>

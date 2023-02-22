@@ -47,5 +47,8 @@ namespace LHDS.Core.Services.Foundations.Suppliers
 
                 return maybeSupplier;
             });
+
+        public ValueTask<Supplier> ModifySupplierAsync(Supplier supplier) =>
+            throw new NotImplementedException();
     }
 }

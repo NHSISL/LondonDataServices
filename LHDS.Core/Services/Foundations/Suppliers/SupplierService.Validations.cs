@@ -1,3 +1,4 @@
+using System;
 using LHDS.Core.Models.Suppliers;
 using LHDS.Core.Models.Suppliers.Exceptions;
 
@@ -8,6 +9,16 @@ namespace LHDS.Core.Services.Foundations.Suppliers
         private void ValidateSupplierOnAdd(Supplier supplier)
         {
             ValidateSupplierIsNotNull(supplier);
+
+            Validate(
+                (Rule: IsInvalid(supplier.Id), Parameter: nameof(Supplier.Id)),
+
+                // TODO: Add any other required validation rules
+
+                (Rule: IsInvalid(supplier.CreatedDate), Parameter: nameof(Supplier.CreatedDate)),
+                (Rule: IsInvalid(supplier.CreatedByUserId), Parameter: nameof(Supplier.CreatedByUserId)),
+                (Rule: IsInvalid(supplier.UpdatedDate), Parameter: nameof(Supplier.UpdatedDate)),
+                (Rule: IsInvalid(supplier.UpdatedByUserId), Parameter: nameof(Supplier.UpdatedByUserId)));
         }
 
         private static void ValidateSupplierIsNotNull(Supplier supplier)
@@ -16,6 +27,35 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             {
                 throw new NullSupplierException();
             }
+        }
+
+        private static dynamic IsInvalid(Guid id) => new
+        {
+            Condition = id == Guid.Empty,
+            Message = "Id is required"
+        };
+
+        private static dynamic IsInvalid(DateTimeOffset date) => new
+        {
+            Condition = date == default,
+            Message = "Date is required"
+        };
+
+        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        {
+            var invalidSupplierException = new InvalidSupplierException();
+
+            foreach ((dynamic rule, string parameter) in validations)
+            {
+                if (rule.Condition)
+                {
+                    invalidSupplierException.UpsertDataList(
+                        key: parameter,
+                        value: rule.Message);
+                }
+            }
+
+            invalidSupplierException.ThrowIfContainsErrors();
         }
     }
 }

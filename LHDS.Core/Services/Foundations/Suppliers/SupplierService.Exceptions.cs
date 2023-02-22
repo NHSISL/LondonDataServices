@@ -19,6 +19,10 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             {
                 throw CreateAndLogValidationException(nullSupplierException);
             }
+            catch (InvalidSupplierException invalidSupplierException)
+            {
+                throw CreateAndLogValidationException(invalidSupplierException);
+            }
         }
 
         private SupplierValidationException CreateAndLogValidationException(Xeption exception)

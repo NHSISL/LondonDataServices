@@ -64,6 +64,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
                 ingestionTracking.Decrypted = true;
                 ingestionTracking.RecordCount = lines.Length - 1;
+                ingestionTracking.DecryptedFileSize = newDecryptedDocument.DocumentData.Length;
 
                 await this.ingestionTrackingService
                     .ModifyIngestionTrackingAsync(ingestionTracking);

@@ -1,6 +1,9 @@
-using System.Linq;
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System.Threading.Tasks;
-using LHDS.Core.Models.Suppliers;
+using LHDS.Core.Models.Foundations.Suppliers;
 
 namespace LHDS.Core.Services.Foundations.Suppliers
 {

@@ -39,25 +39,16 @@ export const Home = () => {
                                     <Card clickable>
                                         <Card.Content>
                                             <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
-                                                <PublicLink to="/practices">GP Practices</PublicLink>
+                                                <PublicLink to="/ingestionTracking">Supplier data</PublicLink>
                                             </Card.Heading>
                                             <Card.Description>
-                                                View, add, edit and remove GP Premises.
+                                                View Suppliers Data.
                                             </Card.Description>
                                         </Card.Content>
                                     </Card>
                                 </Card.GroupItem>
 
-                                <Card.GroupItem width="one-half">
-                                    <Card clickable>
-                                        <Card.Content>
-                                            <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
-                                                <PublicLink to="/actions">Actions</PublicLink>
-                                            </Card.Heading>
-                                            <Card.Description>View, add, edit and remove tasks.</Card.Description>
-                                        </Card.Content>
-                                    </Card>
-                                </Card.GroupItem>
+                               
                             </Card.Group>
                         </div>
                     ) : (

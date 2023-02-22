@@ -2,15 +2,15 @@ import React from "react";
 import 'nhsuk-frontend/dist/nhsuk.min'
 import 'nhsuk-frontend/packages/polyfills';
 import { Container } from 'nhsuk-react-components'
-import SupplierTable from "../components/suppliers/supplierTable";
+import IngestionTrackingTable from "../components/ingestionTracking/ingestionTrackingTable";
 
-export const SuppliersHomepage = () => {
+export const IngestionTrackingHomepage = () => {
     return <div>
         <section >
             <Container>
                 <main id="maincontent" className="NELTopPadding" role="main">
                     <>
-                        <SupplierTable />
+                        <IngestionTrackingTable />
                     </>
                 </main>
             </Container>

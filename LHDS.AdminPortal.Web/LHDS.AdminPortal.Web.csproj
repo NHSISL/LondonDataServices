@@ -39,14 +39,26 @@
   <ItemGroup>
     <TypeScriptCompile Remove="ClientApp\src\App.test.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\toastBroker.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\audit\auditRow.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\audit\auditRowView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\bases\ingestionTrackingTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetail.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetailCard.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetailCardView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRow.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRowView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierDetail.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierDetailCard.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierDetailCardView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\index.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\suppliersHomepage.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\IngestionTrackingHomepage.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\ingestionTrackingPage.tsx" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="ClientApp\dependencies\guid-typescript\node_modules\%40types\" />
-    <Folder Include="ClientApp\src\components\layoutComponents\" />
     <Folder Include="ClientApp\src\models\" />
     <Folder Include="ClientApp\src\hooks\" />
     <Folder Include="ClientApp\src\services\foundations\" />

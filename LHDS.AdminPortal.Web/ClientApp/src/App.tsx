@@ -3,11 +3,12 @@ import { MsalProvider } from '@azure/msal-react';
 import { ReactQueryDevtools } from 'react-query/devtools'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { PageLayout } from './components/PageLayout';
-import { SuppliersHomepage } from './pages/suppliersHomepage';
 import { Route, Routes } from 'react-router-dom';
 import { Home } from './pages/home';
 import { QueryClientProvider } from 'react-query';
 import { queryClientGlobalOptions } from './brokers/apiBroker.globals';
+import { IngestionTrackingHomepage } from './pages/IngestionTrackingHomepage';
+import { IngestionTrackingPage } from './pages/ingestionTrackingPage';
 
 const App = ({ msalInstance }: any) => {
     return (
@@ -16,7 +17,8 @@ const App = ({ msalInstance }: any) => {
                     <PageLayout>
                         <Routes>
                             <Route path="/" element={<Home />} />
-                        <Route path="/suppliers" element={<SuppliersHomepage />} />
+                            <Route path="/ingestionTracking" element={<IngestionTrackingHomepage />} />
+                            <Route path="/ingestionTrackingDetail" element={<IngestionTrackingPage />} />
                         </Routes>
                     </PageLayout>
                     <ReactQueryDevtools initialIsOpen={false} />

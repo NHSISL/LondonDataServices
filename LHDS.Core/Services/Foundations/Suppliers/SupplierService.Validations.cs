@@ -77,6 +77,16 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             }
         }
 
+        private static void ValidateAgainstStorageSupplierOnModify(Supplier inputSupplier, Supplier storageSupplier)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputSupplier.CreatedDate,
+                    secondDate: storageSupplier.CreatedDate,
+                    secondDateName: nameof(Supplier.CreatedDate)),
+                Parameter: nameof(Supplier.CreatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

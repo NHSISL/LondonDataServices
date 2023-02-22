@@ -64,6 +64,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static Supplier CreateRandomModifySupplier(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            Supplier randomSupplier = CreateRandomSupplier(dateTimeOffset);
+
+            randomSupplier.CreatedDate =
+                randomSupplier.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomSupplier;
+        }
+
         private static IQueryable<Supplier> CreateRandomSuppliers()
         {
             return CreateSupplierFiller(dateTimeOffset: GetRandomDateTimeOffset())

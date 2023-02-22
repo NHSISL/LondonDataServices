@@ -209,7 +209,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     modifySupplierTask.AsTask);
 
             // then
-            actualSupplierValidationException.Should().BeEquivalentTo(expectedSupplierValidatonException);
+            actualSupplierValidationException.Should()
+                .BeEquivalentTo(expectedSupplierValidatonException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -227,6 +228,59 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfSupplierDoesNotExistAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Supplier randomSupplier = CreateRandomModifySupplier(randomDateTimeOffset);
+            Supplier nonExistSupplier = randomSupplier;
+            Supplier nullSupplier = null;
+
+            var notFoundSupplierException =
+                new NotFoundSupplierException(nonExistSupplier.Id);
+
+            var expectedSupplierValidationException =
+                new SupplierValidationException(notFoundSupplierException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectSupplierByIdAsync(nonExistSupplier.Id))
+                .ReturnsAsync(nullSupplier);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when 
+            ValueTask<Supplier> modifySupplierTask =
+                this.supplierService.ModifySupplierAsync(nonExistSupplier);
+
+            SupplierValidationException actualSupplierValidationException =
+                await Assert.ThrowsAsync<SupplierValidationException>(
+                    modifySupplierTask.AsTask);
+
+            // then
+            actualSupplierValidationException.Should()
+                .BeEquivalentTo(expectedSupplierValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSupplierByIdAsync(nonExistSupplier.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSupplierValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

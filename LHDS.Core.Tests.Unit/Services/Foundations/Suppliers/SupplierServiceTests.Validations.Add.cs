@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -83,6 +84,53 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             invalidSupplierException.AddData(
                 key: nameof(Supplier.UpdatedByUserId),
                 values: "Id is required");
+
+            var expectedSupplierValidationException =
+                new SupplierValidationException(invalidSupplierException);
+
+            // when
+            ValueTask<Supplier> addSupplierTask =
+                this.supplierService.AddSupplierAsync(invalidSupplier);
+
+            SupplierValidationException actualSupplierValidationException =
+                await Assert.ThrowsAsync<SupplierValidationException>(
+                    addSupplierTask.AsTask);
+
+            // then
+            actualSupplierValidationException.Should()
+                .BeEquivalentTo(expectedSupplierValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSupplierValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertSupplierAsync(It.IsAny<Supplier>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateDatesIsNotSameAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNumber();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Supplier randomSupplier = CreateRandomSupplier(randomDateTimeOffset);
+            Supplier invalidSupplier = randomSupplier;
+
+            invalidSupplier.UpdatedDate =
+                invalidSupplier.CreatedDate.AddDays(randomNumber);
+
+            var invalidSupplierException = new InvalidSupplierException();
+
+            invalidSupplierException.AddData(
+                key: nameof(Supplier.UpdatedDate),
+                values: $"Date is not the same as {nameof(Supplier.CreatedDate)}");
 
             var expectedSupplierValidationException =
                 new SupplierValidationException(invalidSupplierException);

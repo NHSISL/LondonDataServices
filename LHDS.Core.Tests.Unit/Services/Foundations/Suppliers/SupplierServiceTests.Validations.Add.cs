@@ -1,9 +1,13 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
-using LHDS.Core.Models.Suppliers;
+using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Suppliers.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
@@ -53,7 +57,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             // given
             var invalidSupplier = new Supplier
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                Name = invalidText,
+                FriendlyName = invalidText,
+                LandingManualTriggerUrl = invalidText,
             };
 
             var invalidSupplierException =
@@ -63,27 +69,33 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 key: nameof(Supplier.Id),
                 values: "Id is required");
 
-            //invalidSupplierException.AddData(
-            //    key: nameof(Supplier.Name),
-            //    values: "Text is required");
+            invalidSupplierException.AddData(
+                key: nameof(Supplier.Name),
+                values: "Text is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the Supplier model
+            invalidSupplierException.AddData(
+                key: nameof(Supplier.FriendlyName),
+                values: "Text is required");
+
+            invalidSupplierException.AddData(
+                key: nameof(Supplier.LandingManualTriggerUrl),
+                values: "Text is required");
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.CreatedDate),
                 values: "Date is required");
 
             invalidSupplierException.AddData(
-                key: nameof(Supplier.CreatedByUserId),
-                values: "Id is required");
+                key: nameof(Supplier.CreatedBy),
+                values: "Text is required");
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.UpdatedDate),
                 values: "Date is required");
 
             invalidSupplierException.AddData(
-                key: nameof(Supplier.UpdatedByUserId),
-                values: "Id is required");
+                key: nameof(Supplier.UpdatedBy),
+                values: "Text is required");
 
             var expectedSupplierValidationException =
                 new SupplierValidationException(invalidSupplierException);
@@ -174,20 +186,20 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateUserIdsIsNotSameAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateUserIsNotSameAndLogItAsync()
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Supplier randomSupplier = CreateRandomSupplier(randomDateTimeOffset);
             Supplier invalidSupplier = randomSupplier;
-            invalidSupplier.UpdatedByUserId = Guid.NewGuid();
+            invalidSupplier.UpdatedBy = Guid.NewGuid().ToString();
 
             var invalidSupplierException =
                 new InvalidSupplierException();
 
             invalidSupplierException.AddData(
-                key: nameof(Supplier.UpdatedByUserId),
-                values: $"Id is not the same as {nameof(Supplier.CreatedByUserId)}");
+                key: nameof(Supplier.UpdatedBy),
+                values: $"Text is not the same as {nameof(Supplier.CreatedBy)}");
 
             var expectedSupplierValidationException =
                 new SupplierValidationException(invalidSupplierException);

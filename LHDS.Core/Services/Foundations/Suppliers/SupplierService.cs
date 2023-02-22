@@ -22,7 +22,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<Supplier> AddSupplierAsync(Supplier supplier) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<Supplier> AddSupplierAsync(Supplier supplier) =>
+            await this.storageBroker.InsertSupplierAsync(supplier);
     }
 }

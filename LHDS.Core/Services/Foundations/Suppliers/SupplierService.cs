@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -33,5 +34,8 @@ namespace LHDS.Core.Services.Foundations.Suppliers
 
         public IQueryable<Supplier> RetrieveAllSuppliers() =>
             TryCatch(() => this.storageBroker.SelectAllSuppliers());
+
+        public ValueTask<Supplier> RetrieveSupplierByIdAsync(Guid supplierId) =>
+            throw new NotImplementedException();
     }
 }

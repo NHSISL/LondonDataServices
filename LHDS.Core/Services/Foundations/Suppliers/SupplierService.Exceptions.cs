@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using LHDS.Core.Models.Suppliers;
 using LHDS.Core.Models.Suppliers.Exceptions;
 using Xeptions;
@@ -46,6 +47,13 @@ namespace LHDS.Core.Services.Foundations.Suppliers
 
                 throw CreateAndLogDependencyValidationException(invalidSupplierReferenceException);
             }
+            catch (DbUpdateException databaseUpdateException)
+            {
+                var failedSupplierStorageException =
+                    new FailedSupplierStorageException(databaseUpdateException);
+
+                throw CreateAndLogDependencyException(failedSupplierStorageException);
+            }
         }
 
         private SupplierValidationException CreateAndLogValidationException(Xeption exception)
@@ -74,6 +82,15 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             this.loggingBroker.LogError(supplierDependencyValidationException);
 
             return supplierDependencyValidationException;
+        }
+
+        private SupplierDependencyException CreateAndLogDependencyException(
+            Xeption exception)
+        {
+            var supplierDependencyException = new SupplierDependencyException(exception);
+            this.loggingBroker.LogError(supplierDependencyException);
+
+            return supplierDependencyException;
         }
     }
 }

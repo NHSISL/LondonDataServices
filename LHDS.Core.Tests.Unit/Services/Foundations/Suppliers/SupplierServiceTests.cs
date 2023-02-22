@@ -1,13 +1,17 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
-using Microsoft.Data.SqlClient;
-using Moq;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages;
-using LHDS.Core.Models.Suppliers;
+using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Services.Foundations.Suppliers;
+using Microsoft.Data.SqlClient;
+using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
@@ -71,15 +75,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
         private static Filler<Supplier> CreateSupplierFiller(DateTimeOffset dateTimeOffset)
         {
-            Guid userId = Guid.NewGuid();
+            string user = Guid.NewGuid().ToString();
             var filler = new Filler<Supplier>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(supplier => supplier.CreatedByUserId).Use(userId)
-                .OnProperty(supplier => supplier.UpdatedByUserId).Use(userId);
-
-            // TODO: Complete the filler setup e.g. ignore related properties etc...
+                .OnProperty(supplier => supplier.CreatedBy).Use(user)
+                .OnProperty(supplier => supplier.UpdatedBy).Use(user);
 
             return filler;
         }

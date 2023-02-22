@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Suppliers;
 using LHDS.Core.Models.Suppliers.Exceptions;
@@ -109,6 +110,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateSupplierAsync(someSupplier),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnModifyIfDatabaseUpdateExceptionOccursAndLogItAsync()
+        {
+            // given
+            Supplier randomSupplier = CreateRandomSupplier();
+            var databaseUpdateException = new DbUpdateException();
+
+            var failedSupplierStorageException =
+                new FailedSupplierStorageException(databaseUpdateException);
+
+            var expectedSupplierDependencyException =
+                new SupplierDependencyException(failedSupplierStorageException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<Supplier> modifySupplierTask =
+                this.supplierService.ModifySupplierAsync(randomSupplier);
+
+            SupplierDependencyException actualSupplierDependencyException =
+                await Assert.ThrowsAsync<SupplierDependencyException>(
+                    modifySupplierTask.AsTask);
+
+            // then
+            actualSupplierDependencyException.Should()
+                .BeEquivalentTo(expectedSupplierDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSupplierByIdAsync(randomSupplier.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSupplierDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateSupplierAsync(randomSupplier),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

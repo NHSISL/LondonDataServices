@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LHDS.Core.Migrations
 {
     [DbContext(typeof(StorageBroker))]
-    [Migration("20230209122139_InitialMigration")]
+    [Migration("20230222105231_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace LHDS.Core.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.2")
+                .HasAnnotation("ProductVersion", "7.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -44,6 +44,8 @@ namespace LHDS.Core.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IngestionTrackingId");
+
                     b.ToTable("Audits");
                 });
 
@@ -64,7 +66,27 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("DecryptedFileSize")
+                        .HasColumnType("int");
+
                     b.Property<string>("EncryptedFileName")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("EncryptedFileSize")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("FileDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset>("LastSeen")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("RecordCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Source")
                         .IsRequired()
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
@@ -72,6 +94,22 @@ namespace LHDS.Core.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("IngestionTrackings");
+                });
+
+            modelBuilder.Entity("LHDS.Core.Models.Audits.Audit", b =>
+                {
+                    b.HasOne("LHDS.Core.Models.Foundations.IngestionTrackings.IngestionTracking", "IngestionTracking")
+                        .WithMany("Audits")
+                        .HasForeignKey("IngestionTrackingId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("IngestionTracking");
+                });
+
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.IngestionTrackings.IngestionTracking", b =>
+                {
+                    b.Navigation("Audits");
                 });
 #pragma warning restore 612, 618
         }

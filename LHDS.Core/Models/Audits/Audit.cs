@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 
 namespace LHDS.Core.Models.Audits
 {
@@ -12,5 +13,7 @@ namespace LHDS.Core.Models.Audits
         public string IngestionTrackingId { get; set; }
         public string Message { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
+
+        public IngestionTracking IngestionTracking { get; set; }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -54,6 +55,13 @@ namespace LHDS.Core.Services.Foundations.Suppliers
 
                 throw CreateAndLogDependencyException(failedSupplierStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedSupplierServiceException =
+                    new FailedSupplierServiceException(exception);
+
+                throw CreateAndLogServiceException(failedSupplierServiceException);
+            }
         }
 
         private SupplierValidationException CreateAndLogValidationException(Xeption exception)
@@ -91,6 +99,15 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             this.loggingBroker.LogError(supplierDependencyException);
 
             return supplierDependencyException;
+        }
+
+        private SupplierServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var supplierServiceException = new SupplierServiceException(exception);
+            this.loggingBroker.LogError(supplierServiceException);
+
+            return supplierServiceException;
         }
     }
 }

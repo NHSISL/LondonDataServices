@@ -1,59 +1,62 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages;
+using FluentAssertions;
+using Force.DeepCloner;
+using Moq;
 using LHDS.Core.Models.Suppliers;
+using Xunit;
 
-namespace LHDS.Core.Services.Foundations.Suppliers
+namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 {
-    public partial class SupplierService : ISupplierService
+    public partial class SupplierServiceTests
     {
-        private readonly IStorageBroker storageBroker;
-        private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ILoggingBroker loggingBroker;
-
-        public SupplierService(
-            IStorageBroker storageBroker,
-            IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker)
+        [Fact]
+        public async Task ShouldModifySupplierAsync()
         {
-            this.storageBroker = storageBroker;
-            this.dateTimeBroker = dateTimeBroker;
-            this.loggingBroker = loggingBroker;
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Supplier randomSupplier = CreateRandomModifySupplier(randomDateTimeOffset);
+            Supplier inputSupplier = randomSupplier;
+            Supplier storageSupplier = inputSupplier.DeepClone();
+            storageSupplier.UpdatedDate = randomSupplier.CreatedDate;
+            Supplier updatedSupplier = inputSupplier;
+            Supplier expectedSupplier = updatedSupplier.DeepClone();
+            Guid supplierId = inputSupplier.Id;
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectSupplierByIdAsync(supplierId))
+                    .ReturnsAsync(storageSupplier);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.UpdateSupplierAsync(inputSupplier))
+                    .ReturnsAsync(updatedSupplier);
+
+            // when
+            Supplier actualSupplier =
+                await this.supplierService.ModifySupplierAsync(inputSupplier);
+
+            // then
+            actualSupplier.Should().BeEquivalentTo(expectedSupplier);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSupplierByIdAsync(inputSupplier.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateSupplierAsync(inputSupplier),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
-
-        public ValueTask<Supplier> AddSupplierAsync(Supplier supplier) =>
-            TryCatch(async () =>
-            {
-                ValidateSupplierOnAdd(supplier);
-
-                return await this.storageBroker.InsertSupplierAsync(supplier);
-            });
-
-        public IQueryable<Supplier> RetrieveAllSuppliers() =>
-            TryCatch(() => this.storageBroker.SelectAllSuppliers());
-
-        public ValueTask<Supplier> RetrieveSupplierByIdAsync(Guid supplierId) =>
-            TryCatch(async () =>
-            {
-                ValidateSupplierId(supplierId);
-
-                Supplier maybeSupplier = await this.storageBroker
-                    .SelectSupplierByIdAsync(supplierId);
-
-                ValidateStorageSupplier(maybeSupplier, supplierId);
-
-                return maybeSupplier;
-            });
-
-        public ValueTask<Supplier> ModifySupplierAsync(Supplier supplier) =>
-            TryCatch(async () =>
-            {
-                ValidateSupplierOnModify(supplier);
-
-                return await this.storageBroker.UpdateSupplierAsync(supplier);
-            });
     }
 }

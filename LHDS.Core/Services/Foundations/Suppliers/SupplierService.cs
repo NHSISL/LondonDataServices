@@ -70,6 +70,8 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                 Supplier maybeSupplier = await this.storageBroker
                     .SelectSupplierByIdAsync(supplierId);
 
+                ValidateStorageSupplier(maybeSupplier, supplierId);
+
                 return await this.storageBroker.DeleteSupplierAsync(maybeSupplier);
             });
     }

@@ -35,7 +35,15 @@ namespace LHDS.Core.Services.Foundations.Suppliers
         public IQueryable<Supplier> RetrieveAllSuppliers() =>
             TryCatch(() => this.storageBroker.SelectAllSuppliers());
 
-        public async ValueTask<Supplier> RetrieveSupplierByIdAsync(Guid supplierId) =>
-            await this.storageBroker.SelectSupplierByIdAsync(supplierId);
+        public ValueTask<Supplier> RetrieveSupplierByIdAsync(Guid supplierId) =>
+            TryCatch(async () =>
+            {
+                ValidateSupplierId(supplierId);
+
+                Supplier maybeSupplier = await this.storageBroker
+                    .SelectSupplierByIdAsync(supplierId);
+
+                return maybeSupplier;
+            });
     }
 }

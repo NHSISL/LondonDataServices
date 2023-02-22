@@ -53,5 +53,48 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedSupplierServiceException =
+                new FailedSupplierServiceException(serviceException);
+
+            var expectedSupplierServiceException =
+                new SupplierServiceException(failedSupplierServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectSupplierByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<Supplier> retrieveSupplierByIdTask =
+                this.supplierService.RetrieveSupplierByIdAsync(someId);
+
+            SupplierServiceException actualSupplierServiceException =
+                await Assert.ThrowsAsync<SupplierServiceException>(
+                    retrieveSupplierByIdTask.AsTask);
+
+            // then
+            actualSupplierServiceException.Should()
+                .BeEquivalentTo(expectedSupplierServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSupplierByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedSupplierServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

@@ -15,6 +15,12 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .Property(audit => audit.IngestionTrackingId)
                 .HasMaxLength(450)
                 .IsRequired();
+
+            modelBuilder.Entity<Audit>()
+                .HasOne(audit => audit.IngestionTracking)
+                .WithMany(ingestionTracking => ingestionTracking.Audits)
+                .HasForeignKey(audit => audit.IngestionTrackingId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

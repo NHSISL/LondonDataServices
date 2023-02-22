@@ -51,6 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                   new IngestionTracking
                   {
                       Id = document.FileName,
+                      Source = this.inMemoryConfiguration["LandingSource"],
                       EncryptedFileName = $"/encrypted{filename}",
                       DecryptedFileName =
                         $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
@@ -96,6 +97,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                   new IngestionTracking
                   {
                       Id = document.FileName,
+                      Source = this.inMemoryConfiguration["LandingSource"],
                       EncryptedFileName = $"/encrypted{filename}",
                       DecryptedFileName =
                         $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",

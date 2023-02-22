@@ -3,12 +3,15 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using LHDS.Core.Models.Audits;
 
 namespace LHDS.Core.Models.Foundations.IngestionTrackings
 {
     public class IngestionTracking
     {
         public string Id { get; set; }
+        public string Source { get; set; }
         public string EncryptedFileName { get; set; }
         public string DecryptedFileName { get; set; }
         public bool Decrypted { get; set; }
@@ -18,5 +21,7 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings
         public int RecordCount { get; set; }
         public int EncryptedFileSize { get; set; }
         public int DecryptedFileSize { get; set; }
+
+        public List<Audit> Audits { get; set; }
     }
 }

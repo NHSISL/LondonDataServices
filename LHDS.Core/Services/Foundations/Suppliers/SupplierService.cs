@@ -35,7 +35,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
         public IQueryable<Supplier> RetrieveAllSuppliers() =>
             TryCatch(() => this.storageBroker.SelectAllSuppliers());
 
-        public ValueTask<Supplier> RetrieveSupplierByIdAsync(Guid supplierId) =>
-            throw new NotImplementedException();
+        public async ValueTask<Supplier> RetrieveSupplierByIdAsync(Guid supplierId) =>
+            await this.storageBroker.SelectSupplierByIdAsync(supplierId);
     }
 }

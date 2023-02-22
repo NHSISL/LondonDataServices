@@ -173,9 +173,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 broker.SelectSupplierByIdAsync(invalidSupplier.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -279,8 +279,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     expectedSupplierValidationException))),
                         Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -338,8 +338,65 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                    expectedSupplierValidationException))),
                        Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfCreatedUserIdDontMacthStorageAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Supplier randomSupplier = CreateRandomModifySupplier(randomDateTimeOffset);
+            Supplier invalidSupplier = randomSupplier.DeepClone();
+            Supplier storageSupplier = invalidSupplier.DeepClone();
+            invalidSupplier.CreatedByUserId = Guid.NewGuid();
+            storageSupplier.UpdatedDate = storageSupplier.CreatedDate;
+
+            var invalidSupplierException = new InvalidSupplierException();
+
+            invalidSupplierException.AddData(
+                key: nameof(Supplier.CreatedByUserId),
+                values: $"Id is not the same as {nameof(Supplier.CreatedByUserId)}");
+
+            var expectedSupplierValidationException =
+                new SupplierValidationException(invalidSupplierException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectSupplierByIdAsync(invalidSupplier.Id))
+                .ReturnsAsync(storageSupplier);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<Supplier> modifySupplierTask =
+                this.supplierService.ModifySupplierAsync(invalidSupplier);
+
+            SupplierValidationException actualSupplierValidationException =
+                await Assert.ThrowsAsync<SupplierValidationException>(
+                    modifySupplierTask.AsTask);
+
+            // then
+            actualSupplierValidationException.Should().BeEquivalentTo(expectedSupplierValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSupplierByIdAsync(invalidSupplier.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedSupplierValidationException))),
+                       Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

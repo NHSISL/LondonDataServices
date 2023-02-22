@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Suppliers;
 using LHDS.Core.Models.Suppliers.Exceptions;
@@ -31,6 +32,13 @@ namespace LHDS.Core.Services.Foundations.Suppliers
 
                 throw CreateAndLogCriticalDependencyException(failedSupplierStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsSupplierException =
+                    new AlreadyExistsSupplierException(duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsSupplierException);
+            }
         }
 
         private SupplierValidationException CreateAndLogValidationException(Xeption exception)
@@ -49,6 +57,16 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             this.loggingBroker.LogCritical(supplierDependencyException);
 
             return supplierDependencyException;
+        }
+
+        private SupplierDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var supplierDependencyValidationException =
+                new SupplierDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(supplierDependencyValidationException);
+
+            return supplierDependencyValidationException;
         }
     }
 }

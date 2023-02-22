@@ -111,5 +111,48 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveWhenSqlExceptionOccursAndLogItAsync()
+        {
+            // given
+            Guid someSupplierId = Guid.NewGuid();
+            SqlException sqlException = GetSqlException();
+
+            var failedSupplierStorageException =
+                new FailedSupplierStorageException(sqlException);
+
+            var expectedSupplierDependencyException =
+                new SupplierDependencyException(failedSupplierStorageException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectSupplierByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(sqlException);
+
+            // when
+            ValueTask<Supplier> deleteSupplierTask =
+                this.supplierService.RemoveSupplierByIdAsync(someSupplierId);
+
+            SupplierDependencyException actualSupplierDependencyException =
+                await Assert.ThrowsAsync<SupplierDependencyException>(
+                    deleteSupplierTask.AsTask);
+
+            // then
+            actualSupplierDependencyException.Should()
+                .BeEquivalentTo(expectedSupplierDependencyException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSupplierByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedSupplierDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

@@ -13,8 +13,7 @@ interface SearchBaseProps {
 const SearchBase: FunctionComponent<SearchBaseProps> = (props) => {
     return (
         <>
-            <Label size="s"><SearchIcon />{props.label}</Label>
-            <Input id="input-example" value={props.value} type="search" onChange={props.onChange}></Input>
+            <Input id="input-example" placeholder={ props.label } value={props.value} type="search" onChange={props.onChange}></Input>
             {props.description && (<><br /><small>{props.description}</small></>)}
         </>
     );

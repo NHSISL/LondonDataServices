@@ -1,7 +1,6 @@
 import React from 'react';
 import { Container, Form, Nav, Navbar } from "react-bootstrap";
-import securityPoints from '../SecurityMatrix';
-import { PublicLink, SecuredComponents, SecuredLink } from './Links';
+import {SecuredLink } from './Links';
 
 export const NavigationBar = () => {
     return (
@@ -15,8 +14,8 @@ export const NavigationBar = () => {
                             className="me-auto my-2 my-lg-0"
                             style={{ maxHeight: '100px' }}
                             navbarScroll>
-                            <PublicLink to="/">Home</PublicLink>
-                            <PublicLink to="/suppliers">Supplier Data</PublicLink>
+                            <SecuredLink to="/">Home</SecuredLink>
+                            <SecuredLink to="/ingestionTracking">Supplier Data</SecuredLink>
                         </Nav>
                         <Form className="d-flex">
                         </Form>

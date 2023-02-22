@@ -41,6 +41,8 @@ namespace LHDS.Core.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IngestionTrackingId");
+
                     b.ToTable("Audits");
                 });
 
@@ -81,9 +83,30 @@ namespace LHDS.Core.Migrations
                     b.Property<int>("RecordCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.ToTable("IngestionTrackings");
+                });
+
+            modelBuilder.Entity("LHDS.Core.Models.Audits.Audit", b =>
+                {
+                    b.HasOne("LHDS.Core.Models.Foundations.IngestionTrackings.IngestionTracking", "IngestionTracking")
+                        .WithMany("Audits")
+                        .HasForeignKey("IngestionTrackingId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("IngestionTracking");
+                });
+
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.IngestionTrackings.IngestionTracking", b =>
+                {
+                    b.Navigation("Audits");
                 });
 #pragma warning restore 612, 618
         }

@@ -15,6 +15,7 @@ using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using Microsoft.Extensions.Configuration;
 
 namespace LHDS.Core.Services.Orchestrations.Downloads
 {
@@ -26,6 +27,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         private readonly IAuditService auditService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly string source;
 
         public DownloadOrchestrationService(
             IDocumentService documentService,
@@ -33,7 +35,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             IIngestionTrackingService ingestionTrackingService,
             IAuditService auditService,
             ILoggingBroker loggingBroker,
-            IDateTimeBroker dateTimeBroker)
+            IDateTimeBroker dateTimeBroker,
+            IConfiguration configuration)
         {
             this.documentService = documentService;
             this.downloadService = downloadService;
@@ -41,6 +44,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.auditService = auditService;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
+            this.source = configuration["LandingSource"];
         }
 
         public ValueTask ProcessAsync() =>
@@ -75,6 +79,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                   new IngestionTracking
                                   {
                                       Id = document.FileName,
+                                      Source = source,
                                       EncryptedFileName = $"/encrypted{filename}",
                                       DecryptedFileName =
                                         $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",

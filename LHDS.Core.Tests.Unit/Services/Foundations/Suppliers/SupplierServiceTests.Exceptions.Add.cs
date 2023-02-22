@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Suppliers;
 using LHDS.Core.Models.Suppliers.Exceptions;
@@ -139,7 +140,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 await Assert.ThrowsAsync<SupplierDependencyValidationException>(
                     addSupplierTask.AsTask);
 
-            actualSupplierDependencyValidationException.Should().BeEquivalentTo(expectedSupplierValidationException);
+            actualSupplierDependencyValidationException.Should()
+                .BeEquivalentTo(expectedSupplierValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -157,6 +159,55 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnAddIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            Supplier someSupplier = CreateRandomSupplier();
+
+            var databaseUpdateException =
+                new DbUpdateException();
+
+            var failedSupplierStorageException =
+                new FailedSupplierStorageException(databaseUpdateException);
+
+            var expectedSupplierDependencyException =
+                new SupplierDependencyException(failedSupplierStorageException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<Supplier> addSupplierTask =
+                this.supplierService.AddSupplierAsync(someSupplier);
+
+            SupplierDependencyException actualSupplierDependencyException =
+                await Assert.ThrowsAsync<SupplierDependencyException>(
+                    addSupplierTask.AsTask);
+
+            // then
+            actualSupplierDependencyException.Should()
+                .BeEquivalentTo(expectedSupplierDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertSupplierAsync(It.IsAny<Supplier>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSupplierDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

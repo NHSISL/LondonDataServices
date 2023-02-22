@@ -109,6 +109,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             actualSupplierValidationException.Should()
                 .BeEquivalentTo(expectedSupplierValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedSupplierValidationException))),
@@ -118,9 +122,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 broker.UpdateSupplierAsync(It.IsAny<Supplier>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -139,6 +143,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             var expectedSupplierValidationException =
                 new SupplierValidationException(invalidSupplierException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<Supplier> modifySupplierTask =
                 this.supplierService.ModifySupplierAsync(invalidSupplier);
@@ -151,6 +159,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             actualSupplierValidationException.Should()
                 .BeEquivalentTo(expectedSupplierValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedSupplierValidationException))),
@@ -160,9 +172,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 broker.SelectSupplierByIdAsync(invalidSupplier.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]

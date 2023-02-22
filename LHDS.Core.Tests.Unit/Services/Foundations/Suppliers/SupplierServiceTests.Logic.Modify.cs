@@ -23,6 +23,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             Supplier expectedSupplier = updatedSupplier.DeepClone();
             Guid supplierId = inputSupplier.Id;
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.UpdateSupplierAsync(inputSupplier))
                     .ReturnsAsync(updatedSupplier);
@@ -34,13 +38,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             // then
             actualSupplier.Should().BeEquivalentTo(expectedSupplier);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateSupplierAsync(inputSupplier),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

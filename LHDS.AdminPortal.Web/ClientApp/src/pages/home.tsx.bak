@@ -1,10 +1,11 @@
-import React from 'react';
-import { Container, Row, Col, Card } from 'nhsuk-react-components';
-import 'nhsuk-frontend/dist/nhsuk.min';
+﻿import React from 'react';
+import { Container, Row, Col, Card } from 'nhsuk-react-components'
+import 'nhsuk-frontend/dist/nhsuk.min'
 import 'nhsuk-frontend/packages/polyfills';
 import { PublicLink } from '../components/Links';
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 import { loginRequest } from '../authConfig';
+import { Button } from 'react-bootstrap';
 import { Button } from 'react-bootstrap';
 
 export const Home = () => {
@@ -17,9 +18,9 @@ export const Home = () => {
                     <Row className="nhsuk-grid-row">
                         <Col width="full">
                             <div className="nhsuk-hero__wrapper app-hero__wrapper">
-                                <h1 className="nhsuk-u-margin-bottom-4">London Health Data Services</h1>
+                                <h1 className="nhsuk-u-margin-bottom-4">LHDS</h1>
                                 <p className=" nhsuk-u-margin-bottom-1">
-                                    <p className="nhsuk-body-l nhsuk-u-margin-bottom-1">Admin Portal</p>
+                                    <p className="nhsuk-body-l nhsuk-u-margin-bottom-1">Use the service to....</p>
                                 </p>
                             </div>
                         </Col>

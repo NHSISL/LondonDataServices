@@ -160,5 +160,50 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateUserIdsIsNotSameAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Supplier randomSupplier = CreateRandomSupplier(randomDateTimeOffset);
+            Supplier invalidSupplier = randomSupplier;
+            invalidSupplier.UpdatedByUserId = Guid.NewGuid();
+
+            var invalidSupplierException =
+                new InvalidSupplierException();
+
+            invalidSupplierException.AddData(
+                key: nameof(Supplier.UpdatedByUserId),
+                values: $"Id is not the same as {nameof(Supplier.CreatedByUserId)}");
+
+            var expectedSupplierValidationException =
+                new SupplierValidationException(invalidSupplierException);
+
+            // when
+            ValueTask<Supplier> addSupplierTask =
+                this.supplierService.AddSupplierAsync(invalidSupplier);
+
+            SupplierValidationException actualSupplierValidationException =
+                await Assert.ThrowsAsync<SupplierValidationException>(
+                    addSupplierTask.AsTask);
+
+            // then
+            actualSupplierValidationException.Should()
+                .BeEquivalentTo(expectedSupplierValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSupplierValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertSupplierAsync(It.IsAny<Supplier>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

@@ -49,5 +49,46 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomMessage();
+            var serviceException = new Exception(exceptionMessage);
+
+            var failedSupplierServiceException =
+                new FailedSupplierServiceException(serviceException);
+
+            var expectedSupplierServiceException =
+                new SupplierServiceException(failedSupplierServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllSuppliers())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllSuppliersAction = () =>
+                this.supplierService.RetrieveAllSuppliers();
+
+            SupplierServiceException actualSupplierServiceException =
+                Assert.Throws<SupplierServiceException>(retrieveAllSuppliersAction);
+
+            // then
+            actualSupplierServiceException.Should()
+                .BeEquivalentTo(expectedSupplierServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllSuppliers(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSupplierServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

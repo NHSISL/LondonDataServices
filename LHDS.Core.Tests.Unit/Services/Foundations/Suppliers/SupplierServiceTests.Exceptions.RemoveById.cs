@@ -1,6 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Suppliers;
 using LHDS.Core.Models.Suppliers.Exceptions;
@@ -54,6 +56,55 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
+                    Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationOnRemoveIfDatabaseUpdateConcurrencyErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someSupplierId = Guid.NewGuid();
+
+            var databaseUpdateConcurrencyException =
+                new DbUpdateConcurrencyException();
+
+            var lockedSupplierException =
+                new LockedSupplierException(databaseUpdateConcurrencyException);
+
+            var expectedSupplierDependencyValidationException =
+                new SupplierDependencyValidationException(lockedSupplierException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectSupplierByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<Supplier> removeSupplierByIdTask =
+                this.supplierService.RemoveSupplierByIdAsync(someSupplierId);
+
+            SupplierDependencyValidationException actualSupplierDependencyValidationException =
+                await Assert.ThrowsAsync<SupplierDependencyValidationException>(
+                    removeSupplierByIdTask.AsTask);
+
+            // then
+            actualSupplierDependencyValidationException.Should()
+                .BeEquivalentTo(expectedSupplierDependencyValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSupplierByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSupplierDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.DeleteSupplierAsync(It.IsAny<Supplier>()),
                     Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

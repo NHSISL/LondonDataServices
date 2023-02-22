@@ -84,7 +84,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(Supplier.CreatedDate)}"
+                });
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.UpdatedByUserId),

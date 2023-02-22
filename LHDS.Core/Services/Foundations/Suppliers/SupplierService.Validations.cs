@@ -47,7 +47,13 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                 (Rule: IsInvalid(supplier.CreatedDate), Parameter: nameof(Supplier.CreatedDate)),
                 (Rule: IsInvalid(supplier.CreatedByUserId), Parameter: nameof(Supplier.CreatedByUserId)),
                 (Rule: IsInvalid(supplier.UpdatedDate), Parameter: nameof(Supplier.UpdatedDate)),
-                (Rule: IsInvalid(supplier.UpdatedByUserId), Parameter: nameof(Supplier.UpdatedByUserId)));
+                (Rule: IsInvalid(supplier.UpdatedByUserId), Parameter: nameof(Supplier.UpdatedByUserId)),
+
+                (Rule: IsSame(
+                    firstDate: supplier.UpdatedDate,
+                    secondDate: supplier.CreatedDate,
+                    secondDateName: nameof(Supplier.CreatedDate)),
+                Parameter: nameof(Supplier.UpdatedDate)));
         }
 
         public void ValidateSupplierId(Guid supplierId) =>
@@ -80,6 +86,15 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,

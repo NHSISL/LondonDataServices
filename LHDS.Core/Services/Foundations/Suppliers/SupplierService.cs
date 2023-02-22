@@ -22,7 +22,12 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<Supplier> AddSupplierAsync(Supplier supplier) =>
-            await this.storageBroker.InsertSupplierAsync(supplier);
+        public ValueTask<Supplier> AddSupplierAsync(Supplier supplier) =>
+            TryCatch(async () =>
+            {
+                ValidateSupplierOnAdd(supplier);
+
+                return await this.storageBroker.InsertSupplierAsync(supplier);
+            });
     }
 }

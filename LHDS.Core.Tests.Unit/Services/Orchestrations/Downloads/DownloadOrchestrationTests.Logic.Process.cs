@@ -233,6 +233,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 service.RetrieveIngestionTrackingByIdAsync(externalIngestionTrackingFound.Id))
                     .ReturnsAsync(externalIngestionTrackingFound);
 
+            this.downloadServiceMock.Setup(service =>
+                  service.RetrieveDownloadByFileNameAsync(externalIngestionTrackingFound.Id))
+                      .ReturnsAsync(externalDocument);
+
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
                     .Returns(randomDateTime);
@@ -247,21 +251,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     .ReturnsAsync(outputIngestionTracking);
 
             // when
-            await this.downloadOrchestrationService.ProcessAsync(randomDocument.FileName);
+            await this.downloadOrchestrationService.ProcessAsync(externalIngestionTrackingFound.Id);
 
             // then
             this.ingestionTrackingServiceMock.Verify(service =>
                 service.RetrieveIngestionTrackingByIdAsync(externalIngestionTrackingFound.Id),
                     Times.Once);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+            this.downloadServiceMock.Verify(service =>
+                service.RetrieveDownloadByFileNameAsync(externalIngestionTrackingFound.Id),
                     Times.Once);
-
-            this.ingestionTrackingServiceMock.Verify(service =>
-                service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(
-                    outputIngestionTracking))),
-                        Times.Once);
 
             this.documentServiceMock.Verify(service =>
                 service.RemoveDocumentByFileNameAsync(externalIngestionTrackingFound.Id),
@@ -276,6 +275,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             this.documentServiceMock.Verify(service =>
                 service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument))),
                     Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(
+                    outputIngestionTracking))),
+                        Times.Once);
 
             this.auditServiceMock.Verify(service =>
                 service.AddAuditAsync(It.IsAny<Audit>()),

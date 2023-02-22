@@ -1,0 +1,11 @@
+@import "./node_modules/nhsuk-frontend/packages/nhsuk";
+
+#navbarScroll > div > div > a {color:white;}
+
+td, tr, thead, tbody, table, th, body {
+    font-size: 18px;
+}
+
+.NELTopPadding {
+    padding-top: 20px;
+}

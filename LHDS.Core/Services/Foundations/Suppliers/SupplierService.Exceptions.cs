@@ -54,6 +54,12 @@ namespace LHDS.Core.Services.Foundations.Suppliers
 
                 throw CreateAndLogDependencyValidationException(invalidSupplierReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedSupplierException = new LockedSupplierException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedSupplierException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedSupplierStorageException =

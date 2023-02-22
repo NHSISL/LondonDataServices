@@ -1,7 +1,4 @@
 import React from "react";
-import { Badge } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import ButtonBase from "../bases/buttons/ButtonBase";
 import TableBaseData from "../bases/components/Table/TableBase.Data";
 import TableBaseRow from "../bases/components/Table/TableBase.Row";
 

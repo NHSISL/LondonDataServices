@@ -1,5 +1,4 @@
-import { debounce } from "lodash";
-import React, { ChangeEvent, useMemo, useState } from "react";
+import React from "react";
 import CardBase from "../bases/components/Card/CardBase";
 import CardBaseBody from "../bases/components/Card/CardBase.Body";
 import CardBaseContent from "../bases/components/Card/CardBase.Content";
@@ -9,8 +8,6 @@ import TableBaseTbody from "../bases/components/Table/TableBase.Tbody";
 import AuditRow from "./auditRow";
 
 const AuditTable = () => {
-
-
     return (
         <div>
             <CardBase>

@@ -1,4 +1,3 @@
-import { Table } from "nhsuk-react-components";
 import React from "react";
 import { Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
@@ -17,9 +16,10 @@ const IngestionTrackingTable = () => {
                 <TableBaseData>
                     .../delta_76356_Admin_Location_20230109132842_70CD5674-1F0E-44E8-95C5-75D70EA9A291.csv.gpg
                     <br />
-                    <Badge pill bg="success text-white">re-land</Badge> &nbsp;
-                    <Badge pill bg="success text-white">decrypt</Badge> &nbsp;
-                    <Badge pill bg="success text-white">download</Badge> &nbsp;
+                    <Badge  bg="success text-white">Re-land</Badge> &nbsp;
+                    <Badge  bg="success text-white">Decrypt</Badge> &nbsp;
+                    <Badge bg="success text-white">Download</Badge> &nbsp;
+                    <Badge bg="success text-white"> <Link to={'/ingestionTrackingDetail/'}>Details</Link></Badge> &nbsp;
                 </TableBaseData>
                 <TableBaseData>
                     <Link to={'/ingestionTrackingDetail/'}>

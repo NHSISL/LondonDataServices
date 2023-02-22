@@ -6,7 +6,7 @@ export const NavigationBar = () => {
     return (
         <>
             <Navbar style={{ backgroundColor: "#005eb8" }}>
-                <Container style={{ maxWidth: "1040px", backgroundColor: "#005eb8" }} >
+                <Container className="nhsuk-width-container" style={{backgroundColor: "#005eb8" }} >
                     <Navbar.Brand href="#"></Navbar.Brand>
                     <Navbar.Toggle aria-controls="navbarScroll" />
                     <Navbar.Collapse id="navbarScroll">

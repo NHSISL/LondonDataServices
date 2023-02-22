@@ -11,5 +11,6 @@ namespace LHDS.Core.Services.Foundations.Suppliers
         IQueryable<Supplier> RetrieveAllSuppliers();
         ValueTask<Supplier> RetrieveSupplierByIdAsync(Guid supplierId);
         ValueTask<Supplier> ModifySupplierAsync(Supplier supplier);
+        ValueTask<Supplier> RemoveSupplierByIdAsync(Guid supplierId);
     }
 }

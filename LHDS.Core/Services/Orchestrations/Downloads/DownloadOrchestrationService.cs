@@ -126,6 +126,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         public async ValueTask ProcessAsync(string fileName) =>
             await TryCatch(async () =>
             {
+                ValidateFileName(fileName);
+
                 IngestionTracking tracking = 
                     await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(fileName);
 

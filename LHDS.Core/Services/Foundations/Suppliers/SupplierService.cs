@@ -62,7 +62,12 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                 return await this.storageBroker.UpdateSupplierAsync(supplier);
             });
 
-        public ValueTask<Supplier> RemoveSupplierByIdAsync(Guid supplierId) =>
-            throw new NotImplementedException();
+        public async ValueTask<Supplier> RemoveSupplierByIdAsync(Guid supplierId)
+        {
+            Supplier maybeSupplier = await this.storageBroker
+                    .SelectSupplierByIdAsync(supplierId);
+
+            return await this.storageBroker.DeleteSupplierAsync(maybeSupplier);
+        }
     }
 }

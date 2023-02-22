@@ -39,5 +39,18 @@ namespace LHDS.Core.Brokers.Storages
 
             return await broker.Suppliers.FindAsync(supplierId);
         }
+
+        public async ValueTask<Supplier> UpdateSupplierAsync(Supplier supplier)
+        {
+            using var broker =
+                new StorageBroker(this.configuration);
+
+            EntityEntry<Supplier> supplierEntityEntry =
+                broker.Suppliers.Update(supplier);
+
+            await broker.SaveChangesAsync();
+
+            return supplierEntityEntry.Entity;
+        }
     }
 }

@@ -18,7 +18,8 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                 (Rule: IsInvalid(supplier.Id), Parameter: nameof(Supplier.Id)),
                 (Rule: IsInvalid(supplier.Name), Parameter: nameof(Supplier.Name)),
                 (Rule: IsInvalid(supplier.FriendlyName), Parameter: nameof(Supplier.FriendlyName)),
-                (Rule: IsInvalid(supplier.LandingManualTriggerUrl), Parameter: nameof(Supplier.LandingManualTriggerUrl)),
+                (Rule: IsInvalid(supplier.LandingManualTriggerUrl),
+                    Parameter: nameof(Supplier.LandingManualTriggerUrl)),
                 (Rule: IsInvalid(supplier.CreatedDate), Parameter: nameof(Supplier.CreatedDate)),
                 (Rule: IsInvalid(supplier.CreatedBy), Parameter: nameof(Supplier.CreatedBy)),
                 (Rule: IsInvalid(supplier.UpdatedDate), Parameter: nameof(Supplier.UpdatedDate)),
@@ -45,13 +46,14 @@ namespace LHDS.Core.Services.Foundations.Suppliers
 
             Validate(
                 (Rule: IsInvalid(supplier.Id), Parameter: nameof(Supplier.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(supplier.Name), Parameter: nameof(Supplier.Name)),
+                (Rule: IsInvalid(supplier.FriendlyName), Parameter: nameof(Supplier.FriendlyName)),
+                (Rule: IsInvalid(supplier.LandingManualTriggerUrl),
+                    Parameter: nameof(Supplier.LandingManualTriggerUrl)),
                 (Rule: IsInvalid(supplier.CreatedDate), Parameter: nameof(Supplier.CreatedDate)),
-                (Rule: IsInvalid(supplier.CreatedByUserId), Parameter: nameof(Supplier.CreatedByUserId)),
+                (Rule: IsInvalid(supplier.CreatedBy), Parameter: nameof(Supplier.CreatedBy)),
                 (Rule: IsInvalid(supplier.UpdatedDate), Parameter: nameof(Supplier.UpdatedDate)),
-                (Rule: IsInvalid(supplier.UpdatedByUserId), Parameter: nameof(Supplier.UpdatedByUserId)),
+                (Rule: IsInvalid(supplier.UpdatedBy), Parameter: nameof(Supplier.UpdatedBy)),
 
                 (Rule: IsSame(
                     firstDate: supplier.UpdatedDate,
@@ -91,10 +93,10 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                 Parameter: nameof(Supplier.CreatedDate)),
 
                 (Rule: IsNotSame(
-                    firstId: inputSupplier.CreatedByUserId,
-                    secondId: storageSupplier.CreatedByUserId,
-                    secondIdName: nameof(Supplier.CreatedByUserId)),
-                Parameter: nameof(Supplier.CreatedByUserId)),
+                    first: inputSupplier.CreatedBy,
+                    second: storageSupplier.CreatedBy,
+                    secondName: nameof(Supplier.CreatedBy)),
+                Parameter: nameof(Supplier.CreatedBy)),
 
                 (Rule: IsSame(
                     firstDate: inputSupplier.UpdatedDate,

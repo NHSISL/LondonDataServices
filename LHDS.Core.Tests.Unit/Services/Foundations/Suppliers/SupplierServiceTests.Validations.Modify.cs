@@ -106,7 +106,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     modifySupplierTask.AsTask);
 
             //then
-            actualSupplierValidationException.Should().BeEquivalentTo(expectedSupplierValidationException);
+            actualSupplierValidationException.Should()
+                .BeEquivalentTo(expectedSupplierValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -147,7 +148,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                     modifySupplierTask.AsTask);
 
             // then
-            actualSupplierValidationException.Should().BeEquivalentTo(expectedSupplierValidationException);
+            actualSupplierValidationException.Should()
+                .BeEquivalentTo(expectedSupplierValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -161,6 +163,58 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsNotRecentAndLogItAsync(int minutes)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Supplier randomSupplier = CreateRandomSupplier(randomDateTimeOffset);
+            randomSupplier.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
+
+            var invalidSupplierException =
+                new InvalidSupplierException();
+
+            invalidSupplierException.AddData(
+                key: nameof(Supplier.UpdatedDate),
+                values: "Date is not recent");
+
+            var expectedSupplierValidatonException =
+                new SupplierValidationException(invalidSupplierException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<Supplier> modifySupplierTask =
+                this.supplierService.ModifySupplierAsync(randomSupplier);
+
+            SupplierValidationException actualSupplierValidationException =
+                await Assert.ThrowsAsync<SupplierValidationException>(
+                    modifySupplierTask.AsTask);
+
+            // then
+            actualSupplierValidationException.Should().BeEquivalentTo(expectedSupplierValidatonException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSupplierValidatonException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSupplierByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

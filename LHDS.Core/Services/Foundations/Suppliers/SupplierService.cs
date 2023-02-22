@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             });
 
         public IQueryable<Supplier> RetrieveAllSuppliers() =>
-            this.storageBroker.SelectAllSuppliers();
+            TryCatch(() => this.storageBroker.SelectAllSuppliers());
     }
 }

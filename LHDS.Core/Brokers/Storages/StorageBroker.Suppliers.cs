@@ -52,5 +52,18 @@ namespace LHDS.Core.Brokers.Storages
 
             return supplierEntityEntry.Entity;
         }
+
+        public async ValueTask<Supplier> DeleteSupplierAsync(Supplier supplier)
+        {
+            using var broker =
+                new StorageBroker(this.configuration);
+
+            EntityEntry<Supplier> supplierEntityEntry =
+                broker.Suppliers.Remove(supplier);
+
+            await broker.SaveChangesAsync();
+
+            return supplierEntityEntry.Entity;
+        }
     }
 }

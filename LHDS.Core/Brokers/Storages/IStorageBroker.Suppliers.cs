@@ -11,5 +11,6 @@ namespace LHDS.Core.Brokers.Storages
         IQueryable<Supplier> SelectAllSuppliers();
         ValueTask<Supplier> SelectSupplierByIdAsync(Guid supplierId);
         ValueTask<Supplier> UpdateSupplierAsync(Supplier supplier);
+        ValueTask<Supplier> DeleteSupplierAsync(Supplier supplier);
     }
 }

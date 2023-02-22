@@ -5,7 +5,7 @@
 using System;
 using Xeptions;
 
-namespace LHDS.Core.Models.Audits.Exceptions
+namespace LHDS.Core.Models.Foundations.Audits.Exceptions
 {
     public class AlreadyExistsAuditException : Xeption
     {

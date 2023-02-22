@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
-using LHDS.Core.Models.Audits;
+using LHDS.Core.Models.Foundations.Audits;
 
 namespace LHDS.Core.Services.Foundations.Audits
 {

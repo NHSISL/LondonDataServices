@@ -4,12 +4,12 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Audits.Exceptions
+namespace LHDS.Core.Models.Foundations.Audits.Exceptions
 {
-    public class InvalidAuditException : Xeption
+    public class NullAuditException : Xeption
     {
-        public InvalidAuditException()
-            : base(message: "Invalid audit. Please correct the errors and try again.")
+        public NullAuditException()
+            : base(message: "Audit is null.")
         { }
     }
 }

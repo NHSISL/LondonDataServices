@@ -5,7 +5,7 @@
 using System;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 
-namespace LHDS.Core.Models.Audits
+namespace LHDS.Core.Models.Foundations.Audits
 {
     public class Audit
     {

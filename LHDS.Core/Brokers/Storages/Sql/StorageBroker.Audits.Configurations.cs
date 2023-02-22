@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using LHDS.Core.Models.Audits;
+using LHDS.Core.Models.Foundations.Audits;
 using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.Core.Brokers.Storages.Sql

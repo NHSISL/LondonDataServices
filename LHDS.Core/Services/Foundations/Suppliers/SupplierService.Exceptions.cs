@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
     public partial class SupplierService
     {
         private delegate ValueTask<Supplier> ReturningSupplierFunction();
+        private delegate IQueryable<Supplier> ReturningSuppliersFunction();
 
         private async ValueTask<Supplier> TryCatch(ReturningSupplierFunction returningSupplierFunction)
         {
@@ -61,6 +63,20 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                     new FailedSupplierServiceException(exception);
 
                 throw CreateAndLogServiceException(failedSupplierServiceException);
+            }
+        }
+
+        private IQueryable<Supplier> TryCatch(ReturningSuppliersFunction returningSuppliersFunction)
+        {
+            try
+            {
+                return returningSuppliersFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedSupplierStorageException =
+                    new FailedSupplierStorageException(sqlException);
+                throw CreateAndLogCriticalDependencyException(failedSupplierStorageException);
             }
         }
 

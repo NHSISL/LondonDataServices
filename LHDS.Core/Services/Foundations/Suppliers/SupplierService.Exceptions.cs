@@ -78,6 +78,13 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                     new FailedSupplierStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedSupplierStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedSupplierServiceException =
+                    new FailedSupplierServiceException(exception);
+
+                throw CreateAndLogServiceException(failedSupplierServiceException);
+            }
         }
 
         private SupplierValidationException CreateAndLogValidationException(Xeption exception)

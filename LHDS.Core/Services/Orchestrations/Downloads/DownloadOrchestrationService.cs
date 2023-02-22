@@ -123,6 +123,12 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 }
             });
 
+        public async ValueTask ProcessAsync(string fileName) =>
+            await TryCatch(async () =>
+            {
+                throw new NotImplementedException();
+            });
+
         private void LogAudit(Document document, DateTimeOffset currentDateTime, string message)
         {
             Audit newAudit =

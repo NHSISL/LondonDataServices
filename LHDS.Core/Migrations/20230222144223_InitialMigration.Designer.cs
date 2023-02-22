@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LHDS.Core.Migrations
 {
     [DbContext(typeof(StorageBroker))]
-    [Migration("20230222105231_InitialMigration")]
+    [Migration("20230222144223_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace LHDS.Core.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("LHDS.Core.Models.Audits.Audit", b =>
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.Audits.Audit", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -96,7 +96,30 @@ namespace LHDS.Core.Migrations
                     b.ToTable("IngestionTrackings");
                 });
 
-            modelBuilder.Entity("LHDS.Core.Models.Audits.Audit", b =>
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.Suppliers.Supplier", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FriendlyName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LandingManualTriggerUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Suppliers");
+                });
+
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.Audits.Audit", b =>
                 {
                     b.HasOne("LHDS.Core.Models.Foundations.IngestionTrackings.IngestionTracking", "IngestionTracking")
                         .WithMany("Audits")

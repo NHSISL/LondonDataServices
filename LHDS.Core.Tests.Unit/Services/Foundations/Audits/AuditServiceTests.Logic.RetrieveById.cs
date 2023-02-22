@@ -5,7 +5,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Audits;
+using LHDS.Core.Models.Foundations.Audits;
 using Moq;
 using Xunit;
 

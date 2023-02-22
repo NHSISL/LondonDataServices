@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Force.DeepCloner;
-using LHDS.Core.Models.Audits;
+using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;

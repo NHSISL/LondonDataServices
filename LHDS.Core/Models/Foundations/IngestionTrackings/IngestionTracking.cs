@@ -4,7 +4,7 @@
 
 using System;
 using System.Collections.Generic;
-using LHDS.Core.Models.Audits;
+using LHDS.Core.Models.Foundations.Audits;
 
 namespace LHDS.Core.Models.Foundations.IngestionTrackings
 {

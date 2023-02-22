@@ -58,6 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             var invalidIngestionTracking = new IngestionTracking
             {
                 Id = invalidText,
+                Source = invalidText,
                 EncryptedFileName = invalidText,
                 DecryptedFileName = invalidText,
             };
@@ -67,6 +68,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.Id),
+                values: "Text is required");
+
+            invalidIngestionTrackingException.AddData(
+                key: nameof(IngestionTracking.Source),
                 values: "Text is required");
 
             invalidIngestionTrackingException.AddData(

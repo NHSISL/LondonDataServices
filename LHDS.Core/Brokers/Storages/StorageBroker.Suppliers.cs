@@ -23,5 +23,13 @@ namespace LHDS.Core.Brokers.Storages
 
             return supplierEntityEntry.Entity;
         }
+
+        public IQueryable<Supplier> SelectAllSuppliers()
+        {
+            using var broker =
+                new StorageBroker(this.configuration);
+
+            return broker.Suppliers;
+        }
     }
 }

@@ -84,7 +84,13 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                     firstDate: inputSupplier.CreatedDate,
                     secondDate: storageSupplier.CreatedDate,
                     secondDateName: nameof(Supplier.CreatedDate)),
-                Parameter: nameof(Supplier.CreatedDate)));
+                Parameter: nameof(Supplier.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    firstId: inputSupplier.CreatedByUserId,
+                    secondId: storageSupplier.CreatedByUserId,
+                    secondIdName: nameof(Supplier.CreatedByUserId)),
+                Parameter: nameof(Supplier.CreatedByUserId)));
         }
 
         private static dynamic IsInvalid(Guid id) => new

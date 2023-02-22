@@ -27,8 +27,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 this.supplierService.AddSupplierAsync(nullSupplier);
 
             SupplierValidationException actualSupplierValidationException =
-                await Assert.ThrowsAsync<SupplierValidationException>(
-                    addSupplierTask.AsTask);
+                await Assert.ThrowsAsync<SupplierValidationException>(() =>
+                    addSupplierTask.AsTask());
 
             // then
             actualSupplierValidationException.Should()
@@ -93,12 +93,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 this.supplierService.AddSupplierAsync(invalidSupplier);
 
             SupplierValidationException actualSupplierValidationException =
-                await Assert.ThrowsAsync<SupplierValidationException>(
-                    addSupplierTask.AsTask);
+                await Assert.ThrowsAsync<SupplierValidationException>(() =>
+                    addSupplierTask.AsTask());
 
             // then
             actualSupplierValidationException.Should()
                 .BeEquivalentTo(expectedSupplierValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -135,17 +139,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             var expectedSupplierValidationException =
                 new SupplierValidationException(invalidSupplierException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<Supplier> addSupplierTask =
                 this.supplierService.AddSupplierAsync(invalidSupplier);
 
             SupplierValidationException actualSupplierValidationException =
-                await Assert.ThrowsAsync<SupplierValidationException>(
-                    addSupplierTask.AsTask);
+                await Assert.ThrowsAsync<SupplierValidationException>(() =>
+                    addSupplierTask.AsTask());
 
             // then
             actualSupplierValidationException.Should()
                 .BeEquivalentTo(expectedSupplierValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -156,9 +168,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 broker.InsertSupplierAsync(It.IsAny<Supplier>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -180,17 +192,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             var expectedSupplierValidationException =
                 new SupplierValidationException(invalidSupplierException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<Supplier> addSupplierTask =
                 this.supplierService.AddSupplierAsync(invalidSupplier);
 
             SupplierValidationException actualSupplierValidationException =
-                await Assert.ThrowsAsync<SupplierValidationException>(
-                    addSupplierTask.AsTask);
+                await Assert.ThrowsAsync<SupplierValidationException>(() =>
+                    addSupplierTask.AsTask());
 
             // then
             actualSupplierValidationException.Should()
                 .BeEquivalentTo(expectedSupplierValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -239,8 +259,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 this.supplierService.AddSupplierAsync(invalidSupplier);
 
             SupplierValidationException actualSupplierValidationException =
-                await Assert.ThrowsAsync<SupplierValidationException>(
-                    addSupplierTask.AsTask);
+                await Assert.ThrowsAsync<SupplierValidationException>(() =>
+                    addSupplierTask.AsTask());
 
             // then
             actualSupplierValidationException.Should()

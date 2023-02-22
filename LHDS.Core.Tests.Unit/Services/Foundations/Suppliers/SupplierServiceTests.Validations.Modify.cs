@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -110,6 +111,47 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateSupplierAsync(It.IsAny<Supplier>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Supplier randomSupplier = CreateRandomSupplier(randomDateTimeOffset);
+            Supplier invalidSupplier = randomSupplier;
+            var invalidSupplierException = new InvalidSupplierException();
+
+            invalidSupplierException.AddData(
+                key: nameof(Supplier.UpdatedDate),
+                values: $"Date is the same as {nameof(Supplier.CreatedDate)}");
+
+            var expectedSupplierValidationException =
+                new SupplierValidationException(invalidSupplierException);
+
+            // when
+            ValueTask<Supplier> modifySupplierTask =
+                this.supplierService.ModifySupplierAsync(invalidSupplier);
+
+            SupplierValidationException actualSupplierValidationException =
+                await Assert.ThrowsAsync<SupplierValidationException>(
+                    modifySupplierTask.AsTask);
+
+            // then
+            actualSupplierValidationException.Should().BeEquivalentTo(expectedSupplierValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSupplierValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSupplierByIdAsync(invalidSupplier.Id),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

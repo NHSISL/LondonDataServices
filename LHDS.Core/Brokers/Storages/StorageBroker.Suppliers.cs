@@ -31,5 +31,13 @@ namespace LHDS.Core.Brokers.Storages
 
             return broker.Suppliers;
         }
+
+        public async ValueTask<Supplier> SelectSupplierByIdAsync(Guid supplierId)
+        {
+            using var broker =
+                new StorageBroker(this.configuration);
+
+            return await broker.Suppliers.FindAsync(supplierId);
+        }
     }
 }

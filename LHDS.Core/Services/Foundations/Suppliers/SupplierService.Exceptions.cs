@@ -39,6 +39,13 @@ namespace LHDS.Core.Services.Foundations.Suppliers
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsSupplierException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidSupplierReferenceException =
+                    new InvalidSupplierReferenceException(foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidSupplierReferenceException);
+            }
         }
 
         private SupplierValidationException CreateAndLogValidationException(Xeption exception)

@@ -35,6 +35,11 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                 (Rule: IsNotRecent(supplier.CreatedDate), Parameter: nameof(Supplier.CreatedDate)));
         }
 
+        private void ValidateSupplierOnModify(Supplier supplier)
+        {
+            ValidateSupplierIsNotNull(supplier);
+        }
+
         public void ValidateSupplierId(Guid supplierId) =>
             Validate((Rule: IsInvalid(supplierId), Parameter: nameof(Supplier.Id)));
 

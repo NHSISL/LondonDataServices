@@ -22,7 +22,7 @@ namespace LHDS.Core.Services.Foundations.Audits
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<Audit> AddAuditAsync(Audit audit) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<Audit> AddAuditAsync(Audit audit) =>
+            await this.storageBroker.InsertAuditAsync(audit);
     }
 }

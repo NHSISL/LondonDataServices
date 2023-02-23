@@ -4,13 +4,16 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings
 {
     public class IngestionTracking
     {
-        public Guid Id { get; set; }
-
-        // TODO:  Add your properties here
-
-        public Guid CreatedByUserId { get; set; }
+        public string Id { get; set; }
+        public string Source { get; set; }
+        public string EncryptedFileName { get; set; }
+        public string DecryptedFileName { get; set; }
+        public bool Decrypted { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
-        public Guid UpdatedByUserId { get; set; }
-        public DateTimeOffset UpdatedDate { get; set; }
+        public DateTimeOffset LastSeen { get; set; }
+        public bool FileDeleted { get; set; }
+        public int RecordCount { get; set; }
+        public int EncryptedFileSize { get; set; }
+        public int DecryptedFileSize { get; set; }
     }
 }

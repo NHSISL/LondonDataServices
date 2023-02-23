@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using Tynamix.ObjectFiller;
@@ -29,10 +26,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
 
             filler.Setup()
                 .OnProperty(ingestionTracking => ingestionTracking.Id).Use(inputIngestionTracking.Id)
-                .OnType<DateTimeOffset>().Use(GetRandomDateTime())
-                .OnProperty(ingestionTracking => ingestionTracking.CreatedDate).Use(inputIngestionTracking.CreatedDate)
-                .OnProperty(ingestionTracking => ingestionTracking.CreatedByUserId).Use(inputIngestionTracking.CreatedByUserId)
-                .OnProperty(ingestionTracking => ingestionTracking.UpdatedDate).Use(now);
+                .OnType<DateTimeOffset>().Use(GetRandomDateTime());
 
             return filler.Create();
         }
@@ -63,16 +57,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
 
         private static Filler<IngestionTracking> CreateRandomIngestionTrackingFiller()
         {
-            Guid userId = Guid.NewGuid();
             DateTime now = DateTime.UtcNow;
             var filler = new Filler<IngestionTracking>();
 
             filler.Setup()
-                .OnType<DateTimeOffset>().Use(now)
-                .OnProperty(ingestionTracking => ingestionTracking.CreatedDate).Use(now)
-                .OnProperty(ingestionTracking => ingestionTracking.CreatedByUserId).Use(userId)
-                .OnProperty(ingestionTracking => ingestionTracking.UpdatedDate).Use(now)
-                .OnProperty(ingestionTracking => ingestionTracking.UpdatedByUserId).Use(userId);
+                .OnType<DateTimeOffset>().Use(now);
 
             return filler;
         }

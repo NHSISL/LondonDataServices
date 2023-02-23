@@ -12,7 +12,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         public async ValueTask<IngestionTracking> PostIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
             await this.apiFactoryClient.PostContentAsync(IngestionTrackingsRelativeUrl, ingestionTracking);
 
-        public async ValueTask<IngestionTracking> GetIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
+        public async ValueTask<IngestionTracking> GetIngestionTrackingByIdAsync(string ingestionTrackingId) =>
             await this.apiFactoryClient.GetContentAsync<IngestionTracking>($"{IngestionTrackingsRelativeUrl}/{ingestionTrackingId}");
 
         public async ValueTask<List<IngestionTracking>> GetAllIngestionTrackingsAsync() =>
@@ -21,7 +21,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         public async ValueTask<IngestionTracking> PutIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
             await this.apiFactoryClient.PutContentAsync(IngestionTrackingsRelativeUrl, ingestionTracking);
 
-        public async ValueTask<IngestionTracking> DeleteIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
+        public async ValueTask<IngestionTracking> DeleteIngestionTrackingByIdAsync(string ingestionTrackingId) =>
             await this.apiFactoryClient.DeleteContentAsync<IngestionTracking>($"{IngestionTrackingsRelativeUrl}/{ingestionTrackingId}");
     }
 }

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Audits;
 using LHDS.Core.Models.Audits.Exceptions;
 using Xeptions;
@@ -23,6 +24,13 @@ namespace LHDS.Core.Services.Foundations.Audits
             {
                 throw CreateAndLogValidationException(invalidAuditException);
             }
+            catch (SqlException sqlException)
+            {
+                var failedAuditStorageException =
+                    new FailedAuditStorageException(sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedAuditStorageException);
+            }
         }
 
         private AuditValidationException CreateAndLogValidationException(Xeption exception)
@@ -33,6 +41,14 @@ namespace LHDS.Core.Services.Foundations.Audits
             this.loggingBroker.LogError(auditValidationException);
 
             return auditValidationException;
+        }
+
+        private AuditDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        {
+            var auditDependencyException = new AuditDependencyException(exception);
+            this.loggingBroker.LogCritical(auditDependencyException);
+
+            return auditDependencyException;
         }
     }
 }

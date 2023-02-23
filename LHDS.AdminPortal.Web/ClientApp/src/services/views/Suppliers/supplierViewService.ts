@@ -1,8 +1,9 @@
 import { Guid } from "guid-typescript";
 import { useEffect, useState } from "react";
-import { Supplier } from "../../models/suppliers/supplier";
-import { SupplierView } from "../../models/views/components/suppliers/supplierView";
-import { supplierService } from "../foundations/supplierService";
+import { Supplier } from "../../../models/suppliers/supplier";
+import { SupplierView } from "../../../models/views/components/suppliers/supplierView";
+import { supplierService } from "../../foundations/supplierService";
+
 
 export const supplierViewService = {
 

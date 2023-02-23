@@ -52,10 +52,19 @@
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingTable.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierDetail.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierDetailCard.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierDetailCardView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierErrors.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRow.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowAdd.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowDelete.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowEdit.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowNew.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierValidations.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\hooks\useValidation.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\hooks\validation.test.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\hooks\validationMessages.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\hooks\validationProcessor.ts" />
     <TypeScriptCompile Remove="ClientApp\src\index.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\models\audits\audit.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\ingestionTrackings\ingestionTracking.ts" />
@@ -63,8 +72,10 @@
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\audit\auditView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\ingestionTracking\ingestionTrackingView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\suppliers\supplierView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\configuration\configHomePage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\IngestionTrackingHomepage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\ingestionTrackingPage.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\ownershipsPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\auditService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\ingestionTrackingService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\supplierService.ts" />
@@ -75,7 +86,6 @@
 
   <ItemGroup>
     <Folder Include="ClientApp\dependencies\guid-typescript\node_modules\%40types\" />
-    <Folder Include="ClientApp\src\hooks\" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

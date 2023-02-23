@@ -39,6 +39,13 @@ namespace LHDS.Core.Services.Foundations.Audits
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsAuditException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidAuditReferenceException =
+                    new InvalidAuditReferenceException(foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidAuditReferenceException);
+            }
         }
 
         private AuditValidationException CreateAndLogValidationException(Xeption exception)

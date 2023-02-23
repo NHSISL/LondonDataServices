@@ -9,5 +9,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
     public interface IDownloadOrchestrationService
     {
         ValueTask ProcessAsync();
+        ValueTask ProcessAsync(string fileName);
     }
 }

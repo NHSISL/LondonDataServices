@@ -338,7 +338,5 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
-
-
     }
 }

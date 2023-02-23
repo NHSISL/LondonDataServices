@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -54,6 +55,13 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
                 throw CreateAndLogDependencyException(failedIngestionTrackingStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedIngestionTrackingServiceException =
+                    new FailedIngestionTrackingServiceException(exception);
+
+                throw CreateAndLogServiceException(failedIngestionTrackingServiceException);
+            }
         }
 
         private IngestionTrackingValidationException CreateAndLogValidationException(Xeption exception)
@@ -91,6 +99,15 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             this.loggingBroker.LogError(ingestionTrackingDependencyException);
 
             return ingestionTrackingDependencyException;
+        }
+
+        private IngestionTrackingServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var ingestionTrackingServiceException = new IngestionTrackingServiceException(exception);
+            this.loggingBroker.LogError(ingestionTrackingServiceException);
+
+            return ingestionTrackingServiceException;
         }
     }
 }

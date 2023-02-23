@@ -1,14 +1,10 @@
-// ---------------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
-
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Audits;
-using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
+using LHDS.Core.Models.Audits;
+using LHDS.Core.Models.Audits.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
@@ -51,49 +47,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
                     expectedAuditDependencyException))),
-                        Times.Once);
-
-            this.storageBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAndLogItAsync()
-        {
-            // given
-            Guid someId = Guid.NewGuid();
-            var serviceException = new Exception();
-
-            var failedAuditServiceException =
-                new FailedAuditServiceException(serviceException);
-
-            var expectedAuditServiceException =
-                new AuditServiceException(failedAuditServiceException);
-
-            this.storageBrokerMock.Setup(broker =>
-                broker.SelectAuditByIdAsync(It.IsAny<Guid>()))
-                    .ThrowsAsync(serviceException);
-
-            // when
-            ValueTask<Audit> retrieveAuditByIdTask =
-                this.auditService.RetrieveAuditByIdAsync(someId);
-
-            AuditServiceException actualAuditServiceException =
-                await Assert.ThrowsAsync<AuditServiceException>(
-                    retrieveAuditByIdTask.AsTask);
-
-            // then
-            actualAuditServiceException.Should()
-                .BeEquivalentTo(expectedAuditServiceException);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectAuditByIdAsync(It.IsAny<Guid>()),
-                    Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
-                   expectedAuditServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

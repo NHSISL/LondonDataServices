@@ -84,7 +84,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(IngestionTracking.CreatedDate)}"
+                });
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.UpdatedByUserId),

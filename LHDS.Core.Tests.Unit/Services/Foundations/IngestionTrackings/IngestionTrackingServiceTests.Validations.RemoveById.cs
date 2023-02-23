@@ -1,12 +1,9 @@
-﻿// ---------------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
-
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.IngestionTrackings;
-using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using Moq;
+using LHDS.Core.Models.IngestionTrackings;
+using LHDS.Core.Models.IngestionTrackings.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
@@ -17,14 +14,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
         public async Task ShouldThrowValidationExceptionOnRemoveIfIdIsInvalidAndLogItAsync()
         {
             // given
-            string invalidIngestionTrackingId = string.Empty;
+            Guid invalidIngestionTrackingId = Guid.Empty;
 
             var invalidIngestionTrackingException =
                 new InvalidIngestionTrackingException();
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.Id),
-                values: "Text is required");
+                values: "Id is required");
 
             var expectedIngestionTrackingValidationException =
                 new IngestionTrackingValidationException(invalidIngestionTrackingException);

@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.IngestionTrackings;
 using LHDS.Core.Models.IngestionTrackings.Exceptions;
@@ -109,6 +110,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateIngestionTrackingAsync(someIngestionTracking),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnModifyIfDatabaseUpdateExceptionOccursAndLogItAsync()
+        {
+            // given
+            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();
+            var databaseUpdateException = new DbUpdateException();
+
+            var failedIngestionTrackingStorageException =
+                new FailedIngestionTrackingStorageException(databaseUpdateException);
+
+            var expectedIngestionTrackingDependencyException =
+                new IngestionTrackingDependencyException(failedIngestionTrackingStorageException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<IngestionTracking> modifyIngestionTrackingTask =
+                this.ingestionTrackingService.ModifyIngestionTrackingAsync(randomIngestionTracking);
+
+            IngestionTrackingDependencyException actualIngestionTrackingDependencyException =
+                await Assert.ThrowsAsync<IngestionTrackingDependencyException>(
+                    modifyIngestionTrackingTask.AsTask);
+
+            // then
+            actualIngestionTrackingDependencyException.Should()
+                .BeEquivalentTo(expectedIngestionTrackingDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectIngestionTrackingByIdAsync(randomIngestionTracking.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedIngestionTrackingDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateIngestionTrackingAsync(randomIngestionTracking),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

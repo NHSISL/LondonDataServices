@@ -22,6 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             IngestionTracking randomIngestionTracking = CreateRandomModifyIngestionTracking(randomDateTimeOffset);
             IngestionTracking inputIngestionTracking = randomIngestionTracking;
             IngestionTracking storageIngestionTracking = inputIngestionTracking.DeepClone();
+            storageIngestionTracking.UpdatedDate = randomIngestionTracking.CreatedDate;
             IngestionTracking updatedIngestionTracking = inputIngestionTracking;
             IngestionTracking expectedIngestionTracking = updatedIngestionTracking.DeepClone();
             string ingestionTrackingId = inputIngestionTracking.Id;
@@ -45,6 +46,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             // then
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectIngestionTrackingByIdAsync(inputIngestionTracking.Id),
                     Times.Once);
@@ -52,10 +57,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateIngestionTrackingAsync(inputIngestionTracking),
                     Times.Once);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

@@ -33,13 +33,6 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             {
                 throw CreateAndLogValidationException(invalidIngestionTrackingException);
             }
-            catch (DuplicateKeyException duplicateKeyException)
-            {
-                var alreadyExistsIngestionTrackingException =
-                    new AlreadyExistsIngestionTrackingException(duplicateKeyException);
-
-                throw CreateAndLogDependencyValidationException(alreadyExistsIngestionTrackingException);
-            }
             catch (SqlException sqlException)
             {
                 var failedIngestionTrackingStorageException =
@@ -50,6 +43,13 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             catch (NotFoundIngestionTrackingException notFoundIngestionTrackingException)
             {
                 throw CreateAndLogValidationException(notFoundIngestionTrackingException);
+            }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsIngestionTrackingException =
+                    new AlreadyExistsIngestionTrackingException(duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsIngestionTrackingException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {

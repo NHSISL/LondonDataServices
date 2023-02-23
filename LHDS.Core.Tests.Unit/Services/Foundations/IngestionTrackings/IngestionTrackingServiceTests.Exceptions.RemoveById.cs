@@ -111,5 +111,48 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveWhenSqlExceptionOccursAndLogItAsync()
+        {
+            // given
+            Guid someIngestionTrackingId = Guid.NewGuid();
+            SqlException sqlException = GetSqlException();
+
+            var failedIngestionTrackingStorageException =
+                new FailedIngestionTrackingStorageException(sqlException);
+
+            var expectedIngestionTrackingDependencyException =
+                new IngestionTrackingDependencyException(failedIngestionTrackingStorageException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectIngestionTrackingByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(sqlException);
+
+            // when
+            ValueTask<IngestionTracking> deleteIngestionTrackingTask =
+                this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(someIngestionTrackingId);
+
+            IngestionTrackingDependencyException actualIngestionTrackingDependencyException =
+                await Assert.ThrowsAsync<IngestionTrackingDependencyException>(
+                    deleteIngestionTrackingTask.AsTask);
+
+            // then
+            actualIngestionTrackingDependencyException.Should()
+                .BeEquivalentTo(expectedIngestionTrackingDependencyException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectIngestionTrackingByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedIngestionTrackingDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

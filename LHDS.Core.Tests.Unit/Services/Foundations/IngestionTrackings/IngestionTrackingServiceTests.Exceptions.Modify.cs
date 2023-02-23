@@ -167,5 +167,56 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyErrorOccursAndLogAsync()
+        {
+            // given
+            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();
+            var databaseUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedIngestionTrackingException =
+                new LockedIngestionTrackingException(databaseUpdateConcurrencyException);
+
+            var expectedIngestionTrackingDependencyValidationException =
+                new IngestionTrackingDependencyValidationException(lockedIngestionTrackingException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<IngestionTracking> modifyIngestionTrackingTask =
+                this.ingestionTrackingService.ModifyIngestionTrackingAsync(randomIngestionTracking);
+
+            IngestionTrackingDependencyValidationException actualIngestionTrackingDependencyValidationException =
+                await Assert.ThrowsAsync<IngestionTrackingDependencyValidationException>(
+                    modifyIngestionTrackingTask.AsTask);
+
+            // then
+            actualIngestionTrackingDependencyValidationException.Should()
+                .BeEquivalentTo(expectedIngestionTrackingDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectIngestionTrackingByIdAsync(randomIngestionTracking.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedIngestionTrackingDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateIngestionTrackingAsync(randomIngestionTracking),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

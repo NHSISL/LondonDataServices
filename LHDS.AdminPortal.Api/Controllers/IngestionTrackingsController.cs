@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
@@ -39,6 +40,26 @@ namespace LHDS.AdminPortal.Api.Controllers
                when (ingestionTrackingDependencyValidationException.InnerException is AlreadyExistsIngestionTrackingException)
             {
                 return Conflict(ingestionTrackingDependencyValidationException.InnerException);
+            }
+            catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
+            {
+                return InternalServerError(ingestionTrackingDependencyException);
+            }
+            catch (IngestionTrackingServiceException ingestionTrackingServiceException)
+            {
+                return InternalServerError(ingestionTrackingServiceException);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult<IQueryable<IngestionTracking>> GetAllIngestionTrackings()
+        {
+            try
+            {
+                IQueryable<IngestionTracking> retrievedIngestionTrackings =
+                    this.ingestionTrackingService.RetrieveAllIngestionTrackings();
+
+                return Ok(retrievedIngestionTrackings);
             }
             catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
             {

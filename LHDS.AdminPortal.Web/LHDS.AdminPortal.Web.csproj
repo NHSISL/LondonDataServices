@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>
@@ -13,8 +13,20 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants />
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="7.0.3" />
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.9.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -25,12 +37,45 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Remove="ClientApp\src\App.test.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.audits.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ingestionTrackings.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.suppliers.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\brokers\toastBroker.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\audit\auditRow.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\audit\auditRowView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\bases\ingestionTrackingTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetail.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetailCard.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetailCardView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRow.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRowView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierDetail.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierDetailCard.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierDetailCardView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\index.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\models\audits\audit.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\ingestionTrackings\ingestionTracking.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\suppliers\supplier.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\views\components\audit\auditView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\views\components\ingestionTracking\ingestionTrackingView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\views\components\suppliers\supplierView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\IngestionTrackingHomepage.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\ingestionTrackingPage.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\services\foundations\auditService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\foundations\ingestionTrackingService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\foundations\supplierService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\auditViewService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\ingestionTrackingViewService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\supplierViewService .ts" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="ClientApp\dependencies\guid-typescript\node_modules\%40types\" />
-    <Folder Include="ClientApp\src\models\" />
     <Folder Include="ClientApp\src\hooks\" />
-    <Folder Include="ClientApp\src\styles\" />
-    <Folder Include="ClientApp\src\services\foundations\" />
-    <Folder Include="ClientApp\src\services\views\" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
@@ -49,13 +94,13 @@
     <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
 
     <!-- Include the newly-built files in the publish output -->
-    <ItemGroup>
-      <DistFiles Include="$(SpaRoot)build\**" />
-      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
-        <RelativePath>wwwroot\%(RecursiveDir)%(FileName)%(Extension)</RelativePath>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      </ResolvedFileToPublish>
-    </ItemGroup>
+	  <ItemGroup>
+		  <DistFiles Include="$(SpaRoot)build\**" />
+		  <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+			  <RelativePath>wwwroot\%(RecursiveDir)%(FileName)%(Extension)</RelativePath>
+			  <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+			  <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+		  </ResolvedFileToPublish>
+	  </ItemGroup>
   </Target>
 </Project>

@@ -78,6 +78,13 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                     new FailedIngestionTrackingStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedIngestionTrackingStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedIngestionTrackingServiceException =
+                    new FailedIngestionTrackingServiceException(exception);
+
+                throw CreateAndLogServiceException(failedIngestionTrackingServiceException);
+            }
         }
 
         private IngestionTrackingValidationException CreateAndLogValidationException(Xeption exception)

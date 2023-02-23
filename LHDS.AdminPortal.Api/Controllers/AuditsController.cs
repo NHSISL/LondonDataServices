@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
@@ -39,6 +40,26 @@ namespace LHDS.AdminPortal.Api.Controllers
                when (auditDependencyValidationException.InnerException is AlreadyExistsAuditException)
             {
                 return Conflict(auditDependencyValidationException.InnerException);
+            }
+            catch (AuditDependencyException auditDependencyException)
+            {
+                return InternalServerError(auditDependencyException);
+            }
+            catch (AuditServiceException auditServiceException)
+            {
+                return InternalServerError(auditServiceException);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult<IQueryable<Audit>> GetAllAudits()
+        {
+            try
+            {
+                IQueryable<Audit> retrievedAudits =
+                    this.auditService.RetrieveAllAudits();
+
+                return Ok(retrievedAudits);
             }
             catch (AuditDependencyException auditDependencyException)
             {

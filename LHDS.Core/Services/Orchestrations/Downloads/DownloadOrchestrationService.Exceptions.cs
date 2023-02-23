@@ -4,7 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Audits.Exceptions;
+using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;

@@ -4,7 +4,7 @@
 
 using System.Linq;
 using FluentAssertions;
-using LHDS.Core.Models.Audits;
+using LHDS.Core.Models.Foundations.Audits;
 using Moq;
 using Xunit;
 

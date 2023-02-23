@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Audits.Exceptions;
+using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using LHDS.Core.Models.Foundations.Decryptions.Exceptions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;

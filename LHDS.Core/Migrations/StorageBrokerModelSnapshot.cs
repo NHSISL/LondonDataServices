@@ -22,7 +22,7 @@ namespace LHDS.Core.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("LHDS.Core.Models.Audits.Audit", b =>
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.Audits.Audit", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -40,6 +40,8 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IngestionTrackingId");
 
                     b.ToTable("Audits");
                 });
@@ -81,9 +83,53 @@ namespace LHDS.Core.Migrations
                     b.Property<int>("RecordCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.ToTable("IngestionTrackings");
+                });
+
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.Suppliers.Supplier", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FriendlyName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LandingManualTriggerUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Suppliers");
+                });
+
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.Audits.Audit", b =>
+                {
+                    b.HasOne("LHDS.Core.Models.Foundations.IngestionTrackings.IngestionTracking", "IngestionTracking")
+                        .WithMany("Audits")
+                        .HasForeignKey("IngestionTrackingId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("IngestionTracking");
+                });
+
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.IngestionTrackings.IngestionTracking", b =>
+                {
+                    b.Navigation("Audits");
                 });
 #pragma warning restore 612, 618
         }

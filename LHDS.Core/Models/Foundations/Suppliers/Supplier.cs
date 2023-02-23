@@ -1,0 +1,22 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System;
+using LHDS.Core.Models.Bases;
+
+namespace LHDS.Core.Models.Foundations.Suppliers
+{
+    public class Supplier : IKey, IAudit
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string FriendlyName { get; set; }
+        public string Description { get; set; }
+        public string LandingManualTriggerUrl { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTimeOffset CreatedDate { get; set; }
+        public string UpdatedBy { get; set; }
+        public DateTimeOffset UpdatedDate { get; set; }
+    }
+}

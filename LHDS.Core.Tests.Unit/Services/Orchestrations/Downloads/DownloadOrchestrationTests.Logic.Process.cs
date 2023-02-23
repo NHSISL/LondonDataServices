@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Force.DeepCloner;
-using LHDS.Core.Models.Audits;
+using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
@@ -51,6 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                   new IngestionTracking
                   {
                       Id = document.FileName,
+                      Source = this.inMemoryConfiguration["LandingSource"],
                       EncryptedFileName = $"/encrypted{filename}",
                       DecryptedFileName =
                         $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
@@ -96,6 +97,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                   new IngestionTracking
                   {
                       Id = document.FileName,
+                      Source = this.inMemoryConfiguration["LandingSource"],
                       EncryptedFileName = $"/encrypted{filename}",
                       DecryptedFileName =
                         $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",

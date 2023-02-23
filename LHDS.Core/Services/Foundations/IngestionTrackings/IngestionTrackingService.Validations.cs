@@ -16,6 +16,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
             Validate(
                 (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),
+                (Rule: IsInvalid(ingestionTracking.Source), Parameter: nameof(IngestionTracking.Source)),
                 (Rule: IsInvalid(ingestionTracking.EncryptedFileName),
                     Parameter: nameof(IngestionTracking.EncryptedFileName)),
                 (Rule: IsInvalid(ingestionTracking.DecryptedFileName),
@@ -31,6 +32,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
             Validate(
                 (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),
+                (Rule: IsInvalid(ingestionTracking.Source), Parameter: nameof(IngestionTracking.Source)),
                 (Rule: IsInvalid(ingestionTracking.EncryptedFileName),
                     Parameter: nameof(IngestionTracking.EncryptedFileName)),
                 (Rule: IsInvalid(ingestionTracking.DecryptedFileName),

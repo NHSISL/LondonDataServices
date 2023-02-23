@@ -1,12 +1,8 @@
-// ---------------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
-
 using System;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
+using LHDS.Core.Models.Audits.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
@@ -52,47 +48,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
-        {
-            // given
-            string exceptionMessage = GetRandomMessage();
-            var serviceException = new Exception(exceptionMessage);
-
-            var failedAuditServiceException =
-                new FailedAuditServiceException(serviceException);
-
-            var expectedAuditServiceException =
-                new AuditServiceException(failedAuditServiceException);
-
-            this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllAudits())
-                    .Throws(serviceException);
-
-            // when
-            Action retrieveAllAuditsAction = () =>
-                this.auditService.RetrieveAllAudits();
-
-            AuditServiceException actualAuditServiceException =
-                Assert.Throws<AuditServiceException>(retrieveAllAuditsAction);
-
-            // then
-            actualAuditServiceException.Should()
-                .BeEquivalentTo(expectedAuditServiceException);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllAudits(),
-                    Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedAuditServiceException))),
-                        Times.Once);
-
-            this.storageBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

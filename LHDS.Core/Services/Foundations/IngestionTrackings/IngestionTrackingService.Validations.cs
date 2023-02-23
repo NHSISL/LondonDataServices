@@ -18,7 +18,13 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 (Rule: IsInvalid(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
                 (Rule: IsInvalid(ingestionTracking.CreatedByUserId), Parameter: nameof(IngestionTracking.CreatedByUserId)),
                 (Rule: IsInvalid(ingestionTracking.UpdatedDate), Parameter: nameof(IngestionTracking.UpdatedDate)),
-                (Rule: IsInvalid(ingestionTracking.UpdatedByUserId), Parameter: nameof(IngestionTracking.UpdatedByUserId)));
+                (Rule: IsInvalid(ingestionTracking.UpdatedByUserId), Parameter: nameof(IngestionTracking.UpdatedByUserId)),
+
+                (Rule: IsNotSame(
+                    firstDate: ingestionTracking.UpdatedDate,
+                    secondDate: ingestionTracking.CreatedDate,
+                    secondDateName: nameof(IngestionTracking.CreatedDate)),
+                Parameter: nameof(IngestionTracking.UpdatedDate)));
         }
 
         private static void ValidateIngestionTrackingIsNotNull(IngestionTracking ingestionTracking)
@@ -40,6 +46,15 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsNotSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate != secondDate,
+                Message = $"Date is not the same as {secondDateName}"
+            };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

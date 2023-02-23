@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Clients.DecryptClient
+namespace LHDS.Core.Models.Clients.DecryptClient.Exceptions
 {
     public class DecryptionClientValidationException : Xeption
     {

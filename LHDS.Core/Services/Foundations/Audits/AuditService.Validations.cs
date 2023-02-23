@@ -38,6 +38,14 @@ namespace LHDS.Core.Services.Foundations.Audits
         public void ValidateAuditId(Guid auditId) =>
             Validate((Rule: IsInvalid(auditId), Parameter: nameof(Audit.Id)));
 
+        private static void ValidateStorageAudit(Audit maybeAudit, Guid auditId)
+        {
+            if (maybeAudit is null)
+            {
+                throw new NotFoundAuditException(auditId);
+            }
+        }
+
         private static void ValidateAuditIsNotNull(Audit audit)
         {
             if (audit is null)

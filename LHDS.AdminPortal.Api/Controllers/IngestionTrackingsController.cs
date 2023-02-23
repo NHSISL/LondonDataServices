@@ -59,7 +59,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             try
             {
                 IQueryable<IngestionTracking> retrievedIngestionTrackings =
-                    this.ingestionTrackingService.RetrieveAllIngestionTracking();
+                    this.ingestionTrackingService.RetrieveAllIngestionTrackings();
 
                 return Ok(retrievedIngestionTrackings);
             }

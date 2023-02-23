@@ -1,7 +1,11 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System.Linq;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
-using LHDS.Core.Models.IngestionTrackings;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings

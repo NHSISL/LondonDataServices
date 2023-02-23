@@ -1,9 +1,13 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using Moq;
-using LHDS.Core.Models.IngestionTrackings;
-using LHDS.Core.Models.IngestionTrackings.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
@@ -53,7 +57,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             // given
             var invalidIngestionTracking = new IngestionTracking
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                Id = invalidText,
+                Source = invalidText,
+                EncryptedFileName = invalidText,
+                DecryptedFileName = invalidText,
             };
 
             var invalidIngestionTrackingException =
@@ -61,29 +68,35 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.Id),
-                values: "Id is required");
+                values: "Text is required");
 
-            //invalidIngestionTrackingException.AddData(
-            //    key: nameof(IngestionTracking.Name),
-            //    values: "Text is required");
+            invalidIngestionTrackingException.AddData(
+                key: nameof(IngestionTracking.Source),
+                values: "Text is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the IngestionTracking model
+            invalidIngestionTrackingException.AddData(
+                key: nameof(IngestionTracking.EncryptedFileName),
+                values: "Text is required");
+
+            invalidIngestionTrackingException.AddData(
+                key: nameof(IngestionTracking.DecryptedFileName),
+                values: "Text is required");
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.CreatedDate),
                 values: "Date is required");
 
             invalidIngestionTrackingException.AddData(
-                key: nameof(IngestionTracking.CreatedByUserId),
-                values: "Id is required");
+                key: nameof(IngestionTracking.CreatedBy),
+                values: "Text is required");
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.UpdatedDate),
                 values: "Date is required");
 
             invalidIngestionTrackingException.AddData(
-                key: nameof(IngestionTracking.UpdatedByUserId),
-                values: "Id is required");
+                key: nameof(IngestionTracking.UpdatedBy),
+                values: "Text is required");
 
             var expectedIngestionTrackingValidationException =
                 new IngestionTrackingValidationException(invalidIngestionTrackingException);
@@ -180,14 +193,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTimeOffset);
             IngestionTracking invalidIngestionTracking = randomIngestionTracking;
-            invalidIngestionTracking.UpdatedByUserId = Guid.NewGuid();
+            invalidIngestionTracking.UpdatedBy = Guid.NewGuid().ToString();
 
             var invalidIngestionTrackingException =
                 new InvalidIngestionTrackingException();
 
             invalidIngestionTrackingException.AddData(
-                key: nameof(IngestionTracking.UpdatedByUserId),
-                values: $"Id is not the same as {nameof(IngestionTracking.CreatedByUserId)}");
+                key: nameof(IngestionTracking.UpdatedBy),
+                values: $"Text is not the same as {nameof(IngestionTracking.CreatedBy)}");
 
             var expectedIngestionTrackingValidationException =
                 new IngestionTrackingValidationException(invalidIngestionTrackingException);

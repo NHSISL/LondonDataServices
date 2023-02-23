@@ -1,6 +1,10 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
-using LHDS.Core.Models.IngestionTrackings;
-using LHDS.Core.Models.IngestionTrackings.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 
 namespace LHDS.Core.Services.Foundations.IngestionTrackings
 {
@@ -12,13 +16,15 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
             Validate(
                 (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(ingestionTracking.Source), Parameter: nameof(IngestionTracking.Source)),
+                (Rule: IsInvalid(ingestionTracking.EncryptedFileName),
+                    Parameter: nameof(IngestionTracking.EncryptedFileName)),
+                (Rule: IsInvalid(ingestionTracking.DecryptedFileName),
+                    Parameter: nameof(IngestionTracking.DecryptedFileName)),
                 (Rule: IsInvalid(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
-                (Rule: IsInvalid(ingestionTracking.CreatedByUserId), Parameter: nameof(IngestionTracking.CreatedByUserId)),
+                (Rule: IsInvalid(ingestionTracking.CreatedBy), Parameter: nameof(IngestionTracking.CreatedBy)),
                 (Rule: IsInvalid(ingestionTracking.UpdatedDate), Parameter: nameof(IngestionTracking.UpdatedDate)),
-                (Rule: IsInvalid(ingestionTracking.UpdatedByUserId), Parameter: nameof(IngestionTracking.UpdatedByUserId)),
+                (Rule: IsInvalid(ingestionTracking.UpdatedBy), Parameter: nameof(IngestionTracking.UpdatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: ingestionTracking.UpdatedDate,
@@ -27,10 +33,10 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 Parameter: nameof(IngestionTracking.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    firstId: ingestionTracking.UpdatedByUserId,
-                    secondId: ingestionTracking.CreatedByUserId,
-                    secondIdName: nameof(IngestionTracking.CreatedByUserId)),
-                Parameter: nameof(IngestionTracking.UpdatedByUserId)),
+                    first: ingestionTracking.UpdatedBy,
+                    second: ingestionTracking.CreatedBy,
+                    secondName: nameof(IngestionTracking.CreatedBy)),
+                Parameter: nameof(IngestionTracking.UpdatedBy)),
 
                 (Rule: IsNotRecent(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)));
         }
@@ -41,13 +47,15 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
             Validate(
                 (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(ingestionTracking.Source), Parameter: nameof(IngestionTracking.Source)),
+                (Rule: IsInvalid(ingestionTracking.EncryptedFileName),
+                    Parameter: nameof(IngestionTracking.EncryptedFileName)),
+                (Rule: IsInvalid(ingestionTracking.DecryptedFileName),
+                    Parameter: nameof(IngestionTracking.DecryptedFileName)),
                 (Rule: IsInvalid(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
-                (Rule: IsInvalid(ingestionTracking.CreatedByUserId), Parameter: nameof(IngestionTracking.CreatedByUserId)),
+                (Rule: IsInvalid(ingestionTracking.CreatedBy), Parameter: nameof(IngestionTracking.CreatedBy)),
                 (Rule: IsInvalid(ingestionTracking.UpdatedDate), Parameter: nameof(IngestionTracking.UpdatedDate)),
-                (Rule: IsInvalid(ingestionTracking.UpdatedByUserId), Parameter: nameof(IngestionTracking.UpdatedByUserId)),
+                (Rule: IsInvalid(ingestionTracking.UpdatedBy), Parameter: nameof(IngestionTracking.UpdatedBy)),
 
                 (Rule: IsSame(
                     firstDate: ingestionTracking.UpdatedDate,
@@ -58,10 +66,12 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 (Rule: IsNotRecent(ingestionTracking.UpdatedDate), Parameter: nameof(ingestionTracking.UpdatedDate)));
         }
 
-        public void ValidateIngestionTrackingId(Guid ingestionTrackingId) =>
+        public void ValidateIngestionTrackingId(string ingestionTrackingId) =>
             Validate((Rule: IsInvalid(ingestionTrackingId), Parameter: nameof(IngestionTracking.Id)));
 
-        private static void ValidateStorageIngestionTracking(IngestionTracking maybeIngestionTracking, Guid ingestionTrackingId)
+        private static void ValidateStorageIngestionTracking(
+            IngestionTracking maybeIngestionTracking,
+            string ingestionTrackingId)
         {
             if (maybeIngestionTracking is null)
             {
@@ -77,7 +87,9 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             }
         }
 
-        private static void ValidateAgainstStorageIngestionTrackingOnModify(IngestionTracking inputIngestionTracking, IngestionTracking storageIngestionTracking)
+        private static void ValidateAgainstStorageIngestionTrackingOnModify(
+            IngestionTracking inputIngestionTracking,
+            IngestionTracking storageIngestionTracking)
         {
             Validate(
                 (Rule: IsNotSame(
@@ -87,10 +99,10 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 Parameter: nameof(IngestionTracking.CreatedDate)),
 
                 (Rule: IsNotSame(
-                    firstId: inputIngestionTracking.CreatedByUserId,
-                    secondId: storageIngestionTracking.CreatedByUserId,
-                    secondIdName: nameof(IngestionTracking.CreatedByUserId)),
-                Parameter: nameof(IngestionTracking.CreatedByUserId)),
+                    first: inputIngestionTracking.CreatedBy,
+                    second: storageIngestionTracking.CreatedBy,
+                    secondName: nameof(IngestionTracking.CreatedBy)),
+                Parameter: nameof(IngestionTracking.CreatedBy)),
 
                 (Rule: IsSame(
                     firstDate: inputIngestionTracking.UpdatedDate,
@@ -103,6 +115,12 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
         {
             Condition = id == Guid.Empty,
             Message = "Id is required"
+        };
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = String.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
         };
 
         private static dynamic IsInvalid(DateTimeOffset date) => new
@@ -137,6 +155,15 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
+
+        private static dynamic IsNotSame(
+           string first,
+           string second,
+           string secondName) => new
+           {
+               Condition = first != second,
+               Message = $"Text is not the same as {secondName}"
+           };
 
         private dynamic IsNotRecent(DateTimeOffset date) => new
         {

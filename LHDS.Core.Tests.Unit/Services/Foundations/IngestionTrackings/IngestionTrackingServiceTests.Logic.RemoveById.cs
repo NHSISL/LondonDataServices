@@ -1,9 +1,13 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
-using LHDS.Core.Models.IngestionTrackings;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
@@ -14,8 +18,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
         public async Task ShouldRemoveIngestionTrackingByIdAsync()
         {
             // given
-            Guid randomId = Guid.NewGuid();
-            Guid inputIngestionTrackingId = randomId;
+            string randomId = Guid.NewGuid().ToString();
+            string inputIngestionTrackingId = randomId;
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             IngestionTracking expectedInputIngestionTracking = storageIngestionTracking;

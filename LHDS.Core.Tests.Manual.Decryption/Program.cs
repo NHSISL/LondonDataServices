@@ -44,7 +44,7 @@ namespace LHDS.Clients.Tests.Decryption.Manual
             IIngestionTrackingService ingestionTrackingService =
                 serviceProvider.GetService<IIngestionTrackingService>();
 
-            var items = ingestionTrackingService.RetrieveAllIngestionTracking()
+            var items = ingestionTrackingService.RetrieveAllIngestionTrackings()
                 .Where(ingestionTrackingService => ingestionTrackingService.Decrypted == false);
 
             foreach (IngestionTracking item in items)

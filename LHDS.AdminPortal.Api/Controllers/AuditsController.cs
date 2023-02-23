@@ -138,5 +138,43 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(auditServiceException);
             }
         }
+
+        [HttpDelete("{auditId}")]
+        public async ValueTask<ActionResult<Audit>> DeleteAuditByIdAsync(Guid auditId)
+        {
+            try
+            {
+                Audit deletedAudit =
+                    await this.auditService.RemoveAuditByIdAsync(auditId);
+
+                return Ok(deletedAudit);
+            }
+            catch (AuditValidationException auditValidationException)
+                when (auditValidationException.InnerException is NotFoundAuditException)
+            {
+                return NotFound(auditValidationException.InnerException);
+            }
+            catch (AuditValidationException auditValidationException)
+            {
+                return BadRequest(auditValidationException.InnerException);
+            }
+            catch (AuditDependencyValidationException auditDependencyValidationException)
+                when (auditDependencyValidationException.InnerException is LockedAuditException)
+            {
+                return Locked(auditDependencyValidationException.InnerException);
+            }
+            catch (AuditDependencyValidationException auditDependencyValidationException)
+            {
+                return BadRequest(auditDependencyValidationException);
+            }
+            catch (AuditDependencyException auditDependencyException)
+            {
+                return InternalServerError(auditDependencyException);
+            }
+            catch (AuditServiceException auditServiceException)
+            {
+                return InternalServerError(auditServiceException);
+            }
+        }
     }
 }

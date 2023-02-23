@@ -53,7 +53,9 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                     firstDate: ingestionTracking.UpdatedDate,
                     secondDate: ingestionTracking.CreatedDate,
                     secondDateName: nameof(IngestionTracking.CreatedDate)),
-                Parameter: nameof(IngestionTracking.UpdatedDate)));
+                Parameter: nameof(IngestionTracking.UpdatedDate)),
+
+                (Rule: IsNotRecent(ingestionTracking.UpdatedDate), Parameter: nameof(ingestionTracking.UpdatedDate)));
         }
 
         public void ValidateIngestionTrackingId(Guid ingestionTrackingId) =>

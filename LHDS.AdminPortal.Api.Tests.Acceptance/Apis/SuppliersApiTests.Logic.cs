@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using RESTFulSense.Exceptions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using Xunit;
 
@@ -76,6 +77,28 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
             // then
             actualSupplier.Should().BeEquivalentTo(modifiedSupplier);
             await this.apiBroker.DeleteSupplierByIdAsync(actualSupplier.Id);
+        }
+
+        [Fact]
+        public async Task ShouldDeleteSupplierAsync()
+        {
+            // given
+            Supplier randomSupplier = await PostRandomSupplierAsync();
+            Supplier inputSupplier = randomSupplier;
+            Supplier expectedSupplier = inputSupplier;
+
+            // when
+            Supplier deletedSupplier =
+                await this.apiBroker.DeleteSupplierByIdAsync(inputSupplier.Id);
+
+            ValueTask<Supplier> getSupplierbyIdTask =
+                this.apiBroker.GetSupplierByIdAsync(inputSupplier.Id);
+
+            // then
+            deletedSupplier.Should().BeEquivalentTo(expectedSupplier);
+
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
+                getSupplierbyIdTask.AsTask());
         }
     }
 }

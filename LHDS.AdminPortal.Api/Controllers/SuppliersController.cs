@@ -99,5 +99,44 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(supplierServiceException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<Supplier>> PutSupplierAsync(Supplier supplier)
+        {
+            try
+            {
+                Supplier modifiedSupplier =
+                    await this.supplierService.ModifySupplierAsync(supplier);
+
+                return Ok(modifiedSupplier);
+            }
+            catch (SupplierValidationException supplierValidationException)
+                when (supplierValidationException.InnerException is NotFoundSupplierException)
+            {
+                return NotFound(supplierValidationException.InnerException);
+            }
+            catch (SupplierValidationException supplierValidationException)
+            {
+                return BadRequest(supplierValidationException.InnerException);
+            }
+            catch (SupplierDependencyValidationException supplierValidationException)
+                when (supplierValidationException.InnerException is InvalidSupplierReferenceException)
+            {
+                return FailedDependency(supplierValidationException.InnerException);
+            }
+            catch (SupplierDependencyValidationException supplierDependencyValidationException)
+               when (supplierDependencyValidationException.InnerException is AlreadyExistsSupplierException)
+            {
+                return Conflict(supplierDependencyValidationException.InnerException);
+            }
+            catch (SupplierDependencyException supplierDependencyException)
+            {
+                return InternalServerError(supplierDependencyException);
+            }
+            catch (SupplierServiceException supplierServiceException)
+            {
+                return InternalServerError(supplierServiceException);
+            }
+        }
     }
 }

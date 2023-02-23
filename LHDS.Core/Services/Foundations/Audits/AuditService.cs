@@ -1,14 +1,8 @@
-// ---------------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
-
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages.Sql;
-using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Brokers.Storages;
+using LHDS.Core.Models.Audits;
 
 namespace LHDS.Core.Services.Foundations.Audits
 {
@@ -29,27 +23,6 @@ namespace LHDS.Core.Services.Foundations.Audits
         }
 
         public ValueTask<Audit> AddAuditAsync(Audit audit) =>
-            TryCatch(async () =>
-            {
-                ValidateAuditOnAdd(audit);
-
-                return await this.storageBroker.InsertAuditAsync(audit);
-            });
-
-        public IQueryable<Audit> RetrieveAllAudits() =>
-            TryCatch(() => this.storageBroker.SelectAllAudits());
-
-        public ValueTask<Audit> RetrieveAuditByIdAsync(Guid auditId) =>
-            TryCatch(async () =>
-            {
-                ValidateAuditId(auditId);
-
-                Audit maybeAudit = await this.storageBroker
-                    .SelectAuditByIdAsync(auditId);
-
-                ValidateStorageAudit(maybeAudit, auditId);
-
-                return maybeAudit;
-            });
+            throw new System.NotImplementedException();
     }
 }

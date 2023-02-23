@@ -70,6 +70,8 @@ namespace LHDS.Core.Services.Foundations.Audits
                 Audit maybeAudit = await this.storageBroker
                     .SelectAuditByIdAsync(auditId);
 
+                ValidateStorageAudit(maybeAudit, auditId);
+
                 return await this.storageBroker.DeleteAuditAsync(maybeAudit);
             });
     }

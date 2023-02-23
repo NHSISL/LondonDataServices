@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using Tynamix.ObjectFiller;
@@ -13,6 +15,30 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
 
         public SuppliersApiTests(ApiBroker apiBroker) =>
             this.apiBroker = apiBroker;
+
+        private int GetRandomNumber() =>
+            new IntRange(min: 2, max: 10).GetValue();
+
+        private async ValueTask<Supplier> PostRandomSupplierAsync()
+        {
+            Supplier randomSupplier = CreateRandomSupplier();
+            await this.apiBroker.PostSupplierAsync(randomSupplier);
+
+            return randomSupplier;
+        }
+
+        private async ValueTask<List<Supplier>> PostRandomSuppliersAsync()
+        {
+            int randomNumber = GetRandomNumber();
+            var randomSuppliers = new List<Supplier>();
+
+            for (int i = 0; i < randomNumber; i++)
+            {
+                randomSuppliers.Add(await PostRandomSupplierAsync());
+            }
+
+            return randomSuppliers;
+        }
 
         private static Supplier CreateRandomSupplier() =>
             CreateRandomSupplierFiller().Create();

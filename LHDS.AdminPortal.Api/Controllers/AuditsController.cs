@@ -1,11 +1,8 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
-using LHDS.AdminPortal.Api.Models.Audits;
-using LHDS.AdminPortal.Api.Models.Audits.Exceptions;
-using LHDS.AdminPortal.Api.Services.Foundations.Audits;
+using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Audits.Exceptions;
+using LHDS.Core.Services.Foundations.Audits;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {

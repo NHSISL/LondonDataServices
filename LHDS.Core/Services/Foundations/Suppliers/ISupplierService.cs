@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Suppliers;
 
@@ -10,5 +11,6 @@ namespace LHDS.Core.Services.Foundations.Suppliers
     public interface ISupplierService
     {
         ValueTask<Supplier> AddSupplierAsync(Supplier supplier);
+        IQueryable<Supplier> RetrieveAllSuppliers();
     }
 }

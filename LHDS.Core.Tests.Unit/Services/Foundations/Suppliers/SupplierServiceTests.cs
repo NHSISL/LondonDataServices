@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using LHDS.Core.Brokers.DateTimes;
@@ -66,6 +67,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static IQueryable<Supplier> CreateRandomSuppliers()
+        {
+            return CreateSupplierFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
 
         private static Supplier CreateRandomSupplier() =>
             CreateSupplierFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();

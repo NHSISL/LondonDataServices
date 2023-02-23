@@ -40,6 +40,10 @@ namespace LHDS.Core.Services.Foundations.Suppliers
 
                 throw CreateAndLogCriticalDependencyException(failedSupplierStorageException);
             }
+            catch (NotFoundSupplierException notFoundSupplierException)
+            {
+                throw CreateAndLogValidationException(notFoundSupplierException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsSupplierException =

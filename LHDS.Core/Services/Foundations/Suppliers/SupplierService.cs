@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -37,5 +38,18 @@ namespace LHDS.Core.Services.Foundations.Suppliers
 
         public IQueryable<Supplier> RetrieveAllSuppliers() =>
             TryCatch(() => this.storageBroker.SelectAllSuppliers());
+
+        public ValueTask<Supplier> RetrieveSupplierByIdAsync(Guid supplierId) =>
+            TryCatch(async () =>
+            {
+                ValidateSupplierId(supplierId);
+
+                Supplier maybeSupplier = await this.storageBroker
+                    .SelectSupplierByIdAsync(supplierId);
+
+                ValidateStorageSupplier(maybeSupplier, supplierId);
+
+                return maybeSupplier;
+            });
     }
 }

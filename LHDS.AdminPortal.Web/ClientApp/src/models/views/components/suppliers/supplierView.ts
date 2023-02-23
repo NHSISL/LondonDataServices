@@ -1,0 +1,33 @@
+import { Guid } from 'guid-typescript';
+
+export class SupplierView {
+    public id: Guid;
+    public name: string;
+    public friendlyName: string;
+    public description: string;
+    public landingManualTriggerUrl: string;
+    public createdDate: Date;
+    public updatedBy: string;
+    public updatedDate: Date;
+
+    constructor(
+        id: Guid,
+        name: string,
+        friendlyName: string,
+        description: string,
+        landingManualTriggerUrl: string,
+        createdDate: Date,
+        updatedBy: string,
+        updatedDate: Date,
+
+    ) {
+        this.id = id;
+        this.name = name || "";
+        this.friendlyName = friendlyName || "";
+        this.description = description || "";
+        this.landingManualTriggerUrl = landingManualTriggerUrl || "";
+        this.createdDate = createdDate ;
+        this.updatedBy = updatedBy || "";
+        this.updatedDate = updatedDate;
+    }
+}

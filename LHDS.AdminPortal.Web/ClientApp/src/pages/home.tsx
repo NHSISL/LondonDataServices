@@ -1,6 +1,6 @@
-﻿import React from 'react';
-import { Container, Row, Col, Card } from 'nhsuk-react-components'
-import 'nhsuk-frontend/dist/nhsuk.min'
+import React from 'react';
+import { Container, Row, Col, Card } from 'nhsuk-react-components';
+import 'nhsuk-frontend/dist/nhsuk.min';
 import 'nhsuk-frontend/packages/polyfills';
 import { PublicLink } from '../components/Links';
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
@@ -17,15 +17,13 @@ export const Home = () => {
                     <Row className="nhsuk-grid-row">
                         <Col width="full">
                             <div className="nhsuk-hero__wrapper app-hero__wrapper">
-                                <h1 className="nhsuk-u-margin-bottom-4">GP Premises Manager</h1>
+                                <h1 className="nhsuk-u-margin-bottom-4">London Health Data Services</h1>
                                 <p className=" nhsuk-u-margin-bottom-1">
-                                    <p className="nhsuk-body-l nhsuk-u-margin-bottom-1">Use the service to setup, monitor and track rent reviews across all managed premises.</p>
+                                    <p className="nhsuk-body-l nhsuk-u-margin-bottom-1">Admin Portal</p>
                                 </p>
                             </div>
                         </Col>
-                        <Col width="one-third">
-
-                        </Col>
+                        <Col width="one-third"></Col>
                     </Row>
                 </Container>
             </section>
@@ -39,25 +37,16 @@ export const Home = () => {
                                     <Card clickable>
                                         <Card.Content>
                                             <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
-                                                <PublicLink to="/practices">GP Practices</PublicLink>
+                                                <PublicLink to="/ingestionTracking">Supplier data</PublicLink>
                                             </Card.Heading>
                                             <Card.Description>
-                                                View, add, edit and remove GP Premises.
+                                                View Suppliers Data.
                                             </Card.Description>
                                         </Card.Content>
                                     </Card>
                                 </Card.GroupItem>
 
-                                <Card.GroupItem width="one-half">
-                                    <Card clickable>
-                                        <Card.Content>
-                                            <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
-                                                <PublicLink to="/actions">Actions</PublicLink>
-                                            </Card.Heading>
-                                            <Card.Description>View, add, edit and remove tasks.</Card.Description>
-                                        </Card.Content>
-                                    </Card>
-                                </Card.GroupItem>
+                               
                             </Card.Group>
                         </div>
                     ) : (

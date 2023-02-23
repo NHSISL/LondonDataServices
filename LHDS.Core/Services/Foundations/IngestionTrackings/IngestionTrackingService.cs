@@ -35,8 +35,8 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 return await this.storageBroker.InsertIngestionTrackingAsync(ingestionTracking);
             });
 
-        public IQueryable<IngestionTracking> RetrieveAllIngestionTracking() =>
-            TryCatch(() => this.storageBroker.SelectAllIngestionTracking());
+        public IQueryable<IngestionTracking> RetrieveAllIngestionTrackings() =>
+            TryCatch(() => this.storageBroker.SelectAllIngestionTrackings());
 
         public ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(string ingestionTrackingId) =>
             TryCatch(async () =>
@@ -45,6 +45,8 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
                 IngestionTracking maybeIngestionTracking = await this.storageBroker
                     .SelectIngestionTrackingByIdAsync(ingestionTrackingId);
+
+                ValidateStorageIngestionTracking(maybeIngestionTracking, ingestionTrackingId);
 
                 return maybeIngestionTracking;
             });
@@ -58,10 +60,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                     await this.storageBroker.SelectIngestionTrackingByIdAsync(ingestionTracking.Id);
 
                 ValidateStorageIngestionTracking(maybeIngestionTracking, ingestionTracking.Id);
-
-                ValidateAgainstStorageIngestionTrackingOnModify(
-                    inputIngestionTracking: ingestionTracking,
-                    storageIngestionTracking: maybeIngestionTracking);
+                ValidateAgainstStorageIngestionTrackingOnModify(inputIngestionTracking: ingestionTracking, storageIngestionTracking: maybeIngestionTracking);
 
                 return await this.storageBroker.UpdateIngestionTrackingAsync(ingestionTracking);
             });
@@ -73,6 +72,8 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
                 IngestionTracking maybeIngestionTracking = await this.storageBroker
                     .SelectIngestionTrackingByIdAsync(ingestionTrackingId);
+
+                ValidateStorageIngestionTracking(maybeIngestionTracking, ingestionTrackingId);
 
                 return await this.storageBroker.DeleteIngestionTrackingAsync(maybeIngestionTracking);
             });

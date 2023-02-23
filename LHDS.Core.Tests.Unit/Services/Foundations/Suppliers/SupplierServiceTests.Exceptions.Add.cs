@@ -1,0 +1,265 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System;
+using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.Suppliers;
+using LHDS.Core.Models.Suppliers.Exceptions;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Moq;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
+{
+    public partial class SupplierServiceTests
+    {
+        [Fact]
+        public async Task ShouldThrowCriticalDependencyExceptionOnAddIfSqlErrorOccursAndLogItAsync()
+        {
+            // given
+            Supplier someSupplier = CreateRandomSupplier();
+            SqlException sqlException = GetSqlException();
+
+            var failedSupplierStorageException =
+                new FailedSupplierStorageException(sqlException);
+
+            var expectedSupplierDependencyException =
+                new SupplierDependencyException(failedSupplierStorageException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(sqlException);
+
+            // when
+            ValueTask<Supplier> addSupplierTask =
+                this.supplierService.AddSupplierAsync(someSupplier);
+
+            SupplierDependencyException actualSupplierDependencyException =
+                await Assert.ThrowsAsync<SupplierDependencyException>(
+                    addSupplierTask.AsTask);
+
+            // then
+            actualSupplierDependencyException.Should()
+                .BeEquivalentTo(expectedSupplierDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertSupplierAsync(It.IsAny<Supplier>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedSupplierDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfSupplierAlreadyExsitsAndLogItAsync()
+        {
+            // given
+            Supplier randomSupplier = CreateRandomSupplier();
+            Supplier alreadyExistsSupplier = randomSupplier;
+            string randomMessage = GetRandomMessage();
+
+            var duplicateKeyException =
+                new DuplicateKeyException(randomMessage);
+
+            var alreadyExistsSupplierException =
+                new AlreadyExistsSupplierException(duplicateKeyException);
+
+            var expectedSupplierDependencyValidationException =
+                new SupplierDependencyValidationException(alreadyExistsSupplierException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(duplicateKeyException);
+
+            // when
+            ValueTask<Supplier> addSupplierTask =
+                this.supplierService.AddSupplierAsync(alreadyExistsSupplier);
+
+            // then
+            SupplierDependencyValidationException actualSupplierDependencyValidationException =
+                await Assert.ThrowsAsync<SupplierDependencyValidationException>(
+                    addSupplierTask.AsTask);
+
+            actualSupplierDependencyValidationException.Should()
+                .BeEquivalentTo(expectedSupplierDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertSupplierAsync(It.IsAny<Supplier>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSupplierDependencyValidationException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            Supplier someSupplier = CreateRandomSupplier();
+            string randomMessage = GetRandomMessage();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidSupplierReferenceException =
+                new InvalidSupplierReferenceException(foreignKeyConstraintConflictException);
+
+            var expectedSupplierValidationException =
+                new SupplierDependencyValidationException(invalidSupplierReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<Supplier> addSupplierTask =
+                this.supplierService.AddSupplierAsync(someSupplier);
+
+            // then
+            SupplierDependencyValidationException actualSupplierDependencyValidationException =
+                await Assert.ThrowsAsync<SupplierDependencyValidationException>(
+                    addSupplierTask.AsTask);
+
+            actualSupplierDependencyValidationException.Should()
+                .BeEquivalentTo(expectedSupplierValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSupplierValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertSupplierAsync(someSupplier),
+                    Times.Never());
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnAddIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            Supplier someSupplier = CreateRandomSupplier();
+
+            var databaseUpdateException =
+                new DbUpdateException();
+
+            var failedSupplierStorageException =
+                new FailedSupplierStorageException(databaseUpdateException);
+
+            var expectedSupplierDependencyException =
+                new SupplierDependencyException(failedSupplierStorageException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<Supplier> addSupplierTask =
+                this.supplierService.AddSupplierAsync(someSupplier);
+
+            SupplierDependencyException actualSupplierDependencyException =
+                await Assert.ThrowsAsync<SupplierDependencyException>(
+                    addSupplierTask.AsTask);
+
+            // then
+            actualSupplierDependencyException.Should()
+                .BeEquivalentTo(expectedSupplierDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertSupplierAsync(It.IsAny<Supplier>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSupplierDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Supplier someSupplier = CreateRandomSupplier();
+            var serviceException = new Exception();
+
+            var failedSupplierServiceException =
+                new FailedSupplierServiceException(serviceException);
+
+            var expectedSupplierServiceException =
+                new SupplierServiceException(failedSupplierServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<Supplier> addSupplierTask =
+                this.supplierService.AddSupplierAsync(someSupplier);
+
+            SupplierServiceException actualSupplierServiceException =
+                await Assert.ThrowsAsync<SupplierServiceException>(
+                    addSupplierTask.AsTask);
+
+            // then
+            actualSupplierServiceException.Should()
+                .BeEquivalentTo(expectedSupplierServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertSupplierAsync(It.IsAny<Supplier>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSupplierServiceException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

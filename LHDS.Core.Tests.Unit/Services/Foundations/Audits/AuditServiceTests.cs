@@ -1,5 +1,7 @@
 using System;
 using System.Linq.Expressions;
+using System.Runtime.Serialization;
+using Microsoft.Data.SqlClient;
 using Moq;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -46,6 +48,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             };
         }
 
+        private static SqlException GetSqlException() =>
+            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
@@ -54,6 +59,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static Audit CreateRandomAudit() =>
+            CreateAuditFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
         private static Audit CreateRandomAudit(DateTimeOffset dateTimeOffset) =>
             CreateAuditFiller(dateTimeOffset).Create();

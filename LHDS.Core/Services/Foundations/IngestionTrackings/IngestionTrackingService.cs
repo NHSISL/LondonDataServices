@@ -62,12 +62,15 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 return await this.storageBroker.UpdateIngestionTrackingAsync(ingestionTracking);
             });
 
-        public async ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(Guid ingestionTrackingId)
-        {
-            IngestionTracking maybeIngestionTracking = await this.storageBroker
+        public ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
+            TryCatch(async () =>
+            {
+                ValidateIngestionTrackingId(ingestionTrackingId);
+
+                IngestionTracking maybeIngestionTracking = await this.storageBroker
                     .SelectIngestionTrackingByIdAsync(ingestionTrackingId);
 
-            return await this.storageBroker.DeleteIngestionTrackingAsync(maybeIngestionTracking);
-        }
+                return await this.storageBroker.DeleteIngestionTrackingAsync(maybeIngestionTracking);
+            });
     }
 }

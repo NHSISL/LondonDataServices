@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,34 @@ namespace LHDS.AdminPortal.Api.Controllers
                     this.supplierService.RetrieveAllSuppliers();
 
                 return Ok(retrievedSuppliers);
+            }
+            catch (SupplierDependencyException supplierDependencyException)
+            {
+                return InternalServerError(supplierDependencyException);
+            }
+            catch (SupplierServiceException supplierServiceException)
+            {
+                return InternalServerError(supplierServiceException);
+            }
+        }
+
+        [HttpGet("{supplierId}")]
+        public async ValueTask<ActionResult<Supplier>> GetSupplierByIdAsync(Guid supplierId)
+        {
+            try
+            {
+                Supplier supplier = await this.supplierService.RetrieveSupplierByIdAsync(supplierId);
+
+                return Ok(supplier);
+            }
+            catch (SupplierValidationException supplierValidationException)
+                when (supplierValidationException.InnerException is NotFoundSupplierException)
+            {
+                return NotFound(supplierValidationException.InnerException);
+            }
+            catch (SupplierValidationException supplierValidationException)
+            {
+                return BadRequest(supplierValidationException.InnerException);
             }
             catch (SupplierDependencyException supplierDependencyException)
             {

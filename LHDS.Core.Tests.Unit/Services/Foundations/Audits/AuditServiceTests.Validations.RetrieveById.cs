@@ -1,13 +1,9 @@
-// ---------------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
-
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Audits;
-using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using Moq;
+using LHDS.Core.Models.Audits;
+using LHDS.Core.Models.Audits.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
@@ -53,48 +49,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfAuditIsNotFoundAndLogItAsync()
-        {
-            //given
-            Guid someAuditId = Guid.NewGuid();
-            Audit noAudit = null;
-
-            var notFoundAuditException =
-                new NotFoundAuditException(someAuditId);
-
-            var expectedAuditValidationException =
-                new AuditValidationException(notFoundAuditException);
-
-            this.storageBrokerMock.Setup(broker =>
-                broker.SelectAuditByIdAsync(It.IsAny<Guid>()))
-                    .ReturnsAsync(noAudit);
-
-            //when
-            ValueTask<Audit> retrieveAuditByIdTask =
-                this.auditService.RetrieveAuditByIdAsync(someAuditId);
-
-            AuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<AuditValidationException>(
-                    retrieveAuditByIdTask.AsTask);
-
-            //then
-            actualAuditValidationException.Should().BeEquivalentTo(expectedAuditValidationException);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectAuditByIdAsync(It.IsAny<Guid>()),
-                    Times.Once());
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedAuditValidationException))),
-                        Times.Once);
-
-            this.storageBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }

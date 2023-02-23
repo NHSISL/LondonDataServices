@@ -106,7 +106,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     modifyIngestionTrackingTask.AsTask);
 
             //then
-            actualIngestionTrackingValidationException.Should().BeEquivalentTo(expectedIngestionTrackingValidationException);
+            actualIngestionTrackingValidationException.Should()
+                .BeEquivalentTo(expectedIngestionTrackingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -147,7 +148,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     modifyIngestionTrackingTask.AsTask);
 
             // then
-            actualIngestionTrackingValidationException.Should().BeEquivalentTo(expectedIngestionTrackingValidationException);
+            actualIngestionTrackingValidationException.Should()
+                .BeEquivalentTo(expectedIngestionTrackingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -161,6 +163,58 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsNotRecentAndLogItAsync(int minutes)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTimeOffset);
+            randomIngestionTracking.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
+
+            var invalidIngestionTrackingException =
+                new InvalidIngestionTrackingException();
+
+            invalidIngestionTrackingException.AddData(
+                key: nameof(IngestionTracking.UpdatedDate),
+                values: "Date is not recent");
+
+            var expectedIngestionTrackingValidatonException =
+                new IngestionTrackingValidationException(invalidIngestionTrackingException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<IngestionTracking> modifyIngestionTrackingTask =
+                this.ingestionTrackingService.ModifyIngestionTrackingAsync(randomIngestionTracking);
+
+            IngestionTrackingValidationException actualIngestionTrackingValidationException =
+                await Assert.ThrowsAsync<IngestionTrackingValidationException>(
+                    modifyIngestionTrackingTask.AsTask);
+
+            // then
+            actualIngestionTrackingValidationException.Should().BeEquivalentTo(expectedIngestionTrackingValidatonException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedIngestionTrackingValidatonException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectIngestionTrackingByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

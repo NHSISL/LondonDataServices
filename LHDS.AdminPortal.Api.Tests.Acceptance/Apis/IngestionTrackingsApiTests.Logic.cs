@@ -61,5 +61,21 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
             await this.apiBroker.DeleteIngestionTrackingByIdAsync(actualIngestionTracking.Id);
         }
+
+        [Fact]
+        public async Task ShouldPutIngestionTrackingAsync()
+        {
+            // given
+            IngestionTracking randomIngestionTracking = await PostRandomIngestionTrackingAsync();
+            IngestionTracking modifiedIngestionTracking = UpdateIngestionTrackingWithRandomValues(randomIngestionTracking);
+
+            // when
+            await this.apiBroker.PutIngestionTrackingAsync(modifiedIngestionTracking);
+            IngestionTracking actualIngestionTracking = await this.apiBroker.GetIngestionTrackingByIdAsync(randomIngestionTracking.Id);
+
+            // then
+            actualIngestionTracking.Should().BeEquivalentTo(modifiedIngestionTracking);
+            await this.apiBroker.DeleteIngestionTrackingByIdAsync(actualIngestionTracking.Id);
+        }
     }
 }

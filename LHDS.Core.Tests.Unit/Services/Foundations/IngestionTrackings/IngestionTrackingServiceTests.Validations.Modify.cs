@@ -357,7 +357,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnModifyIfCreatedUserIdDontMacthStorageAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnModifyIfCreatedUserIdDontMatchStorageAndLogItAsync()
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();

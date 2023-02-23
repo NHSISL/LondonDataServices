@@ -4,7 +4,7 @@ export class Audit {
     public id: Guid;
     public ingestionTrackingId: string;
     public message: string;
-    public createdDate?: Date;
+    public createdDate: Date;
 
     constructor(audit: any) {
         this.id = audit.id ? Guid.parse(audit.id) : Guid.parse(Guid.EMPTY);

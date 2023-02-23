@@ -22,7 +22,12 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<IngestionTracking> AddIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
-            await this.storageBroker.InsertIngestionTrackingAsync(ingestionTracking);
+        public ValueTask<IngestionTracking> AddIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
+            TryCatch(async () =>
+            {
+                ValidateIngestionTrackingOnAdd(ingestionTracking);
+
+                return await this.storageBroker.InsertIngestionTrackingAsync(ingestionTracking);
+            });
     }
 }

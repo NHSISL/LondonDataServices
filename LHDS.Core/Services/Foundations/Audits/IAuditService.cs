@@ -11,5 +11,6 @@ namespace LHDS.Core.Services.Foundations.Audits
         IQueryable<Audit> RetrieveAllAudits();
         ValueTask<Audit> RetrieveAuditByIdAsync(Guid auditId);
         ValueTask<Audit> ModifyAuditAsync(Audit audit);
+        ValueTask<Audit> RemoveAuditByIdAsync(Guid auditId);
     }
 }

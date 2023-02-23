@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -33,5 +34,8 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
         public IQueryable<IngestionTracking> RetrieveAllIngestionTrackings() =>
             TryCatch(() => this.storageBroker.SelectAllIngestionTrackings());
+
+        public ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
+            throw new NotImplementedException();
     }
 }

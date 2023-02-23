@@ -1,8 +1,12 @@
-using Microsoft.AspNetCore.Mvc;
-using RESTFulSense.Controllers;
-using LHDS.Core.Services.Foundations.Suppliers;
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Suppliers.Exceptions;
+using LHDS.Core.Services.Foundations.Suppliers;
+using Microsoft.AspNetCore.Mvc;
+using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {

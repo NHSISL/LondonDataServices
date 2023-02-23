@@ -26,12 +26,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 new IngestionTrackingDependencyException(failedStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllIngestionTracking())
+                broker.SelectAllIngestionTrackings())
                     .Throws(sqlException);
 
             // when
             Action retrieveAllIngestionTrackingsAction = () =>
-                this.ingestionTrackingService.RetrieveAllIngestionTracking();
+                this.ingestionTrackingService.RetrieveAllIngestionTrackings();
 
             IngestionTrackingDependencyException actualIngestionTrackingDependencyException =
                 Assert.Throws<IngestionTrackingDependencyException>(retrieveAllIngestionTrackingsAction);
@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 .BeEquivalentTo(expectedIngestionTrackingDependencyException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllIngestionTracking(),
+                broker.SelectAllIngestionTrackings(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -68,12 +68,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 new IngestionTrackingServiceException(failedIngestionTrackingServiceException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllIngestionTracking())
+                broker.SelectAllIngestionTrackings())
                     .Throws(serviceException);
 
             // when
             Action retrieveAllIngestionTrackingsAction = () =>
-                this.ingestionTrackingService.RetrieveAllIngestionTracking();
+                this.ingestionTrackingService.RetrieveAllIngestionTrackings();
 
             IngestionTrackingServiceException actualIngestionTrackingServiceException =
                 Assert.Throws<IngestionTrackingServiceException>(retrieveAllIngestionTrackingsAction);
@@ -83,7 +83,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 .BeEquivalentTo(expectedIngestionTrackingServiceException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllIngestionTracking(),
+                broker.SelectAllIngestionTrackings(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

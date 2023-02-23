@@ -11,7 +11,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
     public interface IIngestionTrackingService
     {
         ValueTask<IngestionTracking> AddIngestionTrackingAsync(IngestionTracking ingestionTracking);
-        IQueryable<IngestionTracking> RetrieveAllIngestionTracking();
+        IQueryable<IngestionTracking> RetrieveAllIngestionTrackings();
         ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(string ingestionTrackingId);
         ValueTask<IngestionTracking> ModifyIngestionTrackingAsync(IngestionTracking ingestionTracking);
         ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(string ingestionTrackingId);

@@ -1,5 +1,4 @@
-﻿import { MutationCache, QueryCache, QueryClient } from "react-query";
-import { ApiValidationError } from "../errors/validationError";
+import { MutationCache, QueryCache, QueryClient } from "react-query";
 
 export const queryClientGlobalOptions = new QueryClient({
     defaultOptions: {

@@ -1,0 +1,28 @@
+@import "./node_modules/nhsuk-frontend/packages/nhsuk";
+
+#navbarScroll > div > div > a {color:white;}
+
+td, tr, thead, tbody, table, th, body {
+    font-size: 18px;
+}
+
+.NELTopPadding {
+    padding-top: 20px;
+}
+
+.middle{vertical-align: middle}
+
+.linkCustom {
+    color: #005eb8;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 0 0 4px;
+}
+
+#maincontent > div > div > div > div.undefined.cardBaseContent > label {
+    margin-bottom: 0px !important;
+}
+
+.nhsuk-width-container {
+    max-width:80% !important;
+    }

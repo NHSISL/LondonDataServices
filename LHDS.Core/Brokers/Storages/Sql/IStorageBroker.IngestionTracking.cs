@@ -11,7 +11,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
     public partial interface IStorageBroker
     {
         ValueTask<IngestionTracking> InsertIngestionTrackingAsync(IngestionTracking ingestionTracking);
-        IQueryable<IngestionTracking> SelectAllIngestionTracking();
+        IQueryable<IngestionTracking> SelectAllIngestionTrackings();
         ValueTask<IngestionTracking> SelectIngestionTrackingByIdAsync(string ingestionTrackingId);
         ValueTask<IngestionTracking> UpdateIngestionTrackingAsync(IngestionTracking ingestionTracking);
         ValueTask<IngestionTracking> DeleteIngestionTrackingAsync(IngestionTracking ingestionTracking);

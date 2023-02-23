@@ -3,15 +3,19 @@
 // ---------------------------------------------------------------
 
 using System;
+using LHDS.Core.Models.Bases;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 
 namespace LHDS.Core.Models.Foundations.Audits
 {
-    public class Audit
+    public class Audit : IKey, IAudit
     {
         public Guid Id { get; set; }
         public string IngestionTrackingId { get; set; }
         public string Message { get; set; }
+        public string CreatedBy { get; set; }
+        public string UpdatedBy { get; set; }
+        public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
 
         public IngestionTracking IngestionTracking { get; set; }

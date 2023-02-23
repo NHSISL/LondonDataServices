@@ -3,8 +3,8 @@
 // ---------------------------------------------------------------
 
 using System;
+using LHDS.Core.Models.Audits.Exceptions;
 using LHDS.Core.Models.Foundations.Audits;
-using LHDS.Core.Models.Foundations.Audits.Exceptions;
 
 namespace LHDS.Core.Services.Foundations.Audits
 {
@@ -19,6 +19,22 @@ namespace LHDS.Core.Services.Foundations.Audits
                 (Rule: IsInvalid(audit.IngestionTrackingId), Parameter: nameof(Audit.IngestionTrackingId)),
                 (Rule: IsInvalid(audit.Message), Parameter: nameof(Audit.Message)),
                 (Rule: IsInvalid(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)),
+                (Rule: IsInvalid(audit.CreatedBy), Parameter: nameof(Audit.CreatedBy)),
+                (Rule: IsInvalid(audit.UpdatedDate), Parameter: nameof(Audit.UpdatedDate)),
+                (Rule: IsInvalid(audit.UpdatedBy), Parameter: nameof(Audit.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    firstDate: audit.UpdatedDate,
+                    secondDate: audit.CreatedDate,
+                    secondDateName: nameof(Audit.CreatedDate)),
+                Parameter: nameof(Audit.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    first: audit.UpdatedBy,
+                    second: audit.CreatedBy,
+                    secondName: nameof(Audit.CreatedBy)),
+                Parameter: nameof(Audit.UpdatedBy)),
+
                 (Rule: IsNotRecent(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)));
         }
 
@@ -30,7 +46,18 @@ namespace LHDS.Core.Services.Foundations.Audits
                 (Rule: IsInvalid(audit.Id), Parameter: nameof(Audit.Id)),
                 (Rule: IsInvalid(audit.IngestionTrackingId), Parameter: nameof(Audit.IngestionTrackingId)),
                 (Rule: IsInvalid(audit.Message), Parameter: nameof(Audit.Message)),
-                (Rule: IsInvalid(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)));
+                (Rule: IsInvalid(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)),
+                (Rule: IsInvalid(audit.CreatedBy), Parameter: nameof(Audit.CreatedBy)),
+                (Rule: IsInvalid(audit.UpdatedDate), Parameter: nameof(Audit.UpdatedDate)),
+                (Rule: IsInvalid(audit.UpdatedBy), Parameter: nameof(Audit.UpdatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: audit.UpdatedDate,
+                    secondDate: audit.CreatedDate,
+                    secondDateName: nameof(Audit.CreatedDate)),
+                Parameter: nameof(Audit.UpdatedDate)),
+
+                (Rule: IsNotRecent(audit.UpdatedDate), Parameter: nameof(audit.UpdatedDate)));
         }
 
         public void ValidateAuditId(Guid auditId) =>
@@ -59,7 +86,19 @@ namespace LHDS.Core.Services.Foundations.Audits
                     firstDate: inputAudit.CreatedDate,
                     secondDate: storageAudit.CreatedDate,
                     secondDateName: nameof(Audit.CreatedDate)),
-                Parameter: nameof(Audit.CreatedDate)));
+                Parameter: nameof(Audit.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    first: inputAudit.CreatedBy,
+                    second: storageAudit.CreatedBy,
+                    secondName: nameof(Audit.CreatedBy)),
+                Parameter: nameof(Audit.CreatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: inputAudit.UpdatedDate,
+                    secondDate: storageAudit.UpdatedDate,
+                    secondDateName: nameof(Audit.UpdatedDate)),
+                Parameter: nameof(Audit.UpdatedDate)));
         }
 
         private static dynamic IsInvalid(Guid id) => new
@@ -70,7 +109,7 @@ namespace LHDS.Core.Services.Foundations.Audits
 
         private static dynamic IsInvalid(string text) => new
         {
-            Condition = String.IsNullOrWhiteSpace(text),
+            Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
         };
 
@@ -106,6 +145,15 @@ namespace LHDS.Core.Services.Foundations.Audits
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
+
+        private static dynamic IsNotSame(
+                 string first,
+                 string second,
+                 string secondName) => new
+                 {
+                     Condition = first != second,
+                     Message = $"Text is not the same as {secondName}"
+                 };
 
         private dynamic IsNotRecent(DateTimeOffset date) => new
         {

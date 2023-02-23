@@ -1,0 +1,45 @@
+﻿.dlBase {
+    margin-bottom: 40px;
+    font-weight: 400;
+    margin: 0;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}
+
+/*
+@media (min-width: 40.0625em) .dlBase {
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+}*/
+
+.summaryRow {
+    display: flex;
+    border-bottom: 1px solid #d8dde0;
+    padding:5px;
+}
+
+.summaryListKey {
+    width:35%;
+    font-weight: 600;
+}
+
+.summaryListValue {
+    width: 50%;
+    word-wrap: break-word;
+   
+    display: table-cell;
+    padding-bottom: 8px;
+    padding-right: 24px;
+   
+    margin: 0;
+    vertical-align: top
+}
+
+.summaryListActions {
+    width: 30%;
+    font-weight: 600;
+    margin-bottom: 4px;
+}

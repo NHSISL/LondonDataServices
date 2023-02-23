@@ -129,5 +129,127 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DownloadDependencyValidationExceptions))]
+        public async Task ShouldThrowDependencyValidationOnProcessFileIfDependencyValidationOccursAndLogItAsync(
+            Xeption dependancyValidationException)
+        {
+            // given
+            var fileName = GetRandomMessage();
+
+            var expectedDependencyException =
+                new DownloadOrchestrationDependencyValidationException(
+                    dependancyValidationException.InnerException as Xeption);
+            
+            this.ingestionTrackingServiceMock.Setup(service =>
+              service.RetrieveIngestionTrackingByIdAsync(It.IsAny<string>()))
+                  .ThrowsAsync(dependancyValidationException);
+
+            // when
+            ValueTask processTask = this.downloadOrchestrationService.ProcessAsync(fileName);
+
+            DownloadOrchestrationDependencyValidationException actualException =
+                await Assert.ThrowsAsync<DownloadOrchestrationDependencyValidationException>(processTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDependencyException);
+
+            this.ingestionTrackingServiceMock.Verify(service => 
+                service.RetrieveIngestionTrackingByIdAsync(It.IsAny<string>()), 
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedDependencyException))),
+                       Times.Once);
+
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(DownloadDependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnProcessFileIfDependencyExceptionOccursAndLogItAsync(
+           Xeption dependancyException)
+        {
+            // given
+            var fileName = GetRandomMessage();
+
+            var expectedDependencyException =
+                new DownloadOrchestrationDependencyException(
+                    dependancyException.InnerException as Xeption);
+
+            this.ingestionTrackingServiceMock.Setup(service =>
+              service.RetrieveIngestionTrackingByIdAsync(It.IsAny<string>()))
+                  .ThrowsAsync(dependancyException);
+
+            // when
+            ValueTask processTask = this.downloadOrchestrationService.ProcessAsync(fileName);
+
+            DownloadOrchestrationDependencyException actualException =
+                await Assert.ThrowsAsync<DownloadOrchestrationDependencyException>(processTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDependencyException);
+
+            this.ingestionTrackingServiceMock.Verify(service =>
+              service.RetrieveIngestionTrackingByIdAsync(It.IsAny<string>()),
+                Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedDependencyException))),
+                       Times.Once);
+
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnProcessFileIfServiceErrorOccursAndLogItAsync()
+        {
+            //Given
+            var fileName = GetRandomMessage();
+
+            var serviceException = new Exception();
+
+            var failedDownloadOrchestrationServiceException =
+                new FailedDownloadOrchestrationServiceException(serviceException);
+
+            var expectedDownloadOrchestrationServiceException =
+                new DownloadOrchestrationServiceException(failedDownloadOrchestrationServiceException);
+
+            this.ingestionTrackingServiceMock.Setup(service =>
+                service.RetrieveIngestionTrackingByIdAsync(It.IsAny<string>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask processTask = this.downloadOrchestrationService.ProcessAsync(fileName);
+
+            DownloadOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<DownloadOrchestrationServiceException>(processTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDownloadOrchestrationServiceException);
+
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.RetrieveIngestionTrackingByIdAsync(It.IsAny<string>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDownloadOrchestrationServiceException))),
+                        Times.Once);
+
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

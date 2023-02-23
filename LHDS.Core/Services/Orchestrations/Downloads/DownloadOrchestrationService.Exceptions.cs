@@ -23,9 +23,13 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 await returningProcessFunction();
             }
+            catch (InvalidArgumentDownloadOrchestrationException invalidArgumentDownloadOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentDownloadOrchestrationException);
+            }
             catch (DocumentValidationException documentValidationException)
             {
-                throw CreateAndLogValidationException(documentValidationException);
+                throw CreateAndLogDependencyValidationException(documentValidationException);
             }
             catch (DocumentDependencyValidationException documentDependencyValidationException)
             {
@@ -33,7 +37,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             }
             catch (DownloadValidationException downloadValidationException)
             {
-                throw CreateAndLogValidationException(downloadValidationException);
+                throw CreateAndLogDependencyValidationException(downloadValidationException);
             }
             catch (DownloadDependencyValidationException downloadDependencyValidationException)
             {
@@ -41,7 +45,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             }
             catch (IngestionTrackingValidationException ingestionTrackingValidationException)
             {
-                throw CreateAndLogValidationException(ingestionTrackingValidationException);
+                throw CreateAndLogDependencyValidationException(ingestionTrackingValidationException);
             }
             catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
             {
@@ -49,7 +53,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             }
             catch (AuditValidationException auditValidationException)
             {
-                throw CreateAndLogValidationException(auditValidationException);
+                throw CreateAndLogDependencyValidationException(auditValidationException);
             }
             catch (AuditDependencyValidationException auditDependencyValidationException)
             {
@@ -96,14 +100,14 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             }
         }
 
-        private DownloadOrchestrationDependencyValidationException CreateAndLogValidationException(Xeption exception)
+        private DownloadOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
-            var downloadOrchestrationDependencyValidationException =
-                new DownloadOrchestrationDependencyValidationException(exception.InnerException as Xeption);
+            var downloadOrchestrationValidationException =
+                new DownloadOrchestrationValidationException(exception);
 
-            this.loggingBroker.LogError(downloadOrchestrationDependencyValidationException);
+            this.loggingBroker.LogError(downloadOrchestrationValidationException);
 
-            return downloadOrchestrationDependencyValidationException;
+            return downloadOrchestrationValidationException;
         }
 
         private DownloadOrchestrationDependencyValidationException

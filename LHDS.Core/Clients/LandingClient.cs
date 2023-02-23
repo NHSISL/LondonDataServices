@@ -3,7 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
-using LHDS.Core.Models.Clients.LandingClient;
+using LHDS.Core.Models.Clients.LandingClient.Exceptions;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
 using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
 using LHDS.Core.Services.Orchestrations.Downloads;

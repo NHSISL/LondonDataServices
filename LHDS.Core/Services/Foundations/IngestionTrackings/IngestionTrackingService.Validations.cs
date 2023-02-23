@@ -24,7 +24,13 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                     firstDate: ingestionTracking.UpdatedDate,
                     secondDate: ingestionTracking.CreatedDate,
                     secondDateName: nameof(IngestionTracking.CreatedDate)),
-                Parameter: nameof(IngestionTracking.UpdatedDate)));
+                Parameter: nameof(IngestionTracking.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    firstId: ingestionTracking.UpdatedByUserId,
+                    secondId: ingestionTracking.CreatedByUserId,
+                    secondIdName: nameof(IngestionTracking.CreatedByUserId)),
+                Parameter: nameof(IngestionTracking.UpdatedByUserId)));
         }
 
         private static void ValidateIngestionTrackingIsNotNull(IngestionTracking ingestionTracking)
@@ -54,6 +60,15 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             {
                 Condition = firstDate != secondDate,
                 Message = $"Date is not the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            Guid firstId,
+            Guid secondId,
+            string secondIdName) => new
+            {
+                Condition = firstId != secondId,
+                Message = $"Id is not the same as {secondIdName}"
             };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

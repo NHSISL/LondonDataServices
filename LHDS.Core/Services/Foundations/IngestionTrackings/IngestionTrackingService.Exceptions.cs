@@ -39,6 +39,13 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsIngestionTrackingException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidIngestionTrackingReferenceException =
+                    new InvalidIngestionTrackingReferenceException(foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidIngestionTrackingReferenceException);
+            }
         }
 
         private IngestionTrackingValidationException CreateAndLogValidationException(Xeption exception)

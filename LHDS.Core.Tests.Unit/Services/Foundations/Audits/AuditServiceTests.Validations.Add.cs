@@ -5,8 +5,8 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Audits.Exceptions;
 using LHDS.Core.Models.Foundations.Audits;
-using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using Moq;
 using Xunit;
 
@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             var invalidAudit = new Audit
             {
                 IngestionTrackingId = invalidText,
-                Message = invalidText,
+                Message = invalidText
             };
 
             var invalidAuditException =
@@ -80,8 +80,128 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 key: nameof(Audit.CreatedDate),
                 values: "Date is required");
 
+            invalidAuditException.AddData(
+                key: nameof(Audit.CreatedBy),
+                values: "Text is required");
+
+            invalidAuditException.AddData(
+                key: nameof(Audit.UpdatedDate),
+                values: "Date is required");
+
+            invalidAuditException.AddData(
+                key: nameof(Audit.UpdatedBy),
+                values: "Text is required");
+
             var expectedAuditValidationException =
                 new AuditValidationException(invalidAuditException);
+
+            // when
+            ValueTask<Audit> addAuditTask =
+                this.auditService.AddAuditAsync(invalidAudit);
+
+            AuditValidationException actualAuditValidationException =
+                await Assert.ThrowsAsync<AuditValidationException>(() =>
+                    addAuditTask.AsTask());
+
+            // then
+            actualAuditValidationException.Should()
+                .BeEquivalentTo(expectedAuditValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAuditValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertAuditAsync(It.IsAny<Audit>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateDatesIsNotSameAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNumber();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Audit randomAudit = CreateRandomAudit(randomDateTimeOffset);
+            Audit invalidAudit = randomAudit;
+
+            invalidAudit.UpdatedDate =
+                invalidAudit.CreatedDate.AddDays(randomNumber);
+
+            var invalidAuditException = new InvalidAuditException();
+
+            invalidAuditException.AddData(
+                key: nameof(Audit.UpdatedDate),
+                values: $"Date is not the same as {nameof(Audit.CreatedDate)}");
+
+            var expectedAuditValidationException =
+                new AuditValidationException(invalidAuditException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<Audit> addAuditTask =
+                this.auditService.AddAuditAsync(invalidAudit);
+
+            AuditValidationException actualAuditValidationException =
+                await Assert.ThrowsAsync<AuditValidationException>(() =>
+                    addAuditTask.AsTask());
+
+            // then
+            actualAuditValidationException.Should()
+                .BeEquivalentTo(expectedAuditValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAuditValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertAuditAsync(It.IsAny<Audit>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateUserIdsIsNotSameAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Audit randomAudit = CreateRandomAudit(randomDateTimeOffset);
+            Audit invalidAudit = randomAudit;
+            invalidAudit.UpdatedBy = Guid.NewGuid().ToString();
+
+            var invalidAuditException =
+                new InvalidAuditException();
+
+            invalidAuditException.AddData(
+                key: nameof(Audit.UpdatedBy),
+                values: $"Text is not the same as {nameof(Audit.CreatedBy)}");
+
+            var expectedAuditValidationException =
+                new AuditValidationException(invalidAuditException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
 
             // when
             ValueTask<Audit> addAuditTask =

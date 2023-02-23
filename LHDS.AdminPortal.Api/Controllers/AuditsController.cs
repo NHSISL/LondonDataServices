@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,34 @@ namespace LHDS.AdminPortal.Api.Controllers
                     this.auditService.RetrieveAllAudits();
 
                 return Ok(retrievedAudits);
+            }
+            catch (AuditDependencyException auditDependencyException)
+            {
+                return InternalServerError(auditDependencyException);
+            }
+            catch (AuditServiceException auditServiceException)
+            {
+                return InternalServerError(auditServiceException);
+            }
+        }
+
+        [HttpGet("{auditId}")]
+        public async ValueTask<ActionResult<Audit>> GetAuditByIdAsync(Guid auditId)
+        {
+            try
+            {
+                Audit audit = await this.auditService.RetrieveAuditByIdAsync(auditId);
+
+                return Ok(audit);
+            }
+            catch (AuditValidationException auditValidationException)
+                when (auditValidationException.InnerException is NotFoundAuditException)
+            {
+                return NotFound(auditValidationException.InnerException);
+            }
+            catch (AuditValidationException auditValidationException)
+            {
+                return BadRequest(auditValidationException.InnerException);
             }
             catch (AuditDependencyException auditDependencyException)
             {

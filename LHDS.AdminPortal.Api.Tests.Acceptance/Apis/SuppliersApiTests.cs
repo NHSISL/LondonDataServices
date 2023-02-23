@@ -31,7 +31,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
                 .OnProperty(supplier => supplier.Id).Use(inputSupplier.Id)
                 .OnType<DateTimeOffset>().Use(GetRandomDateTime())
                 .OnProperty(supplier => supplier.CreatedDate).Use(inputSupplier.CreatedDate)
-                .OnProperty(supplier => supplier.CreatedByUserId).Use(inputSupplier.CreatedByUserId)
+                .OnProperty(supplier => supplier.CreatedBy).Use(inputSupplier.CreatedBy)
                 .OnProperty(supplier => supplier.UpdatedDate).Use(now);
 
             return filler.Create();
@@ -63,16 +63,16 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
 
         private static Filler<Supplier> CreateRandomSupplierFiller()
         {
-            Guid userId = Guid.NewGuid();
+            string userId = Guid.NewGuid().ToString();
             DateTime now = DateTime.UtcNow;
             var filler = new Filler<Supplier>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnProperty(supplier => supplier.CreatedDate).Use(now)
-                .OnProperty(supplier => supplier.CreatedByUserId).Use(userId)
+                .OnProperty(supplier => supplier.CreatedBy).Use(userId)
                 .OnProperty(supplier => supplier.UpdatedDate).Use(now)
-                .OnProperty(supplier => supplier.UpdatedByUserId).Use(userId);
+                .OnProperty(supplier => supplier.UpdatedBy).Use(userId);
 
             return filler;
         }

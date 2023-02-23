@@ -1,9 +1,13 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using Moq;
-using LHDS.Core.Models.IngestionTrackings;
-using LHDS.Core.Models.IngestionTrackings.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
@@ -14,14 +18,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
         public async Task ShouldThrowValidationExceptionOnRetrieveByIdIfIdIsInvalidAndLogItAsync()
         {
             // given
-            var invalidIngestionTrackingId = Guid.Empty;
+            var invalidIngestionTrackingId = string.Empty;
 
             var invalidIngestionTrackingException =
                 new InvalidIngestionTrackingException();
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.Id),
-                values: "Id is required");
+                values: "Text is required");
 
             var expectedIngestionTrackingValidationException =
                 new IngestionTrackingValidationException(invalidIngestionTrackingException);
@@ -44,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(It.IsAny<Guid>()),
+                broker.SelectIngestionTrackingByIdAsync(It.IsAny<string>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -56,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
         public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfIngestionTrackingIsNotFoundAndLogItAsync()
         {
             //given
-            Guid someIngestionTrackingId = Guid.NewGuid();
+            string someIngestionTrackingId = Guid.NewGuid().ToString();
             IngestionTracking noIngestionTracking = null;
 
             var notFoundIngestionTrackingException =
@@ -66,7 +70,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 new IngestionTrackingValidationException(notFoundIngestionTrackingException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectIngestionTrackingByIdAsync(It.IsAny<Guid>()))
+                broker.SelectIngestionTrackingByIdAsync(It.IsAny<string>()))
                     .ReturnsAsync(noIngestionTracking);
 
             //when
@@ -81,7 +85,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             actualIngestionTrackingValidationException.Should().BeEquivalentTo(expectedIngestionTrackingValidationException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(It.IsAny<Guid>()),
+                broker.SelectIngestionTrackingByIdAsync(It.IsAny<string>()),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>

@@ -1,9 +1,13 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
-using LHDS.Core.Models.IngestionTrackings;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
@@ -21,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             storageIngestionTracking.UpdatedDate = randomIngestionTracking.CreatedDate;
             IngestionTracking updatedIngestionTracking = inputIngestionTracking;
             IngestionTracking expectedIngestionTracking = updatedIngestionTracking.DeepClone();
-            Guid ingestionTrackingId = inputIngestionTracking.Id;
+            string ingestionTrackingId = inputIngestionTracking.Id;
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())

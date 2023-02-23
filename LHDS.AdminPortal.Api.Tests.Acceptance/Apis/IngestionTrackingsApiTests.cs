@@ -19,6 +19,24 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
         private int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
+        private static DateTimeOffset GetRandomDateTime() =>
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static IngestionTracking UpdateIngestionTrackingWithRandomValues(IngestionTracking inputIngestionTracking)
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            var filler = new Filler<IngestionTracking>();
+
+            filler.Setup()
+                .OnProperty(ingestionTracking => ingestionTracking.Id).Use(inputIngestionTracking.Id)
+                .OnType<DateTimeOffset>().Use(GetRandomDateTime())
+                .OnProperty(ingestionTracking => ingestionTracking.CreatedDate).Use(inputIngestionTracking.CreatedDate)
+                .OnProperty(ingestionTracking => ingestionTracking.CreatedByUserId).Use(inputIngestionTracking.CreatedByUserId)
+                .OnProperty(ingestionTracking => ingestionTracking.UpdatedDate).Use(now);
+
+            return filler.Create();
+        }
+
         private async ValueTask<IngestionTracking> PostRandomIngestionTrackingAsync()
         {
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();

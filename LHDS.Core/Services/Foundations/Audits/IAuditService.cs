@@ -1,7 +1,11 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Audits;
+using LHDS.Core.Models.Foundations.Audits;
 
 namespace LHDS.Core.Services.Foundations.Audits
 {

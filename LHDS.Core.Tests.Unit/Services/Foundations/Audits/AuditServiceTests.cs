@@ -1,14 +1,18 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
-using Microsoft.Data.SqlClient;
-using Moq;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages;
-using LHDS.Core.Models.Audits;
+using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Audits;
+using Microsoft.Data.SqlClient;
+using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
@@ -90,15 +94,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
         private static Filler<Audit> CreateAuditFiller(DateTimeOffset dateTimeOffset)
         {
-            Guid userId = Guid.NewGuid();
+            string user = Guid.NewGuid().ToString();
             var filler = new Filler<Audit>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(audit => audit.CreatedByUserId).Use(userId)
-                .OnProperty(audit => audit.UpdatedByUserId).Use(userId);
-
-            // TODO: Complete the filler setup e.g. ignore related properties etc...
+                .OnProperty(audit => audit.CreatedBy).Use(user)
+                .OnProperty(audit => audit.UpdatedBy).Use(user)
+                .OnProperty(audit => audit.IngestionTracking).IgnoreIt();
 
             return filler;
         }

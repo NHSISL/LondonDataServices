@@ -1,11 +1,15 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
+using LHDS.Core.Models.Audits.Exceptions;
+using LHDS.Core.Models.Foundations.Audits;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using LHDS.Core.Models.Audits;
-using LHDS.Core.Models.Audits.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.Audits

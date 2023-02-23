@@ -1,10 +1,14 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using Moq;
-using LHDS.Core.Models.Audits;
 using LHDS.Core.Models.Audits.Exceptions;
+using LHDS.Core.Models.Foundations.Audits;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
@@ -60,7 +64,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             // given 
             var invalidAudit = new Audit
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                IngestionTrackingId = invalidText,
+                Message = invalidText
             };
 
             var invalidAuditException = new InvalidAuditException();
@@ -69,19 +74,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 key: nameof(Audit.Id),
                 values: "Id is required");
 
-            //invalidAuditException.AddData(
-            //    key: nameof(Audit.Name),
-            //    values: "Text is required");
+            invalidAuditException.AddData(
+                key: nameof(Audit.IngestionTrackingId),
+                values: "Text is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the Audit model
+            invalidAuditException.AddData(
+                key: nameof(Audit.Message),
+                values: "Text is required");
 
             invalidAuditException.AddData(
                 key: nameof(Audit.CreatedDate),
                 values: "Date is required");
 
             invalidAuditException.AddData(
-                key: nameof(Audit.CreatedByUserId),
-                values: "Id is required");
+                key: nameof(Audit.CreatedBy),
+                values: "Text is required");
 
             invalidAuditException.AddData(
                 key: nameof(Audit.UpdatedDate),
@@ -92,8 +99,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 });
 
             invalidAuditException.AddData(
-                key: nameof(Audit.UpdatedByUserId),
-                values: "Id is required");
+                key: nameof(Audit.UpdatedBy),
+                values: "Text is required");
 
             var expectedAuditValidationException =
                 new AuditValidationException(invalidAuditException);
@@ -351,14 +358,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             Audit randomAudit = CreateRandomModifyAudit(randomDateTimeOffset);
             Audit invalidAudit = randomAudit.DeepClone();
             Audit storageAudit = invalidAudit.DeepClone();
-            invalidAudit.CreatedByUserId = Guid.NewGuid();
+            invalidAudit.CreatedBy = Guid.NewGuid().ToString();
             storageAudit.UpdatedDate = storageAudit.CreatedDate;
 
             var invalidAuditException = new InvalidAuditException();
 
             invalidAuditException.AddData(
-                key: nameof(Audit.CreatedByUserId),
-                values: $"Id is not the same as {nameof(Audit.CreatedByUserId)}");
+                key: nameof(Audit.CreatedBy),
+                values: $"Text is not the same as {nameof(Audit.CreatedBy)}");
 
             var expectedAuditValidationException =
                 new AuditValidationException(invalidAuditException);

@@ -1,5 +1,5 @@
 import { Guid } from 'guid-typescript';
-import { Audit } from '../audit/audit';
+import { Audit } from '../audits/audit';
 
 export class IngestionTracking {
     public id: Guid;

@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
-using LHDS.Core.Models.Audits;
+using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Audits;
 using Microsoft.Data.SqlClient;
 using Moq;

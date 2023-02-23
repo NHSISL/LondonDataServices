@@ -6,7 +6,7 @@ using System;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Audits;
+using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Decryptions;
@@ -52,6 +52,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                     .RetrieveDocumentByFileNameAsync(ingestionTracking.EncryptedFileName);
 
                 byte[] decryptedData = await this.decryptionService.DecryptAsync(document.DocumentData);
+                string[] lines = System.Text.Encoding.UTF8.GetString(decryptedData).Split('\n');
 
                 Document newDecryptedDocument = new Document
                 {
@@ -62,6 +63,8 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 await this.documentService.AddDocumentAsync(newDecryptedDocument);
 
                 ingestionTracking.Decrypted = true;
+                ingestionTracking.RecordCount = lines.Length - 1;
+                ingestionTracking.DecryptedFileSize = newDecryptedDocument.DocumentData.Length;
 
                 await this.ingestionTrackingService
                     .ModifyIngestionTrackingAsync(ingestionTracking);

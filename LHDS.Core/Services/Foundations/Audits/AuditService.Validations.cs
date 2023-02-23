@@ -1,6 +1,10 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
-using LHDS.Core.Models.Audits;
 using LHDS.Core.Models.Audits.Exceptions;
+using LHDS.Core.Models.Foundations.Audits;
 
 namespace LHDS.Core.Services.Foundations.Audits
 {
@@ -12,13 +16,12 @@ namespace LHDS.Core.Services.Foundations.Audits
 
             Validate(
                 (Rule: IsInvalid(audit.Id), Parameter: nameof(Audit.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(audit.IngestionTrackingId), Parameter: nameof(Audit.IngestionTrackingId)),
+                (Rule: IsInvalid(audit.Message), Parameter: nameof(Audit.Message)),
                 (Rule: IsInvalid(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)),
-                (Rule: IsInvalid(audit.CreatedByUserId), Parameter: nameof(Audit.CreatedByUserId)),
+                (Rule: IsInvalid(audit.CreatedBy), Parameter: nameof(Audit.CreatedBy)),
                 (Rule: IsInvalid(audit.UpdatedDate), Parameter: nameof(Audit.UpdatedDate)),
-                (Rule: IsInvalid(audit.UpdatedByUserId), Parameter: nameof(Audit.UpdatedByUserId)),
+                (Rule: IsInvalid(audit.UpdatedBy), Parameter: nameof(Audit.UpdatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: audit.UpdatedDate,
@@ -27,10 +30,10 @@ namespace LHDS.Core.Services.Foundations.Audits
                 Parameter: nameof(Audit.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    firstId: audit.UpdatedByUserId,
-                    secondId: audit.CreatedByUserId,
-                    secondIdName: nameof(Audit.CreatedByUserId)),
-                Parameter: nameof(Audit.UpdatedByUserId)),
+                    first: audit.UpdatedBy,
+                    second: audit.CreatedBy,
+                    secondName: nameof(Audit.CreatedBy)),
+                Parameter: nameof(Audit.UpdatedBy)),
 
                 (Rule: IsNotRecent(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)));
         }
@@ -41,13 +44,12 @@ namespace LHDS.Core.Services.Foundations.Audits
 
             Validate(
                 (Rule: IsInvalid(audit.Id), Parameter: nameof(Audit.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(audit.IngestionTrackingId), Parameter: nameof(Audit.IngestionTrackingId)),
+                (Rule: IsInvalid(audit.Message), Parameter: nameof(Audit.Message)),
                 (Rule: IsInvalid(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)),
-                (Rule: IsInvalid(audit.CreatedByUserId), Parameter: nameof(Audit.CreatedByUserId)),
+                (Rule: IsInvalid(audit.CreatedBy), Parameter: nameof(Audit.CreatedBy)),
                 (Rule: IsInvalid(audit.UpdatedDate), Parameter: nameof(Audit.UpdatedDate)),
-                (Rule: IsInvalid(audit.UpdatedByUserId), Parameter: nameof(Audit.UpdatedByUserId)),
+                (Rule: IsInvalid(audit.UpdatedBy), Parameter: nameof(Audit.UpdatedBy)),
 
                 (Rule: IsSame(
                     firstDate: audit.UpdatedDate,
@@ -87,10 +89,10 @@ namespace LHDS.Core.Services.Foundations.Audits
                 Parameter: nameof(Audit.CreatedDate)),
 
                 (Rule: IsNotSame(
-                    firstId: inputAudit.CreatedByUserId,
-                    secondId: storageAudit.CreatedByUserId,
-                    secondIdName: nameof(Audit.CreatedByUserId)),
-                Parameter: nameof(Audit.CreatedByUserId)),
+                    first: inputAudit.CreatedBy,
+                    second: storageAudit.CreatedBy,
+                    secondName: nameof(Audit.CreatedBy)),
+                Parameter: nameof(Audit.CreatedBy)),
 
                 (Rule: IsSame(
                     firstDate: inputAudit.UpdatedDate,
@@ -103,6 +105,12 @@ namespace LHDS.Core.Services.Foundations.Audits
         {
             Condition = id == Guid.Empty,
             Message = "Id is required"
+        };
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
         };
 
         private static dynamic IsInvalid(DateTimeOffset date) => new
@@ -137,6 +145,15 @@ namespace LHDS.Core.Services.Foundations.Audits
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
+
+        private static dynamic IsNotSame(
+                 string first,
+                 string second,
+                 string secondName) => new
+                 {
+                     Condition = first != second,
+                     Message = $"Text is not the same as {secondName}"
+                 };
 
         private dynamic IsNotRecent(DateTimeOffset date) => new
         {

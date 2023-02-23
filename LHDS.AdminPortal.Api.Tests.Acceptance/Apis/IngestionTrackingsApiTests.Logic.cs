@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using RESTFulSense.Exceptions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using Xunit;
 
@@ -76,6 +77,28 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
             // then
             actualIngestionTracking.Should().BeEquivalentTo(modifiedIngestionTracking);
             await this.apiBroker.DeleteIngestionTrackingByIdAsync(actualIngestionTracking.Id);
+        }
+
+        [Fact]
+        public async Task ShouldDeleteIngestionTrackingAsync()
+        {
+            // given
+            IngestionTracking randomIngestionTracking = await PostRandomIngestionTrackingAsync();
+            IngestionTracking inputIngestionTracking = randomIngestionTracking;
+            IngestionTracking expectedIngestionTracking = inputIngestionTracking;
+
+            // when
+            IngestionTracking deletedIngestionTracking =
+                await this.apiBroker.DeleteIngestionTrackingByIdAsync(inputIngestionTracking.Id);
+
+            ValueTask<IngestionTracking> getIngestionTrackingbyIdTask =
+                this.apiBroker.GetIngestionTrackingByIdAsync(inputIngestionTracking.Id);
+
+            // then
+            deletedIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
+
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
+                getIngestionTrackingbyIdTask.AsTask());
         }
     }
 }

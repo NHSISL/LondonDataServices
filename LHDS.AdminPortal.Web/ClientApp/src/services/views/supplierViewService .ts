@@ -4,8 +4,6 @@ import { Supplier } from "../../models/suppliers/supplier";
 import { SupplierView } from "../../models/views/components/suppliers/supplierView";
 import { supplierService } from "../foundations/supplierService";
 
-
-
 export const supplierViewService = {
 
     useCreateSupplier: () => {

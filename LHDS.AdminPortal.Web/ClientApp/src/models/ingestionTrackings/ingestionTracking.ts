@@ -2,7 +2,7 @@ import { Guid } from 'guid-typescript';
 import { Audit } from '../audits/audit';
 
 export class IngestionTracking {
-    public id: Guid;
+    public id: string;
     public source: string;
     public encryptedFileName: string;
     public decryptedFileName: string;
@@ -16,7 +16,7 @@ export class IngestionTracking {
     public audit: Audit;
 
     constructor(ingestionTracking: any) {
-        this.id = Guid.parse(ingestionTracking.id);
+        this.id = ingestionTracking.id;
         this.source = ingestionTracking.source || "";
         this.encryptedFileName = ingestionTracking.encryptedFileName || "";
         this.decryptedFileName = ingestionTracking.decryptedFileName || "";

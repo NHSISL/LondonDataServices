@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             });
 
         public IQueryable<IngestionTracking> RetrieveAllIngestionTrackings() =>
-            throw new System.NotImplementedException();
+            this.storageBroker.SelectAllIngestionTrackings();
     }
 }

@@ -1,59 +1,62 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages;
+using FluentAssertions;
+using Force.DeepCloner;
+using Moq;
 using LHDS.Core.Models.IngestionTrackings;
+using Xunit;
 
-namespace LHDS.Core.Services.Foundations.IngestionTrackings
+namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 {
-    public partial class IngestionTrackingService : IIngestionTrackingService
+    public partial class IngestionTrackingServiceTests
     {
-        private readonly IStorageBroker storageBroker;
-        private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ILoggingBroker loggingBroker;
-
-        public IngestionTrackingService(
-            IStorageBroker storageBroker,
-            IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker)
+        [Fact]
+        public async Task ShouldModifyIngestionTrackingAsync()
         {
-            this.storageBroker = storageBroker;
-            this.dateTimeBroker = dateTimeBroker;
-            this.loggingBroker = loggingBroker;
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            IngestionTracking randomIngestionTracking = CreateRandomModifyIngestionTracking(randomDateTimeOffset);
+            IngestionTracking inputIngestionTracking = randomIngestionTracking;
+            IngestionTracking storageIngestionTracking = inputIngestionTracking.DeepClone();
+            storageIngestionTracking.UpdatedDate = randomIngestionTracking.CreatedDate;
+            IngestionTracking updatedIngestionTracking = inputIngestionTracking;
+            IngestionTracking expectedIngestionTracking = updatedIngestionTracking.DeepClone();
+            Guid ingestionTrackingId = inputIngestionTracking.Id;
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectIngestionTrackingByIdAsync(ingestionTrackingId))
+                    .ReturnsAsync(storageIngestionTracking);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.UpdateIngestionTrackingAsync(inputIngestionTracking))
+                    .ReturnsAsync(updatedIngestionTracking);
+
+            // when
+            IngestionTracking actualIngestionTracking =
+                await this.ingestionTrackingService.ModifyIngestionTrackingAsync(inputIngestionTracking);
+
+            // then
+            actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectIngestionTrackingByIdAsync(inputIngestionTracking.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateIngestionTrackingAsync(inputIngestionTracking),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
-
-        public ValueTask<IngestionTracking> AddIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
-            TryCatch(async () =>
-            {
-                ValidateIngestionTrackingOnAdd(ingestionTracking);
-
-                return await this.storageBroker.InsertIngestionTrackingAsync(ingestionTracking);
-            });
-
-        public IQueryable<IngestionTracking> RetrieveAllIngestionTrackings() =>
-            TryCatch(() => this.storageBroker.SelectAllIngestionTrackings());
-
-        public ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
-            TryCatch(async () =>
-            {
-                ValidateIngestionTrackingId(ingestionTrackingId);
-
-                IngestionTracking maybeIngestionTracking = await this.storageBroker
-                    .SelectIngestionTrackingByIdAsync(ingestionTrackingId);
-
-                ValidateStorageIngestionTracking(maybeIngestionTracking, ingestionTrackingId);
-
-                return maybeIngestionTracking;
-            });
-
-        public ValueTask<IngestionTracking> ModifyIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
-            TryCatch(async () =>
-            {
-                ValidateIngestionTrackingOnModify(ingestionTracking);
-
-                return await this.storageBroker.UpdateIngestionTrackingAsync(ingestionTracking);
-            });
     }
 }

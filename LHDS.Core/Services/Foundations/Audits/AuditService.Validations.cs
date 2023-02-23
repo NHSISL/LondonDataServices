@@ -84,7 +84,13 @@ namespace LHDS.Core.Services.Foundations.Audits
                     firstDate: inputAudit.CreatedDate,
                     secondDate: storageAudit.CreatedDate,
                     secondDateName: nameof(Audit.CreatedDate)),
-                Parameter: nameof(Audit.CreatedDate)));
+                Parameter: nameof(Audit.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    firstId: inputAudit.CreatedByUserId,
+                    secondId: storageAudit.CreatedByUserId,
+                    secondIdName: nameof(Audit.CreatedByUserId)),
+                Parameter: nameof(Audit.CreatedByUserId)));
         }
 
         private static dynamic IsInvalid(Guid id) => new

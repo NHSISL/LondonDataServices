@@ -65,5 +65,18 @@ namespace LHDS.Core.Services.Foundations.Suppliers
 
                 return await this.storageBroker.UpdateSupplierAsync(supplier);
             });
+
+        public ValueTask<Supplier> RemoveSupplierByIdAsync(Guid supplierId) =>
+            TryCatch(async () =>
+            {
+                ValidateSupplierId(supplierId);
+
+                Supplier maybeSupplier = await this.storageBroker
+                    .SelectSupplierByIdAsync(supplierId);
+
+                ValidateStorageSupplier(maybeSupplier, supplierId);
+
+                return await this.storageBroker.DeleteSupplierAsync(maybeSupplier);
+            });
     }
 }

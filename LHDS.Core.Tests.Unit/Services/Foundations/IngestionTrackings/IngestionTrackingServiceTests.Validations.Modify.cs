@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using Moq;
 using LHDS.Core.Models.IngestionTrackings;
 using LHDS.Core.Models.IngestionTrackings.Exceptions;
@@ -122,9 +123,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 broker.UpdateIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -172,9 +173,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.Id),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -277,6 +278,65 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedIngestionTrackingValidationException))),
                         Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfStorageCreatedDateNotSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNegativeNumber();
+            int randomMinutes = randomNumber;
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            IngestionTracking randomIngestionTracking = CreateRandomModifyIngestionTracking(randomDateTimeOffset);
+            IngestionTracking invalidIngestionTracking = randomIngestionTracking.DeepClone();
+            IngestionTracking storageIngestionTracking = invalidIngestionTracking.DeepClone();
+            storageIngestionTracking.CreatedDate = storageIngestionTracking.CreatedDate.AddMinutes(randomMinutes);
+            storageIngestionTracking.UpdatedDate = storageIngestionTracking.UpdatedDate.AddMinutes(randomMinutes);
+            var invalidIngestionTrackingException = new InvalidIngestionTrackingException();
+
+            invalidIngestionTrackingException.AddData(
+                key: nameof(IngestionTracking.CreatedDate),
+                values: $"Date is not the same as {nameof(IngestionTracking.CreatedDate)}");
+
+            var expectedIngestionTrackingValidationException =
+                new IngestionTrackingValidationException(invalidIngestionTrackingException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.Id))
+                .ReturnsAsync(storageIngestionTracking);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<IngestionTracking> modifyIngestionTrackingTask =
+                this.ingestionTrackingService.ModifyIngestionTrackingAsync(invalidIngestionTracking);
+
+            IngestionTrackingValidationException actualIngestionTrackingValidationException =
+                await Assert.ThrowsAsync<IngestionTrackingValidationException>(
+                    modifyIngestionTrackingTask.AsTask);
+
+            // then
+            actualIngestionTrackingValidationException.Should()
+                .BeEquivalentTo(expectedIngestionTrackingValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedIngestionTrackingValidationException))),
+                       Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

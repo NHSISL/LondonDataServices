@@ -19,6 +19,24 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
         private int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
+        private static DateTimeOffset GetRandomDateTime() =>
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static Supplier UpdateSupplierWithRandomValues(Supplier inputSupplier)
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            var filler = new Filler<Supplier>();
+
+            filler.Setup()
+                .OnProperty(supplier => supplier.Id).Use(inputSupplier.Id)
+                .OnType<DateTimeOffset>().Use(GetRandomDateTime())
+                .OnProperty(supplier => supplier.CreatedDate).Use(inputSupplier.CreatedDate)
+                .OnProperty(supplier => supplier.CreatedByUserId).Use(inputSupplier.CreatedByUserId)
+                .OnProperty(supplier => supplier.UpdatedDate).Use(now);
+
+            return filler.Create();
+        }
+
         private async ValueTask<Supplier> PostRandomSupplierAsync()
         {
             Supplier randomSupplier = CreateRandomSupplier();

@@ -18,7 +18,8 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                 (Rule: IsInvalid(supplier.Id), Parameter: nameof(Supplier.Id)),
                 (Rule: IsInvalid(supplier.Name), Parameter: nameof(Supplier.Name)),
                 (Rule: IsInvalid(supplier.FriendlyName), Parameter: nameof(Supplier.FriendlyName)),
-                (Rule: IsInvalid(supplier.LandingManualTriggerUrl), Parameter: nameof(Supplier.LandingManualTriggerUrl)),
+                (Rule: IsInvalid(supplier.LandingManualTriggerUrl),
+                    Parameter: nameof(Supplier.LandingManualTriggerUrl)),
                 (Rule: IsInvalid(supplier.CreatedDate), Parameter: nameof(Supplier.CreatedDate)),
                 (Rule: IsInvalid(supplier.CreatedBy), Parameter: nameof(Supplier.CreatedBy)),
                 (Rule: IsInvalid(supplier.UpdatedDate), Parameter: nameof(Supplier.UpdatedDate)),
@@ -37,6 +38,30 @@ namespace LHDS.Core.Services.Foundations.Suppliers
                 Parameter: nameof(Supplier.UpdatedBy)),
 
                 (Rule: IsNotRecent(supplier.CreatedDate), Parameter: nameof(Supplier.CreatedDate)));
+        }
+
+        private void ValidateSupplierOnModify(Supplier supplier)
+        {
+            ValidateSupplierIsNotNull(supplier);
+
+            Validate(
+                (Rule: IsInvalid(supplier.Id), Parameter: nameof(Supplier.Id)),
+                (Rule: IsInvalid(supplier.Name), Parameter: nameof(Supplier.Name)),
+                (Rule: IsInvalid(supplier.FriendlyName), Parameter: nameof(Supplier.FriendlyName)),
+                (Rule: IsInvalid(supplier.LandingManualTriggerUrl),
+                    Parameter: nameof(Supplier.LandingManualTriggerUrl)),
+                (Rule: IsInvalid(supplier.CreatedDate), Parameter: nameof(Supplier.CreatedDate)),
+                (Rule: IsInvalid(supplier.CreatedBy), Parameter: nameof(Supplier.CreatedBy)),
+                (Rule: IsInvalid(supplier.UpdatedDate), Parameter: nameof(Supplier.UpdatedDate)),
+                (Rule: IsInvalid(supplier.UpdatedBy), Parameter: nameof(Supplier.UpdatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: supplier.UpdatedDate,
+                    secondDate: supplier.CreatedDate,
+                    secondDateName: nameof(Supplier.CreatedDate)),
+                Parameter: nameof(Supplier.UpdatedDate)),
+
+                (Rule: IsNotRecent(supplier.UpdatedDate), Parameter: nameof(supplier.UpdatedDate)));
         }
 
         public void ValidateSupplierId(Guid supplierId) =>
@@ -58,6 +83,28 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             }
         }
 
+        private static void ValidateAgainstStorageSupplierOnModify(Supplier inputSupplier, Supplier storageSupplier)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputSupplier.CreatedDate,
+                    secondDate: storageSupplier.CreatedDate,
+                    secondDateName: nameof(Supplier.CreatedDate)),
+                Parameter: nameof(Supplier.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    first: inputSupplier.CreatedBy,
+                    second: storageSupplier.CreatedBy,
+                    secondName: nameof(Supplier.CreatedBy)),
+                Parameter: nameof(Supplier.CreatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: inputSupplier.UpdatedDate,
+                    secondDate: storageSupplier.UpdatedDate,
+                    secondDateName: nameof(Supplier.UpdatedDate)),
+                Parameter: nameof(Supplier.UpdatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
@@ -75,6 +122,15 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,

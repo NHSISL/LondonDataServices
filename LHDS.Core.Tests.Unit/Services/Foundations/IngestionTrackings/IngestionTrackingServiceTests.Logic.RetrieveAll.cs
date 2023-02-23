@@ -1,11 +1,7 @@
-// ---------------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
-
 using System.Linq;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
+using LHDS.Core.Models.IngestionTrackings;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
@@ -21,18 +17,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             IQueryable<IngestionTracking> expectedIngestionTrackings = storageIngestionTrackings;
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllIngestionTracking())
+                broker.SelectAllIngestionTrackings())
                     .Returns(storageIngestionTrackings);
 
             // when
             IQueryable<IngestionTracking> actualIngestionTrackings =
-                this.ingestionTrackingService.RetrieveAllIngestionTracking();
+                this.ingestionTrackingService.RetrieveAllIngestionTrackings();
 
             // then
             actualIngestionTrackings.Should().BeEquivalentTo(expectedIngestionTrackings);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllIngestionTracking(),
+                broker.SelectAllIngestionTrackings(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

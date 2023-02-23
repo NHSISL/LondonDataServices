@@ -99,5 +99,44 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(auditServiceException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<Audit>> PutAuditAsync(Audit audit)
+        {
+            try
+            {
+                Audit modifiedAudit =
+                    await this.auditService.ModifyAuditAsync(audit);
+
+                return Ok(modifiedAudit);
+            }
+            catch (AuditValidationException auditValidationException)
+                when (auditValidationException.InnerException is NotFoundAuditException)
+            {
+                return NotFound(auditValidationException.InnerException);
+            }
+            catch (AuditValidationException auditValidationException)
+            {
+                return BadRequest(auditValidationException.InnerException);
+            }
+            catch (AuditDependencyValidationException auditValidationException)
+                when (auditValidationException.InnerException is InvalidAuditReferenceException)
+            {
+                return FailedDependency(auditValidationException.InnerException);
+            }
+            catch (AuditDependencyValidationException auditDependencyValidationException)
+               when (auditDependencyValidationException.InnerException is AlreadyExistsAuditException)
+            {
+                return Conflict(auditDependencyValidationException.InnerException);
+            }
+            catch (AuditDependencyException auditDependencyException)
+            {
+                return InternalServerError(auditDependencyException);
+            }
+            catch (AuditServiceException auditServiceException)
+            {
+                return InternalServerError(auditServiceException);
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container, Form, Nav, Navbar } from "react-bootstrap";
-import {SecuredLink } from './Links';
+import securityPoints from '../SecurityMatrix';
+import {SecuredComponents, SecuredLink } from './Links';
 
 export const NavigationBar = () => {
     return (
@@ -18,6 +19,9 @@ export const NavigationBar = () => {
                             <SecuredLink to="/ingestionTracking">Supplier Data</SecuredLink>
                         </Nav>
                         <Form className="d-flex">
+                            <SecuredComponents allowedRoles={securityPoints.configNavigation.view}>
+                                <SecuredLink to="/configuration">Config</SecuredLink>
+                            </SecuredComponents>
                         </Form>
                     </Navbar.Collapse>
                 </Container>

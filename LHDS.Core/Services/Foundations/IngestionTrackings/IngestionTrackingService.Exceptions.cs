@@ -19,6 +19,10 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             {
                 throw CreateAndLogValidationException(nullIngestionTrackingException);
             }
+            catch (InvalidIngestionTrackingException invalidIngestionTrackingException)
+            {
+                throw CreateAndLogValidationException(invalidIngestionTrackingException);
+            }
         }
 
         private IngestionTrackingValidationException CreateAndLogValidationException(Xeption exception)

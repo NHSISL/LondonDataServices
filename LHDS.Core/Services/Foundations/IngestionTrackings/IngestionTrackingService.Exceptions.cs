@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.IngestionTrackings;
 using LHDS.Core.Models.IngestionTrackings.Exceptions;
@@ -31,6 +32,13 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
                 throw CreateAndLogCriticalDependencyException(failedIngestionTrackingStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsIngestionTrackingException =
+                    new AlreadyExistsIngestionTrackingException(duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsIngestionTrackingException);
+            }
         }
 
         private IngestionTrackingValidationException CreateAndLogValidationException(Xeption exception)
@@ -49,6 +57,16 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             this.loggingBroker.LogCritical(ingestionTrackingDependencyException);
 
             return ingestionTrackingDependencyException;
+        }
+
+        private IngestionTrackingDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var ingestionTrackingDependencyValidationException =
+                new IngestionTrackingDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(ingestionTrackingDependencyValidationException);
+
+            return ingestionTrackingDependencyValidationException;
         }
     }
 }

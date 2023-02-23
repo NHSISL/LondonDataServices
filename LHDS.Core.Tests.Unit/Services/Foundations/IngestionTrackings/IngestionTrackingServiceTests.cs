@@ -1,21 +1,11 @@
-// ---------------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
-
 using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Runtime.Serialization;
+using Moq;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages.Sql;
-using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Brokers.Storages;
+using LHDS.Core.Models.IngestionTrackings;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
-using Microsoft.Data.SqlClient;
-using Moq;
 using Tynamix.ObjectFiller;
-using Xeptions;
-using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 {
@@ -38,64 +28,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
-        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
-            actualException => actualException.SameExceptionAs(expectedException);
-
-        private static string GetRandomMessage() =>
-            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
-
-        public static TheoryData MinutesBeforeOrAfter()
-        {
-            int randomNumber = GetRandomNumber();
-            int randomNegativeNumber = GetRandomNegativeNumber();
-
-            return new TheoryData<int>
-            {
-                randomNumber,
-                randomNegativeNumber
-            };
-        }
-
-        private static SqlException GetSqlException() =>
-            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
-
-        private static int GetRandomNumber() =>
-            new IntRange(min: 2, max: 10).GetValue();
-
-        private static int GetRandomNegativeNumber() =>
-            -1 * new IntRange(min: 2, max: 10).GetValue();
-
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
-
-        private static IngestionTracking CreateRandomModifyIngestionTracking(DateTimeOffset dateTimeOffset)
-        {
-            int randomDaysInPast = GetRandomNegativeNumber();
-            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(dateTimeOffset);
-
-            randomIngestionTracking.CreatedDate =
-                randomIngestionTracking.CreatedDate.AddDays(randomDaysInPast);
-
-            return randomIngestionTracking;
-        }
-
-        private static IQueryable<IngestionTracking> CreateRandomIngestionTrackings()
-        {
-            return CreateIngestionTrackingFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber())
-                    .AsQueryable();
-        }
-
-        private static IngestionTracking CreateRandomIngestionTracking() =>
-            CreateIngestionTrackingFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
         private static IngestionTracking CreateRandomIngestionTracking(DateTimeOffset dateTimeOffset) =>
             CreateIngestionTrackingFiller(dateTimeOffset).Create();
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(DateTimeOffset dateTimeOffset)
         {
+            Guid userId = Guid.NewGuid();
             var filler = new Filler<IngestionTracking>();
-            filler.Setup().OnType<DateTimeOffset>().Use(dateTimeOffset);
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(ingestionTracking => ingestionTracking.CreatedByUserId).Use(userId)
+                .OnProperty(ingestionTracking => ingestionTracking.UpdatedByUserId).Use(userId);
+
+            // TODO: Complete the filler setup e.g. ignore related properties etc...
 
             return filler;
         }

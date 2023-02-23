@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -110,6 +111,47 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateAuditAsync(It.IsAny<Audit>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Audit randomAudit = CreateRandomAudit(randomDateTimeOffset);
+            Audit invalidAudit = randomAudit;
+            var invalidAuditException = new InvalidAuditException();
+
+            invalidAuditException.AddData(
+                key: nameof(Audit.UpdatedDate),
+                values: $"Date is the same as {nameof(Audit.CreatedDate)}");
+
+            var expectedAuditValidationException =
+                new AuditValidationException(invalidAuditException);
+
+            // when
+            ValueTask<Audit> modifyAuditTask =
+                this.auditService.ModifyAuditAsync(invalidAudit);
+
+            AuditValidationException actualAuditValidationException =
+                await Assert.ThrowsAsync<AuditValidationException>(
+                    modifyAuditTask.AsTask);
+
+            // then
+            actualAuditValidationException.Should().BeEquivalentTo(expectedAuditValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAuditValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAuditByIdAsync(invalidAudit.Id),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

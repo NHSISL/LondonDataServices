@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
@@ -24,6 +26,25 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
             // then
             actualSupplier.Should().BeEquivalentTo(expectedSupplier);
             await this.apiBroker.DeleteSupplierByIdAsync(actualSupplier.Id);
+        }
+
+        [Fact]
+        public async Task ShouldGetAllSuppliersAsync()
+        {
+            // given
+            List<Supplier> randomSuppliers = await PostRandomSuppliersAsync();
+            List<Supplier> expectedSuppliers = randomSuppliers;
+
+            // when
+            List<Supplier> actualSuppliers = await this.apiBroker.GetAllSuppliersAsync();
+
+            // then
+            foreach (Supplier expectedSupplier in expectedSuppliers)
+            {
+                Supplier actualSupplier = actualSuppliers.Single(approval => approval.Id == expectedSupplier.Id);
+                actualSupplier.Should().BeEquivalentTo(expectedSupplier);
+                await this.apiBroker.DeleteSupplierByIdAsync(actualSupplier.Id);
+            }
         }
     }
 }

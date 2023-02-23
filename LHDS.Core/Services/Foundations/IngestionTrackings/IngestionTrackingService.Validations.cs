@@ -38,6 +38,16 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
         private void ValidateIngestionTrackingOnModify(IngestionTracking ingestionTracking)
         {
             ValidateIngestionTrackingIsNotNull(ingestionTracking);
+
+            Validate(
+                (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),
+
+                // TODO: Add any other required validation rules
+
+                (Rule: IsInvalid(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)),
+                (Rule: IsInvalid(ingestionTracking.CreatedByUserId), Parameter: nameof(IngestionTracking.CreatedByUserId)),
+                (Rule: IsInvalid(ingestionTracking.UpdatedDate), Parameter: nameof(IngestionTracking.UpdatedDate)),
+                (Rule: IsInvalid(ingestionTracking.UpdatedByUserId), Parameter: nameof(IngestionTracking.UpdatedByUserId)));
         }
 
         public void ValidateIngestionTrackingId(Guid ingestionTrackingId) =>

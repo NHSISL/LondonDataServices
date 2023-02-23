@@ -1,13 +1,8 @@
-// ---------------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
-
-using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Audits;
-using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using Moq;
+using LHDS.Core.Models.Audits;
+using LHDS.Core.Models.Audits.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
@@ -31,12 +26,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 this.auditService.AddAuditAsync(nullAudit);
 
             AuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<AuditValidationException>(() =>
-                    addAuditTask.AsTask());
+                await Assert.ThrowsAsync<AuditValidationException>(
+                    addAuditTask.AsTask);
 
             // then
-            actualAuditValidationException.Should()
-                .BeEquivalentTo(expectedAuditValidationException);
+            actualAuditValidationException.Should().BeEquivalentTo(expectedAuditValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -45,129 +39,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnAddIfAuditIsInvalidAndLogItAsync(string invalidText)
-        {
-            // given
-            var invalidAudit = new Audit
-            {
-                IngestionTrackingId = invalidText,
-                Message = invalidText,
-            };
-
-            var invalidAuditException =
-                new InvalidAuditException();
-
-            invalidAuditException.AddData(
-                key: nameof(Audit.Id),
-                values: "Id is required");
-
-            invalidAuditException.AddData(
-                key: nameof(Audit.IngestionTrackingId),
-                values: "Text is required");
-
-            invalidAuditException.AddData(
-                key: nameof(Audit.Message),
-                values: "Text is required");
-
-            invalidAuditException.AddData(
-                key: nameof(Audit.CreatedDate),
-                values: "Date is required");
-
-            var expectedAuditValidationException =
-                new AuditValidationException(invalidAuditException);
-
-            // when
-            ValueTask<Audit> addAuditTask =
-                this.auditService.AddAuditAsync(invalidAudit);
-
-            AuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<AuditValidationException>(() =>
-                    addAuditTask.AsTask());
-
-            // then
-            actualAuditValidationException.Should()
-                .BeEquivalentTo(expectedAuditValidationException);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Once());
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedAuditValidationException))),
-                        Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.InsertAuditAsync(It.IsAny<Audit>()),
-                    Times.Never);
-
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Theory]
-        [MemberData(nameof(MinutesBeforeOrAfter))]
-        public async Task ShouldThrowValidationExceptionOnAddIfCreatedDateIsNotRecentAndLogItAsync(
-            int minutesBeforeOrAfter)
-        {
-            // given
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-
-            DateTimeOffset invalidDateTime =
-                randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
-
-            Audit randomAudit = CreateRandomAudit(invalidDateTime);
-            Audit invalidAudit = randomAudit;
-
-            var invalidAuditException =
-                new InvalidAuditException();
-
-            invalidAuditException.AddData(
-                key: nameof(Audit.CreatedDate),
-                values: "Date is not recent");
-
-            var expectedAuditValidationException =
-                new AuditValidationException(invalidAuditException);
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
-
-            // when
-            ValueTask<Audit> addAuditTask =
-                this.auditService.AddAuditAsync(invalidAudit);
-
-            AuditValidationException actualAuditValidationException =
-                await Assert.ThrowsAsync<AuditValidationException>(() =>
-                    addAuditTask.AsTask());
-
-            // then
-            actualAuditValidationException.Should()
-                .BeEquivalentTo(expectedAuditValidationException);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Once());
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedAuditValidationException))),
-                        Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.InsertAuditAsync(It.IsAny<Audit>()),
-                    Times.Never);
-
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }

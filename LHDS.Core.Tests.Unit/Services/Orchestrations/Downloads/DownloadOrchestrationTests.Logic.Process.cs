@@ -295,5 +295,50 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
+        [Fact]
+        public async Task ShouldNotProcessNamedDocumentsIfFileNameNotExistsAsync()
+        {
+            // given
+            string nonExistentFileName = GetRandomMessage();
+
+            this.ingestionTrackingServiceMock.Setup(service =>
+                service.RetrieveIngestionTrackingByIdAsync(nonExistentFileName))
+                    .ReturnsAsync((IngestionTracking)null);
+
+            // when
+            await this.downloadOrchestrationService.ProcessAsync(nonExistentFileName);
+
+            // then
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.RetrieveIngestionTrackingByIdAsync(nonExistentFileName),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Never);
+
+            this.documentServiceMock.Verify(service =>
+                service.RemoveDocumentByFileNameAsync(nonExistentFileName),
+                    Times.Never);
+
+            this.documentServiceMock.Verify(service =>
+                service.AddDocumentAsync(It.IsAny<Document>()),
+                    Times.Never);
+
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.ModifyIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
+                    Times.Never);
+
+            this.auditServiceMock.Verify(service =>
+                service.AddAuditAsync(It.IsAny<Audit>()),
+                    Times.Never);
+
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+
     }
 }

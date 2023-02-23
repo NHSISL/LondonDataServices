@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using Tynamix.ObjectFiller;
@@ -13,6 +15,30 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
 
         public IngestionTrackingsApiTests(ApiBroker apiBroker) =>
             this.apiBroker = apiBroker;
+
+        private int GetRandomNumber() =>
+            new IntRange(min: 2, max: 10).GetValue();
+
+        private async ValueTask<IngestionTracking> PostRandomIngestionTrackingAsync()
+        {
+            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();
+            await this.apiBroker.PostIngestionTrackingAsync(randomIngestionTracking);
+
+            return randomIngestionTracking;
+        }
+
+        private async ValueTask<List<IngestionTracking>> PostRandomIngestionTrackingsAsync()
+        {
+            int randomNumber = GetRandomNumber();
+            var randomIngestionTrackings = new List<IngestionTracking>();
+
+            for (int i = 0; i < randomNumber; i++)
+            {
+                randomIngestionTrackings.Add(await PostRandomIngestionTrackingAsync());
+            }
+
+            return randomIngestionTrackings;
+        }
 
         private static IngestionTracking CreateRandomIngestionTracking() =>
             CreateRandomIngestionTrackingFiller().Create();

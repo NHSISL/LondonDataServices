@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             });
 
         public IQueryable<IngestionTracking> RetrieveAllIngestionTrackings() =>
-            this.storageBroker.SelectAllIngestionTrackings();
+            TryCatch(() => this.storageBroker.SelectAllIngestionTrackings());
     }
 }

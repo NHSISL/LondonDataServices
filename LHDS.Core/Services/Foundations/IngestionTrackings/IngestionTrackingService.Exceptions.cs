@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
     public partial class IngestionTrackingService
     {
         private delegate ValueTask<IngestionTracking> ReturningIngestionTrackingFunction();
+        private delegate IQueryable<IngestionTracking> ReturningIngestionTrackingsFunction();
 
         private async ValueTask<IngestionTracking> TryCatch(ReturningIngestionTrackingFunction returningIngestionTrackingFunction)
         {
@@ -61,6 +63,20 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                     new FailedIngestionTrackingServiceException(exception);
 
                 throw CreateAndLogServiceException(failedIngestionTrackingServiceException);
+            }
+        }
+
+        private IQueryable<IngestionTracking> TryCatch(ReturningIngestionTrackingsFunction returningIngestionTrackingsFunction)
+        {
+            try
+            {
+                return returningIngestionTrackingsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedIngestionTrackingStorageException =
+                    new FailedIngestionTrackingStorageException(sqlException);
+                throw CreateAndLogCriticalDependencyException(failedIngestionTrackingStorageException);
             }
         }
 

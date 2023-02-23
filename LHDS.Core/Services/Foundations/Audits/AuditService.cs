@@ -62,12 +62,15 @@ namespace LHDS.Core.Services.Foundations.Audits
                 return await this.storageBroker.UpdateAuditAsync(audit);
             });
 
-        public async ValueTask<Audit> RemoveAuditByIdAsync(Guid auditId)
-        {
-            Audit maybeAudit = await this.storageBroker
+        public ValueTask<Audit> RemoveAuditByIdAsync(Guid auditId) =>
+            TryCatch(async () =>
+            {
+                ValidateAuditId(auditId);
+
+                Audit maybeAudit = await this.storageBroker
                     .SelectAuditByIdAsync(auditId);
 
-            return await this.storageBroker.DeleteAuditAsync(maybeAudit);
-        }
+                return await this.storageBroker.DeleteAuditAsync(maybeAudit);
+            });
     }
 }

@@ -90,7 +90,13 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                     firstId: inputIngestionTracking.CreatedByUserId,
                     secondId: storageIngestionTracking.CreatedByUserId,
                     secondIdName: nameof(IngestionTracking.CreatedByUserId)),
-                Parameter: nameof(IngestionTracking.CreatedByUserId)));
+                Parameter: nameof(IngestionTracking.CreatedByUserId)),
+
+                (Rule: IsSame(
+                    firstDate: inputIngestionTracking.UpdatedDate,
+                    secondDate: storageIngestionTracking.UpdatedDate,
+                    secondDateName: nameof(IngestionTracking.UpdatedDate)),
+                Parameter: nameof(IngestionTracking.UpdatedDate)));
         }
 
         private static dynamic IsInvalid(Guid id) => new

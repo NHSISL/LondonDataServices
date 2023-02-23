@@ -1,11 +1,12 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
+using LHDS.Core.Services.Foundations.IngestionTrackings;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
-using LHDS.AdminPortal.Api.Models.IngestionTrackings;
-using LHDS.AdminPortal.Api.Models.IngestionTrackings.Exceptions;
-using LHDS.AdminPortal.Api.Services.Foundations.IngestionTrackings;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
@@ -58,7 +59,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             try
             {
                 IQueryable<IngestionTracking> retrievedIngestionTrackings =
-                    this.ingestionTrackingService.RetrieveAllIngestionTrackings();
+                    this.ingestionTrackingService.RetrieveAllIngestionTracking();
 
                 return Ok(retrievedIngestionTrackings);
             }
@@ -73,7 +74,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet("{ingestionTrackingId}")]
-        public async ValueTask<ActionResult<IngestionTracking>> GetIngestionTrackingByIdAsync(Guid ingestionTrackingId)
+        public async ValueTask<ActionResult<IngestionTracking>> GetIngestionTrackingByIdAsync(string ingestionTrackingId)
         {
             try
             {
@@ -140,7 +141,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpDelete("{ingestionTrackingId}")]
-        public async ValueTask<ActionResult<IngestionTracking>> DeleteIngestionTrackingByIdAsync(Guid ingestionTrackingId)
+        public async ValueTask<ActionResult<IngestionTracking>> DeleteIngestionTrackingByIdAsync(string ingestionTrackingId)
         {
             try
             {

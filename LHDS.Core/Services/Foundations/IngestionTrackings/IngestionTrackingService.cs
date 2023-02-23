@@ -22,7 +22,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<IngestionTracking> AddIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<IngestionTracking> AddIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
+            await this.storageBroker.InsertIngestionTrackingAsync(ingestionTracking);
     }
 }

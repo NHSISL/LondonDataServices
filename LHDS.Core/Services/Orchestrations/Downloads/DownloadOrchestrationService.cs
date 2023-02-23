@@ -123,6 +123,36 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 }
             });
 
+        public async ValueTask ProcessAsync(string fileName) =>
+            await TryCatch(async () =>
+            {
+                ValidateFileName(fileName);
+
+                IngestionTracking tracking = 
+                    await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(fileName);
+
+            if (tracking != null)
+            {
+                Document externalDocument =
+                        await this.downloadService.RetrieveDownloadByFileNameAsync(fileName);
+
+                    var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                    tracking.LastSeen = currentDateTime;
+                    tracking.EncryptedFileSize = externalDocument.DocumentData.Length;
+                    await this.documentService.RemoveDocumentByFileNameAsync(fileName);
+
+                    Document newBlobDocument = new Document
+                    {
+                        DocumentData = externalDocument.DocumentData,
+                        FileName = tracking.EncryptedFileName
+                    };
+
+                    await this.documentService.AddDocumentAsync(newBlobDocument);
+                    await this.ingestionTrackingService.ModifyIngestionTrackingAsync(tracking);
+                    LogAudit(externalDocument, currentDateTime, "Refreshed");
+                }
+            });
+
         private void LogAudit(Document document, DateTimeOffset currentDateTime, string message)
         {
             Audit newAudit =

@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
@@ -39,6 +40,26 @@ namespace LHDS.AdminPortal.Api.Controllers
                when (supplierDependencyValidationException.InnerException is AlreadyExistsSupplierException)
             {
                 return Conflict(supplierDependencyValidationException.InnerException);
+            }
+            catch (SupplierDependencyException supplierDependencyException)
+            {
+                return InternalServerError(supplierDependencyException);
+            }
+            catch (SupplierServiceException supplierServiceException)
+            {
+                return InternalServerError(supplierServiceException);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult<IQueryable<Supplier>> GetAllSuppliers()
+        {
+            try
+            {
+                IQueryable<Supplier> retrievedSuppliers =
+                    this.supplierService.RetrieveAllSuppliers();
+
+                return Ok(retrievedSuppliers);
             }
             catch (SupplierDependencyException supplierDependencyException)
             {

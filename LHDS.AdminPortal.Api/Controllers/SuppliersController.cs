@@ -138,5 +138,43 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(supplierServiceException);
             }
         }
+
+        [HttpDelete("{supplierId}")]
+        public async ValueTask<ActionResult<Supplier>> DeleteSupplierByIdAsync(Guid supplierId)
+        {
+            try
+            {
+                Supplier deletedSupplier =
+                    await this.supplierService.RemoveSupplierByIdAsync(supplierId);
+
+                return Ok(deletedSupplier);
+            }
+            catch (SupplierValidationException supplierValidationException)
+                when (supplierValidationException.InnerException is NotFoundSupplierException)
+            {
+                return NotFound(supplierValidationException.InnerException);
+            }
+            catch (SupplierValidationException supplierValidationException)
+            {
+                return BadRequest(supplierValidationException.InnerException);
+            }
+            catch (SupplierDependencyValidationException supplierDependencyValidationException)
+                when (supplierDependencyValidationException.InnerException is LockedSupplierException)
+            {
+                return Locked(supplierDependencyValidationException.InnerException);
+            }
+            catch (SupplierDependencyValidationException supplierDependencyValidationException)
+            {
+                return BadRequest(supplierDependencyValidationException);
+            }
+            catch (SupplierDependencyException supplierDependencyException)
+            {
+                return InternalServerError(supplierDependencyException);
+            }
+            catch (SupplierServiceException supplierServiceException)
+            {
+                return InternalServerError(supplierServiceException);
+            }
+        }
     }
 }

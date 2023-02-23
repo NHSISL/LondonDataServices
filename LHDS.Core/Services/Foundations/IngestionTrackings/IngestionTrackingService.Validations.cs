@@ -30,7 +30,9 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                     firstId: ingestionTracking.UpdatedByUserId,
                     secondId: ingestionTracking.CreatedByUserId,
                     secondIdName: nameof(IngestionTracking.CreatedByUserId)),
-                Parameter: nameof(IngestionTracking.UpdatedByUserId)));
+                Parameter: nameof(IngestionTracking.UpdatedByUserId)),
+
+                (Rule: IsNotRecent(ingestionTracking.CreatedDate), Parameter: nameof(IngestionTracking.CreatedDate)));
         }
 
         private static void ValidateIngestionTrackingIsNotNull(IngestionTracking ingestionTracking)
@@ -70,6 +72,23 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
+
+        private dynamic IsNotRecent(DateTimeOffset date) => new
+        {
+            Condition = IsDateNotRecent(date),
+            Message = "Date is not recent"
+        };
+
+        private bool IsDateNotRecent(DateTimeOffset date)
+        {
+            DateTimeOffset currentDateTime =
+                this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+            TimeSpan timeDifference = currentDateTime.Subtract(date);
+            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+
+            return timeDifference.Duration() > oneMinute;
+        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

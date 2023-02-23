@@ -3,7 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
-using LHDS.Core.Models.Clients.DecryptClient;
+using LHDS.Core.Models.Clients.DecryptClient.Exceptions;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
 using LHDS.Core.Services.Orchestrations.Decryptions;
 using Xeptions;

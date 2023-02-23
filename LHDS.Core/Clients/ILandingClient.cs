@@ -9,5 +9,6 @@ namespace LHDS.Core.Clients
     public interface ILandingClient
     {
         ValueTask ProcessAsync();
+        ValueTask ProcessAsync(string fileName);
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,34 @@ namespace LHDS.AdminPortal.Api.Controllers
                     this.ingestionTrackingService.RetrieveAllIngestionTrackings();
 
                 return Ok(retrievedIngestionTrackings);
+            }
+            catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
+            {
+                return InternalServerError(ingestionTrackingDependencyException);
+            }
+            catch (IngestionTrackingServiceException ingestionTrackingServiceException)
+            {
+                return InternalServerError(ingestionTrackingServiceException);
+            }
+        }
+
+        [HttpGet("{ingestionTrackingId}")]
+        public async ValueTask<ActionResult<IngestionTracking>> GetIngestionTrackingByIdAsync(Guid ingestionTrackingId)
+        {
+            try
+            {
+                IngestionTracking ingestionTracking = await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
+
+                return Ok(ingestionTracking);
+            }
+            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
+                when (ingestionTrackingValidationException.InnerException is NotFoundIngestionTrackingException)
+            {
+                return NotFound(ingestionTrackingValidationException.InnerException);
+            }
+            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
+            {
+                return BadRequest(ingestionTrackingValidationException.InnerException);
             }
             catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
             {

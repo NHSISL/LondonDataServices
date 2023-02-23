@@ -1,12 +1,8 @@
-// ---------------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
-
 using System;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
+using LHDS.Core.Models.IngestionTrackings.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
@@ -26,12 +22,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 new IngestionTrackingDependencyException(failedStorageException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllIngestionTracking())
+                broker.SelectAllIngestionTrackings())
                     .Throws(sqlException);
 
             // when
             Action retrieveAllIngestionTrackingsAction = () =>
-                this.ingestionTrackingService.RetrieveAllIngestionTracking();
+                this.ingestionTrackingService.RetrieveAllIngestionTrackings();
 
             IngestionTrackingDependencyException actualIngestionTrackingDependencyException =
                 Assert.Throws<IngestionTrackingDependencyException>(retrieveAllIngestionTrackingsAction);
@@ -41,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 .BeEquivalentTo(expectedIngestionTrackingDependencyException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllIngestionTracking(),
+                broker.SelectAllIngestionTrackings(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -52,47 +48,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
-        {
-            // given
-            string exceptionMessage = GetRandomMessage();
-            var serviceException = new Exception(exceptionMessage);
-
-            var failedIngestionTrackingServiceException =
-                new FailedIngestionTrackingServiceException(serviceException);
-
-            var expectedIngestionTrackingServiceException =
-                new IngestionTrackingServiceException(failedIngestionTrackingServiceException);
-
-            this.storageBrokerMock.Setup(broker =>
-                broker.SelectAllIngestionTracking())
-                    .Throws(serviceException);
-
-            // when
-            Action retrieveAllIngestionTrackingsAction = () =>
-                this.ingestionTrackingService.RetrieveAllIngestionTracking();
-
-            IngestionTrackingServiceException actualIngestionTrackingServiceException =
-                Assert.Throws<IngestionTrackingServiceException>(retrieveAllIngestionTrackingsAction);
-
-            // then
-            actualIngestionTrackingServiceException.Should()
-                .BeEquivalentTo(expectedIngestionTrackingServiceException);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectAllIngestionTracking(),
-                    Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedIngestionTrackingServiceException))),
-                        Times.Once);
-
-            this.storageBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

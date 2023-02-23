@@ -109,6 +109,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             actualIngestionTrackingValidationException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedIngestionTrackingValidationException))),
@@ -118,9 +122,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 broker.UpdateIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -139,6 +143,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             var expectedIngestionTrackingValidationException =
                 new IngestionTrackingValidationException(invalidIngestionTrackingException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<IngestionTracking> modifyIngestionTrackingTask =
                 this.ingestionTrackingService.ModifyIngestionTrackingAsync(invalidIngestionTracking);
@@ -151,6 +159,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             actualIngestionTrackingValidationException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedIngestionTrackingValidationException))),
@@ -160,9 +172,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]

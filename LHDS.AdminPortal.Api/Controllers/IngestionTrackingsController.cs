@@ -138,5 +138,43 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(ingestionTrackingServiceException);
             }
         }
+
+        [HttpDelete("{ingestionTrackingId}")]
+        public async ValueTask<ActionResult<IngestionTracking>> DeleteIngestionTrackingByIdAsync(Guid ingestionTrackingId)
+        {
+            try
+            {
+                IngestionTracking deletedIngestionTracking =
+                    await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTrackingId);
+
+                return Ok(deletedIngestionTracking);
+            }
+            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
+                when (ingestionTrackingValidationException.InnerException is NotFoundIngestionTrackingException)
+            {
+                return NotFound(ingestionTrackingValidationException.InnerException);
+            }
+            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
+            {
+                return BadRequest(ingestionTrackingValidationException.InnerException);
+            }
+            catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
+                when (ingestionTrackingDependencyValidationException.InnerException is LockedIngestionTrackingException)
+            {
+                return Locked(ingestionTrackingDependencyValidationException.InnerException);
+            }
+            catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
+            {
+                return BadRequest(ingestionTrackingDependencyValidationException);
+            }
+            catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
+            {
+                return InternalServerError(ingestionTrackingDependencyException);
+            }
+            catch (IngestionTrackingServiceException ingestionTrackingServiceException)
+            {
+                return InternalServerError(ingestionTrackingServiceException);
+            }
+        }
     }
 }

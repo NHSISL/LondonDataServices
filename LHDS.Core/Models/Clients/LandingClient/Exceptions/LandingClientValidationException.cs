@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Clients.LandingClient
+namespace LHDS.Core.Models.Clients.LandingClient.Exceptions
 {
     public class LandingClientValidationException : Xeption
     {

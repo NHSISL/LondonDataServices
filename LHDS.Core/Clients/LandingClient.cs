@@ -2,8 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Clients.LandingClient;
+using LHDS.Core.Models.Clients.LandingClient.Exceptions;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
 using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
 using LHDS.Core.Services.Orchestrations.Downloads;
@@ -46,6 +47,34 @@ namespace LHDS.Core.Clients
             }
             catch (DownloadOrchestrationServiceException
                 downloadOrchestrationServiceException)
+            {
+                throw new LandingClientServiceException(
+                    downloadOrchestrationServiceException.InnerException as Xeption);
+            }
+        }
+
+        public async ValueTask ProcessAsync(string fileName)
+        {
+            try
+            {
+                await this.downloadOrchestrationService.ProcessAsync(fileName);
+            }
+            catch (DecryptionOrchestrationValidationException downloadOrchestrationValidationException)
+            {
+                throw new LandingClientValidationException(
+                    downloadOrchestrationValidationException.InnerException as Xeption);
+            }
+            catch (DownloadOrchestrationDependencyValidationException downloadOrchestrationDependencyValidationException)
+            {
+                throw new LandingClientValidationException(
+                    downloadOrchestrationDependencyValidationException.InnerException as Xeption);
+            }
+            catch (DownloadOrchestrationDependencyException downloadOrchestrationDependencyException)
+            {
+                throw new LandingClientDependencyException(
+                    downloadOrchestrationDependencyException.InnerException as Xeption);
+            }
+            catch (DownloadOrchestrationServiceException downloadOrchestrationServiceException)
             {
                 throw new LandingClientServiceException(
                     downloadOrchestrationServiceException.InnerException as Xeption);

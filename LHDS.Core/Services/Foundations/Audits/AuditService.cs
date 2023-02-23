@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.Audits
             });
 
         public IQueryable<Audit> RetrieveAllAudits() =>
-            throw new System.NotImplementedException();
+            this.storageBroker.SelectAllAudits();
     }
 }

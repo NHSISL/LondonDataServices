@@ -53,13 +53,16 @@
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierDetailCardView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\index.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\models\audit\audit.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\ingestionTracking\ingestionTracking.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\views\components\audit\auditView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\views\components\ingestionTracking\ingestionTrackingView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\pages\IngestionTrackingHomepage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\ingestionTrackingPage.tsx" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="ClientApp\dependencies\guid-typescript\node_modules\%40types\" />
-    <Folder Include="ClientApp\src\models\" />
     <Folder Include="ClientApp\src\hooks\" />
     <Folder Include="ClientApp\src\services\foundations\" />
     <Folder Include="ClientApp\src\services\views\" />

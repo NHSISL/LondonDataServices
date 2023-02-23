@@ -54,6 +54,12 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
                 throw CreateAndLogDependencyValidationException(invalidIngestionTrackingReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedIngestionTrackingException = new LockedIngestionTrackingException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedIngestionTrackingException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedIngestionTrackingStorageException =

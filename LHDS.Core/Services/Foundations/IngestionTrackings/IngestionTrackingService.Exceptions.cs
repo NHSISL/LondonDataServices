@@ -36,6 +36,10 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
                 throw CreateAndLogCriticalDependencyException(failedIngestionTrackingStorageException);
             }
+            catch (NotFoundIngestionTrackingException notFoundIngestionTrackingException)
+            {
+                throw CreateAndLogValidationException(notFoundIngestionTrackingException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsIngestionTrackingException =

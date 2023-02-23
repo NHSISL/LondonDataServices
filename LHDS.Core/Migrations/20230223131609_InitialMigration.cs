@@ -40,7 +40,11 @@ namespace LHDS.Core.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FriendlyName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LandingManualTriggerUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    LandingManualTriggerUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
                 {

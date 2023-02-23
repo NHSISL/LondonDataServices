@@ -77,6 +77,16 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             }
         }
 
+        private static void ValidateAgainstStorageIngestionTrackingOnModify(IngestionTracking inputIngestionTracking, IngestionTracking storageIngestionTracking)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputIngestionTracking.CreatedDate,
+                    secondDate: storageIngestionTracking.CreatedDate,
+                    secondDateName: nameof(IngestionTracking.CreatedDate)),
+                Parameter: nameof(IngestionTracking.CreatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

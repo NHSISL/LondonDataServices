@@ -4,7 +4,6 @@ import { Audit } from "../../models/audits/audit";
 import { AuditView } from "../../models/views/components/audit/auditView";
 import { auditService } from "../foundations/auditService";
 
-
 export const auditViewService = {
 
     useGetAllAudits: (searchTerm?: string) => {

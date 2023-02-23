@@ -1,7 +1,7 @@
 import { Guid } from 'guid-typescript';
 
 export class IngestionTrackingView {
-    public id: Guid;
+    public id: string;
     public source: string;
     public encryptedFileName: string;
     public decryptedFileName: string;
@@ -14,7 +14,7 @@ export class IngestionTrackingView {
     public decryptedFileSize: number;
 
     constructor(
-        id: Guid,
+        id: string,
         source: string,
         encryptedFileName: string,
         decryptedFileName: string,

@@ -23,9 +23,7 @@ export const Home = () => {
                                 </p>
                             </div>
                         </Col>
-                        <Col width="one-third">
-
-                        </Col>
+                        <Col width="one-third"></Col>
                     </Row>
                 </Container>
             </section>

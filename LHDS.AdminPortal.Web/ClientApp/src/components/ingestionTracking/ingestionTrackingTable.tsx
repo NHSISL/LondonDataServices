@@ -20,7 +20,6 @@ const IngestionTrackingTable = () => {
         }, 500)
         , []);
 
-
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);
         handleDebounce(value);

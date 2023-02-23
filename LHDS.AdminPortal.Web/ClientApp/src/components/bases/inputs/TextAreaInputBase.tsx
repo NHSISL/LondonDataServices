@@ -76,7 +76,6 @@ const TextAreaInputBase: FunctionComponent<TextAreaInputBaseProps> = (props) => 
             {props.description && <><br /><small>{props.description}</small></>}
             {props.error && <Form.Control.Feedback type="invalid">{props.error}</Form.Control.Feedback>}
         </Form.Group>
-
     );
 };
 

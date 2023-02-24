@@ -90,7 +90,10 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                       RecordCount = 0,
                                       EncryptedFileSize = retrievedDocument.DocumentData.Length,
                                       DecryptedFileSize = 0,
-                                  };
+                                      CreatedBy = "System",
+                                      UpdatedDate = currentDateTime,
+                                      UpdatedBy = "System",
+    };
 
                                 Document newBlobDocument = new Document
                                 {
@@ -161,7 +164,10 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     Id = Guid.NewGuid(),
                     IngestionTrackingId = document.FileName,
                     Message = $"{message} document - {document.FileName}",
-                    CreatedDate = currentDateTime
+                    CreatedDate = currentDateTime,
+                    CreatedBy = "System",
+                    UpdatedDate = currentDateTime,
+                    UpdatedBy = "System",
                 };
 
             this.auditService.AddAuditAsync(newAudit);

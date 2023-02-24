@@ -7,7 +7,6 @@ export class IngestionTracking {
     public encryptedFileName: string;
     public decryptedFileName: string;
     public decrypted: boolean;
-    public createdDate: Date;
     public lastSeen: Date;
     public fileDeleted: boolean;
     public recordCount: number;
@@ -21,7 +20,6 @@ export class IngestionTracking {
         this.encryptedFileName = ingestionTracking.encryptedFileName || "";
         this.decryptedFileName = ingestionTracking.decryptedFileName || "";
         this.decrypted = ingestionTracking.decrypted;
-        this.createdDate = ingestionTracking.createdDate ? new Date(ingestionTracking.createdDate) : new Date();
         this.lastSeen = ingestionTracking.lastSeen ? new Date(ingestionTracking.lastSeen) : new Date();
         this.fileDeleted = ingestionTracking.fileDeleted;
         this.recordCount = ingestionTracking.recordCount;

@@ -10,7 +10,6 @@ namespace LHDS.Core.Models.Foundations.Audits.Exceptions
     public class FailedAuditServiceException : Xeption
     {
         public FailedAuditServiceException(Exception innerException)
-            : base(message: "Failed audit service occurred, please contact support", innerException)
-        { }
+            : base(message: "Failed audit service occurred, please contact support", innerException) { }
     }
 }

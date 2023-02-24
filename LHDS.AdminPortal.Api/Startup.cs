@@ -9,7 +9,10 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
+using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.Suppliers;
+using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -151,6 +154,7 @@ namespace LHDS.AdminPortal.Api
         {
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddTransient<ISupplierService, SupplierService>();
+            services.AddTransient<IAuditService, AuditService>();
         }
 
         private static void AddOrchestrationServices(IServiceCollection services)
@@ -164,6 +168,8 @@ namespace LHDS.AdminPortal.Api
                new ODataConventionModelBuilder();
 
             builder.EntitySet<IngestionTracking>("IngestionTrackings");
+            builder.EntitySet<Supplier>("Suppliers");
+            builder.EntitySet<Audit>("Audits");
             builder.EnableLowerCamelCase();
 
             return builder.GetEdmModel();

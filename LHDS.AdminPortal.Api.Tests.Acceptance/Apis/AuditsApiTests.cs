@@ -19,6 +19,24 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
         private int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
+        private static DateTimeOffset GetRandomDateTime() =>
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static Audit UpdateAuditWithRandomValues(Audit inputAudit)
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            var filler = new Filler<Audit>();
+
+            filler.Setup()
+                .OnProperty(audit => audit.Id).Use(inputAudit.Id)
+                .OnType<DateTimeOffset>().Use(GetRandomDateTime())
+                .OnProperty(audit => audit.CreatedDate).Use(inputAudit.CreatedDate)
+                .OnProperty(audit => audit.CreatedByUserId).Use(inputAudit.CreatedByUserId)
+                .OnProperty(audit => audit.UpdatedDate).Use(now);
+
+            return filler.Create();
+        }
+
         private async ValueTask<Audit> PostRandomAuditAsync()
         {
             Audit randomAudit = CreateRandomAudit();

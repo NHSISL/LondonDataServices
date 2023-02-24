@@ -22,4 +22,11 @@ export const supplierValidations: Array<Validation> = [
         minLength: 3,
         maxLength: 255,
     },
+    {
+        property: "landingManualTriggerUrl",
+        friendlyName: "landingManualTriggerUrl",
+        isRequired: true,
+        minLength: 3,
+        maxLength: 255,
+    },
 ]

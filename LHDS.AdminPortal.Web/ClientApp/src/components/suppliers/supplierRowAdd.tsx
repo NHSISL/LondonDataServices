@@ -8,6 +8,7 @@ import TableBaseData from "../bases/components/Table/TableBase.Data";
 import { useValidation } from "../../hooks/useValidation";
 import { supplierValidations } from "./supplierValidations";
 import { supplierErrors } from "./supplierErrors";
+import TextAreaInputBase from "../bases/inputs/TextAreaInputBase";
 
 interface SupplierRowAddProps {
     onCancel: () => void;
@@ -61,34 +62,36 @@ const SupplierRowAdd: FunctionComponent<SupplierRowAddProps> = (props) => {
                     required={true}
                     error={errors.name}
                     onChange={handleChange} />
-            {/*    <TextAreaInputBase*/}
-            {/*        id="description"*/}
-            {/*        name="description"*/}
-            {/*        label="Ownership Description"*/}
-            {/*        placeholder="Ownership Description"*/}
-            {/*        value={ownership.description}*/}
-            {/*        error={errors.description}*/}
-            {/*        onChange={handleChange}*/}
-            {/*        rows={3}*/}
-            {/*    />*/}
-            {/*    <TextInputBase*/}
-            {/*        id="sortOrder"*/}
-            {/*        name="sortOrder"*/}
-            {/*        label="Sort Order"*/}
-            {/*        placeholder="Sort Order"*/}
-            {/*        value={ownership.sortOrder}*/}
-            {/*        error={errors.sortOrder}*/}
-            {/*        onChange={handleChange}*/}
-            {/*    />*/}
-            {/*</TableBaseData>*/}
-            {/*<TableBaseData>*/}
-            {/*    <CheckboxBase*/}
-            {/*        id="isActive"*/}
-            {/*        name="isActive"*/}
-            {/*        checked={ownership.isActive}*/}
-            {/*        error={errors.description}*/}
-            {/*        onChange={handleChange}*/}
-            {/*    />*/}
+                <TextAreaInputBase
+                    id="description"
+                    name="description"
+                    label="Supplier Description"
+                    placeholder="Supplier Description"
+                    value={supplier.description}
+                    error={errors.description}
+                    onChange={handleChange}
+                    rows={3}
+                />
+            </TableBaseData>
+            <TableBaseData>
+                <TextInputBase
+                    id="friendlyName"
+                    name="friendlyName"
+                    label="Friendly Name"
+                    placeholder="Friendly Name"
+                    value={supplier.friendlyName}
+                    required={true}
+                    error={errors.friendlyName}
+                    onChange={handleChange} />
+                <TextInputBase
+                    id="landingManualTriggerUrl"
+                    name="landingManualTriggerUrl"
+                    label="landing Manual Trigger Url"
+                    placeholder="landing Manual Trigge Url"
+                    value={supplier.landingManualTriggerUrl}
+                    required={true}
+                    error={errors.landingManualTriggerUrl}
+                    onChange={handleChange} />
             </TableBaseData>
             <TableBaseData classes="text-end">
                 <ButtonBase onClick={() => onCancel()} cancel>Cancel</ButtonBase>&nbsp;

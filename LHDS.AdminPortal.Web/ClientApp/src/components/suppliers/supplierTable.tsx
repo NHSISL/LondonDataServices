@@ -52,18 +52,18 @@ const SupplierTable: FunctionComponent<SupplierTableProps> = (props) => {
     };
 
     const handleAddNew = (supplier: SupplierView) => {
-        //return addSupplier.mutate(supplier, {
-        //    onSuccess: () => {
-        //        setAddMode(false);
-        //    },
-        //    onError: (error: any) => {
-        //        setAddApiError(error?.response?.data?.errors);
-        //    }
-        //});
+        return addSupplier.mutate(supplier, {
+            onSuccess: () => {
+                setAddMode(false);
+            },
+            onError: (error: any) => {
+                setAddApiError(error?.response?.data?.errors);
+            }
+        });
     };
 
     const handleUpdate = (supplier: SupplierView) => {
-        /*return updateSupplier.mutateAsync(supplier);*/
+        return updateSupplier.mutateAsync(supplier);
     }
 
     const handleDelete = (supplier: SupplierView) => {
@@ -91,7 +91,8 @@ const SupplierTable: FunctionComponent<SupplierTableProps> = (props) => {
                             <TableBaseThead>
                                 <TableBaseRow>
                                     <TableBaseData>Suppliers</TableBaseData>
-                                    <TableBaseData classes="text-center">Action(s)</TableBaseData>
+                                    <TableBaseData></TableBaseData>
+                                    <TableBaseData classes="text-end">Action(s)</TableBaseData>
                                 </TableBaseRow>
                             </TableBaseThead>
                             <TableBaseTbody>

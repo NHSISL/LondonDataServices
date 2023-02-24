@@ -37,6 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Remove="ClientApp\cypress.config.ts" />
     <TypeScriptCompile Remove="ClientApp\src\App.test.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.audits.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ingestionTrackings.ts" />
@@ -85,6 +86,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="ClientApp\cypress\component\" />
+    <Folder Include="ClientApp\cypress\downloads\" />
+    <Folder Include="ClientApp\cypress\e2e\helpers\" />
+    <Folder Include="ClientApp\cypress\e2e\pages\configuration\" />
+    <Folder Include="ClientApp\cypress\screenshots\" />
+    <Folder Include="ClientApp\cypress\videos\" />
     <Folder Include="ClientApp\dependencies\guid-typescript\node_modules\%40types\" />
   </ItemGroup>
 

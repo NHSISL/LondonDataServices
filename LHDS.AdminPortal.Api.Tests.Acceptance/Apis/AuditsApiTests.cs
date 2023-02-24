@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits;
 using Tynamix.ObjectFiller;
@@ -13,6 +15,30 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
 
         public AuditsApiTests(ApiBroker apiBroker) =>
             this.apiBroker = apiBroker;
+
+        private int GetRandomNumber() =>
+            new IntRange(min: 2, max: 10).GetValue();
+
+        private async ValueTask<Audit> PostRandomAuditAsync()
+        {
+            Audit randomAudit = CreateRandomAudit();
+            await this.apiBroker.PostAuditAsync(randomAudit);
+
+            return randomAudit;
+        }
+
+        private async ValueTask<List<Audit>> PostRandomAuditsAsync()
+        {
+            int randomNumber = GetRandomNumber();
+            var randomAudits = new List<Audit>();
+
+            for (int i = 0; i < randomNumber; i++)
+            {
+                randomAudits.Add(await PostRandomAuditAsync());
+            }
+
+            return randomAudits;
+        }
 
         private static Audit CreateRandomAudit() =>
             CreateRandomAuditFiller().Create();

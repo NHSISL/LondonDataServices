@@ -31,6 +31,7 @@ export const supplierViewService = {
                             supplier.friendlyName,
                             supplier.description,
                             supplier.landingManualTriggerUrl,
+                            supplier.createdBy,
                             supplier.createdDate,
                             supplier.updatedBy,
                             supplier.updatedDate,
@@ -62,6 +63,7 @@ export const supplierViewService = {
                         response.data[0].friendlyName,
                         response.data[0].description,
                         response.data[0].landingManualTriggerUrl,
+                        response.data[0].createdBy,
                         response.data[0].createdDate,
                         response.data[0].updatedBy,
                         response.data[0].updatedDate

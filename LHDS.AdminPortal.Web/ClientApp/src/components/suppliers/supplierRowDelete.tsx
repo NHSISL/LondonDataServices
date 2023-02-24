@@ -27,11 +27,14 @@ const SupplierRowDelete: FunctionComponent<SupplierRowDeleteProps> = (props) => 
     return (
         <TableBaseRow>
             <TableBaseData>
-                <b>{supplier.name}</b><br />
+                <b>{supplier.name} - {supplier.friendlyName}</b><br />
                 {supplier.description}<br />
             </TableBaseData>
             <TableBaseData>
-               
+                {
+                    supplier.landingManualTriggerUrl &&
+                    <><br />{supplier.landingManualTriggerUrl}</>
+                }
             </TableBaseData>
             <TableBaseData classes="text-end">
                 <ButtonBase onClick={() => onCancel(supplier.id)} cancel>Cancel</ButtonBase>&nbsp;

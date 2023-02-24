@@ -28,23 +28,29 @@ const SupplierRowView: FunctionComponent<SupplierRowViewProps> = (props) => {
             <TableBaseData>
                 {
                     supplier.name &&
-                    (<b>{supplier.name}</b>)
+                    (<><b>{supplier.name}</b> - {supplier.friendlyName}</>)
                 }
                 {
                     supplier.description &&
-                    <>({supplier.description})</>
+                    <><br/>{supplier.description}</>
                 }
 
             </TableBaseData>
+            <TableBaseData>
+                {
+                    supplier.landingManualTriggerUrl &&
+                    <><br />{supplier.landingManualTriggerUrl}</>
+                }
+            </TableBaseData>
             <TableBaseData classes="text-end">
                 {allowedToEdit && (
-                    <SecuredComponents allowedRoles={securityPoints.suppliers.edit}>
+                    <SecuredComponents>
                         <ButtonBase onClick={() => onEdit('EDIT')} edit>Edit</ButtonBase>
                     </SecuredComponents>
                 )}
                 &nbsp;
                 {allowedToDelete && (
-                    <SecuredComponents allowedRoles={securityPoints.suppliers.delete}>
+                    <SecuredComponents>
                         <ButtonBase onClick={() => onDelete('DELETE')} remove>Delete</ButtonBase>
                     </SecuredComponents>
                 )}

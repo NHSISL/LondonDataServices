@@ -17,8 +17,9 @@ const SupplierRowNew: FunctionComponent<SupplierRowNewProps> = (props) => {
     } = props;
 
     return (
-        <SecuredComponents allowedRoles={securityPoints.suppliers.add}>
+        <SecuredComponents>
             <TableBaseRow>
+                <TableBaseData></TableBaseData>
                 <TableBaseData></TableBaseData>
                 <TableBaseData classes="text-end">
                     <ButtonBase id="supplierssAdd" onClick={() => onAdd(true)} add> <FontAwesomeIcon icon={faCirclePlus} size="lg" />&nbsp; New</ButtonBase>

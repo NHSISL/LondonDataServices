@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits;
@@ -24,6 +26,25 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             // then
             actualAudit.Should().BeEquivalentTo(expectedAudit);
             await this.apiBroker.DeleteAuditByIdAsync(actualAudit.Id);
+        }
+
+        [Fact]
+        public async Task ShouldGetAllAuditsAsync()
+        {
+            // given
+            List<Audit> randomAudits = await PostRandomAuditsAsync();
+            List<Audit> expectedAudits = randomAudits;
+
+            // when
+            List<Audit> actualAudits = await this.apiBroker.GetAllAuditsAsync();
+
+            // then
+            foreach (Audit expectedAudit in expectedAudits)
+            {
+                Audit actualAudit = actualAudits.Single(approval => approval.Id == expectedAudit.Id);
+                actualAudit.Should().BeEquivalentTo(expectedAudit);
+                await this.apiBroker.DeleteAuditByIdAsync(actualAudit.Id);
+            }
         }
     }
 }

@@ -10,7 +10,6 @@ namespace LHDS.Core.Models.Foundations.Audits.Exceptions
     public class FailedAuditStorageException : Xeption
     {
         public FailedAuditStorageException(Exception innerException)
-            : base(message: "Failed audit storage error occurred, contact support.", innerException)
-        { }
+            : base(message: "Failed audit storage error occurred, contact support.", innerException) { }
     }
 }

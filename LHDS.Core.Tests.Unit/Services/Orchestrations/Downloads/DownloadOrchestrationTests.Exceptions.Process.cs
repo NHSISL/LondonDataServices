@@ -141,7 +141,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             var expectedDependencyException =
                 new DownloadOrchestrationDependencyValidationException(
                     dependancyValidationException.InnerException as Xeption);
-            
+
             this.ingestionTrackingServiceMock.Setup(service =>
               service.RetrieveAllIngestionTrackings())
                   .Throws(dependancyValidationException);

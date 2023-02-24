@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Suppliers;
-using LHDS.Core.Models.Suppliers.Exceptions;
+using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using Moq;
 using Xunit;
 

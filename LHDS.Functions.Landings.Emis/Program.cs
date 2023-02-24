@@ -30,18 +30,18 @@ var host = new HostBuilder()
                 .AddEnvironmentVariables();
     })
     .ConfigureServices((context, services) =>
-     {
+    {
 
-         services
-             .AddLogging(setup =>
-             {
-                 setup.AddApplicationInsights();
-             })
-            .AddLandingClient(context.Configuration)
-            .AddDecryptionClient(context.Configuration)
-            .UseGpgCryptographyProvider(context.Configuration, builder => builder.AddGpgCryptographyProvider())
-            .UseFtpDownloadProvider(context.Configuration, builder => builder.AddFtpDownloadProvider());
-     })
+        services
+            .AddLogging(setup =>
+            {
+                setup.AddApplicationInsights();
+            })
+           .AddLandingClient(context.Configuration)
+           .AddDecryptionClient(context.Configuration)
+           .UseGpgCryptographyProvider(context.Configuration, builder => builder.AddGpgCryptographyProvider())
+           .UseFtpDownloadProvider(context.Configuration, builder => builder.AddFtpDownloadProvider());
+    })
     .UseDefaultServiceProvider(options => options.ValidateScopes = false)
     .Build();
 

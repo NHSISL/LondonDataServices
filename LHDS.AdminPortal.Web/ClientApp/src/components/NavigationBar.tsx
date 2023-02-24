@@ -1,13 +1,12 @@
 import React from 'react';
 import { Container, Form, Nav, Navbar } from "react-bootstrap";
-import securityPoints from '../SecurityMatrix';
-import {SecuredComponents, SecuredLink } from './Links';
+import { SecuredLink } from './Links';
 
 export const NavigationBar = () => {
     return (
         <>
             <Navbar style={{ backgroundColor: "#005eb8" }}>
-                <Container className="nhsuk-width-container" style={{backgroundColor: "#005eb8" }} >
+                <Container className="nhsuk-width-container" style={{ backgroundColor: "#005eb8" }} >
                     <Navbar.Brand href="#"></Navbar.Brand>
                     <Navbar.Toggle aria-controls="navbarScroll" />
                     <Navbar.Collapse id="navbarScroll">
@@ -19,9 +18,7 @@ export const NavigationBar = () => {
                             <SecuredLink to="/ingestionTracking">Supplier Data</SecuredLink>
                         </Nav>
                         <Form className="d-flex">
-                            <SecuredComponents allowedRoles={securityPoints.configNavigation.view}>
-                                <SecuredLink to="/configuration">Config</SecuredLink>
-                            </SecuredComponents>
+                            <SecuredLink to="/configuration">Configuration</SecuredLink>
                         </Form>
                     </Navbar.Collapse>
                 </Container>

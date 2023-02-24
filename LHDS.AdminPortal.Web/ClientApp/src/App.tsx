@@ -24,8 +24,8 @@ const App = ({ msalInstance }: any) => {
                         <Route path="/ingestionTracking" element={<IngestionTrackingHomepage />} />
                         <Route path="/ingestionTrackingDetail" element={<IngestionTrackingPage />} />
 
-                        <Route path="/configuration" element={<SecuredRoute allowedRoles={securityPoints.configNavigation.view}><ConfigHomePage /></SecuredRoute>} />
-                        <Route path="/configuration/suppliers" element={<SecuredRoute allowedRoles={securityPoints.configNavigation.view}><SuppliersPage /></SecuredRoute>} />
+                        <Route path="/configuration" element={<ConfigHomePage/>} />
+                        <Route path="/configuration/suppliers" element={<SuppliersPage />} />
                     </Routes>
                 </PageLayout>
                 <ReactQueryDevtools initialIsOpen={false} />

@@ -1,8 +1,9 @@
 import { Guid } from "guid-typescript";
 import { useEffect, useState } from "react";
-import { Supplier } from "../../models/suppliers/supplier";
-import { SupplierView } from "../../models/views/components/suppliers/supplierView";
-import { supplierService } from "../foundations/supplierService";
+import { Supplier } from "../../../models/suppliers/supplier";
+import { SupplierView } from "../../../models/views/components/suppliers/supplierView";
+import { supplierService } from "../../foundations/supplierService";
+
 
 export const supplierViewService = {
 
@@ -25,14 +26,15 @@ export const supplierViewService = {
                 if (response.data) {
                     const suppliers = response.data.map((supplier: Supplier) =>
                         new SupplierView(
-                            suppliers.id,
-                            suppliers.name,
-                            suppliers.friendlyName,
-                            suppliers.description,
-                            suppliers.landingManualTriggerUrl,
-                            suppliers.createdDate,
-                            suppliers.updatedBy,
-                            suppliers.updatedDate,
+                            supplier.id,
+                            supplier.name,
+                            supplier.friendlyName,
+                            supplier.description,
+                            supplier.landingManualTriggerUrl,
+                            supplier.createdBy,
+                            supplier.createdDate,
+                            supplier.updatedBy,
+                            supplier.updatedDate,
                         ));
 
                     setMappedSuppliers(suppliers);
@@ -61,6 +63,7 @@ export const supplierViewService = {
                         response.data[0].friendlyName,
                         response.data[0].description,
                         response.data[0].landingManualTriggerUrl,
+                        response.data[0].createdBy,
                         response.data[0].createdDate,
                         response.data[0].updatedBy,
                         response.data[0].updatedDate

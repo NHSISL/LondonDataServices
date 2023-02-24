@@ -132,7 +132,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 ValidateFileName(fileName);
 
                 IngestionTracking tracking = 
-                    await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(fileName);
+                    this.ingestionTrackingService.RetrieveAllIngestionTrackings().FirstOrDefault(ingestionTracking => 
+                        ingestionTracking.Id == fileName);
 
             if (tracking != null)
             {

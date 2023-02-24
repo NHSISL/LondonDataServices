@@ -94,8 +94,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(DateTimeOffset dateTimeOffset)
         {
+            string user = Guid.NewGuid().ToString();
             var filler = new Filler<IngestionTracking>();
-            filler.Setup().OnType<DateTimeOffset>().Use(dateTimeOffset);
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
+                .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
+                .OnProperty(ingestionTracking => ingestionTracking.Audits).IgnoreIt();
 
             return filler;
         }

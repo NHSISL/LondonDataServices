@@ -11,7 +11,7 @@ using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
-
+using LHDS.Core.Services.Foundations.Suppliers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.OData;
@@ -150,6 +150,7 @@ namespace LHDS.AdminPortal.Api
         private static void AddFoundationServices(IServiceCollection services)
         {
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
+            services.AddTransient<ISupplierService, SupplierService>();
         }
 
         private static void AddOrchestrationServices(IServiceCollection services)

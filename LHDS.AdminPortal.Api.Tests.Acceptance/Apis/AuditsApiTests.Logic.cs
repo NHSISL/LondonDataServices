@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using RESTFulSense.Exceptions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits;
 using Xunit;
 
@@ -76,6 +77,28 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             // then
             actualAudit.Should().BeEquivalentTo(modifiedAudit);
             await this.apiBroker.DeleteAuditByIdAsync(actualAudit.Id);
+        }
+
+        [Fact]
+        public async Task ShouldDeleteAuditAsync()
+        {
+            // given
+            Audit randomAudit = await PostRandomAuditAsync();
+            Audit inputAudit = randomAudit;
+            Audit expectedAudit = inputAudit;
+
+            // when
+            Audit deletedAudit =
+                await this.apiBroker.DeleteAuditByIdAsync(inputAudit.Id);
+
+            ValueTask<Audit> getAuditbyIdTask =
+                this.apiBroker.GetAuditByIdAsync(inputAudit.Id);
+
+            // then
+            deletedAudit.Should().BeEquivalentTo(expectedAudit);
+
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
+                getAuditbyIdTask.AsTask());
         }
     }
 }

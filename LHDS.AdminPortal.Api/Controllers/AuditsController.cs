@@ -1,8 +1,12 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.Audits.Exceptions;
+using LHDS.Core.Services.Foundations.Audits;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
-using LHDS.Core.Models.Foundations.Audits;
-using LHDS.Core.Models.Audits.Exceptions;
-using LHDS.Core.Services.Foundations.Audits;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {

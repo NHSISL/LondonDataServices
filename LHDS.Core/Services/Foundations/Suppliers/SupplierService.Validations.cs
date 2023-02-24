@@ -4,7 +4,7 @@
 
 using System;
 using LHDS.Core.Models.Foundations.Suppliers;
-using LHDS.Core.Models.Suppliers.Exceptions;
+using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 
 namespace LHDS.Core.Services.Foundations.Suppliers
 {

@@ -10,7 +10,6 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions
     public class FailedIngestionTrackingStorageException : Xeption
     {
         public FailedIngestionTrackingStorageException(Exception innerException)
-            : base(message: "Failed ingestion tracking storage error occurred, contact support.")
-        { }
+            : base(message: "Failed ingestion tracking storage error occurred, contact support.") { }
     }
 }

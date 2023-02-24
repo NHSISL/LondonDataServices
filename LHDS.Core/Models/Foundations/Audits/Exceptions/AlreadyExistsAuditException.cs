@@ -10,7 +10,6 @@ namespace LHDS.Core.Models.Foundations.Audits.Exceptions
     public class AlreadyExistsAuditException : Xeption
     {
         public AlreadyExistsAuditException(Exception innerException)
-            : base(message: "Audit with the same Id already exists.", innerException)
-        { }
+            : base(message: "Audit with the same Id already exists.", innerException) { }
     }
 }

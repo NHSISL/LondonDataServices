@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 new Document { FileName = randomFileName, DocumentData = randomEncryptedBytes };
 
             Document encryptedDocument = randomDocument;
-            
+
             Document decryptedDocument = new Document
             {
                 DocumentData = randomDecryptedBytes,

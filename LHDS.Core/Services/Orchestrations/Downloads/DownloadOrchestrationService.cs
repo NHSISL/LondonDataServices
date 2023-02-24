@@ -84,16 +84,13 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                       DecryptedFileName =
                                         $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
                                       Decrypted = false,
+                                      CreatedDate = currentDateTime,
                                       LastSeen = currentDateTime,
                                       FileDeleted = false,
                                       RecordCount = 0,
                                       EncryptedFileSize = retrievedDocument.DocumentData.Length,
                                       DecryptedFileSize = 0,
-                                      CreatedDate = currentDateTime,
-                                      CreatedBy = "System",
-                                      UpdatedDate = currentDateTime,
-                                      UpdatedBy = "System",
-    };
+                                  };
 
                                 Document newBlobDocument = new Document
                                 {
@@ -131,13 +128,13 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 ValidateFileName(fileName);
 
-                IngestionTracking tracking = 
+                IngestionTracking tracking =
                     await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(fileName);
 
-            if (tracking != null)
-            {
-                Document externalDocument =
-                        await this.downloadService.RetrieveDownloadByFileNameAsync(fileName);
+                if (tracking != null)
+                {
+                    Document externalDocument =
+                            await this.downloadService.RetrieveDownloadByFileNameAsync(fileName);
 
                     var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
                     tracking.LastSeen = currentDateTime;
@@ -164,10 +161,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     Id = Guid.NewGuid(),
                     IngestionTrackingId = document.FileName,
                     Message = $"{message} document - {document.FileName}",
-                    CreatedDate = currentDateTime,
-                    CreatedBy = "System",
-                    UpdatedDate = currentDateTime,
-                    UpdatedBy = "System",
+                    CreatedDate = currentDateTime
                 };
 
             this.auditService.AddAuditAsync(newAudit);

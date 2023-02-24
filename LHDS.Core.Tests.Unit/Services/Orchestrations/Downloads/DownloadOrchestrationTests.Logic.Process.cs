@@ -56,15 +56,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                       DecryptedFileName =
                         $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
                       Decrypted = false,
+                      CreatedDate = randomDateTime,
                       LastSeen = randomDateTime,
                       FileDeleted = false,
                       RecordCount = 0,
                       EncryptedFileSize = document.DocumentData.Length,
                       DecryptedFileSize = 0,
-                      CreatedDate = randomDateTime,
-                      CreatedBy = "System",
-                      UpdatedDate = randomDateTime,
-                      UpdatedBy = "System",
                   };
 
                 IngestionTracking storageIngestionTracking = newIngestionTracking.DeepClone();
@@ -105,15 +102,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                       DecryptedFileName =
                         $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
                       Decrypted = false,
+                      CreatedDate = randomDateTime,
                       LastSeen = randomDateTime,
                       FileDeleted = false,
                       RecordCount = 0,
                       EncryptedFileSize = document.DocumentData.Length,
                       DecryptedFileSize = 0,
-                      CreatedDate = randomDateTime,
-                      CreatedBy = "System",
-                      UpdatedDate = randomDateTime,
-                      UpdatedBy = "System",
                   };
 
                 IngestionTracking storageIngestionTracking = newIngestionTracking.DeepClone();

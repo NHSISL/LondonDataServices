@@ -19,7 +19,7 @@ namespace LHDS.Core.SeedGenerator.Services
             foreach (IngestionTracking item in ingestionTrackingItems)
             {
                 List<Audit> generatedItems =
-                    CreateAuditFiller(dateTimeOffset: GetRandomDateTimeOffset(), item)
+                    CreateAuditFiller(dateTimeOffset: DateTimeOffset.UtcNow, item)
                         .Create(count: auditCount)
                             .ToList();
 

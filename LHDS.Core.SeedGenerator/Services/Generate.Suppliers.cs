@@ -11,7 +11,7 @@ namespace LHDS.Core.SeedGenerator.Services
     {
         private static List<Supplier> CreateRandomSuppliers(int count)
         {
-            return CreateSupplierFiller(dateTimeOffset: GetRandomDateTimeOffset())
+            return CreateSupplierFiller(dateTimeOffset: DateTimeOffset.UtcNow)
                 .Create(count: count)
                     .ToList();
         }

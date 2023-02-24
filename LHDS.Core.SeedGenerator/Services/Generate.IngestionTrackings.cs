@@ -19,7 +19,7 @@ namespace LHDS.Core.SeedGenerator.Services
             foreach (Supplier supplier in suppliers)
             {
                 List<IngestionTracking> generatedItems =
-                    CreateIngestionTrackingFiller(dateTimeOffset: GetRandomDateTimeOffset(), supplier)
+                    CreateIngestionTrackingFiller(dateTimeOffset: DateTimeOffset.UtcNow, supplier)
                         .Create(count: recordCount)
                             .ToList();
 

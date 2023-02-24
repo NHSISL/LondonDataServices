@@ -6,6 +6,6 @@ namespace LHDS.Core.SeedGenerator.Services
 {
     public interface IGenerate
     {
-        void GenerateRecords(int supplierCount, int recordCount, int auditCount);
+        ValueTask GenerateRecords(int supplierCount, int recordCount, int auditCount);
     }
 }

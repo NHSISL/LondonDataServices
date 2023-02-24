@@ -2,7 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.SeedGenerator.Services;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
@@ -30,13 +33,32 @@ namespace LHDS.Core.SeedGenerator
                 .AddLogging(builder =>
                 {
                     builder.AddConsole();
-                    builder.AddApplicationInsights();
                 })
+                .AddSingleton<IConfiguration>(_ => configuration)
                 .AddTransient<IStorageBroker, StorageBroker>()
+                .AddTransient<IDateTimeBroker, DateTimeBroker>()
+                .AddTransient<ILoggingBroker, LoggingBroker>()
                 .AddTransient<IAuditService, AuditService>()
                 .AddTransient<IIngestionTrackingService, IngestionTrackingService>()
                 .AddTransient<ISupplierService, SupplierService>()
+                .AddTransient<IGenerate, Generate>()
                 .BuildServiceProvider();
+
+            var generate = serviceProvider.GetService<IGenerate>();
+
+            try
+            {
+                if (generate != null)
+                {
+                    generate.GenerateRecords(2, 5, 3);
+                }
+            }
+            catch (Exception ex)
+            {
+                ILoggingBroker logger = (ILoggingBroker)serviceProvider.GetService(typeof(ILoggingBroker));
+                logger.LogError(ex);
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }

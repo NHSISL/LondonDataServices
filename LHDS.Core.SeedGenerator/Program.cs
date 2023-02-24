@@ -1,22 +1,20 @@
 ﻿// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
-using System.Linq;
-using System.Threading.Tasks;
-using LHDS.Core.Clients;
-using LHDS.Core.Clients.Extensions;
-using LHDS.Core.Models.Foundations.IngestionTrackings;
-using LHDS.Core.Providers.Cryptography.Extensions;
+
+using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.Suppliers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace LHDS.Core.Tests.Manual.Decryption
+namespace LHDS.Core.SeedGenerator
 {
     internal class Program
     {
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
             var environmentName = args.FirstOrDefault() ?? "Development";
 
@@ -28,29 +26,17 @@ namespace LHDS.Core.Tests.Manual.Decryption
 
             IConfiguration configuration = configurationBuilder.Build();
 
-            //setup our DI
             var serviceProvider = new ServiceCollection()
                 .AddLogging(builder =>
                 {
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
-                .AddDecryptionClient(configuration)
-                .UseGpgCryptographyProvider(configuration, builder => builder.AddGpgCryptographyProvider())
+                .AddTransient<IStorageBroker, StorageBroker>()
+                .AddTransient<IAuditService, AuditService>()
+                .AddTransient<IIngestionTrackingService, IngestionTrackingService>()
+                .AddTransient<ISupplierService, SupplierService>()
                 .BuildServiceProvider();
-
-            var decryptionClient = serviceProvider.GetService<IDecryptionClient>();
-
-            IIngestionTrackingService ingestionTrackingService =
-                serviceProvider.GetService<IIngestionTrackingService>();
-
-            var items = ingestionTrackingService.RetrieveAllIngestionTrackings()
-                .Where(ingestionTrackingService => ingestionTrackingService.Decrypted == false);
-
-            foreach (IngestionTracking item in items)
-            {
-                await decryptionClient.DecryptAsync(item.Id);
-            }
         }
     }
 }

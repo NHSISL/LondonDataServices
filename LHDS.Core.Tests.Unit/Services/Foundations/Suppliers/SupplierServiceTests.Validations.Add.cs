@@ -6,7 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Suppliers;
-using LHDS.Core.Models.Suppliers.Exceptions;
+using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using Moq;
 using Xunit;
 

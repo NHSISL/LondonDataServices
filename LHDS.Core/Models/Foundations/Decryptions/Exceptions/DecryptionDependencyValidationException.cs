@@ -9,7 +9,6 @@ namespace LHDS.Core.Models.Foundations.Decryptions.Exceptions
     public class DecryptionDependencyValidationException : Xeption
     {
         public DecryptionDependencyValidationException(Xeption innerException)
-            : base(message: "Decryption dependency validation occurred, please try again.", innerException)
-        { }
+            : base(message: "Decryption dependency validation occurred, please try again.", innerException) { }
     }
 }

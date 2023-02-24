@@ -4,6 +4,5 @@
 
 namespace LHDS.Core.Brokers.Storages.Sql
 {
-    public partial interface IStorageBroker
-    { }
+    public partial interface IStorageBroker { }
 }

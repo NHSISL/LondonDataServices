@@ -4,7 +4,7 @@
 
 using System;
 using FluentAssertions;
-using LHDS.Core.Models.Suppliers.Exceptions;
+using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
 using Xunit;

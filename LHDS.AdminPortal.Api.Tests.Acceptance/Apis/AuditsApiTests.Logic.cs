@@ -46,5 +46,20 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
                 await this.apiBroker.DeleteAuditByIdAsync(actualAudit.Id);
             }
         }
+
+        [Fact]
+        public async Task ShouldGetAuditAsync()
+        {
+            // given
+            Audit randomAudit = await PostRandomAuditAsync();
+            Audit expectedAudit = randomAudit;
+
+            // when
+            Audit actualAudit = await this.apiBroker.GetAuditByIdAsync(randomAudit.Id);
+
+            // then
+            actualAudit.Should().BeEquivalentTo(expectedAudit);
+            await this.apiBroker.DeleteAuditByIdAsync(actualAudit.Id);
+        }
     }
 }

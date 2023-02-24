@@ -26,14 +26,14 @@ export const supplierViewService = {
                 if (response.data) {
                     const suppliers = response.data.map((supplier: Supplier) =>
                         new SupplierView(
-                            suppliers.id,
-                            suppliers.name,
-                            suppliers.friendlyName,
-                            suppliers.description,
-                            suppliers.landingManualTriggerUrl,
-                            suppliers.createdDate,
-                            suppliers.updatedBy,
-                            suppliers.updatedDate,
+                            supplier.id,
+                            supplier.name,
+                            supplier.friendlyName,
+                            supplier.description,
+                            supplier.landingManualTriggerUrl,
+                            supplier.createdDate,
+                            supplier.updatedBy,
+                            supplier.updatedDate,
                         ));
 
                     setMappedSuppliers(suppliers);

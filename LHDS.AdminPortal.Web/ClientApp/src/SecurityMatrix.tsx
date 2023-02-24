@@ -9,7 +9,7 @@ const securityPoints = {
         view: ["", ""]
     },
     configNavigation: {
-        view: ["", ""]
+        view: ["administrator", ""]
     },
 }
 

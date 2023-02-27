@@ -6,7 +6,6 @@ export class IngestionTrackingView {
     public encryptedFileName: string;
     public decryptedFileName: string;
     public decrypted: boolean;
-    public createdDate: Date;
     public lastSeen: Date;
     public fileDeleted: boolean;
     public recordCount: number;
@@ -19,7 +18,6 @@ export class IngestionTrackingView {
         encryptedFileName: string,
         decryptedFileName: string,
         decrypted: boolean,
-        createdDate: Date,
         lastSeen: Date,
         fileDeleted: boolean,
         recordCount: number,
@@ -31,7 +29,6 @@ export class IngestionTrackingView {
         this.encryptedFileName = encryptedFileName || "";
         this.decryptedFileName = decryptedFileName || "";
         this.decrypted = decrypted;
-        this.createdDate = createdDate ;
         this.lastSeen = lastSeen;
         this.fileDeleted = fileDeleted;
         this.recordCount = recordCount;

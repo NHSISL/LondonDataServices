@@ -55,5 +55,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
+
+        private static DateTimeOffset GetRandomDateTimeOffset() =>
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
     }
 }

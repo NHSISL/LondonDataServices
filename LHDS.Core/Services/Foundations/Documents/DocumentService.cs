@@ -60,5 +60,10 @@ namespace LHDS.Core.Services.Foundations.Documents
                ValidateDeleteArguments(fileName);
                await this.blobStorageBroker.DeleteFileAsync(fileName);
            });
+
+        public ValueTask<string> GetDownloadLinkAsync(string fileName)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -98,6 +98,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static List<IngestionTracking> CreateRandomIngestionTrackings(
+            DateTimeOffset dateTimeOffset,
+            List<Document> documents)
+        {
+            List<IngestionTracking> items = new List<IngestionTracking>();
+
+            foreach (var document in documents)
+            {
+                items.Add(CreateIngestionTrackingFiller(dateTimeOffset, document.FileName).Create());
+            }
+
+            return items;
+        }
+
         private static IngestionTracking CreateRandomIngestionTracking(DateTimeOffset dateTimeOffset) =>
             CreateIngestionTrackingFiller(dateTimeOffset).Create();
 
@@ -162,6 +176,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         {
             var filler = new Filler<IngestionTracking>();
             filler.Setup().OnType<DateTimeOffset>().Use(dateTimeOffset);
+
+            return filler;
+        }
+
+        private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
+            DateTimeOffset dateTimeOffset, string id)
+        {
+            var filler = new Filler<IngestionTracking>();
+            filler.Setup()
+                .OnProperty(ingestionTracking => ingestionTracking.Id).Use(id)
+                .OnType<DateTimeOffset>().Use(dateTimeOffset);
 
             return filler;
         }

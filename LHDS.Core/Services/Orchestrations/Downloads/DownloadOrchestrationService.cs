@@ -61,8 +61,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         await TryCatch(async () =>
                         {
                             IngestionTracking maybeIngestionTracking =
-                            await this.ingestionTrackingService
-                                .RetrieveIngestionTrackingByIdAsync(document.FileName);
+                                this.ingestionTrackingService.RetrieveAllIngestionTrackings()
+                                    .FirstOrDefault(ingestionTracking => ingestionTracking.Id == document.FileName);
 
                             if (maybeIngestionTracking == null)
                             {
@@ -128,9 +128,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 ValidateFileName(fileName);
 
-                IngestionTracking tracking = 
-                    this.ingestionTrackingService.RetrieveAllIngestionTrackings().FirstOrDefault(ingestionTracking => 
-                        ingestionTracking.Id == fileName);
+                IngestionTracking tracking =
+                    this.ingestionTrackingService.RetrieveAllIngestionTrackings()
+                        .FirstOrDefault(ingestionTracking => ingestionTracking.Id == fileName);
 
                 if (tracking != null)
                 {

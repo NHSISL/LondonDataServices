@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             List<Document> randomDocuments = CreateRandomDocuments();
             List<Document> externalDocuments = randomDocuments;
 
-            List<IngestionTracking> externalIngestionTrackingsFound = 
+            List<IngestionTracking> externalIngestionTrackingsFound =
                 new List<IngestionTracking>();
 
             this.downloadServiceMock.Setup(service =>
@@ -58,12 +58,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                       DecryptedFileName =
                         $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
                       Decrypted = false,
-                      CreatedDate = randomDateTime,
                       LastSeen = randomDateTime,
                       FileDeleted = false,
                       RecordCount = 0,
                       EncryptedFileSize = document.DocumentData.Length,
                       DecryptedFileSize = 0,
+                      CreatedBy = "System",
+                      CreatedDate = randomDateTime,
+                      UpdatedBy = "System",
+                      UpdatedDate = randomDateTime
                   };
 
                 IngestionTracking storageIngestionTracking = newIngestionTracking.DeepClone();
@@ -104,12 +107,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                       DecryptedFileName =
                         $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
                       Decrypted = false,
-                      CreatedDate = randomDateTime,
                       LastSeen = randomDateTime,
                       FileDeleted = false,
                       RecordCount = 0,
                       EncryptedFileSize = document.DocumentData.Length,
                       DecryptedFileSize = 0,
+                      CreatedBy = "System",
+                      CreatedDate = randomDateTime,
+                      UpdatedBy = "System",
+                      UpdatedDate = randomDateTime
                   };
 
                 IngestionTracking storageIngestionTracking = newIngestionTracking.DeepClone();

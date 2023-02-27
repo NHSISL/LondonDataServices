@@ -89,8 +89,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                       RecordCount = 0,
                                       EncryptedFileSize = retrievedDocument.DocumentData.Length,
                                       DecryptedFileSize = 0,
-                                      CreatedDate = currentDateTime,
                                       CreatedBy = "System",
+                                      CreatedDate = currentDateTime,
                                       UpdatedBy = "System",
                                       UpdatedDate = currentDateTime
                                   };

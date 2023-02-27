@@ -20,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            DateTimeOffset inputExpireTime = randomDateTimeOffset;
+            DateTimeOffset inputExpireTime = randomDateTimeOffset.AddMinutes(5);
             string randomSasUrl = GetRandomString();
             string outputSasUrl = randomSasUrl;
             string expectedSasUrl = randomSasUrl;

@@ -1,11 +1,34 @@
-import React from "react";
-import SupplierDetailCard from "./ingestionTrackingDetailCard";
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { IngestionTrackingView } from "../../models/views/components/ingestionTracking/ingestionTrackingView";
+import { ingestionTrackingViewService } from "../../services/views/ingestionTrackingViewService";
+import IngestionTrackingDetailCard from "./ingestionTrackingDetailCard";
 
-const IngestionTrackingDetail = () => {
+interface IngestionTrackingDetailProps {
+    ingestionTrackingId: string;
+    children?: React.ReactNode;
+}
+
+const IngestionTrackingDetail: FunctionComponent<IngestionTrackingDetailProps> = (props) => {
+    const {
+        ingestionTrackingId,
+        children
+    } = props;
+
+    const { mappedIngestionTracking: ingestionTrackingRetrieved } =
+        ingestionTrackingViewService.useGetIngestionTrackingById(ingestionTrackingId)
 
     return (
         <div>
-            <SupplierDetailCard />
+            {ingestionTrackingRetrieved !== undefined && (
+                <div>
+                    <IngestionTrackingDetailCard
+                        key={ingestionTrackingRetrieved.id.toString()}
+                        ingestionTracking={ingestionTrackingRetrieved}>
+
+                        {children}
+                    </IngestionTrackingDetailCard>
+                </div>
+            )}
         </div>
     );
 }

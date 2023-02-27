@@ -42,5 +42,38 @@ export const ingestionTrackingViewService = {
         } catch (err) {
             throw err;
         }
-    }
+    },
+
+    useGetIngestionTrackingById: (id: string) => {
+        try {
+            const query = `?$expand=audit&$filter=id eq ${id}`
+            const response = ingestionTrackingService.useGetAllIngestionTrackings(query);
+            const [mappedIngestionTracking, setMappedIngestionTracking] = useState<IngestionTrackingView>();
+
+            useEffect(() => {
+                if (response.data && response.data[0]) {
+                    const ingestionTracking = new IngestionTrackingView(
+                        response.data[0].id,
+                        response.data[0].source,
+                        response.data[0].encryptedFileName,
+                        response.data[0].decryptedFileName,
+                        response.data[0].decrypted,
+                        response.data[0].createdDate,
+                        response.data[0].lastSeen,
+                        response.data[0].fileDeleted,
+                        response.data[0].recordCount,
+                        response.data[0].encryptedFileSize,
+                        response.data[0].decryptedFileSize);
+
+                    setMappedIngestionTracking(ingestionTracking);
+                }
+            }, [response.data]);
+
+            return {
+                mappedIngestionTracking, ...response
+            }
+        } catch (err) {
+            throw err;
+        }
+    },
 }

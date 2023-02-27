@@ -9,8 +9,6 @@ import { QueryClientProvider } from 'react-query';
 import { queryClientGlobalOptions } from './brokers/apiBroker.globals';
 import { IngestionTrackingHomepage } from './pages/IngestionTrackingHomepage';
 import { IngestionTrackingPage } from './pages/ingestionTrackingPage';
-import { SecuredRoute } from './components/SecuredRoute';
-import securityPoints from './SecurityMatrix';
 import { ConfigHomePage } from './pages/configuration/configHomePage';
 import { SuppliersPage } from './pages/configuration/suppliersPage';
 
@@ -23,6 +21,7 @@ const App = ({ msalInstance }: any) => {
                         <Route path="/" element={<Home />} />
                         <Route path="/ingestionTracking" element={<IngestionTrackingHomepage />} />
                         <Route path="/ingestionTrackingDetail" element={<IngestionTrackingPage />} />
+                        <Route path="/ingestionTrackingDetail/:ingestionTrackingId" element={<IngestionTrackingPage />} />
 
                         <Route path="/configuration" element={<ConfigHomePage/>} />
                         <Route path="/configuration/suppliers" element={<SuppliersPage />} />

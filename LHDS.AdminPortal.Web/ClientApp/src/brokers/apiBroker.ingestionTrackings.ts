@@ -32,7 +32,7 @@ class IngestionTrackingBroker {
         return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
 
-    async GetIngestionTrackingByIdAsync(id: Guid) {
+    async GetIngestionTrackingByIdAsync(id: string) {
         const url = `${this.relativeIngestionTrackingUrl}/${id}`;
 
         return this.apiBroker.GetAsync(url)

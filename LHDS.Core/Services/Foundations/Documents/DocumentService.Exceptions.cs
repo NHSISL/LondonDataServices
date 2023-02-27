@@ -87,6 +87,18 @@ namespace LHDS.Core.Services.Foundations.Documents
             {
                 throw CreateAndLogValidationException(exception);
             }
+            catch (RequestFailedException requestFailedException)
+            {
+                var failedRequestException = new FailedDocumentRequestException(requestFailedException);
+                throw CreateAndLogDependencyException(failedRequestException);
+            }
+            catch (Exception exception)
+            {
+                var failedDocumentBlobServiceException =
+                   new FailedDocumentServiceException(exception);
+
+                throw CreateAndLogServiceException(failedDocumentBlobServiceException);
+            }
         }
 
         private DocumentValidationException CreateAndLogValidationException(Xeption exception)

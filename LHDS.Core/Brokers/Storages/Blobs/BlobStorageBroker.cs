@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Clients;
@@ -32,5 +33,12 @@ namespace LHDS.Core.Brokers.Storages.Blobs
 
         public async ValueTask DeleteFileAsync(string fileName) =>
             await azureBlobClient.DeleteFileAsync(fileName, blobStorageBrokerSettings.BlobContainerName);
+
+        public async ValueTask<string> GetDownloadLinkAsync(string fileName, DateTimeOffset expiresOn)
+        {
+            Uri uri = await azureBlobClient.GetDownloadUriAsync(fileName, blobStorageBrokerSettings.BlobContainerName, expiresOn);
+
+            return uri.ToString();
+        }
     }
 }

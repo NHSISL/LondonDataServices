@@ -84,12 +84,15 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                       DecryptedFileName =
                                         $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
                                       Decrypted = false,
-                                      CreatedDate = currentDateTime,
                                       LastSeen = currentDateTime,
                                       FileDeleted = false,
                                       RecordCount = 0,
                                       EncryptedFileSize = retrievedDocument.DocumentData.Length,
                                       DecryptedFileSize = 0,
+                                      CreatedDate = currentDateTime,
+                                      CreatedBy = "System",
+                                      UpdatedBy = "System",
+                                      UpdatedDate = currentDateTime
                                   };
 
                                 Document newBlobDocument = new Document
@@ -162,7 +165,10 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     Id = Guid.NewGuid(),
                     IngestionTrackingId = document.FileName,
                     Message = $"{message} document - {document.FileName}",
-                    CreatedDate = currentDateTime
+                    CreatedBy = "System",
+                    CreatedDate = currentDateTime,
+                    UpdatedBy = "System",
+                    UpdatedDate = currentDateTime
                 };
 
             this.auditService.AddAuditAsync(newAudit);

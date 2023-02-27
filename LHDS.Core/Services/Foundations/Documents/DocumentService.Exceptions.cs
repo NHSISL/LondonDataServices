@@ -16,6 +16,7 @@ namespace LHDS.Core.Services.Foundations.Documents
     {
         private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<Document> ReturningDocumentFunction();
+        private delegate ValueTask<string> ReturningStringFunction();
 
         private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
         {
@@ -73,6 +74,18 @@ namespace LHDS.Core.Services.Foundations.Documents
                    new FailedDocumentServiceException(exception);
 
                 throw CreateAndLogServiceException(failedDocumentBlobServiceException);
+            }
+        }
+
+        private async ValueTask<string> TryCatch(ReturningStringFunction returningStringFunction)
+        {
+            try
+            {
+                return await returningStringFunction();
+            }
+            catch (InvalidDocumentException exception)
+            {
+                throw CreateAndLogValidationException(exception);
             }
         }
 

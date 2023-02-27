@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             var invalidDocumentException = new InvalidDocumentException();
 
             invalidDocumentException.AddData(
-                key: "FileName",
+                key: "fileName",
                 values: "Text is required");
 
             var expectedDocumentValidationException

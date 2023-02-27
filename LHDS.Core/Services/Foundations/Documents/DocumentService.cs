@@ -65,10 +65,13 @@ namespace LHDS.Core.Services.Foundations.Documents
                await this.blobStorageBroker.DeleteFileAsync(fileName);
            });
 
-        public async ValueTask<string> GetDownloadLinkAsync(string fileName)
-        {
-            var expireOn = this.dateTimeBroker.GetCurrentDateTimeOffset().AddMinutes(5);
-            return await this.blobStorageBroker.GetDownloadLinkAsync(fileName, expireOn);
-        }
+        public ValueTask<string> GetDownloadLinkAsync(string fileName) =>
+           TryCatch(async () =>
+           {
+               ValidateGetDownloadLinkArguments(fileName);
+               var expireOn = this.dateTimeBroker.GetCurrentDateTimeOffset().AddMinutes(5);
+
+               return await this.blobStorageBroker.GetDownloadLinkAsync(fileName, expireOn);
+           });
     }
 }

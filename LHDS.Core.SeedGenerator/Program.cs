@@ -2,19 +2,22 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Clients;
-using LHDS.Core.Clients.Extensions;
-using LHDS.Core.Providers.Downloads.Extensions;
+using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.SeedGenerator.Services;
+using LHDS.Core.Services.Foundations.Audits;
+using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.Suppliers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace LHDS.Core.Tests.Manual.Landings
+namespace LHDS.Core.SeedGenerator
 {
     internal class Program
     {
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
             var environmentName = args.FirstOrDefault() ?? "Development";
 
@@ -26,24 +29,28 @@ namespace LHDS.Core.Tests.Manual.Landings
 
             IConfiguration configuration = configurationBuilder.Build();
 
-            //setup our DI
             var serviceProvider = new ServiceCollection()
                 .AddLogging(builder =>
                 {
                     builder.AddConsole();
-                    builder.AddApplicationInsights();
                 })
-                .AddLandingClient(configuration)
-                .UseFtpDownloadProvider(configuration, builder => builder.AddFtpDownloadProvider())
+                .AddSingleton<IConfiguration>(_ => configuration)
+                .AddTransient<IStorageBroker, StorageBroker>()
+                .AddTransient<IDateTimeBroker, DateTimeBroker>()
+                .AddTransient<ILoggingBroker, LoggingBroker>()
+                .AddTransient<IAuditService, AuditService>()
+                .AddTransient<IIngestionTrackingService, IngestionTrackingService>()
+                .AddTransient<ISupplierService, SupplierService>()
+                .AddTransient<IGenerate, Generate>()
                 .BuildServiceProvider();
 
-            var landingClient = serviceProvider.GetService<ILandingClient>();
+            var generate = serviceProvider.GetService<IGenerate>();
 
             try
             {
-                if (landingClient != null)
+                if (generate != null)
                 {
-                    await landingClient.ProcessAsync();
+                    generate.GenerateRecords(2, 5, 3);
                 }
             }
             catch (Exception ex)

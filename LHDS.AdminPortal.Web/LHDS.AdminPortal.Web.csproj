@@ -59,6 +59,7 @@
     <TypeScriptCompile Remove="ClientApp\src\index.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\models\audits\audit.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\ingestionTrackings\ingestionTracking.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\ingestionTrackings\ingestionTrackingHomeView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\suppliers\supplier.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\audit\auditView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\ingestionTracking\ingestionTrackingView.ts" />
@@ -69,6 +70,7 @@
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\ingestionTrackingService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\supplierService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\auditViewService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\ingestionTrackingHomeViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\ingestionTrackingViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\supplierViewService .ts" />
   </ItemGroup>

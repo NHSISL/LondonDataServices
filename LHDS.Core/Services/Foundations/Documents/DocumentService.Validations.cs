@@ -51,6 +51,12 @@ namespace LHDS.Core.Services.Foundations.Documents
                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
+        private void ValidateGetDownloadLinkArguments(string fileName)
+        {
+            Validate(
+               (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
+        }
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidDocumentException = new InvalidDocumentException();

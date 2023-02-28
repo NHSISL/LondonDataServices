@@ -20,12 +20,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         public async Task ShouldProcessNewDocumentsAsync()
         {
             // given
+            Guid randomGuid = Guid.NewGuid();
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             List<Document> randomDocuments = CreateRandomDocuments();
             List<Document> externalDocuments = randomDocuments;
 
             List<IngestionTracking> externalIngestionTrackingsFound =
                 new List<IngestionTracking>();
+
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifier())
+                    .Returns(randomGuid);
 
             this.downloadServiceMock.Setup(service =>
                service.RetrieveListOfDocumentsToProcessAsync())
@@ -52,6 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 IngestionTracking newIngestionTracking =
                   new IngestionTracking
                   {
+                      Id = randomGuid,
                       FileName = document.FileName,
                       Source = this.inMemoryConfiguration["LandingSource"],
                       EncryptedFileName = $"/encrypted{filename}",
@@ -101,6 +107,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 IngestionTracking newIngestionTracking =
                   new IngestionTracking
                   {
+                      Id = randomGuid,
                       FileName = document.FileName,
                       Source = this.inMemoryConfiguration["LandingSource"],
                       EncryptedFileName = $"/encrypted{filename}",

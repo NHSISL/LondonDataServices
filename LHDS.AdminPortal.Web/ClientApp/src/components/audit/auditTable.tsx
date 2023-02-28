@@ -1,4 +1,5 @@
-import React from "react";
+import { Guid } from "guid-typescript";
+import React, { FunctionComponent } from "react";
 import CardBase from "../bases/components/Card/CardBase";
 import CardBaseBody from "../bases/components/Card/CardBase.Body";
 import CardBaseContent from "../bases/components/Card/CardBase.Content";
@@ -7,7 +8,15 @@ import TableBase from "../bases/components/Table/TableBase";
 import TableBaseTbody from "../bases/components/Table/TableBase.Tbody";
 import AuditRow from "./auditRow";
 
-const AuditTable = () => {
+interface AuditTableProps {
+    ingestionTrackingId: string
+}
+
+const AuditTable: FunctionComponent<AuditTableProps> = (props) => {
+    const {
+        ingestionTrackingId
+    } = props;
+
     return (
         <div>
             <CardBase>
@@ -18,7 +27,7 @@ const AuditTable = () => {
                     <CardBaseContent>
                         <TableBase>
                             <TableBaseTbody>
-                                <AuditRow/>
+                                <AuditRow ingestionTrackingId={ingestionTrackingId} />
                             </TableBaseTbody>
                         </TableBase>
                     </CardBaseContent>

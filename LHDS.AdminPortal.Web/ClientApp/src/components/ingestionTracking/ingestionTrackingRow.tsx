@@ -13,7 +13,7 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
     const { ingestionTracking } = props;
     return (
         <IngestionTrackingRowView
-            key={ingestionTracking.id}
+            key={ingestionTracking.id.toString()}
             ingestionTracking={ingestionTracking} />
     );
 };

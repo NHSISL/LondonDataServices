@@ -19,32 +19,32 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
             <h1>Details</h1>
             <SummaryListBase>
                 <SummaryListBaseRow>
-                    <SummaryListBaseKey>File Name</SummaryListBaseKey>
+                    <SummaryListBaseKey>Encrypted FileName</SummaryListBaseKey>
                     <SummaryListBaseValue>{ingestionTracking.encryptedFileName}</SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
+                    <SummaryListBaseKey>Decrypted FileName</SummaryListBaseKey>
+                    <SummaryListBaseValue>{ingestionTracking.decryptedFileName}</SummaryListBaseValue>
+                </SummaryListBaseRow>
+                <SummaryListBaseRow>
                     <SummaryListBaseKey>Decrypted</SummaryListBaseKey>
-                    <SummaryListBaseValue>True</SummaryListBaseValue>
-                </SummaryListBaseRow>
-                <SummaryListBaseRow>
-                    <SummaryListBaseKey>Encrypted File Size</SummaryListBaseKey>
-                    <SummaryListBaseValue>1000mb</SummaryListBaseValue>
-                </SummaryListBaseRow>
-                <SummaryListBaseRow>
-                    <SummaryListBaseKey>Decrypted File Size</SummaryListBaseKey>
-                    <SummaryListBaseValue>500mb</SummaryListBaseValue>
-                </SummaryListBaseRow>
-                <SummaryListBaseRow>
-                    <SummaryListBaseKey>Record Count</SummaryListBaseKey>
-                    <SummaryListBaseValue>22</SummaryListBaseValue>
+                    <SummaryListBaseValue>{ingestionTracking.decrypted}</SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Last Seen</SummaryListBaseKey>
-                    <SummaryListBaseValue>22-Aug-2022</SummaryListBaseValue>
+                    <SummaryListBaseValue></SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
-                    <SummaryListBaseKey>Created Date</SummaryListBaseKey>
-                    <SummaryListBaseValue>22-Aug-2022</SummaryListBaseValue>
+                    <SummaryListBaseKey>File Deleted</SummaryListBaseKey>
+                    <SummaryListBaseValue>{ingestionTracking.fileDeleted}</SummaryListBaseValue>
+                </SummaryListBaseRow>
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Record Count</SummaryListBaseKey>
+                    <SummaryListBaseValue>{ingestionTracking.recordCount}</SummaryListBaseValue>
+                </SummaryListBaseRow>
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Encrypted FileSize</SummaryListBaseKey>
+                    <SummaryListBaseValue>{ingestionTracking.encryptedFileSize}</SummaryListBaseValue>
                 </SummaryListBaseRow>
             </SummaryListBase>
         </>

@@ -45,24 +45,23 @@ export const ingestionTrackingViewService = {
 
     useGetIngestionTrackingById: (id: string) => {
         try {
-            const query = `?$expand=audit&$filter=id eq ${id}`
-            const response = ingestionTrackingService.useGetAllIngestionTrackings(query);
+            const query = '?Id=' + encodeURI(`${id}`)
+            const response = ingestionTrackingService.useGetIngestionTrackingById(query);
             const [mappedIngestionTracking, setMappedIngestionTracking] = useState<IngestionTrackingView>();
 
             useEffect(() => {
-                if (response.data && response.data[0]) {
+                if (response.data) {
                     const ingestionTracking = new IngestionTrackingView(
-                        response.data[0].id,
-                        response.data[0].source,
-                        response.data[0].encryptedFileName,
-                        response.data[0].decryptedFileName,
-                        response.data[0].decrypted,
-                        response.data[0].createdDate,
-                        response.data[0].lastSeen,
-                        response.data[0].fileDeleted,
-                        response.data[0].recordCount,
-                        response.data[0].encryptedFileSize,
-                        response.data[0].decryptedFileSize);
+                        response.data.id,
+                        response.data.source,
+                        response.data.encryptedFileName,
+                        response.data.decryptedFileName,
+                        response.data.decrypted,
+                        response.data.lastSeen,
+                        response.data.fileDeleted,
+                        response.data.recordCount,
+                        response.data.encryptedFileSize,
+                        response.data.decryptedFileSize);
 
                     setMappedIngestionTracking(ingestionTracking);
                 }

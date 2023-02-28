@@ -63,7 +63,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                                 <TableBaseTbody>
                                     {IngestionTrackingsRetrieved?.map((ingestionTrackingHomeView: IngestionTrackingHomeView) =>
                                         <IngestionTrackingRow
-                                            key={ingestionTrackingHomeView.id}
+                                            key={ingestionTrackingHomeView.id.toString()}
                                             ingestionTracking={ingestionTrackingHomeView}
                                         />)
                                     }

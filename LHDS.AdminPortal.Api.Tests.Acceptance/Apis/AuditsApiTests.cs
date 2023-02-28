@@ -39,11 +39,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
                 .OnProperty(audit => audit.CreatedDate).Use(inputAudit.CreatedDate)
                 .OnProperty(audit => audit.CreatedBy).Use(inputAudit.CreatedBy)
                 .OnProperty(audit => audit.UpdatedDate).Use(now);
-
             return filler.Create();
         }
 
-        private async ValueTask<Audit> PostRandomAuditAsync(string ingestionTrackingId)
+        private async ValueTask<Audit> PostRandomAuditAsync(Guid ingestionTrackingId)
         {
             Audit randomAudit = CreateRandomAudit(ingestionTrackingId);
             await this.apiBroker.PostAuditAsync(randomAudit);
@@ -51,7 +50,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             return randomAudit;
         }
 
-        private async ValueTask<List<Audit>> PostRandomAuditsAsync(string ingestionTrackingId)
+        private async ValueTask<List<Audit>> PostRandomAuditsAsync(Guid ingestionTrackingId)
         {
             int randomNumber = GetRandomNumber();
             var randomAudits = new List<Audit>();
@@ -64,10 +63,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             return randomAudits;
         }
 
-        private static Audit CreateRandomAudit(string ingestionTrackingId) =>
+        private static Audit CreateRandomAudit(Guid ingestionTrackingId) =>
             CreateRandomAuditFiller(ingestionTrackingId).Create();
 
-        private static Filler<Audit> CreateRandomAuditFiller(string ingestionTrackingId)
+        private static Filler<Audit> CreateRandomAuditFiller(Guid ingestionTrackingId)
         {
             string user = Guid.NewGuid().ToString();
             DateTime now = DateTime.UtcNow;

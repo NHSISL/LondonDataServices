@@ -11,7 +11,7 @@ namespace LHDS.Core.Models.Foundations.Audits
     public class Audit : IKey, IAudit
     {
         public Guid Id { get; set; }
-        public string IngestionTrackingId { get; set; }
+        public Guid IngestionTrackingId { get; set; }
         public string Message { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }

@@ -18,8 +18,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
         public async Task ShouldRemoveIngestionTrackingByIdAsync()
         {
             // given
-            string randomId = Guid.NewGuid().ToString();
-            string inputIngestionTrackingId = randomId;
+            Guid randomId = Guid.NewGuid();
+            Guid inputIngestionTrackingId = randomId;
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             IngestionTracking expectedInputIngestionTracking = storageIngestionTracking;

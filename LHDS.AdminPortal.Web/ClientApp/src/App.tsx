@@ -9,8 +9,6 @@ import { QueryClientProvider } from 'react-query';
 import { queryClientGlobalOptions } from './brokers/apiBroker.globals';
 import { IngestionTrackingHomepage } from './pages/IngestionTrackingHomepage';
 import { IngestionTrackingPage } from './pages/ingestionTrackingPage';
-import { SecuredRoute } from './components/SecuredRoute';
-import securityPoints from './SecurityMatrix';
 import { ConfigHomePage } from './pages/configuration/configHomePage';
 import { SuppliersPage } from './pages/configuration/suppliersPage';
 

@@ -4,8 +4,8 @@ import { IngestionTracking } from "../models/ingestionTrackings/ingestionTrackin
 import ApiBroker from "./apiBroker";
 
 class IngestionTrackingBroker {
-    relativeIngestionTrackingUrl = '/api/ingestionTracking';
-    relativeIngestionTrackingOdataUrl = '/odata/ingestionTracking'
+    relativeIngestionTrackingUrl = '/api/ingestionTrackings';
+    relativeIngestionTrackingOdataUrl = '/odata/ingestionTrackings'
 
     private apiBroker: ApiBroker = new ApiBroker();
 

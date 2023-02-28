@@ -28,6 +28,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
         private static void AddConfigurations(ModelBuilder modelBuilder)
         {
+            AddSupplierConfigurations(modelBuilder);
             AddIngestionTrackingConfigurations(modelBuilder);
             AddAuditConfigurations(modelBuilder);
         }

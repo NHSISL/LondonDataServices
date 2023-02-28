@@ -36,36 +36,105 @@ namespace LHDS.Core.SeedGenerator.Services
         {
             try
             {
-                List<Supplier> suppliers = GenerateSuppliers(supplierCount);
-                List<IngestionTracking> ingestionTrackingRecords = GenerateIngestionTrackingRecords(recordCount, suppliers);
-                List<Audit> auditRecords = GenerateAuditRecords(auditCount, ingestionTrackingRecords);
+                List<Supplier> suppliers = await SetupSuppliers(supplierCount);
 
-                foreach (Supplier supplier in suppliers)
-                {
-                    var result = await this.supplierService.AddSupplierAsync(supplier);
-                }
+                List<IngestionTracking> ingestionTrackingRecords =
+                    await SetupIngestionTrackingRecords(recordCount, suppliers);
 
-                //this.loggingBroker.LogInformation($"Created {suppliers.Count} suppliers.");
-
-                foreach (IngestionTracking ingestionTracking in ingestionTrackingRecords)
-                {
-                    var result = await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
-                }
-
-                //this.loggingBroker
-                //    .LogInformation($"Created {ingestionTrackingRecords.Count} ingestion tracking records.");
-
-                foreach (Audit audit in auditRecords)
-                {
-                    var result = await this.auditService.AddAuditAsync(audit);
-                }
-
-                //this.loggingBroker
-                //    .LogInformation($"Created {auditRecords.Count} audit records.");
+                await SetupAuditRecords(auditCount, ingestionTrackingRecords);
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 this.loggingBroker.LogError(ex);
+            }
+        }
+
+        private async Task SetupAuditRecords(int auditCount, List<IngestionTracking> ingestionTrackingRecords)
+        {
+            try
+            {
+                List<Audit> auditRecords = GenerateAuditRecords(auditCount, ingestionTrackingRecords);
+
+                foreach (Audit audit in auditRecords)
+                {
+                    try
+                    {
+                        var result = await this.auditService.AddAuditAsync(audit);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.ToString());
+                        this.loggingBroker.LogError(ex);
+                    }
+                }
+
+                Console.WriteLine($"Created {auditRecords.Count} audit records.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+        }
+
+        private async Task<List<IngestionTracking>> SetupIngestionTrackingRecords(int recordCount, List<Supplier> suppliers)
+        {
+            try
+            {
+                List<IngestionTracking> ingestionTrackingRecords =
+                GenerateIngestionTrackingRecords(recordCount, suppliers);
+
+                foreach (IngestionTracking ingestionTracking in ingestionTrackingRecords)
+                {
+                    try
+                    {
+                        var result = await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.ToString());
+                        this.loggingBroker.LogError(ex);
+                    }
+                }
+
+                Console.WriteLine($"Created {ingestionTrackingRecords.Count} ingestion tracking records.");
+                return ingestionTrackingRecords;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+        }
+
+        private async Task<List<Supplier>> SetupSuppliers(int supplierCount)
+        {
+            try
+            {
+                List<Supplier> suppliers = GenerateSuppliers(supplierCount);
+
+                foreach (Supplier supplier in suppliers)
+                {
+                    try
+                    {
+                        var result = await this.supplierService.AddSupplierAsync(supplier);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.ToString());
+                        this.loggingBroker.LogError(ex);
+                    }
+                }
+
+                Console.WriteLine($"Created {suppliers.Count} suppliers.");
+
+                return suppliers;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
             }
         }
 
@@ -86,5 +155,11 @@ namespace LHDS.Core.SeedGenerator.Services
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static string GetRandomString(int minCharacters = 2, int maxCharacters = 10) =>
+            new MnemonicString(wordCount: GetRandomNumber(min: minCharacters, max: maxCharacters)).GetValue();
+
+        private static int GetRandomNumber(int min = 2, int max = 10) =>
+            new IntRange(min: 2, max: 10).GetValue();
     }
 }

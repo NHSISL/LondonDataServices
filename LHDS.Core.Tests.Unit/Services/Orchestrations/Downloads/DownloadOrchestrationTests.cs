@@ -36,6 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         private readonly Mock<IAuditService> auditServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly IConfiguration inMemoryConfiguration;
         private readonly IDownloadOrchestrationService downloadOrchestrationService;
         private readonly ICompareLogic compareLogic;
@@ -48,6 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             auditServiceMock = new Mock<IAuditService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.compareLogic = new CompareLogic();
 
             var appSettingsStub = new Dictionary<string, string> {
@@ -65,6 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 auditService: auditServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
+                identifierBroker: identifierBrokerMock.Object,
                 configuration: this.inMemoryConfiguration);
         }
 

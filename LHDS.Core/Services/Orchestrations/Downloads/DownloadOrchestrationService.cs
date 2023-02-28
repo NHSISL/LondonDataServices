@@ -27,6 +27,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         private readonly IAuditService auditService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly IIdentifierBroker identifierBroker;
         private readonly string source;
 
         public DownloadOrchestrationService(
@@ -36,6 +37,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             IAuditService auditService,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
+            IIdentifierBroker identifierBroker,
             IConfiguration configuration)
         {
             this.documentService = documentService;
@@ -44,6 +46,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.auditService = auditService;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
+            this.identifierBroker = identifierBroker;
             this.source = configuration["LandingSource"];
         }
 
@@ -78,6 +81,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                 IngestionTracking newIngestionTracking =
                                   new IngestionTracking
                                   {
+                                      Id = this.identifierBroker.GetIdentifier(),
                                       FileName = document.FileName,
                                       Source = source,
                                       EncryptedFileName = $"/encrypted{filename}",

@@ -8,7 +8,10 @@ export const IngestionTrackingHomeViewService = {
 
     useGetAllIngestionTrackings: (searchTerm?: string) => {
         try {
-            let query = `?$expand=borough&$expand=sites($select=*&$expand=propertyStatus;$orderby=siteName desc )&$orderby=isActive desc,IngestionTrackingName`;
+            //DH: Check the expands, @Hassan please add expands and orderby etc
+            //let query = `?$expand=borough&$expand=sites($select=*&$expand=propertyStatus;$orderby=siteName desc )&$orderby=isActive desc,IngestionTrackingName`;
+
+            let query = `?$orderby=createdDate`;
 
             if (searchTerm) {
                 query = query + `&$filter=contains(IngestionTrackingName,'${searchTerm}')`

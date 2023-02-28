@@ -1,5 +1,6 @@
+import { Audit } from '../audits/audit';
 
-export class IngestionTrackingView {
+export class IngestionTrackingHomeView {
     public id: string;
     public source: string;
     public encryptedFileName: string;
@@ -10,6 +11,7 @@ export class IngestionTrackingView {
     public recordCount: number;
     public encryptedFileSize: number;
     public decryptedFileSize: number;
+    public audit: Audit;
 
     constructor(
         id: string,
@@ -21,17 +23,19 @@ export class IngestionTrackingView {
         fileDeleted: boolean,
         recordCount: number,
         encryptedFileSize: number,
-        decryptedFileSize: number
+        decryptedFileSize: number,
+        audit: Audit
     ) {
         this.id = id;
-        this.source = source || "";
-        this.encryptedFileName = encryptedFileName || "";
-        this.decryptedFileName = decryptedFileName || "";
-        this.decrypted = decrypted;
-        this.lastSeen = lastSeen;
+        this.source = source 
+        this.encryptedFileName = encryptedFileName 
+        this.decryptedFileName = decryptedFileName 
+        this.decrypted = decrypted === true ? true : false;
+        this.lastSeen = lastSeen
         this.fileDeleted = fileDeleted;
         this.recordCount = recordCount;
         this.encryptedFileSize = encryptedFileSize;
         this.decryptedFileSize = decryptedFileSize;
+        this.audit = audit;
     }
 }

@@ -6,6 +6,7 @@ using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Controllers
@@ -54,7 +55,8 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IQueryable<IngestionTracking>> GetAllIngestionTrackings()
+        [EnableQuery(PageSize = 5)]
+        public ActionResult<IQueryable<IngestionTracking>> Get()
         {
             try
             {

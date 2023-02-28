@@ -146,6 +146,7 @@ namespace LHDS.AdminPortal.Api
         private static void AddBrokers(IServiceCollection services)
         {
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
+            services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
         }

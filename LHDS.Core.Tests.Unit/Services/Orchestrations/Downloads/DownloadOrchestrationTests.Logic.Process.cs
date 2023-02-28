@@ -52,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 IngestionTracking newIngestionTracking =
                   new IngestionTracking
                   {
-                      Id = document.FileName,
+                      FileName = document.FileName,
                       Source = this.inMemoryConfiguration["LandingSource"],
                       EncryptedFileName = $"/encrypted{filename}",
                       DecryptedFileName =
@@ -101,7 +101,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 IngestionTracking newIngestionTracking =
                   new IngestionTracking
                   {
-                      Id = document.FileName,
+                      FileName = document.FileName,
                       Source = this.inMemoryConfiguration["LandingSource"],
                       EncryptedFileName = $"/encrypted{filename}",
                       DecryptedFileName =
@@ -184,7 +184,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     : "/" + document.FileName;
 
                 IngestionTracking storageIngestionTracking = externalIngestionTrackingsFound
-                    .First(ingestionTracking => ingestionTracking.Id == document.FileName).DeepClone();
+                    .First(ingestionTracking => ingestionTracking.FileName == document.FileName).DeepClone();
 
                 IngestionTracking modifiedIngestionTracking = storageIngestionTracking.DeepClone();
                 modifiedIngestionTracking.LastSeen = randomDateTime;
@@ -205,7 +205,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             foreach (var document in externalDocuments)
             {
                 IngestionTracking storageIngestionTracking = externalIngestionTrackingsFound
-                    .First(ingestionTracking => ingestionTracking.Id == document.FileName).DeepClone();
+                    .First(ingestionTracking => ingestionTracking.FileName == document.FileName).DeepClone();
 
                 IngestionTracking modifiedIngestionTracking = storageIngestionTracking.DeepClone();
                 modifiedIngestionTracking.LastSeen = randomDateTime;
@@ -249,7 +249,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     .Returns(externalIngestionTrackingsFound.AsQueryable());
 
             this.downloadServiceMock.Setup(service =>
-                  service.RetrieveDownloadByFileNameAsync(externalIngestionTracking.Id))
+                  service.RetrieveDownloadByFileNameAsync(externalIngestionTracking.FileName))
                       .ReturnsAsync(externalDocument);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -266,7 +266,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     .ReturnsAsync(outputIngestionTracking);
 
             // when
-            await this.downloadOrchestrationService.ProcessAsync(externalIngestionTracking.Id);
+            await this.downloadOrchestrationService.ProcessAsync(externalIngestionTracking.FileName);
 
             // then
             this.ingestionTrackingServiceMock.Verify(service =>
@@ -274,11 +274,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     Times.Once);
 
             this.downloadServiceMock.Verify(service =>
-                service.RetrieveDownloadByFileNameAsync(externalIngestionTracking.Id),
+                service.RetrieveDownloadByFileNameAsync(externalIngestionTracking.FileName),
                     Times.Once);
 
             this.documentServiceMock.Verify(service =>
-                service.RemoveDocumentByFileNameAsync(externalIngestionTracking.Id),
+                service.RemoveDocumentByFileNameAsync(externalIngestionTracking.FileName),
                     Times.Once);
 
             Document newBlobDocument = new Document

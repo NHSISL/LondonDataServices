@@ -16,6 +16,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
             Validate(
                 (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),
+                (Rule: IsInvalid(ingestionTracking.FileName), Parameter: nameof(IngestionTracking.FileName)),
                 (Rule: IsInvalid(ingestionTracking.Source), Parameter: nameof(IngestionTracking.Source)),
                 (Rule: IsInvalid(ingestionTracking.EncryptedFileName),
                     Parameter: nameof(IngestionTracking.EncryptedFileName)),
@@ -47,6 +48,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
             Validate(
                 (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),
+                (Rule: IsInvalid(ingestionTracking.FileName), Parameter: nameof(IngestionTracking.FileName)),
                 (Rule: IsInvalid(ingestionTracking.Source), Parameter: nameof(IngestionTracking.Source)),
                 (Rule: IsInvalid(ingestionTracking.EncryptedFileName),
                     Parameter: nameof(IngestionTracking.EncryptedFileName)),
@@ -66,16 +68,29 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 (Rule: IsNotRecent(ingestionTracking.UpdatedDate), Parameter: nameof(ingestionTracking.UpdatedDate)));
         }
 
-        public void ValidateIngestionTrackingId(string ingestionTrackingId) =>
+        public void ValidateIngestionTrackingId(Guid ingestionTrackingId) =>
             Validate((Rule: IsInvalid(ingestionTrackingId), Parameter: nameof(IngestionTracking.Id)));
+
+        public void ValidateIngestionTrackingFileName(string fileName) =>
+            Validate((Rule: IsInvalid(fileName), Parameter: nameof(IngestionTracking.FileName)));
 
         private static void ValidateStorageIngestionTracking(
             IngestionTracking maybeIngestionTracking,
-            string ingestionTrackingId)
+            Guid ingestionTrackingId)
         {
             if (maybeIngestionTracking is null)
             {
                 throw new NotFoundIngestionTrackingException(ingestionTrackingId);
+            }
+        }
+
+        private static void ValidateStorageIngestionTracking(
+            IngestionTracking maybeIngestionTracking,
+            string fileName)
+        {
+            if (maybeIngestionTracking is null)
+            {
+                throw new NotFoundIngestionTrackingException(fileName);
             }
         }
 

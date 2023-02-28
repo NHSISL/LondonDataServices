@@ -1,8 +1,4 @@
-﻿// ---------------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
-
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -10,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LHDS.Core.Migrations
 {
     /// <inheritdoc />
-    public partial class InititlalMmigration : Migration
+    public partial class AddInitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,7 +15,8 @@ namespace LHDS.Core.Migrations
                 name: "IngestionTrackings",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FileName = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
                     Source = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
                     EncryptedFileName = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
                     DecryptedFileName = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
@@ -63,7 +60,7 @@ namespace LHDS.Core.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IngestionTrackingId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    IngestionTrackingId = table.Column<Guid>(type: "uniqueidentifier", maxLength: 450, nullable: false),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -84,6 +81,12 @@ namespace LHDS.Core.Migrations
                 name: "IX_Audits_IngestionTrackingId",
                 table: "Audits",
                 column: "IngestionTrackingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_IngestionTrackings_FileName",
+                table: "IngestionTrackings",
+                column: "FileName",
+                unique: true);
         }
 
         /// <inheritdoc />

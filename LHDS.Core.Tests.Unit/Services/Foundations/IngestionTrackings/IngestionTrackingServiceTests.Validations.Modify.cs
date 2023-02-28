@@ -73,6 +73,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             var invalidIngestionTrackingException = new InvalidIngestionTrackingException();
 
             invalidIngestionTrackingException.AddData(
+                key: nameof(IngestionTracking.Id),
+                values: "Id is required");
+
+            invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.FileName),
                 values: "Text is required");
 
@@ -183,7 +187,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.FileName),
+                broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.Id),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -236,7 +240,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(It.IsAny<string>()),
+                broker.SelectIngestionTrackingByIdAsync(It.IsAny<Guid>()),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -254,13 +258,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             IngestionTracking nullIngestionTracking = null;
 
             var notFoundIngestionTrackingException =
-                new NotFoundIngestionTrackingException(nonExistIngestionTracking.FileName);
+                new NotFoundIngestionTrackingException(nonExistIngestionTracking.Id);
 
             var expectedIngestionTrackingValidationException =
                 new IngestionTrackingValidationException(notFoundIngestionTrackingException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectIngestionTrackingByIdAsync(nonExistIngestionTracking.FileName))
+                broker.SelectIngestionTrackingByIdAsync(nonExistIngestionTracking.Id))
                 .ReturnsAsync(nullIngestionTracking);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -280,7 +284,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 .BeEquivalentTo(expectedIngestionTrackingValidationException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(nonExistIngestionTracking.FileName),
+                broker.SelectIngestionTrackingByIdAsync(nonExistIngestionTracking.Id),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -319,7 +323,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 new IngestionTrackingValidationException(invalidIngestionTrackingException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.FileName))
+                broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.Id))
                 .ReturnsAsync(storageIngestionTracking);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -339,7 +343,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 .BeEquivalentTo(expectedIngestionTrackingValidationException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.FileName),
+                broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.Id),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -377,7 +381,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 new IngestionTrackingValidationException(invalidIngestionTrackingException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.FileName))
+                broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.Id))
                 .ReturnsAsync(storageIngestionTracking);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -396,7 +400,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             actualIngestionTrackingValidationException.Should().BeEquivalentTo(expectedIngestionTrackingValidationException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.FileName),
+                broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.Id),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -432,7 +436,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 new IngestionTrackingValidationException(invalidIngestionTrackingException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.FileName))
+                broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.Id))
                 .ReturnsAsync(storageIngestionTracking);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -457,7 +461,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.FileName),
+                broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.Id),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

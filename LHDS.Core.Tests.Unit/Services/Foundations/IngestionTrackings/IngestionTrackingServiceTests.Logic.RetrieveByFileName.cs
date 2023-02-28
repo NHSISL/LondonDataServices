@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -22,20 +24,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             IngestionTracking expectedIngestionTracking = storageIngestionTracking.DeepClone();
 
+            IQueryable<IngestionTracking> storageIngestionTrackings =
+                new List<IngestionTracking> { storageIngestionTracking }.AsQueryable();
+
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectIngestionTrackingByIdAsync(inputIngestionTracking.FileName))
-                    .ReturnsAsync(storageIngestionTracking);
+                broker.SelectAllIngestionTrackings())
+                    .Returns(storageIngestionTrackings);
 
             // when
             IngestionTracking actualIngestionTracking =
                 await this.ingestionTrackingService
-                    .RetrieveIngestionTrackingByIdAsync(inputIngestionTracking.FileName);
+                    .RetrieveIngestionTrackingByFileNameAsync(inputIngestionTracking.FileName);
 
             // then
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(inputIngestionTracking.FileName),
+                broker.SelectAllIngestionTrackings(),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

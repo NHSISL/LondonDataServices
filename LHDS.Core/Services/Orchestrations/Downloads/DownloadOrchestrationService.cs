@@ -103,7 +103,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                                 await this.documentService.AddDocumentAsync(newBlobDocument);
                                 await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
-                                LogAudit(document, currentDateTime, "Landed");
+                                LogAudit(newIngestionTracking, document, currentDateTime, "Landed");
                             }
                             else
                             {
@@ -131,39 +131,48 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 ValidateFileName(fileName);
 
-                IngestionTracking tracking =
+                IngestionTracking maybeIngestionTracking =
                     this.ingestionTrackingService.RetrieveAllIngestionTrackings()
                         .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == fileName);
 
-                if (tracking != null)
+                if (maybeIngestionTracking != null)
                 {
                     Document externalDocument =
                             await this.downloadService.RetrieveDownloadByFileNameAsync(fileName);
 
                     var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                    tracking.LastSeen = currentDateTime;
-                    tracking.EncryptedFileSize = externalDocument.DocumentData.Length;
+                    maybeIngestionTracking.LastSeen = currentDateTime;
+                    maybeIngestionTracking.EncryptedFileSize = externalDocument.DocumentData.Length;
                     await this.documentService.RemoveDocumentByFileNameAsync(fileName);
 
                     Document newBlobDocument = new Document
                     {
                         DocumentData = externalDocument.DocumentData,
-                        FileName = tracking.EncryptedFileName
+                        FileName = maybeIngestionTracking.EncryptedFileName
                     };
 
                     await this.documentService.AddDocumentAsync(newBlobDocument);
-                    await this.ingestionTrackingService.ModifyIngestionTrackingAsync(tracking);
-                    LogAudit(externalDocument, currentDateTime, "Refreshed");
+                    await this.ingestionTrackingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);
+
+                    LogAudit(
+                        ingestionTracking: maybeIngestionTracking,
+                        document: externalDocument,
+                        currentDateTime,
+                        message: "Refreshed");
                 }
             });
 
-        private void LogAudit(Document document, DateTimeOffset currentDateTime, string message)
+        private void LogAudit(
+            IngestionTracking ingestionTracking,
+            Document document,
+            DateTimeOffset currentDateTime,
+            string message)
         {
             Audit newAudit =
                 new Audit
                 {
                     Id = Guid.NewGuid(),
-                    IngestionTrackingId = document.FileName,
+                    IngestionTrackingId = ingestionTracking.Id,
                     Message = $"{message} document - {document.FileName}",
                     CreatedBy = "System",
                     CreatedDate = currentDateTime,

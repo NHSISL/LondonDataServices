@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(randomIngestionTracking.FileName),
+                broker.SelectIngestionTrackingByIdAsync(randomIngestionTracking.Id),
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -106,7 +106,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(someIngestionTracking.FileName),
+                broker.SelectIngestionTrackingByIdAsync(someIngestionTracking.Id),
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -156,7 +156,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(randomIngestionTracking.FileName),
+                broker.SelectIngestionTrackingByIdAsync(randomIngestionTracking.Id),
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -207,7 +207,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(randomIngestionTracking.FileName),
+                broker.SelectIngestionTrackingByIdAsync(randomIngestionTracking.Id),
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -258,7 +258,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(randomIngestionTracking.FileName),
+                broker.SelectIngestionTrackingByIdAsync(randomIngestionTracking.Id),
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>

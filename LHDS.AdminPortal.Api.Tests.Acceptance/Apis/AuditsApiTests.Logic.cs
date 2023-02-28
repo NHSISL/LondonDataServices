@@ -21,7 +21,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             // given
             IngestionTracking randomIngestionTracking = await PostRandomIngestionTrackingAsync();
             await DeleteAuditRecordsAsync(randomIngestionTracking);
-            Audit randomAudit = CreateRandomAudit(randomIngestionTracking.Id);
+            Audit randomAudit = CreateRandomAudit(randomIngestionTracking.FileName);
             Audit inputAudit = randomAudit;
             Audit expectedAudit = inputAudit;
 
@@ -34,7 +34,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             // then
             actualAudit.Should().BeEquivalentTo(expectedAudit);
             await this.apiBroker.DeleteAuditByIdAsync(actualAudit.Id);
-            await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
+            await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.FileName);
         }
 
         [Fact]
@@ -43,7 +43,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             // given
             IngestionTracking randomIngestionTracking = await PostRandomIngestionTrackingAsync();
             await DeleteAuditRecordsAsync(randomIngestionTracking);
-            List<Audit> randomAudits = await PostRandomAuditsAsync(randomIngestionTracking.Id);
+            List<Audit> randomAudits = await PostRandomAuditsAsync(randomIngestionTracking.FileName);
             List<Audit> expectedAudits = randomAudits;
 
             // when
@@ -57,7 +57,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
                 await this.apiBroker.DeleteAuditByIdAsync(actualAudit.Id);
             }
 
-            await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
+            await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.FileName);
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             // given
             IngestionTracking randomIngestionTracking = await PostRandomIngestionTrackingAsync();
             await DeleteAuditRecordsAsync(randomIngestionTracking);
-            Audit randomAudit = await PostRandomAuditAsync(randomIngestionTracking.Id);
+            Audit randomAudit = await PostRandomAuditAsync(randomIngestionTracking.FileName);
             Audit expectedAudit = randomAudit;
 
             // when
@@ -75,7 +75,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             // then
             actualAudit.Should().BeEquivalentTo(expectedAudit);
             await this.apiBroker.DeleteAuditByIdAsync(actualAudit.Id);
-            await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
+            await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.FileName);
         }
 
         [Fact]
@@ -84,7 +84,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             // given
             IngestionTracking randomIngestionTracking = await PostRandomIngestionTrackingAsync();
             await DeleteAuditRecordsAsync(randomIngestionTracking);
-            Audit randomAudit = await PostRandomAuditAsync(randomIngestionTracking.Id);
+            Audit randomAudit = await PostRandomAuditAsync(randomIngestionTracking.FileName);
             Audit modifiedAudit = UpdateAuditWithRandomValues(randomAudit);
 
             // when
@@ -94,7 +94,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             // then
             actualAudit.Should().BeEquivalentTo(modifiedAudit);
             await this.apiBroker.DeleteAuditByIdAsync(actualAudit.Id);
-            await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
+            await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.FileName);
         }
 
         [Fact]
@@ -103,7 +103,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             // given
             IngestionTracking randomIngestionTracking = await PostRandomIngestionTrackingAsync();
             await DeleteAuditRecordsAsync(randomIngestionTracking);
-            Audit randomAudit = await PostRandomAuditAsync(randomIngestionTracking.Id);
+            Audit randomAudit = await PostRandomAuditAsync(randomIngestionTracking.FileName);
             Audit inputAudit = randomAudit;
             Audit expectedAudit = inputAudit;
 
@@ -120,13 +120,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
                 getAuditbyIdTask.AsTask());
 
-            await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
+            await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.FileName);
         }
 
         private async Task DeleteAuditRecordsAsync(IngestionTracking inputIngestionTracking)
         {
             var audits = this.apiBroker.auditService.RetrieveAllAudits()
-                .Where(audit => audit.IngestionTrackingId == inputIngestionTracking.Id);
+                .Where(audit => audit.IngestionTrackingId == inputIngestionTracking.FileName);
 
             foreach (var audit in audits)
             {

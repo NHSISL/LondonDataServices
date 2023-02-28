@@ -15,7 +15,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             ValidateIngestionTrackingIsNotNull(ingestionTracking);
 
             Validate(
-                (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),
+                (Rule: IsInvalid(ingestionTracking.FileName), Parameter: nameof(IngestionTracking.FileName)),
                 (Rule: IsInvalid(ingestionTracking.Source), Parameter: nameof(IngestionTracking.Source)),
                 (Rule: IsInvalid(ingestionTracking.EncryptedFileName),
                     Parameter: nameof(IngestionTracking.EncryptedFileName)),
@@ -46,7 +46,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             ValidateIngestionTrackingIsNotNull(ingestionTracking);
 
             Validate(
-                (Rule: IsInvalid(ingestionTracking.Id), Parameter: nameof(IngestionTracking.Id)),
+                (Rule: IsInvalid(ingestionTracking.FileName), Parameter: nameof(IngestionTracking.FileName)),
                 (Rule: IsInvalid(ingestionTracking.Source), Parameter: nameof(IngestionTracking.Source)),
                 (Rule: IsInvalid(ingestionTracking.EncryptedFileName),
                     Parameter: nameof(IngestionTracking.EncryptedFileName)),
@@ -67,7 +67,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
         }
 
         public void ValidateIngestionTrackingId(string ingestionTrackingId) =>
-            Validate((Rule: IsInvalid(ingestionTrackingId), Parameter: nameof(IngestionTracking.Id)));
+            Validate((Rule: IsInvalid(ingestionTrackingId), Parameter: nameof(IngestionTracking.FileName)));
 
         private static void ValidateStorageIngestionTracking(
             IngestionTracking maybeIngestionTracking,

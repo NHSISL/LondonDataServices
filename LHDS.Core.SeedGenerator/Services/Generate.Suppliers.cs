@@ -18,11 +18,15 @@ namespace LHDS.Core.SeedGenerator.Services
 
         private static Filler<Supplier> CreateSupplierFiller(DateTimeOffset dateTimeOffset)
         {
+            Guid id = Guid.NewGuid();
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<Supplier>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(supplier => supplier.Id).Use(id)
+                .OnProperty(supplier => supplier.Name).Use(GetRandomString(maxCharacters: 450))
+                .OnProperty(supplier => supplier.FriendlyName).Use(GetRandomString(maxCharacters: 450))
                 .OnProperty(supplier => supplier.CreatedBy).Use(user)
                 .OnProperty(supplier => supplier.UpdatedBy).Use(user);
 

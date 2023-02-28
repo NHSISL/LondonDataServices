@@ -13,8 +13,10 @@ using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Services.Foundations.Audits;
+using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
+using LHDS.Core.Services.Orchestrations.Decryptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.OData;
@@ -155,11 +157,12 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddTransient<ISupplierService, SupplierService>();
             services.AddTransient<IAuditService, AuditService>();
+            services.AddTransient<IDocumentService, DocumentService>();
         }
 
         private static void AddOrchestrationServices(IServiceCollection services)
         {
-
+            services.AddTransient<IDecryptionOrchestrationService, DecryptionOrchestrationService>();
         }
 
         private IEdmModel GetEdmModel()

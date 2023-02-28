@@ -19,6 +19,18 @@ namespace LHDS.Core.SeedGenerator
     {
         static void Main(string[] args)
         {
+            var logfile = $"{AppDomain.CurrentDomain.BaseDirectory}\\CrashDump.txt";
+            AppDomain.CurrentDomain.UnhandledException += (sender, args1) =>
+            {
+                try
+                {
+                    File.WriteAllText(logfile, args1.ExceptionObject.ToString());
+                }
+                catch
+                {
+                }
+            };
+
             var environmentName = args.FirstOrDefault() ?? "Development";
 
             var configurationBuilder = new ConfigurationBuilder()

@@ -155,5 +155,11 @@ namespace LHDS.Core.SeedGenerator.Services
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static string GetRandomString(int minCharacters = 2, int maxCharacters = 10) =>
+            new MnemonicString(wordCount: GetRandomNumber(min: minCharacters, max: maxCharacters)).GetValue();
+
+        private static int GetRandomNumber(int min = 2, int max = 10) =>
+            new IntRange(min: 2, max: 10).GetValue();
     }
 }

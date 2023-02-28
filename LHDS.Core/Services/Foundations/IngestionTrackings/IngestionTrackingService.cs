@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -38,7 +39,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
         public IQueryable<IngestionTracking> RetrieveAllIngestionTrackings() =>
             TryCatch(() => this.storageBroker.SelectAllIngestionTrackings());
 
-        public ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(string ingestionTrackingId) =>
+        public ValueTask<IngestionTracking> RetrieveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
             TryCatch(async () =>
             {
                 ValidateIngestionTrackingId(ingestionTrackingId);
@@ -51,21 +52,35 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 return maybeIngestionTracking;
             });
 
+        public ValueTask<IngestionTracking> RetrieveIngestionTrackingByFileNameAsync(string fileName) =>
+            TryCatch(async () =>
+            {
+                ValidateIngestionTrackingFileName(fileName);
+
+                IngestionTracking maybeIngestionTracking =
+                    this.storageBroker.SelectAllIngestionTrackings()
+                        .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == fileName);
+
+                ValidateStorageIngestionTracking(maybeIngestionTracking, fileName);
+
+                return await ValueTask.FromResult(maybeIngestionTracking);
+            });
+
         public ValueTask<IngestionTracking> ModifyIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
             TryCatch(async () =>
             {
                 ValidateIngestionTrackingOnModify(ingestionTracking);
 
                 IngestionTracking maybeIngestionTracking =
-                    await this.storageBroker.SelectIngestionTrackingByIdAsync(ingestionTracking.FileName);
+                    await this.storageBroker.SelectIngestionTrackingByIdAsync(ingestionTracking.Id);
 
-                ValidateStorageIngestionTracking(maybeIngestionTracking, ingestionTracking.FileName);
+                ValidateStorageIngestionTracking(maybeIngestionTracking, ingestionTracking.Id);
                 ValidateAgainstStorageIngestionTrackingOnModify(inputIngestionTracking: ingestionTracking, storageIngestionTracking: maybeIngestionTracking);
 
                 return await this.storageBroker.UpdateIngestionTrackingAsync(ingestionTracking);
             });
 
-        public ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(string ingestionTrackingId) =>
+        public ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
             TryCatch(async () =>
             {
                 ValidateIngestionTrackingId(ingestionTrackingId);

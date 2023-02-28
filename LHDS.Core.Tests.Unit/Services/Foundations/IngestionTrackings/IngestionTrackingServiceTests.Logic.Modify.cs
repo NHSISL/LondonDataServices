@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             storageIngestionTracking.UpdatedDate = randomIngestionTracking.CreatedDate;
             IngestionTracking updatedIngestionTracking = inputIngestionTracking;
             IngestionTracking expectedIngestionTracking = updatedIngestionTracking.DeepClone();
-            string ingestionTrackingId = inputIngestionTracking.FileName;
+            Guid ingestionTrackingId = inputIngestionTracking.Id;
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(inputIngestionTracking.FileName),
+                broker.SelectIngestionTrackingByIdAsync(inputIngestionTracking.Id),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

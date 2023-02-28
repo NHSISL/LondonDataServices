@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
@@ -18,7 +19,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
         public IQueryable<IngestionTracking> SelectAllIngestionTrackings() => ReadAll<IngestionTracking>();
 
-        public async ValueTask<IngestionTracking> SelectIngestionTrackingByIdAsync(string ingestionTrackingId) =>
+        public async ValueTask<IngestionTracking> SelectIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
             await ReadAsync<IngestionTracking>(ingestionTrackingId);
 
         public async ValueTask<IngestionTracking> UpdateIngestionTrackingAsync(IngestionTracking ingestionTracking) =>

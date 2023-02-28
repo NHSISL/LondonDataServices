@@ -9,8 +9,9 @@ using LHDS.Core.Models.Foundations.Audits;
 
 namespace LHDS.Core.Models.Foundations.IngestionTrackings
 {
-    public class IngestionTracking : IAudit
+    public class IngestionTracking : IKey, IAudit
     {
+        public Guid Id { get; set; }
         public string FileName { get; set; }
         public string Source { get; set; }
         public string EncryptedFileName { get; set; }

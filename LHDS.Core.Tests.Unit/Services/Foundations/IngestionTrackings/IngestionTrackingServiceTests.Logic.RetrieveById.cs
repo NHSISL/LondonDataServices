@@ -23,18 +23,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             IngestionTracking expectedIngestionTracking = storageIngestionTracking.DeepClone();
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectIngestionTrackingByIdAsync(inputIngestionTracking.FileName))
+                broker.SelectIngestionTrackingByIdAsync(inputIngestionTracking.Id))
                     .ReturnsAsync(storageIngestionTracking);
 
             // when
             IngestionTracking actualIngestionTracking =
-                await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(inputIngestionTracking.FileName);
+                await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(inputIngestionTracking.Id);
 
             // then
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(inputIngestionTracking.FileName),
+                broker.SelectIngestionTrackingByIdAsync(inputIngestionTracking.Id),
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

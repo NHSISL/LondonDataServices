@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     dependancyValidationException.InnerException as Xeption);
 
             this.ingestionTrackingServiceMock.Setup(service =>
-               service.RetrieveIngestionTrackingByIdAsync(randomFileName))
+               service.RetrieveIngestionTrackingByFileNameAsync(randomFileName))
                    .ThrowsAsync(dependancyValidationException);
 
             // when
@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                  .BeEquivalentTo(expectedDependencyException);
 
             this.ingestionTrackingServiceMock.Verify(service =>
-             service.RetrieveIngestionTrackingByIdAsync(randomFileName),
+             service.RetrieveIngestionTrackingByFileNameAsync(randomFileName),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -69,7 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     dependancyException.InnerException as Xeption);
 
             this.ingestionTrackingServiceMock.Setup(service =>
-              service.RetrieveIngestionTrackingByIdAsync(randomFileName))
+              service.RetrieveIngestionTrackingByFileNameAsync(randomFileName))
                   .ThrowsAsync(dependancyException);
 
             // when
@@ -82,7 +82,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.ingestionTrackingServiceMock.Verify(service =>
-             service.RetrieveIngestionTrackingByIdAsync(randomFileName),
+             service.RetrieveIngestionTrackingByFileNameAsync(randomFileName),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -110,7 +110,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 new DecryptionOrchestrationServiceException(failedDecryptionOrchestrationServiceException);
 
             this.ingestionTrackingServiceMock.Setup(service =>
-                service.RetrieveIngestionTrackingByIdAsync(randomFileName))
+                service.RetrieveIngestionTrackingByFileNameAsync(randomFileName))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -123,7 +123,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             actualException.Should().BeEquivalentTo(expectedDecryptionOrchestrationServiceException);
 
             this.ingestionTrackingServiceMock.Verify(service =>
-                service.RetrieveIngestionTrackingByIdAsync(randomFileName),
+                service.RetrieveIngestionTrackingByFileNameAsync(randomFileName),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

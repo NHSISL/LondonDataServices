@@ -185,7 +185,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         {
             var filler = new Filler<IngestionTracking>();
             filler.Setup()
-                .OnProperty(ingestionTracking => ingestionTracking.Id).Use(id)
+                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(id)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset);
 
             return filler;

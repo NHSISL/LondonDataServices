@@ -48,7 +48,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
             foreach (IngestionTracking expectedIngestionTracking in expectedIngestionTrackings)
             {
                 IngestionTracking actualIngestionTracking =
-                    actualIngestionTrackings.Single(approval => approval.Id == expectedIngestionTracking.Id);
+                    actualIngestionTrackings.Single(approval =>
+                        approval.Id == expectedIngestionTracking.Id);
 
                 actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
                 await DeleteAuditRecordsAsync(actualIngestionTracking);
@@ -64,7 +65,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
             IngestionTracking expectedIngestionTracking = randomIngestionTracking;
 
             // when
-            IngestionTracking actualIngestionTracking = await this.apiBroker.GetIngestionTrackingByIdAsync(randomIngestionTracking.Id);
+            IngestionTracking actualIngestionTracking =
+                await this.apiBroker.GetIngestionTrackingByIdAsync(randomIngestionTracking.Id);
 
             // then
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
@@ -77,11 +79,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
         {
             // given
             IngestionTracking randomIngestionTracking = await PostRandomIngestionTrackingAsync();
-            IngestionTracking modifiedIngestionTracking = UpdateIngestionTrackingWithRandomValues(randomIngestionTracking);
+
+            IngestionTracking modifiedIngestionTracking =
+                UpdateIngestionTrackingWithRandomValues(randomIngestionTracking);
 
             // when
             await this.apiBroker.PutIngestionTrackingAsync(modifiedIngestionTracking);
-            IngestionTracking actualIngestionTracking = await this.apiBroker.GetIngestionTrackingByIdAsync(randomIngestionTracking.Id);
+
+            IngestionTracking actualIngestionTracking =
+                await this.apiBroker.GetIngestionTrackingByIdAsync(randomIngestionTracking.Id);
 
             // then
             actualIngestionTracking.Should().BeEquivalentTo(modifiedIngestionTracking);

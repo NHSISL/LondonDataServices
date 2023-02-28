@@ -21,7 +21,8 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.ingestionTrackingService = ingestionTrackingService;
 
         [HttpPost]
-        public async ValueTask<ActionResult<IngestionTracking>> PostIngestionTrackingAsync(IngestionTracking ingestionTracking)
+        public async ValueTask<ActionResult<IngestionTracking>> PostIngestionTrackingAsync(
+            IngestionTracking ingestionTracking)
         {
             try
             {
@@ -55,7 +56,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
-        [EnableQuery(PageSize = 5)]
+        [EnableQuery(PageSize = 50)]
         public ActionResult<IQueryable<IngestionTracking>> Get()
         {
             try
@@ -76,11 +77,12 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet("{ingestionTrackingId}")]
-        public async ValueTask<ActionResult<IngestionTracking>> GetIngestionTrackingByIdAsync(string ingestionTrackingId)
+        public async ValueTask<ActionResult<IngestionTracking>> GetIngestionTrackingByIdAsync(Guid ingestionTrackingId)
         {
             try
             {
-                IngestionTracking ingestionTracking = await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
+                IngestionTracking ingestionTracking =
+                    await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
 
                 return Ok(ingestionTracking);
             }
@@ -143,7 +145,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpDelete("{ingestionTrackingId}")]
-        public async ValueTask<ActionResult<IngestionTracking>> DeleteIngestionTrackingByIdAsync(string ingestionTrackingId)
+        public async ValueTask<ActionResult<IngestionTracking>> DeleteIngestionTrackingByIdAsync(Guid ingestionTrackingId)
         {
             try
             {

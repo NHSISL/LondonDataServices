@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
@@ -15,7 +16,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         public async ValueTask<IngestionTracking> PostIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
             await this.apiFactoryClient.PostContentAsync(IngestionTrackingsRelativeUrl, ingestionTracking);
 
-        public async ValueTask<IngestionTracking> GetIngestionTrackingByIdAsync(string ingestionTrackingId) =>
+        public async ValueTask<IngestionTracking> GetIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
             await this.apiFactoryClient.GetContentAsync<IngestionTracking>($"{IngestionTrackingsRelativeUrl}/{ingestionTrackingId}");
 
         public async ValueTask<List<IngestionTracking>> GetAllIngestionTrackingsAsync() =>
@@ -24,7 +25,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         public async ValueTask<IngestionTracking> PutIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
             await this.apiFactoryClient.PutContentAsync(IngestionTrackingsRelativeUrl, ingestionTracking);
 
-        public async ValueTask<IngestionTracking> DeleteIngestionTrackingByIdAsync(string ingestionTrackingId) =>
+        public async ValueTask<IngestionTracking> DeleteIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
             await this.apiFactoryClient.DeleteContentAsync<IngestionTracking>($"{IngestionTrackingsRelativeUrl}/{ingestionTrackingId}");
     }
 }

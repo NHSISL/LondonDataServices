@@ -99,5 +99,44 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(documentServiceException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<Document>> PutDocumentAsync(Document document)
+        {
+            try
+            {
+                Document modifiedDocument =
+                    await this.documentService.ModifyDocumentAsync(document);
+
+                return Ok(modifiedDocument);
+            }
+            catch (DocumentValidationException documentValidationException)
+                when (documentValidationException.InnerException is NotFoundDocumentException)
+            {
+                return NotFound(documentValidationException.InnerException);
+            }
+            catch (DocumentValidationException documentValidationException)
+            {
+                return BadRequest(documentValidationException.InnerException);
+            }
+            catch (DocumentDependencyValidationException documentValidationException)
+                when (documentValidationException.InnerException is InvalidDocumentReferenceException)
+            {
+                return FailedDependency(documentValidationException.InnerException);
+            }
+            catch (DocumentDependencyValidationException documentDependencyValidationException)
+               when (documentDependencyValidationException.InnerException is AlreadyExistsDocumentException)
+            {
+                return Conflict(documentDependencyValidationException.InnerException);
+            }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                return InternalServerError(documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                return InternalServerError(documentServiceException);
+            }
+        }
     }
 }

@@ -63,6 +63,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddSingleton<IAuditService, AuditService>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
+            services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IDownloadBroker, DownloadBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();

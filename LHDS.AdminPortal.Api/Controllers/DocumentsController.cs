@@ -138,5 +138,43 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(documentServiceException);
             }
         }
+
+        [HttpDelete("{documentId}")]
+        public async ValueTask<ActionResult<Document>> DeleteDocumentByIdAsync(Guid documentId)
+        {
+            try
+            {
+                Document deletedDocument =
+                    await this.documentService.RemoveDocumentByIdAsync(documentId);
+
+                return Ok(deletedDocument);
+            }
+            catch (DocumentValidationException documentValidationException)
+                when (documentValidationException.InnerException is NotFoundDocumentException)
+            {
+                return NotFound(documentValidationException.InnerException);
+            }
+            catch (DocumentValidationException documentValidationException)
+            {
+                return BadRequest(documentValidationException.InnerException);
+            }
+            catch (DocumentDependencyValidationException documentDependencyValidationException)
+                when (documentDependencyValidationException.InnerException is LockedDocumentException)
+            {
+                return Locked(documentDependencyValidationException.InnerException);
+            }
+            catch (DocumentDependencyValidationException documentDependencyValidationException)
+            {
+                return BadRequest(documentDependencyValidationException);
+            }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                return InternalServerError(documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                return InternalServerError(documentServiceException);
+            }
+        }
     }
 }

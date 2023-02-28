@@ -1,14 +1,25 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
 import TableBaseData from "../bases/components/Table/TableBase.Data";
 import TableBaseRow from "../bases/components/Table/TableBase.Row";
 
-const AuditRowView = () => {
+interface AuditRowViewProps {
+    ingestionTrackingId: string
+}
+
+const AuditRowView: FunctionComponent<AuditRowViewProps> = (props: { ingestionTrackingId: any; }) => {
+    const {
+        ingestionTrackingId
+    } = props;
 
     return (
         <div>
             <TableBaseRow>
                 <TableBaseData>
                     Landed document - /emisnightingale-data-preprod-provider-extracts/IM1/sftp/70CD5674-1F0E-44E8-95C5-75D70EA9A291/20230113/delta_76606_Admin_Location_20230113134411_70CD5674-1F0E-44E8-95C5-75D70EA9A291.csv.gpg
+
+                    <br />
+
+                    ingestionTrackingId
                 </TableBaseData>
                 <TableBaseData>
                     23-Aug-2022

@@ -1,11 +1,11 @@
+import { Guid } from "guid-typescript";
 
 export class IngestionTrackingView {
-    public id: string;
+    public id: Guid;
     public source?: string;
     public encryptedFileName?: string;
     public decryptedFileName?: string;
     public decrypted?: boolean;
-    public createdDate?: Date;
     public lastSeen?: Date;
     public fileDeleted?: boolean;
     public recordCount?: number;
@@ -13,12 +13,11 @@ export class IngestionTrackingView {
     public decryptedFileSize?: number;
 
     constructor(
-        id: string,
+        id: Guid,
         source?: string,
         encryptedFileName?: string,
         decryptedFileName?: string,
         decrypted?: boolean,
-        createdDate?: Date,
         lastSeen?: Date,
         fileDeleted?: boolean,
         recordCount?: number,

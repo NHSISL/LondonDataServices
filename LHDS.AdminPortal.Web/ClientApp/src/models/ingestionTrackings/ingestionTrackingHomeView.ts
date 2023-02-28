@@ -1,7 +1,8 @@
+import { Guid } from 'guid-typescript';
 import { Audit } from '../audits/audit';
 
 export class IngestionTrackingHomeView {
-    public id: string;
+    public id: Guid;
     public source: string;
     public encryptedFileName: string;
     public decryptedFileName: string;
@@ -14,7 +15,7 @@ export class IngestionTrackingHomeView {
     public audit: Audit;
 
     constructor(
-        id: string,
+        id: Guid,
         source: string,
         encryptedFileName: string,
         decryptedFileName: string,

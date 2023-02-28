@@ -17,7 +17,6 @@ const IngestionTrackingDetailCard: FunctionComponent<IngestionTrackingDetailCard
         children
     } = props;
 
-
     return (
         <div>
             <CardBase>

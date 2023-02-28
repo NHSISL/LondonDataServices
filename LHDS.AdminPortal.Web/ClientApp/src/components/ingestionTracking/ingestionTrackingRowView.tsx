@@ -26,7 +26,10 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
                 {ingestionTracking.decrypted && <Badge pill bg="success text-white">Re-land</Badge>}
                 {ingestionTracking.decrypted && <Badge pill bg="success text-white">Decrypt</Badge>}
                 <Badge pill bg="success text-white">Download</Badge> &nbsp;
-                <Badge pill bg="success text-white"><Link to={`/ingestionTrackingDetail/${ingestionTracking.id}`}>Details</Link></Badge>
+                <Badge pill bg="success text-white"><Link to={`/ingestionTrackingDetail${ingestionTracking.id}`}>Details</Link></Badge>
+
+                {encodeURIComponent(`${ingestionTracking.id}`)}
+
             </TableBaseData>
             <TableBaseData>
                 <Link to={`/ingestionTrackingDetail/${ingestionTracking.id}`}>

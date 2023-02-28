@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,34 @@ namespace LHDS.AdminPortal.Api.Controllers
                     this.documentService.RetrieveAllDocuments();
 
                 return Ok(retrievedDocuments);
+            }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                return InternalServerError(documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                return InternalServerError(documentServiceException);
+            }
+        }
+
+        [HttpGet("{documentId}")]
+        public async ValueTask<ActionResult<Document>> GetDocumentByIdAsync(Guid documentId)
+        {
+            try
+            {
+                Document document = await this.documentService.RetrieveDocumentByIdAsync(documentId);
+
+                return Ok(document);
+            }
+            catch (DocumentValidationException documentValidationException)
+                when (documentValidationException.InnerException is NotFoundDocumentException)
+            {
+                return NotFound(documentValidationException.InnerException);
+            }
+            catch (DocumentValidationException documentValidationException)
+            {
+                return BadRequest(documentValidationException.InnerException);
             }
             catch (DocumentDependencyException documentDependencyException)
             {

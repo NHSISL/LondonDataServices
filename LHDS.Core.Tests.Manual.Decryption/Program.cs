@@ -12,7 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace LHDS.Clients.Tests.Decryption.Manual
+namespace LHDS.Core.Tests.Manual.Decryption
 {
     internal class Program
     {
@@ -44,7 +44,7 @@ namespace LHDS.Clients.Tests.Decryption.Manual
             IIngestionTrackingService ingestionTrackingService =
                 serviceProvider.GetService<IIngestionTrackingService>();
 
-            var items = ingestionTrackingService.RetrieveAllIngestionTracking()
+            var items = ingestionTrackingService.RetrieveAllIngestionTrackings()
                 .Where(ingestionTrackingService => ingestionTrackingService.Decrypted == false);
 
             foreach (IngestionTracking item in items)

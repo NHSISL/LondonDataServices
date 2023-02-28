@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace LHDS.Core.Landings.Tests.Manual
+namespace LHDS.Core.Tests.Manual.Landings
 {
     internal class Program
     {

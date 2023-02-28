@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Audits;
@@ -23,7 +24,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             List<Document> randomDocuments = CreateRandomDocuments();
             List<Document> externalDocuments = randomDocuments;
 
-            IngestionTracking externalIngestionTrackingFound = null;
+            List<IngestionTracking> externalIngestionTrackingsFound =
+                new List<IngestionTracking>();
 
             this.downloadServiceMock.Setup(service =>
                service.RetrieveListOfDocumentsToProcessAsync())
@@ -32,8 +34,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             foreach (var document in externalDocuments)
             {
                 this.ingestionTrackingServiceMock.Setup(service =>
-                    service.RetrieveIngestionTrackingByIdAsync(document.FileName))
-                        .ReturnsAsync(externalIngestionTrackingFound);
+                    service.RetrieveAllIngestionTrackings())
+                        .Returns(externalIngestionTrackingsFound.AsQueryable());
 
                 this.downloadServiceMock.Setup(service =>
                   service.RetrieveDownloadByFileNameAsync(document.FileName))
@@ -56,12 +58,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                       DecryptedFileName =
                         $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
                       Decrypted = false,
-                      CreatedDate = randomDateTime,
                       LastSeen = randomDateTime,
                       FileDeleted = false,
                       RecordCount = 0,
                       EncryptedFileSize = document.DocumentData.Length,
                       DecryptedFileSize = 0,
+                      CreatedBy = "System",
+                      CreatedDate = randomDateTime,
+                      UpdatedBy = "System",
+                      UpdatedDate = randomDateTime
                   };
 
                 IngestionTracking storageIngestionTracking = newIngestionTracking.DeepClone();
@@ -82,7 +87,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             foreach (var document in externalDocuments)
             {
                 this.ingestionTrackingServiceMock.Verify(service =>
-                    service.RetrieveIngestionTrackingByIdAsync(document.FileName),
+                    service.RetrieveAllIngestionTrackings(),
                         Times.Once);
 
                 this.dateTimeBrokerMock.Verify(broker =>
@@ -102,12 +107,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                       DecryptedFileName =
                         $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
                       Decrypted = false,
-                      CreatedDate = randomDateTime,
                       LastSeen = randomDateTime,
                       FileDeleted = false,
                       RecordCount = 0,
                       EncryptedFileSize = document.DocumentData.Length,
                       DecryptedFileSize = 0,
+                      CreatedBy = "System",
+                      CreatedDate = randomDateTime,
+                      UpdatedBy = "System",
+                      UpdatedDate = randomDateTime
                   };
 
                 IngestionTracking storageIngestionTracking = newIngestionTracking.DeepClone();
@@ -149,7 +157,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             List<Document> randomDocuments = CreateRandomDocuments();
             List<Document> externalDocuments = randomDocuments;
-            IngestionTracking externalIngestionTrackingFound = CreateRandomIngestionTracking(randomDateTime);
+
+            List<IngestionTracking> externalIngestionTrackingsFound =
+                CreateRandomIngestionTrackings(randomDateTime, randomDocuments);
 
             this.downloadServiceMock.Setup(service =>
                service.RetrieveListOfDocumentsToProcessAsync())
@@ -158,8 +168,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             foreach (var document in externalDocuments)
             {
                 this.ingestionTrackingServiceMock.Setup(service =>
-                    service.RetrieveIngestionTrackingByIdAsync(document.FileName))
-                        .ReturnsAsync(externalIngestionTrackingFound);
+                    service.RetrieveAllIngestionTrackings())
+                        .Returns(externalIngestionTrackingsFound.AsQueryable());
 
                 this.downloadServiceMock.Setup(service =>
                    service.RetrieveDownloadByFileNameAsync(document.FileName))
@@ -173,12 +183,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     ? document.FileName
                     : "/" + document.FileName;
 
-                IngestionTracking storageIngestionTracking = externalIngestionTrackingFound.DeepClone();
+                IngestionTracking storageIngestionTracking = externalIngestionTrackingsFound
+                    .First(ingestionTracking => ingestionTracking.Id == document.FileName).DeepClone();
+
                 IngestionTracking modifiedIngestionTracking = storageIngestionTracking.DeepClone();
                 modifiedIngestionTracking.LastSeen = randomDateTime;
 
                 this.ingestionTrackingServiceMock.Setup(service =>
-                    service.ModifyIngestionTrackingAsync(externalIngestionTrackingFound))
+                    service.ModifyIngestionTrackingAsync(modifiedIngestionTracking))
                         .ReturnsAsync(storageIngestionTracking);
             }
 
@@ -192,12 +204,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
             foreach (var document in externalDocuments)
             {
-                IngestionTracking storageIngestionTracking = externalIngestionTrackingFound.DeepClone();
+                IngestionTracking storageIngestionTracking = externalIngestionTrackingsFound
+                    .First(ingestionTracking => ingestionTracking.Id == document.FileName).DeepClone();
+
                 IngestionTracking modifiedIngestionTracking = storageIngestionTracking.DeepClone();
                 modifiedIngestionTracking.LastSeen = randomDateTime;
 
                 this.ingestionTrackingServiceMock.Verify(service =>
-                    service.RetrieveIngestionTrackingByIdAsync(document.FileName),
+                    service.RetrieveAllIngestionTrackings(),
                         Times.Once);
 
                 this.dateTimeBrokerMock.Verify(broker =>
@@ -227,21 +241,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             Document randomDocument = CreateRandomDocument();
             Document externalDocument = randomDocument;
-            IngestionTracking externalIngestionTrackingFound = CreateRandomIngestionTracking(randomDateTime);
+            IngestionTracking externalIngestionTracking = CreateRandomIngestionTracking(randomDateTime);
+            List<IngestionTracking> externalIngestionTrackingsFound = new List<IngestionTracking> { externalIngestionTracking };
 
             this.ingestionTrackingServiceMock.Setup(service =>
-                service.RetrieveIngestionTrackingByIdAsync(externalIngestionTrackingFound.Id))
-                    .ReturnsAsync(externalIngestionTrackingFound);
+                service.RetrieveAllIngestionTrackings())
+                    .Returns(externalIngestionTrackingsFound.AsQueryable());
 
             this.downloadServiceMock.Setup(service =>
-                  service.RetrieveDownloadByFileNameAsync(externalIngestionTrackingFound.Id))
+                  service.RetrieveDownloadByFileNameAsync(externalIngestionTracking.Id))
                       .ReturnsAsync(externalDocument);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
                     .Returns(randomDateTime);
 
-            IngestionTracking updatedIngestionTracking = externalIngestionTrackingFound.DeepClone();
+            IngestionTracking updatedIngestionTracking = externalIngestionTracking.DeepClone();
             updatedIngestionTracking.LastSeen = randomDateTime;
             updatedIngestionTracking.EncryptedFileSize = externalDocument.DocumentData.Length;
             IngestionTracking outputIngestionTracking = updatedIngestionTracking.DeepClone();
@@ -251,25 +266,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     .ReturnsAsync(outputIngestionTracking);
 
             // when
-            await this.downloadOrchestrationService.ProcessAsync(externalIngestionTrackingFound.Id);
+            await this.downloadOrchestrationService.ProcessAsync(externalIngestionTracking.Id);
 
             // then
             this.ingestionTrackingServiceMock.Verify(service =>
-                service.RetrieveIngestionTrackingByIdAsync(externalIngestionTrackingFound.Id),
+                service.RetrieveAllIngestionTrackings(),
                     Times.Once);
 
             this.downloadServiceMock.Verify(service =>
-                service.RetrieveDownloadByFileNameAsync(externalIngestionTrackingFound.Id),
+                service.RetrieveDownloadByFileNameAsync(externalIngestionTracking.Id),
                     Times.Once);
 
             this.documentServiceMock.Verify(service =>
-                service.RemoveDocumentByFileNameAsync(externalIngestionTrackingFound.Id),
+                service.RemoveDocumentByFileNameAsync(externalIngestionTracking.Id),
                     Times.Once);
 
             Document newBlobDocument = new Document
             {
                 DocumentData = randomDocument.DocumentData,
-                FileName = externalIngestionTrackingFound.EncryptedFileName
+                FileName = externalIngestionTracking.EncryptedFileName
             };
 
             this.documentServiceMock.Verify(service =>
@@ -300,17 +315,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         {
             // given
             string nonExistentFileName = GetRandomMessage();
+            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+            Document randomDocument = CreateRandomDocument();
+            Document externalDocument = randomDocument;
+            IngestionTracking externalIngestionTracking = CreateRandomIngestionTracking(randomDateTime);
+            List<IngestionTracking> externalIngestionTrackingsFound = new List<IngestionTracking> { externalIngestionTracking };
 
             this.ingestionTrackingServiceMock.Setup(service =>
-                service.RetrieveIngestionTrackingByIdAsync(nonExistentFileName))
-                    .ReturnsAsync((IngestionTracking)null);
+                service.RetrieveAllIngestionTrackings())
+                    .Returns(externalIngestionTrackingsFound.AsQueryable());
 
             // when
             await this.downloadOrchestrationService.ProcessAsync(nonExistentFileName);
 
             // then
             this.ingestionTrackingServiceMock.Verify(service =>
-                service.RetrieveIngestionTrackingByIdAsync(nonExistentFileName),
+                service.RetrieveAllIngestionTrackings(),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -334,6 +354,30 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     Times.Never);
 
             this.documentServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldNotProcessNamedDocumentsIfDownloadIsNullAsync()
+        {
+            // given
+            string fileName = GetRandomMessage();
+            List<IngestionTracking> ingestionTrackings = new List<IngestionTracking>();
+
+            this.ingestionTrackingServiceMock.Setup(service =>
+                service.RetrieveAllIngestionTrackings())
+                    .Returns(ingestionTrackings.AsQueryable());
+
+            // when
+            await this.downloadOrchestrationService.ProcessAsync(fileName);
+
+            // then
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.RetrieveAllIngestionTrackings(),
+                    Times.Once);
+
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

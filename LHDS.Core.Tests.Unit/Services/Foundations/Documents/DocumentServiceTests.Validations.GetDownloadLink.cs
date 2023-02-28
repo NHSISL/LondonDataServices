@@ -1,0 +1,56 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System;
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using Moq;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
+{
+    public partial class DocumentServiceTests
+    {
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public async Task ShouldThrowValidationExceptionOnGetDownloadLinkIfFileNameIsInvalid(string invalidInput)
+        {
+            // Given
+            string invalidFileName = invalidInput;
+
+            var invalidDocumentException = new InvalidDocumentException();
+
+            invalidDocumentException.AddData(
+                key: "fileName",
+                values: "Text is required");
+
+            var expectedDocumentValidationException
+                = new DocumentValidationException(invalidDocumentException);
+
+            // When
+            ValueTask<string> uploadFileTask = this.documentService.GetDownloadLinkAsync(invalidFileName);
+
+            DocumentValidationException actualDocumentValidationException =
+                await Assert.ThrowsAsync<DocumentValidationException>(uploadFileTask.AsTask);
+
+            // Then
+            actualDocumentValidationException.Should().BeEquivalentTo(expectedDocumentValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDocumentValidationException))),
+                        Times.Once);
+
+            this.blobStorageBrokerMock.Verify(broker =>
+               broker.GetDownloadLinkAsync(invalidFileName, It.IsAny<DateTimeOffset>()),
+                   Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

@@ -3,7 +3,7 @@
 // ---------------------------------------------------------------
 
 using LHDS.Core.Models.Foundations.Suppliers;
-using LHDS.Core.Models.Suppliers.Exceptions;
+using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using LHDS.Core.Services.Foundations.Suppliers;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;

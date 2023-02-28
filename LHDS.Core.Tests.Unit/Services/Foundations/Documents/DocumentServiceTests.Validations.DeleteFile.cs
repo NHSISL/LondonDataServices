@@ -46,6 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             var documentService = new DocumentService(
                     blobStorageBroker: this.blobStorageBrokerMock.Object,
+                    dateTimeBroker: this.dateTimeBrokerMock.Object,
                     loggingBroker: this.loggingBrokerMock.Object,
                     configuration: inMemoryConfiguration);
 

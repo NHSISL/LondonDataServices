@@ -141,10 +141,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             var expectedDependencyException =
                 new DownloadOrchestrationDependencyValidationException(
                     dependancyValidationException.InnerException as Xeption);
-            
+
             this.ingestionTrackingServiceMock.Setup(service =>
-              service.RetrieveIngestionTrackingByIdAsync(It.IsAny<string>()))
-                  .ThrowsAsync(dependancyValidationException);
+              service.RetrieveAllIngestionTrackings())
+                  .Throws(dependancyValidationException);
 
             // when
             ValueTask processTask = this.downloadOrchestrationService.ProcessAsync(fileName);
@@ -156,7 +156,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.ingestionTrackingServiceMock.Verify(service => 
-                service.RetrieveIngestionTrackingByIdAsync(It.IsAny<string>()), 
+                service.RetrieveAllIngestionTrackings(), 
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -183,8 +183,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     dependancyException.InnerException as Xeption);
 
             this.ingestionTrackingServiceMock.Setup(service =>
-              service.RetrieveIngestionTrackingByIdAsync(It.IsAny<string>()))
-                  .ThrowsAsync(dependancyException);
+              service.RetrieveAllIngestionTrackings())
+                  .Throws(dependancyException);
 
             // when
             ValueTask processTask = this.downloadOrchestrationService.ProcessAsync(fileName);
@@ -196,7 +196,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.ingestionTrackingServiceMock.Verify(service =>
-              service.RetrieveIngestionTrackingByIdAsync(It.IsAny<string>()),
+              service.RetrieveAllIngestionTrackings(),
                 Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -225,8 +225,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 new DownloadOrchestrationServiceException(failedDownloadOrchestrationServiceException);
 
             this.ingestionTrackingServiceMock.Setup(service =>
-                service.RetrieveIngestionTrackingByIdAsync(It.IsAny<string>()))
-                    .ThrowsAsync(serviceException);
+                service.RetrieveAllIngestionTrackings())
+                    .Throws(serviceException);
 
             // when
             ValueTask processTask = this.downloadOrchestrationService.ProcessAsync(fileName);
@@ -238,7 +238,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             actualException.Should().BeEquivalentTo(expectedDownloadOrchestrationServiceException);
 
             this.ingestionTrackingServiceMock.Verify(service =>
-                service.RetrieveIngestionTrackingByIdAsync(It.IsAny<string>()),
+                service.RetrieveAllIngestionTrackings(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

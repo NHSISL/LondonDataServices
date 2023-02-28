@@ -10,7 +10,6 @@ namespace LHDS.Core.Models.Foundations.Documents.Exceptions
     public class FailedDocumentRequestException : Xeption
     {
         public FailedDocumentRequestException(Exception innerException)
-            : base(message: "Failed document request occurred, please contact support", innerException)
-        { }
+            : base(message: "Failed document request occurred, please contact support", innerException) { }
     }
 }

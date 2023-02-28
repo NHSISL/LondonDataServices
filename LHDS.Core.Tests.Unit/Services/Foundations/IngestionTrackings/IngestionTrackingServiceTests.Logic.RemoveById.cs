@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
@@ -18,8 +18,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
         public async Task ShouldRemoveIngestionTrackingByIdAsync()
         {
             // given
-            string randomIngestionTrackingId = Guid.NewGuid().ToString();
-            string inputIngestionTrackingId = randomIngestionTrackingId;
+            string randomId = Guid.NewGuid().ToString();
+            string inputIngestionTrackingId = randomId;
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             IngestionTracking expectedInputIngestionTracking = storageIngestionTracking;

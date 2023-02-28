@@ -4,6 +4,7 @@
 
 using System.IO;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
@@ -14,15 +15,18 @@ namespace LHDS.Core.Services.Foundations.Documents
     public partial class DocumentService : IDocumentService
     {
         private readonly IBlobStorageBroker blobStorageBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly IConfiguration configuration;
 
         public DocumentService(
             IBlobStorageBroker blobStorageBroker,
+            IDateTimeBroker dateTimeBroker,
             ILoggingBroker loggingBroker,
             IConfiguration configuration)
         {
             this.blobStorageBroker = blobStorageBroker;
+            this.dateTimeBroker = dateTimeBroker;
             this.loggingBroker = loggingBroker;
             this.configuration = configuration;
         }
@@ -59,6 +63,15 @@ namespace LHDS.Core.Services.Foundations.Documents
            {
                ValidateDeleteArguments(fileName);
                await this.blobStorageBroker.DeleteFileAsync(fileName);
+           });
+
+        public ValueTask<string> GetDownloadLinkAsync(string fileName) =>
+           TryCatch(async () =>
+           {
+               ValidateGetDownloadLinkArguments(fileName);
+               var expireOn = this.dateTimeBroker.GetCurrentDateTimeOffset().AddMinutes(5);
+
+               return await this.blobStorageBroker.GetDownloadLinkAsync(fileName, expireOn);
            });
     }
 }

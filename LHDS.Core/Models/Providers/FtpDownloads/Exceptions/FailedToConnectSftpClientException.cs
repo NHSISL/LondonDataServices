@@ -9,7 +9,6 @@ namespace LHDS.Core.Models.Providers.FtpDownloads.Exceptions
     public class FailedToConnectSftpClientException : Xeption
     {
         public FailedToConnectSftpClientException()
-            : base(message: "Failed to connect to SFTP client.")
-        { }
+            : base(message: "Failed to connect to SFTP client.") { }
     }
 }

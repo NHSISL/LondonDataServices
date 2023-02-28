@@ -9,6 +9,7 @@ namespace LHDS.Core.Clients
     using System.Threading.Tasks;
     using Azure.Storage.Blobs;
     using Azure.Storage.Blobs.Models;
+    using Azure.Storage.Sas;
     using LHDS.Core.Brokers.Loggings;
 
     public class AzureBlobClient : IAzureBlobClient
@@ -73,6 +74,32 @@ namespace LHDS.Core.Clients
             loggingBroker.LogInformation(fileName);
             var blobClient = blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
             await blobClient.DeleteAsync(DeleteSnapshotsOption.None);
+        }
+
+        public async ValueTask<Uri> GetDownloadUriAsync(string fileName, string container, DateTimeOffset expiresOn)
+        {
+            loggingBroker.LogInformation(fileName);
+            var blobClient = this.blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
+            var userDelegationKey = blobServiceClient.GetUserDelegationKey(DateTimeOffset.UtcNow, expiresOn);
+
+            var sasBuilder = new BlobSasBuilder()
+            {
+                BlobContainerName = blobClient.BlobContainerName,
+                BlobName = blobClient.Name,
+                Resource = "b", // b for blob, c for container
+                StartsOn = DateTimeOffset.UtcNow,
+                ExpiresOn = expiresOn,
+            };
+
+            sasBuilder.SetPermissions(BlobSasPermissions.Read); // read permissions
+
+            // Add the SAS token to the container URI.
+            var blobUriBuilder = new BlobUriBuilder(blobClient.Uri)
+            {
+                Sas = sasBuilder.ToSasQueryParameters(userDelegationKey, blobServiceClient.AccountName)
+            };
+
+            return await Task.FromResult(blobUriBuilder.ToUri());
         }
     }
 }

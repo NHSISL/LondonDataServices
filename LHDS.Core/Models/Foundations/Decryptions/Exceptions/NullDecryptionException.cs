@@ -9,7 +9,6 @@ namespace LHDS.Core.Models.Foundations.Decryptions.Exceptions
     public class NullDecryptionException : Xeption
     {
         public NullDecryptionException()
-            : base(message: "Decryption is null.")
-        { }
+            : base(message: "Decryption is null.") { }
     }
 }

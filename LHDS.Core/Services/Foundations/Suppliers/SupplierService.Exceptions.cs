@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using LHDS.Core.Models.Foundations.Suppliers;
-using LHDS.Core.Models.Suppliers.Exceptions;
+using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Xeptions;

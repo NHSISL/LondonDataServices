@@ -14,6 +14,7 @@ export const supplierService = {
         return useMutation((supplier: Supplier) => {
             const date = new Date();
             supplier.createdDate = supplier.updatedDate = date;
+            supplier.createdBy = supplier.updatedBy = msal.accounts[0].username;
 
             return supplierBroker.PostSupplierAsync(supplier);
         },

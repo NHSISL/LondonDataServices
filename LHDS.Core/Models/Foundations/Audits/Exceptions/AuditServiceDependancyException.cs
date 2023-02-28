@@ -10,7 +10,6 @@ namespace LHDS.Core.Models.Foundations.Audits.Exceptions
     public class AuditServiceDependencyException : Xeption
     {
         public AuditServiceDependencyException(Exception innerException)
-            : base(message: "Audit service dependancy error occurred, contact support.", innerException)
-        { }
+            : base(message: "Audit service dependancy error occurred, contact support.", innerException) { }
     }
 }

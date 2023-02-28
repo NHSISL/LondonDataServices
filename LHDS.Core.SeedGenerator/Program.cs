@@ -1,0 +1,64 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.SeedGenerator.Services;
+using LHDS.Core.Services.Foundations.Audits;
+using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.Suppliers;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
+namespace LHDS.Core.SeedGenerator
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            var environmentName = args.FirstOrDefault() ?? "Development";
+
+            var configurationBuilder = new ConfigurationBuilder()
+                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
+
+            IConfiguration configuration = configurationBuilder.Build();
+
+            var serviceProvider = new ServiceCollection()
+                .AddLogging(builder =>
+                {
+                    builder.AddConsole();
+                })
+                .AddSingleton<IConfiguration>(_ => configuration)
+                .AddTransient<IStorageBroker, StorageBroker>()
+                .AddTransient<IDateTimeBroker, DateTimeBroker>()
+                .AddTransient<ILoggingBroker, LoggingBroker>()
+                .AddTransient<IAuditService, AuditService>()
+                .AddTransient<IIngestionTrackingService, IngestionTrackingService>()
+                .AddTransient<ISupplierService, SupplierService>()
+                .AddTransient<IGenerate, Generate>()
+                .BuildServiceProvider();
+
+            var generate = serviceProvider.GetService<IGenerate>();
+
+            try
+            {
+                if (generate != null)
+                {
+                    generate.GenerateRecords(2, 5, 3);
+                }
+            }
+            catch (Exception ex)
+            {
+                ILoggingBroker logger = (ILoggingBroker)serviceProvider.GetService(typeof(ILoggingBroker));
+                logger.LogError(ex);
+                Console.WriteLine(ex.Message);
+            }
+        }
+    }
+}

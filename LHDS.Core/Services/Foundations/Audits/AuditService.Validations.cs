@@ -3,8 +3,8 @@
 // ---------------------------------------------------------------
 
 using System;
-using LHDS.Core.Models.Audits.Exceptions;
 using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.Audits.Exceptions;
 
 namespace LHDS.Core.Services.Foundations.Audits
 {

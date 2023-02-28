@@ -9,7 +9,6 @@ namespace LHDS.Core.Models.Foundations.Downloads.Exceptions
     public class NullDownloadException : Xeption
     {
         public NullDownloadException()
-            : base(message: "Download is null.")
-        { }
+            : base(message: "Download is null.") { }
     }
 }

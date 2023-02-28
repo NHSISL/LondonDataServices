@@ -9,7 +9,6 @@ namespace LHDS.Core.Models.Foundations.Audits.Exceptions
     public class InvalidAuditException : Xeption
     {
         public InvalidAuditException()
-            : base(message: "Invalid audit. Please correct the errors and try again.")
-        { }
+            : base(message: "Invalid audit. Please correct the errors and try again.") { }
     }
 }

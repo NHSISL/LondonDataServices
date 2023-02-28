@@ -1,9 +1,6 @@
 import { debounce } from "lodash";
 import React, { FunctionComponent, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
 import { IngestionTrackingHomeView } from "../../models/ingestionTrackings/ingestionTrackingHomeView";
-import securityPoints from "../../SecurityMatrix";
 import { IngestionTrackingHomeViewService } from "../../services/views/ingestionTrackingHomeViewService";
 import CardBase from "../bases/components/Card/CardBase";
 import CardBaseBody from "../bases/components/Card/CardBase.Body";
@@ -15,9 +12,7 @@ import SearchBase from "../bases/inputs/SearchBase";
 import InfiniteScroll from "../bases/pagers/InfiniteScroll";
 import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
-import { SecuredComponents } from "../Links";
 import IngestionTrackingRow from "./ingestionTrackingRowView";
-import IngestionTrackingRowView from "./ingestionTrackingRowView";
 
 
 

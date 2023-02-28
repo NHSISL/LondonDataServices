@@ -1,3 +1,4 @@
+import { Guid } from 'guid-typescript';
 import { useEffect, useState } from 'react';
 import { IngestionTracking } from '../../models/ingestionTrackings/ingestionTracking';
 import { IngestionTrackingView } from '../../models/views/components/ingestionTracking/ingestionTrackingView';
@@ -43,10 +44,10 @@ export const ingestionTrackingViewService = {
         }
     },
 
-    useGetIngestionTrackingById: (id: string) => {
+    useGetIngestionTrackingById: (id: Guid) => {
         try {
-            const query = '?Id=' + encodeURI(`${id}`)
-            const response = ingestionTrackingService.useGetIngestionTrackingById(query);
+            const query = `?id eq ${id}`
+            const response = ingestionTrackingService.useGetAllIngestionTrackings(query);
             const [mappedIngestionTracking, setMappedIngestionTracking] = useState<IngestionTrackingView>();
 
             useEffect(() => {

@@ -27,7 +27,7 @@ const AuditTable: FunctionComponent<AuditTableProps> = (props) => {
                     <CardBaseContent>
                         <TableBase>
                             <TableBaseTbody>
-                                <AuditRow ingestionTrackingId={ingestionTrackingId} />
+                                <AuditRow  />
                             </TableBaseTbody>
                         </TableBase>
                     </CardBaseContent>

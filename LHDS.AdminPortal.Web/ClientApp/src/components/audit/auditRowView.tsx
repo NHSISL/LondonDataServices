@@ -3,12 +3,12 @@ import TableBaseData from "../bases/components/Table/TableBase.Data";
 import TableBaseRow from "../bases/components/Table/TableBase.Row";
 
 interface AuditRowViewProps {
-    ingestionTrackingId: string
+    
 }
 
-const AuditRowView: FunctionComponent<AuditRowViewProps> = (props: { ingestionTrackingId: any; }) => {
+const AuditRowView: FunctionComponent<AuditRowViewProps> = (props: {  }) => {
     const {
-        ingestionTrackingId
+      
     } = props;
 
     return (

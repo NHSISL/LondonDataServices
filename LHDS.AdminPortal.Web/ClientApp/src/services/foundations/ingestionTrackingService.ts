@@ -29,7 +29,7 @@ export const ingestionTrackingService = {
             });
     },
 
-    useGetIngestionTrackingById: (id: string) => {
+    useGetIngestionTrackingById: (id: Guid) => {
         const ingestionTrackingBroker = new IngestionTrackingBroker();
 
         return useQuery(

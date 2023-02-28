@@ -1,3 +1,4 @@
+import { Guid } from "guid-typescript";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { IngestionTrackingView } from "../../models/views/components/ingestionTracking/ingestionTrackingView";
 import { ingestionTrackingViewService } from "../../services/views/ingestionTrackingViewService";
@@ -15,7 +16,7 @@ const IngestionTrackingDetail: FunctionComponent<IngestionTrackingDetailProps> =
     } = props;
 
     const { mappedIngestionTracking: ingestionTrackingRetrieved } =
-        ingestionTrackingViewService.useGetIngestionTrackingById(ingestionTrackingId)
+        ingestionTrackingViewService.useGetIngestionTrackingById(Guid.parse(ingestionTrackingId))
 
     return (
         <div>

@@ -2,12 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
-using LHDS.Core.Services.Foundations.Documents;
-using Microsoft.Extensions.Configuration;
 using Moq;
 using Xunit;
 
@@ -19,14 +17,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public async Task ShouldThrowValidationExceptionOnDeleteFileIfInputsIsInvalid(string invalidInput)
+        public async Task ShouldThrowValidationExceptionOnGetDownloadLinkIfFileNameIsInvalid(string invalidInput)
         {
             // Given
-            string fileName = invalidInput;
-            string containerName = invalidInput;
+            string invalidFileName = invalidInput;
 
-            var invalidDocumentException =
-                new InvalidDocumentException();
+            var invalidDocumentException = new InvalidDocumentException();
 
             invalidDocumentException.AddData(
                 key: "fileName",
@@ -35,26 +31,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             var expectedDocumentValidationException
                 = new DocumentValidationException(invalidDocumentException);
 
-            var appSettingsStub = new Dictionary<string, string> {
-                {"blobContainerName", invalidInput},
-                {"blobUriValidMinutes", "1"}
-            };
-
-            var inMemoryConfiguration = new ConfigurationBuilder()
-                .AddInMemoryCollection(appSettingsStub)
-                .Build();
-
-            var documentService = new DocumentService(
-                    blobStorageBroker: this.blobStorageBrokerMock.Object,
-                    dateTimeBroker: this.dateTimeBrokerMock.Object,
-                    loggingBroker: this.loggingBrokerMock.Object,
-                    configuration: inMemoryConfiguration);
-
             // When
-            ValueTask deleteFileTask = documentService.RemoveDocumentByFileNameAsync(fileName);
+            ValueTask<string> uploadFileTask = this.documentService.GetDownloadLinkAsync(invalidFileName);
 
             DocumentValidationException actualDocumentValidationException =
-                await Assert.ThrowsAsync<DocumentValidationException>(deleteFileTask.AsTask);
+                await Assert.ThrowsAsync<DocumentValidationException>(uploadFileTask.AsTask);
 
             // Then
             actualDocumentValidationException.Should().BeEquivalentTo(expectedDocumentValidationException);
@@ -65,8 +46,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                         Times.Once);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.DeleteFileAsync(It.IsAny<string>()),
-                    Times.Never);
+               broker.GetDownloadLinkAsync(invalidFileName, It.IsAny<DateTimeOffset>()),
+                   Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

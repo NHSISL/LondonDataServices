@@ -24,7 +24,6 @@ export const ingestionTrackingViewService = {
                         ingestionTracking.encryptedFileName,
                         ingestionTracking.decryptedFileName,
                         ingestionTracking.decrypted,
-                        ingestionTracking.createdDate,
                         ingestionTracking.lastSeen,
                         ingestionTracking.fileDeleted,
                         ingestionTracking.recordCount,

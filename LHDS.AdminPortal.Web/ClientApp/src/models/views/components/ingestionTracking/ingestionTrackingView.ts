@@ -1,4 +1,3 @@
-import { Guid } from 'guid-typescript';
 
 export class IngestionTrackingView {
     public id: string;
@@ -31,7 +30,6 @@ export class IngestionTrackingView {
         this.encryptedFileName = encryptedFileName || "";
         this.decryptedFileName = decryptedFileName || "";
         this.decrypted = decrypted;
-        this.createdDate = createdDate ;
         this.lastSeen = lastSeen;
         this.fileDeleted = fileDeleted;
         this.recordCount = recordCount;

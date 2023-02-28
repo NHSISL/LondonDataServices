@@ -33,11 +33,17 @@ namespace LHDS.Core.SeedGenerator.Services
             DateTimeOffset dateTimeOffset,
             Supplier supplier)
         {
+            Guid id = Guid.NewGuid();
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<IngestionTracking>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(supplier => supplier.Id).Use(id)
+                .OnProperty(supplier => supplier.FileName).Use(GetRandomString(maxCharacters: 450))
+                .OnProperty(supplier => supplier.Source).Use(GetRandomString(maxCharacters: 450))
+                .OnProperty(supplier => supplier.EncryptedFileName).Use(GetRandomString(maxCharacters: 450))
+                .OnProperty(supplier => supplier.DecryptedFileName).Use(GetRandomString(maxCharacters: 450))
                 .OnProperty(ingestionTracking => ingestionTracking.Source).Use(supplier.Name)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user);

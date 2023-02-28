@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
@@ -39,6 +40,26 @@ namespace LHDS.AdminPortal.Api.Controllers
                when (documentDependencyValidationException.InnerException is AlreadyExistsDocumentException)
             {
                 return Conflict(documentDependencyValidationException.InnerException);
+            }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                return InternalServerError(documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                return InternalServerError(documentServiceException);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult<IQueryable<Document>> GetAllDocuments()
+        {
+            try
+            {
+                IQueryable<Document> retrievedDocuments =
+                    this.documentService.RetrieveAllDocuments();
+
+                return Ok(retrievedDocuments);
             }
             catch (DocumentDependencyException documentDependencyException)
             {

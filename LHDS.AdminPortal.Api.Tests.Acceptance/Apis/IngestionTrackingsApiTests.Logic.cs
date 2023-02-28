@@ -26,12 +26,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
             await this.apiBroker.PostIngestionTrackingAsync(inputIngestionTracking);
 
             IngestionTracking actualIngestionTracking =
-                await this.apiBroker.GetIngestionTrackingByIdAsync(inputIngestionTracking.Id);
+                await this.apiBroker.GetIngestionTrackingByIdAsync(inputIngestionTracking.FileName);
 
             // then
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
             await DeleteAuditRecordsAsync(actualIngestionTracking);
-            await this.apiBroker.DeleteIngestionTrackingByIdAsync(actualIngestionTracking.Id);
+            await this.apiBroker.DeleteIngestionTrackingByIdAsync(actualIngestionTracking.FileName);
         }
 
         [Fact]
@@ -48,11 +48,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
             foreach (IngestionTracking expectedIngestionTracking in expectedIngestionTrackings)
             {
                 IngestionTracking actualIngestionTracking =
-                    actualIngestionTrackings.Single(approval => approval.Id == expectedIngestionTracking.Id);
+                    actualIngestionTrackings.Single(approval => approval.FileName == expectedIngestionTracking.FileName);
 
                 actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
                 await DeleteAuditRecordsAsync(actualIngestionTracking);
-                await this.apiBroker.DeleteIngestionTrackingByIdAsync(actualIngestionTracking.Id);
+                await this.apiBroker.DeleteIngestionTrackingByIdAsync(actualIngestionTracking.FileName);
             }
         }
 
@@ -64,12 +64,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
             IngestionTracking expectedIngestionTracking = randomIngestionTracking;
 
             // when
-            IngestionTracking actualIngestionTracking = await this.apiBroker.GetIngestionTrackingByIdAsync(randomIngestionTracking.Id);
+            IngestionTracking actualIngestionTracking = await this.apiBroker.GetIngestionTrackingByIdAsync(randomIngestionTracking.FileName);
 
             // then
             actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
             await DeleteAuditRecordsAsync(actualIngestionTracking);
-            await this.apiBroker.DeleteIngestionTrackingByIdAsync(actualIngestionTracking.Id);
+            await this.apiBroker.DeleteIngestionTrackingByIdAsync(actualIngestionTracking.FileName);
         }
 
         [Fact]
@@ -81,12 +81,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
 
             // when
             await this.apiBroker.PutIngestionTrackingAsync(modifiedIngestionTracking);
-            IngestionTracking actualIngestionTracking = await this.apiBroker.GetIngestionTrackingByIdAsync(randomIngestionTracking.Id);
+            IngestionTracking actualIngestionTracking = await this.apiBroker.GetIngestionTrackingByIdAsync(randomIngestionTracking.FileName);
 
             // then
             actualIngestionTracking.Should().BeEquivalentTo(modifiedIngestionTracking);
             await DeleteAuditRecordsAsync(actualIngestionTracking);
-            await this.apiBroker.DeleteIngestionTrackingByIdAsync(actualIngestionTracking.Id);
+            await this.apiBroker.DeleteIngestionTrackingByIdAsync(actualIngestionTracking.FileName);
         }
 
         [Fact]
@@ -101,10 +101,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
             await DeleteAuditRecordsAsync(inputIngestionTracking);
 
             IngestionTracking deletedIngestionTracking =
-                await this.apiBroker.DeleteIngestionTrackingByIdAsync(inputIngestionTracking.Id);
+                await this.apiBroker.DeleteIngestionTrackingByIdAsync(inputIngestionTracking.FileName);
 
             ValueTask<IngestionTracking> getIngestionTrackingbyIdTask =
-                this.apiBroker.GetIngestionTrackingByIdAsync(inputIngestionTracking.Id);
+                this.apiBroker.GetIngestionTrackingByIdAsync(inputIngestionTracking.FileName);
 
             // then
             deletedIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
@@ -117,7 +117,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
         private async Task DeleteAuditRecordsAsync(IngestionTracking inputIngestionTracking)
         {
             var audits = this.apiBroker.auditService.RetrieveAllAudits()
-                .Where(audit => audit.IngestionTrackingId == inputIngestionTracking.Id);
+                .Where(audit => audit.IngestionTrackingId == inputIngestionTracking.FileName);
 
             foreach (var audit in audits)
             {

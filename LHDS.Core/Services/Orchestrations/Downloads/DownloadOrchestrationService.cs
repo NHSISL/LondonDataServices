@@ -62,7 +62,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         {
                             IngestionTracking maybeIngestionTracking =
                                 this.ingestionTrackingService.RetrieveAllIngestionTrackings()
-                                    .FirstOrDefault(ingestionTracking => ingestionTracking.Id == document.FileName);
+                                    .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == document.FileName);
 
                             if (maybeIngestionTracking == null)
                             {
@@ -78,7 +78,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                 IngestionTracking newIngestionTracking =
                                   new IngestionTracking
                                   {
-                                      Id = document.FileName,
+                                      FileName = document.FileName,
                                       Source = source,
                                       EncryptedFileName = $"/encrypted{filename}",
                                       DecryptedFileName =
@@ -133,7 +133,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                 IngestionTracking tracking =
                     this.ingestionTrackingService.RetrieveAllIngestionTrackings()
-                        .FirstOrDefault(ingestionTracking => ingestionTracking.Id == fileName);
+                        .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == fileName);
 
                 if (tracking != null)
                 {

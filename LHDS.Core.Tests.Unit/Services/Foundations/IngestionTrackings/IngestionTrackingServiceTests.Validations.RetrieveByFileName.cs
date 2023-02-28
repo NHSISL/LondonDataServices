@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 new InvalidIngestionTrackingException();
 
             invalidIngestionTrackingException.AddData(
-                key: nameof(IngestionTracking.Id),
+                key: nameof(IngestionTracking.FileName),
                 values: "Text is required");
 
             var expectedIngestionTrackingValidationException =

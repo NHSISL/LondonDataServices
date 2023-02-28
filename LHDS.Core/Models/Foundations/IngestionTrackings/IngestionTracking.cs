@@ -11,7 +11,7 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings
 {
     public class IngestionTracking : IAudit
     {
-        public string Id { get; set; }
+        public string FileName { get; set; }
         public string Source { get; set; }
         public string EncryptedFileName { get; set; }
         public string DecryptedFileName { get; set; }

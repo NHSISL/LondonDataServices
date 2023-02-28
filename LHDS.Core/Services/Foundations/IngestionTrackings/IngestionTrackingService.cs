@@ -57,9 +57,9 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 ValidateIngestionTrackingOnModify(ingestionTracking);
 
                 IngestionTracking maybeIngestionTracking =
-                    await this.storageBroker.SelectIngestionTrackingByIdAsync(ingestionTracking.Id);
+                    await this.storageBroker.SelectIngestionTrackingByIdAsync(ingestionTracking.FileName);
 
-                ValidateStorageIngestionTracking(maybeIngestionTracking, ingestionTracking.Id);
+                ValidateStorageIngestionTracking(maybeIngestionTracking, ingestionTracking.FileName);
                 ValidateAgainstStorageIngestionTrackingOnModify(inputIngestionTracking: ingestionTracking, storageIngestionTracking: maybeIngestionTracking);
 
                 return await this.storageBroker.UpdateIngestionTrackingAsync(ingestionTracking);

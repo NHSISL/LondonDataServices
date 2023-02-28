@@ -5,7 +5,6 @@ import ButtonBase from "../bases/buttons/ButtonBase";
 import TableBaseRow from "../bases/components/Table/TableBase.Row";
 import TableBaseData from "../bases/components/Table/TableBase.Data";
 import { SecuredComponents } from "../Links";
-import securityPoints from "../../SecurityMatrix";
 
 interface SupplierRowNewProps {
     onAdd: (value: boolean) => void;

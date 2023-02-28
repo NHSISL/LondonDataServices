@@ -1,5 +1,5 @@
 import React, { FunctionComponent, FormEventHandler } from "react";
-import { Label, Input, SearchIcon } from 'nhsuk-react-components'
+import { Input } from 'nhsuk-react-components'
 
 interface SearchBaseProps {
     id: string;

@@ -12,5 +12,6 @@ namespace LHDS.Core.Services.Foundations.Documents
         ValueTask AddDocumentAsync(Document document);
         ValueTask<Document> RetrieveDocumentByFileNameAsync(string fileName);
         ValueTask RemoveDocumentByFileNameAsync(string filename);
+        ValueTask<string> GetDownloadLinkAsync(string fileName);
     }
 }

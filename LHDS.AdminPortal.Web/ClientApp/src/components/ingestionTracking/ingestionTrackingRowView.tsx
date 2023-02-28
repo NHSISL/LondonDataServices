@@ -1,55 +1,42 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
 import { Badge } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 import ButtonBase from "../bases/buttons/ButtonBase";
-import TableBaseData from "../bases/components/Table/TableBase.Data";
 import TableBaseRow from "../bases/components/Table/TableBase.Row";
+import TableBaseData from "../bases/components/Table/TableBase.Data";
+import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
 
-const IngestionTrackingTable = () => {
+type IngestionTrackingRowProps = {
+    ingestionTracking: IngestionTracking;
+}
+
+const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (props) => {
+    const {
+        ingestionTracking
+    } = props;
 
     return (
-        <div>
-            <TableBaseRow>
-                <TableBaseData>
-                    EMIS
-                </TableBaseData>
-                <TableBaseData>
-                    .../delta_76356_Admin_Location_20230109132842_70CD5674-1F0E-44E8-95C5-75D70EA9A291.csv.gpg
-                    <br />
-                    <Badge  bg="success text-white">Re-land</Badge> &nbsp;
-                    <Badge  bg="success text-white">Decrypt</Badge> &nbsp;
-                    <Badge bg="success text-white">Download</Badge> &nbsp;
-                    <Badge bg="success text-white"> <Link to={'/ingestionTrackingDetail/'}>Details</Link></Badge> &nbsp;
-                </TableBaseData>
-                <TableBaseData>
-                    <Link to={'/ingestionTrackingDetail/'}>
-                        <ButtonBase onClick={() => { }} add>
-                            Details
-                        </ButtonBase>
-                    </Link>
-                </TableBaseData>
-            </TableBaseRow>
-
-            <TableBaseRow>
-                <TableBaseData>
-                    EMIS
-                </TableBaseData>
-                <TableBaseData>
-                    .../delta_76356_Admin_Location_20230109132842_70CD5674-1F0E-44E8-95C5-75D70EA9A291.csv.gpg
-                    <br />
-                    <Badge pill bg="success text-white">re-land</Badge> &nbsp;
-                    <Badge pill bg="success text-white">decrypt</Badge> &nbsp;
-                    <Badge pill bg="success text-white">download</Badge> &nbsp;
-                </TableBaseData>
-                <TableBaseData>
-                    <Link to={'/ingestionTrackingDetail/'}>
-                        <ButtonBase onClick={() => { }} add>
-                            Details
-                        </ButtonBase>
-                    </Link>
-                </TableBaseData>
-            </TableBaseRow>
-        </div>
+        <TableBaseRow>
+            <TableBaseData>
+                {ingestionTracking.source}
+            </TableBaseData>
+            <TableBaseData>
+                {ingestionTracking.encryptedFileName}
+                <br />
+                {ingestionTracking.decrypted && <Badge pill bg="success text-white">Re-land</Badge>}
+                {ingestionTracking.decrypted && <Badge pill bg="success text-white">Decrypt</Badge>}
+                <Badge pill bg="success text-white">Download</Badge> &nbsp;
+                <Badge pill bg="success text-white"><Link to={`/ingestionTrackingDetail/${ingestionTracking.id}`}>Details</Link></Badge>
+            </TableBaseData>
+            <TableBaseData>
+                <Link to={`/ingestionTrackingDetail/${ingestionTracking.id}`}>
+                    <ButtonBase onClick={() => { }} add>
+                        Details
+                    </ButtonBase>
+                </Link>
+            </TableBaseData>
+        </TableBaseRow>
     );
 }
-export default IngestionTrackingTable;
+
+export default IngestionTrackingRow;

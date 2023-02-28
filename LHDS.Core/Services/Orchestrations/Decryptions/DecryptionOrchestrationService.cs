@@ -8,6 +8,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Decryptions;
 using LHDS.Core.Services.Foundations.Documents;
@@ -46,7 +47,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 ValidateFileNameIsNotNull(fileName);
 
                 var ingestionTracking = await this.ingestionTrackingService
-                    .RetrieveIngestionTrackingByIdAsync(fileName);
+                    .RetrieveIngestionTrackingByFileNameAsync(fileName);
 
                 Document document = await this.documentService
                     .RetrieveDocumentByFileNameAsync(ingestionTracking.EncryptedFileName);
@@ -69,10 +70,10 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 await this.ingestionTrackingService
                     .ModifyIngestionTrackingAsync(ingestionTracking);
 
-                LogAudit(document);
+                LogAudit(ingestionTracking, document: newDecryptedDocument);
             });
 
-        private void LogAudit(Document document)
+        private void LogAudit(IngestionTracking ingestionTracking, Document document)
         {
             var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
@@ -80,7 +81,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 new Audit
                 {
                     Id = Guid.NewGuid(),
-                    IngestionTrackingId = document.FileName,
+                    IngestionTrackingId = ingestionTracking.Id,
                     Message = $"Decrypted document - {document.FileName}",
                     CreatedDate = currentDateTime
                 };

@@ -64,7 +64,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             // given 
             var invalidAudit = new Audit
             {
-                IngestionTrackingId = invalidText,
                 Message = invalidText
             };
 
@@ -76,7 +75,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             invalidAuditException.AddData(
                 key: nameof(Audit.IngestionTrackingId),
-                values: "Text is required");
+                values: "Id is required");
 
             invalidAuditException.AddData(
                 key: nameof(Audit.Message),

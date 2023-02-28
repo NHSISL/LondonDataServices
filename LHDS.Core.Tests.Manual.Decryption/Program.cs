@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Manual.Decryption
 
             foreach (IngestionTracking item in items)
             {
-                await decryptionClient.DecryptAsync(item.Id);
+                await decryptionClient.DecryptAsync(item.FileName);
             }
         }
     }

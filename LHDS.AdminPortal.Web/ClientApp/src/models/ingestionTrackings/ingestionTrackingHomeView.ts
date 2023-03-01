@@ -3,6 +3,7 @@ import { Audit } from '../audits/audit';
 
 export class IngestionTrackingHomeView {
     public id: Guid;
+    public fileName: string;
     public source: string;
     public encryptedFileName: string;
     public decryptedFileName: string;
@@ -16,6 +17,7 @@ export class IngestionTrackingHomeView {
 
     constructor(
         id: Guid,
+        fileName: string,
         source: string,
         encryptedFileName: string,
         decryptedFileName: string,
@@ -28,6 +30,7 @@ export class IngestionTrackingHomeView {
         audit: Audit
     ) {
         this.id = id;
+        this.fileName = fileName 
         this.source = source 
         this.encryptedFileName = encryptedFileName 
         this.decryptedFileName = decryptedFileName 

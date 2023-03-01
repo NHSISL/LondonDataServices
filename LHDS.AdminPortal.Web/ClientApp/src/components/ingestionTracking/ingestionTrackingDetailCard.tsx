@@ -9,13 +9,31 @@ import SupplierDetailCardView from "./ingestionTrackingDetailCardView";
 interface IngestionTrackingDetailCardProps {
     ingestionTracking: IngestionTrackingView;
     children?: React.ReactNode;
+    onDownload: (ingestionTracking: IngestionTrackingView) => void;
+    onReLand: (ingestionTracking: IngestionTrackingView) => void;
+    onReDecrypt: (ingestionTracking: IngestionTrackingView) => void;
 }
 
 const IngestionTrackingDetailCard: FunctionComponent<IngestionTrackingDetailCardProps> = (props) => {
     const {
         ingestionTracking,
-        children
+        children,
+        onDownload,
+        onReLand,
+        onReDecrypt
     } = props;
+
+    const handleDownload = async (ingestionTracking: IngestionTrackingView) => {
+        await onDownload(ingestionTracking);
+    }
+
+    const handleReland = async (ingestionTracking: IngestionTrackingView) => {
+        await onReLand(ingestionTracking);
+    }
+
+    const handlReDecrypt = async (ingestionTracking: IngestionTrackingView) => {
+        await onReDecrypt(ingestionTracking);
+    }
 
     return (
         <div>
@@ -27,6 +45,9 @@ const IngestionTrackingDetailCard: FunctionComponent<IngestionTrackingDetailCard
                     <CardBaseContent>
                         <SupplierDetailCardView
                             ingestionTracking={ingestionTracking}
+                            onDownload={handleDownload}
+                            onReLand={handleReland}
+                            onReDecrypt={handlReDecrypt}
                         />
 
                         {children !== undefined && (

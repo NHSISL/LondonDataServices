@@ -28,6 +28,7 @@ export const IngestionTrackingHomeViewService = {
                         x.data.forEach((ingestionTracking: IngestionTracking) => {
                             IngestionTrackings.push(new IngestionTrackingHomeView(
                                 ingestionTracking.id,
+                                ingestionTracking.fileName,
                                 ingestionTracking.source,
                                 ingestionTracking.encryptedFileName,
                                 ingestionTracking.decryptedFileName,

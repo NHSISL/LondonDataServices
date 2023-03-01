@@ -88,6 +88,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 values: "Text is required");
 
             invalidSupplierException.AddData(
+                key: nameof(Supplier.DecryptionManualTriggerUrl),
+                values: "Text is required");
+
+            invalidSupplierException.AddData(
                 key: nameof(Supplier.CreatedDate),
                 values: "Date is required");
 

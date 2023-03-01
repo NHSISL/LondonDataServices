@@ -4,6 +4,8 @@ import { IngestionTrackingView } from "../../models/views/components/ingestionTr
 import { documentViewService } from "../../services/views/Documents/DocumentViewService";
 import { ingestionTrackingViewService } from "../../services/views/ingestionTrackingViewService";
 import IngestionTrackingDetailCard from "./ingestionTrackingDetailCard";
+import { toastSuccess } from "../../brokers/toastBroker";
+import { documentService } from "../../services/foundations/documentService";
 
 interface IngestionTrackingDetailProps {
     ingestionTrackingId: string;
@@ -19,18 +21,27 @@ const IngestionTrackingDetail: FunctionComponent<IngestionTrackingDetailProps> =
     const { mappedIngestionTracking: ingestionTrackingRetrieved } =
         ingestionTrackingViewService.useGetIngestionTrackingById(Guid.parse(ingestionTrackingId))
 
+    const [downloadFileName, setDownloadFileName] = useState<string>("");
+
+    const { mappedLink } = documentService.useGetDownloadLinkByFileName(downloadFileName)
+
     const handleDownload = async (ingestionTrackingView: IngestionTrackingView) => {
-        var pow = documentViewService.useGetDownloadLinkByFileName(ingestionTrackingView.fileName)
-        alert(pow);
+        setDownloadFileName(ingestionTrackingView.fileName)
+        //const mappedLink = documentService.useGetDownloadLinkByFileName(ingestionTrackingView.fileName)
+        //toastSuccess(`${mappedLink}`);
     }
 
     const handleReLand = async (ingestionTrackingView: IngestionTrackingView) => {
-        alert("Re-Land");
+        toastSuccess("Re-Land");
     }
 
     const handleReDecrypt = async (ingestionTrackingView: IngestionTrackingView) => {
-        alert("Re-Decrypt");
+        toastSuccess("Re-Decrypt");
     }
+
+    useEffect(() => {
+
+    })
 
     return (
         <div>

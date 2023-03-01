@@ -7,12 +7,14 @@ using Azure.Core.Extensions;
 using Azure.Storage.Blobs;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Services.Foundations.Audits;
+using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -149,6 +151,8 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
+            services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
+            services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
         }
 
         private static void AddFoundationServices(IServiceCollection services)
@@ -156,6 +160,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddTransient<ISupplierService, SupplierService>();
             services.AddTransient<IAuditService, AuditService>();
+            services.AddTransient<IDocumentService, DocumentService>();
         }
 
         private static void AddOrchestrationServices(IServiceCollection services)

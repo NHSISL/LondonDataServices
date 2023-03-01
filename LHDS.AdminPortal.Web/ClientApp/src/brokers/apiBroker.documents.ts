@@ -2,7 +2,7 @@ import { Document } from "../models/documents/document";
 import ApiBroker from "./apiBroker";
 
 class DocumentBroker {
-    relativeDocumentUrl = '/api/documents';
+    relativeDocumentUrl = '/api/documents/';
 
     private apiBroker: ApiBroker = new ApiBroker();
 

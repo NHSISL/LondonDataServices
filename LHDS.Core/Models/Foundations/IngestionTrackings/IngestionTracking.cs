@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using LHDS.Core.Models.Bases;
 using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.Suppliers;
 
 namespace LHDS.Core.Models.Foundations.IngestionTrackings
 {
@@ -13,7 +14,7 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings
     {
         public Guid Id { get; set; }
         public string FileName { get; set; }
-        public string Source { get; set; }
+        public Guid SupplierId { get; set; }
         public string EncryptedFileName { get; set; }
         public string DecryptedFileName { get; set; }
         public bool Decrypted { get; set; }
@@ -27,6 +28,7 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings
         public DateTimeOffset UpdatedDate { get; set; }
         public string UpdatedBy { get; set; }
 
+        public Supplier Supplier { get; set; }
         public List<Audit> Audits { get; set; }
     }
 }

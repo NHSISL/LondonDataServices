@@ -3,7 +3,9 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using LHDS.Core.Models.Bases;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 
 namespace LHDS.Core.Models.Foundations.Suppliers
 {
@@ -14,9 +16,12 @@ namespace LHDS.Core.Models.Foundations.Suppliers
         public string FriendlyName { get; set; }
         public string Description { get; set; }
         public string LandingManualTriggerUrl { get; set; }
+        public string DecryptionManualTriggerUrl { get; set; }
         public string CreatedBy { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public string UpdatedBy { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
+
+        public List<IngestionTracking> IngestionTrackings { get; set; }
     }
 }

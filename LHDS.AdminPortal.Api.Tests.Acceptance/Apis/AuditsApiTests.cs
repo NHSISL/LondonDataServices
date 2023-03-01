@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using Tynamix.ObjectFiller;
 using Xunit;
 
@@ -83,18 +84,18 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             return filler;
         }
 
-        private async ValueTask<IngestionTracking> PostRandomIngestionTrackingAsync()
+        private async ValueTask<IngestionTracking> PostRandomIngestionTrackingAsync(Guid supplierId)
         {
-            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking();
+            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(supplierId);
             await this.apiBroker.PostIngestionTrackingAsync(randomIngestionTracking);
 
             return randomIngestionTracking;
         }
 
-        private static IngestionTracking CreateRandomIngestionTracking() =>
-            CreateRandomIngestionTrackingFiller().Create();
+        private static IngestionTracking CreateRandomIngestionTracking(Guid supplierId) =>
+            CreateRandomIngestionTrackingFiller(supplierId).Create();
 
-        private static Filler<IngestionTracking> CreateRandomIngestionTrackingFiller()
+        private static Filler<IngestionTracking> CreateRandomIngestionTrackingFiller(Guid supplierId)
         {
             string user = Guid.NewGuid().ToString();
             DateTime now = DateTime.UtcNow;
@@ -102,10 +103,38 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
-                .OnProperty(audit => audit.CreatedDate).Use(now)
-                .OnProperty(audit => audit.CreatedBy).Use(user)
-                .OnProperty(audit => audit.UpdatedDate).Use(now)
-                .OnProperty(audit => audit.UpdatedBy).Use(user);
+                .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
+                .OnProperty(ingestionTracking => ingestionTracking.CreatedDate).Use(now)
+                .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
+                .OnProperty(ingestionTracking => ingestionTracking.UpdatedDate).Use(now)
+                .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private async ValueTask<Supplier> PostRandomSupplierAsync()
+        {
+            Supplier randomSupplier = CreateRandomSupplier();
+            await this.apiBroker.PostSupplierAsync(randomSupplier);
+
+            return randomSupplier;
+        }
+
+        private static Supplier CreateRandomSupplier() =>
+            CreateRandomSupplierFiller().Create();
+
+        private static Filler<Supplier> CreateRandomSupplierFiller()
+        {
+            string userId = Guid.NewGuid().ToString();
+            DateTime now = DateTime.UtcNow;
+            var filler = new Filler<Supplier>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnProperty(supplier => supplier.CreatedDate).Use(now)
+                .OnProperty(supplier => supplier.CreatedBy).Use(userId)
+                .OnProperty(supplier => supplier.UpdatedDate).Use(now)
+                .OnProperty(supplier => supplier.UpdatedBy).Use(userId);
 
             return filler;
         }

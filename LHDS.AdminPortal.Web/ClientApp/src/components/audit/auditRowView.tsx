@@ -15,11 +15,7 @@ const AuditRowView: FunctionComponent<AuditRowViewProps> = (props: {  }) => {
         <div>
             <TableBaseRow>
                 <TableBaseData>
-                    Landed document - /emisnightingale-data-preprod-provider-extracts/IM1/sftp/70CD5674-1F0E-44E8-95C5-75D70EA9A291/20230113/delta_76606_Admin_Location_20230113134411_70CD5674-1F0E-44E8-95C5-75D70EA9A291.csv.gpg
-
-                    <br />
-
-                    ingestionTrackingId
+                    TEST DATA
                 </TableBaseData>
                 <TableBaseData>
                     23-Aug-2022
@@ -27,10 +23,10 @@ const AuditRowView: FunctionComponent<AuditRowViewProps> = (props: {  }) => {
             </TableBaseRow>
             <TableBaseRow>
                 <TableBaseData>
-                    Decrypted document - /encrypted/emisnightingale-data-preprod-provider-extracts/IM1/sftp/70CD5674-1F0E-44E8-95C5-75D70EA9A291/20230109/delta_76356_Appointment_Slot_20230109132842_70CD5674-1F0E-44E8-95C5-75D70EA9A291.csv
+                    TEST DATA
                 </TableBaseData>
                 <TableBaseData>
-                    23-Aug-2022
+                    TEST DATE
                 </TableBaseData>
             </TableBaseRow>
            

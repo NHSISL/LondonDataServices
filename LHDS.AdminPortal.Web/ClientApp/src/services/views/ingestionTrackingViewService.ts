@@ -21,6 +21,7 @@ export const ingestionTrackingViewService = {
                 if (response.data) {
                     const ingestionTrackings = response.data.map((ingestionTracking: IngestionTracking) => new IngestionTrackingView(
                         ingestionTracking.id,
+                        ingestionTracking.fileName,
                         ingestionTracking.source,
                         ingestionTracking.encryptedFileName,
                         ingestionTracking.decryptedFileName,
@@ -29,7 +30,11 @@ export const ingestionTrackingViewService = {
                         ingestionTracking.fileDeleted,
                         ingestionTracking.recordCount,
                         ingestionTracking.encryptedFileSize,
-                        ingestionTracking.decryptedFileSize
+                        ingestionTracking.decryptedFileSize,
+                        ingestionTracking.createdBy,
+                        ingestionTracking.createdDate,
+                        ingestionTracking.updatedBy,
+                        ingestionTracking.updatedDate,
                     ));
 
                     setMappedIngestionTrackings(ingestionTrackings);
@@ -47,13 +52,14 @@ export const ingestionTrackingViewService = {
     useGetIngestionTrackingById: (id: Guid) => {
         try {
             const query = `?id eq ${id}`
-            const response = ingestionTrackingService.useGetAllIngestionTrackings(query);
+            const response = ingestionTrackingService.useGetIngestionTrackingById(id);
             const [mappedIngestionTracking, setMappedIngestionTracking] = useState<IngestionTrackingView>();
 
             useEffect(() => {
                 if (response.data) {
                     const ingestionTracking = new IngestionTrackingView(
                         response.data.id,
+                        response.data.fileName,
                         response.data.source,
                         response.data.encryptedFileName,
                         response.data.decryptedFileName,
@@ -62,7 +68,12 @@ export const ingestionTrackingViewService = {
                         response.data.fileDeleted,
                         response.data.recordCount,
                         response.data.encryptedFileSize,
-                        response.data.decryptedFileSize);
+                        response.data.decryptedFileSize,
+                        response.data.createdBy,
+                        response.data.createdDate,
+                        response.data.updatedBy,
+                        response.data.updatedDate,
+                    );
 
                     setMappedIngestionTracking(ingestionTracking);
                 }

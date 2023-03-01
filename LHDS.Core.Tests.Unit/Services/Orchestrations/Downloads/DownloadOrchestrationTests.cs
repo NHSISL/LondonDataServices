@@ -53,7 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             this.compareLogic = new CompareLogic();
 
             var appSettingsStub = new Dictionary<string, string> {
-                {"LandingSource", GetRandomString()}
+                { "LandingSupplierId", Guid.NewGuid().ToString() }
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()

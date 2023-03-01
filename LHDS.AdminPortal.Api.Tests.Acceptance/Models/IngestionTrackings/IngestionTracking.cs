@@ -10,7 +10,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings
     {
         public Guid Id { get; set; }
         public string FileName { get; set; }
-        public string Source { get; set; }
+        public Guid SupplierId { get; set; }
         public string EncryptedFileName { get; set; }
         public string DecryptedFileName { get; set; }
         public bool Decrypted { get; set; }

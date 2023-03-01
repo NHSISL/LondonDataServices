@@ -59,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                   {
                       Id = randomGuid,
                       FileName = document.FileName,
-                      Source = this.inMemoryConfiguration["LandingSource"],
+                      SupplierId = Guid.Parse(this.inMemoryConfiguration["LandingSupplierId"]),
                       EncryptedFileName = $"/encrypted{filename}",
                       DecryptedFileName =
                         $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
@@ -109,7 +109,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                   {
                       Id = randomGuid,
                       FileName = document.FileName,
-                      Source = this.inMemoryConfiguration["LandingSource"],
+                      SupplierId = Guid.Parse(this.inMemoryConfiguration["LandingSupplierId"]),
                       EncryptedFileName = $"/encrypted{filename}",
                       DecryptedFileName =
                         $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",

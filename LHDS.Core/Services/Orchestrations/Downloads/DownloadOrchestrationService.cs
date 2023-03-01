@@ -28,7 +28,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
-        private readonly string source;
+        private readonly Guid supplierId;
 
         public DownloadOrchestrationService(
             IDocumentService documentService,
@@ -47,7 +47,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
-            this.source = configuration["LandingSource"];
+            this.supplierId = Guid.Parse(configuration["LandingSupplierId"]);
         }
 
         public ValueTask ProcessAsync() =>
@@ -83,7 +83,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                   {
                                       Id = this.identifierBroker.GetIdentifier(),
                                       FileName = document.FileName,
-                                      Source = source,
+                                      SupplierId = supplierId,
                                       EncryptedFileName = $"/encrypted{filename}",
                                       DecryptedFileName =
                                         $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",

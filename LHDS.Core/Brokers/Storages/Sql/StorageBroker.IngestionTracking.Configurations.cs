@@ -21,8 +21,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsUnique();
 
             modelBuilder.Entity<IngestionTracking>()
-                .Property(ingestionTracking => ingestionTracking.Source)
-                .HasMaxLength(450)
+                .Property(ingestionTracking => ingestionTracking.SupplierId)
                 .IsRequired();
 
             modelBuilder.Entity<IngestionTracking>()
@@ -34,6 +33,12 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .Property(ingestionTracking => ingestionTracking.DecryptedFileName)
                 .HasMaxLength(450)
                 .IsRequired();
+
+            modelBuilder.Entity<IngestionTracking>()
+                .HasOne(ingestionTracking => ingestionTracking.Supplier)
+                .WithMany(supplier => supplier.IngestionTrackings)
+                .HasForeignKey(ingestionTracking => ingestionTracking.SupplierId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

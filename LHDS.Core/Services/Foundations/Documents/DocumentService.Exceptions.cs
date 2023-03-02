@@ -103,13 +103,16 @@ namespace LHDS.Core.Services.Foundations.Documents
 
         private DocumentValidationException CreateAndLogValidationException(Xeption exception)
         {
+            string validationSummary = GetValidationSummary(exception.Data);
+
             var documentValidationExceptionn =
-                new DocumentValidationException(exception);
+                new DocumentValidationException(exception, validationSummary);
 
             this.loggingBroker.LogError(documentValidationExceptionn);
 
             return documentValidationExceptionn;
         }
+
         private Exception CreateAndLogServiceException(Xeption exception)
         {
             var documentServiceException = new DocumentServiceException(exception);

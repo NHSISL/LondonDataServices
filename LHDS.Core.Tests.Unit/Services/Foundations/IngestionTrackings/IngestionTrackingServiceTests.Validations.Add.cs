@@ -102,7 +102,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 values: "Text is required");
 
             var expectedIngestionTrackingValidationException =
-                new IngestionTrackingValidationException(invalidIngestionTrackingException);
+                new IngestionTrackingValidationException(
+                    innerException: invalidIngestionTrackingException,
+                    validationSummary: GetValidationSummary(invalidIngestionTrackingException.Data));
 
             // when
             ValueTask<IngestionTracking> addIngestionTrackingTask =
@@ -153,7 +155,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 values: $"Date is not the same as {nameof(IngestionTracking.CreatedDate)}");
 
             var expectedIngestionTrackingValidationException =
-                new IngestionTrackingValidationException(invalidIngestionTrackingException);
+                new IngestionTrackingValidationException(
+                    innerException: invalidIngestionTrackingException,
+                    validationSummary: GetValidationSummary(invalidIngestionTrackingException.Data));
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -206,7 +210,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 values: $"Text is not the same as {nameof(IngestionTracking.CreatedBy)}");
 
             var expectedIngestionTrackingValidationException =
-                new IngestionTrackingValidationException(invalidIngestionTrackingException);
+                new IngestionTrackingValidationException(
+                    innerException: invalidIngestionTrackingException,
+                    validationSummary: GetValidationSummary(invalidIngestionTrackingException.Data));
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -264,7 +270,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 values: "Date is not recent");
 
             var expectedIngestionTrackingValidationException =
-                new IngestionTrackingValidationException(invalidIngestionTrackingException);
+                new IngestionTrackingValidationException(
+                    innerException: invalidIngestionTrackingException,
+                    validationSummary: GetValidationSummary(invalidIngestionTrackingException.Data));
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())

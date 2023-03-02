@@ -102,8 +102,10 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
         private DownloadOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
+            string validationSummary = GetValidationSummary(exception.Data);
+
             var downloadOrchestrationValidationException =
-                new DownloadOrchestrationValidationException(exception);
+                new DownloadOrchestrationValidationException(exception, validationSummary);
 
             this.loggingBroker.LogError(downloadOrchestrationValidationException);
 

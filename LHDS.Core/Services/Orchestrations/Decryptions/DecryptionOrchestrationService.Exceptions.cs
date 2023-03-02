@@ -102,8 +102,10 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
         private DecryptionOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
+            string validationSummary = GetValidationSummary(exception.Data);
+
             var decryptionOrchestrationValidationException =
-                new DecryptionOrchestrationValidationException(exception);
+                new DecryptionOrchestrationValidationException(exception, validationSummary);
 
             this.loggingBroker.LogError(decryptionOrchestrationValidationException);
 

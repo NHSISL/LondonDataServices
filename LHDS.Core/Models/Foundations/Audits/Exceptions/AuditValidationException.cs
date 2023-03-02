@@ -10,12 +10,7 @@ namespace LHDS.Core.Models.Foundations.Audits.Exceptions
     {
         private const string validationMessage = "Audit validation errors occurred, please try again.";
 
-        public AuditValidationException(Xeption innerException)
-            : base(message: validationMessage,
-                  innerException)
-        { }
-
-        public AuditValidationException(Xeption innerException, string validationSummary)
+        public AuditValidationException(Xeption innerException, string validationSummary = "")
             : base(
                   message: validationSummary.Length > 0
                     ? $"{validationMessage}  Validation errors: {validationSummary}"

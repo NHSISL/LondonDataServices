@@ -10,12 +10,7 @@ namespace LHDS.Core.Models.Foundations.Suppliers.Exceptions
     {
         private const string validationMessage = "Supplier validation errors occurred, please try again.";
 
-        public SupplierValidationException(Xeption innerException)
-            : base(message: validationMessage,
-                  innerException)
-        { }
-
-        public SupplierValidationException(Xeption innerException, string validationSummary)
+        public SupplierValidationException(Xeption innerException, string validationSummary = "")
             : base(
                   message: validationSummary.Length > 0
                     ? $"{validationMessage}  Validation errors: {validationSummary}"

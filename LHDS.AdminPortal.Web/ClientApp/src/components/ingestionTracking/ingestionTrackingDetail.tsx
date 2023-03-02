@@ -23,10 +23,11 @@ const IngestionTrackingDetail: FunctionComponent<IngestionTrackingDetailProps> =
 
     const [downloadFileName, setDownloadFileName] = useState<string>("");
 
-    const { mappedLink } = documentService.useGetDownloadLinkByFileName(downloadFileName)
+    const { mappedLink } = documentService.useGetDownloadLinkByFileName(encodeURIComponent(downloadFileName))
 
     const handleDownload = async (ingestionTrackingView: IngestionTrackingView) => {
-        setDownloadFileName(ingestionTrackingView.fileName)
+        if (ingestionTrackingView.decryptedFileName)
+            setDownloadFileName(ingestionTrackingView.decryptedFileName)
         //const mappedLink = documentService.useGetDownloadLinkByFileName(ingestionTrackingView.fileName)
         //toastSuccess(`${mappedLink}`);
     }

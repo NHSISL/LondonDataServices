@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Net;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Services.Foundations.Documents;
@@ -24,7 +25,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                string document = await this.documentService.GetDownloadLinkAsync(fileName);
+                string document = await this.documentService.GetDownloadLinkAsync(WebUtility.UrlDecode(fileName));
 
                 return Ok(document);
             }

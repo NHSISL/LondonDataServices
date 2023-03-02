@@ -11,7 +11,7 @@ export const documentService = {
         const query = useQuery(
             ["DownloadLinkByFileName", { fileName: fileName }],
             () => documentBroker.GetDownloadLinkAsync(fileName),
-            { staleTime: Infinity });
+            { enabled: !!fileName ,  staleTime: Infinity });
 
         useEffect(() => {
             setMappedLink(query.data)

@@ -103,8 +103,10 @@ namespace LHDS.Core.Services.Foundations.Audits
 
         private AuditValidationException CreateAndLogValidationException(Xeption exception)
         {
+            string validationSummary = GetValidationSummary(exception.Data);
+
             var auditValidationException =
-                new AuditValidationException(exception);
+                new AuditValidationException(exception, validationSummary);
 
             this.loggingBroker.LogError(auditValidationException);
 

@@ -29,7 +29,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                 values: "Text is required");
 
             var expectedDocumentValidationException
-                = new DocumentValidationException(invalidDocumentException);
+                = new DocumentValidationException(
+                    innerException: invalidDocumentException,
+                    validationSummary: GetValidationSummary(invalidDocumentException.Data));
 
             // When
             ValueTask<string> uploadFileTask = this.documentService.GetDownloadLinkAsync(invalidFileName);

@@ -10,12 +10,7 @@ namespace LHDS.Core.Models.Orchestrations.Decryptions.Exceptions
     {
         private const string validationMessage = "Decryption orchestration validation errors occurred, please try again.";
 
-        public DecryptionOrchestrationValidationException(Xeption innerException)
-            : base(message: validationMessage,
-                  innerException)
-        { }
-
-        public DecryptionOrchestrationValidationException(Xeption innerException, string validationSummary)
+        public DecryptionOrchestrationValidationException(Xeption innerException, string validationSummary = "")
             : base(
                   message: validationSummary.Length > 0
                     ? $"{validationMessage}  Validation errors: {validationSummary}"

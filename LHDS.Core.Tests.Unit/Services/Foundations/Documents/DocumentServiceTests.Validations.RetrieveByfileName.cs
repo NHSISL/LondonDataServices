@@ -38,7 +38,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                 values: "Text is required");
 
             var expectedDocumentValidationException
-                = new DocumentValidationException(invalidDocumentException);
+                = new DocumentValidationException(
+                    innerException: invalidDocumentException,
+                    validationSummary: GetValidationSummary(invalidDocumentException.Data));
 
             var appSettingsStub = new Dictionary<string, string> {
                 {"blobContainerName", invalidInput}

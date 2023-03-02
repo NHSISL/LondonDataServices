@@ -10,7 +10,6 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Extensions.Logging;
 
 namespace LHDS.Functions.Landings.Emis
 {
@@ -19,9 +18,9 @@ namespace LHDS.Functions.Landings.Emis
         private readonly ILoggingBroker loggingBroker;
         private readonly IDecryptionClient decryptionClient;
 
-        public DecryptionFunction(ILoggerFactory loggerFactory, IDecryptionClient decryptionClient)
+        public DecryptionFunction(ILoggingBroker loggingBroker, IDecryptionClient decryptionClient)
         {
-            loggingBroker = loggingBroker;
+            this.loggingBroker = loggingBroker;
             this.decryptionClient = decryptionClient;
         }
 

@@ -27,7 +27,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                values: "Text is required");
 
             var expectedDecryptionOrchestrationFileNameValidationException =
-                new DecryptionOrchestrationValidationException(invalidArgumentDecryptionOrchestrationException);
+                new DecryptionOrchestrationValidationException(
+                    innerException: invalidArgumentDecryptionOrchestrationException,
+                    validationSummary: GetValidationSummary(invalidArgumentDecryptionOrchestrationException.Data));
 
             // when
             ValueTask decryptTask =

@@ -27,7 +27,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                values: "Text is required");
 
             var expectedDownloadOrchestrationFileNameValidationException =
-                new DownloadOrchestrationValidationException(invalidArgumentDownloadOrchestrationException);
+                new DownloadOrchestrationValidationException(
+                    innerException: invalidArgumentDownloadOrchestrationException,
+                    validationSummary: GetValidationSummary(invalidArgumentDownloadOrchestrationException.Data));
 
             // when
             ValueTask DownloadTask =

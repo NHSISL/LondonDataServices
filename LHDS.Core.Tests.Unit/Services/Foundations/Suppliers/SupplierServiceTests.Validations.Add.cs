@@ -102,7 +102,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 values: "Text is required");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(invalidSupplierException);
+                new SupplierValidationException(
+                    innerException: invalidSupplierException,
+                    validationSummary: GetValidationSummary(invalidSupplierException.Data));
 
             // when
             ValueTask<Supplier> addSupplierTask =
@@ -153,7 +155,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 values: $"Date is not the same as {nameof(Supplier.CreatedDate)}");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(invalidSupplierException);
+                new SupplierValidationException(
+                    innerException: invalidSupplierException,
+                    validationSummary: GetValidationSummary(invalidSupplierException.Data));
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -206,7 +210,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 values: $"Text is not the same as {nameof(Supplier.CreatedBy)}");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(invalidSupplierException);
+                new SupplierValidationException(
+                    innerException: invalidSupplierException,
+                    validationSummary: GetValidationSummary(invalidSupplierException.Data));
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -264,7 +270,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 values: "Date is not recent");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(invalidSupplierException);
+                new SupplierValidationException(
+                    innerException: invalidSupplierException,
+                    validationSummary: GetValidationSummary(invalidSupplierException.Data));
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())

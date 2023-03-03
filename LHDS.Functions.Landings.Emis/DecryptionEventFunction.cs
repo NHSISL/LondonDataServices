@@ -2,24 +2,44 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
+using System.Threading.Tasks;
+using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Clients;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Logging;
 
 namespace LHDS.Functions.Landings.Emis
 {
     public class DecryptionEventFunction
     {
-        private readonly ILogger _logger;
+        private readonly ILoggingBroker loggingBroker;
+        private readonly IDecryptionClient decryptionClient;
 
-        public DecryptionEventFunction(ILoggerFactory loggerFactory)
+        public DecryptionEventFunction(ILoggingBroker loggingBroker, IDecryptionClient decryptionClient)
         {
-            _logger = loggerFactory.CreateLogger<DecryptionEventFunction>();
+            this.loggingBroker = loggingBroker;
+            this.decryptionClient = decryptionClient;
         }
 
         [Function("DecryptionEventFunction")]
-        public void Run([BlobTrigger("emislanding/encrypted/{name}", Connection = "BlobStorage")] string myBlob, string name)
+        public void Run(
+            [BlobTrigger("emislanding/encrypted/{name}", Connection = "BlobStorage")] string myBlob, string name)
         {
-            _logger.LogInformation($"C# Blob trigger function Processed blob\n Name: {name} \n Data: {myBlob}");
+            this.loggingBroker
+                .LogInformation($"C# Blob trigger function Processed blob\n Name: {name} \n Data: {myBlob}");
+
+            try
+            {
+                Task.Run(async () =>
+                {
+                    await this.decryptionClient.DecryptAsync(name);
+                }).Wait();
+            }
+            catch (Exception ex)
+            {
+                this.loggingBroker.LogError(ex);
+                throw;
+            }
         }
     }
 }

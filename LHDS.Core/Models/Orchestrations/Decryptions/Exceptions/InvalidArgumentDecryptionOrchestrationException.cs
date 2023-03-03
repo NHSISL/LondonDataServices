@@ -9,7 +9,6 @@ namespace LHDS.Core.Models.Orchestrations.Decryptions.Exceptions
     public class InvalidArgumentDecryptionOrchestrationException : Xeption
     {
         public InvalidArgumentDecryptionOrchestrationException()
-            : base(message: "Invalid decryption orchestration argument(s), please correct the errors and try again.")
-        { }
+            : base(message: "Invalid decryption orchestration argument(s), please correct the errors and try again.") { }
     }
 }

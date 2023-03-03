@@ -15,14 +15,12 @@ using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Downloads;
-using LHDS.Core.Providers.Downloads.FtpDownloads;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Decryptions;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Orchestrations.Decryptions;
-using LHDS.Decryptions.Client.Clients;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -65,6 +63,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddSingleton<IAuditService, AuditService>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
+            services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IDownloadBroker, DownloadBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();

@@ -6,10 +6,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
-using LHDS.Core.Models.Foundations.IngestionTracking.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
-using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptionss;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Xeptions;
@@ -35,13 +33,6 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             {
                 throw CreateAndLogValidationException(invalidIngestionTrackingException);
             }
-            catch (DuplicateKeyException duplicateKeyException)
-            {
-                var alreadyExistsIngestionTrackingException =
-                    new AlreadyExistsIngestionTrackingException(duplicateKeyException);
-
-                throw CreateAndLogDependencyValidationException(alreadyExistsIngestionTrackingException);
-            }
             catch (SqlException sqlException)
             {
                 var failedIngestionTrackingStorageException =
@@ -52,6 +43,13 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             catch (NotFoundIngestionTrackingException notFoundIngestionTrackingException)
             {
                 throw CreateAndLogValidationException(notFoundIngestionTrackingException);
+            }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsIngestionTrackingException =
+                    new AlreadyExistsIngestionTrackingException(duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsIngestionTrackingException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
@@ -105,8 +103,10 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
         private IngestionTrackingValidationException CreateAndLogValidationException(Xeption exception)
         {
+            string validationSummary = GetValidationSummary(exception.Data);
+
             var ingestionTrackingValidationException =
-                new IngestionTrackingValidationException(exception);
+                new IngestionTrackingValidationException(exception, validationSummary);
 
             this.loggingBroker.LogError(ingestionTrackingValidationException);
 

@@ -12,7 +12,6 @@ using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Services.Foundations.Documents;
 using Microsoft.Extensions.Configuration;
 using Moq;
-using NEL.Premises.Api.Models.Documents.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
@@ -72,7 +71,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                  values: "Data is required");
 
             var expectedDocumentValidationException
-                = new DocumentValidationException(invalidDocumentException);
+                = new DocumentValidationException(
+                    innerException: invalidDocumentException,
+                    validationSummary: GetValidationSummary(invalidDocumentException.Data));
 
             // When
             ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document);
@@ -113,6 +114,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             var documentService = new DocumentService(
                blobStorageBroker: this.blobStorageBrokerMock.Object,
+               dateTimeBroker: this.dateTimeBrokerMock.Object,
                loggingBroker: this.loggingBrokerMock.Object,
                configuration: inMemoryConfiguration);
 
@@ -133,7 +135,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                 values: "Text is required");
 
             var expectedDocumentValidationException
-                = new DocumentValidationException(invalidDocumentException);
+                = new DocumentValidationException(
+                    innerException: invalidDocumentException,
+                    validationSummary: GetValidationSummary(invalidDocumentException.Data));
 
             // When
             ValueTask uploadFileTask = documentService.AddDocumentAsync(document);

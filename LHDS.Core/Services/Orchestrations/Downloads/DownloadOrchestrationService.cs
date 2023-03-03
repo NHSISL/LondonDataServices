@@ -8,13 +8,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Audits;
+using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using Microsoft.Extensions.Configuration;
 
 namespace LHDS.Core.Services.Orchestrations.Downloads
 {
@@ -26,6 +27,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         private readonly IAuditService auditService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly IIdentifierBroker identifierBroker;
+        private readonly Guid supplierId;
 
         public DownloadOrchestrationService(
             IDocumentService documentService,
@@ -33,7 +36,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             IIngestionTrackingService ingestionTrackingService,
             IAuditService auditService,
             ILoggingBroker loggingBroker,
-            IDateTimeBroker dateTimeBroker)
+            IDateTimeBroker dateTimeBroker,
+            IIdentifierBroker identifierBroker,
+            IConfiguration configuration)
         {
             this.documentService = documentService;
             this.downloadService = downloadService;
@@ -41,13 +46,14 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.auditService = auditService;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
+            this.identifierBroker = identifierBroker;
+            this.supplierId = Guid.Parse(configuration["LandingSupplierId"]);
         }
 
         public ValueTask ProcessAsync() =>
             TryCatch(async () =>
             {
                 var exceptions = new List<Exception>();
-
                 List<Document> retrievedDocuments =
                 await this.downloadService.RetrieveListOfDocumentsToProcessAsync();
 
@@ -58,8 +64,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         await TryCatch(async () =>
                         {
                             IngestionTracking maybeIngestionTracking =
-                            await this.ingestionTrackingService
-                                .RetrieveIngestionTrackingByIdAsync(document.FileName);
+                                this.ingestionTrackingService.RetrieveAllIngestionTrackings()
+                                    .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == document.FileName);
 
                             if (maybeIngestionTracking == null)
                             {
@@ -75,12 +81,22 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                 IngestionTracking newIngestionTracking =
                                   new IngestionTracking
                                   {
-                                      Id = document.FileName,
+                                      Id = this.identifierBroker.GetIdentifier(),
+                                      FileName = document.FileName,
+                                      SupplierId = supplierId,
                                       EncryptedFileName = $"/encrypted{filename}",
                                       DecryptedFileName =
                                         $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
                                       Decrypted = false,
+                                      LastSeen = currentDateTime,
+                                      FileDeleted = false,
+                                      RecordCount = 0,
+                                      EncryptedFileSize = retrievedDocument.DocumentData.Length,
+                                      DecryptedFileSize = 0,
+                                      CreatedBy = "System",
                                       CreatedDate = currentDateTime,
+                                      UpdatedBy = "System",
+                                      UpdatedDate = currentDateTime
                                   };
 
                                 Document newBlobDocument = new Document
@@ -91,7 +107,14 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                                 await this.documentService.AddDocumentAsync(newBlobDocument);
                                 await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
-                                LogAudit(document, currentDateTime);
+                                LogAudit(newIngestionTracking, document, currentDateTime, "Landed");
+                            }
+                            else
+                            {
+                                var currentDateTime = dateTimeBroker.GetCurrentDateTimeOffset();
+                                maybeIngestionTracking.LastSeen = currentDateTime;
+                                maybeIngestionTracking.UpdatedDate = currentDateTime;
+                                await ingestionTrackingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);
                             }
                         });
                     }
@@ -109,15 +132,58 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 }
             });
 
-        private void LogAudit(Document document, DateTimeOffset currentDateTime)
+        public async ValueTask ProcessAsync(string fileName) =>
+            await TryCatch(async () =>
+            {
+                ValidateFileName(fileName);
+
+                IngestionTracking maybeIngestionTracking =
+                    this.ingestionTrackingService.RetrieveAllIngestionTrackings()
+                        .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == fileName);
+
+                if (maybeIngestionTracking != null)
+                {
+                    Document externalDocument =
+                            await this.downloadService.RetrieveDownloadByFileNameAsync(fileName);
+
+                    var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                    maybeIngestionTracking.LastSeen = currentDateTime;
+                    maybeIngestionTracking.EncryptedFileSize = externalDocument.DocumentData.Length;
+                    await this.documentService.RemoveDocumentByFileNameAsync(fileName);
+
+                    Document newBlobDocument = new Document
+                    {
+                        DocumentData = externalDocument.DocumentData,
+                        FileName = maybeIngestionTracking.EncryptedFileName
+                    };
+
+                    await this.documentService.AddDocumentAsync(newBlobDocument);
+                    await this.ingestionTrackingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);
+
+                    LogAudit(
+                        ingestionTracking: maybeIngestionTracking,
+                        document: externalDocument,
+                        currentDateTime,
+                        message: "Refreshed");
+                }
+            });
+
+        private void LogAudit(
+            IngestionTracking ingestionTracking,
+            Document document,
+            DateTimeOffset currentDateTime,
+            string message)
         {
             Audit newAudit =
                 new Audit
                 {
                     Id = Guid.NewGuid(),
-                    IngestionTrackingId = document.FileName,
-                    Message = $"Landed document - {document.FileName}",
-                    CreatedDate = currentDateTime
+                    IngestionTrackingId = ingestionTracking.Id,
+                    Message = $"{message} document - {document.FileName}",
+                    CreatedBy = "System",
+                    CreatedDate = currentDateTime,
+                    UpdatedBy = "System",
+                    UpdatedDate = currentDateTime
                 };
 
             this.auditService.AddAuditAsync(newAudit);

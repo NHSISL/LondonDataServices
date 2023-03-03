@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace LHDS.Core.Landings.Tests.Manual
+namespace LHDS.Core.Tests.Manual.Landings
 {
     internal class Program
     {
@@ -19,16 +19,17 @@ namespace LHDS.Core.Landings.Tests.Manual
             var environmentName = args.FirstOrDefault() ?? "Development";
 
             var configurationBuilder = new ConfigurationBuilder()
-                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
 
             //setup our DI
             var serviceProvider = new ServiceCollection()
-                .AddLogging(builder => {
+                .AddLogging(builder =>
+                {
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })

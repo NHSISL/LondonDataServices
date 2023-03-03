@@ -5,7 +5,7 @@
 using System;
 using Xeptions;
 
-namespace LHDS.Core.Models.Foundations.IngestionTrackings.Exceptionss
+namespace LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions
 {
     public class LockedIngestionTrackingException : Xeption
     {

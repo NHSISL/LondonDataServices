@@ -4,7 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Audits.Exceptions;
+using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using LHDS.Core.Models.Foundations.Decryptions.Exceptions;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
@@ -102,8 +102,10 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
         private DecryptionOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
+            string validationSummary = GetValidationSummary(exception.Data);
+
             var decryptionOrchestrationValidationException =
-                new DecryptionOrchestrationValidationException(exception);
+                new DecryptionOrchestrationValidationException(exception, validationSummary);
 
             this.loggingBroker.LogError(decryptionOrchestrationValidationException);
 

@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Downloads.Exceptions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -68,8 +67,10 @@ namespace LHDS.Core.Services.Foundations.Downloads
 
         private DownloadValidationException CreateAndLogValidationException(Xeption exception)
         {
+            string validationSummary = GetValidationSummary(exception.Data);
+
             var downloadValidationException =
-                new DownloadValidationException(exception);
+                new DownloadValidationException(exception, validationSummary);
 
             this.loggingBroker.LogError(downloadValidationException);
 

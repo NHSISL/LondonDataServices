@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
-using LHDS.Core.Models.Audits;
+using LHDS.Core.Models.Foundations.Audits;
 
 namespace LHDS.Core.Services.Foundations.Audits
 {
@@ -50,6 +50,33 @@ namespace LHDS.Core.Services.Foundations.Audits
                 ValidateStorageAudit(maybeAudit, auditId);
 
                 return maybeAudit;
+            });
+
+        public ValueTask<Audit> ModifyAuditAsync(Audit audit) =>
+            TryCatch(async () =>
+            {
+                ValidateAuditOnModify(audit);
+
+                Audit maybeAudit =
+                    await this.storageBroker.SelectAuditByIdAsync(audit.Id);
+
+                ValidateStorageAudit(maybeAudit, audit.Id);
+                ValidateAgainstStorageAuditOnModify(inputAudit: audit, storageAudit: maybeAudit);
+
+                return await this.storageBroker.UpdateAuditAsync(audit);
+            });
+
+        public ValueTask<Audit> RemoveAuditByIdAsync(Guid auditId) =>
+            TryCatch(async () =>
+            {
+                ValidateAuditId(auditId);
+
+                Audit maybeAudit = await this.storageBroker
+                    .SelectAuditByIdAsync(auditId);
+
+                ValidateStorageAudit(maybeAudit, auditId);
+
+                return await this.storageBroker.DeleteAuditAsync(maybeAudit);
             });
     }
 }

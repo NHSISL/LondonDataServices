@@ -10,7 +10,6 @@ namespace LHDS.Core.Models.Orchestrations.Downloads.Exceptions
     public class FailedDownloadOrchestrationServiceException : Xeption
     {
         public FailedDownloadOrchestrationServiceException(Exception innerException)
-            : base(message: "Failed download orchestration service occurred, please contact support", innerException)
-        { }
+            : base(message: "Failed download orchestration service occurred, please contact support", innerException) { }
     }
 }

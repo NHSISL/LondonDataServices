@@ -8,7 +8,7 @@ using LHDS.Core.Providers.Cryptography.Gpg;
 using Microsoft.Extensions.Configuration;
 using Tynamix.ObjectFiller;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
+namespace LHDS.Core.Tests.Acceptance.Providers.Cryptography.Gpg
 {
     public partial class GpgCryptographyProviderTests
     {

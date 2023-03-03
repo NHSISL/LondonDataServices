@@ -1,0 +1,34 @@
+﻿
+.cardBase {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    background: #fff;
+    border: 1px solid #d8dde0;
+    position: relative;
+    width: 100%;
+}
+
+.cardBaseBody {
+    padding-top: 0 !important;
+    padding: 32px;
+    position: relative;
+}
+
+.cardBaseTitle {
+    margin-top: 0;
+    background: #005eb8;
+    color: #fff;
+    display: inline-block;
+    left: -32px;
+    margin-bottom: 8px;
+    margin-right: -24px;
+    padding: 8px 24px;
+    position: relative;
+    top: -8px;
+    font-size: 1.5rem;
+    line-height: 1.33333
+}
+
+.cardBaseContent {
+    margin-bottom: 0;
+}

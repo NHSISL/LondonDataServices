@@ -3,9 +3,12 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
+using System.Text;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
@@ -94,10 +97,33 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(DateTimeOffset dateTimeOffset)
         {
+            string user = Guid.NewGuid().ToString();
             var filler = new Filler<IngestionTracking>();
-            filler.Setup().OnType<DateTimeOffset>().Use(dateTimeOffset);
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
+                .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
+                .OnProperty(ingestionTracking => ingestionTracking.Audits).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt();
 
             return filler;
+        }
+
+        private string GetValidationSummary(IDictionary data)
+        {
+            StringBuilder validationSummary = new StringBuilder();
+
+            foreach (DictionaryEntry entry in data)
+            {
+                string errorSummary = ((List<string>)entry.Value)
+                    .Select((string value) => value)
+                    .Aggregate((string current, string next) => current + ", " + next);
+
+                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
+            }
+
+            return validationSummary.ToString();
         }
     }
 }

@@ -5,8 +5,8 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Audits;
-using LHDS.Core.Models.Audits.Exceptions;
+using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using Moq;
 using Xunit;
 
@@ -28,7 +28,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 values: "Id is required");
 
             var expectedAuditValidationException =
-                new AuditValidationException(invalidAuditException);
+                new AuditValidationException(
+                    innerException: invalidAuditException,
+                    validationSummary: GetValidationSummary(invalidAuditException.Data));
 
             // when
             ValueTask<Audit> retrieveAuditByIdTask =

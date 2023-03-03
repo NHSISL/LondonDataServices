@@ -9,7 +9,6 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions
     public class InvalidIngestionTrackingException : Xeption
     {
         public InvalidIngestionTrackingException()
-            : base(message: "Invalid ingestion tracking. Please investigate.")
-        { }
+            : base(message: "Invalid ingestion tracking. Please investigate.") { }
     }
 }

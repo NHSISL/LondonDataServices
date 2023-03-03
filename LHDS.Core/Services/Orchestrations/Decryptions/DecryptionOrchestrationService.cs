@@ -6,8 +6,9 @@ using System;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Audits;
+using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Decryptions;
 using LHDS.Core.Services.Foundations.Documents;
@@ -46,12 +47,13 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 ValidateFileNameIsNotNull(fileName);
 
                 var ingestionTracking = await this.ingestionTrackingService
-                    .RetrieveIngestionTrackingByIdAsync(fileName);
+                    .RetrieveIngestionTrackingByFileNameAsync(fileName);
 
                 Document document = await this.documentService
                     .RetrieveDocumentByFileNameAsync(ingestionTracking.EncryptedFileName);
 
                 byte[] decryptedData = await this.decryptionService.DecryptAsync(document.DocumentData);
+                string[] lines = System.Text.Encoding.UTF8.GetString(decryptedData).Split('\n');
 
                 Document newDecryptedDocument = new Document
                 {
@@ -60,24 +62,26 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 };
 
                 await this.documentService.AddDocumentAsync(newDecryptedDocument);
+                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
                 ingestionTracking.Decrypted = true;
+                ingestionTracking.RecordCount = lines.Length - 1;
+                ingestionTracking.DecryptedFileSize = newDecryptedDocument.DocumentData.Length;
+                ingestionTracking.UpdatedDate = currentDateTime;
 
                 await this.ingestionTrackingService
                     .ModifyIngestionTrackingAsync(ingestionTracking);
 
-                LogAudit(document);
+                LogAudit(ingestionTracking, document: newDecryptedDocument, currentDateTime);
             });
 
-        private void LogAudit(Document document)
+        private void LogAudit(IngestionTracking ingestionTracking, Document document, DateTimeOffset currentDateTime)
         {
-            var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-
             Audit newAudit =
                 new Audit
                 {
                     Id = Guid.NewGuid(),
-                    IngestionTrackingId = document.FileName,
+                    IngestionTrackingId = ingestionTracking.Id,
                     Message = $"Decrypted document - {document.FileName}",
                     CreatedDate = currentDateTime
                 };

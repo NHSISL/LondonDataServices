@@ -17,38 +17,51 @@ namespace LHDS.Core.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.2")
+                .HasAnnotation("ProductVersion", "7.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("LHDS.Core.Models.Audits.Audit", b =>
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.Audits.Audit", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("IngestionTrackingId")
-                        .IsRequired()
+                    b.Property<Guid>("IngestionTrackingId")
                         .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Message")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("UpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("IngestionTrackingId");
 
                     b.ToTable("Audits");
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.IngestionTrackings.IngestionTracking", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetimeoffset");
@@ -72,18 +85,113 @@ namespace LHDS.Core.Migrations
                     b.Property<int>("EncryptedFileSize")
                         .HasColumnType("int");
 
-                    b.Property<int>("FileCount")
-                        .HasColumnType("int");
-
                     b.Property<bool>("FileDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTimeOffset>("LastSeen")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<int>("RecordCount")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("SupplierId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("UpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("FileName")
+                        .IsUnique();
+
+                    b.HasIndex("SupplierId");
+
                     b.ToTable("IngestionTrackings");
+                });
+
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.Suppliers.Supplier", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DecryptionManualTriggerUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FriendlyName")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("LandingManualTriggerUrl")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("UpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Suppliers");
+                });
+
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.Audits.Audit", b =>
+                {
+                    b.HasOne("LHDS.Core.Models.Foundations.IngestionTrackings.IngestionTracking", "IngestionTracking")
+                        .WithMany("Audits")
+                        .HasForeignKey("IngestionTrackingId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("IngestionTracking");
+                });
+
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.IngestionTrackings.IngestionTracking", b =>
+                {
+                    b.HasOne("LHDS.Core.Models.Foundations.Suppliers.Supplier", "Supplier")
+                        .WithMany("IngestionTrackings")
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.IngestionTrackings.IngestionTracking", b =>
+                {
+                    b.Navigation("Audits");
+                });
+
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.Suppliers.Supplier", b =>
+                {
+                    b.Navigation("IngestionTrackings");
                 });
 #pragma warning restore 612, 618
         }

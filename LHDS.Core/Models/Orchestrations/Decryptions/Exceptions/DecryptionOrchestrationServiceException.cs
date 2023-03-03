@@ -10,7 +10,6 @@ namespace LHDS.Core.Models.Orchestrations.Decryptions.Exceptions
     public class DecryptionOrchestrationServiceException : Xeption
     {
         public DecryptionOrchestrationServiceException(Exception innerException)
-            : base(message: "Decryption orchestration service error occurred, contact support.", innerException)
-        { }
+            : base(message: "Decryption orchestration service error occurred, contact support.", innerException) { }
     }
 }

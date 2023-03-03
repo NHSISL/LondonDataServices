@@ -3,9 +3,12 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
-using NEL.Premises.Api.Models.Documents.Exceptions;
 
 namespace LHDS.Core.Services.Foundations.Documents
 {
@@ -52,6 +55,12 @@ namespace LHDS.Core.Services.Foundations.Documents
                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
+        private void ValidateGetDownloadLinkArguments(string fileName)
+        {
+            Validate(
+               (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
+        }
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidDocumentException = new InvalidDocumentException();
@@ -67,6 +76,22 @@ namespace LHDS.Core.Services.Foundations.Documents
             }
 
             invalidDocumentException.ThrowIfContainsErrors();
+        }
+
+        private string GetValidationSummary(IDictionary data)
+        {
+            StringBuilder validationSummary = new StringBuilder();
+
+            foreach (DictionaryEntry entry in data)
+            {
+                string errorSummary = ((List<string>)entry.Value)
+                    .Select((string value) => value)
+                    .Aggregate((string current, string next) => current + ", " + next);
+
+                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
+            }
+
+            return validationSummary.ToString();
         }
     }
 }

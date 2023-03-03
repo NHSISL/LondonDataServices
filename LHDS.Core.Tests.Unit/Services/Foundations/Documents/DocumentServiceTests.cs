@@ -3,9 +3,12 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
+using System.Text;
 using Azure;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -21,16 +24,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
     public partial class DocumentServiceTests
     {
         private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
-        private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IConfiguration inMemoryConfiguration;
         private readonly IDocumentService documentService;
 
         public DocumentServiceTests()
         {
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
-            this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             var appSettingsStub = new Dictionary<string, string> {
                 {"blobStorage:encryptedBlobContainerName", GetRandomString()},
@@ -43,6 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             this.documentService = new DocumentService(
                 blobStorageBroker: this.blobStorageBrokerMock.Object,
+                dateTimeBroker: this.dateTimeBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 configuration: this.inMemoryConfiguration);
         }
@@ -55,5 +59,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
+
+        private static DateTimeOffset GetRandomDateTimeOffset() =>
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private string GetValidationSummary(IDictionary data)
+        {
+            StringBuilder validationSummary = new StringBuilder();
+
+            foreach (DictionaryEntry entry in data)
+            {
+                string errorSummary = ((List<string>)entry.Value)
+                    .Select((string value) => value)
+                    .Aggregate((string current, string next) => current + ", " + next);
+
+                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
+            }
+
+            return validationSummary.ToString();
+        }
     }
 }

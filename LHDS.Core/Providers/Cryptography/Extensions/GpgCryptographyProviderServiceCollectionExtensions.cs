@@ -3,8 +3,8 @@
 // ---------------------------------------------------------------
 
 using System;
+using LHDS.Core.Providers.Cryptography.Builders;
 using LHDS.Core.Providers.Cryptography.Gpg;
-using LHDS.Core.Providers.Downloads.Builders;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

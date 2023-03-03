@@ -3,13 +3,15 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Audits.Exceptions;
+using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
@@ -20,6 +22,7 @@ using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Orchestrations.Downloads;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -35,6 +38,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         private readonly Mock<IAuditService> auditServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
+        private readonly IConfiguration inMemoryConfiguration;
         private readonly IDownloadOrchestrationService downloadOrchestrationService;
         private readonly ICompareLogic compareLogic;
 
@@ -46,7 +51,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             auditServiceMock = new Mock<IAuditService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.compareLogic = new CompareLogic();
+
+            var appSettingsStub = new Dictionary<string, string> {
+                { "LandingSupplierId", Guid.NewGuid().ToString() }
+            };
+
+            this.inMemoryConfiguration = new ConfigurationBuilder()
+                .AddInMemoryCollection(appSettingsStub)
+                .Build();
 
             this.downloadOrchestrationService = new DownloadOrchestrationService(
                 documentService: documentServiceMock.Object,
@@ -54,8 +68,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 ingestionTrackingService: ingestionTrackingServiceMock.Object,
                 auditService: auditServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
-                dateTimeBroker: dateTimeBrokerMock.Object
-                );
+                dateTimeBroker: dateTimeBrokerMock.Object,
+                identifierBroker: identifierBrokerMock.Object,
+                configuration: this.inMemoryConfiguration);
         }
 
         private static int GetRandomNumber() =>
@@ -87,6 +102,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static List<IngestionTracking> CreateRandomIngestionTrackings(
+            DateTimeOffset dateTimeOffset,
+            List<Document> documents)
+        {
+            List<IngestionTracking> items = new List<IngestionTracking>();
+
+            foreach (var document in documents)
+            {
+                items.Add(CreateIngestionTrackingFiller(dateTimeOffset, document.FileName).Create());
+            }
+
+            return items;
+        }
 
         private static IngestionTracking CreateRandomIngestionTracking(DateTimeOffset dateTimeOffset) =>
             CreateIngestionTrackingFiller(dateTimeOffset).Create();
@@ -154,6 +183,33 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             filler.Setup().OnType<DateTimeOffset>().Use(dateTimeOffset);
 
             return filler;
+        }
+
+        private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
+            DateTimeOffset dateTimeOffset, string id)
+        {
+            var filler = new Filler<IngestionTracking>();
+            filler.Setup()
+                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(id)
+                .OnType<DateTimeOffset>().Use(dateTimeOffset);
+
+            return filler;
+        }
+
+        private string GetValidationSummary(IDictionary data)
+        {
+            StringBuilder validationSummary = new StringBuilder();
+
+            foreach (DictionaryEntry entry in data)
+            {
+                string errorSummary = ((List<string>)entry.Value)
+                    .Select((string value) => value)
+                    .Aggregate((string current, string next) => current + ", " + next);
+
+                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
+            }
+
+            return validationSummary.ToString();
         }
     }
 }

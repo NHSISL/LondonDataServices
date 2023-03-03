@@ -8,7 +8,6 @@ using Azure;
 using EFxceptions.Models.Exceptions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
-using NEL.Premises.Api.Models.Documents.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.Documents
@@ -17,6 +16,7 @@ namespace LHDS.Core.Services.Foundations.Documents
     {
         private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<Document> ReturningDocumentFunction();
+        private delegate ValueTask<string> ReturningStringFunction();
 
         private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
         {
@@ -77,15 +77,42 @@ namespace LHDS.Core.Services.Foundations.Documents
             }
         }
 
+        private async ValueTask<string> TryCatch(ReturningStringFunction returningStringFunction)
+        {
+            try
+            {
+                return await returningStringFunction();
+            }
+            catch (InvalidDocumentException exception)
+            {
+                throw CreateAndLogValidationException(exception);
+            }
+            catch (RequestFailedException requestFailedException)
+            {
+                var failedRequestException = new FailedDocumentRequestException(requestFailedException);
+                throw CreateAndLogDependencyException(failedRequestException);
+            }
+            catch (Exception exception)
+            {
+                var failedDocumentBlobServiceException =
+                   new FailedDocumentServiceException(exception);
+
+                throw CreateAndLogServiceException(failedDocumentBlobServiceException);
+            }
+        }
+
         private DocumentValidationException CreateAndLogValidationException(Xeption exception)
         {
+            string validationSummary = GetValidationSummary(exception.Data);
+
             var documentValidationExceptionn =
-                new DocumentValidationException(exception);
+                new DocumentValidationException(exception, validationSummary);
 
             this.loggingBroker.LogError(documentValidationExceptionn);
 
             return documentValidationExceptionn;
         }
+
         private Exception CreateAndLogServiceException(Xeption exception)
         {
             var documentServiceException = new DocumentServiceException(exception);

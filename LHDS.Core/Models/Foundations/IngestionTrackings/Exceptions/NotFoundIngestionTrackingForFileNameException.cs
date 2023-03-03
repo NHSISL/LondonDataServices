@@ -4,12 +4,11 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Foundations.IngestionTracking.Exceptions
+namespace LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions
 {
     public class NotFoundIngestionTrackingForFileNameException : Xeption
     {
         public NotFoundIngestionTrackingForFileNameException(string fileName)
-            : base(message: $"Couldn't find ingestion tracking with fileName: {fileName}.")
-        { }
+            : base(message: $"Couldn't find ingestion tracking with fileName: {fileName}.") { }
     }
 }

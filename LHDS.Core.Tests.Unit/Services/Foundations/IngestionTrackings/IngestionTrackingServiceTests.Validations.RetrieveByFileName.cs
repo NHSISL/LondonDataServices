@@ -24,15 +24,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 new InvalidIngestionTrackingException();
 
             invalidIngestionTrackingException.AddData(
-                key: nameof(IngestionTracking.Id),
+                key: nameof(IngestionTracking.FileName),
                 values: "Text is required");
 
             var expectedIngestionTrackingValidationException =
-                new IngestionTrackingValidationException(invalidIngestionTrackingException);
+                new IngestionTrackingValidationException(
+                    innerException: invalidIngestionTrackingException,
+                    validationSummary: GetValidationSummary(invalidIngestionTrackingException.Data));
 
             // when
             ValueTask<IngestionTracking> retrieveIngestionTrackingByFileNameTask =
-                this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(fileName);
+                this.ingestionTrackingService.RetrieveIngestionTrackingByFileNameAsync(fileName);
 
             IngestionTrackingValidationException actualIngestionTrackingValidationException =
                 await Assert.ThrowsAsync<IngestionTrackingValidationException>(
@@ -48,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(It.IsAny<string>()),
+                broker.SelectAllIngestionTrackings(),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

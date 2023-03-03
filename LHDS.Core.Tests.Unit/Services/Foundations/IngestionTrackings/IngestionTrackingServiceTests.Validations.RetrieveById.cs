@@ -5,7 +5,6 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.IngestionTracking.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using Moq;
@@ -19,17 +18,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
         public async Task ShouldThrowValidationExceptionOnRetrieveByIdIfIdIsInvalidAndLogItAsync()
         {
             // given
-            var invalidIngestionTrackingId = string.Empty;
+            Guid invalidIngestionTrackingId = Guid.Empty;
 
             var invalidIngestionTrackingException =
                 new InvalidIngestionTrackingException();
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.Id),
-                values: "Text is required");
+                values: "Id is required");
 
             var expectedIngestionTrackingValidationException =
-                new IngestionTrackingValidationException(invalidIngestionTrackingException);
+                new IngestionTrackingValidationException(
+                    innerException: invalidIngestionTrackingException,
+                    validationSummary: GetValidationSummary(invalidIngestionTrackingException.Data));
 
             // when
             ValueTask<IngestionTracking> retrieveIngestionTrackingByIdTask =
@@ -49,11 +50,53 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectIngestionTrackingByIdAsync(It.IsAny<string>()),
+                broker.SelectIngestionTrackingByIdAsync(It.IsAny<Guid>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfIngestionTrackingIsNotFoundAndLogItAsync()
+        {
+            //given
+            Guid someIngestionTrackingId = Guid.NewGuid();
+            IngestionTracking noIngestionTracking = null;
+
+            var notFoundIngestionTrackingException =
+                new NotFoundIngestionTrackingException(someIngestionTrackingId);
+
+            var expectedIngestionTrackingValidationException =
+                new IngestionTrackingValidationException(notFoundIngestionTrackingException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectIngestionTrackingByIdAsync(It.IsAny<Guid>()))
+                    .ReturnsAsync(noIngestionTracking);
+
+            //when
+            ValueTask<IngestionTracking> retrieveIngestionTrackingByIdTask =
+                this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(someIngestionTrackingId);
+
+            IngestionTrackingValidationException actualIngestionTrackingValidationException =
+                await Assert.ThrowsAsync<IngestionTrackingValidationException>(
+                    retrieveIngestionTrackingByIdTask.AsTask);
+
+            //then
+            actualIngestionTrackingValidationException.Should().BeEquivalentTo(expectedIngestionTrackingValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectIngestionTrackingByIdAsync(It.IsAny<Guid>()),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedIngestionTrackingValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }

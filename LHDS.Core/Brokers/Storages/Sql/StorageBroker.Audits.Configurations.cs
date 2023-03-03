@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using LHDS.Core.Models.Audits;
+using LHDS.Core.Models.Foundations.Audits;
 using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.Core.Brokers.Storages.Sql
@@ -15,6 +15,12 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .Property(audit => audit.IngestionTrackingId)
                 .HasMaxLength(450)
                 .IsRequired();
+
+            modelBuilder.Entity<Audit>()
+                .HasOne(audit => audit.IngestionTracking)
+                .WithMany(ingestionTracking => ingestionTracking.Audits)
+                .HasForeignKey(audit => audit.IngestionTrackingId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

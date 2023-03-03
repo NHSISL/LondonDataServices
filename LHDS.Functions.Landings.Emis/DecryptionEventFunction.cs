@@ -17,7 +17,7 @@ namespace LHDS.Functions.Landings.Emis
         }
 
         [Function("DecryptionEventFunction")]
-        public void Run([BlobTrigger("emislanding/encrypted/{name}", Connection = "blobStorage")] string myBlob, string name)
+        public void Run([BlobTrigger("emislanding/encrypted/{name}", Connection = "BlobStorage")] string myBlob, string name)
         {
             _logger.LogInformation($"C# Blob trigger function Processed blob\n Name: {name} \n Data: {myBlob}");
         }

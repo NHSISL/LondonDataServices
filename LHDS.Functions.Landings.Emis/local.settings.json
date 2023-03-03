@@ -4,7 +4,8 @@
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "AzureWebJobsSecretStorageType": "files",
-    "blobStorage__blobServiceUri": "https://londonhealthdssa.blob.core.windows.net",
-    "blobStorage__queueServiceUri": "https://londonhealthdssa.queue.core.windows.net"
+    "BlobStorage__blobServiceUri": "https://londonhealthdssa.blob.core.windows.net",
+    "BlobStorage__queueServiceUri": "https://londonhealthdssa.queue.core.windows.net",
+    "AzureWebJobs.EmisLandingTimerFunction.Disabled":  true
   }
 }

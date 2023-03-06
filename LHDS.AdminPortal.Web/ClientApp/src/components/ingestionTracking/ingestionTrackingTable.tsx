@@ -1,7 +1,7 @@
 import { debounce } from "lodash";
 import React, { FunctionComponent, useMemo, useState } from "react";
 import { IngestionTrackingHomeView } from "../../models/ingestionTrackings/ingestionTrackingHomeView";
-import { IngestionTrackingHomeViewService } from "../../services/views/ingestionTrackingHomeViewService";
+import { ingestionTrackingHomeViewService } from "../../services/views/ingestionTrackingHomeViewService";
 import CardBase from "../bases/components/Card/CardBase";
 import CardBaseBody from "../bases/components/Card/CardBase.Body";
 import CardBaseContent from "../bases/components/Card/CardBase.Content";
@@ -19,7 +19,7 @@ import IngestionTrackingRow from "./ingestionTrackingRowView";
 type IngestionTrackingTableProps = {
 }
 
-const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (props) => {
+const ingestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (props) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
 
@@ -30,7 +30,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         hasNextPage,
         data
     }
-        = IngestionTrackingHomeViewService.useGetAllIngestionTrackings(debouncedTerm);
+        = ingestionTrackingHomeViewService.useGetAllIngestionTrackings(debouncedTerm);
 
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);
@@ -86,4 +86,4 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
     );
 }
 
-export default IngestionTrackingTable;
+export default ingestionTrackingTable;

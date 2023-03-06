@@ -4,17 +4,18 @@ import { IngestionTrackingHomeView } from "../../models/ingestionTrackings/inges
 import { ingestionTrackingService } from "../foundations/ingestionTrackingService";
 
 
-export const IngestionTrackingHomeViewService = {
+export const ingestionTrackingHomeViewService = {
 
-    useGetAllIngestionTrackings: (searchTerm?: string) => {
+    useGetAllIngestionTrackings: (searchTerm?: string, source?: string) => {
         try {
-            //DH: Check the expands, @Hassan please add expands and orderby etc
-            //let query = `?$expand=borough&$expand=sites($select=*&$expand=propertyStatus;$orderby=siteName desc )&$orderby=isActive desc,IngestionTrackingName`;
-
             let query = `?$orderby=createdDate`;
 
             if (searchTerm) {
-                query = query + `&$filter=contains(IngestionTrackingName,'${searchTerm}')`
+                query = query + `&$filter=contains(encryptedFileName,'${searchTerm}') or contains(decryptedFileName,'${searchTerm}')`;
+            }
+
+            if (source) {
+                query = query + `&$filter=source eq '${source}'`;
             }
 
             const response = ingestionTrackingService.useGetAllIngestionTrackingPages(query);

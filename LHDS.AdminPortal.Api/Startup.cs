@@ -4,15 +4,19 @@
 
 using System.Text.Json;
 using Azure.Core.Extensions;
+using Azure.Core.Pipeline;
+using Azure.Identity;
 using Azure.Storage.Blobs;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Services.Foundations.Audits;
+using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -80,9 +84,9 @@ namespace LHDS.AdminPortal.Api
             });
 
             services.AddDbContext<StorageBroker>();
-            AddBrokers(services);
-            AddFoundationServices(services);
-            AddOrchestrationServices(services);
+            AddBrokers(services, this.Configuration);
+            AddFoundationServices(services, this.Configuration);
+            AddOrchestrationServices(services, this.Configuration);
 
             var blobServiceUri = Configuration["BlobStorage:blob"];
 
@@ -143,22 +147,47 @@ namespace LHDS.AdminPortal.Api
             });
         }
 
-        private static void AddBrokers(IServiceCollection services)
+        private static void AddBrokers(IServiceCollection services, IConfiguration configuration)
         {
+            services.AddSingleton<IConfiguration>(_ => configuration);
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
+            services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
+            services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
+            services.AddTransient<IAzureBlobClient, AzureBlobClient>();
         }
 
-        private static void AddFoundationServices(IServiceCollection services)
+        private static void AddFoundationServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddTransient<ISupplierService, SupplierService>();
             services.AddTransient<IAuditService, AuditService>();
+            services.AddTransient<IDocumentService, DocumentService>();
+
+            var blobServiceUri = GetSettings(configuration, "blobStorage:azureBlobStoreUri", true);
+            var azureTenantId = GetSettings(configuration, "blobStorage:azureTenantId", true);
+
+            var blobServiceClientOptions = new BlobClientOptions()
+            {
+                Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
+                Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
+                EnableTenantDiscovery = true
+            };
+
+            services.AddSingleton(
+                new BlobServiceClient(
+                    serviceUri: new Uri(blobServiceUri),
+                    credential: new DefaultAzureCredential(
+                        new DefaultAzureCredentialOptions
+                        {
+                            VisualStudioTenantId = azureTenantId,
+                        }),
+                    options: blobServiceClientOptions));
         }
 
-        private static void AddOrchestrationServices(IServiceCollection services)
+        private static void AddOrchestrationServices(IServiceCollection services, IConfiguration configuration)
         {
 
         }
@@ -174,6 +203,21 @@ namespace LHDS.AdminPortal.Api
             builder.EnableLowerCamelCase();
 
             return builder.GetEdmModel();
+        }
+
+        private static string GetSettings(IConfiguration configuration, string configurationKey, bool mandatory = true)
+        {
+            var value = configuration[configurationKey];
+
+            if (string.IsNullOrEmpty(value))
+            {
+                if (mandatory)
+                {
+                    throw new Exception($"Configuration value {configurationKey} does not exist");
+                }
+            }
+
+            return value;
         }
     }
 

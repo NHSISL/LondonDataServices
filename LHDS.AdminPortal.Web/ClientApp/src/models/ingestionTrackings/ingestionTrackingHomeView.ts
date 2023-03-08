@@ -1,3 +1,4 @@
+import { Guid } from 'guid-typescript';
 import { Audit } from '../audits/audit';
 
 export class IngestionTrackingHomeView {

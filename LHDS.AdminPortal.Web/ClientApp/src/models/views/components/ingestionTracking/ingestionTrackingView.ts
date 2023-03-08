@@ -11,6 +11,10 @@ export class IngestionTrackingView {
     public recordCount: number;
     public encryptedFileSize: number;
     public decryptedFileSize: number;
+    public createdBy?: string;
+    public createdDate?: Date;
+    public updatedBy?: string;
+    public updatedDate?: Date;
 
     constructor(
         id: string,
@@ -23,7 +27,11 @@ export class IngestionTrackingView {
         fileDeleted: boolean,
         recordCount: number,
         encryptedFileSize: number,
-        decryptedFileSize: number
+        decryptedFileSize: number,
+        createdBy?: string,
+        createdDate?: Date,
+        updatedBy?: string,
+        updatedDate?: Date,
     ) {
         this.id = id;
         this.fileName = fileName || "";
@@ -36,5 +44,9 @@ export class IngestionTrackingView {
         this.recordCount = recordCount;
         this.encryptedFileSize = encryptedFileSize;
         this.decryptedFileSize = decryptedFileSize;
+        this.createdBy = createdBy;
+        this.createdDate = createdDate;
+        this.updatedBy = updatedBy;
+        this.updatedDate = updatedDate;
     }
 }

@@ -24,17 +24,16 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
     return (
         <TableBaseRow>
             <TableBaseData>
-                {ingestionTracking.supplierId}
+                {/*{ingestionTracking.supplierId}*/}
+                EMIS
             </TableBaseData>
             <TableBaseData>
                 {trimString(ingestionTracking.encryptedFileName)}
                 <br />
-                {ingestionTracking.decrypted && <Badge pill bg="success text-white">Re-land</Badge>}
-                {ingestionTracking.decrypted && <Badge pill bg="success text-white">Decrypt</Badge>}
-                <Badge pill bg="success text-white">Download</Badge> &nbsp;
-                <Badge pill bg="success text-white"><Link to={`/ingestionTrackingDetail${ingestionTracking.id}`}>Details</Link></Badge>
-
-                {encodeURIComponent(`${ingestionTracking.id}`)}
+                <Badge pill bg="success text-white">Re-land</Badge> &nbsp;
+                <Badge pill bg="success text-white">Decrypt</Badge>
+               
+              
 
             </TableBaseData>
             <TableBaseData>

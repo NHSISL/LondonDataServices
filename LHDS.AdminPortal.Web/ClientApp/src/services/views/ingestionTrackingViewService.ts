@@ -61,7 +61,7 @@ export const ingestionTrackingViewService = {
                     const ingestionTracking = new IngestionTrackingView(
                         response.data.id,
                         response.data.fileName,
-                        response.data.source,
+                        response.data.supplierId,
                         response.data.encryptedFileName,
                         response.data.decryptedFileName,
                         response.data.decrypted,

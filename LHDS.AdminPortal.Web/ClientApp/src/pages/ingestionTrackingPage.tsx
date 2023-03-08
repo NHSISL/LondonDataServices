@@ -25,9 +25,9 @@ export const IngestionTrackingPage = () => {
                     }
                     <br />
 
-                    {ingestionTrackingId  && (
-                        <AuditTable ingestionTrackingId={ingestionTrackingId} />
-                    )}
+                    {/*{ingestionTrackingId  && (*/}
+                    {/*    <AuditTable ingestionTrackingId={ingestionTrackingId} />*/}
+                    {/*)}*/}
                 </main>
             </Container>
         </section>

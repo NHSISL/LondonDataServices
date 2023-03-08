@@ -28,8 +28,8 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
         <>
             <SummaryListBase>
                 <SummaryListBaseRow>
-                    <SummaryListBaseKey>Source</SummaryListBaseKey>
-                    <SummaryListBaseValue>{ingestionTracking.source}</SummaryListBaseValue>
+                    <SummaryListBaseKey>Supplier</SummaryListBaseKey>
+                    <SummaryListBaseValue>{ingestionTracking.supplierId}</SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Encrypted File Name</SummaryListBaseKey>

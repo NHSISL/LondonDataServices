@@ -1,7 +1,8 @@
 
 export class IngestionTrackingView {
     public id: string;
-    public source: string;
+    public fileName: string;
+    public supplierId: string;
     public encryptedFileName: string;
     public decryptedFileName: string;
     public decrypted: boolean;
@@ -13,7 +14,8 @@ export class IngestionTrackingView {
 
     constructor(
         id: string,
-        source: string,
+        fileName: string,
+        supplierId: string,
         encryptedFileName: string,
         decryptedFileName: string,
         decrypted: boolean,
@@ -24,7 +26,8 @@ export class IngestionTrackingView {
         decryptedFileSize: number
     ) {
         this.id = id;
-        this.source = source || "";
+        this.fileName = fileName || "";
+        this.supplierId = supplierId || "";
         this.encryptedFileName = encryptedFileName || "";
         this.decryptedFileName = decryptedFileName || "";
         this.decrypted = decrypted;

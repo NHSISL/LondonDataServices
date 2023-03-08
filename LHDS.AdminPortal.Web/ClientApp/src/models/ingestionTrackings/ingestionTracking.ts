@@ -1,8 +1,10 @@
 import { Audit } from '../audits/audit';
+import { Supplier } from '../suppliers/supplier';
 
 export class IngestionTracking {
     public id: string;
-    public source: string;
+    public fileName: string;
+    public supplierId: string;
     public encryptedFileName: string;
     public decryptedFileName: string;
     public decrypted: boolean;
@@ -12,10 +14,12 @@ export class IngestionTracking {
     public encryptedFileSize: number;
     public decryptedFileSize: number;
     public audit: Audit;
+    public supplier?: Supplier;
 
     constructor(ingestionTracking: any) {
         this.id = ingestionTracking.id;
-        this.source = ingestionTracking.source || "";
+        this.fileName = ingestionTracking.fileName || "";
+        this.supplierId = ingestionTracking.supplierId || "";
         this.encryptedFileName = ingestionTracking.encryptedFileName || "";
         this.decryptedFileName = ingestionTracking.decryptedFileName || "";
         this.decrypted = ingestionTracking.decrypted;
@@ -25,5 +29,9 @@ export class IngestionTracking {
         this.encryptedFileSize = ingestionTracking.encryptedFileSize;
         this.decryptedFileSize = ingestionTracking.decryptedFileSize;
         this.audit = ingestionTracking.audit;
+
+        if (ingestionTracking.borough !== undefined && ingestionTracking.borough !== null) {
+            this.supplier = new Supplier(ingestionTracking.supplier);
+        }
     }
 }

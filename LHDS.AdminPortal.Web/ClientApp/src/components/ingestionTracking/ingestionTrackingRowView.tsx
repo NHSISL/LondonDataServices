@@ -15,13 +15,19 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
         ingestionTracking
     } = props;
 
+    function trimString(fileName: string) {
+        const str = fileName;
+        const lastIndex = str.lastIndexOf('/');
+        return str.substring(lastIndex + 1, str.length - 4);
+    }
+
     return (
         <TableBaseRow>
             <TableBaseData>
-                {ingestionTracking.source}
+                {ingestionTracking.supplierId}
             </TableBaseData>
             <TableBaseData>
-                {ingestionTracking.encryptedFileName}
+                {trimString(ingestionTracking.encryptedFileName)}
                 <br />
                 {ingestionTracking.decrypted && <Badge pill bg="success text-white">Re-land</Badge>}
                 {ingestionTracking.decrypted && <Badge pill bg="success text-white">Decrypt</Badge>}

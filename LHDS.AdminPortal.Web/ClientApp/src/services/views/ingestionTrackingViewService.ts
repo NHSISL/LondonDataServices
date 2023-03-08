@@ -20,7 +20,8 @@ export const ingestionTrackingViewService = {
                 if (response.data) {
                     const ingestionTrackings = response.data.map((ingestionTracking: IngestionTracking) => new IngestionTrackingView(
                         ingestionTracking.id,
-                        ingestionTracking.source,
+                        ingestionTracking.fileName,
+                        ingestionTracking.supplierId,
                         ingestionTracking.encryptedFileName,
                         ingestionTracking.decryptedFileName,
                         ingestionTracking.decrypted,
@@ -34,6 +35,7 @@ export const ingestionTrackingViewService = {
                     setMappedIngestionTrackings(ingestionTrackings);
                 }
             }, [response.data]);
+
 
             return {
                 mappedIngestionTrackings, ...response

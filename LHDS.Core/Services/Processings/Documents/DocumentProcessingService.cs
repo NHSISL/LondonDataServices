@@ -19,7 +19,7 @@ namespace LHDS.Core.Services.Processings.Documents
 
         public async ValueTask AddDocumentAsync(Document document)
         {
-            throw new System.NotImplementedException();
+            await this.documentService.AddDocumentAsync(document);
         }
     }
 }

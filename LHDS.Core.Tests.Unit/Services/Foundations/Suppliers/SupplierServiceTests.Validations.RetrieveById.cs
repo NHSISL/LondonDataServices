@@ -28,7 +28,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 values: "Id is required");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(invalidSupplierException);
+                new SupplierValidationException(
+                    innerException: invalidSupplierException,
+                    validationSummary: GetValidationSummary(invalidSupplierException.Data));
 
             // when
             ValueTask<Supplier> retrieveSupplierByIdTask =

@@ -111,7 +111,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                             }
                             else
                             {
-                                maybeIngestionTracking.LastSeen = dateTimeBroker.GetCurrentDateTimeOffset();
+                                var currentDateTime = dateTimeBroker.GetCurrentDateTimeOffset();
+                                maybeIngestionTracking.LastSeen = currentDateTime;
+                                maybeIngestionTracking.UpdatedDate = currentDateTime;
                                 await ingestionTrackingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);
                             }
                         });

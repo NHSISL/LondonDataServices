@@ -103,8 +103,10 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
         private IngestionTrackingValidationException CreateAndLogValidationException(Xeption exception)
         {
+            string validationSummary = GetValidationSummary(exception.Data);
+
             var ingestionTrackingValidationException =
-                new IngestionTrackingValidationException(exception);
+                new IngestionTrackingValidationException(exception, validationSummary);
 
             this.loggingBroker.LogError(ingestionTrackingValidationException);
 

@@ -62,21 +62,21 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 };
 
                 await this.documentService.AddDocumentAsync(newDecryptedDocument);
+                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
                 ingestionTracking.Decrypted = true;
                 ingestionTracking.RecordCount = lines.Length - 1;
                 ingestionTracking.DecryptedFileSize = newDecryptedDocument.DocumentData.Length;
+                ingestionTracking.UpdatedDate = currentDateTime;
 
                 await this.ingestionTrackingService
                     .ModifyIngestionTrackingAsync(ingestionTracking);
 
-                LogAudit(ingestionTracking, document: newDecryptedDocument);
+                LogAudit(ingestionTracking, document: newDecryptedDocument, currentDateTime);
             });
 
-        private void LogAudit(IngestionTracking ingestionTracking, Document document)
+        private void LogAudit(IngestionTracking ingestionTracking, Document document, DateTimeOffset currentDateTime)
         {
-            var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-
             Audit newAudit =
                 new Audit
                 {

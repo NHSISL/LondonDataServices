@@ -1,3 +1,4 @@
+import { Guid } from 'guid-typescript';
 import { Audit } from '../audits/audit';
 import { Supplier } from '../suppliers/supplier';
 
@@ -13,6 +14,10 @@ export class IngestionTracking {
     public recordCount: number;
     public encryptedFileSize: number;
     public decryptedFileSize: number;
+    public createdBy?: string;
+    public createdDate?: Date;
+    public updatedBy?: string;
+    public updatedDate?: Date;
     public audit: Audit;
     public supplier?: Supplier;
 
@@ -28,6 +33,10 @@ export class IngestionTracking {
         this.recordCount = ingestionTracking.recordCount;
         this.encryptedFileSize = ingestionTracking.encryptedFileSize;
         this.decryptedFileSize = ingestionTracking.decryptedFileSize;
+        this.createdBy = ingestionTracking.createdBy !== undefined ? ingestionTracking.createdBy : '';
+        this.createdDate = ingestionTracking.createdDate;
+        this.updatedBy = ingestionTracking.updatedBy !== undefined ? ingestionTracking.updatedBy : ''
+        this.updatedDate = ingestionTracking.updatedDate;
         this.audit = ingestionTracking.audit;
 
         if (ingestionTracking.borough !== undefined && ingestionTracking.borough !== null) {

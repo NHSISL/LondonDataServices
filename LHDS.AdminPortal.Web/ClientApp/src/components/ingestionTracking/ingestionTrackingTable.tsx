@@ -47,7 +47,6 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         []
     );
 
-
     const supplierOptions: Array<LookupView> = [
         { id: "", name: "Please select..." },
         ...(data?.supplierOptions || []).map((supplier: LookupView) => {
@@ -67,7 +66,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         <div className="infiniteScollContainer">
             <CardBase>
                 <CardBaseBody>
-                    <CardBaseTitle>GP IngestionTrackings</CardBaseTitle>
+                    <CardBaseTitle>Ingestion Trackings</CardBaseTitle>
                     <CardBaseContent>
                         <InfiniteScroll
                             loading={isLoading}
@@ -86,7 +85,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                                     />
                                 </div>
                                 <div className="filter-item">
-                                    <label htmlFor="supplier-filter">Filter by Supplier:</label>
+                                    <label htmlFor="supplier-filter">Filter by Supplier: &nbsp;</label>
                                     <select
                                         id="supplier-filter"
                                         value={selectedSupplier}

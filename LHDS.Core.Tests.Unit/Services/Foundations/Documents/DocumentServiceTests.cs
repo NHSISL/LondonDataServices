@@ -36,8 +36,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             var appSettingsStub = new Dictionary<string, string> {
-                {"blobStorage:encryptedBlobContainerName", GetRandomString()},
-                {"blobStorage:decryptedBlobContainerName", GetRandomString()},
+                {"BlobStorage:encryptedBlobContainerName", GetRandomString()},
+                {"BlobStorage:decryptedBlobContainerName", GetRandomString()},
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()

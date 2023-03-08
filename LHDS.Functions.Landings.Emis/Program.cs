@@ -19,15 +19,15 @@ var host = new HostBuilder()
         var env = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT");
         config.SetBasePath(Directory.GetCurrentDirectory())
 
-                    .AddJsonFile(path: "appsettings.json")
-                   .AddJsonFile(
-                        path: $"appsettings.{Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT")}.json",
-                        optional: true)
-                .AddJsonFile(
-                        path: "appsettings.local.json",
-                        optional: true,
-                        reloadOnChange: true)
-                .AddEnvironmentVariables();
+        .AddJsonFile(path: "appsettings.json")
+        .AddJsonFile(
+            path: $"appsettings.{env}.json",
+            optional: false)
+        .AddJsonFile(
+            path: "appsettings.local.json",
+            optional: true,
+            reloadOnChange: true)
+        .AddEnvironmentVariables();
     })
     .ConfigureServices((context, services) =>
     {

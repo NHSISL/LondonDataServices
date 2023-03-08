@@ -4,6 +4,8 @@ import 'nhsuk-frontend/packages/polyfills';
 import { Container } from 'nhsuk-react-components'
 import IngestionTrackingTable from "../components/ingestionTracking/ingestionTrackingTable";
 
+
+
 export const IngestionTrackingHomepage = () => {
     return <div>
         <section >

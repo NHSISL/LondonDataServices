@@ -76,6 +76,7 @@
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\audit\auditView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\documents\documentView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\ingestionTracking\ingestionTrackingView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\views\components\lookups\lookupView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\suppliers\supplierView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\configHomePage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\IngestionTrackingHomepage.tsx" />

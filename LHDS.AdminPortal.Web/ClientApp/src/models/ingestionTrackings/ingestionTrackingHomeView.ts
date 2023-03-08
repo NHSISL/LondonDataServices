@@ -2,9 +2,9 @@ import { Guid } from 'guid-typescript';
 import { Audit } from '../audits/audit';
 
 export class IngestionTrackingHomeView {
-    public id: Guid;
+    public id: string;
     public fileName: string;
-    public source: string;
+    public supplierId: string;
     public encryptedFileName: string;
     public decryptedFileName: string;
     public decrypted: boolean;
@@ -16,9 +16,9 @@ export class IngestionTrackingHomeView {
     public audit: Audit;
 
     constructor(
-        id: Guid,
+        id: string,
         fileName: string,
-        source: string,
+        supplierId: string,
         encryptedFileName: string,
         decryptedFileName: string,
         decrypted: boolean,
@@ -30,12 +30,12 @@ export class IngestionTrackingHomeView {
         audit: Audit
     ) {
         this.id = id;
-        this.fileName = fileName 
-        this.source = source 
-        this.encryptedFileName = encryptedFileName 
-        this.decryptedFileName = decryptedFileName 
+        this.fileName = fileName;
+        this.supplierId = supplierId;
+        this.encryptedFileName = encryptedFileName;
+        this.decryptedFileName = decryptedFileName;
         this.decrypted = decrypted === true ? true : false;
-        this.lastSeen = lastSeen
+        this.lastSeen = lastSeen;
         this.fileDeleted = fileDeleted;
         this.recordCount = recordCount;
         this.encryptedFileSize = encryptedFileSize;

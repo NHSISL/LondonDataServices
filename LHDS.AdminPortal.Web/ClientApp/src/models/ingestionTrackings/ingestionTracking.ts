@@ -1,10 +1,11 @@
 import { Guid } from 'guid-typescript';
 import { Audit } from '../audits/audit';
+import { Supplier } from '../suppliers/supplier';
 
 export class IngestionTracking {
-    public id: Guid;
+    public id: string;
     public fileName: string;
-    public source: string;
+    public supplierId: string;
     public encryptedFileName: string;
     public decryptedFileName: string;
     public decrypted: boolean;
@@ -18,11 +19,12 @@ export class IngestionTracking {
     public updatedBy?: string;
     public updatedDate?: Date;
     public audit: Audit;
+    public supplier?: Supplier;
 
     constructor(ingestionTracking: any) {
-        this.id = ingestionTracking.id ? Guid.parse(ingestionTracking.id) : Guid.parse(Guid.EMPTY);
+        this.id = ingestionTracking.id;
         this.fileName = ingestionTracking.fileName || "";
-        this.source = ingestionTracking.source || "";
+        this.supplierId = ingestionTracking.supplierId || "";
         this.encryptedFileName = ingestionTracking.encryptedFileName || "";
         this.decryptedFileName = ingestionTracking.decryptedFileName || "";
         this.decrypted = ingestionTracking.decrypted;
@@ -36,5 +38,9 @@ export class IngestionTracking {
         this.updatedBy = ingestionTracking.updatedBy !== undefined ? ingestionTracking.updatedBy : ''
         this.updatedDate = ingestionTracking.updatedDate;
         this.audit = ingestionTracking.audit;
+
+        if (ingestionTracking.borough !== undefined && ingestionTracking.borough !== null) {
+            this.supplier = new Supplier(ingestionTracking.supplier);
+        }
     }
 }

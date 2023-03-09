@@ -52,9 +52,9 @@
 		</None>
 		<None Update="local.settings.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
+		</None>	
 	</ItemGroup>
-	
+		
 	<ItemGroup>
 		<Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext" />
 	</ItemGroup>

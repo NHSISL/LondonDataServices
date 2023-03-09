@@ -1,16 +1,8 @@
-import React, { FunctionComponent } from "react";
+import React from "react";
 import TableBaseData from "../bases/components/Table/TableBase.Data";
 import TableBaseRow from "../bases/components/Table/TableBase.Row";
 
-interface AuditRowViewProps {
-    
-}
-
-const AuditRowView: FunctionComponent<AuditRowViewProps> = (props: {  }) => {
-    const {
-      
-    } = props;
-
+const AuditRowView = () => {
     return (
         <div>
             <TableBaseRow>

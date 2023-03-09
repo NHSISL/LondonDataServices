@@ -3,7 +3,6 @@ import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTrac
 import { IngestionTrackingHomeView } from "../../models/ingestionTrackings/ingestionTrackingHomeView";
 import { LookupView } from "../../models/views/components/lookups/lookupView";
 import { ingestionTrackingService } from "../foundations/ingestionTrackingService";
-import { lookupViewService } from "./lookups/lookupViewService";
 
 type IngestionTrackingHomeViewServiceResponse = {
     mappedIngestionTrackings: IngestionTrackingHomeView[] | undefined;
@@ -39,18 +38,18 @@ export const ingestionTrackingHomeViewService = {
 
             useEffect(() => {
                 // Fetch the supplier list
-                const fetchSupplierList = async () => {
-                    try {
-                        const suppliers = await lookupViewService.useGetSupplierList();
-                        const supplierLookup: LookupView[] = suppliers?.data?.map((supplier: any) => ({
-                            id: supplier.id,
-                            name: supplier.name
-                        })) || [];
-                        setSupplierOptions([{ id: '', name: 'Please select...' }, ...supplierLookup]);
-                    } catch (err) {
-                        console.log('Error fetching supplier list', err);
-                    }
-                }
+                //const fetchSupplierList = async () => {
+                //    try {
+                //        const suppliers = await lookupViewService.useGetSupplierList();
+                //        const supplierLookup: LookupView[] = suppliers?.data?.map((supplier: any) => ({
+                //            id: supplier.id,
+                //            name: supplier.name
+                //        })) || [];
+                //        setSupplierOptions([{ id: '', name: 'Please select...' }, ...supplierLookup]);
+                //    } catch (err) {
+                //        console.log('Error fetching supplier list', err);
+                //    }
+                //}
 
                 if (response.data && response.data.pages) {
                     const ingestionTrackings: Array<IngestionTrackingHomeView> = [];

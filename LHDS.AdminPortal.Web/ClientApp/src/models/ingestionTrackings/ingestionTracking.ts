@@ -1,4 +1,3 @@
-import { Guid } from 'guid-typescript';
 import { Audit } from '../audits/audit';
 import { Supplier } from '../suppliers/supplier';
 

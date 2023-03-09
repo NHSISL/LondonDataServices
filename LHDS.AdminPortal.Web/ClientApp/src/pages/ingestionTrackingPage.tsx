@@ -6,7 +6,6 @@ import { Container } from 'nhsuk-react-components'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import IngestionTrackingDetail from "../components/ingestionTracking/ingestionTrackingDetail";
-import AuditTable from "../components/audit/auditTable";
 
 export const IngestionTrackingPage = () => {
 

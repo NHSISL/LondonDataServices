@@ -10,6 +10,7 @@ variables:
   solution: '**/*.sln'
   # Agent VM image name
   vmImage: ubuntu-latest
+  webProjectName: 'LHDS.AdminPortal.Web'
 
 steps:
   - task: UseDotNet@2

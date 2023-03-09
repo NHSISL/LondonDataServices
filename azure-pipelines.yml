@@ -28,7 +28,7 @@ steps:
       projects: "**/*.csproj"
       includeNuGetOrg: true
 
-- task: Npm@1
+ - task: Npm@1
     displayName: NPM Install
     inputs:
       workingDir: '$(webProjectName)/ClientApp'

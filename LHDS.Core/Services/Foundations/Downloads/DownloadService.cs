@@ -13,12 +13,12 @@ namespace LHDS.Core.Services.Foundations.Downloads
 {
     public partial class DownloadService : IDownloadService
     {
-        private readonly IDownloadBroker downloadBroker;
+        private readonly IMeshBroker downloadBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public DownloadService(
-            IDownloadBroker downloadBroker,
+            IMeshBroker downloadBroker,
             IDateTimeBroker dateTimeBroker,
             ILoggingBroker loggingBroker)
         {

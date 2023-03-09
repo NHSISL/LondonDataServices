@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
@@ -38,7 +39,15 @@ namespace LHDS.Functions.Landings.Emis
             {
                 Task.Run(async () =>
                 {
-                    await this.decryptionClient.DecryptAsync(name);
+                    if (!Path.HasExtension(name))
+                    {
+                        return;
+                    }
+
+                    if (Path.GetExtension(name) == ".gpg")
+                    {
+                        await this.decryptionClient.DecryptAsync(name);
+                    }
                 }).Wait();
             }
             catch (Exception ex)

@@ -28,12 +28,17 @@ steps:
       projects: "**/*.csproj"
       includeNuGetOrg: true
 
- # - task: DotNetCoreCLI@2
- #   displayName: "Dotnet Build"
- #   inputs:
- #     command: 'build'
- #     projects: '**/*.csproj'
- #     arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
+- task: Npm@1
+    displayName: NPM Install
+    inputs:
+      workingDir: '$(webProjectName)/ClientApp'
+      command: 'install'
+
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Build"
+    inputs:
+      command: 'build'
+      projects: '**/*.csproj'
 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Build (EMIS Download)"
@@ -43,16 +48,10 @@ steps:
       arguments: --output $(System.DefaultWorkingDirectory)/publish_output_emis_func --configuration Release
 
   - task: DotNetCoreCLI@2
-    displayName: Run Unit Tests
+    displayName: C# Unit Tests
     inputs:
       command: 'test'
       projects: '**/*.Tests.Unit.csproj'
-
-- task: Npm@1
-    displayName: NPM Install
-    inputs:
-      workingDir: '$(webProjectName)/ClientApp'
-      command: 'install'
 
   #- task: DotNetCoreCLI@2
   #  displayName: Acceptance Tests
@@ -61,7 +60,7 @@ steps:
   #    projects: '**/*.Tests.Acceptance.csproj'
 
   - task: Npm@1 
-    displayName: Run code linting
+    displayName: Run Code linting
     inputs:
       command: 'custom'
       workingDir: $(webProjectName)/ClientApp

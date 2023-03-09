@@ -34,7 +34,7 @@ steps:
  #     projects: '**/*.csproj'
  #     arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
 
- task: Npm@1
+ - task: Npm@1
     displayName: NPM Install
     inputs:
       workingDir: '$(webProjectName)/ClientApp'
@@ -59,7 +59,7 @@ steps:
   #    command: 'test'
   #    projects: '**/*.Tests.Acceptance.csproj'
 
-   task: Npm@1 
+  - task: Npm@1 
     displayName: Run code linting
     inputs:
       command: 'custom'

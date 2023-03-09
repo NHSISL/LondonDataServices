@@ -28,7 +28,7 @@ steps:
       projects: "**/*.csproj"
       includeNuGetOrg: true
 
- - task: Npm@1
+  - task: Npm@1
     displayName: NPM Install
     inputs:
       workingDir: '$(webProjectName)/ClientApp'
@@ -52,13 +52,7 @@ steps:
     inputs:
       command: 'test'
       projects: '**/*.Tests.Unit.csproj'
-
-  #- task: DotNetCoreCLI@2
-  #  displayName: Acceptance Tests
-  #  inputs:
-  #    command: 'test'
-  #    projects: '**/*.Tests.Acceptance.csproj'
-
+      
   - task: Npm@1 
     displayName: Run Code linting
     inputs:

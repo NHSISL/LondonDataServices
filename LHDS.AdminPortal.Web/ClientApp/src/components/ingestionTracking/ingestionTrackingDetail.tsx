@@ -1,11 +1,9 @@
 import { Guid } from "guid-typescript";
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import { IngestionTrackingView } from "../../models/views/components/ingestionTracking/ingestionTrackingView";
-import { documentViewService } from "../../services/views/Documents/DocumentViewService";
 import { ingestionTrackingViewService } from "../../services/views/ingestionTrackingViewService";
 import IngestionTrackingDetailCard from "./ingestionTrackingDetailCard";
 import { toastSuccess } from "../../brokers/toastBroker";
-import { documentService } from "../../services/foundations/documentService";
 
 interface IngestionTrackingDetailProps {
     ingestionTrackingId: string;
@@ -21,13 +19,12 @@ const IngestionTrackingDetail: FunctionComponent<IngestionTrackingDetailProps> =
     const { mappedIngestionTracking: ingestionTrackingRetrieved } =
         ingestionTrackingViewService.useGetIngestionTrackingById(Guid.parse(ingestionTrackingId))
 
-    const [downloadFileName, setDownloadFileName] = useState<string>("");
-
-    const { mappedLink } = documentService.useGetDownloadLinkByFileName(encodeURIComponent(downloadFileName))
+    //const [downloadFileName, setDownloadFileName] = useState<string>("");
+    //const { mappedLink } = documentService.useGetDownloadLinkByFileName(encodeURIComponent(downloadFileName))
 
     const handleDownload = async (ingestionTrackingView: IngestionTrackingView) => {
-        if (ingestionTrackingView.decryptedFileName)
-            setDownloadFileName(ingestionTrackingView.decryptedFileName)
+       // if (ingestionTrackingView.decryptedFileName)
+        //    setDownloadFileName(ingestionTrackingView.decryptedFileName)
         //const mappedLink = documentService.useGetDownloadLinkByFileName(ingestionTrackingView.fileName)
         //toastSuccess(`${mappedLink}`);
     }

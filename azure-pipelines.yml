@@ -34,6 +34,12 @@ steps:
  #     projects: '**/*.csproj'
  #     arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
 
+ task: Npm@1
+    displayName: NPM Install
+    inputs:
+      workingDir: '$(webProjectName)/ClientApp'
+      command: 'install'
+
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Build (EMIS Download)"
     inputs:
@@ -52,6 +58,13 @@ steps:
   #  inputs:
   #    command: 'test'
   #    projects: '**/*.Tests.Acceptance.csproj'
+
+   task: Npm@1 
+    displayName: Run code linting
+    inputs:
+      command: 'custom'
+      workingDir: $(webProjectName)/ClientApp
+      customCommand: 'run lint'
 
   - task: ArchiveFiles@2
     displayName: 'Archive files'

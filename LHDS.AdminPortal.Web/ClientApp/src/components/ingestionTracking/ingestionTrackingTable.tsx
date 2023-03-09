@@ -54,9 +54,9 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         }),
     ];
 
-    const handleSupplierChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedSupplier(event.target.value);
-    };
+    //const handleSupplierChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    //    setSelectedSupplier(event.target.value);
+    //};
 
     const hasNoMorePages = () => {
         return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
@@ -68,11 +68,8 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                 <CardBaseBody>
                     <CardBaseTitle>Ingestion Trackings</CardBaseTitle>
                     <CardBaseContent>
-                        <InfiniteScroll
-                            loading={isLoading}
-                            hasNextPage={!!data?.hasNextPage}
-                            loadMore={fetchNextPage}
-                        >
+                        <InfiniteScroll loading={isLoading} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
+
                             <div className="filter-container">
                                 <div className="filter-item">
                                     <SearchBase

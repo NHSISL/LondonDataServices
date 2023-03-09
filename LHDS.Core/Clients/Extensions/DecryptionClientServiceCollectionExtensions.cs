@@ -65,7 +65,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
-            services.AddTransient<IDownloadBroker, DownloadBroker>();
+            services.AddTransient<IMeshBroker, MeshBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
             services.AddTransient<IDownloadAbstractProvider, DownloadAbstractProvider>();

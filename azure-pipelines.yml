@@ -48,6 +48,12 @@ steps:
       command: 'test'
       projects: '**/*.Tests.Unit.csproj'
 
+- task: Npm@1
+    displayName: NPM Install
+    inputs:
+      workingDir: '$(webProjectName)/ClientApp'
+      command: 'install'
+
   #- task: DotNetCoreCLI@2
   #  displayName: Acceptance Tests
   #  inputs:

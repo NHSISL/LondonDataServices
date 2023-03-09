@@ -53,7 +53,7 @@
 		<None Update="local.settings.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>	
-		</ItemGroup>
+	</ItemGroup>
 		
 	<ItemGroup>
 		<Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext" />

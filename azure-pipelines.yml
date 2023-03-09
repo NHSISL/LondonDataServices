@@ -34,12 +34,6 @@ steps:
  #     projects: '**/*.csproj'
  #     arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
 
- - task: Npm@1
-    displayName: NPM Install
-    inputs:
-      workingDir: '$(webProjectName)/ClientApp'
-      command: 'install'
-
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Build (EMIS Download)"
     inputs:

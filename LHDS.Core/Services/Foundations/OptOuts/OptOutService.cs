@@ -22,7 +22,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<OptOut> AddOptOutAsync(OptOut optOut) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<OptOut> AddOptOutAsync(OptOut optOut) =>
+            await this.storageBroker.InsertOptOutAsync(optOut);
     }
 }

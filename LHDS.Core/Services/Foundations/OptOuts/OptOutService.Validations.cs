@@ -38,6 +38,14 @@ namespace LHDS.Core.Services.Foundations.OptOuts
         public void ValidateOptOutId(Guid optOutId) =>
             Validate((Rule: IsInvalid(optOutId), Parameter: nameof(OptOut.Id)));
 
+        private static void ValidateStorageOptOut(OptOut maybeOptOut, Guid optOutId)
+        {
+            if (maybeOptOut is null)
+            {
+                throw new NotFoundOptOutException(optOutId);
+            }
+        }
+
         private static void ValidateOptOutIsNotNull(OptOut optOut)
         {
             if (optOut is null)

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -208,6 +209,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedOptOutDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateOptOutAsync(randomOptOut),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnModifyIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            OptOut randomOptOut = CreateRandomOptOut();
+            var serviceException = new Exception();
+
+            var failedOptOutServiceException =
+                new FailedOptOutServiceException(serviceException);
+
+            var expectedOptOutServiceException =
+                new OptOutServiceException(failedOptOutServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<OptOut> modifyOptOutTask =
+                this.optOutService.ModifyOptOutAsync(randomOptOut);
+
+            OptOutServiceException actualOptOutServiceException =
+                await Assert.ThrowsAsync<OptOutServiceException>(
+                    modifyOptOutTask.AsTask);
+
+            // then
+            actualOptOutServiceException.Should()
+                .BeEquivalentTo(expectedOptOutServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOptOutByIdAsync(randomOptOut.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOptOutServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

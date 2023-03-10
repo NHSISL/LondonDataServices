@@ -51,5 +51,47 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfOptOutIsNotFoundAndLogItAsync()
+        {
+            //given
+            Guid someOptOutId = Guid.NewGuid();
+            OptOut noOptOut = null;
+
+            var notFoundOptOutException =
+                new NotFoundOptOutException(someOptOutId);
+
+            var expectedOptOutValidationException =
+                new OptOutValidationException(notFoundOptOutException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectOptOutByIdAsync(It.IsAny<Guid>()))
+                    .ReturnsAsync(noOptOut);
+
+            //when
+            ValueTask<OptOut> retrieveOptOutByIdTask =
+                this.optOutService.RetrieveOptOutByIdAsync(someOptOutId);
+
+            OptOutValidationException actualOptOutValidationException =
+                await Assert.ThrowsAsync<OptOutValidationException>(
+                    retrieveOptOutByIdTask.AsTask);
+
+            //then
+            actualOptOutValidationException.Should().BeEquivalentTo(expectedOptOutValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOptOutByIdAsync(It.IsAny<Guid>()),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOptOutValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

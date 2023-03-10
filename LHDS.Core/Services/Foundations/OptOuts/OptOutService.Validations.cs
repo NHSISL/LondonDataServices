@@ -84,7 +84,13 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                     firstDate: inputOptOut.CreatedDate,
                     secondDate: storageOptOut.CreatedDate,
                     secondDateName: nameof(OptOut.CreatedDate)),
-                Parameter: nameof(OptOut.CreatedDate)));
+                Parameter: nameof(OptOut.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    firstId: inputOptOut.CreatedByUserId,
+                    secondId: storageOptOut.CreatedByUserId,
+                    secondIdName: nameof(OptOut.CreatedByUserId)),
+                Parameter: nameof(OptOut.CreatedByUserId)));
         }
 
         private static dynamic IsInvalid(Guid id) => new

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.OptOuts;
 using LHDS.Core.Models.OptOuts.Exceptions;
@@ -31,6 +32,13 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 
                 throw CreateAndLogCriticalDependencyException(failedOptOutStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsOptOutException =
+                    new AlreadyExistsOptOutException(duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsOptOutException);
+            }
         }
 
         private OptOutValidationException CreateAndLogValidationException(Xeption exception)
@@ -49,6 +57,16 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             this.loggingBroker.LogCritical(optOutDependencyException);
 
             return optOutDependencyException;
+        }
+
+        private OptOutDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var optOutDependencyValidationException =
+                new OptOutDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(optOutDependencyValidationException);
+
+            return optOutDependencyValidationException;
         }
     }
 }

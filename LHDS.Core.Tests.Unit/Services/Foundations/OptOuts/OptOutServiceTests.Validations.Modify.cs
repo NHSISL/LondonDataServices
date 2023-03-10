@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using Moq;
 using LHDS.Core.Models.OptOuts;
 using LHDS.Core.Models.OptOuts.Exceptions;
@@ -122,9 +123,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 broker.UpdateOptOutAsync(It.IsAny<OptOut>()),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -172,9 +173,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 broker.SelectOptOutByIdAsync(invalidOptOut.Id),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -277,6 +278,65 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedOptOutValidationException))),
                         Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfStorageCreatedDateNotSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNegativeNumber();
+            int randomMinutes = randomNumber;
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            OptOut randomOptOut = CreateRandomModifyOptOut(randomDateTimeOffset);
+            OptOut invalidOptOut = randomOptOut.DeepClone();
+            OptOut storageOptOut = invalidOptOut.DeepClone();
+            storageOptOut.CreatedDate = storageOptOut.CreatedDate.AddMinutes(randomMinutes);
+            storageOptOut.UpdatedDate = storageOptOut.UpdatedDate.AddMinutes(randomMinutes);
+            var invalidOptOutException = new InvalidOptOutException();
+
+            invalidOptOutException.AddData(
+                key: nameof(OptOut.CreatedDate),
+                values: $"Date is not the same as {nameof(OptOut.CreatedDate)}");
+
+            var expectedOptOutValidationException =
+                new OptOutValidationException(invalidOptOutException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectOptOutByIdAsync(invalidOptOut.Id))
+                .ReturnsAsync(storageOptOut);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<OptOut> modifyOptOutTask =
+                this.optOutService.ModifyOptOutAsync(invalidOptOut);
+
+            OptOutValidationException actualOptOutValidationException =
+                await Assert.ThrowsAsync<OptOutValidationException>(
+                    modifyOptOutTask.AsTask);
+
+            // then
+            actualOptOutValidationException.Should()
+                .BeEquivalentTo(expectedOptOutValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOptOutByIdAsync(invalidOptOut.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedOptOutValidationException))),
+                       Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

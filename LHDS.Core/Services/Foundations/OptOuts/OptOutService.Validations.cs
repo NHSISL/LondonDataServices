@@ -35,6 +35,9 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 (Rule: IsNotRecent(optOut.CreatedDate), Parameter: nameof(OptOut.CreatedDate)));
         }
 
+        public void ValidateOptOutId(Guid optOutId) =>
+            Validate((Rule: IsInvalid(optOutId), Parameter: nameof(OptOut.Id)));
+
         private static void ValidateOptOutIsNotNull(OptOut optOut)
         {
             if (optOut is null)

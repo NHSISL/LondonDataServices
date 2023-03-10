@@ -160,5 +160,50 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateUserIdsIsNotSameAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            OptOut randomOptOut = CreateRandomOptOut(randomDateTimeOffset);
+            OptOut invalidOptOut = randomOptOut;
+            invalidOptOut.UpdatedByUserId = Guid.NewGuid();
+
+            var invalidOptOutException =
+                new InvalidOptOutException();
+
+            invalidOptOutException.AddData(
+                key: nameof(OptOut.UpdatedByUserId),
+                values: $"Id is not the same as {nameof(OptOut.CreatedByUserId)}");
+
+            var expectedOptOutValidationException =
+                new OptOutValidationException(invalidOptOutException);
+
+            // when
+            ValueTask<OptOut> addOptOutTask =
+                this.optOutService.AddOptOutAsync(invalidOptOut);
+
+            OptOutValidationException actualOptOutValidationException =
+                await Assert.ThrowsAsync<OptOutValidationException>(
+                    addOptOutTask.AsTask);
+
+            // then
+            actualOptOutValidationException.Should()
+                .BeEquivalentTo(expectedOptOutValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOptOutValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertOptOutAsync(It.IsAny<OptOut>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

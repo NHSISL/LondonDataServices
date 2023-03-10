@@ -1,0 +1,64 @@
+using System.Threading.Tasks;
+using FluentAssertions;
+using Microsoft.Data.SqlClient;
+using Moq;
+using LHDS.Core.Models.OptOuts;
+using LHDS.Core.Models.OptOuts.Exceptions;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
+{
+    public partial class OptOutServiceTests
+    {
+        [Fact]
+        public async Task ShouldThrowCriticalDependencyExceptionOnModifyIfSqlErrorOccursAndLogItAsync()
+        {
+            // given
+            OptOut randomOptOut = CreateRandomOptOut();
+            SqlException sqlException = GetSqlException();
+
+            var failedOptOutStorageException =
+                new FailedOptOutStorageException(sqlException);
+
+            var expectedOptOutDependencyException =
+                new OptOutDependencyException(failedOptOutStorageException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(sqlException);
+
+            // when
+            ValueTask<OptOut> modifyOptOutTask =
+                this.optOutService.ModifyOptOutAsync(randomOptOut);
+
+            OptOutDependencyException actualOptOutDependencyException =
+                await Assert.ThrowsAsync<OptOutDependencyException>(
+                    modifyOptOutTask.AsTask);
+
+            // then
+            actualOptOutDependencyException.Should()
+                .BeEquivalentTo(expectedOptOutDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOptOutByIdAsync(randomOptOut.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedOptOutDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateOptOutAsync(randomOptOut),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

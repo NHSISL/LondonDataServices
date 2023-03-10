@@ -173,9 +173,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 broker.SelectOptOutByIdAsync(invalidOptOut.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -279,8 +279,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     expectedOptOutValidationException))),
                         Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -338,8 +338,65 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                    expectedOptOutValidationException))),
                        Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfCreatedUserIdDontMacthStorageAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            OptOut randomOptOut = CreateRandomModifyOptOut(randomDateTimeOffset);
+            OptOut invalidOptOut = randomOptOut.DeepClone();
+            OptOut storageOptOut = invalidOptOut.DeepClone();
+            invalidOptOut.CreatedByUserId = Guid.NewGuid();
+            storageOptOut.UpdatedDate = storageOptOut.CreatedDate;
+
+            var invalidOptOutException = new InvalidOptOutException();
+
+            invalidOptOutException.AddData(
+                key: nameof(OptOut.CreatedByUserId),
+                values: $"Id is not the same as {nameof(OptOut.CreatedByUserId)}");
+
+            var expectedOptOutValidationException =
+                new OptOutValidationException(invalidOptOutException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectOptOutByIdAsync(invalidOptOut.Id))
+                .ReturnsAsync(storageOptOut);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<OptOut> modifyOptOutTask =
+                this.optOutService.ModifyOptOutAsync(invalidOptOut);
+
+            OptOutValidationException actualOptOutValidationException =
+                await Assert.ThrowsAsync<OptOutValidationException>(
+                    modifyOptOutTask.AsTask);
+
+            // then
+            actualOptOutValidationException.Should().BeEquivalentTo(expectedOptOutValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOptOutByIdAsync(invalidOptOut.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedOptOutValidationException))),
+                       Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

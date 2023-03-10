@@ -39,6 +39,13 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsOptOutException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidOptOutReferenceException =
+                    new InvalidOptOutReferenceException(foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidOptOutReferenceException);
+            }
         }
 
         private OptOutValidationException CreateAndLogValidationException(Xeption exception)

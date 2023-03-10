@@ -19,6 +19,10 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             {
                 throw CreateAndLogValidationException(nullOptOutException);
             }
+            catch (InvalidOptOutException invalidOptOutException)
+            {
+                throw CreateAndLogValidationException(invalidOptOutException);
+            }
         }
 
         private OptOutValidationException CreateAndLogValidationException(Xeption exception)

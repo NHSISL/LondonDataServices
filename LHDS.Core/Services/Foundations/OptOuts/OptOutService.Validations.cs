@@ -77,6 +77,16 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             }
         }
 
+        private static void ValidateAgainstStorageOptOutOnModify(OptOut inputOptOut, OptOut storageOptOut)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputOptOut.CreatedDate,
+                    secondDate: storageOptOut.CreatedDate,
+                    secondDateName: nameof(OptOut.CreatedDate)),
+                Parameter: nameof(OptOut.CreatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

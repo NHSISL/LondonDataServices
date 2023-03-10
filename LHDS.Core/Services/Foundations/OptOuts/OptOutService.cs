@@ -1,62 +1,65 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
-using FluentAssertions;
-using Force.DeepCloner;
-using Moq;
+using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Storages;
 using LHDS.Core.Models.OptOuts;
-using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
+namespace LHDS.Core.Services.Foundations.OptOuts
 {
-    public partial class OptOutServiceTests
+    public partial class OptOutService : IOptOutService
     {
-        [Fact]
-        public async Task ShouldModifyOptOutAsync()
+        private readonly IStorageBroker storageBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ILoggingBroker loggingBroker;
+
+        public OptOutService(
+            IStorageBroker storageBroker,
+            IDateTimeBroker dateTimeBroker,
+            ILoggingBroker loggingBroker)
         {
-            // given
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            OptOut randomOptOut = CreateRandomModifyOptOut(randomDateTimeOffset);
-            OptOut inputOptOut = randomOptOut;
-            OptOut storageOptOut = inputOptOut.DeepClone();
-            storageOptOut.UpdatedDate = randomOptOut.CreatedDate;
-            OptOut updatedOptOut = inputOptOut;
-            OptOut expectedOptOut = updatedOptOut.DeepClone();
-            Guid optOutId = inputOptOut.Id;
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
-
-            this.storageBrokerMock.Setup(broker =>
-                broker.SelectOptOutByIdAsync(optOutId))
-                    .ReturnsAsync(storageOptOut);
-
-            this.storageBrokerMock.Setup(broker =>
-                broker.UpdateOptOutAsync(inputOptOut))
-                    .ReturnsAsync(updatedOptOut);
-
-            // when
-            OptOut actualOptOut =
-                await this.optOutService.ModifyOptOutAsync(inputOptOut);
-
-            // then
-            actualOptOut.Should().BeEquivalentTo(expectedOptOut);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectOptOutByIdAsync(inputOptOut.Id),
-                    Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.UpdateOptOutAsync(inputOptOut),
-                    Times.Once);
-
-            this.storageBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBroker = storageBroker;
+            this.dateTimeBroker = dateTimeBroker;
+            this.loggingBroker = loggingBroker;
         }
+
+        public ValueTask<OptOut> AddOptOutAsync(OptOut optOut) =>
+            TryCatch(async () =>
+            {
+                ValidateOptOutOnAdd(optOut);
+
+                return await this.storageBroker.InsertOptOutAsync(optOut);
+            });
+
+        public IQueryable<OptOut> RetrieveAllOptOuts() =>
+            TryCatch(() => this.storageBroker.SelectAllOptOuts());
+
+        public ValueTask<OptOut> RetrieveOptOutByIdAsync(Guid optOutId) =>
+            TryCatch(async () =>
+            {
+                ValidateOptOutId(optOutId);
+
+                OptOut maybeOptOut = await this.storageBroker
+                    .SelectOptOutByIdAsync(optOutId);
+
+                ValidateStorageOptOut(maybeOptOut, optOutId);
+
+                return maybeOptOut;
+            });
+
+        public ValueTask<OptOut> ModifyOptOutAsync(OptOut optOut) =>
+            TryCatch(async () =>
+            {
+                ValidateOptOutOnModify(optOut);
+
+                OptOut maybeOptOut =
+                    await this.storageBroker.SelectOptOutByIdAsync(optOut.Id);
+
+                ValidateStorageOptOut(maybeOptOut, optOut.Id);
+                ValidateAgainstStorageOptOutOnModify(inputOptOut: optOut, storageOptOut: maybeOptOut);
+
+                return await this.storageBroker.UpdateOptOutAsync(optOut);
+            });
     }
 }

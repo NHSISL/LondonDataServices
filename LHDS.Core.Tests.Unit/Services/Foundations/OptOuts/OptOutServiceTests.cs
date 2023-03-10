@@ -1,14 +1,18 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
-using Microsoft.Data.SqlClient;
-using Moq;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages;
-using LHDS.Core.Models.OptOuts;
+using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.OptOuts;
+using Microsoft.Data.SqlClient;
+using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
@@ -90,15 +94,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
         private static Filler<OptOut> CreateOptOutFiller(DateTimeOffset dateTimeOffset)
         {
-            Guid userId = Guid.NewGuid();
+            string user = Guid.NewGuid().ToString();
             var filler = new Filler<OptOut>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(optOut => optOut.CreatedByUserId).Use(userId)
-                .OnProperty(optOut => optOut.UpdatedByUserId).Use(userId);
-
-            // TODO: Complete the filler setup e.g. ignore related properties etc...
+                .OnProperty(optOut => optOut.CreatedBy).Use(user)
+                .OnProperty(optOut => optOut.UpdatedBy).Use(user);
 
             return filler;
         }

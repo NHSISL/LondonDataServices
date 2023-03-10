@@ -1,11 +1,15 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
+using LHDS.Core.Models.Foundations.OptOuts;
+using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using LHDS.Core.Models.OptOuts;
-using LHDS.Core.Models.OptOuts.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.OptOuts

@@ -47,7 +47,13 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 (Rule: IsInvalid(optOut.CreatedDate), Parameter: nameof(OptOut.CreatedDate)),
                 (Rule: IsInvalid(optOut.CreatedByUserId), Parameter: nameof(OptOut.CreatedByUserId)),
                 (Rule: IsInvalid(optOut.UpdatedDate), Parameter: nameof(OptOut.UpdatedDate)),
-                (Rule: IsInvalid(optOut.UpdatedByUserId), Parameter: nameof(OptOut.UpdatedByUserId)));
+                (Rule: IsInvalid(optOut.UpdatedByUserId), Parameter: nameof(OptOut.UpdatedByUserId)),
+
+                (Rule: IsSame(
+                    firstDate: optOut.UpdatedDate,
+                    secondDate: optOut.CreatedDate,
+                    secondDateName: nameof(OptOut.CreatedDate)),
+                Parameter: nameof(OptOut.UpdatedDate)));
         }
 
         public void ValidateOptOutId(Guid optOutId) =>
@@ -80,6 +86,15 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,

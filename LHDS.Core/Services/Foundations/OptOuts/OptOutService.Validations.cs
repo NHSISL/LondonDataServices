@@ -1,6 +1,10 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
-using LHDS.Core.Models.OptOuts;
-using LHDS.Core.Models.OptOuts.Exceptions;
+using LHDS.Core.Models.Foundations.OptOuts;
+using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
 
 namespace LHDS.Core.Services.Foundations.OptOuts
 {
@@ -12,13 +16,12 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 
             Validate(
                 (Rule: IsInvalid(optOut.Id), Parameter: nameof(OptOut.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(optOut.NhsNumber), Parameter: nameof(OptOut.NhsNumber)),
+                (Rule: IsInvalid(optOut.OptOutStatus), Parameter: nameof(OptOut.OptOutStatus)),
                 (Rule: IsInvalid(optOut.CreatedDate), Parameter: nameof(OptOut.CreatedDate)),
-                (Rule: IsInvalid(optOut.CreatedByUserId), Parameter: nameof(OptOut.CreatedByUserId)),
+                (Rule: IsInvalid(optOut.CreatedBy), Parameter: nameof(OptOut.CreatedBy)),
                 (Rule: IsInvalid(optOut.UpdatedDate), Parameter: nameof(OptOut.UpdatedDate)),
-                (Rule: IsInvalid(optOut.UpdatedByUserId), Parameter: nameof(OptOut.UpdatedByUserId)),
+                (Rule: IsInvalid(optOut.UpdatedBy), Parameter: nameof(OptOut.UpdatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: optOut.UpdatedDate,
@@ -27,10 +30,10 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 Parameter: nameof(OptOut.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    firstId: optOut.UpdatedByUserId,
-                    secondId: optOut.CreatedByUserId,
-                    secondIdName: nameof(OptOut.CreatedByUserId)),
-                Parameter: nameof(OptOut.UpdatedByUserId)),
+                    first: optOut.UpdatedBy,
+                    second: optOut.CreatedBy,
+                    secondName: nameof(OptOut.CreatedBy)),
+                Parameter: nameof(OptOut.UpdatedBy)),
 
                 (Rule: IsNotRecent(optOut.CreatedDate), Parameter: nameof(OptOut.CreatedDate)));
         }
@@ -41,13 +44,12 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 
             Validate(
                 (Rule: IsInvalid(optOut.Id), Parameter: nameof(OptOut.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(optOut.NhsNumber), Parameter: nameof(OptOut.NhsNumber)),
+                (Rule: IsInvalid(optOut.OptOutStatus), Parameter: nameof(OptOut.OptOutStatus)),
                 (Rule: IsInvalid(optOut.CreatedDate), Parameter: nameof(OptOut.CreatedDate)),
-                (Rule: IsInvalid(optOut.CreatedByUserId), Parameter: nameof(OptOut.CreatedByUserId)),
+                (Rule: IsInvalid(optOut.CreatedBy), Parameter: nameof(OptOut.CreatedBy)),
                 (Rule: IsInvalid(optOut.UpdatedDate), Parameter: nameof(OptOut.UpdatedDate)),
-                (Rule: IsInvalid(optOut.UpdatedByUserId), Parameter: nameof(OptOut.UpdatedByUserId)),
+                (Rule: IsInvalid(optOut.UpdatedBy), Parameter: nameof(OptOut.UpdatedBy)),
 
                 (Rule: IsSame(
                     firstDate: optOut.UpdatedDate,
@@ -87,10 +89,10 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 Parameter: nameof(OptOut.CreatedDate)),
 
                 (Rule: IsNotSame(
-                    firstId: inputOptOut.CreatedByUserId,
-                    secondId: storageOptOut.CreatedByUserId,
-                    secondIdName: nameof(OptOut.CreatedByUserId)),
-                Parameter: nameof(OptOut.CreatedByUserId)),
+                    first: inputOptOut.CreatedBy,
+                    second: storageOptOut.CreatedBy,
+                    secondName: nameof(OptOut.CreatedBy)),
+                Parameter: nameof(OptOut.CreatedBy)),
 
                 (Rule: IsSame(
                     firstDate: inputOptOut.UpdatedDate,
@@ -103,6 +105,12 @@ namespace LHDS.Core.Services.Foundations.OptOuts
         {
             Condition = id == Guid.Empty,
             Message = "Id is required"
+        };
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = String.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
         };
 
         private static dynamic IsInvalid(DateTimeOffset date) => new
@@ -128,6 +136,15 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 Condition = firstDate != secondDate,
                 Message = $"Date is not the same as {secondDateName}"
             };
+
+        private static dynamic IsNotSame(
+           string first,
+           string second,
+           string secondName) => new
+           {
+               Condition = first != second,
+               Message = $"Text is not the same as {secondName}"
+           };
 
         private static dynamic IsNotSame(
             Guid firstId,

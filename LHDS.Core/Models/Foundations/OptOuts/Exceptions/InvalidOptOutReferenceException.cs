@@ -1,7 +1,7 @@
 using System;
 using Xeptions;
 
-namespace LHDS.Core.Models.OptOuts.Exceptions
+namespace LHDS.Core.Models.Foundations.OptOuts.Exceptions
 {
     public class InvalidOptOutReferenceException : Xeption
     {

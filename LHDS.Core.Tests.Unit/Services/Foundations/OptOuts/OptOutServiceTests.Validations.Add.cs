@@ -1,9 +1,13 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.OptOuts;
+using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
 using Moq;
-using LHDS.Core.Models.OptOuts;
-using LHDS.Core.Models.OptOuts.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
@@ -74,16 +78,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 values: "Date is required");
 
             invalidOptOutException.AddData(
-                key: nameof(OptOut.CreatedByUserId),
-                values: "Id is required");
+                key: nameof(OptOut.CreatedBy),
+                values: "Text is required");
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.UpdatedDate),
                 values: "Date is required");
 
             invalidOptOutException.AddData(
-                key: nameof(OptOut.UpdatedByUserId),
-                values: "Id is required");
+                key: nameof(OptOut.UpdatedBy),
+                values: "Text is required");
 
             var expectedOptOutValidationException =
                 new OptOutValidationException(invalidOptOutException);
@@ -180,14 +184,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             OptOut randomOptOut = CreateRandomOptOut(randomDateTimeOffset);
             OptOut invalidOptOut = randomOptOut;
-            invalidOptOut.UpdatedByUserId = Guid.NewGuid();
+            invalidOptOut.UpdatedBy = Guid.NewGuid().ToString();
 
             var invalidOptOutException =
                 new InvalidOptOutException();
 
             invalidOptOutException.AddData(
-                key: nameof(OptOut.UpdatedByUserId),
-                values: $"Id is not the same as {nameof(OptOut.CreatedByUserId)}");
+                key: nameof(OptOut.UpdatedBy),
+                values: $"Text is not the same as {nameof(OptOut.CreatedBy)}");
 
             var expectedOptOutValidationException =
                 new OptOutValidationException(invalidOptOutException);

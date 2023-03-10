@@ -84,7 +84,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(OptOut.CreatedDate)}"
+                });
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.UpdatedByUserId),

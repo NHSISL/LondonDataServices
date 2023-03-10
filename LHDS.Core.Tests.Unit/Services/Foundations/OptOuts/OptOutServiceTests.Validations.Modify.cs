@@ -106,7 +106,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     modifyOptOutTask.AsTask);
 
             //then
-            actualOptOutValidationException.Should().BeEquivalentTo(expectedOptOutValidationException);
+            actualOptOutValidationException.Should()
+                .BeEquivalentTo(expectedOptOutValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -147,7 +148,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     modifyOptOutTask.AsTask);
 
             // then
-            actualOptOutValidationException.Should().BeEquivalentTo(expectedOptOutValidationException);
+            actualOptOutValidationException.Should()
+                .BeEquivalentTo(expectedOptOutValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -161,6 +163,58 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsNotRecentAndLogItAsync(int minutes)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            OptOut randomOptOut = CreateRandomOptOut(randomDateTimeOffset);
+            randomOptOut.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
+
+            var invalidOptOutException =
+                new InvalidOptOutException();
+
+            invalidOptOutException.AddData(
+                key: nameof(OptOut.UpdatedDate),
+                values: "Date is not recent");
+
+            var expectedOptOutValidatonException =
+                new OptOutValidationException(invalidOptOutException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<OptOut> modifyOptOutTask =
+                this.optOutService.ModifyOptOutAsync(randomOptOut);
+
+            OptOutValidationException actualOptOutValidationException =
+                await Assert.ThrowsAsync<OptOutValidationException>(
+                    modifyOptOutTask.AsTask);
+
+            // then
+            actualOptOutValidationException.Should().BeEquivalentTo(expectedOptOutValidatonException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOptOutValidatonException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOptOutByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

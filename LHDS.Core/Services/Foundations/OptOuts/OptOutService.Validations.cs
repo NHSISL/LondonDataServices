@@ -53,7 +53,9 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                     firstDate: optOut.UpdatedDate,
                     secondDate: optOut.CreatedDate,
                     secondDateName: nameof(OptOut.CreatedDate)),
-                Parameter: nameof(OptOut.UpdatedDate)));
+                Parameter: nameof(OptOut.UpdatedDate)),
+
+                (Rule: IsNotRecent(optOut.UpdatedDate), Parameter: nameof(optOut.UpdatedDate)));
         }
 
         public void ValidateOptOutId(Guid optOutId) =>

@@ -109,6 +109,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             actualOptOutValidationException.Should()
                 .BeEquivalentTo(expectedOptOutValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedOptOutValidationException))),
@@ -118,9 +122,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 broker.UpdateOptOutAsync(It.IsAny<OptOut>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -139,6 +143,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             var expectedOptOutValidationException =
                 new OptOutValidationException(invalidOptOutException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<OptOut> modifyOptOutTask =
                 this.optOutService.ModifyOptOutAsync(invalidOptOut);
@@ -151,6 +159,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             actualOptOutValidationException.Should()
                 .BeEquivalentTo(expectedOptOutValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedOptOutValidationException))),
@@ -160,9 +172,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 broker.SelectOptOutByIdAsync(invalidOptOut.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]

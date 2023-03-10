@@ -77,9 +77,9 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions {
                     IngestionTrackingId = ingestionTracking.Id,
                     Message = $"Decrypted document - {document.FileName}",
                     CreatedDate = currentDateTime,
-                    CreatedBy = "DecryptionService",
+                    CreatedBy = "DecryptionOrchestrationService",
                     UpdatedDate = currentDateTime,
-                    UpdatedBy = "DecryptionService",
+                    UpdatedBy = "DecryptionOrchestrationService",
                 };
 
             this.auditService.AddAuditAsync(newAudit);

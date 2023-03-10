@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.OptOuts;
 using LHDS.Core.Models.OptOuts.Exceptions;
@@ -139,7 +140,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 await Assert.ThrowsAsync<OptOutDependencyValidationException>(
                     addOptOutTask.AsTask);
 
-            actualOptOutDependencyValidationException.Should().BeEquivalentTo(expectedOptOutValidationException);
+            actualOptOutDependencyValidationException.Should()
+                .BeEquivalentTo(expectedOptOutValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -157,6 +159,55 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnAddIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            OptOut someOptOut = CreateRandomOptOut();
+
+            var databaseUpdateException =
+                new DbUpdateException();
+
+            var failedOptOutStorageException =
+                new FailedOptOutStorageException(databaseUpdateException);
+
+            var expectedOptOutDependencyException =
+                new OptOutDependencyException(failedOptOutStorageException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<OptOut> addOptOutTask =
+                this.optOutService.AddOptOutAsync(someOptOut);
+
+            OptOutDependencyException actualOptOutDependencyException =
+                await Assert.ThrowsAsync<OptOutDependencyException>(
+                    addOptOutTask.AsTask);
+
+            // then
+            actualOptOutDependencyException.Should()
+                .BeEquivalentTo(expectedOptOutDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertOptOutAsync(It.IsAny<OptOut>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOptOutDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

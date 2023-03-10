@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -54,6 +55,60 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateOptOutAsync(randomOptOut),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            OptOut someOptOut = CreateRandomOptOut();
+            string randomMessage = GetRandomMessage();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidOptOutReferenceException =
+                new InvalidOptOutReferenceException(foreignKeyConstraintConflictException);
+
+            OptOutDependencyValidationException expectedOptOutDependencyValidationException =
+                new OptOutDependencyValidationException(invalidOptOutReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<OptOut> modifyOptOutTask =
+                this.optOutService.ModifyOptOutAsync(someOptOut);
+
+            OptOutDependencyValidationException actualOptOutDependencyValidationException =
+                await Assert.ThrowsAsync<OptOutDependencyValidationException>(
+                    modifyOptOutTask.AsTask);
+
+            // then
+            actualOptOutDependencyValidationException.Should()
+                .BeEquivalentTo(expectedOptOutDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOptOutByIdAsync(someOptOut.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(expectedOptOutDependencyValidationException))),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateOptOutAsync(someOptOut),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

@@ -54,6 +54,12 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 
                 throw CreateAndLogDependencyValidationException(invalidOptOutReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedOptOutException = new LockedOptOutException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedOptOutException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedOptOutStorageException =

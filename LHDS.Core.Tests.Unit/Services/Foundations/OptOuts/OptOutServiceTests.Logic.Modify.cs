@@ -28,6 +28,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
+                broker.SelectOptOutByIdAsync(optOutId))
+                    .ReturnsAsync(storageOptOut);
+
+            this.storageBrokerMock.Setup(broker =>
                 broker.UpdateOptOutAsync(inputOptOut))
                     .ReturnsAsync(updatedOptOut);
 
@@ -43,12 +47,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
+                broker.SelectOptOutByIdAsync(inputOptOut.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
                 broker.UpdateOptOutAsync(inputOptOut),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

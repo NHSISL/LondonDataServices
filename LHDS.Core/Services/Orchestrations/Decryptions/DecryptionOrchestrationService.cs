@@ -14,10 +14,8 @@ using LHDS.Core.Services.Foundations.Decryptions;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 
-namespace LHDS.Core.Services.Orchestrations.Decryptions
-{
-    public partial class DecryptionOrchestrationService : IDecryptionOrchestrationService
-    {
+namespace LHDS.Core.Services.Orchestrations.Decryptions {
+    public partial class DecryptionOrchestrationService : IDecryptionOrchestrationService {
         private readonly IDocumentService documentService;
         private readonly IDecryptionService decryptionService;
         private readonly IIngestionTrackingService ingestionTrackingService;
@@ -31,8 +29,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             IIngestionTrackingService ingestionTrackingService,
             IAuditService auditService,
             ILoggingBroker loggingBroker,
-            IDateTimeBroker dateTimeBroker)
-        {
+            IDateTimeBroker dateTimeBroker) {
             this.documentService = documentService;
             this.decryptionService = decryptionService;
             this.ingestionTrackingService = ingestionTrackingService;
@@ -42,8 +39,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
         }
 
         public ValueTask DecryptAsync(string fileName) =>
-            TryCatch(async () =>
-            {
+            TryCatch(async () => {
                 ValidateFileNameIsNotNull(fileName);
 
                 var ingestionTracking = await this.ingestionTrackingService
@@ -55,8 +51,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 byte[] decryptedData = await this.decryptionService.DecryptAsync(document.DocumentData);
                 string[] lines = System.Text.Encoding.UTF8.GetString(decryptedData).Split('\n');
 
-                Document newDecryptedDocument = new Document
-                {
+                Document newDecryptedDocument = new Document {
                     DocumentData = decryptedData,
                     FileName = ingestionTracking.DecryptedFileName
                 };
@@ -75,15 +70,16 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 LogAudit(ingestionTracking, document: newDecryptedDocument, currentDateTime);
             });
 
-        private void LogAudit(IngestionTracking ingestionTracking, Document document, DateTimeOffset currentDateTime)
-        {
+        private void LogAudit(IngestionTracking ingestionTracking, Document document, DateTimeOffset currentDateTime) {
             Audit newAudit =
-                new Audit
-                {
+                new Audit {
                     Id = Guid.NewGuid(),
                     IngestionTrackingId = ingestionTracking.Id,
                     Message = $"Decrypted document - {document.FileName}",
-                    CreatedDate = currentDateTime
+                    CreatedDate = currentDateTime,
+                    CreatedBy = "DecryptionService",
+                    UpdatedDate = currentDateTime,
+                    UpdatedBy = "DecryptionService",
                 };
 
             this.auditService.AddAuditAsync(newAudit);

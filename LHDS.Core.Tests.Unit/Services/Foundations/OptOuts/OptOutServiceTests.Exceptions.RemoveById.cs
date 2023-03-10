@@ -111,5 +111,48 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveWhenSqlExceptionOccursAndLogItAsync()
+        {
+            // given
+            Guid someOptOutId = Guid.NewGuid();
+            SqlException sqlException = GetSqlException();
+
+            var failedOptOutStorageException =
+                new FailedOptOutStorageException(sqlException);
+
+            var expectedOptOutDependencyException =
+                new OptOutDependencyException(failedOptOutStorageException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectOptOutByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(sqlException);
+
+            // when
+            ValueTask<OptOut> deleteOptOutTask =
+                this.optOutService.RemoveOptOutByIdAsync(someOptOutId);
+
+            OptOutDependencyException actualOptOutDependencyException =
+                await Assert.ThrowsAsync<OptOutDependencyException>(
+                    deleteOptOutTask.AsTask);
+
+            // then
+            actualOptOutDependencyException.Should()
+                .BeEquivalentTo(expectedOptOutDependencyException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOptOutByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedOptOutDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

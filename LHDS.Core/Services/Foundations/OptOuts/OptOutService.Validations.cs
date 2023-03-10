@@ -30,7 +30,9 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                     firstId: optOut.UpdatedByUserId,
                     secondId: optOut.CreatedByUserId,
                     secondIdName: nameof(OptOut.CreatedByUserId)),
-                Parameter: nameof(OptOut.UpdatedByUserId)));
+                Parameter: nameof(OptOut.UpdatedByUserId)),
+
+                (Rule: IsNotRecent(optOut.CreatedDate), Parameter: nameof(OptOut.CreatedDate)));
         }
 
         private static void ValidateOptOutIsNotNull(OptOut optOut)
@@ -70,6 +72,23 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
+
+        private dynamic IsNotRecent(DateTimeOffset date) => new
+        {
+            Condition = IsDateNotRecent(date),
+            Message = "Date is not recent"
+        };
+
+        private bool IsDateNotRecent(DateTimeOffset date)
+        {
+            DateTimeOffset currentDateTime =
+                this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+            TimeSpan timeDifference = currentDateTime.Subtract(date);
+            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+
+            return timeDifference.Duration() > oneMinute;
+        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

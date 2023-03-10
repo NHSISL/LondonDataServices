@@ -61,5 +61,8 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 
                 return await this.storageBroker.UpdateOptOutAsync(optOut);
             });
+
+        public ValueTask<OptOut> RemoveOptOutByIdAsync(Guid optOutId) =>
+            throw new NotImplementedException();
     }
 }

@@ -38,6 +38,16 @@ namespace LHDS.Core.Services.Foundations.OptOuts
         private void ValidateOptOutOnModify(OptOut optOut)
         {
             ValidateOptOutIsNotNull(optOut);
+
+            Validate(
+                (Rule: IsInvalid(optOut.Id), Parameter: nameof(OptOut.Id)),
+
+                // TODO: Add any other required validation rules
+
+                (Rule: IsInvalid(optOut.CreatedDate), Parameter: nameof(OptOut.CreatedDate)),
+                (Rule: IsInvalid(optOut.CreatedByUserId), Parameter: nameof(OptOut.CreatedByUserId)),
+                (Rule: IsInvalid(optOut.UpdatedDate), Parameter: nameof(OptOut.UpdatedDate)),
+                (Rule: IsInvalid(optOut.UpdatedByUserId), Parameter: nameof(OptOut.UpdatedByUserId)));
         }
 
         public void ValidateOptOutId(Guid optOutId) =>

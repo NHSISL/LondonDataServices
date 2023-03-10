@@ -30,7 +30,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     addOptOutTask.AsTask);
 
             // then
-            actualOptOutValidationException.Should().BeEquivalentTo(expectedOptOutValidationException);
+            actualOptOutValidationException.Should()
+                .BeEquivalentTo(expectedOptOutValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -40,6 +41,76 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnAddIfOptOutIsInvalidAndLogItAsync(string invalidText)
+        {
+            // given
+            var invalidOptOut = new OptOut
+            {
+                // TODO:  Add default values for your properties i.e. Name = invalidText
+            };
+
+            var invalidOptOutException =
+                new InvalidOptOutException();
+
+            invalidOptOutException.AddData(
+                key: nameof(OptOut.Id),
+                values: "Id is required");
+
+            //invalidOptOutException.AddData(
+            //    key: nameof(OptOut.Name),
+            //    values: "Text is required");
+
+            // TODO: Add or remove data here to suit the validation needs for the OptOut model
+
+            invalidOptOutException.AddData(
+                key: nameof(OptOut.CreatedDate),
+                values: "Date is required");
+
+            invalidOptOutException.AddData(
+                key: nameof(OptOut.CreatedByUserId),
+                values: "Id is required");
+
+            invalidOptOutException.AddData(
+                key: nameof(OptOut.UpdatedDate),
+                values: "Date is required");
+
+            invalidOptOutException.AddData(
+                key: nameof(OptOut.UpdatedByUserId),
+                values: "Id is required");
+
+            var expectedOptOutValidationException =
+                new OptOutValidationException(invalidOptOutException);
+
+            // when
+            ValueTask<OptOut> addOptOutTask =
+                this.optOutService.AddOptOutAsync(invalidOptOut);
+
+            OptOutValidationException actualOptOutValidationException =
+                await Assert.ThrowsAsync<OptOutValidationException>(
+                    addOptOutTask.AsTask);
+
+            // then
+            actualOptOutValidationException.Should()
+                .BeEquivalentTo(expectedOptOutValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOptOutValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertOptOutAsync(It.IsAny<OptOut>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

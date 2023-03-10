@@ -36,6 +36,10 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 
                 throw CreateAndLogCriticalDependencyException(failedOptOutStorageException);
             }
+            catch (NotFoundOptOutException notFoundOptOutException)
+            {
+                throw CreateAndLogValidationException(notFoundOptOutException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsOptOutException =

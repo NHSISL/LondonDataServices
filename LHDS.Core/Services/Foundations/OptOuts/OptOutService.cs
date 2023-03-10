@@ -43,6 +43,8 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 OptOut maybeOptOut = await this.storageBroker
                     .SelectOptOutByIdAsync(optOutId);
 
+                ValidateStorageOptOut(maybeOptOut, optOutId);
+
                 return maybeOptOut;
             });
     }

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
     public partial class OptOutService
     {
         private delegate ValueTask<OptOut> ReturningOptOutFunction();
+        private delegate IQueryable<OptOut> ReturningOptOutsFunction();
 
         private async ValueTask<OptOut> TryCatch(ReturningOptOutFunction returningOptOutFunction)
         {
@@ -61,6 +63,20 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                     new FailedOptOutServiceException(exception);
 
                 throw CreateAndLogServiceException(failedOptOutServiceException);
+            }
+        }
+
+        private IQueryable<OptOut> TryCatch(ReturningOptOutsFunction returningOptOutsFunction)
+        {
+            try
+            {
+                return returningOptOutsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedOptOutStorageException =
+                    new FailedOptOutStorageException(sqlException);
+                throw CreateAndLogCriticalDependencyException(failedOptOutStorageException);
             }
         }
 

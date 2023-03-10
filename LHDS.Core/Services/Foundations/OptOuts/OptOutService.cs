@@ -48,7 +48,12 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 return maybeOptOut;
             });
 
-        public async ValueTask<OptOut> ModifyOptOutAsync(OptOut optOut) =>
-            await this.storageBroker.UpdateOptOutAsync(optOut);
+        public ValueTask<OptOut> ModifyOptOutAsync(OptOut optOut) =>
+            TryCatch(async () =>
+            {
+                ValidateOptOutOnModify(optOut);
+
+                return await this.storageBroker.UpdateOptOutAsync(optOut);
+            });
     }
 }

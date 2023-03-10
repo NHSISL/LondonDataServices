@@ -78,6 +78,13 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                     new FailedOptOutStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedOptOutStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedOptOutServiceException =
+                    new FailedOptOutServiceException(exception);
+
+                throw CreateAndLogServiceException(failedOptOutServiceException);
+            }
         }
 
         private OptOutValidationException CreateAndLogValidationException(Xeption exception)

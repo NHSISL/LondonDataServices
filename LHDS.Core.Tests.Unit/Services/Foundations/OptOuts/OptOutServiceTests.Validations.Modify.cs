@@ -209,7 +209,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     modifyOptOutTask.AsTask);
 
             // then
-            actualOptOutValidationException.Should().BeEquivalentTo(expectedOptOutValidatonException);
+            actualOptOutValidationException.Should()
+                .BeEquivalentTo(expectedOptOutValidatonException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -227,6 +228,59 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfOptOutDoesNotExistAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            OptOut randomOptOut = CreateRandomModifyOptOut(randomDateTimeOffset);
+            OptOut nonExistOptOut = randomOptOut;
+            OptOut nullOptOut = null;
+
+            var notFoundOptOutException =
+                new NotFoundOptOutException(nonExistOptOut.Id);
+
+            var expectedOptOutValidationException =
+                new OptOutValidationException(notFoundOptOutException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectOptOutByIdAsync(nonExistOptOut.Id))
+                .ReturnsAsync(nullOptOut);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when 
+            ValueTask<OptOut> modifyOptOutTask =
+                this.optOutService.ModifyOptOutAsync(nonExistOptOut);
+
+            OptOutValidationException actualOptOutValidationException =
+                await Assert.ThrowsAsync<OptOutValidationException>(
+                    modifyOptOutTask.AsTask);
+
+            // then
+            actualOptOutValidationException.Should()
+                .BeEquivalentTo(expectedOptOutValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOptOutByIdAsync(nonExistOptOut.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOptOutValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

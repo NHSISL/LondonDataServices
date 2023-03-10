@@ -35,7 +35,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
         public IQueryable<OptOut> RetrieveAllOptOuts() =>
             TryCatch(() => this.storageBroker.SelectAllOptOuts());
 
-        public ValueTask<OptOut> RetrieveOptOutByIdAsync(Guid optOutId) =>
-            throw new NotImplementedException();
+        public async ValueTask<OptOut> RetrieveOptOutByIdAsync(Guid optOutId) =>
+            await this.storageBroker.SelectOptOutByIdAsync(optOutId);
     }
 }

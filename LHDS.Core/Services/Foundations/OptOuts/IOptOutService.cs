@@ -10,5 +10,6 @@ namespace LHDS.Core.Services.Foundations.OptOuts
         ValueTask<OptOut> AddOptOutAsync(OptOut optOut);
         IQueryable<OptOut> RetrieveAllOptOuts();
         ValueTask<OptOut> RetrieveOptOutByIdAsync(Guid optOutId);
+        ValueTask<OptOut> ModifyOptOutAsync(OptOut optOut);
     }
 }

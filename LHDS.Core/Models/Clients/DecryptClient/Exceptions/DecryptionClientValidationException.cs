@@ -4,8 +4,10 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Clients.DecryptClient.Exceptions {
-    public class DecryptionClientValidationException : Xeption {
+namespace LHDS.Core.Models.Clients.DecryptClient.Exceptions
+{
+    public class DecryptionClientValidationException : Xeption
+    {
         private const string validationMessage =
             "Decryption client validation error occurred, fix errors and try again.";
 
@@ -14,6 +16,7 @@ namespace LHDS.Core.Models.Clients.DecryptClient.Exceptions {
                   message: validationSummary.Length > 0
                     ? $"{validationMessage}  Validation errors: {validationSummary}"
                     : validationMessage,
-                  innerException) { }
+                  innerException)
+        { }
     }
 }

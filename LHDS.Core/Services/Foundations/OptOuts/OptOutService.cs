@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             });
 
         public IQueryable<OptOut> RetrieveAllOptOuts() =>
-            throw new System.NotImplementedException();
+            this.storageBroker.SelectAllOptOuts();
     }
 }

@@ -27,8 +27,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 this.optOutService.AddOptOutAsync(nullOptOut);
 
             OptOutValidationException actualOptOutValidationException =
-                await Assert.ThrowsAsync<OptOutValidationException>(
-                    addOptOutTask.AsTask);
+                await Assert.ThrowsAsync<OptOutValidationException>(() =>
+                    addOptOutTask.AsTask());
 
             // then
             actualOptOutValidationException.Should()
@@ -93,12 +93,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 this.optOutService.AddOptOutAsync(invalidOptOut);
 
             OptOutValidationException actualOptOutValidationException =
-                await Assert.ThrowsAsync<OptOutValidationException>(
-                    addOptOutTask.AsTask);
+                await Assert.ThrowsAsync<OptOutValidationException>(() =>
+                    addOptOutTask.AsTask());
 
             // then
             actualOptOutValidationException.Should()
                 .BeEquivalentTo(expectedOptOutValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -135,17 +139,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             var expectedOptOutValidationException =
                 new OptOutValidationException(invalidOptOutException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<OptOut> addOptOutTask =
                 this.optOutService.AddOptOutAsync(invalidOptOut);
 
             OptOutValidationException actualOptOutValidationException =
-                await Assert.ThrowsAsync<OptOutValidationException>(
-                    addOptOutTask.AsTask);
+                await Assert.ThrowsAsync<OptOutValidationException>(() =>
+                    addOptOutTask.AsTask());
 
             // then
             actualOptOutValidationException.Should()
                 .BeEquivalentTo(expectedOptOutValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -156,9 +168,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 broker.InsertOptOutAsync(It.IsAny<OptOut>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -180,17 +192,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             var expectedOptOutValidationException =
                 new OptOutValidationException(invalidOptOutException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<OptOut> addOptOutTask =
                 this.optOutService.AddOptOutAsync(invalidOptOut);
 
             OptOutValidationException actualOptOutValidationException =
-                await Assert.ThrowsAsync<OptOutValidationException>(
-                    addOptOutTask.AsTask);
+                await Assert.ThrowsAsync<OptOutValidationException>(() =>
+                    addOptOutTask.AsTask());
 
             // then
             actualOptOutValidationException.Should()
                 .BeEquivalentTo(expectedOptOutValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -239,8 +259,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 this.optOutService.AddOptOutAsync(invalidOptOut);
 
             OptOutValidationException actualOptOutValidationException =
-                await Assert.ThrowsAsync<OptOutValidationException>(
-                    addOptOutTask.AsTask);
+                await Assert.ThrowsAsync<OptOutValidationException>(() =>
+                    addOptOutTask.AsTask());
 
             // then
             actualOptOutValidationException.Should()

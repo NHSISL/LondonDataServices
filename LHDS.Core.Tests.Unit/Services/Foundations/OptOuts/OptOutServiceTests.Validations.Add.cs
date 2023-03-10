@@ -57,7 +57,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             // given
             var invalidOptOut = new OptOut
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                NhsNumber = invalidText,
+                OptOutStatus = invalidText,
             };
 
             var invalidOptOutException =
@@ -67,11 +68,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 key: nameof(OptOut.Id),
                 values: "Id is required");
 
-            //invalidOptOutException.AddData(
-            //    key: nameof(OptOut.Name),
-            //    values: "Text is required");
+            invalidOptOutException.AddData(
+                key: nameof(OptOut.NhsNumber),
+                values: "Text is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the OptOut model
+            invalidOptOutException.AddData(
+                key: nameof(OptOut.OptOutStatus),
+                values: "Text is required");
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.CreatedDate),

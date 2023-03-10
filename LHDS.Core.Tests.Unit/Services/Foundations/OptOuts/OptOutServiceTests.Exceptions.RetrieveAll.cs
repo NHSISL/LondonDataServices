@@ -49,5 +49,46 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomMessage();
+            var serviceException = new Exception(exceptionMessage);
+
+            var failedOptOutServiceException =
+                new FailedOptOutServiceException(serviceException);
+
+            var expectedOptOutServiceException =
+                new OptOutServiceException(failedOptOutServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllOptOuts())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllOptOutsAction = () =>
+                this.optOutService.RetrieveAllOptOuts();
+
+            OptOutServiceException actualOptOutServiceException =
+                Assert.Throws<OptOutServiceException>(retrieveAllOptOutsAction);
+
+            // then
+            actualOptOutServiceException.Should()
+                .BeEquivalentTo(expectedOptOutServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllOptOuts(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOptOutServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

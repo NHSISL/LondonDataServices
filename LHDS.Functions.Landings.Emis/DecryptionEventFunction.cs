@@ -10,10 +10,8 @@ using LHDS.Core.Clients;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace LHDS.Functions.Landings.Emis
-{
-    public class DecryptionEventFunction
-    {
+namespace LHDS.Functions.Landings.Emis {
+    public class DecryptionEventFunction {
         private readonly ILoggingBroker loggingBroker;
         private readonly IDecryptionClient decryptionClient;
         private readonly ILogger logger;
@@ -21,8 +19,7 @@ namespace LHDS.Functions.Landings.Emis
         public DecryptionEventFunction(
             ILoggingBroker loggingBroker,
             IDecryptionClient decryptionClient,
-            ILoggerFactory loggerFactory)
-        {
+            ILoggerFactory loggerFactory) {
             this.loggingBroker = loggingBroker;
             this.decryptionClient = decryptionClient;
             this.logger = loggerFactory.CreateLogger<EmisLandingTimerFunction>();
@@ -30,28 +27,24 @@ namespace LHDS.Functions.Landings.Emis
 
         [Function("DecryptionEventFunction")]
         public void Run(
-            [BlobTrigger("emislanding/encrypted/{name}", Connection = "BlobStorage")] string myBlob, string name)
-        {
+            [BlobTrigger("emislanding/encrypted/{name}", Connection = "BlobStorage")] string myBlob, string name) {
             this.loggingBroker
-                .LogInformation($"C# Blob trigger function Processed blob\n Name: {name} \n Data: {myBlob}");
+                .LogInformation(
+                    $"C# Blob trigger function Processing blob\n " +
+                    $"Name: emislanding/encrypted/{name} \n Data: {myBlob}");
 
-            try
-            {
-                Task.Run(async () =>
-                {
-                    if (!Path.HasExtension(name))
-                    {
+            try {
+                Task.Run(async () => {
+                    if (!Path.HasExtension(name)) {
                         return;
                     }
 
-                    if (Path.GetExtension(name) == ".gpg")
-                    {
-                        await this.decryptionClient.DecryptAsync(name);
+                    if (Path.GetExtension(name) == ".gpg") {
+                        await this.decryptionClient.DecryptAsync($"/{name}");
                     }
                 }).Wait();
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 this.loggingBroker.LogError(ex);
                 this.logger.LogError(ex, ex.Message);
                 throw;

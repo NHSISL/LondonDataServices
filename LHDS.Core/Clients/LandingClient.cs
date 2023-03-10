@@ -13,20 +13,26 @@ using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using Xeptions;
 
-namespace LHDS.Core.Clients {
-    public class LandingClient : ILandingClient {
+namespace LHDS.Core.Clients
+{
+    public class LandingClient : ILandingClient
+    {
         private readonly IDownloadOrchestrationService downloadOrchestrationService;
 
         public LandingClient(
-            IDownloadOrchestrationService downloadOrchestrationService) {
+            IDownloadOrchestrationService downloadOrchestrationService)
+        {
             this.downloadOrchestrationService = downloadOrchestrationService;
         }
 
-        public async ValueTask ProcessAsync() {
-            try {
+        public async ValueTask ProcessAsync()
+        {
+            try
+            {
                 await this.downloadOrchestrationService.ProcessAsync();
             }
-            catch (DecryptionOrchestrationValidationException downloadOrchestrationValidationException) {
+            catch (DecryptionOrchestrationValidationException downloadOrchestrationValidationException)
+            {
                 string validationSummary = GetValidationSummary(
                     downloadOrchestrationValidationException.InnerException.Data);
 
@@ -34,7 +40,8 @@ namespace LHDS.Core.Clients {
                     downloadOrchestrationValidationException.InnerException as Xeption, validationSummary);
             }
             catch (DownloadOrchestrationDependencyValidationException
-                downloadOrchestrationDependencyValidationException) {
+                downloadOrchestrationDependencyValidationException)
+            {
                 string validationSummary = GetValidationSummary(
                     downloadOrchestrationDependencyValidationException.InnerException.Data);
 
@@ -42,22 +49,27 @@ namespace LHDS.Core.Clients {
                     downloadOrchestrationDependencyValidationException.InnerException as Xeption, validationSummary);
             }
             catch (DownloadOrchestrationDependencyException
-                downloadOrchestrationDependencyException) {
+                downloadOrchestrationDependencyException)
+            {
                 throw new LandingClientDependencyException(
                     downloadOrchestrationDependencyException.InnerException as Xeption);
             }
             catch (DownloadOrchestrationServiceException
-                downloadOrchestrationServiceException) {
+                downloadOrchestrationServiceException)
+            {
                 throw new LandingClientServiceException(
                     downloadOrchestrationServiceException.InnerException as Xeption);
             }
         }
 
-        public async ValueTask ProcessAsync(string fileName) {
-            try {
+        public async ValueTask ProcessAsync(string fileName)
+        {
+            try
+            {
                 await this.downloadOrchestrationService.ProcessAsync(fileName);
             }
-            catch (DecryptionOrchestrationValidationException downloadOrchestrationValidationException) {
+            catch (DecryptionOrchestrationValidationException downloadOrchestrationValidationException)
+            {
                 string validationSummary = GetValidationSummary(
                     downloadOrchestrationValidationException.InnerException.Data);
 
@@ -65,27 +77,32 @@ namespace LHDS.Core.Clients {
                     downloadOrchestrationValidationException.InnerException as Xeption, validationSummary);
             }
             catch (DownloadOrchestrationDependencyValidationException
-                downloadOrchestrationDependencyValidationException) {
+                downloadOrchestrationDependencyValidationException)
+            {
                 string validationSummary = GetValidationSummary(
                     downloadOrchestrationDependencyValidationException.InnerException.Data);
 
                 throw new LandingClientValidationException(
                     downloadOrchestrationDependencyValidationException.InnerException as Xeption, validationSummary);
             }
-            catch (DownloadOrchestrationDependencyException downloadOrchestrationDependencyException) {
+            catch (DownloadOrchestrationDependencyException downloadOrchestrationDependencyException)
+            {
                 throw new LandingClientDependencyException(
                     downloadOrchestrationDependencyException.InnerException as Xeption);
             }
-            catch (DownloadOrchestrationServiceException downloadOrchestrationServiceException) {
+            catch (DownloadOrchestrationServiceException downloadOrchestrationServiceException)
+            {
                 throw new LandingClientServiceException(
                     downloadOrchestrationServiceException.InnerException as Xeption);
             }
         }
 
-        private string GetValidationSummary(IDictionary data) {
+        private string GetValidationSummary(IDictionary data)
+        {
             StringBuilder validationSummary = new StringBuilder();
 
-            foreach (DictionaryEntry entry in data) {
+            foreach (DictionaryEntry entry in data)
+            {
                 string errorSummary = ((List<string>)entry.Value)
                     .Select((string value) => value)
                     .Aggregate((string current, string next) => current + ", " + next);

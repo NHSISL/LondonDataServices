@@ -4,8 +4,10 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Clients.LandingClient.Exceptions {
-    public class LandingClientValidationException : Xeption {
+namespace LHDS.Core.Models.Clients.LandingClient.Exceptions
+{
+    public class LandingClientValidationException : Xeption
+    {
         private const string validationMessage =
             "Landing client validation error occurred, fix errors and try again.";
 
@@ -14,6 +16,7 @@ namespace LHDS.Core.Models.Clients.LandingClient.Exceptions {
                   message: validationSummary.Length > 0
                     ? $"{validationMessage}  Validation errors: {validationSummary}"
                     : validationMessage,
-                  innerException) { }
+                  innerException)
+        { }
     }
 }

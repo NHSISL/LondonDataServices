@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -110,6 +111,47 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateOptOutAsync(It.IsAny<OptOut>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            OptOut randomOptOut = CreateRandomOptOut(randomDateTimeOffset);
+            OptOut invalidOptOut = randomOptOut;
+            var invalidOptOutException = new InvalidOptOutException();
+
+            invalidOptOutException.AddData(
+                key: nameof(OptOut.UpdatedDate),
+                values: $"Date is the same as {nameof(OptOut.CreatedDate)}");
+
+            var expectedOptOutValidationException =
+                new OptOutValidationException(invalidOptOutException);
+
+            // when
+            ValueTask<OptOut> modifyOptOutTask =
+                this.optOutService.ModifyOptOutAsync(invalidOptOut);
+
+            OptOutValidationException actualOptOutValidationException =
+                await Assert.ThrowsAsync<OptOutValidationException>(
+                    modifyOptOutTask.AsTask);
+
+            // then
+            actualOptOutValidationException.Should().BeEquivalentTo(expectedOptOutValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOptOutValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOptOutByIdAsync(invalidOptOut.Id),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

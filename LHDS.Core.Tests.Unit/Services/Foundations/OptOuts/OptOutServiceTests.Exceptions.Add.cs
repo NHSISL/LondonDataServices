@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -203,6 +204,53 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedOptOutDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            OptOut someOptOut = CreateRandomOptOut();
+            var serviceException = new Exception();
+
+            var failedOptOutServiceException =
+                new FailedOptOutServiceException(serviceException);
+
+            var expectedOptOutServiceException =
+                new OptOutServiceException(failedOptOutServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<OptOut> addOptOutTask =
+                this.optOutService.AddOptOutAsync(someOptOut);
+
+            OptOutServiceException actualOptOutServiceException =
+                await Assert.ThrowsAsync<OptOutServiceException>(
+                    addOptOutTask.AsTask);
+
+            // then
+            actualOptOutServiceException.Should()
+                .BeEquivalentTo(expectedOptOutServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertOptOutAsync(It.IsAny<OptOut>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOptOutServiceException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

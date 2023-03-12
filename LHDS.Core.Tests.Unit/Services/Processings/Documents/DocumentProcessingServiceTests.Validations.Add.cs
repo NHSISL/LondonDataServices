@@ -25,10 +25,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             var expectedDocumentProcessingValidationException =
                 new DocumentProcessingValidationException(nullDocumentProcessingException);
 
-            this.documentServiceMock.Setup(service =>
-                service.AddDocumentAsync(nullDocument))
-                    .Throws(expectedDocumentProcessingValidationException);
-
             // when
             ValueTask AddDocumentTask =
                 this.documentProcessingService.AddDocumentAsync(nullDocument);
@@ -44,10 +40,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedDocumentProcessingValidationException))),
                         Times.Once);
-
-            this.documentServiceMock.Verify(service =>
-                service.AddDocumentAsync(nullDocument),
-                    Times.Once); 
 
             this.documentServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

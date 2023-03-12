@@ -23,7 +23,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
         public DocumentProcessingServiceTests()
         {
             this.documentProcessingService = new DocumentProcessingService(
-                this.documentServiceMock.Object);
+                this.documentServiceMock.Object,
+                this.loggingBrokerMock.Object);
+     
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>

@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -106,6 +108,56 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                          Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAsync()
+        {
+            // given
+            var randomString = GetRandomString();
+            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomMessage = GetRandomString();
+
+            Document inputDocument = new Document
+            {
+                FileName = randomString,
+                DocumentData = randomBytes
+            };
+
+            var serviceException = new Exception();
+
+            var failedDocumentProcessingServiceException =
+                new FailedDocumentProcessingServiceException(serviceException);
+
+            var expectedDocumentProcessingServiveException =
+                new DocumentProcessingServiceException(
+                    failedDocumentProcessingServiceException);
+
+            this.documentServiceMock.Setup(service =>
+                service.AddDocumentAsync(inputDocument))
+                    .Throws(serviceException);
+
+            // when
+            ValueTask addDocumentTask =
+                this.documentProcessingService.AddDocumentAsync(inputDocument);
+
+            DocumentProcessingServiceException actualException =
+                await Assert.ThrowsAsync<DocumentProcessingServiceException>(addDocumentTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDocumentProcessingServiveException);
+
+            this.documentServiceMock.Verify(service =>
+                service.AddDocumentAsync(inputDocument),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedDocumentProcessingServiveException))),
+                         Times.Once);
+
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

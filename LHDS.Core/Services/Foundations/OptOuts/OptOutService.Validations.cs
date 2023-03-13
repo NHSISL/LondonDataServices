@@ -55,7 +55,6 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 (Rule: IsInvalid(optOut.UpdatedBy), Parameter: nameof(OptOut.UpdatedBy)),
                 (Rule: IsInvalidLength(optOut.NhsNumber, 10), Parameter: nameof(OptOut.NhsNumber)),
                 (Rule: IsInvalidLength(optOut.OptOutStatus, 50), Parameter: nameof(OptOut.OptOutStatus)),
-                (Rule: IsInvalidNhsNumber(optOut.NhsNumber), Parameter: nameof(OptOut.NhsNumber)),
 
                 (Rule: IsSame(
                     firstDate: optOut.UpdatedDate,

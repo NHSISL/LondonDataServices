@@ -45,5 +45,10 @@ namespace LHDS.Core.Services.Processings.Documents
 
             await this.documentService.RemoveDocumentByFileNameAsync(fileName);
         });
+
+        public async ValueTask<string> GetDownloadLinkAsync(string fileName)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

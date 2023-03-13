@@ -26,6 +26,10 @@ namespace LHDS.Core.Services.Processings.Documents
             {
                 throw CreateAndLogValidationException(nullDocumentException);
             }
+            catch (NullDocumentProcessingFileNameException exception)
+            {
+                throw CreateAndLogValidationException(exception);
+            }
             catch (DocumentValidationException documentValidationException)
             {
                 throw CreateAndLogDependencyValidationException(documentValidationException);

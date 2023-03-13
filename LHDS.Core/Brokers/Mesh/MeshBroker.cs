@@ -9,19 +9,19 @@ namespace LHDS.Core.Brokers.Mesh
 {
     public class MeshBroker : IMeshBroker
     {
-        public ValueTask<List<string>> AcknowledgeMessageById() =>
+        public ValueTask<bool> AcknowledgeMessageById(string mailboxId, string messageId) =>
             throw new System.NotImplementedException();
 
-        public ValueTask<List<string>> CheckInboxForDownload() =>
+        public ValueTask<string> GetMessageById(string mailboxId, string messageId) =>
             throw new System.NotImplementedException();
 
-        public ValueTask<List<string>> GetMessageById() =>
+        public ValueTask<List<string>> GetMessageIdsFromInbox(string mailboxId) =>
             throw new System.NotImplementedException();
 
-        public ValueTask<List<string>> GetTrackingStatus() =>
+        public ValueTask<string> GetTrackingStatus(string mailboxId, string messageId) =>
             throw new System.NotImplementedException();
 
-        public ValueTask<List<string>> SendMessageForOptOutStatus() =>
+        public ValueTask<string> SendMessage(string messageId) =>
             throw new System.NotImplementedException();
 
         public ValueTask<bool> ValidateAccess() =>

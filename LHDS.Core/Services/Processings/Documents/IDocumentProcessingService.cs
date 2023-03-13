@@ -10,5 +10,6 @@ namespace LHDS.Core.Services.Processings.Documents
     public interface IDocumentProcessingService
     {
         ValueTask AddDocumentAsync(Document document);
+        ValueTask<Document> RetrieveDocumentByFileNameAsync(string fileName);
     }
 }

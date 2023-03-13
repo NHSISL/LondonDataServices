@@ -11,14 +11,14 @@ namespace LHDS.Core.Brokers.Mesh
     {
         ValueTask<bool> ValidateAccess();
 
-        ValueTask<List<string>> CheckInboxForDownload();
+        ValueTask<bool> AcknowledgeMessageById(string mailboxId, string messageId);
 
-        ValueTask<List<string>> GetMessageById();
+        ValueTask<List<string>> GetMessageIdsFromInbox(string mailboxId);
 
-        ValueTask<List<string>> AcknowledgeMessageById();
+        ValueTask<string> GetMessageById(string mailboxId, string messageId);
 
-        ValueTask<List<string>> SendMessageForOptOutStatus();
+        ValueTask<string> SendMessage(string messageId);
 
-        ValueTask<List<string>> GetTrackingStatus();
+        ValueTask<string> GetTrackingStatus(string mailboxId, string messageId);
     }
 }

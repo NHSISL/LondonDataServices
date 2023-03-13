@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
@@ -41,6 +42,13 @@ namespace LHDS.Core.Services.Processings.Documents
             {
                 throw CreateAndLogDependencyException(documentServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedDocumentProcessingServiceException =
+                    new FailedDocumentProcessingServiceException(exception);
+
+                throw CreateAndLogServiceException(failedDocumentProcessingServiceException);
+            }
         }
 
         private DocumentProcessingValidationException 
@@ -75,6 +83,16 @@ namespace LHDS.Core.Services.Processings.Documents
             this.loggingBroker.LogError(documentProcessingDependencyException);
 
             throw documentProcessingDependencyException;
+        }
+
+        private DocumentProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var documentProcessingServiceException = new
+                DocumentProcessingServiceException(exception);
+
+            this.loggingBroker.LogError(documentProcessingServiceException);
+
+            return documentProcessingServiceException;
         }
     }
 }

@@ -30,7 +30,7 @@ namespace LHDS.Core.Clients.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            var blobServiceUri = GetSettings(configuration, "BlobStorage:azureBlobStoreUri", true);
+            var blobServiceUri = GetSettings(configuration, "BlobStorage:azureBlobServiceUri", true);
             var azureTenantId = GetSettings(configuration, "BlobStorage:azureTenantId", true);
 
             var blobServiceClientOptions = new BlobClientOptions()

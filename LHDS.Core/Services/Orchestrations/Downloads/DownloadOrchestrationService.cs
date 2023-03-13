@@ -181,9 +181,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     Id = Guid.NewGuid(),
                     IngestionTrackingId = ingestionTracking.Id,
                     Message = $"{message} document - {document.FileName}",
-                    CreatedBy = "System",
+                    CreatedBy = "DownloadOrchestrationService",
                     CreatedDate = currentDateTime,
-                    UpdatedBy = "System",
+                    UpdatedBy = "DownloadOrchestrationService",
                     UpdatedDate = currentDateTime
                 };
 

@@ -21,9 +21,6 @@ namespace LHDS.Core.Brokers.Storages.Blobs
             Configuration = configuration;
         }
 
-        /// <inheritdoc/>
-        public string AzureBlobStoreUri => GetSettings("BlobStorage:azureBlobStoreUri", true);
-
         public string BlobContainerName => GetSettings("BlobStorage:blobContainerName", true);
 
         private IConfiguration Configuration { get; }

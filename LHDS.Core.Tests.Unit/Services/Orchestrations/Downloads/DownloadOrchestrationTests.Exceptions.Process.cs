@@ -155,8 +155,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             // then
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
-            this.ingestionTrackingServiceMock.Verify(service => 
-                service.RetrieveAllIngestionTrackings(), 
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.RetrieveAllIngestionTrackings(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

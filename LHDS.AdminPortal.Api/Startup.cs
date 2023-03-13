@@ -167,7 +167,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IAuditService, AuditService>();
             services.AddTransient<IDocumentService, DocumentService>();
 
-            var blobServiceUri = GetSettings(configuration, "blobStorage:azureBlobStoreUri", true);
+            var blobServiceUri = GetSettings(configuration, "blobStorage:azureBlobServiceUri", true);
             var azureTenantId = GetSettings(configuration, "blobStorage:azureTenantId", true);
 
             var blobServiceClientOptions = new BlobClientOptions()

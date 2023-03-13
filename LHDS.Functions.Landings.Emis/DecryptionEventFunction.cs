@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
@@ -32,13 +33,23 @@ namespace LHDS.Functions.Landings.Emis
             [BlobTrigger("emislanding/encrypted/{name}", Connection = "BlobStorage")] string myBlob, string name)
         {
             this.loggingBroker
-                .LogInformation($"C# Blob trigger function Processed blob\n Name: {name} \n Data: {myBlob}");
+                .LogInformation(
+                    $"C# Blob trigger function Processing blob\n " +
+                    $"Name: emislanding/encrypted/{name} \n Data: {myBlob}");
 
             try
             {
                 Task.Run(async () =>
                 {
-                    await this.decryptionClient.DecryptAsync(name);
+                    if (!Path.HasExtension(name))
+                    {
+                        return;
+                    }
+
+                    if (Path.GetExtension(name) == ".gpg")
+                    {
+                        await this.decryptionClient.DecryptAsync($"/{name}");
+                    }
                 }).Wait();
             }
             catch (Exception ex)

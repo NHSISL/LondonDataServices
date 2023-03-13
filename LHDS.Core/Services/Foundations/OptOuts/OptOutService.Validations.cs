@@ -23,6 +23,9 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 (Rule: IsInvalid(optOut.UpdatedDate), Parameter: nameof(OptOut.UpdatedDate)),
                 (Rule: IsInvalid(optOut.UpdatedBy), Parameter: nameof(OptOut.UpdatedBy)),
 
+                (Rule: IsInvalidLength(optOut.NhsNumber, 10), Parameter: nameof(OptOut.NhsNumber)),
+                (Rule: IsInvalidLength(optOut.OptOutStatus, 50), Parameter: nameof(OptOut.OptOutStatus)),
+
                 (Rule: IsNotSame(
                     firstDate: optOut.UpdatedDate,
                     secondDate: optOut.CreatedDate,
@@ -111,6 +114,12 @@ namespace LHDS.Core.Services.Foundations.OptOuts
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
+        };
+
+        private static dynamic IsInvalidLength(string text, int maxLength) => new
+        {
+            Condition = text.Length > maxLength,
+            Message = $"Text length should not be greater than {maxLength}"
         };
 
         private static dynamic IsInvalid(DateTimeOffset date) => new

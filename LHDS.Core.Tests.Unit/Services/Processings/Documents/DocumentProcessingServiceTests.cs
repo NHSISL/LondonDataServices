@@ -51,5 +51,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                 new DocumentDependencyValidationException(innerException)
             };
         }
+
+        public static TheoryData DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DocumentDependencyException(innerException),
+                new DocumentServiceException(innerException)
+            };
+        }
     }
 }

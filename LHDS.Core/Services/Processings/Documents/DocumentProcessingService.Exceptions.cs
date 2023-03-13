@@ -4,9 +4,8 @@
 
 using System;
 using System.Threading.Tasks;
-using EFxceptions.Models.Exceptions;
+using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
-using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using Xeptions;
 
@@ -15,6 +14,7 @@ namespace LHDS.Core.Services.Processings.Documents
     public partial class DocumentProcessingService
     {
         private delegate ValueTask ReturningNothingFunction();
+        private delegate ValueTask<Document> ReturningDocumentProcessingFunction();
 
         private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
         {
@@ -51,7 +51,19 @@ namespace LHDS.Core.Services.Processings.Documents
             }
         }
 
-        private DocumentProcessingValidationException 
+        private async ValueTask<Document> TryCatch(ReturningDocumentProcessingFunction returningDocumentProcessingFunction)
+        {
+            try
+            {
+                return await returningDocumentProcessingFunction();
+            }
+            catch (NullDocumentProcessingFileNameException exception)
+            {
+                throw CreateAndLogValidationException(exception);
+            }
+        }
+
+            private DocumentProcessingValidationException 
             CreateAndLogValidationException(Xeption exception)
         {
             var documentProcessingValidationExceptionn =

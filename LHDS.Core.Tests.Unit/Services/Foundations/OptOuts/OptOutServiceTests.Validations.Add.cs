@@ -196,7 +196,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             int nhsNumberMaxLength = 10;
             int optOutStatusMaxLength = 50;
             OptOut invalidOptOut = CreateRandomOptOut(randomDateTimeOffset);
-            invalidOptOut.NhsNumber = GenerateRandomNhsNumber();
+            invalidOptOut.NhsNumber = GenerateInvalidNhsNumber();
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())

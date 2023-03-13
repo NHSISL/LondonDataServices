@@ -59,11 +59,71 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             };
         }
 
-        private static string GenerateRandomNhsNumber()
+        private static string GenerateValidNhsNumber()
         {
-            var randomNumber = new LongRange(0, 9999999999);
-            string formattedNhsNumber = randomNumber.ToString().PadLeft(10, '0');
-            return formattedNhsNumber;
+            var randomNumber = new LongRange(0, 999999999);
+            string formattedNhsNumber = randomNumber.GetValue().ToString().PadLeft(9, '0');
+            int[] multiplers = new int[9];
+            multiplers[0] = 10;
+            multiplers[1] = 9;
+            multiplers[2] = 8;
+            multiplers[3] = 7;
+            multiplers[4] = 6;
+            multiplers[5] = 5;
+            multiplers[6] = 4;
+            multiplers[7] = 3;
+            multiplers[8] = 2;
+            int currentNumber;
+            int currentSum = 0;
+            int currentMultipler;
+            string currentString;
+            int remainder;
+            int total;
+
+            for (int i = 0; i <= 8; i++)
+            {
+                currentString = formattedNhsNumber.Substring(i, 1);
+
+                currentNumber = Convert.ToInt16(currentString);
+                currentMultipler = multiplers[i];
+                currentSum = currentSum + (currentNumber * currentMultipler);
+            }
+
+            remainder = currentSum % 11;
+            total = 11 - remainder;
+
+            if (total.Equals(11))
+            {
+                total = 0;
+            }
+
+            string checkNumber = total.ToString();
+
+            return $"{formattedNhsNumber}{checkNumber}";
+        }
+
+        private static string GenerateInvalidNhsNumber()
+        {
+            string nhsNumber = GenerateValidNhsNumber();
+            int checkDigit = Convert.ToInt32(nhsNumber.Substring(nhsNumber.Length - 1, 1));
+            Random random = new Random();
+            int randomNumber = random.Next(9);
+
+            if (randomNumber == checkDigit)
+            {
+                if (randomNumber == 9)
+                {
+                    randomNumber = randomNumber - 1;
+                }
+                else
+                {
+                    randomNumber = randomNumber + 1;
+                }
+            }
+
+            string invalidNhsNumber = $"{nhsNumber.Substring(0, nhsNumber.Length - 1)}{randomNumber}";
+
+            return invalidNhsNumber;
         }
 
 

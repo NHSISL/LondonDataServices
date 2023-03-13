@@ -38,5 +38,9 @@ namespace LHDS.Core.Services.Processings.Documents
             return await this.documentService.RetrieveDocumentByFileNameAsync(fileName);
         });
 
+        public ValueTask RemoveDocumentByFileNameAsync(string fileName)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

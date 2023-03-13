@@ -24,7 +24,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             string outputSasUrl = randomSasUrl;
             string expectedSasUrl = randomSasUrl;
 
-
             this.documentServiceMock.Setup(service =>
                 service.GetDownloadLinkAsync(inputFileName))
                     .ReturnsAsync(outputSasUrl);

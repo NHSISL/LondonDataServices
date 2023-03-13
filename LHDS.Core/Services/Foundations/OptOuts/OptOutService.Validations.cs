@@ -24,6 +24,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 (Rule: IsInvalid(optOut.UpdatedBy), Parameter: nameof(OptOut.UpdatedBy)),
                 (Rule: IsInvalidLength(optOut.NhsNumber, 10), Parameter: nameof(OptOut.NhsNumber)),
                 (Rule: IsInvalidLength(optOut.OptOutStatus, 50), Parameter: nameof(OptOut.OptOutStatus)),
+                (Rule: IsInvalidNhsNumber(optOut.NhsNumber), Parameter: nameof(OptOut.NhsNumber)),
 
                 (Rule: IsNotSame(
                     firstDate: optOut.UpdatedDate,
@@ -54,6 +55,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 (Rule: IsInvalid(optOut.UpdatedBy), Parameter: nameof(OptOut.UpdatedBy)),
                 (Rule: IsInvalidLength(optOut.NhsNumber, 10), Parameter: nameof(OptOut.NhsNumber)),
                 (Rule: IsInvalidLength(optOut.OptOutStatus, 50), Parameter: nameof(OptOut.OptOutStatus)),
+                (Rule: IsInvalidNhsNumber(optOut.NhsNumber), Parameter: nameof(OptOut.NhsNumber)),
 
                 (Rule: IsSame(
                     firstDate: optOut.UpdatedDate,
@@ -180,6 +182,63 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             TimeSpan oneMinute = TimeSpan.FromMinutes(1);
 
             return timeDifference.Duration() > oneMinute;
+        }
+
+        private static dynamic IsInvalidNhsNumber(string nhsNumber) => new
+        {
+            Condition = IsNhsNumberInvalid(nhsNumber),
+            Message = "NHS Number invalid"
+        };
+
+        private static bool IsNhsNumberInvalid(string nhsNumber)
+        {
+            if (nhsNumber.Length != 10)
+            {
+                return false;
+            }
+
+            int[] multiplers = new int[9];
+            multiplers[0] = 10;
+            multiplers[1] = 9;
+            multiplers[2] = 8;
+            multiplers[3] = 7;
+            multiplers[4] = 6;
+            multiplers[5] = 5;
+            multiplers[6] = 4;
+            multiplers[7] = 3;
+            multiplers[8] = 2;
+            int currentNumber = 0;
+            int currentSum = 0;
+            int currentMultipler = 0;
+            string currentString = "";
+            string checkDigit = nhsNumber.Substring(nhsNumber.Length - 1, 1);
+            int checkNumber = Convert.ToInt16(checkDigit);
+            int remainder = 0;
+            int total = 0;
+
+            for (int i = 0; i <= 8; i++)
+            {
+                currentString = nhsNumber.Substring(i, 1);
+
+                currentNumber = Convert.ToInt16(currentString);
+                currentMultipler = multiplers[i];
+                currentSum = currentSum + (currentNumber * currentMultipler);
+            }
+
+            remainder = currentSum % 11;
+            total = 11 - remainder;
+
+            if (total.Equals(11))
+            {
+                total = 0;
+            }
+
+            if (total.Equals(checkNumber))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

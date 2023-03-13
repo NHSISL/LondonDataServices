@@ -121,7 +121,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 
         private static dynamic IsInvalidLength(string text, int maxLength) => new
         {
-            Condition = text.Length > maxLength,
+            Condition = text != null && text.Length > maxLength,
             Message = $"Text length should not be greater than {maxLength}"
         };
 
@@ -192,21 +192,12 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 
         private static bool IsNhsNumberInvalid(string nhsNumber)
         {
-            if (nhsNumber.Length != 10)
+            if (nhsNumber == null || nhsNumber.Length != 10)
             {
-                return false;
+                return true;
             }
 
-            int[] multiplers = new int[9];
-            multiplers[0] = 10;
-            multiplers[1] = 9;
-            multiplers[2] = 8;
-            multiplers[3] = 7;
-            multiplers[4] = 6;
-            multiplers[5] = 5;
-            multiplers[6] = 4;
-            multiplers[7] = 3;
-            multiplers[8] = 2;
+            int[] multiplers = new int[] { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
             int currentNumber = 0;
             int currentSum = 0;
             int currentMultipler = 0;

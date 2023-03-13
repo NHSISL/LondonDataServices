@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
         {
             // given
             OptOut someOptOut = CreateRandomOptOut();
-            string randomMessage = GetRandomMessage();
+            string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
 
             var foreignKeyConstraintConflictException =

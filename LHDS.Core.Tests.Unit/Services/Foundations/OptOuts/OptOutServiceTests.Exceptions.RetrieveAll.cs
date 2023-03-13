@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
         public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            string exceptionMessage = GetRandomMessage();
+            string exceptionMessage = GetRandomString();
             var serviceException = new Exception(exceptionMessage);
 
             var failedOptOutServiceException =

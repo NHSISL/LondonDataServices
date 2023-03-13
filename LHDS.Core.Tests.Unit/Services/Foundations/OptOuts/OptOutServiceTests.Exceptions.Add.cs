@@ -70,7 +70,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             // given
             OptOut randomOptOut = CreateRandomOptOut();
             OptOut alreadyExistsOptOut = randomOptOut;
-            string randomMessage = GetRandomMessage();
+            string randomMessage = GetRandomString();
 
             var duplicateKeyException =
                 new DuplicateKeyException(randomMessage);
@@ -120,7 +120,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
         {
             // given
             OptOut someOptOut = CreateRandomOptOut();
-            string randomMessage = GetRandomMessage();
+            string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
 
             var foreignKeyConstraintConflictException =

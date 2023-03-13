@@ -5,6 +5,7 @@
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using Xeptions;
 
@@ -32,9 +33,18 @@ namespace LHDS.Core.Services.Processings.Documents
             {
                 throw CreateAndLogDependencyValidationException(documentDependencyValidationException);
             }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                throw CreateAndLogDependencyException(documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                throw CreateAndLogDependencyException(documentServiceException);
+            }
         }
 
-        private DocumentProcessingValidationException CreateAndLogValidationException(Xeption exception)
+        private DocumentProcessingValidationException 
+            CreateAndLogValidationException(Xeption exception)
         {
             var documentProcessingValidationExceptionn =
                 new DocumentProcessingValidationException(exception);
@@ -44,7 +54,8 @@ namespace LHDS.Core.Services.Processings.Documents
             return documentProcessingValidationExceptionn;
         }
 
-        private DocumentProcessingDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        private DocumentProcessingDependencyValidationException 
+            CreateAndLogDependencyValidationException(Xeption exception)
         {
             var documentProcessingDependencyValidationException =
                 new DocumentProcessingDependencyValidationException(
@@ -53,6 +64,17 @@ namespace LHDS.Core.Services.Processings.Documents
             this.loggingBroker.LogError(documentProcessingDependencyValidationException);
 
             return documentProcessingDependencyValidationException;
+        }
+
+        private DocumentProcessingDependencyException
+            CreateAndLogDependencyException(Xeption exception)
+        {
+            var documentProcessingDependencyException =
+                new DocumentProcessingDependencyException(exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(documentProcessingDependencyException);
+
+            throw documentProcessingDependencyException;
         }
     }
 }

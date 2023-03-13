@@ -103,14 +103,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             string checkNumber = total.ToString();
 
-            var value = $"{formattedNhsNumber}{checkNumber}";
-
-            if (value.Length != 10)
-            {
-                throw new Exception($"Incorrect NHS Number: {value}.  Lenghth should be 10 digits");
-            }
-
-            return value;
+            return $"{formattedNhsNumber}{checkNumber}";
         }
 
         private static string GenerateInvalidNhsNumber()

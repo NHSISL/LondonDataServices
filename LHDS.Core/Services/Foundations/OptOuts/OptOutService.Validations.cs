@@ -22,7 +22,6 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 (Rule: IsInvalid(optOut.CreatedBy), Parameter: nameof(OptOut.CreatedBy)),
                 (Rule: IsInvalid(optOut.UpdatedDate), Parameter: nameof(OptOut.UpdatedDate)),
                 (Rule: IsInvalid(optOut.UpdatedBy), Parameter: nameof(OptOut.UpdatedBy)),
-
                 (Rule: IsInvalidLength(optOut.NhsNumber, 10), Parameter: nameof(OptOut.NhsNumber)),
                 (Rule: IsInvalidLength(optOut.OptOutStatus, 50), Parameter: nameof(OptOut.OptOutStatus)),
 
@@ -53,6 +52,8 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 (Rule: IsInvalid(optOut.CreatedBy), Parameter: nameof(OptOut.CreatedBy)),
                 (Rule: IsInvalid(optOut.UpdatedDate), Parameter: nameof(OptOut.UpdatedDate)),
                 (Rule: IsInvalid(optOut.UpdatedBy), Parameter: nameof(OptOut.UpdatedBy)),
+                (Rule: IsInvalidLength(optOut.NhsNumber, 10), Parameter: nameof(OptOut.NhsNumber)),
+                (Rule: IsInvalidLength(optOut.OptOutStatus, 50), Parameter: nameof(OptOut.OptOutStatus)),
 
                 (Rule: IsSame(
                     firstDate: optOut.UpdatedDate,

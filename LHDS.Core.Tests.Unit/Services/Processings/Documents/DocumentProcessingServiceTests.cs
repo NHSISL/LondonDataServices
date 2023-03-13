@@ -11,6 +11,11 @@ using LHDS.Core.Services.Processings.Documents;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using LHDS.Core.Models.Foundations.Audits.Exceptions;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.Downloads.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 {
@@ -33,5 +38,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
+
+        public static TheoryData DependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DocumentValidationException(innerException),
+                new DocumentDependencyValidationException(innerException)
+            };
+        }
     }
 }

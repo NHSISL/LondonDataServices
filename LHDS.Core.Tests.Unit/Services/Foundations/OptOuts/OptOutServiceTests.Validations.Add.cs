@@ -133,22 +133,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 GetRandomDateTimeOffset();
 
             int nhsNumberMaxLength = 10;
-            int optOutStatusMaxLength = 10;
-
+            int optOutStatusMaxLength = 50;
             OptOut invalidOptOut = CreateRandomOptOut(randomDateTimeOffset);
             invalidOptOut.NhsNumber = GetRandomMessage(length: nhsNumberMaxLength + 1);
             invalidOptOut.OptOutStatus = GetRandomMessage(length: optOutStatusMaxLength + 1);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
 
             var invalidOptOutException =
                 new InvalidOptOutException();
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.NhsNumber),
-                values: $"Text length must be less than {nhsNumberMaxLength}");
+                values: $"Text length should not be greater than {nhsNumberMaxLength}");
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.OptOutStatus),
-                values: $"Text length must be less than {optOutStatusMaxLength}");
+                values: $"Text length should not be greater than {optOutStatusMaxLength}");
 
             var expectedOptOutValidationException =
                 new OptOutValidationException(invalidOptOutException);

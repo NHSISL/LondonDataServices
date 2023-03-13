@@ -19,6 +19,11 @@ namespace LHDS.Core.Services.Processings.Documents
             ValidateDocumentProcessingFileNameIsNotNull(fileName);
         }
 
+        private static void ValidateDocumentProcessingOnRemove(string fileName)
+        {
+            ValidateDocumentProcessingFileNameIsNotNull(fileName);
+        }
+
         private static void ValidateDocumentProcessingIsNotNull(Document document)
         {
             if (document is null)

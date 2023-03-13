@@ -32,7 +32,7 @@ namespace LHDS.Core.Services.Processings.Documents
 
         public async ValueTask<Document> RetrieveDocumentByFileNameAsync(string fileName)
         {
-            throw new System.NotImplementedException();
+            return await documentService.RetrieveDocumentByFileNameAsync(fileName);
         }
     }
 }

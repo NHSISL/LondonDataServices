@@ -44,6 +44,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
         private static string GetRandomMessage() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
+        private static string GetRandomMessage(int length) =>
+            new MnemonicString(wordCount: length).GetValue();
+
         public static TheoryData MinutesBeforeOrAfter()
         {
             int randomNumber = GetRandomNumber();

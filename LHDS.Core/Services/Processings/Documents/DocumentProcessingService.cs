@@ -48,7 +48,7 @@ namespace LHDS.Core.Services.Processings.Documents
 
         public async ValueTask<string> GetDownloadLinkAsync(string fileName)
         {
-            throw new System.NotImplementedException();
+            return await this.GetDownloadLinkAsync(fileName);
         }
     }
 }

@@ -3,12 +3,9 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Documents;
-using Microsoft.Extensions.Configuration;
 
 namespace LHDS.Core.Services.Processings.Documents
 {

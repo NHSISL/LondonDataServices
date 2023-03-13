@@ -59,6 +59,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             };
         }
 
+        private static string GenerateRandomNhsNumber()
+        {
+            var randomNumber = new LongRange(0, 9999999999);
+            string formattedNhsNumber = randomNumber.ToString().PadLeft(10, '0');
+            return formattedNhsNumber;
+        }
+
+
         private static SqlException GetSqlException() =>
             (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
 

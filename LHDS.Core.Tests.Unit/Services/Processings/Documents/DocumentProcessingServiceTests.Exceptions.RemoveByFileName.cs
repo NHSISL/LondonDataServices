@@ -63,5 +63,53 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             this.documentServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyOnRemoveIfDependencyErrorOccursAndLogItAsync(
+          Xeption dependencyException)
+        {
+            // given
+            var randomString = GetRandomString();
+            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomMessage = GetRandomString();
+
+            Document inputDocument = new Document
+            {
+                FileName = randomString,
+                DocumentData = randomBytes
+            };
+
+            var expectedDocumentProcessingDependencyException =
+                new DocumentProcessingDependencyException(
+                    dependencyException.InnerException as Xeption);
+
+            this.documentServiceMock.Setup(service =>
+                service.RemoveDocumentByFileNameAsync(inputDocument.FileName))
+                    .Throws(dependencyException);
+
+            // when
+            ValueTask retrieveDocumentTask =
+                this.documentProcessingService.RemoveDocumentByFileNameAsync(inputDocument.FileName);
+
+            DocumentProcessingDependencyException actualException =
+                await Assert.ThrowsAsync<DocumentProcessingDependencyException>(retrieveDocumentTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDocumentProcessingDependencyException);
+
+            this.documentServiceMock.Verify(service =>
+                service.RemoveDocumentByFileNameAsync(inputDocument.FileName),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedDocumentProcessingDependencyException))),
+                         Times.Once);
+
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
     }
 }

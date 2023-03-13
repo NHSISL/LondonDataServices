@@ -29,5 +29,10 @@ namespace LHDS.Core.Services.Processings.Documents
 
             await this.documentService.AddDocumentAsync(document);
         });
+
+        public async ValueTask<Document> RetrieveDocumentByFileNameAsync(string fileName)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

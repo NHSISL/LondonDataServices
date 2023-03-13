@@ -41,11 +41,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
-        private static string GetRandomMessage() =>
+        private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
-        private static string GetRandomMessage(int length) =>
-            new MnemonicString(wordCount: length).GetValue();
+        private static string GetRandomString(int wordMinLength, int wordMaxLength) =>
+            new MnemonicString(wordCount: 1, wordMinLength, wordMaxLength).GetValue();
+
+        private static string GetRandomString(int length) =>
+            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
         public static TheoryData MinutesBeforeOrAfter()
         {
@@ -61,45 +64,53 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
         private static string GenerateValidNhsNumber()
         {
-            var randomNumber = new LongRange(0, 999999999);
-            string formattedNhsNumber = randomNumber.GetValue().ToString().PadLeft(9, '0');
-            int[] multiplers = new int[9];
-            multiplers[0] = 10;
-            multiplers[1] = 9;
-            multiplers[2] = 8;
-            multiplers[3] = 7;
-            multiplers[4] = 6;
-            multiplers[5] = 5;
-            multiplers[6] = 4;
-            multiplers[7] = 3;
-            multiplers[8] = 2;
-            int currentNumber;
-            int currentSum = 0;
-            int currentMultipler;
-            string currentString;
-            int remainder;
-            int total;
+            int total = 10;
+            string formattedNhsNumber = string.Empty;
 
-            for (int i = 0; i <= 8; i++)
+            while (total == 10)
             {
-                currentString = formattedNhsNumber.Substring(i, 1);
+                var randomNumber = new LongRange(100000000, 999999999);
+                formattedNhsNumber = randomNumber.GetValue().ToString();
+                int[] multiplers = new int[] { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
+                int currentNumber;
+                int currentSum = 0;
+                int currentMultipler;
+                string currentString;
+                int remainder;
 
-                currentNumber = Convert.ToInt16(currentString);
-                currentMultipler = multiplers[i];
-                currentSum = currentSum + (currentNumber * currentMultipler);
-            }
+                for (int i = 0; i <= 8; i++)
+                {
+                    currentString = formattedNhsNumber.Substring(i, 1);
 
-            remainder = currentSum % 11;
-            total = 11 - remainder;
+                    currentNumber = Convert.ToInt16(currentString);
+                    currentMultipler = multiplers[i];
+                    currentSum = currentSum + (currentNumber * currentMultipler);
+                }
 
-            if (total.Equals(11))
-            {
-                total = 0;
+                remainder = currentSum % 11;
+                total = 11 - remainder;
+
+                if (total.Equals(11))
+                {
+                    total = 0;
+                }
+
+                if (total != 10)
+                {
+                    break;
+                }
             }
 
             string checkNumber = total.ToString();
 
-            return $"{formattedNhsNumber}{checkNumber}";
+            var value = $"{formattedNhsNumber}{checkNumber}";
+
+            if (value.Length != 10)
+            {
+                throw new Exception($"Incorrect NHS Number: {value}.  Lenghth should be 10 digits");
+            }
+
+            return value;
         }
 
         private static string GenerateInvalidNhsNumber()
@@ -170,6 +181,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
+                .OnProperty(optOut => optOut.OptOutStatus).Use(GetRandomString(length: 20))
                 .OnProperty(optOut => optOut.CreatedBy).Use(user)
                 .OnProperty(optOut => optOut.UpdatedBy).Use(user);
 

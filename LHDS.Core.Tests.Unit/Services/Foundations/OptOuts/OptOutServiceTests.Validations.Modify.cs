@@ -76,7 +76,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.NhsNumber),
-                values: "Text is required");
+                values:
+                    new[] {
+                        "Text is required",
+                        "NHS Number invalid"
+                    });
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.OptOutStatus),
@@ -146,8 +150,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             OptOut inputOptOut = randomOptOut;
             OptOut storageOptOut = inputOptOut.DeepClone();
             storageOptOut.UpdatedDate = randomOptOut.CreatedDate;
-            inputOptOut.NhsNumber = GetRandomMessage(length: nhsNumberMaxLength + 1);
-            inputOptOut.OptOutStatus = GetRandomMessage(length: optOutStatusMaxLength + 1);
+            inputOptOut.NhsNumber = GetRandomString(length: nhsNumberMaxLength + 1);
+            inputOptOut.OptOutStatus = GetRandomString(length: optOutStatusMaxLength + 1);
             OptOut updatedOptOut = inputOptOut;
             OptOut expectedOptOut = updatedOptOut.DeepClone();
             Guid optOutId = inputOptOut.Id;
@@ -160,7 +164,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.NhsNumber),
-                values: $"Text length should not be greater than {nhsNumberMaxLength}");
+                values:
+                    new[] {
+                        $"Text length should not be greater than {nhsNumberMaxLength}",
+                        "NHS Number invalid"
+                    });
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.OptOutStatus),

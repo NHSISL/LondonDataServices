@@ -70,7 +70,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.NhsNumber),
-                values: "Text is required");
+                values:
+                    new[] {
+                        "Text is required",
+                        "NHS Number invalid"
+                    });
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.OptOutStatus),
@@ -135,8 +139,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             int nhsNumberMaxLength = 10;
             int optOutStatusMaxLength = 50;
             OptOut invalidOptOut = CreateRandomOptOut(randomDateTimeOffset);
-            invalidOptOut.NhsNumber = GetRandomMessage(length: nhsNumberMaxLength + 1);
-            invalidOptOut.OptOutStatus = GetRandomMessage(length: optOutStatusMaxLength + 1);
+            invalidOptOut.NhsNumber = GetRandomString(length: nhsNumberMaxLength + 1);
+            invalidOptOut.OptOutStatus = GetRandomString(length: optOutStatusMaxLength + 1);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -147,7 +151,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.NhsNumber),
-                values: $"Text length should not be greater than {nhsNumberMaxLength}");
+                values:
+                    new[] {
+                        $"Text length should not be greater than {nhsNumberMaxLength}",
+                        "NHS Number invalid"
+                    });
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.OptOutStatus),

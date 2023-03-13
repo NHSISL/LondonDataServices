@@ -110,5 +110,56 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             this.documentServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveIfServiceErrorOccursAsync()
+        {
+            // given
+            var randomString = GetRandomString();
+            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomMessage = GetRandomString();
+
+            Document inputDocument = new Document
+            {
+                FileName = randomString,
+                DocumentData = randomBytes
+            };
+
+            var serviceException = new Exception();
+
+            var failedDocumentProcessingServiceException =
+                new FailedDocumentProcessingServiceException(serviceException);
+
+            var expectedDocumentProcessingServiveException =
+                new DocumentProcessingServiceException(
+                    failedDocumentProcessingServiceException);
+
+            this.documentServiceMock.Setup(service =>
+                service.RetrieveDocumentByFileNameAsync(inputDocument.FileName))
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<Document> retrieveDocumentTask =
+                this.documentProcessingService.RetrieveDocumentByFileNameAsync(inputDocument.FileName);
+
+            DocumentProcessingServiceException actualException =
+                await Assert.ThrowsAsync<DocumentProcessingServiceException>(retrieveDocumentTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDocumentProcessingServiveException);
+
+            this.documentServiceMock.Verify(service =>
+                service.RetrieveDocumentByFileNameAsync(inputDocument.FileName),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedDocumentProcessingServiveException))),
+                         Times.Once);
+
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

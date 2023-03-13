@@ -199,6 +199,66 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfNhsNumberIsInvalidAndLogItAsync()
+        {
+            // given 
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            int nhsNumberMaxLength = 10;
+            int optOutStatusMaxLength = 50;
+            OptOut randomOptOut = CreateRandomModifyOptOut(randomDateTimeOffset);
+            OptOut inputOptOut = randomOptOut;
+            OptOut storageOptOut = inputOptOut.DeepClone();
+            storageOptOut.UpdatedDate = randomOptOut.CreatedDate;
+            inputOptOut.NhsNumber = GenerateInvalidNhsNumber();
+            OptOut updatedOptOut = inputOptOut;
+            OptOut expectedOptOut = updatedOptOut.DeepClone();
+            Guid optOutId = inputOptOut.Id;
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            var invalidOptOutException = new InvalidOptOutException();
+
+            invalidOptOutException.AddData(
+                key: nameof(OptOut.NhsNumber),
+                values: $"NHS Number invalid");
+
+            var expectedOptOutValidationException =
+                new OptOutValidationException(invalidOptOutException);
+
+            // when
+            ValueTask<OptOut> modifyOptOutTask =
+                this.optOutService.ModifyOptOutAsync(inputOptOut);
+
+            OptOutValidationException actualOptOutValidationException =
+                await Assert.ThrowsAsync<OptOutValidationException>(
+                    modifyOptOutTask.AsTask);
+
+            //then
+            actualOptOutValidationException.Should()
+                .BeEquivalentTo(expectedOptOutValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOptOutValidationException))),
+                        Times.Once());
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateOptOutAsync(It.IsAny<OptOut>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
         [Fact]
         public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
         {

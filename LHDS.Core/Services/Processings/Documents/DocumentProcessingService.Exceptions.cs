@@ -3,6 +3,8 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using Xeptions;
 
@@ -22,6 +24,14 @@ namespace LHDS.Core.Services.Processings.Documents
             {
                 throw CreateAndLogValidationException(nullDocumentException);
             }
+            catch (DocumentValidationException documentValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(documentValidationException);
+            }
+            catch (DocumentDependencyValidationException documentDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(documentDependencyValidationException);
+            }
         }
 
         private DocumentProcessingValidationException CreateAndLogValidationException(Xeption exception)
@@ -32,6 +42,17 @@ namespace LHDS.Core.Services.Processings.Documents
             this.loggingBroker.LogError(documentProcessingValidationExceptionn);
 
             return documentProcessingValidationExceptionn;
+        }
+
+        private DocumentProcessingDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var documentProcessingDependencyValidationException =
+                new DocumentProcessingDependencyValidationException(
+                    exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(documentProcessingDependencyValidationException);
+
+            return documentProcessingDependencyValidationException;
         }
     }
 }

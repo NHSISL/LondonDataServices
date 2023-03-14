@@ -15,6 +15,7 @@ namespace LHDS.Core.Services.Processings.Documents
     {
         private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<Document> ReturningDocumentProcessingFunction();
+        private delegate ValueTask<string> ReturningStringFunction();
 
         private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
         {
@@ -87,6 +88,18 @@ namespace LHDS.Core.Services.Processings.Documents
                     new FailedDocumentProcessingServiceException(exception);
 
                 throw CreateAndLogServiceException(failedDocumentProcessingServiceException);
+            }
+        }
+
+        private async ValueTask<string> TryCatch(ReturningStringFunction returningStringFunction)
+        {
+            try
+            {
+                return await returningStringFunction();
+            }
+            catch (NullDocumentProcessingFileNameException exception)
+            {
+                throw CreateAndLogValidationException(exception);
             }
         }
 

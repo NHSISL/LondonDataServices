@@ -46,9 +46,12 @@ namespace LHDS.Core.Services.Processings.Documents
             await this.documentService.RemoveDocumentByFileNameAsync(fileName);
         });
 
-        public async ValueTask<string> GetDownloadLinkAsync(string fileName)
+        public ValueTask<string> GetDownloadLinkAsync(string fileName) =>
+        TryCatch(async () =>
         {
+            ValidateGetDownloadLinkArguments(fileName);
+
             return await this.GetDownloadLinkAsync(fileName);
-        }
+        });
     }
 }

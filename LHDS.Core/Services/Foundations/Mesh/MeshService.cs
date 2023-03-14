@@ -27,11 +27,11 @@ namespace LHDS.Core.Services.Foundations.Mesh
                 return await this.meshBroker.ValidateAccessAsync();
             });
 
-        public ValueTask<bool> AcknowledgeMessageByIdAsync(
+        public async ValueTask<bool> AcknowledgeMessageByIdAsync(
             string inputMailboxId,
             string inputMessageId)
         {
-            throw new System.NotImplementedException();
+            return await this.meshBroker.AcknowledgeMessageByIdAsync(inputMailboxId, inputMessageId);
         }
     }
 }

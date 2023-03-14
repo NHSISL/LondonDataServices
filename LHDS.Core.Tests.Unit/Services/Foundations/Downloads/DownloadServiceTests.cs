@@ -24,14 +24,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
 {
     public partial class DownloadServiceTests
     {
-        private readonly Mock<IMeshBroker> downloadBrokerMock;
+        private readonly Mock<IDownloadBroker> downloadBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IDownloadService downloadService;
 
         public DownloadServiceTests()
         {
-            this.downloadBrokerMock = new Mock<IMeshBroker>();
+            this.downloadBrokerMock = new Mock<IDownloadBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 

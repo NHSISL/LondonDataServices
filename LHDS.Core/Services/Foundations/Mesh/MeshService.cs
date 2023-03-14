@@ -21,7 +21,9 @@ namespace LHDS.Core.Services.Foundations.Mesh
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<bool> ValidateAccessAsync() =>
-            throw new System.NotImplementedException();
+        public ValueTask<bool> ValidateAccessAsync()
+        {
+            return this.meshBroker.ValidateAccessAsync();
+        }
     }
 }

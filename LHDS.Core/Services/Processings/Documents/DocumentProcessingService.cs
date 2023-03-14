@@ -23,11 +23,11 @@ namespace LHDS.Core.Services.Processings.Documents
         }
 
         public ValueTask AddDocumentAsync(Document document) =>
-        TryCatch(async () =>
-        {
-            ValidateDocumentProcessingOnAdd(document);
+            TryCatch(async () =>
+            {
+                ValidateDocumentProcessingOnAdd(document);
 
-            await this.documentService.AddDocumentAsync(document);
-        });
+                await this.documentService.AddDocumentAsync(document);
+            });
     }
 }

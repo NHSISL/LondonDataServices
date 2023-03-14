@@ -30,7 +30,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             this.documentProcessingService = new DocumentProcessingService(
                 this.documentServiceMock.Object,
                 this.loggingBrokerMock.Object);
-     
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>

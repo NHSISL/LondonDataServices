@@ -109,6 +109,14 @@ namespace LHDS.Core.Services.Processings.Documents
             {
                 throw CreateAndLogDependencyValidationException(documentDependencyValidationException);
             }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                throw CreateAndLogDependencyException(documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                throw CreateAndLogDependencyException(documentServiceException);
+            }
         }
 
             private DocumentProcessingValidationException 

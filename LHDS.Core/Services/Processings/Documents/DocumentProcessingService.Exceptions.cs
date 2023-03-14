@@ -1,0 +1,98 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System;
+using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
+using LHDS.Core.Models.Processings.Documents.Exceptions;
+using Xeptions;
+
+namespace LHDS.Core.Services.Processings.Documents
+{
+    public partial class DocumentProcessingService
+    {
+        private delegate ValueTask ReturningNothingFunction();
+
+        private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
+        {
+            try
+            {
+                await returningNothingFunction();
+            }
+            catch (NullDocumentProcessingException nullDocumentException)
+            {
+                throw CreateAndLogValidationException(nullDocumentException);
+            }
+            catch (DocumentValidationException documentValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(documentValidationException);
+            }
+            catch (DocumentDependencyValidationException documentDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(documentDependencyValidationException);
+            }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                throw CreateAndLogDependencyException(documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                throw CreateAndLogDependencyException(documentServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedDocumentProcessingServiceException =
+                    new FailedDocumentProcessingServiceException(exception);
+
+                throw CreateAndLogServiceException(failedDocumentProcessingServiceException);
+            }
+        }
+
+        private DocumentProcessingValidationException 
+            CreateAndLogValidationException(Xeption exception)
+        {
+            var documentProcessingValidationExceptionn =
+                new DocumentProcessingValidationException(exception);
+
+            this.loggingBroker.LogError(documentProcessingValidationExceptionn);
+
+            return documentProcessingValidationExceptionn;
+        }
+
+        private DocumentProcessingDependencyValidationException 
+            CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var documentProcessingDependencyValidationException =
+                new DocumentProcessingDependencyValidationException(
+                    exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(documentProcessingDependencyValidationException);
+
+            return documentProcessingDependencyValidationException;
+        }
+
+        private DocumentProcessingDependencyException
+            CreateAndLogDependencyException(Xeption exception)
+        {
+            var documentProcessingDependencyException =
+                new DocumentProcessingDependencyException(exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(documentProcessingDependencyException);
+
+            throw documentProcessingDependencyException;
+        }
+
+        private DocumentProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var documentProcessingServiceException = new
+                DocumentProcessingServiceException(exception);
+
+            this.loggingBroker.LogError(documentProcessingServiceException);
+
+            return documentProcessingServiceException;
+        }
+    }
+}

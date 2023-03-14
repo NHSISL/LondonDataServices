@@ -51,7 +51,7 @@ namespace LHDS.Core.Services.Processings.Documents
         {
             ValidateGetDownloadLinkArguments(fileName);
 
-            return await this.GetDownloadLinkAsync(fileName);
+            return await this.documentService.GetDownloadLinkAsync(fileName);
         });
     }
 }

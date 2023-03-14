@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Documents;
@@ -180,9 +181,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     Id = Guid.NewGuid(),
                     IngestionTrackingId = ingestionTracking.Id,
                     Message = $"{message} document - {document.FileName}",
-                    CreatedBy = "System",
+                    CreatedBy = "DownloadOrchestrationService",
                     CreatedDate = currentDateTime,
-                    UpdatedBy = "System",
+                    UpdatedBy = "DownloadOrchestrationService",
                     UpdatedDate = currentDateTime
                 };
 

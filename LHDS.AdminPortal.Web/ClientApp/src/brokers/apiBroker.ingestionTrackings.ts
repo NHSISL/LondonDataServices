@@ -35,7 +35,7 @@ class IngestionTrackingBroker {
     async GetIngestionTrackingByIdAsync(id: Guid) {
         const url = `${this.relativeIngestionTrackingUrl}/${id}`;
 
-        return this.apiBroker.GetAsync(url)
+        return await this.apiBroker.GetAsync(url)
             .then(result => new IngestionTracking(result.data));
     }
 

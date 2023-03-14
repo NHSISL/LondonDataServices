@@ -22,7 +22,7 @@ var host = new HostBuilder()
         .AddJsonFile(path: "appsettings.json")
         .AddJsonFile(
             path: $"appsettings.{env}.json",
-            optional: false)
+            optional: true)
         .AddJsonFile(
             path: "appsettings.local.json",
             optional: true,

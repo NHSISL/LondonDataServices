@@ -24,6 +24,11 @@ namespace LHDS.Core.Services.Processings.Documents
             ValidateDocumentProcessingFileNameIsNotNull(fileName);
         }
 
+        private static void ValidateGetDownloadLinkArguments(string fileName)
+        {
+            ValidateDocumentProcessingFileNameIsNotNull(fileName);
+        }
+
         private static void ValidateDocumentProcessingIsNotNull(Document document)
         {
             if (document is null)

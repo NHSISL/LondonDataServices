@@ -111,7 +111,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
-
         [Fact]
         public async Task ShouldThrowServiceExceptionOnRetrieveIfServiceErrorOccursAsync()
         {

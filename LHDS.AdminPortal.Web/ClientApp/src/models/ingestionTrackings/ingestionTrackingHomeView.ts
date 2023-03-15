@@ -2,7 +2,8 @@ import { Audit } from '../audits/audit';
 
 export class IngestionTrackingHomeView {
     public id: string;
-    public source: string;
+    public fileName: string;
+    public supplierId: string;
     public encryptedFileName: string;
     public decryptedFileName: string;
     public decrypted: boolean;
@@ -15,7 +16,8 @@ export class IngestionTrackingHomeView {
 
     constructor(
         id: string,
-        source: string,
+        fileName: string,
+        supplierId: string,
         encryptedFileName: string,
         decryptedFileName: string,
         decrypted: boolean,
@@ -27,11 +29,12 @@ export class IngestionTrackingHomeView {
         audit: Audit
     ) {
         this.id = id;
-        this.source = source 
-        this.encryptedFileName = encryptedFileName 
-        this.decryptedFileName = decryptedFileName 
+        this.fileName = fileName;
+        this.supplierId = supplierId;
+        this.encryptedFileName = encryptedFileName;
+        this.decryptedFileName = decryptedFileName;
         this.decrypted = decrypted === true ? true : false;
-        this.lastSeen = lastSeen
+        this.lastSeen = lastSeen;
         this.fileDeleted = fileDeleted;
         this.recordCount = recordCount;
         this.encryptedFileSize = encryptedFileSize;

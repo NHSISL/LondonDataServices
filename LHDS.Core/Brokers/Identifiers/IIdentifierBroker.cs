@@ -4,7 +4,7 @@
 
 using System;
 
-namespace LHDS.Core.Brokers.DateTimes
+namespace LHDS.Core.Brokers.Identifiers
 {
     public interface IIdentifierBroker
     {

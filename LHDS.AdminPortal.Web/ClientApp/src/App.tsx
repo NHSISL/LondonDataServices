@@ -21,6 +21,7 @@ const App = ({ msalInstance }: any) => {
                         <Route path="/" element={<Home />} />
                         <Route path="/ingestionTracking" element={<IngestionTrackingHomepage />} />
                         <Route path="/ingestionTrackingDetail" element={<IngestionTrackingPage />} />
+                        <Route path="/ingestionTrackingDetail/:ingestionTrackingId" element={<IngestionTrackingPage />} />
 
                         <Route path="/configuration" element={<ConfigHomePage/>} />
                         <Route path="/configuration/suppliers" element={<SuppliersPage />} />

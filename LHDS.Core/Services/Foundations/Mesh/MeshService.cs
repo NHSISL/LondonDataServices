@@ -53,6 +53,10 @@ namespace LHDS.Core.Services.Foundations.Mesh
             });
 
         public ValueTask<string> RetrieveTrackingStatusAsync(string mailboxId, string messageId) =>
-            throw new System.NotImplementedException();
+            TryCatch(async () =>
+            {
+                ValidateMeshArgs(mailboxId, messageId);
+                return await this.meshBroker.GetTrackingStatusAsync(mailboxId, messageId);
+            });
     }
 }

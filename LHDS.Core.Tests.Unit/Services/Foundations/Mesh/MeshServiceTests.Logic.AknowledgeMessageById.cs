@@ -12,25 +12,31 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
     public partial class MeshServiceTests
     {
         [Fact]
-        public async Task ShouldReturnMeshValidationAsync()
+        public async Task ShouldReturnAknowledgeMessageByIdAsync()
         {
             // given
+            string randomMailboxId = GetRandomMessage();
+            string inputMailboxId = randomMailboxId;
+
+            string randomMessageId = GetRandomMessage();
+            string inputMessageId = randomMessageId;
+
             bool outputValidationResult = true;
             bool expectedValidationResult = outputValidationResult;
 
             this.meshBrokerMock.Setup(broker =>
-                broker.ValidateAccessAsync())
+                broker.AcknowledgeMessageByIdAsync(inputMailboxId, inputMessageId))
                     .ReturnsAsync(outputValidationResult);
 
             // when
-            bool actualMeshValidationResult =
-                await this.meshService.ValidateMailboxAccessAsync();
+            bool actualMeshValidation =
+                await this.meshService.AcknowledgeMessageByIdAsync(inputMailboxId, inputMessageId);
 
             // then
-            actualMeshValidationResult.Should().Be(expectedValidationResult);
+            actualMeshValidation.Should().Be(expectedValidationResult);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.ValidateAccessAsync(),
+                broker.AcknowledgeMessageByIdAsync(inputMailboxId, inputMessageId),
                     Times.Once());
 
             this.meshBrokerMock.VerifyNoOtherCalls();

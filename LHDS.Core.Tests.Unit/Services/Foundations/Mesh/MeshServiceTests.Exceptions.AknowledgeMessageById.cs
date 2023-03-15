@@ -14,11 +14,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
     public partial class MeshServiceTests
     {
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnValidateAccessIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnAknowledgeMNessageByIdIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            string exceptionMessage = GetRandomMessage();
-            var serviceException = new Exception(exceptionMessage);
+            string mailboxId = GetRandomMessage();
+            string messageId = GetRandomMessage();
+            var serviceException = new Exception();
 
             var failedMeshServiceException =
                new FailedMeshServiceException(serviceException);
@@ -27,22 +28,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                new MeshServiceException(failedMeshServiceException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.ValidateAccessAsync())
+                broker.AcknowledgeMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()))
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<bool> RetrieveValidationAccessTask =
-                this.meshService.ValidateMailboxAccessAsync();
+            ValueTask<bool> RetrieveAknowledgeMessageByIdTask =
+                this.meshService.AcknowledgeMessageByIdAsync(mailboxId, messageId);
 
             MeshServiceException actualMeshServiceException =
-                await Assert.ThrowsAsync<MeshServiceException>(RetrieveValidationAccessTask.AsTask);
+                await Assert.ThrowsAsync<MeshServiceException>
+                    (RetrieveAknowledgeMessageByIdTask.AsTask);
 
             // then
             actualMeshServiceException.Should()
                 .BeEquivalentTo(expectedMeshServiceException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.ValidateAccessAsync(),
+                broker.AcknowledgeMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

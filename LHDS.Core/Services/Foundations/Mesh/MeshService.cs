@@ -45,8 +45,10 @@ namespace LHDS.Core.Services.Foundations.Mesh
         public ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync(string mailboxId) =>
             throw new System.NotImplementedException();
 
-        public ValueTask<string> SendMessageAsync(string messageId) =>
-            throw new System.NotImplementedException();
+        public ValueTask<string> SendMessageAsync(string messageId)
+        {
+            return this.meshBroker.SendMessageAsync(messageId);
+        }
 
         public ValueTask<string> RetrieveTrackingStatusAsync(string mailboxId, string messageId) =>
             throw new System.NotImplementedException();

@@ -149,5 +149,55 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             this.optOutServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnAddIfDependencyErrorOccursAndLogItAsync(
+            Xeption dependencyValidationException)
+        {
+            // given
+            OptOut someOptOut = CreateRandomOptOut();
+            OptOut inputOptOut = someOptOut;
+
+            var expectedOptOutProcessingDependencyException =
+                new OptOutProcessingDependencyException(
+                    dependencyValidationException.InnerException as Xeption);
+
+            this.optOutServiceMock.Setup(service =>
+                service.RetrieveOptOutByIdAsync(inputOptOut.Id))
+                    .ReturnsAsync(value: null);
+
+            this.optOutServiceMock.Setup(service =>
+                service.AddOptOutAsync(inputOptOut))
+                    .Throws(dependencyValidationException);
+
+            // when
+            ValueTask<OptOut> optOutRetrieveOrAddTask =
+                this.optOutProcessingService.RetrieveOrAddOptOutAsync(inputOptOut);
+
+            OptOutProcessingDependencyException actualException =
+                await Assert.ThrowsAsync<OptOutProcessingDependencyException>(optOutRetrieveOrAddTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(
+                expectedOptOutProcessingDependencyException);
+
+            this.optOutServiceMock.Verify(service =>
+                service.RetrieveOptOutByIdAsync(inputOptOut.Id),
+                    Times.Once);
+
+            this.optOutServiceMock.Verify(service =>
+                service.AddOptOutAsync(inputOptOut),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedOptOutProcessingDependencyException))),
+                         Times.Once);
+
+            this.optOutServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

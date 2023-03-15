@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<bool> RetrieveValidationAccessTask =
-                this.meshService.ValidateAccessAsync();
+                this.meshService.ValidateMailboxAccessAsync();
 
             MeshServiceException actualMeshServiceException =
                 await Assert.ThrowsAsync<MeshServiceException>(RetrieveValidationAccessTask.AsTask);

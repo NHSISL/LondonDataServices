@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             // when
             bool actualMeshValidation =
-                await this.meshService.ValidateAccessAsync();
+                await this.meshService.ValidateMailboxAccessAsync();
 
             // then
             actualMeshValidation.Should().Be(expectedValidationResult);

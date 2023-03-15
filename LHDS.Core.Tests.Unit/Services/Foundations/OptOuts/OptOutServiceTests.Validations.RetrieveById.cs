@@ -28,7 +28,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 values: "Id is required");
 
             var expectedOptOutValidationException =
-                new OptOutValidationException(invalidOptOutException);
+                new OptOutValidationException(
+                    innerException: invalidOptOutException,
+                    validationSummary: GetValidationSummary(invalidOptOutException.Data));
 
             // when
             ValueTask<OptOut> retrieveOptOutByIdTask =

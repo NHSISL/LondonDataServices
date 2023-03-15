@@ -17,10 +17,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             // given
             string randomMailboxId = GetRandomMessage();
             string inputMailboxId = randomMailboxId;
-
             string randomMessageId = GetRandomMessage();
             string inputMessageId = randomMessageId;
-
             string outputValidationResult = "";
             string expectedValidationResult = outputValidationResult;
 
@@ -29,11 +27,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     .ReturnsAsync(outputValidationResult);
 
             // when
-            string actualMeshValidation =
+            string actualMeshValidationResult =
                 await this.meshService.RetrieveMessageByIdAsync(inputMailboxId, inputMessageId);
 
             // then
-            actualMeshValidation.Should().Be(expectedValidationResult);
+            actualMeshValidationResult.Should().Be(expectedValidationResult);
 
             this.meshBrokerMock.Verify(broker =>
                 broker.GetMessageByIdAsync(inputMailboxId, inputMessageId),

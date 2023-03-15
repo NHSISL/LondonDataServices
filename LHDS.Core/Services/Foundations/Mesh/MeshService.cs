@@ -42,10 +42,12 @@ namespace LHDS.Core.Services.Foundations.Mesh
                 return await this.meshBroker.GetMessageByIdAsync(mailboxId, messageId);
             });
 
-        public ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync(string mailboxId)
-        {
-            return this.meshBroker.GetMessageIdsFromInboxAsync(mailboxId);
-        }
+        public ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync(string mailboxId) =>
+             TryCatch(async () =>
+             {
+                 ValidateMailboxId(mailboxId);
+                 return await this.meshBroker.GetMessageIdsFromInboxAsync(mailboxId);
+             });
 
         public ValueTask<string> SendMessageAsync(string messageId) =>
             TryCatch(async () =>

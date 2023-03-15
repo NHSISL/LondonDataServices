@@ -199,5 +199,52 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             this.optOutServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveIfServiceErrorOccursAsync()
+        {
+            // given
+            OptOut someOptOut = CreateRandomOptOut();
+            OptOut inputOptOut = someOptOut;
+
+            var serviceException = new Exception();
+
+            var failedOptOutProcessingServiceException =
+                new FailedOptOutProcessingServiceException(serviceException);
+
+            var expectedOptOutProcessingServiveException =
+                new OptOutProcessingServiceException(
+                    failedOptOutProcessingServiceException);
+
+            this.optOutServiceMock.Setup(service =>
+                service.RetrieveOptOutByIdAsync(inputOptOut.Id))
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<OptOut> OptOutRetrieveOrAddTask =
+                this.optOutProcessingService.RetrieveOrAddOptOutAsync(inputOptOut);
+
+            OptOutProcessingServiceException actualException =
+                await Assert.ThrowsAsync<OptOutProcessingServiceException>(OptOutRetrieveOrAddTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedOptOutProcessingServiveException);
+
+            this.optOutServiceMock.Verify(service =>
+                service.RetrieveOptOutByIdAsync(inputOptOut.Id),
+                    Times.Once);
+
+            this.optOutServiceMock.Verify(service =>
+                service.AddOptOutAsync(It.IsAny<OptOut>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedOptOutProcessingServiveException))),
+                         Times.Once);
+
+            this.optOutServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

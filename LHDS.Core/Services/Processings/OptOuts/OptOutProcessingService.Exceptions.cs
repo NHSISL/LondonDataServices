@@ -6,6 +6,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.OptOuts;
+using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
+using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.OptOuts.Exceptions;
 using Xeptions;
 
@@ -25,6 +27,14 @@ namespace LHDS.Core.Services.Processings.OptOuts
             {
                 throw CreateAndLogValidationException(nullOptOutProcessingException);
             }
+            catch (OptOutValidationException optOutValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(optOutValidationException);
+            }
+            catch (OptOutDependencyValidationException optOutDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(optOutDependencyValidationException);
+            }
         }
 
         private OptOutProcessingValidationException CreateAndLogValidationException(Xeption exception)
@@ -35,6 +45,18 @@ namespace LHDS.Core.Services.Processings.OptOuts
             this.loggingBroker.LogError(optOutProcessingValidationException);
 
             return optOutProcessingValidationException;
+        }
+
+        private OptOutProcessingDependencyValidationException
+            CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var optOutProcessingDependencyValidationException =
+                new OptOutProcessingDependencyValidationException(
+                    exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(optOutProcessingDependencyValidationException);
+
+            return optOutProcessingDependencyValidationException;
         }
     }
 }

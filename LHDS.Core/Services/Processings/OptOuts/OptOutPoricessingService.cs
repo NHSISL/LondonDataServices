@@ -21,7 +21,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
         }
 
         public async ValueTask<OptOut> RetrieveOrAddOptOutAsync(OptOut optOut) =>
-            throw new System.NotImplementedException();
-        }
+            await this.optOutService.AddOptOutAsync(optOut);
+    }
 }
 

@@ -19,7 +19,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             string randomMessageId = GetRandomMessage();
             string inputMailboxId = randomMessageId;
 
-            List<string> outputValidationResult = GetRandomMessages(10);
+            List<string> outputValidationResult = GetRandomMessages(GetRandomNumber());
             List<string> expectedValidationResult = outputValidationResult;
 
             this.meshBrokerMock.Setup(broker =>

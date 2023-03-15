@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -42,6 +43,13 @@ namespace LHDS.Core.Services.Processings.OptOuts
             {
                 throw CreateAndLogDependencyException(optOutServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedOptOutProcessingServiceException =
+                    new FailedOptOutProcessingServiceException(exception);
+
+                throw CreateAndLogServiceException(failedOptOutProcessingServiceException);
+            }
         }
 
         private OptOutProcessingValidationException CreateAndLogValidationException(Xeption exception)
@@ -77,6 +85,16 @@ namespace LHDS.Core.Services.Processings.OptOuts
             this.loggingBroker.LogError(optOutProcessingDependencyException);
 
             throw optOutProcessingDependencyException;
+        }
+
+        private OptOutProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var optOutProcessingServiceException = new
+                OptOutProcessingServiceException(exception);
+
+            this.loggingBroker.LogError(optOutProcessingServiceException);
+
+            return optOutProcessingServiceException;
         }
     }
 }

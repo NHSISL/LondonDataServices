@@ -2,9 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
-using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
@@ -35,12 +34,22 @@ namespace LHDS.Core.Services.Processings.OptOuts
             {
                 throw CreateAndLogDependencyValidationException(optOutDependencyValidationException);
             }
+            catch (OptOutDependencyException optOutDependencyException)
+            {
+                throw CreateAndLogDependencyException(optOutDependencyException);
+            }
+            catch (OptOutServiceException optOutServiceException)
+            {
+                throw CreateAndLogDependencyException(optOutServiceException);
+            }
         }
 
         private OptOutProcessingValidationException CreateAndLogValidationException(Xeption exception)
         {
+            string validationSummary = GetValidationSummary(exception.Data);
+
             var optOutProcessingValidationException =
-                new OptOutProcessingValidationException(exception);
+                new OptOutProcessingValidationException(exception, validationSummary);
 
             this.loggingBroker.LogError(optOutProcessingValidationException);
 
@@ -57,6 +66,17 @@ namespace LHDS.Core.Services.Processings.OptOuts
             this.loggingBroker.LogError(optOutProcessingDependencyValidationException);
 
             return optOutProcessingDependencyValidationException;
+        }
+
+        private OptOutProcessingDependencyException
+            CreateAndLogDependencyException(Xeption exception)
+        {
+            var optOutProcessingDependencyException =
+                new OptOutProcessingDependencyException(exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(optOutProcessingDependencyException);
+
+            throw optOutProcessingDependencyException;
         }
     }
 }

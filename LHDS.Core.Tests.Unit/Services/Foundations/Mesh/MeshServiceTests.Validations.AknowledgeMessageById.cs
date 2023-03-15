@@ -20,26 +20,28 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             string invalidText)
         {
             // given
-            string param1 = invalidText;
-            string param2 = invalidText;
+            string mailboxId = invalidText;
+            string messageId = invalidText;
 
             var invalidArgumentMeshException =
                 new InvalidArgumentMeshException();
 
             invalidArgumentMeshException.AddData(
-                key: nameof(param1),
-                values: "Param1 is required");
+                key: nameof(mailboxId),
+                values: "Text is required");
 
             invalidArgumentMeshException.AddData(
-              key: nameof(param2),
-              values: "Param2 is required");
+              key: nameof(messageId),
+              values: "Text is required");
 
             var expectedMeshValidationException =
-                new MeshValidationException(invalidArgumentMeshException);
+                new MeshValidationException(
+                    innerException: invalidArgumentMeshException,
+                    validationSummary: GetValidationSummary(invalidArgumentMeshException.Data));
 
             // when
             ValueTask<bool> retrieveAknowledgeMessageByIdTask =
-                this.meshService.AcknowledgeMessageByIdAsync(param1, param2);
+                this.meshService.AcknowledgeMessageByIdAsync(mailboxId, messageId);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(
@@ -55,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                         Times.Once);
 
             this.meshBrokerMock.Verify(broker =>
-               broker.AcknowledgeMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()),
+               broker.AcknowledgeMessageByIdAsync(mailboxId, messageId),
                    Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

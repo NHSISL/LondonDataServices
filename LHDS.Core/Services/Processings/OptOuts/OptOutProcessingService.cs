@@ -10,19 +10,24 @@ using LHDS.Core.Services.Foundations.OptOuts;
 
 namespace LHDS.Core.Services.Processings.OptOuts
 {
-    public class OptOutProcessingService : IOptOutProcessingService
+    public partial class OptOutProcessingService : IOptOutProcessingService
     {
         private readonly IOptOutService optOutService;
         private readonly ILoggingBroker loggingBroker;
 
-        public OptOutProcessingService(IOptOutService optOutService, ILoggingBroker loggingBroker)
+        public OptOutProcessingService(
+            IOptOutService optOutService, 
+            ILoggingBroker loggingBroker)
         {
             this.optOutService = optOutService;
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<OptOut> RetrieveOrAddOptOutAsync(OptOut optOut)
+        public ValueTask<OptOut> RetrieveOrAddOptOutAsync(OptOut optOut) =>
+        TryCatch(async () =>
         {
+            ValidateOptOutProcessingOnRetrieveOrAdd(optOut);
+
             OptOut maybeOptOut = await this.optOutService.RetrieveOptOutByIdAsync(optOut.Id);
 
             if (maybeOptOut == null)
@@ -31,7 +36,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
             }
 
             return maybeOptOut;
-        }
+        });
     }
 }
 

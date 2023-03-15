@@ -41,6 +41,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         private static string GetRandomMessage() =>
           new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
+        private static List<string> GetRandomMessages(int count)
+        {
+            var messages = new List<string>();
+            for (int i = 0; i < count; i++)
+            {
+                string message = new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+                messages.Add(message);
+            }
+            return messages;
+        }
+
         private string GetValidationSummary(IDictionary data)
         {
             StringBuilder validationSummary = new StringBuilder();

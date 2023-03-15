@@ -28,23 +28,23 @@ namespace LHDS.Core.Services.Foundations.Mesh
                 return await this.meshBroker.ValidateAccessAsync();
             });
 
-        public ValueTask<bool> AcknowledgeMessageByIdAsync(
-            string inputMailboxId,
-            string inputMessageId) =>
+        public ValueTask<bool> AcknowledgeMessageByIdAsync(string inputMailboxId, string inputMessageId) =>
             TryCatch(async () =>
             {
                 ValidateMeshArgs(inputMailboxId, inputMessageId);
                 return await this.meshBroker.AcknowledgeMessageByIdAsync(inputMailboxId, inputMessageId);
             });
 
+        public ValueTask<string> RetrieveMessageByIdAsync(string mailboxId, string messageId) =>
+            TryCatch(async () =>
+            {
+                ValidateMeshArgs(mailboxId, messageId);
+                return await this.meshBroker.GetMessageByIdAsync(mailboxId, messageId);
+            });
+
+
         public ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync(string mailboxId) =>
             throw new System.NotImplementedException();
-
-
-        public ValueTask<string> RetrieveMessageByIdAsync(string mailboxId, string messageId)
-        {
-            return this.meshBroker.GetMessageByIdAsync(mailboxId, messageId);
-        }
 
         public ValueTask<string> SendMessageAsync(string messageId) =>
             throw new System.NotImplementedException();

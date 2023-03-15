@@ -23,7 +23,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
         }
 
         public ValueTask<bool> ValidateMailboxAccessAsync() =>
-         TryCatch(async () =>
+            TryCatch(async () =>
             {
                 return await this.meshBroker.ValidateAccessAsync();
             });

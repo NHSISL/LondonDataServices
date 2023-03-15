@@ -23,11 +23,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     .ReturnsAsync(outputValidationResult);
 
             // when
-            bool actualMeshValidation =
+            bool actualMeshValidationResult =
                 await this.meshService.ValidateMailboxAccessAsync();
 
             // then
-            actualMeshValidation.Should().Be(expectedValidationResult);
+            actualMeshValidationResult.Should().Be(expectedValidationResult);
 
             this.meshBrokerMock.Verify(broker =>
                 broker.ValidateAccessAsync(),

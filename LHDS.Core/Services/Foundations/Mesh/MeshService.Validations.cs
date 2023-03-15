@@ -18,7 +18,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
                (Rule: IsInvalid(messageId), Parameter: nameof(messageId)));
 
         public void ValidateMessageId(string messageId) =>
-          Validate((Rule: IsInvalid(messageId), Parameter: nameof(messageId)));
+            Validate((Rule: IsInvalid(messageId), Parameter: nameof(messageId)));
 
         public void ValidateMailboxId(string mailboxId) =>
           Validate((Rule: IsInvalid(mailboxId), Parameter: nameof(mailboxId)));

@@ -31,8 +31,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 values: "Text is required");
 
             invalidArgumentMeshException.AddData(
-              key: nameof(messageId),
-              values: "Text is required");
+                key: nameof(messageId),
+                values: "Text is required");
 
             var expectedMeshValidationException =
                 new MeshValidationException(

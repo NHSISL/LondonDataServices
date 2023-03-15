@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.MeshItems.Exceptions;
 using Xeptions;
@@ -13,6 +14,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
     {
         private delegate ValueTask<bool> ReturningBoolMeshFunction();
         private delegate ValueTask<string> ReturningStringMeshFunction();
+        private delegate ValueTask<List<string>> ReturningStringsMeshFunction();
 
         private async ValueTask<bool> TryCatch(ReturningBoolMeshFunction returningMeshFunction)
         {
@@ -38,6 +40,25 @@ namespace LHDS.Core.Services.Foundations.Mesh
             try
             {
                 return await returningStringMeshFunction();
+            }
+            catch (InvalidArgumentMeshException invalidArgumentMeshException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentMeshException);
+            }
+            catch (Exception exception)
+            {
+                var failedMeshServiceException =
+                    new FailedMeshServiceException(exception);
+
+                throw CreateAndLogServiceException(failedMeshServiceException);
+            }
+        }
+
+        private async ValueTask<List<string>> TryCatch(ReturningStringsMeshFunction returningStringsMeshFunction)
+        {
+            try
+            {
+                return await returningStringsMeshFunction();
             }
             catch (InvalidArgumentMeshException invalidArgumentMeshException)
             {

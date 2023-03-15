@@ -11,6 +11,8 @@ using LHDS.Core.Services.Processings.OptOuts;
 using System;
 using Tynamix.ObjectFiller;
 using LHDS.Core.Models.Foundations.OptOuts;
+using System.Linq.Expressions;
+using Xeptions;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 {
@@ -29,6 +31,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 optOutService: optOutServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object);
         }
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+           actualException => actualException.SameExceptionAs(expectedException);
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
         new DateTimeRange(earliestDate: new DateTime()).GetValue();

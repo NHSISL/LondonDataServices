@@ -65,6 +65,19 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             };
         }
 
+        public static TheoryData DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new OptOutDependencyException(innerException),
+                new OptOutServiceException(innerException)
+            };
+        }
+
         private static Filler<OptOut> CreateOptOutFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();

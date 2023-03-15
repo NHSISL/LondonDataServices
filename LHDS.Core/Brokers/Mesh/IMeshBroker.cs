@@ -9,16 +9,16 @@ namespace LHDS.Core.Brokers.Mesh
 {
     public interface IMeshBroker
     {
-        ValueTask<bool> ValidateAccess();
+        ValueTask<bool> ValidateAccessAsync();
 
-        ValueTask<bool> AcknowledgeMessageById(string mailboxId, string messageId);
+        ValueTask<bool> AcknowledgeMessageByIdAsync(string mailboxId, string messageId);
 
-        ValueTask<List<string>> GetMessageIdsFromInbox(string mailboxId);
+        ValueTask<List<string>> GetMessageIdsFromInboxAsync(string mailboxId);
 
-        ValueTask<string> GetMessageById(string mailboxId, string messageId);
+        ValueTask<string> GetMessageByIdAsync(string mailboxId, string messageId);
 
-        ValueTask<string> SendMessage(string messageId);
+        ValueTask<string> SendMessageAsync(string messageId);
 
-        ValueTask<string> GetTrackingStatus(string mailboxId, string messageId);
+        ValueTask<string> GetTrackingStatusAsync(string mailboxId, string messageId);
     }
 }

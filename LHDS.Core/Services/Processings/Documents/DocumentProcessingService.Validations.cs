@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using LHDS.Core.Models.Foundations.Documents;
-using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 
 namespace LHDS.Core.Services.Processings.Documents
@@ -15,11 +14,24 @@ namespace LHDS.Core.Services.Processings.Documents
             ValidateDocumentProcessingIsNotNull(document);
         }
 
+        private static void ValidateDocumentProcessingOnRetrieve(string fileName)
+        {
+            ValidateDocumentProcessingFileNameIsNotNull(fileName);
+        }
+
         private static void ValidateDocumentProcessingIsNotNull(Document document)
         {
             if (document is null)
             {
                 throw new NullDocumentProcessingException();
+            }
+        }
+
+        private static void ValidateDocumentProcessingFileNameIsNotNull(string fileName)
+        {
+            if (fileName is null)
+            {
+                throw new NullDocumentProcessingFileNameException();
             }
         }
     }

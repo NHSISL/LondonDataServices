@@ -9,22 +9,22 @@ namespace LHDS.Core.Brokers.Mesh
 {
     public class MeshBroker : IMeshBroker
     {
-        public ValueTask<bool> AcknowledgeMessageById(string mailboxId, string messageId) =>
+        public ValueTask<bool> AcknowledgeMessageByIdAsync(string mailboxId, string messageId) =>
             throw new System.NotImplementedException();
 
-        public ValueTask<string> GetMessageById(string mailboxId, string messageId) =>
+        public ValueTask<string> GetMessageByIdAsync(string mailboxId, string messageId) =>
             throw new System.NotImplementedException();
 
-        public ValueTask<List<string>> GetMessageIdsFromInbox(string mailboxId) =>
+        public ValueTask<List<string>> GetMessageIdsFromInboxAsync(string mailboxId) =>
             throw new System.NotImplementedException();
 
-        public ValueTask<string> GetTrackingStatus(string mailboxId, string messageId) =>
+        public ValueTask<string> GetTrackingStatusAsync(string mailboxId, string messageId) =>
             throw new System.NotImplementedException();
 
-        public ValueTask<string> SendMessage(string messageId) =>
+        public ValueTask<string> SendMessageAsync(string messageId) =>
             throw new System.NotImplementedException();
 
-        public ValueTask<bool> ValidateAccess() =>
+        public ValueTask<bool> ValidateAccessAsync() =>
             throw new System.NotImplementedException();
     }
 }

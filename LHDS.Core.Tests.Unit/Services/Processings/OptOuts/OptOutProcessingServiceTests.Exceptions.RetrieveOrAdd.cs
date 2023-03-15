@@ -246,5 +246,56 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             this.optOutServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAsync()
+        {
+            // given
+            OptOut someOptOut = CreateRandomOptOut();
+            OptOut inputOptOut = someOptOut;
+
+            var serviceException = new Exception();
+
+            var failedOptOutProcessingServiceException =
+                new FailedOptOutProcessingServiceException(serviceException);
+
+            var expectedOptOutProcessingServiveException =
+                new OptOutProcessingServiceException(
+                    failedOptOutProcessingServiceException);
+
+            this.optOutServiceMock.Setup(service =>
+                service.RetrieveOptOutByIdAsync(inputOptOut.Id))
+                    .ReturnsAsync(value: null);
+
+            this.optOutServiceMock.Setup(service =>
+                service.AddOptOutAsync(inputOptOut))
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<OptOut> OptOutRetrieveOrAddTask =
+                this.optOutProcessingService.RetrieveOrAddOptOutAsync(inputOptOut);
+
+            OptOutProcessingServiceException actualException =
+                await Assert.ThrowsAsync<OptOutProcessingServiceException>(OptOutRetrieveOrAddTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedOptOutProcessingServiveException);
+
+            this.optOutServiceMock.Verify(service =>
+                service.RetrieveOptOutByIdAsync(inputOptOut.Id),
+                    Times.Once);
+
+            this.optOutServiceMock.Verify(service =>
+                service.AddOptOutAsync(inputOptOut),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedOptOutProcessingServiveException))),
+                         Times.Once);
+
+            this.optOutServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

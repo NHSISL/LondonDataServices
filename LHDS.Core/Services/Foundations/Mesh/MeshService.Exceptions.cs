@@ -11,13 +11,33 @@ namespace LHDS.Core.Services.Foundations.Mesh
 {
     public partial class MeshService
     {
-        private delegate ValueTask<bool> ReturningMeshFunction();
+        private delegate ValueTask<bool> ReturningBoolMeshFunction();
+        private delegate ValueTask<string> ReturningStringMeshFunction();
 
-        private async ValueTask<bool> TryCatch(ReturningMeshFunction returningMeshFunction)
+        private async ValueTask<bool> TryCatch(ReturningBoolMeshFunction returningMeshFunction)
         {
             try
             {
                 return await returningMeshFunction();
+            }
+            catch (InvalidArgumentMeshException invalidArgumentMeshException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentMeshException);
+            }
+            catch (Exception exception)
+            {
+                var failedMeshServiceException =
+                    new FailedMeshServiceException(exception);
+
+                throw CreateAndLogServiceException(failedMeshServiceException);
+            }
+        }
+
+        private async ValueTask<string> TryCatch(ReturningStringMeshFunction returningStringMeshFunction)
+        {
+            try
+            {
+                return await returningStringMeshFunction();
             }
             catch (InvalidArgumentMeshException invalidArgumentMeshException)
             {

@@ -13,6 +13,8 @@ using Tynamix.ObjectFiller;
 using LHDS.Core.Models.Foundations.OptOuts;
 using System.Linq.Expressions;
 using Xeptions;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 {
@@ -41,9 +43,28 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
         private static OptOut CreateRandomOptOut(DateTimeOffset dateTimeOffset) =>
         CreateOptOutFiller(dateTimeOffset).Create();
 
+        private static OptOut CreateRandomOptOut() =>
+            CreateOptOutFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+
         private static string GetRandomString(int length) =>
             new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
-        
+
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
+
+        public static TheoryData DependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new OptOutValidationException(innerException),
+                new OptOutDependencyValidationException(innerException)
+            };
+        }
+
         private static Filler<OptOut> CreateOptOutFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();

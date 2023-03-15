@@ -19,6 +19,10 @@ namespace LHDS.Core.Services.Foundations.Mesh
             {
                 return await returningMeshFunction();
             }
+            catch (InvalidArgumentMeshException invalidArgumentMeshException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentMeshException);
+            }
             catch (Exception exception)
             {
                 var failedMeshServiceException =
@@ -26,6 +30,18 @@ namespace LHDS.Core.Services.Foundations.Mesh
 
                 throw CreateAndLogServiceException(failedMeshServiceException);
             }
+        }
+
+        private MeshValidationException CreateAndLogValidationException(Xeption exception)
+        {
+            string validationSummary = GetValidationSummary(exception.Data);
+
+            var meshValidationException =
+                new MeshValidationException(exception, validationSummary);
+
+            this.loggingBroker.LogError(meshValidationException);
+
+            return meshValidationException;
         }
 
         private MeshServiceException CreateAndLogServiceException(

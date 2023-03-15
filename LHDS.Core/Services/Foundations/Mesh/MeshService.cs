@@ -52,9 +52,11 @@ namespace LHDS.Core.Services.Foundations.Mesh
                 return await this.meshBroker.SendMessageAsync(messageId);
             });
 
-        public ValueTask<string> RetrieveTrackingStatusAsync(string mailboxId, string messageId)
-        {
-            return this.meshBroker.GetTrackingStatusAsync(mailboxId, messageId);
-        }
+        public ValueTask<string> RetrieveTrackingStatusAsync(string mailboxId, string messageId) =>
+            TryCatch(async () =>
+            {
+                ValidateMeshArgs(mailboxId, messageId);
+                return await this.meshBroker.GetTrackingStatusAsync(mailboxId, messageId);
+            });
     }
 }

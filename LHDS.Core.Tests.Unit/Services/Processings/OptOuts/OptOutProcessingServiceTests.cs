@@ -15,6 +15,10 @@ using System.Linq.Expressions;
 using Xeptions;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
+using System.Collections.Generic;
+using System.Collections;
+using System.Text;
+using System.Linq;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 {
@@ -135,6 +139,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             string checkNumber = total.ToString();
 
             return $"{formattedNhsNumber}{checkNumber}";
+        }
+
+        private string GetValidationSummary(IDictionary data)
+        {
+            StringBuilder validationSummary = new StringBuilder();
+
+            foreach (DictionaryEntry entry in data)
+            {
+                string errorSummary = ((List<string>)entry.Value)
+                    .Select((string value) => value)
+                    .Aggregate((string current, string next) => current + ", " + next);
+
+                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
+            }
+
+            return validationSummary.ToString();
         }
     }
 }

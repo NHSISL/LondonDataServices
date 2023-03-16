@@ -32,7 +32,9 @@ namespace LHDS.Core.Services.Processings.Mesh
         public ValueTask<string> SendMessageAsync(string mailboxId, string messageId) =>
             throw new NotImplementedException();
 
-        public ValueTask<bool> ValidateMailboxAccessAsync() =>
-            throw new NotImplementedException();
+        public ValueTask<bool> ValidateMailboxAccessAsync()
+        {
+            return this.meshService.ValidateMailboxAccessAsync();
+        }
     }
 }

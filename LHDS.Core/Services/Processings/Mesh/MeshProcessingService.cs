@@ -23,19 +23,19 @@ namespace LHDS.Core.Services.Processings.Mesh
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<string> RetrieveAndAcknowledgeMessageByIdAsync(string mailboxId, string messageId) =>
-            throw new NotImplementedException();
+        public ValueTask<bool> ValidateMailboxAccessAsync() =>
+           TryCatch(async () =>
+           {
+               return await this.meshService.ValidateMailboxAccessAsync();
+           });
 
         public ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync(string mailboxId) =>
             throw new NotImplementedException();
 
-        public ValueTask<string> SendMessageAsync(string mailboxId, string messageId) =>
+        public ValueTask<string> RetrieveAndAcknowledgeMessageByIdAsync(string mailboxId, string messageId) =>
             throw new NotImplementedException();
 
-        public ValueTask<bool> ValidateMailboxAccessAsync() =>
-        TryCatch(async () =>
-            {
-                return await this.meshService.ValidateMailboxAccessAsync();
-            });
+        public ValueTask<string> SendMessageAsync(string mailboxId, string messageId) =>
+            throw new NotImplementedException();
     }
 }

@@ -31,7 +31,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                 values: "Text is required");
 
             var expectedDocumentProcessingValidationException =
-                new DocumentProcessingValidationException(invalidDocumentProcessingFileNameException);
+                new DocumentProcessingValidationException(
+                    innerException: invalidDocumentProcessingFileNameException,
+                    validationSummary: GetValidationSummary(invalidDocumentProcessingFileNameException.Data));
 
             // when
             ValueTask RemoveDocumentTask =

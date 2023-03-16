@@ -2,6 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.LandingClient.Exceptions;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
@@ -29,14 +33,20 @@ namespace LHDS.Core.Clients
             }
             catch (DecryptionOrchestrationValidationException downloadOrchestrationValidationException)
             {
+                string validationSummary = GetValidationSummary(
+                    downloadOrchestrationValidationException.InnerException.Data);
+
                 throw new LandingClientValidationException(
-                    downloadOrchestrationValidationException.InnerException as Xeption);
+                    downloadOrchestrationValidationException.InnerException as Xeption, validationSummary);
             }
             catch (DownloadOrchestrationDependencyValidationException
                 downloadOrchestrationDependencyValidationException)
             {
+                string validationSummary = GetValidationSummary(
+                    downloadOrchestrationDependencyValidationException.InnerException.Data);
+
                 throw new LandingClientValidationException(
-                    downloadOrchestrationDependencyValidationException.InnerException as Xeption);
+                    downloadOrchestrationDependencyValidationException.InnerException as Xeption, validationSummary);
             }
             catch (DownloadOrchestrationDependencyException
                 downloadOrchestrationDependencyException)
@@ -60,13 +70,20 @@ namespace LHDS.Core.Clients
             }
             catch (DecryptionOrchestrationValidationException downloadOrchestrationValidationException)
             {
+                string validationSummary = GetValidationSummary(
+                    downloadOrchestrationValidationException.InnerException.Data);
+
                 throw new LandingClientValidationException(
-                    downloadOrchestrationValidationException.InnerException as Xeption);
+                    downloadOrchestrationValidationException.InnerException as Xeption, validationSummary);
             }
-            catch (DownloadOrchestrationDependencyValidationException downloadOrchestrationDependencyValidationException)
+            catch (DownloadOrchestrationDependencyValidationException
+                downloadOrchestrationDependencyValidationException)
             {
+                string validationSummary = GetValidationSummary(
+                    downloadOrchestrationDependencyValidationException.InnerException.Data);
+
                 throw new LandingClientValidationException(
-                    downloadOrchestrationDependencyValidationException.InnerException as Xeption);
+                    downloadOrchestrationDependencyValidationException.InnerException as Xeption, validationSummary);
             }
             catch (DownloadOrchestrationDependencyException downloadOrchestrationDependencyException)
             {
@@ -78,6 +95,22 @@ namespace LHDS.Core.Clients
                 throw new LandingClientServiceException(
                     downloadOrchestrationServiceException.InnerException as Xeption);
             }
+        }
+
+        private string GetValidationSummary(IDictionary data)
+        {
+            StringBuilder validationSummary = new StringBuilder();
+
+            foreach (DictionaryEntry entry in data)
+            {
+                string errorSummary = ((List<string>)entry.Value)
+                    .Select((string value) => value)
+                    .Aggregate((string current, string next) => current + ", " + next);
+
+                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
+            }
+
+            return validationSummary.ToString();
         }
     }
 }

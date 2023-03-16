@@ -5,6 +5,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using Moq;
 using Xunit;
@@ -17,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public async Task ShouldThrowValidationExceptionsOnRetrieveIfDocumentProcessingIsNullAndLogItAsync(string invalidInput)
+        public async Task ShouldThrowValidationExceptionsOnRemoveIfDocumentProcessingIsNullAndLogItAsync(string invalidInput)
         {
             // given
             string invalidFileName = invalidInput;
@@ -35,11 +36,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     validationSummary: GetValidationSummary(invalidDocumentProcessingFileNameException.Data));
 
             // when
-            ValueTask<Document> RetrieveDocumentTask =
-                this.documentProcessingService.RetrieveDocumentByFileNameAsync(invalidFileName);
+            ValueTask RemoveDocumentTask =
+                this.documentProcessingService.RemoveDocumentByFileNameAsync(invalidFileName);
 
             DocumentProcessingValidationException actualDocumentProcessingValidationException =
-                await Assert.ThrowsAsync<DocumentProcessingValidationException>(RetrieveDocumentTask.AsTask);
+                await Assert.ThrowsAsync<DocumentProcessingValidationException>(RemoveDocumentTask.AsTask);
 
             //then
             actualDocumentProcessingValidationException.Should()

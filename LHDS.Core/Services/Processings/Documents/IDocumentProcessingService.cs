@@ -11,5 +11,6 @@ namespace LHDS.Core.Services.Processings.Documents
     {
         ValueTask AddDocumentAsync(Document document);
         ValueTask<Document> RetrieveDocumentByFileNameAsync(string fileName);
+        ValueTask RemoveDocumentByFileNameAsync(string fileName);
     }
 }

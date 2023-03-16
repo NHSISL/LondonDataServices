@@ -37,6 +37,9 @@ namespace LHDS.Core.Services.Processings.OptOuts
 
             return maybeOptOut;
         });
+
+        public async ValueTask<OptOut> ModifyOptOutAsync(OptOut optOut) =>
+            throw new System.NotImplementedException();
     }
 }
 

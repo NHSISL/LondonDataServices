@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33209.295
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Documentation", "_Documentation", "{2B227197-B5FA-49D7-9D5C-2D0E643A5FA0}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{BE18D087-D538-4650-8DF1-444B7AB58B3F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{5907A031-DD96-4ED8-9CB4-3710B6B9CBCC}"
@@ -33,7 +31,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LHDS.AdminPortal.Api", "LHD
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LHDS.AdminPortal.Api.Tests.Acceptance", "LHDS.AdminPortal.Api.Tests.Acceptance\LHDS.AdminPortal.Api.Tests.Acceptance.csproj", "{0C94F40A-C5A7-40A5-AE49-8975D3B4BE46}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LHDS.Core.SeedGenerator", "LHDS.Core.SeedGenerator\LHDS.Core.SeedGenerator.csproj", "{A3DAC0F3-6C9B-491A-805E-42DA6D08D74B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LHDS.Core.SeedGenerator", "LHDS.Core.SeedGenerator\LHDS.Core.SeedGenerator.csproj", "{A3DAC0F3-6C9B-491A-805E-42DA6D08D74B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -33,7 +33,7 @@ export const ingestionTrackingService = {
         const ingestionTrackingBroker = new IngestionTrackingBroker();
 
         return useQuery(
-            ["UngestionTrackingBrokerGetById", { id: id }],
+            ["IngestionTrackingGetById", { id: id }],
             () => ingestionTrackingBroker.GetIngestionTrackingByIdAsync(id),
             { staleTime: Infinity });
     }

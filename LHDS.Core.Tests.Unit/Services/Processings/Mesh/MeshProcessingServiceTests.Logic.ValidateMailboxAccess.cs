@@ -18,7 +18,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             await this.meshProcessingService.ValidateMailboxAccessAsync();
 
             // then
-
             this.meshServiceMock.Verify(service =>
                 service.ValidateMailboxAccessAsync(),
                     Times.Once());

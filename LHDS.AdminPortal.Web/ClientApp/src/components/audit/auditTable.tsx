@@ -7,7 +7,9 @@ import TableBase from "../bases/components/Table/TableBase";
 import TableBaseTbody from "../bases/components/Table/TableBase.Tbody";
 import AuditRow from "./auditRow";
 
-const AuditTable = () => {
+const AuditTable  = () => {
+
+
     return (
         <div>
             <CardBase>
@@ -18,7 +20,7 @@ const AuditTable = () => {
                     <CardBaseContent>
                         <TableBase>
                             <TableBaseTbody>
-                                <AuditRow/>
+                                <AuditRow  />
                             </TableBaseTbody>
                         </TableBase>
                     </CardBaseContent>

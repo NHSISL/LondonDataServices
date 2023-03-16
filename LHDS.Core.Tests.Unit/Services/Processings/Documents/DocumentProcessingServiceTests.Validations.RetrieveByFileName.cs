@@ -13,26 +13,30 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 {
     public partial class DocumentProcessingServiceTests
     {
-        [Fact]
-        public async Task ShouldThrowValidationExceptionsOnRetrieveIfDocumentProcessingIsNullAndLogItAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public async Task ShouldThrowValidationExceptionsOnRetrieveIfDocumentProcessingIsNullAndLogItAsync(string invalidInput)
         {
             // given
-            string nullFileName = null;
+            string invalidFileName = invalidInput;
 
-            Document document = new Document
-            {
-                FileName = nullFileName
-            };
+            var invalidDocumentProcessingFileNameException =
+                new InvalidDocumentProcessingFileNameException();
 
-            var nullDocumentProcessingFileNameException =
-                new NullDocumentProcessingFileNameException();
+            invalidDocumentProcessingFileNameException.AddData(
+                key: "fileName",
+                values: "Text is required");
 
             var expectedDocumentProcessingValidationException =
-                new DocumentProcessingValidationException(nullDocumentProcessingFileNameException);
+                new DocumentProcessingValidationException(
+                    innerException: invalidDocumentProcessingFileNameException,
+                    validationSummary: GetValidationSummary(invalidDocumentProcessingFileNameException.Data));
 
             // when
             ValueTask<Document> RetrieveDocumentTask =
-                this.documentProcessingService.RetrieveDocumentByFileNameAsync(document.FileName);
+                this.documentProcessingService.RetrieveDocumentByFileNameAsync(invalidFileName);
 
             DocumentProcessingValidationException actualDocumentProcessingValidationException =
                 await Assert.ThrowsAsync<DocumentProcessingValidationException>(RetrieveDocumentTask.AsTask);

@@ -26,7 +26,7 @@ namespace LHDS.Core.Services.Processings.Documents
             {
                 throw CreateAndLogValidationException(nullDocumentException);
             }
-            catch (NullDocumentProcessingFileNameException exception)
+            catch (InvalidDocumentProcessingFileNameException exception)
             {
                 throw CreateAndLogValidationException(exception);
             }
@@ -90,7 +90,7 @@ namespace LHDS.Core.Services.Processings.Documents
             }
         }
 
-            private DocumentProcessingValidationException 
+        private DocumentProcessingValidationException 
             CreateAndLogValidationException(Xeption exception)
         {
             var documentProcessingValidationExceptionn =

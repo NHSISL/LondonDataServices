@@ -15,6 +15,7 @@ namespace LHDS.Core.Services.Processings.Documents
     {
         private delegate ValueTask ReturningNothingFunction();
         private delegate ValueTask<Document> ReturningDocumentProcessingFunction();
+        private delegate ValueTask<string> ReturningStringFunction();
 
         private async ValueTask TryCatch(ReturningNothingFunction returningNothingFunction)
         {
@@ -60,6 +61,40 @@ namespace LHDS.Core.Services.Processings.Documents
             try
             {
                 return await returningDocumentProcessingFunction();
+            }
+            catch (InvalidDocumentProcessingFileNameException exception)
+            {
+                throw CreateAndLogValidationException(exception);
+            }
+            catch (DocumentValidationException documentValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(documentValidationException);
+            }
+            catch (DocumentDependencyValidationException documentDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(documentDependencyValidationException);
+            }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                throw CreateAndLogDependencyException(documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                throw CreateAndLogDependencyException(documentServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedDocumentProcessingServiceException =
+                    new FailedDocumentProcessingServiceException(exception);
+
+                throw CreateAndLogServiceException(failedDocumentProcessingServiceException);
+            }
+        }
+        private async ValueTask<string> TryCatch(ReturningStringFunction returningStringFunction)
+        {
+            try
+            {
+                return await returningStringFunction();
             }
             catch (InvalidDocumentProcessingFileNameException exception)
             {

@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -103,6 +104,56 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedDocumentProcessingDependencyException))),
+                         Times.Once);
+
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnGetDownloadLinkIfServiceErrorOccursAsync()
+        {
+            // given
+            var randomString = GetRandomString();
+            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomMessage = GetRandomString();
+
+            Document inputDocument = new Document
+            {
+                FileName = randomString,
+                DocumentData = randomBytes
+            };
+
+            var serviceException = new Exception();
+
+            var failedDocumentProcessingServiceException =
+                new FailedDocumentProcessingServiceException(serviceException);
+
+            var expectedDocumentProcessingServiveException =
+                new DocumentProcessingServiceException(
+                    failedDocumentProcessingServiceException);
+
+            this.documentServiceMock.Setup(service =>
+                service.GetDownloadLinkAsync(inputDocument.FileName))
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<string> retrieveDocumentTask =
+                this.documentProcessingService.GetDownloadLinkAsync(inputDocument.FileName);
+
+            DocumentProcessingServiceException actualException =
+                await Assert.ThrowsAsync<DocumentProcessingServiceException>(retrieveDocumentTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDocumentProcessingServiveException);
+
+            this.documentServiceMock.Verify(service =>
+                service.GetDownloadLinkAsync(inputDocument.FileName),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedDocumentProcessingServiveException))),
                          Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();

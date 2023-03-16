@@ -15,26 +15,30 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 {
     public partial class DocumentProcessingServiceTests
     {
-        [Fact]
-        public async Task ShouldThrowValidationExceptionsOnGetDownloadLinkIfDocumentProcessingIsNullAndLogItAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public async Task ShouldThrowValidationExceptionsOnGetDownloadLinkIfDocumentProcessingIsNullAndLogItAsync(string invalidInput)
         {
             // given
-            string nullFileName = null;
+            string invalidFileName = invalidInput;
 
-            Document document = new Document
-            {
-                FileName = nullFileName
-            };
+            var invalidDocumentProcessingFileNameException =
+                new InvalidDocumentProcessingFileNameException();
 
-            var nullDocumentProcessingFileNameException =
-                new NullDocumentProcessingFileNameException();
+            invalidDocumentProcessingFileNameException.AddData(
+                key: "fileName",
+                values: "Text is required");
 
             var expectedDocumentProcessingValidationException =
-                new DocumentProcessingValidationException(nullDocumentProcessingFileNameException);
+                new DocumentProcessingValidationException(
+                    innerException: invalidDocumentProcessingFileNameException,
+                    validationSummary: GetValidationSummary(invalidDocumentProcessingFileNameException.Data));
 
             // when
             ValueTask<string> GetDownloadLinkTask =
-                this.documentProcessingService.GetDownloadLinkAsync(document.FileName);
+                this.documentProcessingService.GetDownloadLinkAsync(invalidFileName);
 
             DocumentProcessingValidationException actualDocumentProcessingValidationException =
                 await Assert.ThrowsAsync<DocumentProcessingValidationException>(GetDownloadLinkTask.AsTask);
@@ -47,56 +51,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedDocumentProcessingValidationException))),
                         Times.Once);
-
-            this.documentServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldThrowServiceExceptionOnGetDownloadLinkIfServiceErrorOccursAsync()
-        {
-            // given
-            var randomString = GetRandomString();
-            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
-            var randomMessage = GetRandomString();
-
-            Document inputDocument = new Document
-            {
-                FileName = randomString,
-                DocumentData = randomBytes
-            };
-
-            var serviceException = new Exception();
-
-            var failedDocumentProcessingServiceException =
-                new FailedDocumentProcessingServiceException(serviceException);
-
-            var expectedDocumentProcessingServiveException =
-                new DocumentProcessingServiceException(
-                    failedDocumentProcessingServiceException);
-
-            this.documentServiceMock.Setup(service =>
-                service.GetDownloadLinkAsync(inputDocument.FileName))
-                    .Throws(serviceException);
-
-            // when
-            ValueTask<string> retrieveDocumentTask =
-                this.documentProcessingService.GetDownloadLinkAsync(inputDocument.FileName);
-
-            DocumentProcessingServiceException actualException =
-                await Assert.ThrowsAsync<DocumentProcessingServiceException>(retrieveDocumentTask.AsTask);
-
-            // then
-            actualException.Should().BeEquivalentTo(expectedDocumentProcessingServiveException);
-
-            this.documentServiceMock.Verify(service =>
-                service.GetDownloadLinkAsync(inputDocument.FileName),
-                    Times.Once);
-
-            this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
-                     expectedDocumentProcessingServiveException))),
-                         Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

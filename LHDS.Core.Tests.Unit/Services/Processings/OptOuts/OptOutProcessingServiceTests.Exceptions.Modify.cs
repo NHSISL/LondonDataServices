@@ -98,5 +98,48 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             this.optOutServiceMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnModifyIfServiceErrorOccursAsync()
+        {
+            // given
+            OptOut someOptOut = CreateRandomOptOut();
+            OptOut inputOptOut = someOptOut;
+
+            var serviceException = new Exception();
+
+            var failedOptOutProcessingServiceException =
+                new FailedOptOutProcessingServiceException(serviceException);
+
+            var expectedOptOutProcessingServiveException =
+                new OptOutProcessingServiceException(
+                    failedOptOutProcessingServiceException);
+
+            this.optOutServiceMock.Setup(service =>
+                service.ModifyOptOutAsync(inputOptOut))
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<OptOut> optOutModifyTask =
+                this.optOutProcessingService.ModifyOptOutAsync(inputOptOut);
+
+            OptOutProcessingServiceException actualException =
+                await Assert.ThrowsAsync<OptOutProcessingServiceException>(optOutModifyTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedOptOutProcessingServiveException);
+
+            this.optOutServiceMock.Verify(service =>
+                service.ModifyOptOutAsync(inputOptOut),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedOptOutProcessingServiveException))),
+                         Times.Once);
+
+            this.optOutServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

@@ -33,6 +33,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                 service.AddDocumentAsync(It.Is<Document>(doc =>
                     doc.FileName == randomFileName && doc.DocumentData == randomfileData)), 
                     Times.Once);
+
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

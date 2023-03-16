@@ -118,6 +118,45 @@ namespace LHDS.Core.Migrations
                     b.ToTable("IngestionTrackings");
                 });
 
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.OptOuts.OptOut", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CacheTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("LastSentToMesh")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NhsNumber")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("OptOutStatus")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("UpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OptOuts");
+                });
+
             modelBuilder.Entity("LHDS.Core.Models.Foundations.Suppliers.Supplier", b =>
                 {
                     b.Property<Guid>("Id")

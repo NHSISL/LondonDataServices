@@ -23,35 +23,35 @@ namespace LHDS.Core.Services.Processings.Documents
         }
 
         public ValueTask AddDocumentAsync(Document document) =>
-        TryCatch(async () =>
-        {
-            ValidateDocumentProcessingOnAdd(document);
+            TryCatch(async () =>
+            {
+                ValidateDocumentProcessingOnAdd(document);
 
-            await this.documentService.AddDocumentAsync(document);
-        });
+                await this.documentService.AddDocumentAsync(document);
+            });
 
         public ValueTask<Document> RetrieveDocumentByFileNameAsync(string fileName) =>
-        TryCatch(async () =>
-        {
-            ValidateDocumentProcessingOnRetrieve(fileName);
-
-            return await this.documentService.RetrieveDocumentByFileNameAsync(fileName);
-        });
-
+            TryCatch(async () =>
+            {
+                ValidateDocumentProcessingOnRetrieve(fileName);
+                
+                return await this.documentService.RetrieveDocumentByFileNameAsync(fileName);
+            });
+            
         public ValueTask RemoveDocumentByFileNameAsync(string fileName) =>
-        TryCatch(async () =>
-        {
-            ValidateDocumentProcessingOnRemove(fileName);
+            TryCatch(async () =>
+            {
+                ValidateDocumentProcessingOnRemove(fileName);
 
-            await this.documentService.RemoveDocumentByFileNameAsync(fileName);
-        });
+                await this.documentService.RemoveDocumentByFileNameAsync(fileName);
+            });
 
         public ValueTask<string> GetDownloadLinkAsync(string fileName) =>
-        TryCatch(async () =>
-        {
-            ValidateGetDownloadLinkArguments(fileName);
+            TryCatch(async () =>
+            {
+                ValidateGetDownloadLinkArguments(fileName);
 
-            return await this.documentService.GetDownloadLinkAsync(fileName);
-        });
+                return await this.documentService.GetDownloadLinkAsync(fileName);
+            });
     }
 }

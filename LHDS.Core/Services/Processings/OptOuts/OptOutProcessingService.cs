@@ -16,7 +16,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
         private readonly ILoggingBroker loggingBroker;
 
         public OptOutProcessingService(
-            IOptOutService optOutService, 
+            IOptOutService optOutService,
             ILoggingBroker loggingBroker)
         {
             this.optOutService = optOutService;
@@ -24,19 +24,27 @@ namespace LHDS.Core.Services.Processings.OptOuts
         }
 
         public ValueTask<OptOut> RetrieveOrAddOptOutAsync(OptOut optOut) =>
-        TryCatch(async () =>
-        {
-            ValidateOptOutProcessingOnRetrieveOrAdd(optOut);
-
-            OptOut maybeOptOut = await this.optOutService.RetrieveOptOutByIdAsync(optOut.Id);
-
-            if (maybeOptOut == null)
+            TryCatch(async () =>
             {
-                return await this.optOutService.AddOptOutAsync(optOut);
-            }
+                ValidateOptOutProcessingOnRetrieveOrAdd(optOut);
 
-            return maybeOptOut;
-        });
+                OptOut maybeOptOut = await this.optOutService.RetrieveOptOutByIdAsync(optOut.Id);
+
+                if (maybeOptOut == null)
+                {
+                    return await this.optOutService.AddOptOutAsync(optOut);
+                }
+
+                return maybeOptOut;
+            });
+
+        public ValueTask<OptOut> ModifyOptOutAsync(OptOut optOut) =>
+            TryCatch(async () =>
+            {
+                ValidateOptOutProcessingOnModify(optOut);
+
+                return await this.optOutService.ModifyOptOutAsync(optOut);
+            });
     }
 }
 

@@ -19,6 +19,11 @@ namespace LHDS.Core.Services.Processings.OptOuts
             ValidateOptOutProcessingIsNotNull(optOut);
         }
 
+        private static void ValidateOptOutProcessingOnModify(OptOut optOut)
+        {
+            ValidateOptOutProcessingIsNotNull(optOut);
+        }
+
         private static void ValidateOptOutProcessingIsNotNull(OptOut optOut)
         {
             if (optOut is null)

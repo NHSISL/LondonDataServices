@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
@@ -84,6 +85,46 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                          Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnalidateAccessIfServiceErrorOccursAsync()
+        {
+            // given
+            var serviceException = new Exception();
+
+            var failedMeshProcessingServiceException =
+                new FailedMeshProcessingServiceException(serviceException);
+
+            var expectedMeshProcessingServiveException =
+                new MeshProcessingServiceException(
+                    failedMeshProcessingServiceException);
+
+            this.meshServiceMock.Setup(service =>
+                service.ValidateMailboxAccessAsync())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<bool> addValidateAccessTask =
+                this.meshProcessingService.ValidateMailboxAccessAsync();
+
+            MeshProcessingServiceException actualException =
+                await Assert.ThrowsAsync<MeshProcessingServiceException>(addValidateAccessTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedMeshProcessingServiveException);
+
+            this.meshServiceMock.Verify(service =>
+                service.ValidateMailboxAccessAsync(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedMeshProcessingServiveException))),
+                         Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

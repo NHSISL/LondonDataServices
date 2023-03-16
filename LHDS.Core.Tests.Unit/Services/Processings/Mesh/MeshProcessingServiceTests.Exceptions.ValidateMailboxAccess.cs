@@ -49,5 +49,41 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             this.meshServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyOnValidateAccessIfDependencyErrorOccursAndLogItAsync(
+                Xeption dependencyException)
+        {
+            // given
+            var expectedMeshProcessingDependencyException =
+                new MeshProcessingDependencyException(
+                    dependencyException.InnerException as Xeption);
+
+            this.meshServiceMock.Setup(service =>
+                service.ValidateMailboxAccessAsync())
+                    .Throws(dependencyException);
+
+            // when
+            ValueTask<bool> meshAddTask =
+                this.meshProcessingService.ValidateMailboxAccessAsync();
+
+            MeshProcessingDependencyException actualException =
+                await Assert.ThrowsAsync<MeshProcessingDependencyException>(meshAddTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedMeshProcessingDependencyException);
+
+            this.meshServiceMock.Verify(service =>
+                service.ValidateMailboxAccessAsync(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedMeshProcessingDependencyException))),
+                         Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

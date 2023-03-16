@@ -27,7 +27,6 @@ namespace LHDS.Core.Services.Processings.Mesh
             {
                 throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
             }
-
         }
 
         private MeshProcessingDependencyValidationException

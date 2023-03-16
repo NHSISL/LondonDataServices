@@ -32,7 +32,8 @@ namespace LHDS.Core.Services.Processings.Documents
 
         private static void ValidateGetDownloadLinkArguments(string fileName)
         {
-            ValidateDocumentProcessingFileNameIsNotNull(fileName);
+            Validate(
+               (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
         private static void ValidateDocumentProcessingIsNotNull(Document document)

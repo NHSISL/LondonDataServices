@@ -90,14 +90,13 @@ namespace LHDS.Core.Services.Processings.Documents
                 throw CreateAndLogServiceException(failedDocumentProcessingServiceException);
             }
         }
-
         private async ValueTask<string> TryCatch(ReturningStringFunction returningStringFunction)
         {
             try
             {
                 return await returningStringFunction();
             }
-            catch (NullDocumentProcessingFileNameException exception)
+            catch (InvalidDocumentProcessingFileNameException exception)
             {
                 throw CreateAndLogValidationException(exception);
             }
@@ -126,7 +125,7 @@ namespace LHDS.Core.Services.Processings.Documents
             }
         }
 
-            private DocumentProcessingValidationException 
+        private DocumentProcessingValidationException 
             CreateAndLogValidationException(Xeption exception)
         {
             string validationSummary = GetValidationSummary(exception.Data);

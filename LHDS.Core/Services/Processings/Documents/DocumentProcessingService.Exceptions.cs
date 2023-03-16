@@ -27,7 +27,7 @@ namespace LHDS.Core.Services.Processings.Documents
             {
                 throw CreateAndLogValidationException(nullDocumentException);
             }
-            catch (NullDocumentProcessingFileNameException exception)
+            catch (InvalidDocumentProcessingFileNameException exception)
             {
                 throw CreateAndLogValidationException(exception);
             }
@@ -62,7 +62,7 @@ namespace LHDS.Core.Services.Processings.Documents
             {
                 return await returningDocumentProcessingFunction();
             }
-            catch (NullDocumentProcessingFileNameException exception)
+            catch (InvalidDocumentProcessingFileNameException exception)
             {
                 throw CreateAndLogValidationException(exception);
             }
@@ -129,8 +129,10 @@ namespace LHDS.Core.Services.Processings.Documents
             private DocumentProcessingValidationException 
             CreateAndLogValidationException(Xeption exception)
         {
+            string validationSummary = GetValidationSummary(exception.Data);
+
             var documentProcessingValidationExceptionn =
-                new DocumentProcessingValidationException(exception);
+                new DocumentProcessingValidationException(exception, validationSummary);
 
             this.loggingBroker.LogError(documentProcessingValidationExceptionn);
 

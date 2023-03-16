@@ -16,6 +16,10 @@ using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using Xunit;
+using System.Collections.Generic;
+using System.Collections;
+using System.Text;
+using System.Linq;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 {
@@ -62,6 +66,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                 new DocumentDependencyException(innerException),
                 new DocumentServiceException(innerException)
             };
+        }
+
+        private string GetValidationSummary(IDictionary data)
+        {
+            StringBuilder validationSummary = new StringBuilder();
+
+            foreach (DictionaryEntry entry in data)
+            {
+                string errorSummary = ((List<string>)entry.Value)
+                    .Select((string value) => value)
+                    .Aggregate((string current, string next) => current + ", " + next);
+
+                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
+            }
+
+            return validationSummary.ToString();
         }
     }
 }

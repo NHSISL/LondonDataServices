@@ -27,6 +27,14 @@ namespace LHDS.Core.Services.Processings.Mesh
             {
                 throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
             }
+            catch (MeshDependencyException meshDependencyException)
+            {
+                throw CreateAndLogDependencyException(meshDependencyException);
+            }
+            catch (MeshServiceException meshServiceException)
+            {
+                throw CreateAndLogDependencyException(meshServiceException);
+            }
         }
 
         private MeshProcessingDependencyValidationException
@@ -40,5 +48,17 @@ namespace LHDS.Core.Services.Processings.Mesh
 
             return meshProcessingDependencyValidationException;
         }
+
+        private MeshProcessingDependencyException
+           CreateAndLogDependencyException(Xeption exception)
+        {
+            var meshProcessingDependencyException =
+                new MeshProcessingDependencyException(exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(meshProcessingDependencyException);
+
+            throw meshProcessingDependencyException;
+        }
+
     }
 }

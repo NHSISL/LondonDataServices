@@ -38,7 +38,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 service.AddOptOutAsync(inputOptOut),
                     Times.Once);
 
-
             this.optOutServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

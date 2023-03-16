@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.MeshItems.Exceptions;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
@@ -35,6 +36,13 @@ namespace LHDS.Core.Services.Processings.Mesh
             {
                 throw CreateAndLogDependencyException(meshServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedMeshProcessingServiceException =
+                    new FailedMeshProcessingServiceException(exception);
+
+                throw CreateAndLogServiceException(failedMeshProcessingServiceException);
+            }
         }
 
         private MeshProcessingDependencyValidationException
@@ -60,5 +68,16 @@ namespace LHDS.Core.Services.Processings.Mesh
             throw meshProcessingDependencyException;
         }
 
+        private MeshProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var meshProcessingServiceException = new
+                MeshProcessingServiceException(exception);
+
+            this.loggingBroker.LogError(meshProcessingServiceException);
+
+            return meshProcessingServiceException;
+        }
     }
+
 }
+

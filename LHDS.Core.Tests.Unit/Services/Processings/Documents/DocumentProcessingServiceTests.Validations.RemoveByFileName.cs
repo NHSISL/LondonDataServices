@@ -5,6 +5,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using Moq;
 using Xunit;
@@ -13,26 +14,28 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 {
     public partial class DocumentProcessingServiceTests
     {
-        [Fact]
-        public async Task ShouldThrowValidationExceptionsOnRemoveIfDocumentProcessingIsNullAndLogItAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public async Task ShouldThrowValidationExceptionsOnRemoveIfDocumentProcessingIsNullAndLogItAsync(string invalidInput)
         {
             // given
-            string nullFileName = null;
+            string invalidFileName = invalidInput;
 
-            Document document = new Document
-            {
-                FileName = nullFileName
-            };
+            var invalidDocumentProcessingFileNameException =
+                new InvalidDocumentProcessingFileNameException();
 
-            var nullDocumentProcessingFileNameException =
-                new NullDocumentProcessingFileNameException();
+            invalidDocumentProcessingFileNameException.AddData(
+                key: "fileName",
+                values: "Text is required");
 
             var expectedDocumentProcessingValidationException =
-                new DocumentProcessingValidationException(nullDocumentProcessingFileNameException);
+                new DocumentProcessingValidationException(invalidDocumentProcessingFileNameException);
 
             // when
             ValueTask RemoveDocumentTask =
-                this.documentProcessingService.RemoveDocumentByFileNameAsync(document.FileName);
+                this.documentProcessingService.RemoveDocumentByFileNameAsync(invalidFileName);
 
             DocumentProcessingValidationException actualDocumentProcessingValidationException =
                 await Assert.ThrowsAsync<DocumentProcessingValidationException>(RemoveDocumentTask.AsTask);

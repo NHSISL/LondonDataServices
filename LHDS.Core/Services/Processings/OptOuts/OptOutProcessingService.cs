@@ -16,7 +16,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
         private readonly ILoggingBroker loggingBroker;
 
         public OptOutProcessingService(
-            IOptOutService optOutService, 
+            IOptOutService optOutService,
             ILoggingBroker loggingBroker)
         {
             this.optOutService = optOutService;
@@ -39,7 +39,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
         });
 
         public async ValueTask<OptOut> ModifyOptOutAsync(OptOut optOut) =>
-            throw new System.NotImplementedException();
+            await this.optOutService.ModifyOptOutAsync(optOut);
     }
 }
 

@@ -6,8 +6,6 @@ namespace LHDS.Core.Brokers.Storages.Blobs
 {
     public interface IBlobStorageBrokerSettings
     {
-        string AzureBlobStoreUri { get; }
-
         string BlobContainerName { get; }
     }
 }

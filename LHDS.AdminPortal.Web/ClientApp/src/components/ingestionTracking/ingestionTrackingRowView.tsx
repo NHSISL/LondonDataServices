@@ -15,18 +15,26 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
         ingestionTracking
     } = props;
 
+    function trimString(fileName: string) {
+        const str = fileName;
+        const lastIndex = str.lastIndexOf('/');
+        return str.substring(lastIndex + 1, str.length - 4);
+    }
+
     return (
         <TableBaseRow>
             <TableBaseData>
-                {ingestionTracking.source}
+                {/*{ingestionTracking.supplierId}*/}
+                EMIS
             </TableBaseData>
             <TableBaseData>
-                {ingestionTracking.encryptedFileName}
+                {trimString(ingestionTracking.encryptedFileName)}
                 <br />
-                {ingestionTracking.decrypted && <Badge pill bg="success text-white">Re-land</Badge>}
-                {ingestionTracking.decrypted && <Badge pill bg="success text-white">Decrypt</Badge>}
-                <Badge pill bg="success text-white">Download</Badge> &nbsp;
-                <Badge pill bg="success text-white"><Link to={`/ingestionTrackingDetail/${ingestionTracking.id}`}>Details</Link></Badge>
+                <Badge pill bg="success text-white">Re-land</Badge> &nbsp;
+                <Badge pill bg="success text-white">Decrypt</Badge>
+               
+              
+
             </TableBaseData>
             <TableBaseData>
                 <Link to={`/ingestionTrackingDetail/${ingestionTracking.id}`}>

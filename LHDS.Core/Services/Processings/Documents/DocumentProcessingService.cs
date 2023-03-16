@@ -37,7 +37,7 @@ namespace LHDS.Core.Services.Processings.Documents
                 
                 return await this.documentService.RetrieveDocumentByFileNameAsync(fileName);
             });
-            
+
         public ValueTask RemoveDocumentByFileNameAsync(string fileName) =>
             TryCatch(async () =>
             {
@@ -51,9 +51,7 @@ namespace LHDS.Core.Services.Processings.Documents
             {
                 ValidateGetDownloadLinkArguments(fileName);
 
-
-                return await this.documentService.RetrieveDocumentByFileNameAsync(fileName);
+                return await this.documentService.GetDownloadLinkAsync(fileName);
             });
-
     }
 }

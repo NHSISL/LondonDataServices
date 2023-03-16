@@ -29,10 +29,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
-          actualException => actualException.SameExceptionAs(expectedException);
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static string GetRandomString() =>
-           new MnemonicString().GetValue();
+            new MnemonicString().GetValue();
 
         public static TheoryData DependencyValidationExceptions()
         {

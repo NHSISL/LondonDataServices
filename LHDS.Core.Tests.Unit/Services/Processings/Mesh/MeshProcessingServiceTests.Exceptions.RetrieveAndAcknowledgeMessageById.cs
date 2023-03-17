@@ -30,7 +30,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 service.RetrieveMessageByIdAsync(mailboxId, messageId))
                     .Throws(dependencyValidationException);
 
-
             // when
             ValueTask<string> retrieveMessageAndAcknowledgeTask =
                 this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(mailboxId, messageId);

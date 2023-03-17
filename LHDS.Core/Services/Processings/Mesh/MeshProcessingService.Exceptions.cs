@@ -62,6 +62,14 @@ namespace LHDS.Core.Services.Processings.Mesh
             {
                 throw CreateAndLogValidationException(exception);
             }
+            catch (MeshDependencyValidationException meshDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
+            }
+            catch (MeshDependencyException meshDependencyException)
+            {
+                throw CreateAndLogDependencyException(meshDependencyException);
+            }
         }
 
         private async ValueTask<List<string>> TryCatch(ReturningStringsMeshFunction returningStringsMeshFunction)

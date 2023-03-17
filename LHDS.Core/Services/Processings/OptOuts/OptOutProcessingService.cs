@@ -3,12 +3,14 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.OptOuts;
+using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.Core.Services.Processings.OptOuts
 {
@@ -63,6 +65,10 @@ namespace LHDS.Core.Services.Processings.OptOuts
 
                 return await this.optOutService.RetrieveOptOutByIdAsync(optOutId);
             });
+
+        public async ValueTask<OptOut> RetrieveOptOutByNhsNumberAsync(string optOutNhsNumber) =>
+            throw new NotImplementedException();
+
     }
 }
 

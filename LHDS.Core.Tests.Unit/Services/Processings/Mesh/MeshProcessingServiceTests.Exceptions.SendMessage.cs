@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
@@ -103,6 +104,53 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedMeshProcessingDependencyException))),
+                         Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnSendMessageIfServiceErrorOccursAsync()
+        {
+            // given
+            string mailboxId = GetRandomString();
+            string messageId = GetRandomString();
+
+            var serviceException = new Exception();
+
+            var failedMeshProcessingServiceException =
+                new FailedMeshProcessingServiceException(serviceException);
+
+            var expectedMeshProcessingServiveException =
+                new MeshProcessingServiceException(
+                    failedMeshProcessingServiceException);
+
+            this.meshServiceMock.Setup(service =>
+                service.SendMessageAsync(messageId))
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<string> retrieveSendMessageTask =
+                this.meshProcessingService.SendMessageAsync(mailboxId, messageId);
+
+            MeshProcessingServiceException actualException =
+                await Assert.ThrowsAsync<MeshProcessingServiceException>(retrieveSendMessageTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedMeshProcessingServiveException);
+
+            this.meshServiceMock.Verify(service =>
+                service.SendMessageAsync(messageId),
+                    Times.Once);
+
+            this.meshServiceMock.Verify(service =>
+               service.RetrieveTrackingStatusAsync(mailboxId, messageId),
+                   Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedMeshProcessingServiveException))),
                          Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();

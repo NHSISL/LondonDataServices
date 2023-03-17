@@ -29,11 +29,12 @@ namespace LHDS.Core.Services.Processings.Mesh
                return await this.meshService.ValidateMailboxAccessAsync();
            });
 
-        public ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync(string mailboxId)
-        {
-            ValidateGetArguments(mailboxId);
-            return this.meshService.RetrieveMessageIdsFromInboxAsync(mailboxId);
-        }
+        public ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync(string mailboxId) =>
+            TryCatch(async () =>
+            {
+                ValidateGetArguments(mailboxId);
+                return await this.meshService.RetrieveMessageIdsFromInboxAsync(mailboxId);
+            });
 
         public ValueTask<string> RetrieveAndAcknowledgeMessageByIdAsync(string mailboxId, string messageId) =>
         throw new NotImplementedException();

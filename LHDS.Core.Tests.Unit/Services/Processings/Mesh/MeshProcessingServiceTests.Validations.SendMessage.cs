@@ -40,11 +40,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                    validationSummary: GetValidationSummary(invalidMeshProcessingArgumentException.Data));
 
             // when
-            ValueTask<string> retrieveMessageIdsFromInboxTask =
+            ValueTask<string> retrieveSendMessageTask =
                 this.meshProcessingService.SendMessageAsync(mailboxId, messageId);
 
             MeshProcessingValidationException actualMeshProcessingValidationException =
-                await Assert.ThrowsAsync<MeshProcessingValidationException>(retrieveMessageIdsFromInboxTask.AsTask);
+                await Assert.ThrowsAsync<MeshProcessingValidationException>(retrieveSendMessageTask.AsTask);
 
             //then
             actualMeshProcessingValidationException.Should()

@@ -58,10 +58,6 @@ namespace LHDS.Core.Services.Processings.Mesh
             {
                 throw CreateAndLogDependencyValidationException(meshValidationException);
             }
-            catch (InvalidMeshProcessingArgumentException exception)
-            {
-                throw CreateAndLogValidationException(exception);
-            }
             catch (MeshDependencyValidationException meshDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
@@ -69,6 +65,14 @@ namespace LHDS.Core.Services.Processings.Mesh
             catch (MeshDependencyException meshDependencyException)
             {
                 throw CreateAndLogDependencyException(meshDependencyException);
+            }
+            catch (MeshServiceException meshServiceException)
+            {
+                throw CreateAndLogDependencyException(meshServiceException);
+            }
+            catch (InvalidMeshProcessingArgumentException exception)
+            {
+                throw CreateAndLogValidationException(exception);
             }
         }
 

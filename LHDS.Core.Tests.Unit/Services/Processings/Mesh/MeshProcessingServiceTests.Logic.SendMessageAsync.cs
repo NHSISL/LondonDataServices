@@ -27,6 +27,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 service.SendMessageAsync(inputMessageId),
                     Times.Once());
 
+            this.meshServiceMock.Verify(service =>
+                service.RetrieveTrackingStatusAsync(inputMailboxId, inputMessageId),
+                    Times.Once());
+
             this.meshServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

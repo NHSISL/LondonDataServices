@@ -53,6 +53,22 @@ namespace LHDS.Core.Services.Processings.Mesh
             {
                 return await returningStringsMeshFunction();
             }
+            catch (MeshValidationException meshValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshValidationException);
+            }
+            catch (MeshDependencyValidationException meshDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
+            }
+            catch (MeshDependencyException meshDependencyException)
+            {
+                throw CreateAndLogDependencyException(meshDependencyException);
+            }
+            catch (MeshServiceException meshServiceException)
+            {
+                throw CreateAndLogDependencyException(meshServiceException);
+            }
             catch (InvalidMeshProcessingArgumentException exception)
             {
                 throw CreateAndLogValidationException(exception);

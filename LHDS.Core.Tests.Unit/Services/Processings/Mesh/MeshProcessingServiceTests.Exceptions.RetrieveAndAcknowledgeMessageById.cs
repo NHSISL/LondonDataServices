@@ -30,9 +30,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 service.RetrieveMessageByIdAsync(mailboxId, messageId))
                     .Throws(dependencyValidationException);
 
-            this.meshServiceMock.Setup(service =>
-               service.AcknowledgeMessageByIdAsync(mailboxId, messageId))
-                   .Throws(dependencyValidationException);
 
             // when
             ValueTask<string> retrieveMessageAndAcknowledgeTask =
@@ -46,10 +43,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             this.meshServiceMock.Verify(service =>
                 service.RetrieveMessageByIdAsync(mailboxId, messageId),
-                    Times.Once);
-
-            this.meshServiceMock.Verify(service =>
-                service.AcknowledgeMessageByIdAsync(mailboxId, messageId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

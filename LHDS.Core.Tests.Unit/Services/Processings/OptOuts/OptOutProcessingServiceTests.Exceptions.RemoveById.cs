@@ -120,11 +120,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     .Throws(serviceException);
 
             // when
-            ValueTask<OptOut> optOutModifyTask =
+            ValueTask<OptOut> optOutRemoveTask =
                 this.optOutProcessingService.RemoveOptOutByIdAsync(inputOptOut.Id);
 
             OptOutProcessingServiceException actualException =
-                await Assert.ThrowsAsync<OptOutProcessingServiceException>(optOutModifyTask.AsTask);
+                await Assert.ThrowsAsync<OptOutProcessingServiceException>(optOutRemoveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedOptOutProcessingServiveException);

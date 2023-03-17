@@ -52,5 +52,45 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             this.meshServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyOnRetrieveMessageIdsIfDependencyErrorOccursAndLogItAsync(
+          Xeption dependencyException)
+        {
+            // given
+            string mailboxId = GetRandomString();
+
+            var expectedMeshProcessingDependencyException =
+                new MeshProcessingDependencyException(
+                    dependencyException.InnerException as Xeption);
+
+            this.meshServiceMock.Setup(service =>
+                service.RetrieveMessageIdsFromInboxAsync(mailboxId))
+                    .Throws(dependencyException);
+
+            // when
+            ValueTask<List<string>> retrieveMessageByIdsTask =
+                this.meshProcessingService.RetrieveMessageIdsFromInboxAsync(mailboxId);
+
+            MeshProcessingDependencyException actualException =
+                await Assert.ThrowsAsync<MeshProcessingDependencyException>(retrieveMessageByIdsTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedMeshProcessingDependencyException);
+
+            this.meshServiceMock.Verify(service =>
+                service.RetrieveMessageIdsFromInboxAsync(mailboxId),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedMeshProcessingDependencyException))),
+                         Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
     }
 }

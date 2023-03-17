@@ -38,6 +38,7 @@ namespace LHDS.Core.Services.Processings.Mesh
 
         public async ValueTask<string> RetrieveAndAcknowledgeMessageByIdAsync(string mailboxId, string messageId)
         {
+            ValidateMeshArgs(mailboxId, messageId);
             var retrievedMessage = await this.meshService.RetrieveMessageByIdAsync(mailboxId, messageId);
             await this.meshService.AcknowledgeMessageByIdAsync(mailboxId, messageId);
 

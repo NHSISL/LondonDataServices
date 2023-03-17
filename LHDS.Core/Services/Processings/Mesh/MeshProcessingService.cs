@@ -31,6 +31,7 @@ namespace LHDS.Core.Services.Processings.Mesh
 
         public ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync(string mailboxId)
         {
+            ValidateGetArguments(mailboxId);
             return this.meshService.RetrieveMessageIdsFromInboxAsync(mailboxId);
         }
 

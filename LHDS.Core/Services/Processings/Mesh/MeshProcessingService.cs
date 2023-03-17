@@ -36,7 +36,7 @@ namespace LHDS.Core.Services.Processings.Mesh
             });
 
         public ValueTask<string> RetrieveAndAcknowledgeMessageByIdAsync(string mailboxId, string messageId) =>
-         TryCatch(async () =>
+            TryCatch(async () =>
             {
                 ValidateMeshArgs(mailboxId, messageId);
                 var retrievedMessage = await this.meshService.RetrieveMessageByIdAsync(mailboxId, messageId);
@@ -46,13 +46,13 @@ namespace LHDS.Core.Services.Processings.Mesh
             });
 
         public ValueTask<string> SendMessageAsync(string mailboxId, string messageId) =>
-        TryCatch(async () =>
-        {
-            ValidateMeshArgs(mailboxId, messageId);
-            var trackMessage = await this.meshService.RetrieveTrackingStatusAsync(mailboxId, messageId);
-            await this.meshService.SendMessageAsync(messageId);
+            TryCatch(async () =>
+            {
+                ValidateMeshArgs(mailboxId, messageId);
+                var trackMessage = await this.meshService.RetrieveTrackingStatusAsync(mailboxId, messageId);
+                await this.meshService.SendMessageAsync(messageId);
 
-            return trackMessage;
-        });
+                return trackMessage;
+            });
     }
 }

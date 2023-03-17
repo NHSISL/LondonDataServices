@@ -74,6 +74,13 @@ namespace LHDS.Core.Services.Processings.Mesh
             {
                 throw CreateAndLogValidationException(exception);
             }
+            catch (Exception exception)
+            {
+                var failedMeshProcessingServiceException =
+                    new FailedMeshProcessingServiceException(exception);
+
+                throw CreateAndLogServiceException(failedMeshProcessingServiceException);
+            }
         }
 
         private async ValueTask<List<string>> TryCatch(ReturningStringsMeshFunction returningStringsMeshFunction)

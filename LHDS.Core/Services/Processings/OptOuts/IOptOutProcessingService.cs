@@ -13,5 +13,6 @@ namespace LHDS.Core.Services.Processings.OptOuts
         ValueTask<OptOut> RetrieveOrAddOptOutAsync(OptOut optOut);
         ValueTask<OptOut> ModifyOptOutAsync(OptOut optOut);
         ValueTask<OptOut> RemoveOptOutByIdAsync(Guid optOutId);
+        ValueTask<OptOut> RetrieveOptOutByIdAsync(Guid optOutId);
     }
 }

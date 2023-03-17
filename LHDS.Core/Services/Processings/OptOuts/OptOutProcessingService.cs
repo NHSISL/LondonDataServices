@@ -55,6 +55,9 @@ namespace LHDS.Core.Services.Processings.OptOuts
 
                 return await this.optOutService.RemoveOptOutByIdAsync(optOutId);
             });
+
+        public async ValueTask<OptOut> RetrieveOptOutByIdAsync(Guid optOutId) =>
+            throw new NotImplementedException();
     }
 }
 

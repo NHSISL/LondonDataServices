@@ -13,7 +13,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 {
     public partial class MeshProcessingServiceTests
     {
-
         [Theory]
         [InlineData(null)]
         [InlineData("")]

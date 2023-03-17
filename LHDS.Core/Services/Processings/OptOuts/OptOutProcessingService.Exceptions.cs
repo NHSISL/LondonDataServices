@@ -27,6 +27,10 @@ namespace LHDS.Core.Services.Processings.OptOuts
             {
                 throw CreateAndLogValidationException(nullOptOutProcessingException);
             }
+            catch (InvalidOptOutProcessingIdException invalidOptOutProcessingIdException)
+            {
+                throw CreateAndLogValidationException(invalidOptOutProcessingIdException);
+            }
             catch (OptOutValidationException optOutValidationException)
             {
                 throw CreateAndLogDependencyValidationException(optOutValidationException);

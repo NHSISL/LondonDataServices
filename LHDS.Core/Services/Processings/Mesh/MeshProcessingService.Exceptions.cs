@@ -14,6 +14,7 @@ namespace LHDS.Core.Services.Processings.Mesh
     public partial class MeshProcessingService
     {
         private delegate ValueTask<bool> ReturningBoolMeshFunction();
+        private delegate ValueTask<string> ReturningStringMeshFunction();
         private delegate ValueTask<List<string>> ReturningStringsMeshFunction();
 
         private async ValueTask<bool> TryCatch(ReturningBoolMeshFunction returningMeshFunction)
@@ -37,6 +38,41 @@ namespace LHDS.Core.Services.Processings.Mesh
             catch (MeshServiceException meshServiceException)
             {
                 throw CreateAndLogDependencyException(meshServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedMeshProcessingServiceException =
+                    new FailedMeshProcessingServiceException(exception);
+
+                throw CreateAndLogServiceException(failedMeshProcessingServiceException);
+            }
+        }
+
+        private async ValueTask<string> TryCatch(ReturningStringMeshFunction returningStringMeshFunction)
+        {
+            try
+            {
+                return await returningStringMeshFunction();
+            }
+            catch (MeshValidationException meshValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshValidationException);
+            }
+            catch (MeshDependencyValidationException meshDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
+            }
+            catch (MeshDependencyException meshDependencyException)
+            {
+                throw CreateAndLogDependencyException(meshDependencyException);
+            }
+            catch (MeshServiceException meshServiceException)
+            {
+                throw CreateAndLogDependencyException(meshServiceException);
+            }
+            catch (InvalidMeshProcessingArgumentException exception)
+            {
+                throw CreateAndLogValidationException(exception);
             }
             catch (Exception exception)
             {

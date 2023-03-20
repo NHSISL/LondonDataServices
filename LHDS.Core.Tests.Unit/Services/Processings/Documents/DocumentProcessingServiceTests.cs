@@ -2,24 +2,20 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Linq.Expressions;
 using System;
-using LHDS.Core.Brokers.DateTimes;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Processings.Documents;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
-using LHDS.Core.Models.Foundations.Audits.Exceptions;
-using LHDS.Core.Models.Foundations.Documents.Exceptions;
-using LHDS.Core.Models.Foundations.Downloads.Exceptions;
-using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using Xunit;
-using System.Collections.Generic;
-using System.Collections;
-using System.Text;
-using System.Linq;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 {

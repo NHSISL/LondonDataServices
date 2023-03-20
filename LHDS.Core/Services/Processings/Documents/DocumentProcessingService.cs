@@ -34,7 +34,7 @@ namespace LHDS.Core.Services.Processings.Documents
             TryCatch(async () =>
             {
                 ValidateDocumentProcessingOnRetrieve(fileName);
-                
+
                 return await this.documentService.RetrieveDocumentByFileNameAsync(fileName);
             });
 

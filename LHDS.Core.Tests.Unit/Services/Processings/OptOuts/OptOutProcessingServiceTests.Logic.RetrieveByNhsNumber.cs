@@ -2,10 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -22,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
         {
             // given
             OptOut randomOptOut = CreateRandomOptOut();
-            List <OptOut> retrievedOptOut = new List<OptOut> { randomOptOut };
+            List<OptOut> retrievedOptOut = new List<OptOut> { randomOptOut };
             OptOut expectedOptOut = randomOptOut.DeepClone();
 
             this.optOutServiceMock.Setup(service =>

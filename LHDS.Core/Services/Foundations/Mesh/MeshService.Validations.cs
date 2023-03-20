@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using LHDS.Core.Models.Foundations.MeshItems.Exceptions;
+using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 
 namespace LHDS.Core.Services.Foundations.Mesh
 {

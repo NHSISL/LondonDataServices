@@ -33,6 +33,7 @@ namespace LHDS.Core.Services.Processings.Mesh
             TryCatch(async () =>
             {
                 ValidateGetArguments(mailboxId);
+                
                 return await this.meshService.RetrieveMessageIdsFromInboxAsync(mailboxId);
             });
 

@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
         public async Task ShouldThrowDependencyValidationExceptionOnSendMessageIfDependencyValidationErrorOccursAndLogItAsync(
-          Xeption dependencyValidationException)
+            Xeption dependencyValidationException)
         {
             // given
             string mailboxId = GetRandomString();
@@ -65,7 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
         public async Task ShouldThrowDependencyOnSendMessageIfDependencyErrorOccursAndLogItAsync(
-         Xeption dependencyException)
+            Xeption dependencyException)
         {
             // given
             string mailboxId = GetRandomString();
@@ -156,6 +156,5 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             this.meshServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
-
     }
 }

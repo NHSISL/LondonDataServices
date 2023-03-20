@@ -12,10 +12,12 @@ namespace LHDS.Core.Services.Processings.Mesh
 {
     public partial class MeshProcessingService
     {
-        public void ValidateMeshArgs(string mailboxId, string messageId) =>
+        public void ValidateMeshArgs(string mailboxId, string messageId)
+        {
            Validate(
                (Rule: IsInvalid(mailboxId), Parameter: nameof(mailboxId)),
                (Rule: IsInvalid(messageId), Parameter: nameof(messageId)));
+        }
 
         private static void ValidateGetArguments(string mailboxId)
         {

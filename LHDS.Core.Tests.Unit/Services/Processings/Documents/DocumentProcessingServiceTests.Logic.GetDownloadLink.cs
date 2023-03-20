@@ -2,11 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
 using Moq;
 using Xunit;
 
@@ -36,8 +33,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             // Then
             actualSasUrl.Should().BeEquivalentTo(expectedSasUrl);
 
-            this.documentServiceMock.Verify(service => 
-                service.GetDownloadLinkAsync(inputFileName), 
+            this.documentServiceMock.Verify(service =>
+                service.GetDownloadLinkAsync(inputFileName),
                     Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();

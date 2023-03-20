@@ -2,23 +2,21 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using Moq;
-using Xunit;
-using System.Threading.Tasks;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.OptOuts;
+using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
 using LHDS.Core.Services.Foundations.OptOuts;
 using LHDS.Core.Services.Processings.OptOuts;
-using System;
+using Moq;
 using Tynamix.ObjectFiller;
-using LHDS.Core.Models.Foundations.OptOuts;
-using System.Linq.Expressions;
 using Xeptions;
-using LHDS.Core.Models.Foundations.Documents.Exceptions;
-using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
-using System.Collections.Generic;
-using System.Collections;
-using System.Text;
-using System.Linq;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 {

@@ -2,11 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Text;
-using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using Moq;
 using Xunit;

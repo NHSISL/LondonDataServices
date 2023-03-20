@@ -40,8 +40,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             // Then
             actualDocument.Should().BeEquivalentTo(expectedDocument);
 
-            this.documentServiceMock.Verify(service => 
-                service.RetrieveDocumentByFileNameAsync(randomDocument.FileName), 
+            this.documentServiceMock.Verify(service =>
+                service.RetrieveDocumentByFileNameAsync(randomDocument.FileName),
                     Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();

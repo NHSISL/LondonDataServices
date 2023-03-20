@@ -2,16 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Collections.Generic;
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Processings.OptOuts.Exceptions;
-using LHDS.Core.Services.Foundations.OptOuts;
-using System.Linq;
-using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
-using LHDS.Core.Models.Foundations.OptOuts;
-using System;
 
 namespace LHDS.Core.Services.Processings.OptOuts
 {

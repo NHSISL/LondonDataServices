@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace LHDS.Core.Models.Foundations.MeshItems
+namespace LHDS.Core.Models.Foundations.Mesh
 {
     internal class MeshMessage
     {
@@ -16,6 +16,7 @@ namespace LHDS.Core.Models.Foundations.MeshItems
         public string ContentType { get; set; }
         public string Body { get; set; }
         public byte[] FileContent { get; set; }
+        public string FileName { get; set; }
         public TrackingInfo TrackingInfo { get; set; }
     }
 }

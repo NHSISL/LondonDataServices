@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Processings.OptOuts.Exceptions
     public class InvalidArgumentOptOutProcessingException : Xeption
     {
         public InvalidArgumentOptOutProcessingException()
-            : base(message: "Invalid opt out processing argument. Please correct the errors and try again.") 
+            : base(message: "Invalid opt out processing argument. Please correct the errors and try again.")
         { }
     }
 }

@@ -2,15 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Foundations.OptOuts;
-using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.OptOuts.Exceptions;
 using Moq;
 using Xunit;

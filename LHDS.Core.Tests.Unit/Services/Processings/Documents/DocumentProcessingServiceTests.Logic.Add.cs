@@ -29,9 +29,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             await this.documentProcessingService.AddDocumentAsync(document);
 
             // Then
-            this.documentServiceMock.Verify(service => 
+            this.documentServiceMock.Verify(service =>
                 service.AddDocumentAsync(It.Is<Document>(doc =>
-                    doc.FileName == randomFileName && doc.DocumentData == randomfileData)), 
+                    doc.FileName == randomFileName && doc.DocumentData == randomfileData)),
                     Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();

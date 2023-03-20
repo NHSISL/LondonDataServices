@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Collections.Generic;
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,25 +32,25 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                 DocumentData = randomBytes
             };
 
-            var expectedDocumentProcessingDependencyValidationException = 
+            var expectedDocumentProcessingDependencyValidationException =
                 new DocumentProcessingDependencyValidationException(
                     dependencyValidationException.InnerException as Xeption);
 
-            this.documentServiceMock.Setup(service => 
+            this.documentServiceMock.Setup(service =>
                 service.AddDocumentAsync(inputDocument))
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask documentAddTask = 
+            ValueTask documentAddTask =
                 this.documentProcessingService.AddDocumentAsync(inputDocument);
 
-            DocumentProcessingDependencyValidationException actualException = 
+            DocumentProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<DocumentProcessingDependencyValidationException>(documentAddTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDocumentProcessingDependencyValidationException);
 
-            this.documentServiceMock.Verify(service => 
+            this.documentServiceMock.Verify(service =>
                 service.AddDocumentAsync(inputDocument),
                     Times.Once);
 

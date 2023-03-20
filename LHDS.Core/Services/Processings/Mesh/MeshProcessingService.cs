@@ -38,7 +38,14 @@ namespace LHDS.Core.Services.Processings.Mesh
             });
 
         public ValueTask<string> RetrieveAndAcknowledgeMessageByIdAsync(string mailboxId, string messageId) =>
-        throw new NotImplementedException();
+         TryCatch(async () =>
+            {
+                ValidateMeshArgs(mailboxId, messageId);
+                var retrievedMessage = await this.meshService.RetrieveMessageByIdAsync(mailboxId, messageId);
+                await this.meshService.AcknowledgeMessageByIdAsync(mailboxId, messageId);
+
+                return retrievedMessage;
+            });
 
         public ValueTask<string> SendMessageAsync(string mailboxId, string messageId) =>
             throw new NotImplementedException();

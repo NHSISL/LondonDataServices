@@ -2,7 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -44,6 +46,14 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 ValidateOptOutProcessingOnModify(optOut);
 
                 return await this.optOutService.ModifyOptOutAsync(optOut);
+            });
+
+        public ValueTask<OptOut> RemoveOptOutByIdAsync(Guid optOutId) =>
+            TryCatch(async () =>
+            {
+                ValidateOptOutId(optOutId);
+
+                return await this.optOutService.RemoveOptOutByIdAsync(optOutId);
             });
     }
 }

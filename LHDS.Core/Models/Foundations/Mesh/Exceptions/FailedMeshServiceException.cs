@@ -5,7 +5,7 @@
 using System;
 using Xeptions;
 
-namespace LHDS.Core.Models.Foundations.MeshItems.Exceptions
+namespace LHDS.Core.Models.Foundations.Mesh.Exceptions
 {
     public class FailedMeshServiceException : Xeption
     {

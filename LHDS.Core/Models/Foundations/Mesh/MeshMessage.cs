@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace LHDS.Core.Models.Foundations.MeshItems
 {
-    internal class Message
+    internal class MeshMessage
     {
         public string MessageId { get; set; }
         public string To { get; set; }

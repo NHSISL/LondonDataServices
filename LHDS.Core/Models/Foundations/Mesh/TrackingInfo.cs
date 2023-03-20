@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-namespace LHDS.Core.Models.Foundations.MeshItems
+namespace LHDS.Core.Models.Foundations.Mesh
 {
     internal class TrackingInfo
     {

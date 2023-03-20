@@ -4,8 +4,6 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
-using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using Moq;
 using Xunit;

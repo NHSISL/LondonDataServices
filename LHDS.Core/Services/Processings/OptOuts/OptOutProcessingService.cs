@@ -3,14 +3,11 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.OptOuts;
-using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.Core.Services.Processings.OptOuts
 {
@@ -58,7 +55,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 return await this.optOutService.RemoveOptOutByIdAsync(optOutId);
             });
 
-        public  ValueTask<OptOut> RetrieveOptOutByIdAsync(Guid optOutId) =>
+        public ValueTask<OptOut> RetrieveOptOutByIdAsync(Guid optOutId) =>
             TryCatch(async () =>
             {
                 ValidateOptOutId(optOutId);
@@ -73,7 +70,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
 
                 IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
 
-                OptOut foundOptOut = allOptOuts.FirstOrDefault(optOut => 
+                OptOut foundOptOut = allOptOuts.FirstOrDefault(optOut =>
                     optOut.NhsNumber == optOutNhsNumber);
 
                 return foundOptOut;

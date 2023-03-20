@@ -3,9 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -34,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     .ReturnsAsync(inputOptOut);
 
             // when
-            OptOut actualOptOut = 
+            OptOut actualOptOut =
                 await this.optOutProcessingService.ModifyOptOutAsync(inputOptOut);
 
             // then

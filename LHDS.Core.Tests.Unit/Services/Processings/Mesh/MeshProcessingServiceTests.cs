@@ -9,7 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.MeshItems.Exceptions;
+using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using LHDS.Core.Services.Foundations.Mesh;
 using LHDS.Core.Services.Processings.Mesh;
 using Moq;

@@ -125,7 +125,7 @@ namespace LHDS.Core.Services.Processings.Documents
             }
         }
 
-        private DocumentProcessingValidationException 
+        private DocumentProcessingValidationException
             CreateAndLogValidationException(Xeption exception)
         {
             string validationSummary = GetValidationSummary(exception.Data);
@@ -138,7 +138,7 @@ namespace LHDS.Core.Services.Processings.Documents
             return documentProcessingValidationExceptionn;
         }
 
-        private DocumentProcessingDependencyValidationException 
+        private DocumentProcessingDependencyValidationException
             CreateAndLogDependencyValidationException(Xeption exception)
         {
             var documentProcessingDependencyValidationException =

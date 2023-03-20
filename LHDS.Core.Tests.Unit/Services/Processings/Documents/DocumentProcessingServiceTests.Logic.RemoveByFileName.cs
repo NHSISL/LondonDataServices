@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(document.FileName);
 
             // Then
-            this.documentServiceMock.Verify(service => 
+            this.documentServiceMock.Verify(service =>
                 service.RemoveDocumentByFileNameAsync(document.FileName),
                     Times.Once);
         }

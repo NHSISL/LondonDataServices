@@ -27,9 +27,9 @@ namespace LHDS.Core.Services.Processings.OptOuts
             {
                 throw CreateAndLogValidationException(nullOptOutProcessingException);
             }
-            catch (InvalidOptOutProcessingIdException invalidOptOutProcessingIdException)
+            catch (InvalidArgumentOptOutProcessingException invalidArgumentOptOutProcessingException)
             {
-                throw CreateAndLogValidationException(invalidOptOutProcessingIdException);
+                throw CreateAndLogValidationException(invalidArgumentOptOutProcessingException);
             }
             catch (OptOutValidationException optOutValidationException)
             {
@@ -102,4 +102,3 @@ namespace LHDS.Core.Services.Processings.OptOuts
         }
     }
 }
-

@@ -3,9 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -50,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             OptOut existingOptOut = CreateRandomOptOut(randomDateTimeOffset);
             OptOut existingOptOutFound = existingOptOut;
 
-            this.optOutServiceMock.Setup(service => 
+            this.optOutServiceMock.Setup(service =>
                 service.RetrieveOptOutByIdAsync(existingOptOut.Id))
                     .ReturnsAsync(existingOptOutFound);
 
@@ -60,12 +57,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             // then
             retrievedOptOut.Should().BeEquivalentTo(existingOptOutFound);
 
-            this.optOutServiceMock.Verify(service => 
+            this.optOutServiceMock.Verify(service =>
                 service.RetrieveOptOutByIdAsync(existingOptOut.Id),
                     Times.Once);
 
-            this.optOutServiceMock.Verify(service => 
-                service.AddOptOutAsync(It.IsAny<OptOut>()), 
+            this.optOutServiceMock.Verify(service =>
+                service.AddOptOutAsync(It.IsAny<OptOut>()),
                     Times.Never);
 
             this.optOutServiceMock.VerifyNoOtherCalls();

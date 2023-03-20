@@ -1,4 +1,4 @@
-﻿// ----------------------------
+﻿// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Processings.Documents.Exceptions
     public class OptOutProcessingDependencyValidationException : Xeption
     {
         public OptOutProcessingDependencyValidationException(Xeption innerException)
-            : base(message: "Opt out processing dependency validation occurred, please try again.", innerException) 
+            : base(message: "Opt out processing dependency validation occurred, please try again.", innerException)
         { }
     }
 }

@@ -32,25 +32,25 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                 DocumentData = randomBytes
             };
 
-            var expectedDocumentProcessingDependencyValidationException = 
+            var expectedDocumentProcessingDependencyValidationException =
                 new DocumentProcessingDependencyValidationException(
                     dependencyValidationException.InnerException as Xeption);
 
-            this.documentServiceMock.Setup(service => 
+            this.documentServiceMock.Setup(service =>
                 service.GetDownloadLinkAsync(inputDocument.FileName))
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask<string> GetDownloadLinktTask = 
+            ValueTask<string> GetDownloadLinktTask =
                 this.documentProcessingService.GetDownloadLinkAsync(inputDocument.FileName);
 
-            DocumentProcessingDependencyValidationException actualException = 
+            DocumentProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<DocumentProcessingDependencyValidationException>(GetDownloadLinktTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDocumentProcessingDependencyValidationException);
 
-            this.documentServiceMock.Verify(service => 
+            this.documentServiceMock.Verify(service =>
                 service.GetDownloadLinkAsync(inputDocument.FileName),
                     Times.Once);
 

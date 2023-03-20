@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
-using LHDS.Core.Models.Foundations.MeshItems.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.Mesh

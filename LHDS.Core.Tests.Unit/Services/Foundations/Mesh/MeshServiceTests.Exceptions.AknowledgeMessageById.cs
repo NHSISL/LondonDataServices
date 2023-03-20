@@ -5,7 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.MeshItems.Exceptions;
+using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using Moq;
 using Xunit;
 

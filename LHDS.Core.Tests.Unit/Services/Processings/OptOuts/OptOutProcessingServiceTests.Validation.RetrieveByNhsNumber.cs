@@ -19,18 +19,21 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 {
     public partial class OptOutProcessingServiceTests
     {
-        [Fact]
-        public async Task ShouldThrowValidationExceptionsOnRemoveIfOptOutProcessingIdIsNullAndLogItAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public async Task ShouldThrowValidationExceptionsOnRetrieveIfOptOutProcessingNhsNumberIsNullAndLogItAsync(string invalidInput)
         {
             // given
-            Guid invalidIngestionTrackingId = Guid.Empty;
+            string invalidOptOutNhsNumber = invalidInput;
 
             var invalidArgumentOptOutProcessingException =
                 new InvalidArgumentOptOutProcessingException();
 
             invalidArgumentOptOutProcessingException.AddData(
-                key: nameof(OptOut.Id),
-                values: "Id is required");
+                key: nameof(OptOut.NhsNumber),
+                values: "Text is required");
 
             var expectedOptOutProcessingValidationException =
                 new OptOutProcessingValidationException(
@@ -39,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             // when
             ValueTask<OptOut> RemoveOptOutTask =
-                this.optOutProcessingService.RemoveOptOutByIdAsync(invalidIngestionTrackingId);
+                this.optOutProcessingService.RetrieveOptOutByNhsNumberAsync(invalidOptOutNhsNumber);
 
             OptOutProcessingValidationException actualOptOutProcessingValidationException =
                 await Assert.ThrowsAsync<OptOutProcessingValidationException>(RemoveOptOutTask.AsTask);
@@ -49,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 .BeEquivalentTo(expectedOptOutProcessingValidationException);
 
             this.optOutServiceMock.Verify(service =>
-                service.RemoveOptOutByIdAsync(invalidIngestionTrackingId),
+                service.RetrieveAllOptOuts(),
                     Times.Never());
 
             this.loggingBrokerMock.Verify(broker =>

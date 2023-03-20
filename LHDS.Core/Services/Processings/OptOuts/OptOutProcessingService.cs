@@ -66,13 +66,18 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 return await this.optOutService.RetrieveOptOutByIdAsync(optOutId);
             });
 
-        public async ValueTask<OptOut> RetrieveOptOutByNhsNumberAsync(string optOutNhsNumber)
-        {
-            IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
-            OptOut foundOptOut = allOptOuts.FirstOrDefault(optOut => optOut.NhsNumber == optOutNhsNumber);
+        public ValueTask<OptOut> RetrieveOptOutByNhsNumberAsync(string optOutNhsNumber) =>
+            TryCatch(async () =>
+            {
+                ValidateOptOutNhsNumber(optOutNhsNumber);
 
-            return foundOptOut;
-        }
+                IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
+
+                OptOut foundOptOut = allOptOuts.FirstOrDefault(optOut => 
+                    optOut.NhsNumber == optOutNhsNumber);
+
+                return foundOptOut;
+            });
     }
 }
 

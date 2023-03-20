@@ -25,17 +25,17 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             // given
             Guid invalidIngestionTrackingId = Guid.Empty;
 
-            var invalidOptOutProcessingIdException =
-                new InvalidOptOutProcessingIdException();
+            var invalidArgumentOptOutProcessingException =
+                new InvalidArgumentOptOutProcessingException();
 
-            invalidOptOutProcessingIdException.AddData(
+            invalidArgumentOptOutProcessingException.AddData(
                 key: nameof(OptOut.Id),
                 values: "Id is required");
 
             var expectedOptOutProcessingValidationException =
                 new OptOutProcessingValidationException(
-                    innerException: invalidOptOutProcessingIdException,
-                    validationSummary: GetValidationSummary(invalidOptOutProcessingIdException.Data));
+                    innerException: invalidArgumentOptOutProcessingException,
+                    validationSummary: GetValidationSummary(invalidArgumentOptOutProcessingException.Data));
 
             // when
             ValueTask<OptOut> RemoveOptOutTask =

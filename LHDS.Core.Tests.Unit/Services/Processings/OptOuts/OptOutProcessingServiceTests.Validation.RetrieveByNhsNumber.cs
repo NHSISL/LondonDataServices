@@ -19,11 +19,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 {
     public partial class OptOutProcessingServiceTests
     {
-        [Fact]
-        public async Task ShouldThrowValidationExceptionsOnRetrieveIfOptOutProcessingNhsNumberIsNullAndLogItAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public async Task ShouldThrowValidationExceptionsOnRetrieveIfOptOutProcessingNhsNumberIsNullAndLogItAsync(string invalidInput)
         {
             // given
-            string invalidOptOutNhsNumber = null;
+            string invalidOptOutNhsNumber = invalidInput;
 
             var invalidArgumentOptOutProcessingException =
                 new InvalidArgumentOptOutProcessingException();

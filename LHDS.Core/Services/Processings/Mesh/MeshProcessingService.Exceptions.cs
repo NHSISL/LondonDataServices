@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.MeshItems.Exceptions;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
@@ -13,6 +14,7 @@ namespace LHDS.Core.Services.Processings.Mesh
     public partial class MeshProcessingService
     {
         private delegate ValueTask<bool> ReturningBoolMeshFunction();
+        private delegate ValueTask<List<string>> ReturningStringsMeshFunction();
 
         private async ValueTask<bool> TryCatch(ReturningBoolMeshFunction returningMeshFunction)
         {
@@ -43,6 +45,54 @@ namespace LHDS.Core.Services.Processings.Mesh
 
                 throw CreateAndLogServiceException(failedMeshProcessingServiceException);
             }
+        }
+
+        private async ValueTask<List<string>> TryCatch(ReturningStringsMeshFunction returningStringsMeshFunction)
+        {
+            try
+            {
+                return await returningStringsMeshFunction();
+            }
+            catch (MeshValidationException meshValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshValidationException);
+            }
+            catch (MeshDependencyValidationException meshDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
+            }
+            catch (MeshDependencyException meshDependencyException)
+            {
+                throw CreateAndLogDependencyException(meshDependencyException);
+            }
+            catch (MeshServiceException meshServiceException)
+            {
+                throw CreateAndLogDependencyException(meshServiceException);
+            }
+            catch (InvalidMeshProcessingArgumentException exception)
+            {
+                throw CreateAndLogValidationException(exception);
+            }
+            catch (Exception exception)
+            {
+                var failedMeshProcessingServiceException =
+                    new FailedMeshProcessingServiceException(exception);
+
+                throw CreateAndLogServiceException(failedMeshProcessingServiceException);
+            }
+        }
+
+        private MeshProcessingValidationException
+            CreateAndLogValidationException(Xeption exception)
+        {
+            string validationSummary = GetValidationSummary(exception.Data);
+
+            var meshProcessingValidationExceptionn =
+                new MeshProcessingValidationException(exception, validationSummary);
+
+            this.loggingBroker.LogError(meshProcessingValidationExceptionn);
+
+            return meshProcessingValidationExceptionn;
         }
 
         private MeshProcessingDependencyValidationException

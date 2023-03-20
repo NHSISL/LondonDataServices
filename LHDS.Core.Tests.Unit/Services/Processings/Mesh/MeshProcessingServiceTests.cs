@@ -3,7 +3,11 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.MeshItems.Exceptions;
 using LHDS.Core.Services.Foundations.Mesh;
@@ -58,6 +62,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 new MeshDependencyException(innerException),
                 new MeshServiceException(innerException)
             };
+        }
+
+        private string GetValidationSummary(IDictionary data)
+        {
+            StringBuilder validationSummary = new StringBuilder();
+
+            foreach (DictionaryEntry entry in data)
+            {
+                string errorSummary = ((List<string>)entry.Value)
+                    .Select((string value) => value)
+                    .Aggregate((string current, string next) => current + ", " + next);
+
+                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
+            }
+
+            return validationSummary.ToString();
         }
     }
 }

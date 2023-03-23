@@ -79,6 +79,7 @@
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\documents\documentView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\ingestionTracking\ingestionTrackingView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\lookups\lookupView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\views\components\optOuts\optOutView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\suppliers\supplierView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\configHomePage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\IngestionTrackingHomepage.tsx" />
@@ -93,6 +94,7 @@
     <TypeScriptCompile Remove="ClientApp\src\services\views\Documents\DocumentViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\ingestionTrackingHomeViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\ingestionTrackingViewService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\OptOuts\optoutViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\supplierViewService .ts" />
   </ItemGroup>
 

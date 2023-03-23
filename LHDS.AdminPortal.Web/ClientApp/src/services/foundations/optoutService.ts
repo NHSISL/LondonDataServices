@@ -5,7 +5,6 @@ import OptOutBroker from "../../brokers/apiBroker.optout";
 import { OptOut } from "../../models/optout/optout";
 
 export const optOutService = {
-
     useCreateOptOut: () => {
         const optOutBroker = new OptOutBroker();
         const queryClient = useQueryClient();

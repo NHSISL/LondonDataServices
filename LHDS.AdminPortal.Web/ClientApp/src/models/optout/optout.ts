@@ -2,7 +2,6 @@ import { Guid } from 'guid-typescript';
 
 export class OptOut {
     public id: Guid;
-
     public nhsNumber: string;
     public optOutStatus: string;
     public cacheTime: Date;

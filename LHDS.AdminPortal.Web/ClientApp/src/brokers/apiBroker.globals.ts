@@ -1,4 +1,6 @@
 import { MutationCache, QueryCache, QueryClient } from "react-query";
+import { ApiValidationError } from "../errors/validationError";
+import { toastError, toastSuccess, toastWarning } from "./toastBroker";
 
 export const queryClientGlobalOptions = new QueryClient({
     defaultOptions: {
@@ -8,21 +10,21 @@ export const queryClientGlobalOptions = new QueryClient({
     },
     queryCache: new QueryCache({
         onError: () => {
-            //toastError("An unknown error has occured, please refresh the page and try again.");
+            toastError("An unknown error has occured, please refresh the page and try again.");
         }
     },
     ),
     mutationCache: new MutationCache({
         onSuccess: () => {
-            //toastSuccess("Saved.")
+            toastSuccess("Saved.")
         },
         onError: (error: any) => {
-            //if (!error?.response?.data?.errors) {
-            //    toastError("An unknown error has occured, please try again.");
-            //} else {
-            //    toastWarning("Your record has not been saved, please correct and try again.");
-            //    throw new ApiValidationError(error?.response?.data?.errors);
-            //}
+            if (!error?.response?.data?.errors) {
+                toastError("An unknown error has occured, please try again.");
+            } else {
+                toastWarning("Your record has not been saved, please correct and try again.");
+                throw new ApiValidationError(error?.response?.data?.errors);
+            }
         }
     })
 });

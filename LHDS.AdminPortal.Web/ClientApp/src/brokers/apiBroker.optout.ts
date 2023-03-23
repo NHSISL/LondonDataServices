@@ -13,7 +13,7 @@ class OptOutBroker {
     }
 
     async GetAllOptOutsAsync(queryString: string) {
-        var url = this.relativeOptOutUrl + queryString;
+        const url = this.relativeOptOutUrl + queryString;
 
         return await this.apiBroker.GetAsync(url)
             .then(result => result.data.map((optOut: any) => new OptOut(optOut)));

@@ -16,6 +16,7 @@ export const NavigationBar = () => {
                             navbarScroll>
                             <SecuredLink to="/">Home</SecuredLink>
                             <SecuredLink to="/ingestionTracking">Supplier Data</SecuredLink>
+                            <SecuredLink to="/optOut">Patient Opt-Out</SecuredLink>
                         </Nav>
                         <Form className="d-flex">
                             <SecuredLink to="/configuration">Configuration</SecuredLink>

@@ -34,12 +34,12 @@ export const optOutService = {
             { staleTime: Infinity });
     },
 
-    useGetOptOutByNhsNumber: (nhsNumber: string) => {
+    useGetOptOutById: (id: Guid) => {
         const optOutBroker = new OptOutBroker();
 
         return useQuery(
-            ["OptOutGetById", { nhsNumber: nhsNumber }],
-            () => optOutBroker.GetOptOutByNhsNumberAsync(nhsNumber),
+            ["OptOutGetById", { id: id }],
+            () => optOutBroker.GetOptOutByIdAsync(id),
             { staleTime: Infinity });
     },
 

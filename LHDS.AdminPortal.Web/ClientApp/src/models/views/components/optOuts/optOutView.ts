@@ -2,10 +2,10 @@ import { Guid } from 'guid-typescript';
 
 export class OptOutView {
     public id: Guid;
-    public nhsNumber?: string;
-    public optOutStatus?: string;
-    public cacheTime?: Date;
-    public lastSentToMesh?: Date;
+    public nhsNumber: string;
+    public optOutStatus: string;
+    public cacheTime: Date;
+    public lastSentToMesh: Date;
     public createdBy?: string;
     public createdDate?: Date;
     public updatedBy?: string;
@@ -13,10 +13,10 @@ export class OptOutView {
 
     constructor(
         id: Guid,
-        nhsNumber?: string,
-        optOutStatus?: string,
-        cacheTime?: Date,
-        lastSentToMesh?: Date,
+        nhsNumber: string,
+        optOutStatus: string,
+        cacheTime: Date,
+        lastSentToMesh: Date,
         createdBy?: string,
         createdDate?: Date,
         updatedBy?: string,

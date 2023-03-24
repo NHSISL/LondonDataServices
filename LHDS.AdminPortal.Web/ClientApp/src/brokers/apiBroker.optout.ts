@@ -3,7 +3,7 @@ import { OptOut } from "../models/optout/optout";
 import ApiBroker from "./apiBroker";
 
 class OptOutBroker {
-    relativeOptOutUrl = '/api/optout';
+    relativeOptOutUrl = '/api/OptOuts';
 
     private apiBroker: ApiBroker = new ApiBroker();
 
@@ -14,13 +14,15 @@ class OptOutBroker {
 
     async GetAllOptOutsAsync(queryString: string) {
         const url = this.relativeOptOutUrl + queryString;
-
+        if (queryString === "") {
+            return undefined;
+        }
         return await this.apiBroker.GetAsync(url)
             .then(result => result.data.map((optOut: any) => new OptOut(optOut)));
     }
 
-    async GetOptOutByNhsNumberAsync(nhsNumber: string) {
-        const url = `${this.relativeOptOutUrl}/${nhsNumber}`;
+    async GetOptOutByIdAsync(id: Guid) {
+        const url = `${this.relativeOptOutUrl}/${id}`;
 
         return await this.apiBroker.GetAsync(url)
             .then(result => new OptOut(result.data));

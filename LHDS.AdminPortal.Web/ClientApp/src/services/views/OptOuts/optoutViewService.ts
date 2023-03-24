@@ -1,8 +1,8 @@
+import { Guid } from "guid-typescript";
 import { useEffect, useState } from "react";
 import { OptOut } from "../../../models/optout/optout";
 import { OptOutView } from "../../../models/views/components/optOuts/optOutView";
 import { optOutService } from "../../foundations/optoutService";
-
 
 export const optOutViewService = {
 
@@ -10,26 +10,31 @@ export const optOutViewService = {
         return optOutService.useCreateOptOut();
     },
 
-    useGetAllOptOuts: () => {
+    useGetAllOptOuts: (searchTerm?: string) => {
         try {
-            let query = '?$orderby=name/createdDate';
+
+            let query = ``;
+
+            if (searchTerm) {
+                query = query + `?$orderby=createdDate&$filter=nhsNumber eq '${searchTerm}'`;
+                //query = `?$filter=id eq 508158d9-70d3-4771-baae-c7e93775512d`
+            }
 
             const response = optOutService.useGetAllOptOuts(query);
             const [mappedOptOuts, setMappedOptOuts] = useState<Array<OptOutView>>([]);
 
             useEffect(() => {
                 if (response.data) {
-                    const optOuts = response.data.map((optOut: OptOut) =>
-                        new OptOutView(
-                            optOuts.id,
-                            optOuts.nhsNumber,
-                            optOuts.optOutStatus,
-                            optOuts.cacheTime,
-                            optOuts.lastSentToMesh,
-                            optOuts.createdBy,
-                            optOuts.createdDate,
-                            optOuts.updatedBy,
-                            optOuts.updatedDate,
+                    const optOuts = response.data.map((optOut: OptOut) => new OptOutView(
+                            optOut.id,
+                            optOut.nhsNumber,
+                            optOut.optOutStatus,
+                            optOut.cacheTime,
+                            optOut.lastSentToMesh,
+                            optOut.createdBy,
+                            optOut.createdDate,
+                            optOut.updatedBy,
+                            optOut.updatedDate,
                         ));
 
                     setMappedOptOuts(optOuts);
@@ -44,10 +49,10 @@ export const optOutViewService = {
         }
     },
 
-    useGetOptOutsByNhsNumber: (nhsNumber: string) => {
+    useGetOptOutsById: (id: Guid) => {
         try {
-            const query = `?$filter=nhsNumber eq ${nhsNumber}`
-            const response = optOutService.useGetOptOutByNhsNumber(query);
+            const query = `?$filter=id eq ${id}`
+            const response = optOutService.useGetAllOptOuts(query);
             const [mappedOptOut, setMappedOptOut] = useState<OptOutView>();
 
             useEffect(() => {

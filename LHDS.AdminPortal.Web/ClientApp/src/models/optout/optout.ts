@@ -6,10 +6,10 @@ export class OptOut {
     public optOutStatus: string;
     public cacheTime: Date;
     public lastSentToMesh: Date;
-    public createdDate: Date;
-    public createdBy: string;
-    public updatedDate: Date;
-    public updatedBy: string;
+    public createdDate?: Date;
+    public createdBy?: string;
+    public updatedDate?: Date;
+    public updatedBy?: string;
 
     constructor(optout: any) {
         this.id = optout.id ? Guid.parse(optout.id) : Guid.parse(Guid.EMPTY);

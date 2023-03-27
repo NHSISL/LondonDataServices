@@ -11,6 +11,7 @@ import { IngestionTrackingHomepage } from './pages/IngestionTrackingHomepage';
 import { IngestionTrackingPage } from './pages/ingestionTrackingPage';
 import { ConfigHomePage } from './pages/configuration/configHomePage';
 import { SuppliersPage } from './pages/configuration/suppliersPage';
+import { OptOutHomepage } from './pages/OptOutHomepage';
 
 const App = ({ msalInstance }: any) => {
     return (
@@ -22,7 +23,7 @@ const App = ({ msalInstance }: any) => {
                         <Route path="/ingestionTracking" element={<IngestionTrackingHomepage />} />
                         <Route path="/ingestionTrackingDetail" element={<IngestionTrackingPage />} />
                         <Route path="/ingestionTrackingDetail/:ingestionTrackingId" element={<IngestionTrackingPage />} />
-
+                        <Route path="/optOut" element={<OptOutHomepage />} />
                         <Route path="/configuration" element={<ConfigHomePage/>} />
                         <Route path="/configuration/suppliers" element={<SuppliersPage />} />
                     </Routes>
@@ -32,4 +33,5 @@ const App = ({ msalInstance }: any) => {
         </MsalProvider>
     );
 }
+
 export default App;

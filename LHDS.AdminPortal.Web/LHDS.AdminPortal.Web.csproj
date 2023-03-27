@@ -42,6 +42,7 @@
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.audits.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.documents.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ingestionTrackings.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.optout.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.suppliers.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\toastBroker.tsx" />
@@ -54,6 +55,9 @@
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetail.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetailCard.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetailCardView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierErrors.ts" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowAdd.tsx" />
@@ -72,24 +76,29 @@
     <TypeScriptCompile Remove="ClientApp\src\models\documents\document.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\ingestionTrackings\ingestionTracking.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\ingestionTrackings\ingestionTrackingHomeView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\optout\optout.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\suppliers\supplier.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\audit\auditView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\documents\documentView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\ingestionTracking\ingestionTrackingView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\lookups\lookupView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\views\components\optOuts\optOutView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\suppliers\supplierView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\configHomePage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\IngestionTrackingHomepage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\ingestionTrackingPage.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\OptOutHomepage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\ownershipsPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\auditService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\documentService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\ingestionTrackingService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\foundations\optoutService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\supplierService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\auditViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\Documents\DocumentViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\ingestionTrackingHomeViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\ingestionTrackingViewService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\OptOuts\optoutViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\supplierViewService .ts" />
   </ItemGroup>
 

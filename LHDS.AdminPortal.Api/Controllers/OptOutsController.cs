@@ -40,5 +40,44 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(optOutServiceException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<OptOut>> PutOptOutAsync(OptOut optOut)
+        {
+            try
+            {
+                OptOut modifiedOptOut =
+                    await this.optOutService.ModifyOptOutAsync(optOut);
+
+                return Ok(modifiedOptOut);
+            }
+            catch (OptOutValidationException optOutValidationException)
+                when (optOutValidationException.InnerException is NotFoundOptOutException)
+            {
+                return NotFound(optOutValidationException.InnerException);
+            }
+            catch (OptOutValidationException optOutValidationException)
+            {
+                return BadRequest(optOutValidationException.InnerException);
+            }
+            catch (OptOutDependencyValidationException optOutValidationException)
+                when (optOutValidationException.InnerException is InvalidOptOutReferenceException)
+            {
+                return FailedDependency(optOutValidationException.InnerException);
+            }
+            catch (OptOutDependencyValidationException optOutDependencyValidationException)
+               when (optOutDependencyValidationException.InnerException is AlreadyExistsOptOutException)
+            {
+                return Conflict(optOutDependencyValidationException.InnerException);
+            }
+            catch (OptOutDependencyException optOutDependencyException)
+            {
+                return InternalServerError(optOutDependencyException);
+            }
+            catch (OptOutServiceException optOutServiceException)
+            {
+                return InternalServerError(optOutServiceException);
+            }
+        }
     }
 }

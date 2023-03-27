@@ -9,13 +9,16 @@ import OptOutDetailCardView from "./optOutDetailCardView";
 interface OptOutDetailCardProps {
     optOuts: Array<OptOutView>;
     children?: React.ReactNode;
+    onClearCache: (optOuts: Array<OptOutView>) => void;
 }
 
 const OptOutDetailCard: FunctionComponent<OptOutDetailCardProps> = (props) => {
     const {
         optOuts,
-        children
+        children,
+        onClearCache
     } = props;
+
 
     return (
         <div>
@@ -27,6 +30,7 @@ const OptOutDetailCard: FunctionComponent<OptOutDetailCardProps> = (props) => {
                     <CardBaseContent>
                         <OptOutDetailCardView
                             optOuts={optOuts}
+                            onClearCache={onClearCache}
                         />
                         {children !== undefined && (
                             <>

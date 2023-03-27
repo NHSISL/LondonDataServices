@@ -19,7 +19,6 @@ const OptOutDetailCard: FunctionComponent<OptOutDetailCardProps> = (props) => {
         onClearCache
     } = props;
 
-
     return (
         <div>
             <CardBase>
@@ -44,4 +43,5 @@ const OptOutDetailCard: FunctionComponent<OptOutDetailCardProps> = (props) => {
         </div>
     );
 }
+
 export default OptOutDetailCard;

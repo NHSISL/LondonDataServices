@@ -40,4 +40,5 @@ class OptOutBroker {
             .then(result => new OptOut(result.data));
     }
 }
+
 export default OptOutBroker;

@@ -1,5 +1,5 @@
 import React, { FunctionComponent, FormEventHandler } from "react";
-import { Input } from 'nhsuk-react-components'
+import { Input, Label, SearchIcon } from 'nhsuk-react-components'
 
 interface SearchBaseProps {
     id: string;
@@ -13,7 +13,8 @@ interface SearchBaseProps {
 const SearchBase: FunctionComponent<SearchBaseProps> = (props) => {
     return (
         <>
-            <Input id="input-example" placeholder={ props.label } value={props.value} type="search" onChange={props.onChange}></Input>
+            <Label size="s"><SearchIcon />{props.label}</Label>
+            <Input id="input-example" placeholder={props.placeholder} value={props.value} type="search" onChange={props.onChange}></Input>
             {props.description && (<><br /><small>{props.description}</small></>)}
         </>
     );

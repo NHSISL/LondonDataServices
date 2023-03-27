@@ -20,9 +20,8 @@ export class OptOutView {
         createdBy?: string,
         createdDate?: Date,
         updatedBy?: string,
-        updatedDate?: Date,
-
-    ) {
+        updatedDate?: Date) 
+    {
         this.id = id;
         this.nhsNumber = nhsNumber || "";
         this.optOutStatus = optOutStatus || "";

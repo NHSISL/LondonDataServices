@@ -68,4 +68,5 @@ const OptOutDetail: FunctionComponent<OptOutDetailProps> = (props) => {
         </div>
     );
 }
+
 export default OptOutDetail;

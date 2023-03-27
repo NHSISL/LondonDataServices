@@ -44,7 +44,8 @@ export const optOutViewService = {
             return {
                 mappedOptOuts, ...response
             }
-        } catch (err) {
+        } catch (err) 
+        {
             throw err;
         }
     },
@@ -76,7 +77,8 @@ export const optOutViewService = {
             return {
                 mappedOptOut, ...response
             }
-        } catch (err) {
+        } catch (err) 
+        {
             throw err;
         }
     },

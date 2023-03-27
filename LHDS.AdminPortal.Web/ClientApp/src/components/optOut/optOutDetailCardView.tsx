@@ -17,6 +17,7 @@ const OptOutDetailCardView: FunctionComponent<OptOutDetailCardViewProps> = (prop
         optOuts,
         onClearCache
     } = props;
+
     return (
         <>
             {optOuts[0] !== undefined && (
@@ -54,4 +55,5 @@ const OptOutDetailCardView: FunctionComponent<OptOutDetailCardViewProps> = (prop
         </>
     );
 }
+
 export default OptOutDetailCardView;

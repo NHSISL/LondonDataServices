@@ -33,4 +33,5 @@ const App = ({ msalInstance }: any) => {
         </MsalProvider>
     );
 }
+
 export default App;

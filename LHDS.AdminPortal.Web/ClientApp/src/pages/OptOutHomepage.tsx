@@ -4,8 +4,6 @@ import 'nhsuk-frontend/packages/polyfills';
 import { Container } from 'nhsuk-react-components'
 import OptOutDetail from "../components/optOut/optOutDetail";
 
-
-
 export const OptOutHomepage = () => {
     return <div>
         <section >

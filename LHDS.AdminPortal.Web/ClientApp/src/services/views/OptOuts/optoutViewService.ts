@@ -24,7 +24,7 @@ export const optOutViewService = {
             const [mappedOptOuts, setMappedOptOuts] = useState<Array<OptOutView>>([]);
 
             useEffect(() => {
-                if (response.data) {
+                if (response.data && response.data) {
                     const optOuts = response.data.map((optOut: OptOut) => new OptOutView(
                             optOut.id,
                             optOut.nhsNumber,

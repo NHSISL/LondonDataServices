@@ -1,5 +1,5 @@
 import moment from "moment";
-import React, { FunctionComponent} from "react";
+import React, { FunctionComponent } from "react";
 import { OptOutView } from "../../models/views/components/optOuts/optOutView";
 import ButtonBase from "../bases/buttons/ButtonBase";
 import SummaryListBase from "../bases/components/SummaryList/SummaryListBase";
@@ -9,42 +9,47 @@ import SummaryListBaseValue from "../bases/components/SummaryList/SummaryListBas
 
 interface OptOutDetailCardViewProps {
     optOuts: Array<OptOutView>;
+    onClearCache: (optOuts: Array<OptOutView>) => void;
 }
 
 const OptOutDetailCardView: FunctionComponent<OptOutDetailCardViewProps> = (props) => {
     const {
         optOuts,
+        onClearCache
     } = props;
     return (
         <>
-            <p>Please Search for an NHS Number above to view the details.</p>
             {optOuts[0] !== undefined && (
-                <SummaryListBase>
-                    <SummaryListBaseRow>
-                        <SummaryListBaseKey>NHS Number</SummaryListBaseKey>
-                        <SummaryListBaseValue>{optOuts[0].nhsNumber}</SummaryListBaseValue>
-                    </SummaryListBaseRow>
-                    <SummaryListBaseRow>
-                        <SummaryListBaseKey>Opt-Out Status</SummaryListBaseKey>
-                        <SummaryListBaseValue>{optOuts[0].optOutStatus}</SummaryListBaseValue>
-                    </SummaryListBaseRow>
-                    <SummaryListBaseRow>
-                        <SummaryListBaseKey>Cache Time</SummaryListBaseKey>
-                        <SummaryListBaseValue>{moment(optOuts[0].cacheTime?.toString()).format("Do-MMM-yyyy")}</SummaryListBaseValue>
-                    </SummaryListBaseRow>
-                    <SummaryListBaseRow>
-                        <SummaryListBaseKey>Last Sent To Mesh</SummaryListBaseKey>
-                        <SummaryListBaseValue>{moment(optOuts[0].lastSentToMesh?.toString()).format("Do-MMM-yyyy")}</SummaryListBaseValue>
-                    </SummaryListBaseRow>
+                <div>
+                    <SummaryListBase>
+                        <SummaryListBaseRow>
+                            <SummaryListBaseKey>NHS Number</SummaryListBaseKey>
+                            <SummaryListBaseValue>{optOuts[0].nhsNumber}</SummaryListBaseValue>
+                        </SummaryListBaseRow>
+                        <SummaryListBaseRow>
+                            <SummaryListBaseKey>Opt-Out Status</SummaryListBaseKey>
+                            <SummaryListBaseValue>{optOuts[0].optOutStatus}</SummaryListBaseValue>
+                        </SummaryListBaseRow>
+                        <SummaryListBaseRow>
+                            <SummaryListBaseKey>Cache Time</SummaryListBaseKey>
+                            <SummaryListBaseValue>{moment(optOuts[0].cacheTime?.toString()).format("Do-MMM-yyyy")}</SummaryListBaseValue>
+                        </SummaryListBaseRow>
+                        <SummaryListBaseRow>
+                            <SummaryListBaseKey>Last Sent To Mesh</SummaryListBaseKey>
+                            <SummaryListBaseValue>{moment(optOuts[0].lastSentToMesh?.toString()).format("Do-MMM-yyyy")}</SummaryListBaseValue>
+                        </SummaryListBaseRow>
 
-                    <SummaryListBaseRow>
-                        <SummaryListBaseKey></SummaryListBaseKey>
-                        <SummaryListBaseValue>
-                            <ButtonBase onClick={() => (optOuts)} add>&nbsp;Clear Cache</ButtonBase>&nbsp;
-
-                        </SummaryListBaseValue>
-                    </SummaryListBaseRow>
-                </SummaryListBase>
+                        <SummaryListBaseRow>
+                            <SummaryListBaseKey></SummaryListBaseKey>
+                            <SummaryListBaseValue>
+                                <ButtonBase onClick={() => onClearCache(optOuts)} add>&nbsp;Clear Cache</ButtonBase>&nbsp;
+                            </SummaryListBaseValue>
+                        </SummaryListBaseRow>
+                    </SummaryListBase>
+                </div>
+            )}
+            {optOuts[0] === undefined && (
+                <ButtonBase onClick={() => (optOuts)} view>&nbsp;Add New Nhs Number</ButtonBase>
             )}
         </>
     );

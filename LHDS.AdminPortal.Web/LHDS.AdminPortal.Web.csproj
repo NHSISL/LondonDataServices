@@ -49,6 +49,7 @@
     <TypeScriptCompile Remove="ClientApp\src\components\audit\auditRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\audit\auditRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\bases\ingestionTrackingTable.tsx" />
+    <TypeScriptCompile Remove="clientapp\src\components\FeatureSwitch.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetailCard.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetailCardView.tsx" />

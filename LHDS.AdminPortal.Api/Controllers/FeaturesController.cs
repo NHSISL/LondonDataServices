@@ -18,7 +18,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
-        public async ValueTask<ActionResult> GetFeatures()
+        public ActionResult GetFeatures()
         {
             var activeFeatures = configuration.GetSection("Features").Get<string[]>();
             return Ok(activeFeatures);

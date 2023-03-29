@@ -2,11 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
-using LHDS.Core.Services.Foundations.OptOuts;
+using LHDS.Core.Models.Processings.Documents.Exceptions;
+using LHDS.Core.Models.Processings.OptOuts.Exceptions;
+using LHDS.Core.Services.Processings.OptOuts;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Controllers
@@ -15,10 +17,10 @@ namespace LHDS.AdminPortal.Api.Controllers
     [Route("api/[controller]")]
     public class OptOutsController : RESTFulController
     {
-        private readonly IOptOutService optOutService;
+        private readonly IOptOutProcessingService optOutProcessingService;
 
-        public OptOutsController(IOptOutService optOutService) =>
-            this.optOutService = optOutService;
+        public OptOutsController(IOptOutProcessingService optOutProcessingService) =>
+            this.optOutProcessingService = optOutProcessingService;
 
 
         [HttpPost]
@@ -28,52 +30,61 @@ namespace LHDS.AdminPortal.Api.Controllers
             try
             {
                 OptOut addedOptOut =
-                    await this.optOutService.AddOptOutAsync(optOut);
+                    await this.optOutProcessingService.RetrieveOrAddOptOutAsync(optOut);
 
                 return Created(addedOptOut);
             }
-            catch (OptOutValidationException optOutValidationException)
+            catch (OptOutProcessingValidationException optOutProcessingValidationException)
             {
-                return BadRequest(optOutValidationException.InnerException);
+                return BadRequest(optOutProcessingValidationException.InnerException);
             }
-            catch (OptOutDependencyValidationException optOutValidationException)
-                when (optOutValidationException.InnerException is InvalidOptOutReferenceException)
+            catch (OptOutProcessingDependencyValidationException optOutProcessingValidationException)
+                when (optOutProcessingValidationException.InnerException is InvalidOptOutReferenceException)
             {
-                return FailedDependency(optOutValidationException.InnerException);
+                return FailedDependency(optOutProcessingValidationException.InnerException);
             }
-            catch (OptOutDependencyValidationException optOutDependencyValidationException)
-               when (optOutDependencyValidationException.InnerException is AlreadyExistsOptOutException)
+            catch (OptOutProcessingDependencyValidationException optOutProcessingDependencyValidationException)
+               when (optOutProcessingDependencyValidationException.InnerException is AlreadyExistsOptOutException)
             {
-                return Conflict(optOutDependencyValidationException.InnerException);
+                return Conflict(optOutProcessingDependencyValidationException.InnerException);
             }
             catch (OptOutDependencyException optOutDependencyException)
             {
                 return InternalServerError(optOutDependencyException);
             }
-            catch (OptOutServiceException optOutServiceException)
+            catch (OptOutServiceException optOutProcessingServiceException)
             {
-                return InternalServerError(optOutServiceException);
+                return InternalServerError(optOutProcessingServiceException);
             }
         }
 
-        [HttpGet]
-        [EnableQuery(PageSize = 50)]
-        public ActionResult<IQueryable<OptOut>> Get()
+
+        [HttpGet("{optOutNhsNumber}")]
+        public async ValueTask<ActionResult<OptOut>> GetIngestionTrackingByIdAsync(string optOutNhsNumber)
         {
             try
             {
-                IQueryable<OptOut> retrievedOptOuts =
-                    this.optOutService.RetrieveAllOptOuts();
+                OptOut getOptOutByNhs =
+                    await this.optOutProcessingService.RetrieveOptOutByNhsNumberAsync(optOutNhsNumber);
 
-                return Ok(retrievedOptOuts);
+                return Ok(getOptOutByNhs);
             }
-            catch (OptOutDependencyException optOutDependencyException)
+            catch (OptOutProcessingValidationException optOutProcessingValidationException)
+                when (optOutProcessingValidationException.InnerException is NotFoundIngestionTrackingException)
             {
-                return InternalServerError(optOutDependencyException);
+                return NotFound(optOutProcessingValidationException.InnerException);
             }
-            catch (OptOutServiceException optOutServiceException)
+            catch (OptOutProcessingValidationException optOutProcessingValidationException)
             {
-                return InternalServerError(optOutServiceException);
+                return BadRequest(optOutProcessingValidationException.InnerException);
+            }
+            catch (OptOutProcessingDependencyException optOutProcessingDependencyException)
+            {
+                return InternalServerError(optOutProcessingDependencyException);
+            }
+            catch (OptOutProcessingServiceException optOutProcessingServiceException)
+            {
+                return InternalServerError(optOutProcessingServiceException);
             }
         }
 
@@ -83,36 +94,36 @@ namespace LHDS.AdminPortal.Api.Controllers
             try
             {
                 OptOut modifiedOptOut =
-                    await this.optOutService.ModifyOptOutAsync(optOut);
+                    await this.optOutProcessingService.ModifyOptOutAsync(optOut);
 
                 return Ok(modifiedOptOut);
             }
-            catch (OptOutValidationException optOutValidationException)
-                when (optOutValidationException.InnerException is NotFoundOptOutException)
+            catch (OptOutProcessingValidationException optOutProcessingValidationException)
+                when (optOutProcessingValidationException.InnerException is NotFoundOptOutException)
             {
-                return NotFound(optOutValidationException.InnerException);
+                return NotFound(optOutProcessingValidationException.InnerException);
             }
-            catch (OptOutValidationException optOutValidationException)
+            catch (OptOutProcessingValidationException optOutProcessingValidationException)
             {
-                return BadRequest(optOutValidationException.InnerException);
+                return BadRequest(optOutProcessingValidationException.InnerException);
             }
-            catch (OptOutDependencyValidationException optOutValidationException)
-                when (optOutValidationException.InnerException is InvalidOptOutReferenceException)
+            catch (OptOutProcessingDependencyValidationException optOutProcessingValidationException)
+                when (optOutProcessingValidationException.InnerException is InvalidOptOutReferenceException)
             {
-                return FailedDependency(optOutValidationException.InnerException);
+                return FailedDependency(optOutProcessingValidationException.InnerException);
             }
-            catch (OptOutDependencyValidationException optOutDependencyValidationException)
-               when (optOutDependencyValidationException.InnerException is AlreadyExistsOptOutException)
+            catch (OptOutProcessingDependencyValidationException optOutProcessingDependencyValidationException)
+               when (optOutProcessingDependencyValidationException.InnerException is AlreadyExistsOptOutException)
             {
-                return Conflict(optOutDependencyValidationException.InnerException);
+                return Conflict(optOutProcessingDependencyValidationException.InnerException);
             }
             catch (OptOutDependencyException optOutDependencyException)
             {
                 return InternalServerError(optOutDependencyException);
             }
-            catch (OptOutServiceException optOutServiceException)
+            catch (OptOutServiceException optOutProcessingServiceException)
             {
-                return InternalServerError(optOutServiceException);
+                return InternalServerError(optOutProcessingServiceException);
             }
         }
     }

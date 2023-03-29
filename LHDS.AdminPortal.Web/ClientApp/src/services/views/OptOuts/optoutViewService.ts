@@ -50,9 +50,9 @@ export const optOutViewService = {
         }
     },
 
-    useGetOptOutsById: (id: Guid) => {
+    useGetOptOutsByNhsNumber: (nhsNumber: string) => {
         try {
-            const query = `?$filter=id eq ${id}`
+            const query = `/${nhsNumber}`
             const response = optOutService.useGetAllOptOuts(query);
             const [mappedOptOut, setMappedOptOut] = useState<OptOutView>();
 

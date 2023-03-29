@@ -2,15 +2,15 @@ import React from "react";
 import 'nhsuk-frontend/dist/nhsuk.min'
 import 'nhsuk-frontend/packages/polyfills';
 import { Container } from 'nhsuk-react-components'
-import OptOutDetail from "../components/optOut/optOutDetail";
+import OptOutUploadDetail from "../components/optOut/upload/optOutUploadDetail";
 
-export const OptOutHomepage = () => {
+export const OptOutUpload = () => {
     return <div>
         <section >
             <Container>
                 <main id="maincontent" className="NELTopPadding" role="main">
                     <>
-                        <OptOutDetail></OptOutDetail>
+                        <OptOutUploadDetail></OptOutUploadDetail>
                     </>
                 </main>
             </Container>

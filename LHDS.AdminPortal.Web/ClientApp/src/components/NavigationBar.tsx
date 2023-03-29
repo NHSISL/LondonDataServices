@@ -16,8 +16,8 @@ export const NavigationBar = () => {
                             <SecuredLink to="/">Home</SecuredLink>
                             <SecuredLink to="/ingestionTracking">Supplier Data</SecuredLink>
                             <NavDropdown title="Opt Out">
-                                <SecuredLink to="/optOut">  Search Opt-Out</SecuredLink>
-                                <SecuredLink to="/optOut">  Upload Opt-Out</SecuredLink> 
+                                <SecuredLink to="/optOutSearch">  Search Opt-Out</SecuredLink>
+                                <SecuredLink to="/optOutUpload">  Upload Opt-Out</SecuredLink> 
                             </NavDropdown>
                         </Nav>
                     </Navbar.Collapse>

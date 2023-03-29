@@ -20,6 +20,42 @@ namespace LHDS.AdminPortal.Api.Controllers
         public OptOutsController(IOptOutService optOutService) =>
             this.optOutService = optOutService;
 
+
+        [HttpPost]
+        public async ValueTask<ActionResult<OptOut>> PostOptOutAsync(
+            OptOut optOut)
+        {
+            try
+            {
+                OptOut addedOptOut =
+                    await this.optOutService.AddOptOutAsync(optOut);
+
+                return Created(addedOptOut);
+            }
+            catch (OptOutValidationException optOutValidationException)
+            {
+                return BadRequest(optOutValidationException.InnerException);
+            }
+            catch (OptOutDependencyValidationException optOutValidationException)
+                when (optOutValidationException.InnerException is InvalidOptOutReferenceException)
+            {
+                return FailedDependency(optOutValidationException.InnerException);
+            }
+            catch (OptOutDependencyValidationException optOutDependencyValidationException)
+               when (optOutDependencyValidationException.InnerException is AlreadyExistsOptOutException)
+            {
+                return Conflict(optOutDependencyValidationException.InnerException);
+            }
+            catch (OptOutDependencyException optOutDependencyException)
+            {
+                return InternalServerError(optOutDependencyException);
+            }
+            catch (OptOutServiceException optOutServiceException)
+            {
+                return InternalServerError(optOutServiceException);
+            }
+        }
+
         [HttpGet]
         [EnableQuery(PageSize = 50)]
         public ActionResult<IQueryable<OptOut>> Get()

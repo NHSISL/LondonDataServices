@@ -1,11 +1,11 @@
 import moment from "moment";
 import React, { FunctionComponent } from "react";
-import { OptOutView } from "../../models/views/components/optOuts/optOutView";
-import ButtonBase from "../bases/buttons/ButtonBase";
-import SummaryListBase from "../bases/components/SummaryList/SummaryListBase";
-import SummaryListBaseKey from "../bases/components/SummaryList/SummaryListBase.Key";
-import SummaryListBaseRow from "../bases/components/SummaryList/SummaryListBase.Row";
-import SummaryListBaseValue from "../bases/components/SummaryList/SummaryListBase.Value";
+import { OptOutView } from "../../../models/views/components/optOuts/optOutView";
+import ButtonBase from "../../bases/buttons/ButtonBase";
+import SummaryListBase from "../../bases/components/SummaryList/SummaryListBase";
+import SummaryListBaseKey from "../../bases/components/SummaryList/SummaryListBase.Key";
+import SummaryListBaseRow from "../../bases/components/SummaryList/SummaryListBase.Row";
+import SummaryListBaseValue from "../../bases/components/SummaryList/SummaryListBase.Value";
 
 interface OptOutDetailCardViewProps {
     optOuts: Array<OptOutView>;
@@ -49,8 +49,16 @@ const OptOutDetailCardView: FunctionComponent<OptOutDetailCardViewProps> = (prop
                     </SummaryListBase>
                 </div>
             )}
+
             {optOuts[0] === undefined && (
-                <ButtonBase onClick={() => (optOuts)} view>&nbsp;Add New Nhs Number</ButtonBase>
+                <div>
+                <p>You can search for an NHS number in the search bar above.   </p>
+                <p>Alternatively, if you need to add a new patient to the system, click the "Add new" button to enter some details, including a valid NHS number. 
+                 It's important to ensure that all NHS numbers entered into the system are valid and accurate to ensure that patient records are up to date and accessible when needed.
+                 </p>
+
+                    <ButtonBase onClick={() => (optOuts)} view>&nbsp;Add New Nhs Number</ButtonBase>
+                </div>
             )}
         </>
     );

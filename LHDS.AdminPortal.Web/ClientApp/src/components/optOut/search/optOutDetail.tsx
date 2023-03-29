@@ -1,10 +1,10 @@
 import { debounce } from "lodash";
 import React, { FunctionComponent, useMemo, useState } from "react";
-import { OptOutView } from "../../models/views/components/optOuts/optOutView";
-import { toastSuccess } from "../../brokers/toastBroker";
-import { optOutViewService } from "../../services/views/OptOuts/optoutViewService";
-import SearchBase from "../bases/inputs/SearchBase";
-import { SpinnerBase } from "../bases/spinner/SpinnerBase";
+import { OptOutView } from "../../../models/views/components/optOuts/optOutView";
+import { toastSuccess } from "../../../brokers/toastBroker";
+import { optOutViewService } from "../../../services/views/OptOuts/optoutViewService";
+import SearchBase from "../../bases/inputs/SearchBase";
+import { SpinnerBase } from "../../bases/spinner/SpinnerBase";
 import OptOutDetailCard from "./optOutDetailCard";
 
 interface OptOutDetailProps {

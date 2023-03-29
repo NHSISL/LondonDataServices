@@ -7,9 +7,9 @@ import CardBaseTitle from "../../bases/components/Card/CardBase.Title";
 import OptOutDetailCardView from "./optOutDetailCardView";
 
 interface OptOutDetailCardProps {
-    optOuts: Array<OptOutView>;
+    optOuts: OptOutView | undefined;
     children?: React.ReactNode;
-    onClearCache: (optOuts: Array<OptOutView>) => void;
+    onClearCache: (optOuts: OptOutView) => void;
 }
 
 const OptOutDetailCard: FunctionComponent<OptOutDetailCardProps> = (props) => {

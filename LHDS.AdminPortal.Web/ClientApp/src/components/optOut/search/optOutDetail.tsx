@@ -18,7 +18,7 @@ const OptOutDetail: FunctionComponent<OptOutDetailProps> = (props) => {
 
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
-    const { mappedOptOuts: optOutsRetrieved, isLoading } = optOutViewService.useGetAllOptOuts(debouncedTerm);
+    const { mappedOptOut: optOutsRetrieved, isLoading } = optOutViewService.useGetOptOutsByNhsNumber(debouncedTerm);
 
     const handleDebounce = useMemo(
         () =>
@@ -34,10 +34,10 @@ const OptOutDetail: FunctionComponent<OptOutDetailProps> = (props) => {
     };
 
     const updateOptOut = optOutViewService.useUpdateSupplier();
-    const handleClearCache = async (OptOutView: Array<OptOutView>) => {
+    const handleClearCache = async (OptOutView: OptOutView) => {
         toastSuccess("Clearing Cache");
-        OptOutView[0].cacheTime = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)  
-        return updateOptOut.mutateAsync(OptOutView[0]);
+        OptOutView.cacheTime = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)  
+        return updateOptOut.mutateAsync(OptOutView);
     }
 
     return (

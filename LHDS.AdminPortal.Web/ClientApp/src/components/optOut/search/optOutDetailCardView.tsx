@@ -8,8 +8,8 @@ import SummaryListBaseRow from "../../bases/components/SummaryList/SummaryListBa
 import SummaryListBaseValue from "../../bases/components/SummaryList/SummaryListBase.Value";
 
 interface OptOutDetailCardViewProps {
-    optOuts: Array<OptOutView>;
-    onClearCache: (optOuts: Array<OptOutView>) => void;
+    optOuts: OptOutView | undefined;
+    onClearCache: (optOuts: OptOutView) => void;
 }
 
 const OptOutDetailCardView: FunctionComponent<OptOutDetailCardViewProps> = (props) => {
@@ -20,24 +20,24 @@ const OptOutDetailCardView: FunctionComponent<OptOutDetailCardViewProps> = (prop
 
     return (
         <>
-            {optOuts[0] !== undefined && (
+            {optOuts !== undefined && (
                 <div>
                     <SummaryListBase>
                         <SummaryListBaseRow>
                             <SummaryListBaseKey>NHS Number</SummaryListBaseKey>
-                            <SummaryListBaseValue>{optOuts[0].nhsNumber}</SummaryListBaseValue>
+                            <SummaryListBaseValue>{optOuts.nhsNumber}</SummaryListBaseValue>
                         </SummaryListBaseRow>
                         <SummaryListBaseRow>
                             <SummaryListBaseKey>Opt-Out Status</SummaryListBaseKey>
-                            <SummaryListBaseValue>{optOuts[0].optOutStatus}</SummaryListBaseValue>
+                            <SummaryListBaseValue>{optOuts.optOutStatus}</SummaryListBaseValue>
                         </SummaryListBaseRow>
                         <SummaryListBaseRow>
                             <SummaryListBaseKey>Cache Time</SummaryListBaseKey>
-                            <SummaryListBaseValue>{moment(optOuts[0].cacheTime?.toString()).format("Do-MMM-yyyy")}</SummaryListBaseValue>
+                            <SummaryListBaseValue>{moment(optOuts.cacheTime?.toString()).format("Do-MMM-yyyy")}</SummaryListBaseValue>
                         </SummaryListBaseRow>
                         <SummaryListBaseRow>
                             <SummaryListBaseKey>Last Sent To Mesh</SummaryListBaseKey>
-                            <SummaryListBaseValue>{moment(optOuts[0].lastSentToMesh?.toString()).format("Do-MMM-yyyy")}</SummaryListBaseValue>
+                            <SummaryListBaseValue>{moment(optOuts.lastSentToMesh?.toString()).format("Do-MMM-yyyy")}</SummaryListBaseValue>
                         </SummaryListBaseRow>
 
                         <SummaryListBaseRow>
@@ -50,7 +50,7 @@ const OptOutDetailCardView: FunctionComponent<OptOutDetailCardViewProps> = (prop
                 </div>
             )}
 
-            {optOuts[0] === undefined && (
+            {optOuts === undefined && (
                 <div>
                 <p>You can search for an NHS number in the search bar above.   </p>
                 <p>Alternatively, if you need to add a new patient to the system, click the "Add new" button to enter some details, including a valid NHS number. 

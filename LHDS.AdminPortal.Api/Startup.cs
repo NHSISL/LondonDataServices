@@ -19,8 +19,8 @@ using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
-using LHDS.Core.Services.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.Suppliers;
+using LHDS.Core.Services.Processings.OptOuts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.OData;
@@ -89,6 +89,7 @@ namespace LHDS.AdminPortal.Api
             AddBrokers(services, this.Configuration);
             AddFoundationServices(services, this.Configuration);
             AddOrchestrationServices(services, this.Configuration);
+            AddProcessingServices(services, this.Configuration);
 
             var blobServiceUri = Configuration["BlobStorage:blob"];
 
@@ -167,7 +168,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<ISupplierService, SupplierService>();
             services.AddTransient<IAuditService, AuditService>();
             services.AddTransient<IDocumentService, DocumentService>();
-            services.AddTransient<IOptOutService, OptOutService>();
+
 
             var blobServiceUri = GetSettings(configuration, "blobStorage:azureBlobServiceUri", true);
             var azureTenantId = GetSettings(configuration, "blobStorage:azureTenantId", true);
@@ -193,6 +194,11 @@ namespace LHDS.AdminPortal.Api
         private static void AddOrchestrationServices(IServiceCollection services, IConfiguration configuration)
         {
 
+        }
+
+        private static void AddProcessingServices(IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddTransient<IOptOutProcessingService, OptOutProcessingService>();
         }
 
         private IEdmModel GetEdmModel()

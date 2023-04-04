@@ -6,6 +6,8 @@ import { PublicLink } from '../components/Links';
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 import { loginRequest } from '../authConfig';
 import { Button } from 'react-bootstrap';
+import { FeatureSwitch } from '../components/accessControl/FeatureSwitch';
+import { FeatureDefinitions } from '../featureDefinitions';
 
 export const Home = () => {
     const isAuthenticated = useIsAuthenticated();
@@ -32,7 +34,9 @@ export const Home = () => {
                 <Container className="NELTopPadding">
                     {isAuthenticated ? (
                         <div>
+                            
                             <Card.Group>
+                                <FeatureSwitch feature={FeatureDefinitions.EmisIngestionTracking}>
                                 <Card.GroupItem width="one-half">
                                     <Card clickable>
                                         <Card.Content>
@@ -44,9 +48,8 @@ export const Home = () => {
                                             </Card.Description>
                                         </Card.Content>
                                     </Card>
-                                </Card.GroupItem>
-
-                               
+                                    </Card.GroupItem>
+                                </FeatureSwitch>
                             </Card.Group>
                         </div>
                     ) : (

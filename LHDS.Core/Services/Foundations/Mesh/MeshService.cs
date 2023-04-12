@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
+using NEL.MESH.Models.Foundations.Mesh;
 
 namespace LHDS.Core.Services.Foundations.Mesh
 {
@@ -25,42 +26,44 @@ namespace LHDS.Core.Services.Foundations.Mesh
         public ValueTask<bool> ValidateMailboxAccessAsync() =>
             TryCatch(async () =>
             {
-                return await this.meshBroker.ValidateAccessAsync();
+                return await this.meshBroker.HandshakeAsync();
             });
 
-        public ValueTask<bool> AcknowledgeMessageByIdAsync(string inputMailboxId, string inputMessageId) =>
-            TryCatch(async () =>
-            {
-                ValidateMeshArgs(inputMailboxId, inputMessageId);
-                return await this.meshBroker.AcknowledgeMessageByIdAsync(inputMailboxId, inputMessageId);
-            });
+        public ValueTask<Message> SendMessageAsync(Message message) =>
+            throw new System.NotImplementedException();
 
-        public ValueTask<string> RetrieveMessageByIdAsync(string mailboxId, string messageId) =>
-            TryCatch(async () =>
-            {
-                ValidateMeshArgs(mailboxId, messageId);
-                return await this.meshBroker.GetMessageByIdAsync(mailboxId, messageId);
-            });
+        public ValueTask<Message> SendFileAsync(Message message) =>
+            throw new System.NotImplementedException();
 
-        public ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync(string mailboxId) =>
-             TryCatch(async () =>
-             {
-                 ValidateMailboxId(mailboxId);
-                 return await this.meshBroker.GetMessageIdsFromInboxAsync(mailboxId);
-             });
+        public ValueTask<Message> RetrieveTrackingStatusAsync(string messageId) =>
+            //TryCatch(async () =>
+            //{
+            //    ValidateMessageId(messageId);
+            //    return await this.meshBroker.TrackMessageAsync(messageId);
+            //});
+            throw new System.NotImplementedException();
 
-        public ValueTask<string> SendMessageAsync(string messageId) =>
-            TryCatch(async () =>
-            {
-                ValidateMessageId(messageId);
-                return await this.meshBroker.SendMessageAsync(messageId);
-            });
+        public ValueTask<List<string>> RetrieveMessagesFromInboxAsync() =>
+            //TryCatch(async () =>
+            //{
+            //    return await this.meshBroker.RetrieveMessagesAsync();
+            //});
+            throw new System.NotImplementedException();
 
-        public ValueTask<string> RetrieveTrackingStatusAsync(string mailboxId, string messageId) =>
-            TryCatch(async () =>
-            {
-                ValidateMeshArgs(mailboxId, messageId);
-                return await this.meshBroker.GetTrackingStatusAsync(mailboxId, messageId);
-            });
+        public ValueTask<Message> RetrieveMessageByIdAsync(string messageId) =>
+            //TryCatch(async () =>
+            //{
+            //    ValidateMessageId(messageId);
+            //    return await this.meshBroker.RetrieveMessageAsync(messageId);
+            //});
+            throw new System.NotImplementedException();
+
+        public ValueTask<bool> AcknowledgeMessageByIdAsync(string inputMessageId) =>
+            //TryCatch(async () =>
+            //{
+            //    ValidateMessageId(inputMessageId);
+            //    return await this.meshBroker.AcknowledgeMessageAsync(inputMessageId);
+            //});
+            throw new System.NotImplementedException();
     }
 }

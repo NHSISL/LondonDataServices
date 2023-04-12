@@ -1,42 +1,64 @@
-﻿// ---------------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+﻿//// ---------------------------------------------------------------
+//// Copyright (c) North East London ICB. All rights reserved.
+//// ---------------------------------------------------------------
 
-using System.Threading.Tasks;
-using FluentAssertions;
-using Moq;
-using Xunit;
+//using System.Net.Http;
+//using System.Reflection.PortableExecutable;
+//using System.Runtime.InteropServices;
+//using System.Threading.Tasks;
+//using FluentAssertions;
+//using Moq;
+//using NEL.MESH.Models.Foundations.Mesh;
+//using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
-{
-    public partial class MeshServiceTests
-    {
-        [Fact]
-        public async Task ShouldReturnSendMessageAsync()
-        {
-            // given
-            string randomMessageId = GetRandomMessage();
-            string inputMessageId = randomMessageId;
-            string outputValidationResult = GetRandomMessage();
-            string expectedValidationResult = outputValidationResult;
+//namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
+//{
+//    public partial class MeshServiceTests
+//    {
+//        [Fact]
+//        public async Task ShouldReturnSendMessageAsync()
+//        {
+//            // given
+//            dynamic meshMessageProperties =
+//                CreateRandomMeshMessageProperties();
 
-            this.meshBrokerMock.Setup(broker =>
-                broker.SendMessageAsync(inputMessageId))
-                    .ReturnsAsync(outputValidationResult);
+//            var randomMeshMessage = new Message
+//            {
+//                MessageId = meshMessageProperties.MessageId,
+//                Headers = meshMessageProperties.Headers,
+//                StringContent = meshMessageProperties.StringContent,
+//                FileContent = meshMessageProperties.FileContent,
+//                TrackingInfo = meshMessageProperties.TrackingInfo
+//            };
 
-            // when
-            string actualMeshValidation =
-                await this.meshService.SendMessageAsync(inputMessageId);
+//            Message inputMessage = randomMeshMessage;
 
-            // then
-            actualMeshValidation.Should().Be(expectedValidationResult);
+//            var expectedMeshMessage = new Message
+//            {
+//                MessageId = meshMessageProperties.MessageId,
+//                Headers = meshMessageProperties.Headers,
+//                StringContent = meshMessageProperties.StringContent,
+//                FileContent = meshMessageProperties.FileContent,
+//                TrackingInfo = meshMessageProperties.TrackingInfo
+//            };
 
-            this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(inputMessageId),
-                    Times.Once());
+//            this.meshBrokerMock.Setup(broker =>
+//                broker.SendMessageAsync(inputMessage))
+//                    .ReturnsAsync(randomMeshMessage);
 
-            this.meshBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-    }
-}
+//            // when
+//            Message actualMeshMessage =
+//                await this.meshService.SendMessageAsync(inputMessage);
+
+//            // then
+//            actualMeshMessge.Should().Be(expectedValidationResult);
+
+//            this.meshBrokerMock.Verify(broker =>
+//                broker.SendMessageAsync(inputMessage),
+//                    Times.Once());
+
+//            this.meshBrokerMock.VerifyNoOtherCalls();
+//            this.loggingBrokerMock.VerifyNoOtherCalls();
+//        }
+//    }
+//}

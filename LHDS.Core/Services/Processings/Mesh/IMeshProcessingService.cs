@@ -13,6 +13,6 @@ namespace LHDS.Core.Services.Processings.Mesh
         ValueTask<bool> ValidateMailboxAccessAsync();
         ValueTask<List<string>> RetrieveMessagesFromInboxAsync();
         ValueTask<Message> RetrieveAndAcknowledgeMessageByIdAsync(Message message);
-        ValueTask<string> SendMessageAsync(string mailboxId, string messageId);
+        ValueTask<Message> SendMessageAsync(Message message);
     }
 }

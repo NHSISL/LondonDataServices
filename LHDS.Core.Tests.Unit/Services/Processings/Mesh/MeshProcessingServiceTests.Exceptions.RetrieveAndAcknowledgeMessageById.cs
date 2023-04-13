@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             // when
             ValueTask<MeshMessage> retrieveMessageAndAcknowledgeTask =
-                this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(randomMessage);
+                this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(randomMessage.MessageId);
 
             MeshProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<MeshProcessingDependencyValidationException>(retrieveMessageAndAcknowledgeTask.AsTask);
@@ -72,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             // when
             ValueTask<MeshMessage> retrieveMessageAndAcknowledgeTask =
-                this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(randomMessage);
+                this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(randomMessage.MessageId);
 
             MeshProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<MeshProcessingDependencyException>(retrieveMessageAndAcknowledgeTask.AsTask);
@@ -114,7 +114,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             // when
             ValueTask<MeshMessage> retrieveMessageAndAcknowledgeTask =
-                this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(randomMessage);
+                this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(randomMessage.MessageId);
 
             MeshProcessingServiceException actualException =
                 await Assert.ThrowsAsync<MeshProcessingServiceException>(retrieveMessageAndAcknowledgeTask.AsTask);

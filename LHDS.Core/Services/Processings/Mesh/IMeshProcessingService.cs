@@ -12,7 +12,7 @@ namespace LHDS.Core.Services.Processings.Mesh
     {
         ValueTask<bool> ValidateMailboxAccessAsync();
         ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync(string mailboxId);
-        ValueTask<MeshMessage> RetrieveAndAcknowledgeMessageByIdAsync(MeshMessage message);
+        ValueTask<MeshMessage> RetrieveAndAcknowledgeMessageByIdAsync(string messageId);
         ValueTask<string> SendMessageAsync(string mailboxId, string messageId);
     }
 }

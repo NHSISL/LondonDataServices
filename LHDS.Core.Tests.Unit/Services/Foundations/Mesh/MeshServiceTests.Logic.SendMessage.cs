@@ -7,6 +7,7 @@ using System.Reflection.PortableExecutable;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Mesh;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
@@ -19,30 +20,47 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldReturnSendMessageAsync()
         {
             // given
-            dynamic meshMessageProperties =
+            dynamic dynamicMeshMessageProperties =
                 CreateRandomMeshMessageProperties();
 
-            var randomMeshMessage = new Message
+            var randomMessage = new Message
             {
-                MessageId = meshMessageProperties.MessageId,
-                Headers = meshMessageProperties.Headers,
-                StringContent = meshMessageProperties.StringContent,
-                FileContent = meshMessageProperties.FileContent,
-                TrackingInfo = meshMessageProperties.TrackingInfo
+                MessageId = dynamicMeshMessageProperties.MessageId,
+                Headers = dynamicMeshMessageProperties.Headers,
+                StringContent = dynamicMeshMessageProperties.StringContent,
+                FileContent = dynamicMeshMessageProperties.FileContent,
+                TrackingInfo = dynamicMeshMessageProperties.TrackingInfo
             };
 
-            Message inputMeshMessage = randomMeshMessage;
-            Message expectedMeshMessage = inputMeshMessage;
+            var inputMessage = randomMessage;
+            var outputMessage = inputMessage;
+
+            MeshMessage randomMeshMessage = new MeshMessage
+            {
+                MessageId = dynamicMeshMessageProperties.MessageId,
+                Headers = dynamicMeshMessageProperties.Headers,
+                StringContent = dynamicMeshMessageProperties.StringContent,
+                FileContent = dynamicMeshMessageProperties.FileContent,
+                TrackingInfo = dynamicMeshMessageProperties.TrackingInfo
+            };
+
+            var inputMeshMessage = randomMeshMessage;
+            var expectedMeshMessage = randomMeshMessage;
+
+            this.meshBrokerMock.Setup(broker =>
+                broker.SendMessageAsync(inputMessage))
+                    .ReturnsAsync(outputMessage);
+
 
             // when
-            Message actualMeshMessage =
+            MeshMessage actualMeshMessage =
                 await this.meshService.SendMessageAsync(inputMeshMessage);
 
             // then
             actualMeshMessage.Should().BeEquivalentTo(expectedMeshMessage);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(inputMeshMessage),
+                broker.SendMessageAsync(inputMessage),
                     Times.Once());
 
             this.meshBrokerMock.VerifyNoOtherCalls();

@@ -29,8 +29,10 @@ namespace LHDS.Core.Services.Foundations.Mesh
                 return await this.meshBroker.HandshakeAsync();
             });
 
-        public ValueTask<Message> SendMessageAsync(Message message) =>
-            throw new System.NotImplementedException();
+        public ValueTask<Message> SendMessageAsync(Message message)
+        {
+            return this.meshBroker.SendMessageAsync(message);
+        }
 
         public ValueTask<Message> SendFileAsync(Message message) =>
             throw new System.NotImplementedException();

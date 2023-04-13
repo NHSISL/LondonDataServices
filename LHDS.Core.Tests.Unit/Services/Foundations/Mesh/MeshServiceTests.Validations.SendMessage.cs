@@ -1,63 +1,47 @@
-﻿//// ---------------------------------------------------------------
-//// Copyright (c) North East London ICB. All rights reserved.
-//// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
 
-//using System.Threading.Tasks;
-//using FluentAssertions;
-//using LHDS.Core.Models.Foundations.Mesh.Exceptions;
-//using Moq;
-//using Xunit;
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.Mesh.Exceptions;
+using Moq;
+using NEL.MESH.Models.Foundations.Mesh;
+using Xunit;
 
-//namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
-//{
-//    public partial class MeshServiceTests
-//    {
+namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
+{
+    public partial class MeshServiceTests
+    {
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfMessageIsNullAsync()
+        {
+            // given
+            Message nullMessage = null;
 
-//        [Theory]
-//        [InlineData(null)]
-//        [InlineData("")]
-//        [InlineData(" ")]
-//        public async Task ShouldThrowValidationExceptionOnSendMessageIfArgsIsInvalidAndLogItAsync(
-//            string invalidText)
-//        {
-//            // given
-//            string messageId = invalidText;
+            var nullMessageException =
+                new NullMessageException();
 
-//            var invalidArgumentMeshException =
-//                new InvalidArgumentMeshException();
+            var expectedMeshValidationException =
+                new MeshValidationException(nullMessageException);
 
-//            invalidArgumentMeshException.AddData(
-//                key: nameof(messageId),
-//                values: "Text is required");
+            // when
+            ValueTask<Message> addMessageTask =
+                this.meshService.SendMessageAsync(nullMessage);
 
-//            var expectedMeshValidationException =
-//                new MeshValidationException(
-//                    innerException: invalidArgumentMeshException,
-//                    validationSummary: GetValidationSummary(invalidArgumentMeshException.Data));
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(() =>
+                    addMessageTask.AsTask());
 
-//            // when
-//            ValueTask<string> retrieveSendMessageByIdTask =
-//                this.meshService.SendMessageAsync(messageId);
+            // then
+            actualMeshValidationException.Should()
+                .BeEquivalentTo(expectedMeshValidationException);
 
-//            MeshValidationException actualMeshValidationException =
-//                await Assert.ThrowsAsync<MeshValidationException>(
-//                    retrieveSendMessageByIdTask.AsTask);
+            this.meshBrokerMock.Verify(broker =>
+                broker.SendMessageAsync(nullMessage),
+                        Times.Never);
 
-//            // then
-//            actualMeshValidationException.Should()
-//                .BeEquivalentTo(expectedMeshValidationException);
-
-//            this.loggingBrokerMock.Verify(broker =>
-//                broker.LogError(It.Is(SameExceptionAs(
-//                    expectedMeshValidationException))),
-//                        Times.Once);
-
-//            this.meshBrokerMock.Verify(broker =>
-//               broker.SendMessageAsync(messageId),
-//                   Times.Never);
-
-//            this.loggingBrokerMock.VerifyNoOtherCalls();
-//            this.meshBrokerMock.VerifyNoOtherCalls();
-//        }
-//    }
-//}
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

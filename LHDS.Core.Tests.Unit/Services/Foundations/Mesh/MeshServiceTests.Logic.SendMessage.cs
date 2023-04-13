@@ -1,64 +1,52 @@
-﻿//// ---------------------------------------------------------------
-//// Copyright (c) North East London ICB. All rights reserved.
-//// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
 
-//using System.Net.Http;
-//using System.Reflection.PortableExecutable;
-//using System.Runtime.InteropServices;
-//using System.Threading.Tasks;
-//using FluentAssertions;
-//using Moq;
-//using NEL.MESH.Models.Foundations.Mesh;
-//using Xunit;
+using System.Net.Http;
+using System.Reflection.PortableExecutable;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Moq;
+using NEL.MESH.Models.Foundations.Mesh;
+using Xunit;
 
-//namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
-//{
-//    public partial class MeshServiceTests
-//    {
-//        [Fact]
-//        public async Task ShouldReturnSendMessageAsync()
-//        {
-//            // given
-//            dynamic meshMessageProperties =
-//                CreateRandomMeshMessageProperties();
+namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
+{
+    public partial class MeshServiceTests
+    {
+        [Fact]
+        public async Task ShouldReturnSendMessageAsync()
+        {
+            // given
+            dynamic meshMessageProperties =
+                CreateRandomMeshMessageProperties();
 
-//            var randomMeshMessage = new Message
-//            {
-//                MessageId = meshMessageProperties.MessageId,
-//                Headers = meshMessageProperties.Headers,
-//                StringContent = meshMessageProperties.StringContent,
-//                FileContent = meshMessageProperties.FileContent,
-//                TrackingInfo = meshMessageProperties.TrackingInfo
-//            };
+            var randomMeshMessage = new Message
+            {
+                MessageId = meshMessageProperties.MessageId,
+                Headers = meshMessageProperties.Headers,
+                StringContent = meshMessageProperties.StringContent,
+                FileContent = meshMessageProperties.FileContent,
+                TrackingInfo = meshMessageProperties.TrackingInfo
+            };
 
-//            Message inputMessage = randomMeshMessage;
+            Message inputMeshMessage = randomMeshMessage;
+            Message expectedMeshMessage = inputMeshMessage;
 
-//            var expectedMeshMessage = new Message
-//            {
-//                MessageId = meshMessageProperties.MessageId,
-//                Headers = meshMessageProperties.Headers,
-//                StringContent = meshMessageProperties.StringContent,
-//                FileContent = meshMessageProperties.FileContent,
-//                TrackingInfo = meshMessageProperties.TrackingInfo
-//            };
+            // when
+            Message actualMeshMessage =
+                await this.meshService.SendMessageAsync(inputMeshMessage);
 
-//            this.meshBrokerMock.Setup(broker =>
-//                broker.SendMessageAsync(inputMessage))
-//                    .ReturnsAsync(randomMeshMessage);
+            // then
+            actualMeshMessage.Should().BeEquivalentTo(expectedMeshMessage);
 
-//            // when
-//            Message actualMeshMessage =
-//                await this.meshService.SendMessageAsync(inputMessage);
+            this.meshBrokerMock.Verify(broker =>
+                broker.SendMessageAsync(inputMeshMessage),
+                    Times.Once());
 
-//            // then
-//            actualMeshMessge.Should().Be(expectedValidationResult);
-
-//            this.meshBrokerMock.Verify(broker =>
-//                broker.SendMessageAsync(inputMessage),
-//                    Times.Once());
-
-//            this.meshBrokerMock.VerifyNoOtherCalls();
-//            this.loggingBrokerMock.VerifyNoOtherCalls();
-//        }
-//    }
-//}
+            this.meshBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

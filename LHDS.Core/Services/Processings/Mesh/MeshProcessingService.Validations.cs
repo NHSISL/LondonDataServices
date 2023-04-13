@@ -20,12 +20,6 @@ namespace LHDS.Core.Services.Processings.Mesh
                 (Rule: IsInvalid(MessageId), Parameter: nameof(MessageId)));
         }
 
-        private static void ValidateGetArguments(string mailboxId)
-        {
-            Validate(
-               (Rule: IsInvalid(mailboxId), Parameter: nameof(mailboxId)));
-        }
-
         private static void ValidateMeshMessageIsNotNull(MeshMessage meshMessage)
         {
             if (meshMessage is null)

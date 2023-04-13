@@ -5,9 +5,9 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using Moq;
-using NEL.MESH.Models.Foundations.Mesh;
 using Xeptions;
 using Xunit;
 
@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
           Xeption dependencyValidationException)
         {
             // given
-            Message randomMessage = CreateRandomMessage();
+            MeshMessage randomMessage = CreateRandomMessage();
 
             var expectedMeshProcessingDependencyValidationException =
                 new MeshProcessingDependencyValidationException(
@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask<Message> retrieveMessageAndAcknowledgeTask =
+            ValueTask<MeshMessage> retrieveMessageAndAcknowledgeTask =
                 this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(randomMessage);
 
             MeshProcessingDependencyValidationException actualException =
@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
           Xeption dependencyException)
         {
             // given
-            Message randomMessage = CreateRandomMessage();
+            MeshMessage randomMessage = CreateRandomMessage();
 
             var expectedMeshProcessingDependencyException =
                 new MeshProcessingDependencyException(
@@ -71,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     .Throws(dependencyException);
 
             // when
-            ValueTask<Message> retrieveMessageAndAcknowledgeTask =
+            ValueTask<MeshMessage> retrieveMessageAndAcknowledgeTask =
                 this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(randomMessage);
 
             MeshProcessingDependencyException actualException =
@@ -97,7 +97,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
         public async Task ShouldThrowServiceExceptionOnRetrieveMessageAndAcknowledgeIfServiceErrorOccursAsync()
         {
             // given
-            Message randomMessage = CreateRandomMessage();
+            MeshMessage randomMessage = CreateRandomMessage();
 
             var serviceException = new Exception();
 
@@ -113,7 +113,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     .Throws(serviceException);
 
             // when
-            ValueTask<Message> retrieveMessageAndAcknowledgeTask =
+            ValueTask<MeshMessage> retrieveMessageAndAcknowledgeTask =
                 this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(randomMessage);
 
             MeshProcessingServiceException actualException =

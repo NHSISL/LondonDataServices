@@ -11,7 +11,7 @@ namespace LHDS.Core.Services.Processings.Mesh
     public interface IMeshProcessingService
     {
         ValueTask<bool> ValidateMailboxAccessAsync();
-        ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync(string mailboxId);
+        ValueTask<List<string>> RetrieveMessagesFromInboxAsync();
         ValueTask<Message> RetrieveAndAcknowledgeMessageByIdAsync(Message message);
         ValueTask<string> SendMessageAsync(string mailboxId, string messageId);
     }

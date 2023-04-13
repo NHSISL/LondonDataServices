@@ -4,14 +4,14 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using NEL.MESH.Models.Foundations.Mesh;
+using LHDS.Core.Models.Foundations.Mesh;
 
 namespace LHDS.Core.Services.Processings.Mesh
 {
     public interface IMeshProcessingService
     {
         ValueTask<bool> ValidateMailboxAccessAsync();
-        ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync(string mailboxId);
+        ValueTask<List<string>> RetrieveMessagesFromInboxAsync();
         ValueTask<MeshMessage> RetrieveAndAcknowledgeMessageByIdAsync(MeshMessage message);
         ValueTask<MeshMessage> SendMessageAsync(MeshMessage message);
     }

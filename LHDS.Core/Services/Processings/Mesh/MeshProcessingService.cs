@@ -35,16 +35,16 @@ namespace LHDS.Core.Services.Processings.Mesh
             throw new NotImplementedException();
         }
 
-        public ValueTask<MeshMessage> RetrieveAndAcknowledgeMessageByIdAsync(MeshMessage message) =>
+        public ValueTask<MeshMessage> RetrieveAndAcknowledgeMessageByIdAsync(string messageId) =>
             TryCatch(async () =>
             {
-                ValidateMeshArgs(message.MessageId);
+                ValidateMeshArgs(messageId);
 
-                MeshMessage retrievedMessage = await meshService.RetrieveMessageByIdAsync(message.MessageId);
+                MeshMessage retrievedMessage = await meshService.RetrieveMessageByIdAsync(messageId);
 
                 ValidateMeshMessageIsNotNull(retrievedMessage);
 
-                bool ackResult = await meshService.AcknowledgeMessageByIdAsync(message.MessageId);
+                bool ackResult = await meshService.AcknowledgeMessageByIdAsync(messageId);
 
                 return retrievedMessage;
             });

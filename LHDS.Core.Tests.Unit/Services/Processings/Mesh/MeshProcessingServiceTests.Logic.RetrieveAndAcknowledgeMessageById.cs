@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 .ReturnsAsync(storageMessage);
 
             // when
-            await this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(randomMessage);
+            await this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(randomMessage.MessageId);
 
             // then
             this.meshServiceMock.Verify(service =>

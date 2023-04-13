@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace LHDS.Core.Models.Foundations.Mesh
 {
-    internal class MeshMessage
+    public class MeshMessage
     {
         public string MessageId { get; set; }
         public Dictionary<string, List<string>> Headers { get; set; } = new Dictionary<string, List<string>>();

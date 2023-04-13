@@ -5,8 +5,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Services.Foundations.Mesh;
-using NEL.MESH.Models.Foundations.Mesh;
 
 namespace LHDS.Core.Services.Processings.Mesh
 {
@@ -35,22 +35,16 @@ namespace LHDS.Core.Services.Processings.Mesh
                 return await this.meshService.RetrieveMessagesFromInboxAsync();
             });
 
-        public ValueTask<Message> RetrieveAndAcknowledgeMessageByIdAsync(Message message) =>
+        public ValueTask<MeshMessage> RetrieveAndAcknowledgeMessageByIdAsync(MeshMessage message) =>
             TryCatch(async () =>
             {
                 ValidateMeshArgs(message.MessageId);
 
-                Message retrievedMessage;
-                try
-                {
-                    retrievedMessage = await meshService.RetrieveMessageByIdAsync(message.MessageId);
-                }
-                catch
-                {
-                    throw;
-                }
+                MeshMessage retrievedMessage = await meshService.RetrieveMessageByIdAsync(message.MessageId);
 
-                await meshService.AcknowledgeMessageByIdAsync(message.MessageId);
+                ValidateMeshMessageIsNotNull(retrievedMessage);
+
+                bool ackResult = await meshService.AcknowledgeMessageByIdAsync(message.MessageId);
 
                 return retrievedMessage;
             });

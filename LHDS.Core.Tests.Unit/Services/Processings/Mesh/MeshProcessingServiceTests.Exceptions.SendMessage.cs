@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     dependencyValidationException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>
-                service.RetrieveMessageByIdAsync(randomMessage.MessageId))
+                service.SendMessageAsync(randomMessage))
                     .Throws(dependencyValidationException);
 
             this.meshServiceMock.Setup(service =>
@@ -50,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             this.meshServiceMock.Verify(service =>
               service.RetrieveTrackingStatusAsync(randomMessage.MessageId),
-                  Times.Once);
+                  Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(

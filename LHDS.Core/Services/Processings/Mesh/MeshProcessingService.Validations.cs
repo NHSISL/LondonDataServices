@@ -12,12 +12,6 @@ namespace LHDS.Core.Services.Processings.Mesh
 {
     public partial class MeshProcessingService
     {
-        private static void ValidateGetArguments(string mailboxId)
-        {
-            Validate(
-               (Rule: IsInvalid(mailboxId), Parameter: nameof(mailboxId)));
-        }
-
         private static dynamic IsInvalid(string text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),

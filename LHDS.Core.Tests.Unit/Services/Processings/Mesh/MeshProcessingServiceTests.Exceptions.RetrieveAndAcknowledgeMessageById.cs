@@ -53,45 +53,44 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
-        //        [Theory]
-        //        [MemberData(nameof(DependencyExceptions))]
-        //        public async Task ShouldThrowDependencyOnRetrieveMessageAndAcknowledgeIfDependencyErrorOccursAndLogItAsync(
-        //          Xeption dependencyException)
-        //        {
-        //            // given
-        //            string mailboxId = GetRandomString();
-        //            string messageId = GetRandomString();
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyOnRetrieveMessageAndAcknowledgeIfDependencyErrorOccursAndLogItAsync(
+          Xeption dependencyException)
+        {
+            // given
+            Message randomMessage = CreateRandomMessage();
 
-        //            var expectedMeshProcessingDependencyException =
-        //                new MeshProcessingDependencyException(
-        //                    dependencyException.InnerException as Xeption);
+            var expectedMeshProcessingDependencyException =
+                new MeshProcessingDependencyException(
+                    dependencyException.InnerException as Xeption);
 
-        //            this.meshServiceMock.Setup(service =>
-        //                service.RetrieveMessageByIdAsync(mailboxId, messageId))
-        //                    .Throws(dependencyException);
+            this.meshServiceMock.Setup(service =>
+                service.RetrieveMessageByIdAsync(randomMessage.MessageId))
+                    .Throws(dependencyException);
 
-        //            // when
-        //            ValueTask<string> retrieveMessageAndAcknowledgeTask =
-        //                this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(mailboxId, messageId);
+            // when
+            ValueTask<Message> retrieveMessageAndAcknowledgeTask =
+                this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(randomMessage);
 
-        //            MeshProcessingDependencyException actualException =
-        //                await Assert.ThrowsAsync<MeshProcessingDependencyException>(retrieveMessageAndAcknowledgeTask.AsTask);
+            MeshProcessingDependencyException actualException =
+                await Assert.ThrowsAsync<MeshProcessingDependencyException>(retrieveMessageAndAcknowledgeTask.AsTask);
 
-        //            // then
-        //            actualException.Should().BeEquivalentTo(expectedMeshProcessingDependencyException);
+            // then
+            actualException.Should().BeEquivalentTo(expectedMeshProcessingDependencyException);
 
-        //            this.meshServiceMock.Verify(service =>
-        //                service.RetrieveMessageByIdAsync(mailboxId, messageId),
-        //                    Times.Once);
+            this.meshServiceMock.Verify(service =>
+                service.RetrieveMessageByIdAsync(randomMessage.MessageId),
+                    Times.Once);
 
-        //            this.loggingBrokerMock.Verify(broker =>
-        //                 broker.LogError(It.Is(SameExceptionAs(
-        //                     expectedMeshProcessingDependencyException))),
-        //                         Times.Once);
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedMeshProcessingDependencyException))),
+                         Times.Once);
 
-        //            this.meshServiceMock.VerifyNoOtherCalls();
-        //            this.loggingBrokerMock.VerifyNoOtherCalls();
-        //        }
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
 
         //        [Fact]
         //        public async Task ShouldThrowServiceExceptionOnRetrieveMessageAndAcknowledgeIfServiceErrorOccursAsync()

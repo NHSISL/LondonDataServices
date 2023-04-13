@@ -2,42 +2,59 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Processings.Mesh.Exceptions;
+using Moq;
+using NEL.MESH.Models.Foundations.Mesh;
+using Xunit;
+
 namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 {
     public partial class MeshProcessingServiceTests
     {
-        //[Fact]
-        //public async Task ShouldThrowValidationExceptionOnRetrieveMessagAndkAcknowledgeIfArgsIsInvalidAndLogItAsync()
-        //{
-        //    // given
-        //    Message nullMessage = null;
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnRetrieveMessagAndkAcknowledgeIfArgsIsInvalidAndLogItAsync(
+            string invalidText)
+        {
+            // given
+            Message randomMessage = CreateRandomMessage();
+            randomMessage.MessageId = invalidText;
 
-        //    var invalidMeshProcessingArgumentException =
-        //        new InvalidMeshProcessingArgumentException();
+            var invalidMeshProcessingArgumentException =
+                new InvalidMeshProcessingArgumentException();
 
-        //    var expectedMeshProcessingValidationException =
-        //    new MeshProcessingValidationException(
-        //           innerException: invalidMeshProcessingArgumentException,
-        //           validationSummary: GetValidationSummary(invalidMeshProcessingArgumentException.Data));
+            invalidMeshProcessingArgumentException.AddData(
+                key: nameof(randomMessage.MessageId),
+                values: "Text is required");
 
-        //    // when
-        //    ValueTask<Message> retrieveMessageIdsFromInboxTask =
-        //        this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(nullMessage);
+            var expectedMeshProcessingValidationException =
+            new MeshProcessingValidationException(
+                   innerException: invalidMeshProcessingArgumentException,
+                   validationSummary: GetValidationSummary(invalidMeshProcessingArgumentException.Data));
 
-        //    MeshProcessingValidationException actualMeshProcessingValidationException =
-        //        await Assert.ThrowsAsync<MeshProcessingValidationException>(retrieveMessageIdsFromInboxTask.AsTask);
+            // when
+            ValueTask<Message> retrieveMessageIdsFromInboxTask =
+                this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(randomMessage);
 
-        //    //then
-        //    actualMeshProcessingValidationException.Should()
-        //        .BeEquivalentTo(expectedMeshProcessingValidationException);
+            MeshProcessingValidationException actualMeshProcessingValidationException =
+                await Assert.ThrowsAsync<MeshProcessingValidationException>(() =>
+                    retrieveMessageIdsFromInboxTask.AsTask());
 
-        //    this.loggingBrokerMock.Verify(broker =>
-        //        broker.LogError(It.Is(SameExceptionAs(
-        //            expectedMeshProcessingValidationException))),
-        //                Times.Once);
+            //then
+            actualMeshProcessingValidationException.Should()
+                .BeEquivalentTo(expectedMeshProcessingValidationException);
 
-        //    this.meshServiceMock.VerifyNoOtherCalls();
-        //    this.loggingBrokerMock.VerifyNoOtherCalls();
-        //}
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedMeshProcessingValidationException))),
+                        Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

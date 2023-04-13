@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -88,47 +89,44 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
-        //[Fact]
-        //public async Task ShouldThrowServiceExceptionOnRetrieveMessageIdsIfServiceErrorOccursAsync()
-        //{
-        //    // given
-        //    string mailboxId = GetRandomString();
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveMessageIdsIfServiceErrorOccursAsync()
+        {
+            // given
+            var serviceException = new Exception();
 
-        //    var serviceException = new Exception();
+            var failedMeshProcessingServiceException =
+                new FailedMeshProcessingServiceException(serviceException);
 
-        //    var failedMeshProcessingServiceException =
-        //        new FailedMeshProcessingServiceException(serviceException);
+            var expectedMeshProcessingServiveException =
+                new MeshProcessingServiceException(
+                    failedMeshProcessingServiceException);
 
-        //    var expectedMeshProcessingServiveException =
-        //        new MeshProcessingServiceException(
-        //            failedMeshProcessingServiceException);
+            this.meshServiceMock.Setup(service =>
+                service.RetrieveMessagesFromInboxAsync())
+                    .Throws(serviceException);
 
-        //    this.meshServiceMock.Setup(service =>
-        //        service.RetrieveMessageIdsFromInboxAsync(mailboxId))
-        //            .Throws(serviceException);
+            // when
+            ValueTask<List<string>> retrievRetrieveMessageIdsFromInboxTask =
+                this.meshProcessingService.RetrieveMessagesFromInboxAsync();
 
-        //    // when
-        //    ValueTask<List<string>> retrievRetrieveMessageIdsFromInboxTask =
-        //        this.meshProcessingService.RetrieveMessageIdsFromInboxAsync(mailboxId);
+            MeshProcessingServiceException actualException =
+                await Assert.ThrowsAsync<MeshProcessingServiceException>(retrievRetrieveMessageIdsFromInboxTask.AsTask);
 
-        //    MeshProcessingServiceException actualException =
-        //        await Assert.ThrowsAsync<MeshProcessingServiceException>(retrievRetrieveMessageIdsFromInboxTask.AsTask);
+            // then
+            actualException.Should().BeEquivalentTo(expectedMeshProcessingServiveException);
 
-        //    // then
-        //    actualException.Should().BeEquivalentTo(expectedMeshProcessingServiveException);
+            this.meshServiceMock.Verify(service =>
+                service.RetrieveMessagesFromInboxAsync(),
+                    Times.Once);
 
-        //    this.meshServiceMock.Verify(service =>
-        //        service.RetrieveMessageIdsFromInboxAsync(mailboxId),
-        //            Times.Once);
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedMeshProcessingServiveException))),
+                         Times.Once);
 
-        //    this.loggingBrokerMock.Verify(broker =>
-        //         broker.LogError(It.Is(SameExceptionAs(
-        //             expectedMeshProcessingServiveException))),
-        //                 Times.Once);
-
-        //    this.meshServiceMock.VerifyNoOtherCalls();
-        //    this.loggingBrokerMock.VerifyNoOtherCalls();
-        //}
-
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

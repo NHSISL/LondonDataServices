@@ -1,62 +1,43 @@
-﻿//// ---------------------------------------------------------------
-//// Copyright (c) North East London ICB. All rights reserved.
-//// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
 
-//using System.Threading.Tasks;
-//using FluentAssertions;
-//using LHDS.Core.Models.Processings.Mesh.Exceptions;
-//using Moq;
-//using Xunit;
+namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
+{
+    public partial class MeshProcessingServiceTests
+    {
+        //[Fact]
+        //public async Task ShouldThrowValidationExceptionOnRetrieveMessagAndkAcknowledgeIfArgsIsInvalidAndLogItAsync()
+        //{
+        //    // given
+        //    Message nullMessage = null;
 
-//namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
-//{
-//    public partial class MeshProcessingServiceTests
-//    {
-//        [Theory]
-//        [InlineData(null)]
-//        [InlineData("")]
-//        [InlineData(" ")]
-//        public async Task ShouldThrowValidationExceptionOnRetrieveMessagAndkAcknowledgeIfArgsIsInvalidAndLogItAsync(
-//            string invalidText)
-//        {
-//            // given
-//            string mailboxId = invalidText;
-//            string messageId = invalidText;
+        //    var invalidMeshProcessingArgumentException =
+        //        new InvalidMeshProcessingArgumentException();
 
-//            var invalidMeshProcessingArgumentException =
-//                new InvalidMeshProcessingArgumentException();
+        //    var expectedMeshProcessingValidationException =
+        //    new MeshProcessingValidationException(
+        //           innerException: invalidMeshProcessingArgumentException,
+        //           validationSummary: GetValidationSummary(invalidMeshProcessingArgumentException.Data));
 
-//            invalidMeshProcessingArgumentException.AddData(
-//                key: nameof(mailboxId),
-//                values: "Text is required");
+        //    // when
+        //    ValueTask<Message> retrieveMessageIdsFromInboxTask =
+        //        this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(nullMessage);
 
-//            invalidMeshProcessingArgumentException.AddData(
-//               key: nameof(messageId),
-//               values: "Text is required");
+        //    MeshProcessingValidationException actualMeshProcessingValidationException =
+        //        await Assert.ThrowsAsync<MeshProcessingValidationException>(retrieveMessageIdsFromInboxTask.AsTask);
 
-//            var expectedMeshProcessingValidationException =
-//            new MeshProcessingValidationException(
-//                   innerException: invalidMeshProcessingArgumentException,
-//                   validationSummary: GetValidationSummary(invalidMeshProcessingArgumentException.Data));
+        //    //then
+        //    actualMeshProcessingValidationException.Should()
+        //        .BeEquivalentTo(expectedMeshProcessingValidationException);
 
-//            // when
-//            ValueTask<string> retrieveMessageIdsFromInboxTask =
-//                this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(mailboxId, messageId);
+        //    this.loggingBrokerMock.Verify(broker =>
+        //        broker.LogError(It.Is(SameExceptionAs(
+        //            expectedMeshProcessingValidationException))),
+        //                Times.Once);
 
-//            MeshProcessingValidationException actualMeshProcessingValidationException =
-//                await Assert.ThrowsAsync<MeshProcessingValidationException>(retrieveMessageIdsFromInboxTask.AsTask);
-
-//            //then
-//            actualMeshProcessingValidationException.Should()
-//                .BeEquivalentTo(expectedMeshProcessingValidationException);
-
-//            this.loggingBrokerMock.Verify(broker =>
-//                broker.LogError(It.Is(SameExceptionAs(
-//                    expectedMeshProcessingValidationException))),
-//                        Times.Once);
-
-//            this.meshServiceMock.VerifyNoOtherCalls();
-//            this.loggingBrokerMock.VerifyNoOtherCalls();
-//        }
-//    }
-//}
+        //    this.meshServiceMock.VerifyNoOtherCalls();
+        //    this.loggingBrokerMock.VerifyNoOtherCalls();
+        //}
+    }
+}

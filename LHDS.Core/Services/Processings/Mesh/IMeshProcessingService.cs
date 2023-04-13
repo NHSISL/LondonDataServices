@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NEL.MESH.Models.Foundations.Mesh;
 
 namespace LHDS.Core.Services.Processings.Mesh
 {
@@ -11,7 +12,7 @@ namespace LHDS.Core.Services.Processings.Mesh
     {
         ValueTask<bool> ValidateMailboxAccessAsync();
         ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync(string mailboxId);
-        ValueTask<string> RetrieveAndAcknowledgeMessageByIdAsync(string mailboxId, string messageId);
+        ValueTask<Message> RetrieveAndAcknowledgeMessageByIdAsync(Message message);
         ValueTask<string> SendMessageAsync(string mailboxId, string messageId);
     }
 }

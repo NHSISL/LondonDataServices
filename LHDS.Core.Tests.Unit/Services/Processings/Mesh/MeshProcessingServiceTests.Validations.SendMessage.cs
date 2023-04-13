@@ -4,9 +4,9 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using Moq;
-using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
            string invalidText)
         {
             // given
-            Message randomMessage = CreateRandomMessage();
+            MeshMessage randomMessage = CreateRandomMessage();
             randomMessage.MessageId = invalidText;
 
             var invalidMeshProcessingArgumentException =
@@ -37,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                    validationSummary: GetValidationSummary(invalidMeshProcessingArgumentException.Data));
 
             // when
-            ValueTask<Message> retrieveSendMessageTask =
+            ValueTask<MeshMessage> retrieveSendMessageTask =
                 this.meshProcessingService.SendMessageAsync(randomMessage);
 
             MeshProcessingValidationException actualMeshProcessingValidationException =

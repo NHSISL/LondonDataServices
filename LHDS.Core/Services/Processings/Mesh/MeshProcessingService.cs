@@ -49,25 +49,22 @@ namespace LHDS.Core.Services.Processings.Mesh
                 return retrievedMessage;
             });
 
-        public ValueTask<Message> SendMessageAsync(Message message) =>
+        public ValueTask<MeshMessage> SendMessageAsync(MeshMessage message) =>
             TryCatch(async () =>
             {
-
                 ValidateMeshArgs(message.MessageId);
-                Message trackMessage = await this.meshService.RetrieveTrackingStatusAsync(message.MessageId);
-                await this.meshService.SendMessageAsync(message);
 
-                return trackMessage;
-                //ValidateMeshArgs(message.MessageId);
+                MeshMessage sendMessageResult = await this.meshService.SendMessageAsync(message);
 
-                //Message sendMessage;
+                ValidateMeshMessageIsNotNull(sendMessageResult);
 
+                MeshMessage trackMessage = await this.meshService.RetrieveTrackingStatusAsync(message.MessageId);
 
-                //sendMessage = await this.meshService.SendMessageAsync(message);
+                ValidateMeshMessageIsNotNull(trackMessage);
 
-                //var trackMessage = await this.meshService.RetrieveTrackingStatusAsync(message.MessageId);
+                sendMessageResult.TrackingInfo = trackMessage.TrackingInfo;
 
-                //return trackMessage;
+                return sendMessageResult;
             });
     }
 }

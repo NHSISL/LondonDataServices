@@ -42,7 +42,7 @@ namespace LHDS.Core.Services.Processings.Mesh
 
                 MeshMessage retrievedMessage = await meshService.RetrieveMessageByIdAsync(message.MessageId);
 
-                //ValidateMeshMessageIsNotNull(retrievedMessage);
+                ValidateMeshMessageIsNotNull(retrievedMessage);
 
                 bool ackResult = await meshService.AcknowledgeMessageByIdAsync(message.MessageId);
 

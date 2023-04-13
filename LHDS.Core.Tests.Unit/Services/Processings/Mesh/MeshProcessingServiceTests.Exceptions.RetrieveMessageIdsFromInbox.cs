@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveMessagesIfDependencyValidationErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveMessageIdsIfDependencyValidationErrorOccursAndLogItAsync(
            Xeption dependencyValidationException)
         {
             // given

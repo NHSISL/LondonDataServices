@@ -11,7 +11,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
     public partial class MeshProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldReturnRetrieveMessagesFromInboxAsync()
+        public async Task ShouldReturnRetrieveMessageIdsFromInboxAsync()
         {
             // given
             // when

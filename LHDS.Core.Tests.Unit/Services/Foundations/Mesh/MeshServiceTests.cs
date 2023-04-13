@@ -42,9 +42,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
-        private static TrackingInfo GetRandomTrackingInfo()
+        private static dynamic GetRandomTrackingInfo()
         {
-            return new TrackingInfo
+            return new 
             {
                 AddressType = GetRandomString(),
                 Checksum = GetRandomString(),
@@ -107,7 +107,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
         public static dynamic CreateRandomMeshMessageProperties()
         {
-            return new Message
+            return new
             {
                 MessageId = GetRandomString(),
                 Headers = GetRandomDictionary(GetRandomNumber()),

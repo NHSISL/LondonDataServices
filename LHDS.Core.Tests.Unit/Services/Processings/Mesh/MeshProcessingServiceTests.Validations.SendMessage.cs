@@ -16,7 +16,7 @@
 //        [InlineData(null)]
 //        [InlineData("")]
 //        [InlineData(" ")]
-//        public async Task ShouldThrowValidationExceptionOnSendMessageIfArgsIsInvalidAndLogItAsync(
+//        public async Task ShouldThrowValidationExceptionOnSendMessageIfMessageIsInvalidAndLogItAsync(
 //           string invalidText)
 //        {
 //            // given

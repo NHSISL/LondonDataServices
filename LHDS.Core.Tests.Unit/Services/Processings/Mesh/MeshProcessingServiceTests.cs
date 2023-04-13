@@ -9,11 +9,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using LHDS.Core.Services.Foundations.Mesh;
 using LHDS.Core.Services.Processings.Mesh;
 using Moq;
-using NEL.MESH.Models.Foundations.Mesh;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
@@ -65,12 +65,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             };
         }
 
-        private static Message CreateRandomMessage() =>
+        private static MeshMessage CreateRandomMessage() =>
             CreateMessageFiller().Create();
 
-        private static Filler<Message> CreateMessageFiller()
+        private static Filler<MeshMessage> CreateMessageFiller()
         {
-            var filler = new Filler<Message>();
+            var filler = new Filler<MeshMessage>();
             filler.Setup().OnProperty(message => message.Headers)
                 .Use(new Dictionary<string, List<string>>());
 

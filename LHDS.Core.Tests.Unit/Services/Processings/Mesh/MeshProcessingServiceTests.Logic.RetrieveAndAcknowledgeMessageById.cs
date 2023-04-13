@@ -3,8 +3,8 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.Mesh;
 using Moq;
-using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
@@ -15,18 +15,23 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
         public async Task ShouldReturnRetrieveMessageIdAndAcknowledgeAsync()
         {
             // given
-            Message nullMessage = CreateRandomMessage();
+            MeshMessage randomMessage = CreateRandomMessage();
+            MeshMessage storageMessage = randomMessage;
+
+            this.meshServiceMock.Setup(service =>
+              service.RetrieveMessageByIdAsync(randomMessage.MessageId))
+                .ReturnsAsync(storageMessage);
 
             // when
-            await this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(nullMessage);
+            await this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(randomMessage);
 
             // then
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessageByIdAsync(nullMessage.MessageId),
+                service.RetrieveMessageByIdAsync(randomMessage.MessageId),
                     Times.Once());
 
             this.meshServiceMock.Verify(service =>
-               service.AcknowledgeMessageByIdAsync(nullMessage.MessageId),
+               service.AcknowledgeMessageByIdAsync(randomMessage.MessageId),
                    Times.Once());
 
             this.meshServiceMock.VerifyNoOtherCalls();

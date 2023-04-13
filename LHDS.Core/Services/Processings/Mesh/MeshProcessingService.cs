@@ -54,7 +54,7 @@ namespace LHDS.Core.Services.Processings.Mesh
             {
                 ValidateMeshArgs(message.MessageId);
 
-                MeshMessage sendMessageResult = await this.meshService.SendMessageAsync(message);
+                MeshMessage sendMessageResult = await meshService.SendMessageAsync(message);
 
                 ValidateMeshMessageIsNotNull(sendMessageResult);
 

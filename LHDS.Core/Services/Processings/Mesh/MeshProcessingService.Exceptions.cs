@@ -5,9 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
-using NEL.MESH.Models.Foundations.Mesh;
 using Xeptions;
 
 namespace LHDS.Core.Services.Processings.Mesh
@@ -15,7 +15,7 @@ namespace LHDS.Core.Services.Processings.Mesh
     public partial class MeshProcessingService
     {
         private delegate ValueTask<bool> ReturningBoolMeshFunction();
-        private delegate ValueTask<Message> ReturningMessageMeshFunction();
+        private delegate ValueTask<MeshMessage> ReturningMessageMeshFunction();
         private delegate ValueTask<List<string>> ReturningStringsMeshFunction();
 
         private async ValueTask<bool> TryCatch(ReturningBoolMeshFunction returningMeshFunction)
@@ -49,7 +49,7 @@ namespace LHDS.Core.Services.Processings.Mesh
             }
         }
 
-        private async ValueTask<Message> TryCatch(ReturningMessageMeshFunction returningMessageMeshFunction)
+        private async ValueTask<MeshMessage> TryCatch(ReturningMessageMeshFunction returningMessageMeshFunction)
         {
             try
             {

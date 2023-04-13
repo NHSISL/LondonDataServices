@@ -4,8 +4,10 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
 
 namespace LHDS.Core.Services.Processings.Mesh
@@ -22,6 +24,19 @@ namespace LHDS.Core.Services.Processings.Mesh
         {
             Validate(
                (Rule: IsInvalid(mailboxId), Parameter: nameof(mailboxId)));
+        }
+
+        private static void ValidateMeshMessageIsNotNull(MeshMessage meshMessage)
+        {
+            if (meshMessage is null)
+            {
+                throw new NullMeshProcessingException();
+            }
+        }
+
+        public void ValidateMeshMessage(MeshMessage meshMessage)
+        {
+            ValidateMeshMessageIsNotNull(meshMessage);
         }
 
         private static dynamic IsInvalid(string text) => new

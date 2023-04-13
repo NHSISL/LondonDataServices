@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
@@ -56,9 +55,24 @@ namespace LHDS.Core.Services.Processings.Mesh
                 return retrievedMessage;
             });
 
-        public ValueTask<string> SendMessageAsync(string mailboxId, string messageId)
-        {
-            throw new NotImplementedException();
-        }
+        public ValueTask<Message> SendMessageAsync(Message message) =>
+            TryCatch(async () =>
+            {
+                ValidateMeshArgs(message.MessageId);
+
+                Message sendMessage;
+                try
+                {
+                    sendMessage = await this.meshService.SendMessageAsync(message);
+                }
+                catch
+                {
+                    throw;
+                }
+
+                var trackMessage = await this.meshService.RetrieveTrackingStatusAsync(message.MessageId);
+
+                return trackMessage;
+            });
     }
 }

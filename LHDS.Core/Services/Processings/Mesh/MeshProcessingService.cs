@@ -38,10 +38,10 @@ namespace LHDS.Core.Services.Processings.Mesh
         public ValueTask<MeshMessage> RetrieveAndAcknowledgeMessageByIdAsync(string messageId) =>
             TryCatch(async () =>
             {
-                ValidateMeshArgs(message.MessageId);
-                MeshMessage retrievedMessage = await meshService.RetrieveMessageByIdAsync(message.MessageId);
+                ValidateMeshArgs(messageId);
+                MeshMessage retrievedMessage = await meshService.RetrieveMessageByIdAsync(messageId);
                 ValidateMeshMessageIsNotNull(retrievedMessage);
-                bool ackResult = await meshService.AcknowledgeMessageByIdAsync(message.MessageId);
+                bool ackResult = await meshService.AcknowledgeMessageByIdAsync(messageId);
 
                 return retrievedMessage;
             });

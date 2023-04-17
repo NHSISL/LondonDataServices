@@ -42,13 +42,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 StringContent = dynamicMeshMessageProperties.StringContent,
                 FileContent = dynamicMeshMessageProperties.FileContent,
                 TrackingInfo = MaptToMeshMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
-            };
+            }; 
 
             var inputMeshMessage = randomMeshMessage;
             var expectedMeshMessage = randomMeshMessage;
 
             this.meshBrokerMock.Setup(broker =>
-                broker.SendMessageAsync(inputMessage))
+                broker.SendMessageAsync(It.Is(SameMessageAs(inputMessage))))
                     .ReturnsAsync(outputMessage);
 
             // when
@@ -59,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             actualMeshMessage.Should().BeEquivalentTo(expectedMeshMessage);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(inputMessage),
+                broker.SendMessageAsync(It.Is(SameMessageAs(inputMessage))),
                     Times.Once());
 
             this.meshBrokerMock.VerifyNoOtherCalls();

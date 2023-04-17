@@ -31,14 +31,16 @@ namespace LHDS.Core.Services.Foundations.Mesh
                 return await this.meshBroker.HandshakeAsync();
             });
 
-        public async ValueTask<MeshMessage.MeshMessage> SendMessageAsync(MeshMessage.MeshMessage message)
-        {
-            Message.Message convertedMessage = MeshMessageToMessage(message);
-            Message.Message brokerSendMessage =  await this.meshBroker.SendMessageAsync(convertedMessage);
-            MeshMessage.MeshMessage resultMeshMessage = MessageToMeshMessage(brokerSendMessage);
+        public ValueTask<MeshMessage.MeshMessage> SendMessageAsync(MeshMessage.MeshMessage message) =>
+            TryCatch(async () =>
+            {   
+                ValidateMeshMessageOnSendMessage(message);
+                Message.Message convertedMessage = MeshMessageToMessage(message);
+                Message.Message brokerSendMessage = await this.meshBroker.SendMessageAsync(convertedMessage);
+                MeshMessage.MeshMessage resultMeshMessage = MessageToMeshMessage(brokerSendMessage);
 
-            return resultMeshMessage;
-        }
+                return resultMeshMessage;
+            });
 
         public ValueTask<MeshMessage.MeshMessage> SendFileAsync(MeshMessage.MeshMessage message) =>
             throw new System.NotImplementedException();

@@ -12,6 +12,6 @@ namespace LHDS.Core.Models.Foundations.Mesh
         public Dictionary<string, List<string>> Headers { get; set; } = new Dictionary<string, List<string>>();
         public string StringContent { get; set; }
         public byte[] FileContent { get; set; }
-        public TrackingInfo TrackingInfo { get; set; }
+        public MessageTrackingInfo TrackingInfo { get; set; }
     }
 }

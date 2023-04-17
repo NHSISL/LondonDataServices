@@ -39,6 +39,11 @@ namespace LHDS.Core.Services.Foundations.Mesh
                 (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"));
         }
 
+        public void ValidateMeshMessageOnSendFile(MeshMessage message)
+        {
+            ValidateMeshMessageIsNotNull(message);
+        }
+
         public void ValidateMessageId(string messageId) =>
             Validate((Rule: IsInvalid(messageId), Parameter: nameof(messageId)));
 

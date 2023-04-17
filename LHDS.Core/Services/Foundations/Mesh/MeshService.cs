@@ -7,8 +7,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
-using LHDS.Core.Models.Foundations.Mesh;
-using NEL.MESH.Models.Foundations.Mesh;
+using MeshMessage = LHDS.Core.Models.Foundations.Mesh;
+using Message = NEL.MESH.Models.Foundations.Mesh;
 
 namespace LHDS.Core.Services.Foundations.Mesh
 {
@@ -31,57 +31,57 @@ namespace LHDS.Core.Services.Foundations.Mesh
                 return await this.meshBroker.HandshakeAsync();
             });
 
-        public async ValueTask<MeshMessage> SendMessageAsync(MeshMessage message)
+        public async ValueTask<MeshMessage.MeshMessage> SendMessageAsync(MeshMessage.MeshMessage message)
         {
-            Message convertedMessage = MeshMessageToMessage(message);
-            Message brokerSendMessage =  await this.meshBroker.SendMessageAsync(convertedMessage);
-            MeshMessage resultMeshMessage = MessageToMeshMessage(brokerSendMessage);
+            Message.Message convertedMessage = MeshMessageToMessage(message);
+            Message.Message brokerSendMessage =  await this.meshBroker.SendMessageAsync(convertedMessage);
+            MeshMessage.MeshMessage resultMeshMessage = MessageToMeshMessage(brokerSendMessage);
 
             return resultMeshMessage;
         }
 
-        public ValueTask<MeshMessage> SendFileAsync(MeshMessage message) =>
+        public ValueTask<MeshMessage.MeshMessage> SendFileAsync(MeshMessage.MeshMessage message) =>
             throw new System.NotImplementedException();
 
-        public ValueTask<MeshMessage> RetrieveTrackingStatusAsync(string messageId) =>
+        public ValueTask<MeshMessage.MeshMessage> RetrieveTrackingStatusAsync(string messageId) =>
             throw new NotImplementedException();
 
         public ValueTask<List<string>> RetrieveMessagesFromInboxAsync() =>
             throw new System.NotImplementedException();
 
-        public ValueTask<MeshMessage> RetrieveMessageByIdAsync(string messageId) =>
+        public ValueTask<MeshMessage.MeshMessage> RetrieveMessageByIdAsync(string messageId) =>
             throw new System.NotImplementedException();
 
         public ValueTask<bool> AcknowledgeMessageByIdAsync(string messageId) =>
             throw new System.NotImplementedException();
 
-        private static Message MeshMessageToMessage(MeshMessage meshMessage)
+        private static Message.Message MeshMessageToMessage(MeshMessage.MeshMessage meshMessage)
         {
-            return new Message
+            return new Message.Message
             {
                 MessageId = meshMessage.MessageId,
                 Headers = meshMessage.Headers,
                 StringContent = meshMessage.StringContent,
                 FileContent = meshMessage.FileContent,
-                TrackingInfo = ConvertToMessage(meshMessage.TrackingInfo)
+                TrackingInfo = ConvertToMessageTrackingInfo(meshMessage.TrackingInfo)
             };
         }
 
-        private static MeshMessage MessageToMeshMessage(Message message)
+        public static MeshMessage.MeshMessage MessageToMeshMessage(Message.Message message)
         {
-            return new MeshMessage
+            return new MeshMessage.MeshMessage
             {
                 MessageId = message.MessageId,
                 Headers = message.Headers,
                 StringContent = message.StringContent,
                 FileContent = message.FileContent,
-                TrackingInfo = ConvertToMeshMessage(message.TrackingInfo)
+                TrackingInfo = ConvertToMeshMessageTrackingInfo(message.TrackingInfo)
             };
         }
 
-        private static LHDS.Core.Models.Foundations.Mesh.TrackingInfo ConvertToMeshMessage(NEL.MESH.Models.Foundations.Mesh.TrackingInfo nelTrackingInfo)
+        public static MeshMessage.TrackingInfo ConvertToMeshMessageTrackingInfo(Message.TrackingInfo nelTrackingInfo)
         {
-            return new LHDS.Core.Models.Foundations.Mesh.TrackingInfo
+            return new MeshMessage.TrackingInfo
             {
                 AddressType = nelTrackingInfo.AddressType,
                 Checksum = nelTrackingInfo.Checksum,
@@ -116,9 +116,9 @@ namespace LHDS.Core.Services.Foundations.Mesh
             };
         }
 
-        public static NEL.MESH.Models.Foundations.Mesh.TrackingInfo ConvertToMessage(LHDS.Core.Models.Foundations.Mesh.TrackingInfo lhdsTrackingInfo)
+        public static Message.TrackingInfo ConvertToMessageTrackingInfo(MeshMessage.TrackingInfo lhdsTrackingInfo)
         {
-            return new NEL.MESH.Models.Foundations.Mesh.TrackingInfo
+            return new Message.TrackingInfo
             {
                 AddressType = lhdsTrackingInfo.AddressType,
                 Checksum = lhdsTrackingInfo.Checksum,

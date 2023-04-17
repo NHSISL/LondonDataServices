@@ -55,5 +55,49 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             this.meshServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfReturnIsNullAndLogItAsync()
+        {
+            //Given
+            MeshMessage randomMessage = CreateRandomMessage();
+            MeshMessage nonExistMessage = randomMessage;
+            MeshMessage nullMessage = null;
+
+            var nullMeshProcessingException =
+               new NullMeshProcessingException();
+
+            var expectedMeshProcessingValidationException =
+                new MeshProcessingValidationException(nullMeshProcessingException);
+
+            this.meshServiceMock.Setup(service =>
+                service.SendMessageAsync(nonExistMessage))
+                .ReturnsAsync(nullMessage);
+
+            //When
+            ValueTask<MeshMessage> SendMessageTask =
+                this.meshProcessingService.SendMessageAsync(nonExistMessage);
+
+            MeshProcessingValidationException actualMeshProcessingValidationException =
+                await Assert.ThrowsAsync<MeshProcessingValidationException>
+                (SendMessageTask.AsTask);
+
+            //Then
+            actualMeshProcessingValidationException.Should()
+                .BeEquivalentTo(expectedMeshProcessingValidationException);
+
+            this.meshServiceMock.Verify(service =>
+               service.SendMessageAsync(nonExistMessage),
+               Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedMeshProcessingValidationException))),
+                        Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
     }
 }

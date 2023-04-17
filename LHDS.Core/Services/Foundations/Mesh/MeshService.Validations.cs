@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
+using Xeptions;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace LHDS.Core.Services.Foundations.Mesh
@@ -27,12 +28,8 @@ namespace LHDS.Core.Services.Foundations.Mesh
             ValidateMeshMessageIsNotNull(message);
             ValidateHeadersIsNotNull(message);
 
-            Validate(
-                (Rule: IsInvalid(message.MessageId), Parameter: nameof(message.MessageId)),
-                (Rule: IsInvalid(message.Headers), Parameter: nameof(message.Headers)),
-                (Rule: IsInvalid(message.StringContent), Parameter: nameof(message.StringContent)));
-
-            Validate(
+            Validate<InvalidMeshMessageException>(
+                (Rule: IsInvalid(message.StringContent), Parameter: nameof(message.StringContent)),
                 (Rule: IsInvalid(message.Headers, "Content-Type"), Parameter: "Content-Type"),
                 (Rule: IsInvalid(message.Headers, "Mex-FileName"), Parameter: "Mex-FileName"),
                 (Rule: IsInvalid(message.Headers, "Mex-From"), Parameter: "Mex-From"),
@@ -66,12 +63,6 @@ namespace LHDS.Core.Services.Foundations.Mesh
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
-        };
-
-        private static dynamic IsInvalid(Dictionary<string, List<string>> dictionary) => new
-        {
-            Condition = dictionary == null || dictionary.Count == 0,
-            Message = "Values is required"
         };
 
         private static dynamic IsInvalid(Dictionary<string, List<string>> dictionary, string key) => new
@@ -120,6 +111,24 @@ namespace LHDS.Core.Services.Foundations.Mesh
             }
 
             invalidArgumentMeshException.ThrowIfContainsErrors();
+        }
+
+        private static void Validate<T>(params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
+        {
+            var invalidDataException = (T)Activator.CreateInstance(typeof(T));
+
+            foreach ((dynamic rule, string parameter) in validations)
+            {
+                if (rule.Condition)
+                {
+                    invalidDataException.UpsertDataList(
+                        key: parameter,
+                        value: rule.Message);
+                }
+            }
+
+            invalidDataException.ThrowIfContainsErrors();
         }
 
         private string GetValidationSummary(IDictionary data)

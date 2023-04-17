@@ -86,7 +86,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
 
-
         [Theory]
         [InlineData(null)]
         [InlineData("")]
@@ -178,6 +177,5 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
-
     }
 }

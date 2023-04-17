@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 Headers = dynamicMeshMessageProperties.Headers,
                 StringContent = dynamicMeshMessageProperties.StringContent,
                 FileContent = dynamicMeshMessageProperties.FileContent,
-                TrackingInfo = dynamicMeshMessageProperties.TrackingInfo
+                TrackingInfo = MaptToMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
             };
 
             var inputMessage = randomMessage;
@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 Headers = dynamicMeshMessageProperties.Headers,
                 StringContent = dynamicMeshMessageProperties.StringContent,
                 FileContent = dynamicMeshMessageProperties.FileContent,
-                TrackingInfo = dynamicMeshMessageProperties.TrackingInfo
+                TrackingInfo = MaptToMeshMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
             };
 
             var inputMeshMessage = randomMeshMessage;
@@ -50,7 +50,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             this.meshBrokerMock.Setup(broker =>
                 broker.SendMessageAsync(inputMessage))
                     .ReturnsAsync(outputMessage);
-
 
             // when
             MeshMessage actualMeshMessage =

@@ -4,6 +4,7 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -17,17 +18,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldThrowValidationExceptionOnSendMessageIfMessageIsNullAsync()
         {
             // given
+            MeshMessage nullMeshMessage = null;
             Message nullMessage = null;
 
             var nullMessageException =
-                new NullMessageException();
+                new NullMeshMessageException();
 
             var expectedMeshValidationException =
                 new MeshValidationException(nullMessageException);
 
             // when
-            ValueTask<Message> addMessageTask =
-                this.meshService.SendMessageAsync(nullMessage);
+            ValueTask<MeshMessage> addMessageTask =
+                this.meshService.SendMessageAsync(nullMeshMessage);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(() =>
@@ -39,6 +41,45 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.Verify(broker =>
                 broker.SendMessageAsync(nullMessage),
+                        Times.Never);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfHeadersDictionaryIsNullAsync()
+        {
+            // given
+            MeshMessage meshMessageWithNullHeaders = new MeshMessage
+            {
+                Headers = null
+            };
+
+            Message messageWithNullHeaders = new Message
+            {
+                Headers = null
+            };
+
+            var nullHeadersException =
+                new NullHeadersException();
+
+            var expectedMeshValidationException =
+                new MeshValidationException(nullHeadersException);
+
+            // when
+            ValueTask<MeshMessage> sendMessageTask =
+                this.meshService.SendMessageAsync(meshMessageWithNullHeaders);
+
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(() =>
+                    sendMessageTask.AsTask());
+
+            // then
+            actualMeshValidationException.Should()
+                .BeEquivalentTo(expectedMeshValidationException);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.SendMessageAsync(messageWithNullHeaders),
                         Times.Never);
 
             this.meshBrokerMock.VerifyNoOtherCalls();

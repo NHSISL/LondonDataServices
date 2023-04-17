@@ -6,9 +6,9 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Foundations.Mesh.Exceptions
 {
-    public class NullMessageException : Xeption
+    public class NullMeshMessageException : Xeption
     {
-        public NullMessageException()
-            : base(message: "Message is null.") { }
+        public NullMeshMessageException()
+            : base(message: "Mesh message is null.") { }
     }
 }

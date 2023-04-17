@@ -6,7 +6,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace LHDS.Core.Services.Foundations.Mesh
 {
@@ -17,17 +19,48 @@ namespace LHDS.Core.Services.Foundations.Mesh
                (Rule: IsInvalid(mailboxId), Parameter: nameof(mailboxId)),
                (Rule: IsInvalid(messageId), Parameter: nameof(messageId)));
 
+        public void ValidateMeshMessage(MeshMessage message)
+        {
+            ValidateMeshMessageIsNotNull(message);
+            ValidateHeadersIsNotNull(message);
+            Validate(
+                (Rule: IsInvalid(message.MessageId), Parameter: nameof(message.MessageId)),
+                (Rule: IsInvalid(message.FileContent), Parameter: nameof(message.MessageId)));
+        }
+
         public void ValidateMessageId(string messageId) =>
             Validate((Rule: IsInvalid(messageId), Parameter: nameof(messageId)));
 
         public void ValidateMailboxId(string mailboxId) =>
           Validate((Rule: IsInvalid(mailboxId), Parameter: nameof(mailboxId)));
 
+        public void ValidateMeshMessageIsNotNull(MeshMessage message)
+        {
+            if (message is null)
+            {
+                throw new NullMeshMessageException();
+            }
+        }
+
         private static dynamic IsInvalid(string text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
         };
+
+        private static dynamic IsInvalid(byte[] data) => new
+        {
+            Condition = (data == null || data.Length == 0),
+            Message = "Content is required"
+        };
+
+        private static void ValidateHeadersIsNotNull(MeshMessage message)
+        {
+            if (message.Headers is null)
+            {
+                throw new NullHeadersException();
+            }
+        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

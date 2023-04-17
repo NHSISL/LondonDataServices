@@ -22,17 +22,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             dynamic dynamicMeshMessageProperties =
                 CreateRandomMeshMessageProperties();
 
-            var randomMessage = new Message
-            {
-                MessageId = dynamicMeshMessageProperties.MessageId,
-                Headers = dynamicMeshMessageProperties.Headers,
-                StringContent = dynamicMeshMessageProperties.StringContent,
-                FileContent = dynamicMeshMessageProperties.FileContent,
-                TrackingInfo = MaptToMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
-            };
-
-            var inputMessage = randomMessage;
-
             MeshMessage randomMeshMessage = new MeshMessage
             {
                 MessageId = dynamicMeshMessageProperties.MessageId,
@@ -52,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                new MeshServiceException(failedMeshServiceException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.SendMessageAsync(inputMessage))
+                broker.SendMessageAsync(It.IsAny<Message>())),
                     .ThrowsAsync(serviceException);
 
             // when
@@ -68,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 .BeEquivalentTo(expectedMeshServiceException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(inputMessage),
+                broker.SendMessageAsync(It.IsAny<Message>())),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

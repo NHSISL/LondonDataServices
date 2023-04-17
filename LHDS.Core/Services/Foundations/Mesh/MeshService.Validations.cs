@@ -46,6 +46,15 @@ namespace LHDS.Core.Services.Foundations.Mesh
             Validate<InvalidMeshMessageException>(
                 (Rule: IsInvalid(message.FileContent), Parameter: nameof(message.FileContent)),
                 (Rule: IsInvalid(message.Headers), Parameter: nameof(message.Headers)));
+
+            Validate<InvalidMeshMessageException>(
+                (Rule: IsInvalid(message.Headers, "Content-Type"), Parameter: "Content-Type"),
+                (Rule: IsInvalid(message.Headers, "Mex-FileName"), Parameter: "Mex-FileName"),
+                (Rule: IsInvalid(message.Headers, "Mex-From"), Parameter: "Mex-From"),
+                (Rule: IsInvalid(message.Headers, "Mex-To"), Parameter: "Mex-To"),
+                (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"),
+                (Rule: IsInvalid(message.Headers, "Mex-Content-Checksum"), Parameter: "Mex-Content-Checksum"),
+                (Rule: IsInvalid(message.Headers, "Mex-Content-Encrypted"), Parameter: "Mex-Content-Encrypted"));
         }
 
         public void ValidateMessageId(string messageId) =>

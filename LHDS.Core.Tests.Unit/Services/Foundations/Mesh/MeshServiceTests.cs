@@ -165,7 +165,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 { "Mex-FileName", new List<string> { GetRandomMessage() } },
                 { "Mex-From", new List<string> { GetRandomMessage() } },
                 { "Mex-To", new List<string> { GetRandomMessage() } },
-                { "Mex-WorkflowID", new List<string> { GetRandomMessage() } }
+                { "Mex-WorkflowID", new List<string> { GetRandomMessage() } },
+                { "Mex-Content-Checksum", new List<string> { GetRandomMessage() } },
+                { "Mex-Content-Encrypted", new List<string> { GetRandomMessage() } }
             };
 
             return dictionary;

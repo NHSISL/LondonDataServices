@@ -19,8 +19,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             MeshMessage storageMessage = randomMessage;
 
             this.meshServiceMock.Setup(service =>
-              service.RetrieveMessageByIdAsync(randomMessage.MessageId))
-                .ReturnsAsync(storageMessage);
+                service.RetrieveMessageByIdAsync(randomMessage.MessageId))
+                    .ReturnsAsync(storageMessage);
 
             // when
             await this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(randomMessage.MessageId);

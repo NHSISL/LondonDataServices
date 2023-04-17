@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             this.meshServiceMock.Setup(service =>
                 service.RetrieveTrackingStatusAsync(randomMessage.MessageId))
-                  .ReturnsAsync(storageMessage);
+                    .ReturnsAsync(storageMessage);
 
             // when
             await this.meshProcessingService.SendMessageAsync(randomMessage);

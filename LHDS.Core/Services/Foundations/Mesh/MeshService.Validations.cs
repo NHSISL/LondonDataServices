@@ -25,6 +25,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
         public void ValidateMeshMessageOnSendMessage(MeshMessage message)
         {
             ValidateMeshMessageIsNotNull(message);
+            ValidateHeadersIsNotNull(message);
 
             Validate(
                 (Rule: IsInvalid(message.MessageId), Parameter: nameof(message.MessageId)),
@@ -50,6 +51,14 @@ namespace LHDS.Core.Services.Foundations.Mesh
             if (message is null)
             {
                 throw new NullMeshMessageException();
+            }
+        }
+
+        private static void ValidateHeadersIsNotNull(MeshMessage message)
+        {
+            if (message.Headers is null)
+            {
+                throw new NullHeadersException();
             }
         }
 

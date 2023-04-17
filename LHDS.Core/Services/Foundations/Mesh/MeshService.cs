@@ -45,7 +45,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
         public ValueTask<MeshMessage.MeshMessage> SendFileAsync(MeshMessage.MeshMessage message) =>
             TryCatch(async () =>
             {
-                ValidateMeshMessageOnSendMessage(message);
+                ValidateMeshMessageOnSendFile(message);
                 Message.Message convertedMessage = MeshMessageToMessage(message);
                 Message.Message brokerSendMessage = await this.meshBroker.SendFileAsync(convertedMessage);
                 MeshMessage.MeshMessage resultMeshMessage = MessageToMeshMessage(brokerSendMessage);

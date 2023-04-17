@@ -42,6 +42,10 @@ namespace LHDS.Core.Services.Foundations.Mesh
         public void ValidateMeshMessageOnSendFile(MeshMessage message)
         {
             ValidateMeshMessageIsNotNull(message);
+
+            Validate<InvalidMeshMessageException>(
+                (Rule: IsInvalid(message.FileContent), Parameter: nameof(message.FileContent)),
+                (Rule: IsInvalid(message.Headers), Parameter: nameof(message.Headers)));
         }
 
         public void ValidateMessageId(string messageId) =>

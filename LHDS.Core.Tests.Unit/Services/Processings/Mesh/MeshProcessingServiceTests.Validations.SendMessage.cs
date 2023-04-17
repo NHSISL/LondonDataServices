@@ -99,7 +99,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnSendMessageIRetrieveTrackStatusIsNullAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnSendMessageIRetrieveTrackingStatusIsNullAndLogItAsync()
         {
             //Given
             MeshMessage randomMessage = CreateRandomMessage();

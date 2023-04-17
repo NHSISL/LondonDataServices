@@ -8,15 +8,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Services.Foundations.Mesh;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
 using Tynamix.ObjectFiller;
 using Xeptions;
-using LHDS.Core.Models.Foundations.Mesh;
-using KellermanSoftware.CompareNetObjects;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 {
@@ -159,14 +159,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
         public static Dictionary<string, List<string>> GetRandomDictionary(int entryCount)
         {
-            var dictionary = new Dictionary<string, List<string>>();
-
-            for (int i = 0; i < entryCount; i++)
+            var dictionary = new Dictionary<string, List<string>>
             {
-                string key = GetRandomString();
-                List<string> values = RandomStringList(GetRandomNumber());
-                dictionary[key] = values;
-            }
+                { "Content-Type", new List<string> { GetRandomMessage() } },
+                { GetRandomMessage(), new List<string> { GetRandomMessage() } }
+            };
 
             return dictionary;
         }
@@ -195,7 +192,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             };
         }
 
-        private Expression<Func<Message, bool>> SameMessageAs(Message expectedMessage) 
+        private Expression<Func<Message, bool>> SameMessageAs(Message expectedMessage)
         {
             return actualMessage =>
                 this.compareLogic.Compare(expectedMessage, actualMessage)

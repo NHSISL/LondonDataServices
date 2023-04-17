@@ -1,139 +1,132 @@
-﻿//// ---------------------------------------------------------------
-//// Copyright (c) North East London ICB. All rights reserved.
-//// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
 
-//using System;
-//using System.Collections.Generic;
-//using System.Threading.Tasks;
-//using FluentAssertions;
-//using LHDS.Core.Models.Processings.Mesh.Exceptions;
-//using Moq;
-//using Xeptions;
-//using Xunit;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Processings.Mesh.Exceptions;
+using Moq;
+using Xeptions;
+using Xunit;
 
-//namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
-//{
-//    public partial class MeshProcessingServiceTests
-//    {
-//        [Theory]
-//        [MemberData(nameof(DependencyValidationExceptions))]
-//        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveMessageIdsIfDependencyValidationErrorOccursAndLogItAsync(
-//           Xeption dependencyValidationException)
-//        {
-//            // given
-//            string mailboxId = GetRandomString();
+namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
+{
+    public partial class MeshProcessingServiceTests
+    {
+        [Theory]
+        [MemberData(nameof(DependencyValidationExceptions))]
+        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveMessageIdsIfDependencyValidationErrorOccursAndLogItAsync(
+            Xeption dependencyValidationException)
+        {
+            // given
+            var expectedMeshProcessingDependencyValidationException =
+                new MeshProcessingDependencyValidationException(
+                    dependencyValidationException.InnerException as Xeption);
 
-//            var expectedMeshProcessingDependencyValidationException =
-//                new MeshProcessingDependencyValidationException(
-//                    dependencyValidationException.InnerException as Xeption);
+            this.meshServiceMock.Setup(service =>
+                service.RetrieveMessagesFromInboxAsync())
+                    .Throws(dependencyValidationException);
 
-//            this.meshServiceMock.Setup(service =>
-//                service.RetrieveMessageIdsFromInboxAsync(mailboxId))
-//                    .Throws(dependencyValidationException);
+            // when
+            ValueTask<List<string>> retrieveMessageByIdsTask =
+                this.meshProcessingService.RetrieveMessagesFromInboxAsync();
 
-//            // when
-//            ValueTask<List<string>> retrieveMessageByIdsTask =
-//                this.meshProcessingService.RetrieveMessageIdsFromInboxAsync(mailboxId);
+            MeshProcessingDependencyValidationException actualException =
+                await Assert.ThrowsAsync<MeshProcessingDependencyValidationException>(retrieveMessageByIdsTask.AsTask);
 
-//            MeshProcessingDependencyValidationException actualException =
-//                await Assert.ThrowsAsync<MeshProcessingDependencyValidationException>(retrieveMessageByIdsTask.AsTask);
+            // then
+            actualException.Should().BeEquivalentTo(expectedMeshProcessingDependencyValidationException);
 
-//            // then
-//            actualException.Should().BeEquivalentTo(expectedMeshProcessingDependencyValidationException);
+            this.meshServiceMock.Verify(service =>
+                service.RetrieveMessagesFromInboxAsync(),
+                    Times.Once);
 
-//            this.meshServiceMock.Verify(service =>
-//                service.RetrieveMessageIdsFromInboxAsync(mailboxId),
-//                    Times.Once);
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedMeshProcessingDependencyValidationException))),
+                         Times.Once);
 
-//            this.loggingBrokerMock.Verify(broker =>
-//                 broker.LogError(It.Is(SameExceptionAs(
-//                     expectedMeshProcessingDependencyValidationException))),
-//                         Times.Once);
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
 
-//            this.meshServiceMock.VerifyNoOtherCalls();
-//            this.loggingBrokerMock.VerifyNoOtherCalls();
-//        }
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyOnRetrieveMessageIdsIfDependencyErrorOccursAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            var expectedMeshProcessingDependencyException =
+                new MeshProcessingDependencyException(
+                    dependencyException.InnerException as Xeption);
 
-//        [Theory]
-//        [MemberData(nameof(DependencyExceptions))]
-//        public async Task ShouldThrowDependencyOnRetrieveMessageIdsIfDependencyErrorOccursAndLogItAsync(
-//          Xeption dependencyException)
-//        {
-//            // given
-//            string mailboxId = GetRandomString();
+            this.meshServiceMock.Setup(service =>
+                service.RetrieveMessagesFromInboxAsync())
+                    .Throws(dependencyException);
 
-//            var expectedMeshProcessingDependencyException =
-//                new MeshProcessingDependencyException(
-//                    dependencyException.InnerException as Xeption);
+            // when
+            ValueTask<List<string>> retrieveMessageByIdsTask =
+                this.meshProcessingService.RetrieveMessagesFromInboxAsync();
 
-//            this.meshServiceMock.Setup(service =>
-//                service.RetrieveMessageIdsFromInboxAsync(mailboxId))
-//                    .Throws(dependencyException);
+            MeshProcessingDependencyException actualException =
+                await Assert.ThrowsAsync<MeshProcessingDependencyException>(retrieveMessageByIdsTask.AsTask);
 
-//            // when
-//            ValueTask<List<string>> retrieveMessageByIdsTask =
-//                this.meshProcessingService.RetrieveMessageIdsFromInboxAsync(mailboxId);
+            // then
+            actualException.Should().BeEquivalentTo(expectedMeshProcessingDependencyException);
 
-//            MeshProcessingDependencyException actualException =
-//                await Assert.ThrowsAsync<MeshProcessingDependencyException>(retrieveMessageByIdsTask.AsTask);
+            this.meshServiceMock.Verify(service =>
+                service.RetrieveMessagesFromInboxAsync(),
+                    Times.Once);
 
-//            // then
-//            actualException.Should().BeEquivalentTo(expectedMeshProcessingDependencyException);
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedMeshProcessingDependencyException))),
+                         Times.Once);
 
-//            this.meshServiceMock.Verify(service =>
-//                service.RetrieveMessageIdsFromInboxAsync(mailboxId),
-//                    Times.Once);
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
 
-//            this.loggingBrokerMock.Verify(broker =>
-//                 broker.LogError(It.Is(SameExceptionAs(
-//                     expectedMeshProcessingDependencyException))),
-//                         Times.Once);
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveMessageIdsIfServiceErrorOccursAsync()
+        {
+            // given
+            var serviceException = new Exception();
 
-//            this.meshServiceMock.VerifyNoOtherCalls();
-//            this.loggingBrokerMock.VerifyNoOtherCalls();
-//        }
+            var failedMeshProcessingServiceException =
+                new FailedMeshProcessingServiceException(serviceException);
 
-//        [Fact]
-//        public async Task ShouldThrowServiceExceptionOnRetrieveMessageIdsIfServiceErrorOccursAsync()
-//        {
-//            // given
-//            string mailboxId = GetRandomString();
+            var expectedMeshProcessingServiveException =
+                new MeshProcessingServiceException(
+                    failedMeshProcessingServiceException);
 
-//            var serviceException = new Exception();
+            this.meshServiceMock.Setup(service =>
+                service.RetrieveMessagesFromInboxAsync())
+                    .Throws(serviceException);
 
-//            var failedMeshProcessingServiceException =
-//                new FailedMeshProcessingServiceException(serviceException);
+            // when
+            ValueTask<List<string>> retrievRetrieveMessageIdsFromInboxTask =
+                this.meshProcessingService.RetrieveMessagesFromInboxAsync();
 
-//            var expectedMeshProcessingServiveException =
-//                new MeshProcessingServiceException(
-//                    failedMeshProcessingServiceException);
+            MeshProcessingServiceException actualException =
+                await Assert.ThrowsAsync<MeshProcessingServiceException>(retrievRetrieveMessageIdsFromInboxTask.AsTask);
 
-//            this.meshServiceMock.Setup(service =>
-//                service.RetrieveMessageIdsFromInboxAsync(mailboxId))
-//                    .Throws(serviceException);
+            // then
+            actualException.Should().BeEquivalentTo(expectedMeshProcessingServiveException);
 
-//            // when
-//            ValueTask<List<string>> retrievRetrieveMessageIdsFromInboxTask =
-//                this.meshProcessingService.RetrieveMessageIdsFromInboxAsync(mailboxId);
+            this.meshServiceMock.Verify(service =>
+                service.RetrieveMessagesFromInboxAsync(),
+                    Times.Once);
 
-//            MeshProcessingServiceException actualException =
-//                await Assert.ThrowsAsync<MeshProcessingServiceException>(retrievRetrieveMessageIdsFromInboxTask.AsTask);
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedMeshProcessingServiveException))),
+                         Times.Once);
 
-//            // then
-//            actualException.Should().BeEquivalentTo(expectedMeshProcessingServiveException);
-
-//            this.meshServiceMock.Verify(service =>
-//                service.RetrieveMessageIdsFromInboxAsync(mailboxId),
-//                    Times.Once);
-
-//            this.loggingBrokerMock.Verify(broker =>
-//                 broker.LogError(It.Is(SameExceptionAs(
-//                     expectedMeshProcessingServiveException))),
-//                         Times.Once);
-
-//            this.meshServiceMock.VerifyNoOtherCalls();
-//            this.loggingBrokerMock.VerifyNoOtherCalls();
-//        }
-
-//    }
-//}
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

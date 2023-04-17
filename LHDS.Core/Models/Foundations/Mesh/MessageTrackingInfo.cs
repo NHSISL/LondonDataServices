@@ -4,7 +4,7 @@
 
 namespace LHDS.Core.Models.Foundations.Mesh
 {
-    public class TrackingInfo
+    public class MessageTrackingInfo
     {
         public string AddressType { get; set; }
         public string Checksum { get; set; }

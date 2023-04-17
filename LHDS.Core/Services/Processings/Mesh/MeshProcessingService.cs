@@ -35,7 +35,7 @@ namespace LHDS.Core.Services.Processings.Mesh
                 return await this.meshService.RetrieveMessagesFromInboxAsync();
             });
 
-        public ValueTask<MeshMessage> RetrieveAndAcknowledgeMessageByIdAsync(MeshMessage message) =>
+        public ValueTask<MeshMessage> RetrieveAndAcknowledgeMessageByIdAsync(string messageId) =>
             TryCatch(async () =>
             {
                 ValidateMeshArgs(message.MessageId);

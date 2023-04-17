@@ -1,59 +1,62 @@
-﻿//// ---------------------------------------------------------------
-//// Copyright (c) North East London ICB. All rights reserved.
-//// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
 
-//using System.Collections.Generic;
-//using System.Threading.Tasks;
-//using LHDS.Core.Brokers.Loggings;
-//using LHDS.Core.Services.Foundations.Mesh;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.Mesh;
+using LHDS.Core.Services.Foundations.Mesh;
 
-//namespace LHDS.Core.Services.Processings.Mesh
-//{
-//    public partial class MeshProcessingService : IMeshProcessingService
-//    {
-//        private readonly IMeshService meshService;
-//        private readonly ILoggingBroker loggingBroker;
+namespace LHDS.Core.Services.Processings.Mesh
+{
+    public partial class MeshProcessingService : IMeshProcessingService
+    {
+        private readonly IMeshService meshService;
+        private readonly ILoggingBroker loggingBroker;
 
-//        public MeshProcessingService(
-//            IMeshService meshService,
-//            ILoggingBroker loggingBroker)
-//        {
-//            this.meshService = meshService;
-//            this.loggingBroker = loggingBroker;
-//        }
+        public MeshProcessingService(
+            IMeshService meshService,
+            ILoggingBroker loggingBroker)
+        {
+            this.meshService = meshService;
+            this.loggingBroker = loggingBroker;
+        }
 
-//        public ValueTask<bool> ValidateMailboxAccessAsync() =>
-//           TryCatch(async () =>
-//           {
-//               return await this.meshService.ValidateMailboxAccessAsync();
-//           });
+        public ValueTask<bool> ValidateMailboxAccessAsync() =>
+           TryCatch(async () =>
+           {
+               return await this.meshService.ValidateMailboxAccessAsync();
+           });
 
-//        public ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync(string mailboxId) =>
-//            TryCatch(async () =>
-//            {
-//                ValidateGetArguments(mailboxId);
+        public ValueTask<List<string>> RetrieveMessagesFromInboxAsync() =>
+         TryCatch(async () =>
+            {
+                return await this.meshService.RetrieveMessagesFromInboxAsync();
+            });
 
-//                return await this.meshService.RetrieveMessageIdsFromInboxAsync(mailboxId);
-//            });
+        public ValueTask<MeshMessage> RetrieveAndAcknowledgeMessageByIdAsync(string messageId) =>
+            TryCatch(async () =>
+            {
+                ValidateMeshArgs(messageId);
+                MeshMessage retrievedMessage = await meshService.RetrieveMessageByIdAsync(messageId);
+                ValidateMeshMessageIsNotNull(retrievedMessage);
+                bool ackResult = await meshService.AcknowledgeMessageByIdAsync(messageId);
 
-//        public ValueTask<string> RetrieveAndAcknowledgeMessageByIdAsync(string mailboxId, string messageId) =>
-//            TryCatch(async () =>
-//            {
-//                ValidateMeshArgs(mailboxId, messageId);
-//                var retrievedMessage = await this.meshService.RetrieveMessageByIdAsync(mailboxId, messageId);
-//                await this.meshService.AcknowledgeMessageByIdAsync(mailboxId, messageId);
+                return retrievedMessage;
+            });
 
-//                return retrievedMessage;
-//            });
+        public ValueTask<MeshMessage> SendMessageAsync(MeshMessage message) =>
+            TryCatch(async () =>
+            {
+                ValidateMeshArgs(message.MessageId);
+                MeshMessage sendMessageResult = await meshService.SendMessageAsync(message);
+                ValidateMeshMessageIsNotNull(sendMessageResult);
+                MeshMessage trackMessage = await this.meshService.RetrieveTrackingStatusAsync(message.MessageId);
+                ValidateMeshMessageIsNotNull(trackMessage);
+                sendMessageResult.TrackingInfo = trackMessage.TrackingInfo;
 
-//        public ValueTask<string> SendMessageAsync(string mailboxId, string messageId) =>
-//            TryCatch(async () =>
-//            {
-//                ValidateMeshArgs(mailboxId, messageId);
-//                var trackMessage = await this.meshService.RetrieveTrackingStatusAsync(mailboxId, messageId);
-//                await this.meshService.SendMessageAsync(messageId);
-
-//                return trackMessage;
-//            });
-//    }
-//}
+                return sendMessageResult;
+            });
+    }
+}

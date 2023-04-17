@@ -15,6 +15,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 {
     public partial class MeshServiceTests
     {
+
+        // TODO:  Add tests for these
+        //MeshClientValidationException
+        //MeshClientDependencyException
+        //MeshClientServiceException
+
+
+
         [Fact]
         public async Task ShouldThrowServiceExceptionOnSendMessageIfServiceErrorOccursAndLogItAsync()
         {

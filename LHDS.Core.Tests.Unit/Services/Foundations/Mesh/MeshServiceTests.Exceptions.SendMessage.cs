@@ -1,58 +1,83 @@
-﻿//// ---------------------------------------------------------------
-//// Copyright (c) North East London ICB. All rights reserved.
-//// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
 
-//using System;
-//using System.Threading.Tasks;
-//using FluentAssertions;
-//using LHDS.Core.Models.Foundations.Mesh.Exceptions;
-//using Moq;
-//using Xunit;
+using System;
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.Mesh;
+using LHDS.Core.Models.Foundations.Mesh.Exceptions;
+using Moq;
+using NEL.MESH.Models.Foundations.Mesh;
+using Xunit;
 
-//namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
-//{
-//    public partial class MeshServiceTests
-//    {
-//        [Fact]
-//        public async Task ShouldThrowServiceExceptionOnSendMessageIfServiceErrorOccursAndLogItAsync()
-//        {
-//            // given
-//            string messageId = GetRandomMessage();
-//            var serviceException = new Exception();
+namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
+{
+    public partial class MeshServiceTests
+    {
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnSendMessageIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            dynamic dynamicMeshMessageProperties =
+                CreateRandomMeshMessageProperties();
 
-//            var failedMeshServiceException =
-//               new FailedMeshServiceException(serviceException);
+            var randomMessage = new Message
+            {
+                MessageId = dynamicMeshMessageProperties.MessageId,
+                Headers = dynamicMeshMessageProperties.Headers,
+                StringContent = dynamicMeshMessageProperties.StringContent,
+                FileContent = dynamicMeshMessageProperties.FileContent,
+                TrackingInfo = MaptToMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
+            };
 
-//            var expectedMeshServiceException =
-//               new MeshServiceException(failedMeshServiceException);
+            var inputMessage = randomMessage;
 
-//            this.meshBrokerMock.Setup(broker =>
-//                broker.SendMessageAsync(It.IsAny<string>()))
-//                    .ThrowsAsync(serviceException);
+            MeshMessage randomMeshMessage = new MeshMessage
+            {
+                MessageId = dynamicMeshMessageProperties.MessageId,
+                Headers = dynamicMeshMessageProperties.Headers,
+                StringContent = dynamicMeshMessageProperties.StringContent,
+                FileContent = dynamicMeshMessageProperties.FileContent,
+                TrackingInfo = MaptToMeshMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
+            };
 
-//            // when
-//            ValueTask<string> RetrieveSendMessageTask =
-//                this.meshService.SendMessageAsync(messageId);
+            var inputMeshMessage = randomMeshMessage;
+            var serviceException = new Exception();
 
-//            MeshServiceException actualMeshServiceException =
-//                await Assert.ThrowsAsync<MeshServiceException>
-//                    (RetrieveSendMessageTask.AsTask);
+            var failedMeshServiceException =
+               new FailedMeshServiceException(serviceException);
 
-//            // then
-//            actualMeshServiceException.Should()
-//                .BeEquivalentTo(expectedMeshServiceException);
+            var expectedMeshServiceException =
+               new MeshServiceException(failedMeshServiceException);
 
-//            this.meshBrokerMock.Verify(broker =>
-//                broker.SendMessageAsync(It.IsAny<string>()),
-//                    Times.Once);
+            this.meshBrokerMock.Setup(broker =>
+                broker.SendMessageAsync(inputMessage))
+                    .ThrowsAsync(serviceException);
 
-//            this.loggingBrokerMock.Verify(broker =>
-//               broker.LogError(It.Is(SameExceptionAs(
-//                   expectedMeshServiceException))),
-//                       Times.Once);
+            // when
+            ValueTask<MeshMessage> sendMessageTask =
+                this.meshService.SendMessageAsync(inputMeshMessage);
 
-//            this.meshBrokerMock.VerifyNoOtherCalls();
-//            this.loggingBrokerMock.VerifyNoOtherCalls();
-//        }
-//    }
-//}
+            MeshServiceException actualMeshServiceException =
+                await Assert.ThrowsAsync<MeshServiceException>
+                    (sendMessageTask.AsTask);
+
+            // then
+            actualMeshServiceException.Should()
+                .BeEquivalentTo(expectedMeshServiceException);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.SendMessageAsync(inputMessage),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedMeshServiceException))),
+                       Times.Once);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

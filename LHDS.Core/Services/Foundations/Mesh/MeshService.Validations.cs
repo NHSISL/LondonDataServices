@@ -10,7 +10,6 @@ using System.Text;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using Xeptions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace LHDS.Core.Services.Foundations.Mesh
 {
@@ -18,15 +17,18 @@ namespace LHDS.Core.Services.Foundations.Mesh
     {
         public void ValidateMeshArgs(string mailboxId, string messageId)
         {
-           Validate(
-               (Rule: IsInvalid(mailboxId), Parameter: nameof(mailboxId)),
-               (Rule: IsInvalid(messageId), Parameter: nameof(messageId)));
+            Validate(
+                (Rule: IsInvalid(mailboxId), Parameter: nameof(mailboxId)),
+                (Rule: IsInvalid(messageId), Parameter: nameof(messageId)));
         }
 
         public void ValidateMeshMessageOnSendMessage(MeshMessage message)
         {
             ValidateMeshMessageIsNotNull(message);
-            ValidateHeadersIsNotNull(message);
+
+            Validate<InvalidMeshMessageException>(
+                (Rule: IsInvalid(message.StringContent), Parameter: nameof(message.StringContent)),
+                (Rule: IsInvalid(message.Headers), Parameter: nameof(message.Headers)));
 
             Validate<InvalidMeshMessageException>(
                 (Rule: IsInvalid(message.StringContent), Parameter: nameof(message.StringContent)),
@@ -65,6 +67,12 @@ namespace LHDS.Core.Services.Foundations.Mesh
             Message = "Text is required"
         };
 
+        private static dynamic IsInvalid(Dictionary<string, List<string>> dictionary) => new
+        {
+            Condition = dictionary == null,
+            Message = "Values is required"
+        };
+
         private static dynamic IsInvalid(Dictionary<string, List<string>> dictionary, string key) => new
         {
             Condition = IsInvalidKey(dictionary, key),
@@ -79,11 +87,6 @@ namespace LHDS.Core.Services.Foundations.Mesh
 
         private static bool IsInvalidKey(Dictionary<string, List<string>> dictionary, string key)
         {
-            if (dictionary == null)
-            {
-                return false;
-            }
-
             bool keyExists = dictionary.ContainsKey(key);
 
             if (!keyExists)

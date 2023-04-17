@@ -39,11 +39,8 @@ namespace LHDS.Core.Services.Processings.Mesh
             TryCatch(async () =>
             {
                 ValidateMeshArgs(message.MessageId);
-
                 MeshMessage retrievedMessage = await meshService.RetrieveMessageByIdAsync(message.MessageId);
-
                 ValidateMeshMessageIsNotNull(retrievedMessage);
-
                 bool ackResult = await meshService.AcknowledgeMessageByIdAsync(message.MessageId);
 
                 return retrievedMessage;
@@ -53,15 +50,10 @@ namespace LHDS.Core.Services.Processings.Mesh
             TryCatch(async () =>
             {
                 ValidateMeshArgs(message.MessageId);
-
                 MeshMessage sendMessageResult = await meshService.SendMessageAsync(message);
-
                 ValidateMeshMessageIsNotNull(sendMessageResult);
-
                 MeshMessage trackMessage = await this.meshService.RetrieveTrackingStatusAsync(message.MessageId);
-
                 ValidateMeshMessageIsNotNull(trackMessage);
-
                 sendMessageResult.TrackingInfo = trackMessage.TrackingInfo;
 
                 return sendMessageResult;

@@ -98,5 +98,56 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnSendMessageIRetrieveTrackStatusIsNullAndLogItAsync()
+        {
+            //Given
+            MeshMessage randomMessage = CreateRandomMessage();
+            MeshMessage returnMessage = randomMessage;
+
+            MeshMessage nonExistMessage = randomMessage;
+            MeshMessage nullMessage = null;
+
+            var nullMeshProcessingException =
+               new NullMeshProcessingException();
+
+            var expectedMeshProcessingValidationException =
+                new MeshProcessingValidationException(nullMeshProcessingException);
+
+            this.meshServiceMock.Setup(service =>
+                service.SendMessageAsync(nonExistMessage))
+                .ReturnsAsync(returnMessage);
+
+            this.meshServiceMock.Setup(service =>
+                service.RetrieveTrackingStatusAsync(nonExistMessage.MessageId))
+                .ReturnsAsync(nullMessage);
+
+            //When
+            ValueTask<MeshMessage> SendMessageTask =
+                this.meshProcessingService.SendMessageAsync(nonExistMessage);
+
+            MeshProcessingValidationException actualMeshProcessingValidationException =
+                await Assert.ThrowsAsync<MeshProcessingValidationException>(SendMessageTask.AsTask);
+
+            //Then
+            actualMeshProcessingValidationException.Should()
+                .BeEquivalentTo(expectedMeshProcessingValidationException);
+
+            this.meshServiceMock.Verify(service =>
+               service.SendMessageAsync(nonExistMessage),
+               Times.Once);
+
+            this.meshServiceMock.Verify(service =>
+              service.RetrieveTrackingStatusAsync(nonExistMessage.MessageId),
+              Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedMeshProcessingValidationException))),
+                        Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

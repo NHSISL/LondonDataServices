@@ -79,8 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 this.meshProcessingService.SendMessageAsync(nonExistMessage);
 
             MeshProcessingValidationException actualMeshProcessingValidationException =
-                await Assert.ThrowsAsync<MeshProcessingValidationException>
-                (SendMessageTask.AsTask);
+                await Assert.ThrowsAsync<MeshProcessingValidationException>(SendMessageTask.AsTask);
 
             //Then
             actualMeshProcessingValidationException.Should()

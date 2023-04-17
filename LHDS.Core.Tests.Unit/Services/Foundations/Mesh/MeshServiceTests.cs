@@ -157,12 +157,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             };
         }
 
-        public static Dictionary<string, List<string>> GetRandomDictionary(int entryCount)
+        public static Dictionary<string, List<string>> CreateMandatoryHeaders()
         {
             var dictionary = new Dictionary<string, List<string>>
             {
                 { "Content-Type", new List<string> { GetRandomMessage() } },
-                { GetRandomMessage(), new List<string> { GetRandomMessage() } }
+                { "Mex-FileName", new List<string> { GetRandomMessage() } },
+                { "Mex-From", new List<string> { GetRandomMessage() } },
+                { "Mex-To", new List<string> { GetRandomMessage() } },
+                { "Mex-WorkflowID", new List<string> { GetRandomMessage() } }
             };
 
             return dictionary;
@@ -185,7 +188,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             return new
             {
                 MessageId = GetRandomString(),
-                Headers = GetRandomDictionary(GetRandomNumber()),
+                Headers = CreateMandatoryHeaders(),
                 StringContent = GetRandomString(),
                 FileContent = Encoding.ASCII.GetBytes(GetRandomString()),
                 TrackingInfo = GetRandomTrackingInfo()

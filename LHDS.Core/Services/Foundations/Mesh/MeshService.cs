@@ -79,9 +79,9 @@ namespace LHDS.Core.Services.Foundations.Mesh
             };
         }
 
-        public static MeshMessage.TrackingInfo ConvertToMeshMessageTrackingInfo(Message.TrackingInfo nelTrackingInfo)
+        public static MeshMessage.MessageTrackingInfo ConvertToMeshMessageTrackingInfo(Message.TrackingInfo nelTrackingInfo)
         {
-            return new MeshMessage.TrackingInfo
+            return new MeshMessage.MessageTrackingInfo
             {
                 AddressType = nelTrackingInfo.AddressType,
                 Checksum = nelTrackingInfo.Checksum,
@@ -116,7 +116,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
             };
         }
 
-        public static Message.TrackingInfo ConvertToMessageTrackingInfo(MeshMessage.TrackingInfo lhdsTrackingInfo)
+        public static Message.TrackingInfo ConvertToMessageTrackingInfo(MeshMessage.MessageTrackingInfo lhdsTrackingInfo)
         {
             return new Message.TrackingInfo
             {

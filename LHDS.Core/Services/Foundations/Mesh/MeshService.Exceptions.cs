@@ -3,10 +3,10 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
+using NEL.MESH.Models.Clients.Mesh.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.Mesh
@@ -46,13 +46,25 @@ namespace LHDS.Core.Services.Foundations.Mesh
             {
                 throw CreateAndLogValidationException(nullMeshMessageException);
             }
-            catch (NullHeadersException nullHeadersException)
-            {
-                throw CreateAndLogValidationException(nullHeadersException);
-            }
             catch (InvalidMeshMessageException invalidMeshException)
             {
                 throw CreateAndLogValidationException(invalidMeshException);
+            }
+            catch (MeshClientValidationException meshClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshClientValidationException);
+            }
+            catch (MeshClientDependencyException meshClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(meshClientDependencyException);
+            }
+            catch (MeshServiceDependencyValidationException invalidMeshException)
+            {
+                throw CreateAndLogDependencyException(invalidMeshException);
+            }
+            catch (MeshClientServiceException meshClientServiceException)
+            {
+                throw CreateAndLogDependencyException(meshClientServiceException);
             }
             catch (Exception exception)
             {
@@ -101,6 +113,24 @@ namespace LHDS.Core.Services.Foundations.Mesh
             this.loggingBroker.LogError(meshServiceException);
 
             return meshServiceException;
+        }
+
+        private MeshServiceDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var meshServiceDependencyException = new MeshServiceDependencyException(exception);
+            this.loggingBroker.LogError(meshServiceDependencyException);
+
+            return meshServiceDependencyException;
+        }
+
+        private MeshServiceDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var meshServiceDependencyValidationException =
+                new MeshServiceDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(meshServiceDependencyValidationException);
+
+            return meshServiceDependencyValidationException;
         }
     }
 }

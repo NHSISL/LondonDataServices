@@ -46,6 +46,10 @@ namespace LHDS.Core.Services.Foundations.Mesh
             {
                 throw CreateAndLogValidationException(nullMeshMessageException);
             }
+            catch (NullHeadersException nullHeadersException)
+            {
+                throw CreateAndLogValidationException(nullHeadersException);
+            }
             catch (Exception exception)
             {
                 var failedMeshServiceException =

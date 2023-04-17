@@ -12,10 +12,11 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Services.Foundations.Mesh;
 using Moq;
-using Message = NEL.MESH.Models.Foundations.Mesh;
+using NEL.MESH.Models.Foundations.Mesh;
 using Tynamix.ObjectFiller;
 using Xeptions;
-using MeshMessage = LHDS.Core.Models.Foundations.Mesh;
+using LHDS.Core.Models.Foundations.Mesh;
+using KellermanSoftware.CompareNetObjects;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 {
@@ -24,11 +25,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         private readonly Mock<IMeshBroker> meshBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IMeshService meshService;
+        private readonly ICompareLogic compareLogic;
 
         public MeshServiceTests()
         {
             this.meshBrokerMock = new Mock<IMeshBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.compareLogic = new CompareLogic();
 
             this.meshService = new MeshService(
                 meshBroker: this.meshBrokerMock.Object,
@@ -80,9 +83,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             };
         }
 
-        private static MeshMessage.TrackingInfo MaptToMeshMessageTrackingInfo(dynamic dynamicTrackingInfo)
+        private static MessageTrackingInfo MaptToMeshMessageTrackingInfo(dynamic dynamicTrackingInfo)
         {
-            return new MeshMessage.TrackingInfo
+            return new MessageTrackingInfo
             {
                 AddressType = dynamicTrackingInfo.AddressType,
                 Checksum = dynamicTrackingInfo.Checksum,
@@ -117,9 +120,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             };
         }
 
-        private static Message.TrackingInfo MaptToMessageTrackingInfo(dynamic dynamicTrackingInfo)
+        private static TrackingInfo MaptToMessageTrackingInfo(dynamic dynamicTrackingInfo)
         {
-            return new Message.TrackingInfo
+            return new TrackingInfo
             {
                 AddressType = dynamicTrackingInfo.AddressType,
                 Checksum = dynamicTrackingInfo.Checksum,
@@ -190,6 +193,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 FileContent = Encoding.ASCII.GetBytes(GetRandomString()),
                 TrackingInfo = GetRandomTrackingInfo()
             };
+        }
+
+        private Expression<Func<Message, bool>> SameMessageAs(Message expectedMessage) 
+        {
+            return actualMessage =>
+                this.compareLogic.Compare(expectedMessage, actualMessage)
+                    .AreEqual;
+
         }
 
         private static string GetRandomMessage() =>

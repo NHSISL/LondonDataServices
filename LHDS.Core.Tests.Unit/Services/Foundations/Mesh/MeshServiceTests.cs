@@ -12,9 +12,10 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Services.Foundations.Mesh;
 using Moq;
-using NEL.MESH.Models.Foundations.Mesh;
+using Message = NEL.MESH.Models.Foundations.Mesh;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using MeshMessage = LHDS.Core.Models.Foundations.Mesh;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 {
@@ -44,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
         private static dynamic GetRandomTrackingInfo()
         {
-            return new 
+            return new
             {
                 AddressType = GetRandomString(),
                 Checksum = GetRandomString(),
@@ -76,6 +77,80 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 UploadTimestamp = GetRandomString(),
                 Version = GetRandomString(),
                 WorkflowId = GetRandomString()
+            };
+        }
+
+        private static MeshMessage.TrackingInfo MaptToMeshMessageTrackingInfo(dynamic dynamicTrackingInfo)
+        {
+            return new MeshMessage.TrackingInfo
+            {
+                AddressType = dynamicTrackingInfo.AddressType,
+                Checksum = dynamicTrackingInfo.Checksum,
+                ChunkCount = dynamicTrackingInfo.ChunkCount,
+                CompressFlag = dynamicTrackingInfo.CompressFlag,
+                DownloadTimestamp = dynamicTrackingInfo.DownloadTimestamp,
+                DtsId = dynamicTrackingInfo.DtsId,
+                EncryptedFlag = dynamicTrackingInfo.EncryptedFlag,
+                ExpiryTime = dynamicTrackingInfo.ExpiryTime,
+                FileName = dynamicTrackingInfo.FileName,
+                FileSize = dynamicTrackingInfo.FileSize,
+                IsCompressed = dynamicTrackingInfo.IsCompressed,
+                LocalId = dynamicTrackingInfo.LocalId,
+                MeshRecipientOdsCode = dynamicTrackingInfo.MeshRecipientOdsCode,
+                MessageId = dynamicTrackingInfo.MessageId,
+                MessageType = dynamicTrackingInfo.MessageType,
+                PartnerId = dynamicTrackingInfo.PartnerId,
+                Recipient = dynamicTrackingInfo.Recipient,
+                RecipientName = dynamicTrackingInfo.RecipientName,
+                RecipientOrgCode = dynamicTrackingInfo.RecipientOrgCode,
+                RecipientSmtp = dynamicTrackingInfo.RecipientSmtp,
+                Sender = dynamicTrackingInfo.Sender,
+                SenderName = dynamicTrackingInfo.SenderName,
+                SenderOdsCode = dynamicTrackingInfo.SenderOdsCode,
+                SenderOrgCode = dynamicTrackingInfo.SenderOrgCode,
+                SenderSmtp = dynamicTrackingInfo.SenderSmtp,
+                Status = dynamicTrackingInfo.Status,
+                StatusSuccess = dynamicTrackingInfo.StatusSuccess,
+                UploadTimestamp = dynamicTrackingInfo.UploadTimestamp,
+                Version = dynamicTrackingInfo.Version,
+                WorkflowId = dynamicTrackingInfo.WorkflowId,
+            };
+        }
+
+        private static Message.TrackingInfo MaptToMessageTrackingInfo(dynamic dynamicTrackingInfo)
+        {
+            return new Message.TrackingInfo
+            {
+                AddressType = dynamicTrackingInfo.AddressType,
+                Checksum = dynamicTrackingInfo.Checksum,
+                ChunkCount = dynamicTrackingInfo.ChunkCount,
+                CompressFlag = dynamicTrackingInfo.CompressFlag,
+                DownloadTimestamp = dynamicTrackingInfo.DownloadTimestamp,
+                DtsId = dynamicTrackingInfo.DtsId,
+                EncryptedFlag = dynamicTrackingInfo.EncryptedFlag,
+                ExpiryTime = dynamicTrackingInfo.ExpiryTime,
+                FileName = dynamicTrackingInfo.FileName,
+                FileSize = dynamicTrackingInfo.FileSize,
+                IsCompressed = dynamicTrackingInfo.IsCompressed,
+                LocalId = dynamicTrackingInfo.LocalId,
+                MeshRecipientOdsCode = dynamicTrackingInfo.MeshRecipientOdsCode,
+                MessageId = dynamicTrackingInfo.MessageId,
+                MessageType = dynamicTrackingInfo.MessageType,
+                PartnerId = dynamicTrackingInfo.PartnerId,
+                Recipient = dynamicTrackingInfo.Recipient,
+                RecipientName = dynamicTrackingInfo.RecipientName,
+                RecipientOrgCode = dynamicTrackingInfo.RecipientOrgCode,
+                RecipientSmtp = dynamicTrackingInfo.RecipientSmtp,
+                Sender = dynamicTrackingInfo.Sender,
+                SenderName = dynamicTrackingInfo.SenderName,
+                SenderOdsCode = dynamicTrackingInfo.SenderOdsCode,
+                SenderOrgCode = dynamicTrackingInfo.SenderOrgCode,
+                SenderSmtp = dynamicTrackingInfo.SenderSmtp,
+                Status = dynamicTrackingInfo.Status,
+                StatusSuccess = dynamicTrackingInfo.StatusSuccess,
+                UploadTimestamp = dynamicTrackingInfo.UploadTimestamp,
+                Version = dynamicTrackingInfo.Version,
+                WorkflowId = dynamicTrackingInfo.WorkflowId,
             };
         }
 

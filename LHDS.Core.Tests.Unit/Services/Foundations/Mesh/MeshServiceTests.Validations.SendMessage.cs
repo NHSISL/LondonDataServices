@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -45,45 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                         Times.Never);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnSendMessageIfHeadersDictionaryIsNullAsync()
-        {
-            // given
-            MeshMessage meshMessageWithNullHeaders = new MeshMessage
-            {
-                Headers = null
-            };
-
-            Message messageWithNullHeaders = new Message
-            {
-                Headers = null
-            };
-
-            var nullHeadersException =
-                new NullHeadersException();
-
-            var expectedMeshValidationException =
-                new MeshValidationException(nullHeadersException);
-
-            // when
-            ValueTask<MeshMessage> sendMessageTask =
-                this.meshService.SendMessageAsync(meshMessageWithNullHeaders);
-
-            MeshValidationException actualMeshValidationException =
-                await Assert.ThrowsAsync<MeshValidationException>(() =>
-                    sendMessageTask.AsTask());
-
-            // then
-            actualMeshValidationException.Should()
-                .BeEquivalentTo(expectedMeshValidationException);
-
-            this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(messageWithNullHeaders),
-                        Times.Never);
-
-            this.meshBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -94,36 +55,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             string invalidInput)
         {
             // given
-            dynamic dynamicMeshMessageProperties = CreateRandomMeshMessageProperties();
             string inputMessageId = GetRandomString();
-
-            var randomMessage = new Message
-            {
-                MessageId = inputMessageId,
-                Headers = new Dictionary<string, List<string>>(),
-                StringContent = invalidInput,
-            };
-
-            randomMessage.Headers.Add("Mex-From", new List<string> { invalidInput });
-            randomMessage.Headers.Add("Mex-To", new List<string> { invalidInput });
-            randomMessage.Headers.Add("Mex-WorkflowID", new List<string> { invalidInput });
-            randomMessage.Headers.Add("Content-Type", new List<string> { invalidInput });
-            randomMessage.Headers.Add("Mex-FileName", new List<string> { invalidInput });
-
-            var inputMessage = randomMessage;
 
             MeshMessage randomMeshMessage = new MeshMessage
             {
                 MessageId = inputMessageId,
-                Headers = new Dictionary<string, List<string>>(),
+                Headers = null,
                 StringContent = invalidInput,
             };
-
-            randomMeshMessage.Headers.Add("Mex-From", new List<string> { invalidInput });
-            randomMeshMessage.Headers.Add("Mex-To", new List<string> { invalidInput });
-            randomMeshMessage.Headers.Add("Mex-WorkflowID", new List<string> { invalidInput });
-            randomMeshMessage.Headers.Add("Content-Type", new List<string> { invalidInput });
-            randomMeshMessage.Headers.Add("Mex-FileName", new List<string> { invalidInput });
 
             var inputMeshMessage = randomMeshMessage;
 
@@ -135,24 +74,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 values: "Text is required");
 
             invalidMeshMessageException.AddData(
-                key: "Content-Type",
-                values: "Header value is required");
-
-            invalidMeshMessageException.AddData(
-                key: "Mex-FileName",
-                values: "Header value is required");
-
-            invalidMeshMessageException.AddData(
-                key: "Mex-From",
-                values: "Header value is required");
-
-            invalidMeshMessageException.AddData(
-                key: "Mex-To",
-                values: "Header value is required");
-
-            invalidMeshMessageException.AddData(
-                key: "Mex-WorkflowID",
-                values: "Header value is required");
+                key: "Headers",
+                values: "Values is required");
 
             var expectedMeshValidationException =
                 new MeshValidationException(
@@ -172,10 +95,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 .BeEquivalentTo(expectedMeshValidationException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(inputMessage),
+                broker.SendMessageAsync(It.IsAny<Message>()),
                         Times.Never);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

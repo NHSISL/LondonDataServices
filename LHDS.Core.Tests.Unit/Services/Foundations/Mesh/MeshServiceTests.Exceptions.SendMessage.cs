@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                new MeshServiceException(failedMeshServiceException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.SendMessageAsync(It.IsAny<Message>())),
+                broker.SendMessageAsync(It.IsAny<Message>()))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -57,8 +57,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 .BeEquivalentTo(expectedMeshServiceException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(It.IsAny<Message>())),
-                    Times.Once);
+                broker.SendMessageAsync(It.IsAny<Message>()),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(

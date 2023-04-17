@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
         public async Task ShouldThrowDependencyValidationExceptionOnRetrieveMessageAndAcknowledgeIfDependencyValidationErrorOccursAndLogItAsync(
-          Xeption dependencyValidationException)
+            Xeption dependencyValidationException)
         {
             // given
             MeshMessage randomMessage = CreateRandomMessage();
@@ -57,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
         public async Task ShouldThrowDependencyOnRetrieveMessageAndAcknowledgeIfDependencyErrorOccursAndLogItAsync(
-          Xeption dependencyException)
+            Xeption dependencyException)
         {
             // given
             MeshMessage randomMessage = CreateRandomMessage();
@@ -85,9 +85,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
-                     expectedMeshProcessingDependencyException))),
-                         Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedMeshProcessingDependencyException))),
+                        Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

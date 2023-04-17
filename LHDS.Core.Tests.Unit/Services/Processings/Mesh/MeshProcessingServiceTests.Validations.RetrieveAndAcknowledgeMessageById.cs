@@ -33,8 +33,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             var expectedMeshProcessingValidationException =
             new MeshProcessingValidationException(
-                   innerException: invalidMeshProcessingArgumentException,
-                   validationSummary: GetValidationSummary(invalidMeshProcessingArgumentException.Data));
+                innerException: invalidMeshProcessingArgumentException,
+                validationSummary: GetValidationSummary(invalidMeshProcessingArgumentException.Data));
 
             // when
             ValueTask<MeshMessage> retrieveMessageIdsFromInboxTask =

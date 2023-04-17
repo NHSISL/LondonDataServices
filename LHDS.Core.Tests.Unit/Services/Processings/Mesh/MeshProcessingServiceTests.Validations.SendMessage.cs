@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
         [InlineData("")]
         [InlineData(" ")]
         public async Task ShouldThrowValidationExceptionOnSendMessageIfArgsIsInvalidAndLogItAsync(
-           string invalidText)
+            string invalidText)
         {
             // given
             MeshMessage randomMessage = CreateRandomMessage();

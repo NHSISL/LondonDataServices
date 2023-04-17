@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,18 +15,28 @@ namespace LHDS.Core.Services.Foundations.Mesh
 {
     public partial class MeshService
     {
-        public void ValidateMeshArgs(string mailboxId, string messageId) =>
+        public void ValidateMeshArgs(string mailboxId, string messageId)
+        {
            Validate(
                (Rule: IsInvalid(mailboxId), Parameter: nameof(mailboxId)),
                (Rule: IsInvalid(messageId), Parameter: nameof(messageId)));
+        }
 
-        public void ValidateMeshMessage(MeshMessage message)
+        public void ValidateMeshMessageOnSendMessage(MeshMessage message)
         {
             ValidateMeshMessageIsNotNull(message);
-            ValidateHeadersIsNotNull(message);
+
             Validate(
                 (Rule: IsInvalid(message.MessageId), Parameter: nameof(message.MessageId)),
-                (Rule: IsInvalid(message.FileContent), Parameter: nameof(message.MessageId)));
+                (Rule: IsInvalid(message.Headers), Parameter: nameof(message.Headers)),
+                (Rule: IsInvalid(message.StringContent), Parameter: nameof(message.StringContent)));
+
+            Validate(
+                (Rule: IsInvalid(message.Headers, "Content-Type"), Parameter: "Content-Type"),
+                (Rule: IsInvalid(message.Headers, "Mex-FileName"), Parameter: "Mex-FileName"),
+                (Rule: IsInvalid(message.Headers, "Mex-From"), Parameter: "Mex-From"),
+                (Rule: IsInvalid(message.Headers, "Mex-To"), Parameter: "Mex-To"),
+                (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"));
         }
 
         public void ValidateMessageId(string messageId) =>
@@ -48,18 +59,41 @@ namespace LHDS.Core.Services.Foundations.Mesh
             Message = "Text is required"
         };
 
+        private static dynamic IsInvalid(Dictionary<string, List<string>> dictionary) => new
+        {
+            Condition = dictionary == null || dictionary.Count == 0,
+            Message = "Values is required"
+        };
+
+        private static dynamic IsInvalid(Dictionary<string, List<string>> dictionary, string key) => new
+        {
+            Condition = IsInvalidKey(dictionary, key),
+            Message = "Header value is required"
+        };
+
         private static dynamic IsInvalid(byte[] data) => new
         {
             Condition = (data == null || data.Length == 0),
             Message = "Content is required"
         };
 
-        private static void ValidateHeadersIsNotNull(MeshMessage message)
+        private static bool IsInvalidKey(Dictionary<string, List<string>> dictionary, string key)
         {
-            if (message.Headers is null)
+            if (dictionary == null)
             {
-                throw new NullHeadersException();
+                return false;
             }
+
+            bool keyExists = dictionary.ContainsKey(key);
+
+            if (!keyExists)
+            {
+                return true;
+            }
+
+            string value = dictionary[key].FirstOrDefault();
+
+            return String.IsNullOrWhiteSpace(value);
         }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

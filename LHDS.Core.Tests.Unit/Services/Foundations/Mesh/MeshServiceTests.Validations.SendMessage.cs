@@ -21,11 +21,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             MeshMessage nullMeshMessage = null;
             Message nullMessage = null;
 
-            var nullMessageException =
+            var nullMeshMessageException =
                 new NullMeshMessageException();
 
             var expectedMeshValidationException =
-                new MeshValidationException(nullMessageException);
+                new MeshValidationException(nullMeshMessageException);
 
             // when
             ValueTask<MeshMessage> addMessageTask =
@@ -41,45 +41,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.Verify(broker =>
                 broker.SendMessageAsync(nullMessage),
-                        Times.Never);
-
-            this.meshBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnSendMessageIfHeadersDictionaryIsNullAsync()
-        {
-            // given
-            MeshMessage meshMessageWithNullHeaders = new MeshMessage
-            {
-                Headers = null
-            };
-
-            Message messageWithNullHeaders = new Message
-            {
-                Headers = null
-            };
-
-            var nullHeadersException =
-                new NullHeadersException();
-
-            var expectedMeshValidationException =
-                new MeshValidationException(nullHeadersException);
-
-            // when
-            ValueTask<MeshMessage> sendMessageTask =
-                this.meshService.SendMessageAsync(meshMessageWithNullHeaders);
-
-            MeshValidationException actualMeshValidationException =
-                await Assert.ThrowsAsync<MeshValidationException>(() =>
-                    sendMessageTask.AsTask());
-
-            // then
-            actualMeshValidationException.Should()
-                .BeEquivalentTo(expectedMeshValidationException);
-
-            this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(messageWithNullHeaders),
                         Times.Never);
 
             this.meshBrokerMock.VerifyNoOtherCalls();

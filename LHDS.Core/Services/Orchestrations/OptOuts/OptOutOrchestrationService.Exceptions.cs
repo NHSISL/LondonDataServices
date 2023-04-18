@@ -18,29 +18,29 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             {
                 await returningRetrieveOptOutFunction();
             }
-            catch (InvalidArgumentRetieveOptOutStatusOrchestrationException invalidArgumentRetieveOptOutStatusOrchestrationException)
+            catch (InvalidArgumentOptOutOrchestrationException invalidArgumentRetieveOptOutStatusOrchestrationException)
             {
                 throw CreateAndLogValidationException(invalidArgumentRetieveOptOutStatusOrchestrationException);
             }
         }
 
-        private RetrieveOptOutStatusOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
+        private OptOutOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
             string validationSummary = GetValidationSummary(exception.Data);
 
             var decryptionOrchestrationValidationException =
-                new RetrieveOptOutStatusOrchestrationValidationException(exception, validationSummary);
+                new OptOutOrchestrationValidationException(exception, validationSummary);
 
             this.loggingBroker.LogError(decryptionOrchestrationValidationException);
 
             return decryptionOrchestrationValidationException;
         }
 
-        private RetrieveOptOutStatusOrchestrationDependencyValidationException
+        private OptOutOrchestrationDependencyValidationException
            CreateAndLogDependencyValidationException(Xeption exception)
         {
             var retrieveOptOutStatusOrchestrationDependencyValidationException =
-                new RetrieveOptOutStatusOrchestrationDependencyValidationException(exception.InnerException as Xeption);
+                new OptOutOrchestrationDependencyValidationException(exception.InnerException as Xeption);
             this.loggingBroker.LogError(retrieveOptOutStatusOrchestrationDependencyValidationException);
 
             return retrieveOptOutStatusOrchestrationDependencyValidationException;

@@ -6,9 +6,9 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Orchestrations.OptOuts.Exceptions
 {
-    public class InvalidArgumentRetieveOptOutStatusOrchestrationException : Xeption
+    public class InvalidArgumentOptOutOrchestrationException : Xeption
     {
-        public InvalidArgumentRetieveOptOutStatusOrchestrationException()
+        public InvalidArgumentOptOutOrchestrationException()
             : base(message: "Invalid Retrieve Opt Out Status orchestration argument(s), please correct the errors and try again.") { }
     }
 }

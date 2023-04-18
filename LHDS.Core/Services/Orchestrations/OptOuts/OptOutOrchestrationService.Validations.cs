@@ -35,7 +35,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidArgumentRetieveOptOutStatusOrchestrationException = new InvalidArgumentRetieveOptOutStatusOrchestrationException();
+            var invalidArgumentRetieveOptOutStatusOrchestrationException = new InvalidArgumentOptOutOrchestrationException();
 
             foreach ((dynamic rule, string parameter) in validations)
             {

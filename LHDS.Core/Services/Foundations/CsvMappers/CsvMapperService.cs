@@ -20,7 +20,7 @@ namespace LHDS.Core.Brokers.CsvMappers
         }
 
         public ValueTask<List<T>> MapCsvToObjectAsync<T>(string data, bool hasHeaderRecord) =>
-            throw new System.NotImplementedException();
+            this.csvMapperBroker.MapCsvToObjectAsync<T>(data, hasHeaderRecord);
 
         public ValueTask<string> MapObjectToCsvAsync<T>(List<T> @object, bool addHeaderRecord) =>
             throw new System.NotImplementedException();

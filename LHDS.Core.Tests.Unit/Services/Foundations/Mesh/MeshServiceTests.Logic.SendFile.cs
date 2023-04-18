@@ -27,7 +27,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             {
                 MessageId = dynamicMeshMessageProperties.MessageId,
                 Headers = dynamicMeshMessageProperties.Headers,
-                StringContent = dynamicMeshMessageProperties.StringContent,
                 FileContent = dynamicMeshMessageProperties.FileContent,
                 TrackingInfo = MaptToMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
             };
@@ -39,7 +38,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             {
                 MessageId = dynamicMeshMessageProperties.MessageId,
                 Headers = dynamicMeshMessageProperties.Headers,
-                StringContent = dynamicMeshMessageProperties.StringContent,
                 FileContent = dynamicMeshMessageProperties.FileContent,
                 TrackingInfo = MaptToMeshMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
             };

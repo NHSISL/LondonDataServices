@@ -59,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Extensions
             Xeption randomXeption = new Xeption(randomMessage, randomInnerXeption);
 
             string expectedResult = $"{randomInnerXeption.GetType().Name} Errors:  " +
-                $"Error1 => Error message 1;  Error2 => Error message 2, Error message 3;\r\n";
+                $"Error1 => Error message 1;  Error2 => Error message 2, Error message 3;" + Environment.NewLine;
 
             // when
             string actualResult = randomXeption.GetValidationSummary();
@@ -88,9 +88,9 @@ namespace LHDS.Core.Tests.Unit.Extensions
 
             string expectedResult =
                 $"{randomXeption.GetType().Name} Errors:  " +
-                $"Error1 => Error message 1;  Error2 => Error message 2, Error message 3;\r\n" +
+                $"Error1 => Error message 1;  Error2 => Error message 2, Error message 3;" + Environment.NewLine +
                 $"{randomInnerXeption.GetType().Name} Errors:  " +
-                $"Error3 => Error message 4;  Error4 => Error message 5, Error message 6;\r\n";
+                $"Error3 => Error message 4;  Error4 => Error message 5, Error message 6;" + Environment.NewLine;
 
             // when
             string actualResult = randomXeption.GetValidationSummary();

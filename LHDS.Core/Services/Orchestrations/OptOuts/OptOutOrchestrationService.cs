@@ -45,6 +45,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             TryCatch(async () =>
             {
                 ValidateOptOutFileIsNotNull(optOutFile);
+                ValidateRequestIdIsNotNull(requestId);
 
                 List<OptOut> mappedOptOuts =
                 await this.csvMapperProcessingService.MapCsvDataToObjectAsync<OptOut>(optOutFile);

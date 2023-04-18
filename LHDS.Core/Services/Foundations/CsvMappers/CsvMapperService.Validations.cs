@@ -16,10 +16,22 @@ namespace LHDS.Core.Brokers.CsvMappers
                     (Rule: IsInvalid(data), Parameter: "Data"));
         }
 
+        private static void ValidateMapObjectToCsvArguments<T>(T @object, bool addHeaderRecord)
+        {
+            Validate<InvalidCsvMapperArgumentsException>(
+                    (Rule: IsInvalid(@object), Parameter: "Object"));
+        }
+
         private static dynamic IsInvalid(string text) => new
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
+        };
+
+        private static dynamic IsInvalid(object @object) => new
+        {
+            Condition = @object is null,
+            Message = "Object is required"
         };
 
         private static void Validate<T>(params (dynamic Rule, string Parameter)[] validations)

@@ -46,7 +46,8 @@ namespace LHDS.Core.Extensions.Exceptions
                     errors.Append($"{entry.Key} => {errorSummary};  ");
                 }
 
-                validationSummary.Append(errors.ToString().Trim() + Environment.NewLine);
+                validationSummary.Append(errors.ToString().Trim());
+                validationSummary.AppendLine();
             }
 
             return validationSummary.ToString();

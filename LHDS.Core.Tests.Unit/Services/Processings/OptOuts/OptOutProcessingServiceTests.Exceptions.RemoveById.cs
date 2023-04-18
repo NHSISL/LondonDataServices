@@ -6,7 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.OptOuts;
-using LHDS.Core.Models.Processings.Documents.Exceptions;
+using LHDS.Core.Models.Processings.OptOuts.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;

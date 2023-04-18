@@ -30,8 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 
             var expectedDocumentProcessingValidationException =
                 new DocumentProcessingValidationException(
-                    innerException: invalidDocumentProcessingFileNameException,
-                    validationSummary: GetValidationSummary(invalidDocumentProcessingFileNameException.Data));
+                    innerException: invalidDocumentProcessingFileNameException);
 
             // when
             ValueTask<string> GetDownloadLinkTask =

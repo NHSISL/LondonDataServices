@@ -103,11 +103,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
 
         private SupplierValidationException CreateAndLogValidationException(Xeption exception)
         {
-            string validationSummary = GetValidationSummary(exception.Data);
-
-            var supplierValidationException =
-                new SupplierValidationException(exception, validationSummary);
-
+            var supplierValidationException = new SupplierValidationException(exception);
             this.loggingBroker.LogError(supplierValidationException);
 
             return supplierValidationException;

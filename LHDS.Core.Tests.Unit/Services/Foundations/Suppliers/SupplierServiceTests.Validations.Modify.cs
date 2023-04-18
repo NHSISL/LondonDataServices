@@ -112,9 +112,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 values: "Text is required");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(
-                    innerException: invalidSupplierException,
-                    validationSummary: GetValidationSummary(invalidSupplierException.Data));
+                new SupplierValidationException(innerException: invalidSupplierException);
 
             // when
             ValueTask<Supplier> modifySupplierTask =
@@ -160,9 +158,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 values: $"Date is the same as {nameof(Supplier.CreatedDate)}");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(
-                    innerException: invalidSupplierException,
-                    validationSummary: GetValidationSummary(invalidSupplierException.Data));
+                new SupplierValidationException(innerException: invalidSupplierException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -215,9 +211,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 values: "Date is not recent");
 
             var expectedSupplierValidatonException =
-                new SupplierValidationException(
-                    innerException: invalidSupplierException,
-                    validationSummary: GetValidationSummary(invalidSupplierException.Data));
+                new SupplierValidationException(innerException: invalidSupplierException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -325,9 +319,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 values: $"Date is not the same as {nameof(Supplier.CreatedDate)}");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(
-                    innerException: invalidSupplierException,
-                    validationSummary: GetValidationSummary(invalidSupplierException.Data));
+                new SupplierValidationException(innerException: invalidSupplierException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectSupplierByIdAsync(invalidSupplier.Id))
@@ -385,9 +377,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 values: $"Text is not the same as {nameof(Supplier.CreatedBy)}");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(
-                    innerException: invalidSupplierException,
-                    validationSummary: GetValidationSummary(invalidSupplierException.Data));
+                new SupplierValidationException(innerException: invalidSupplierException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectSupplierByIdAsync(invalidSupplier.Id))
@@ -442,9 +432,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 values: $"Date is the same as {nameof(Supplier.UpdatedDate)}");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(
-                    innerException: invalidSupplierException,
-                    validationSummary: GetValidationSummary(invalidSupplierException.Data));
+                new SupplierValidationException(innerException: invalidSupplierException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectSupplierByIdAsync(invalidSupplier.Id))

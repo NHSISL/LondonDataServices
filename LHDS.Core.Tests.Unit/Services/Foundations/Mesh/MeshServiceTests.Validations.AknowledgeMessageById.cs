@@ -1,6 +1,6 @@
-//// ---------------------------------------------------------------
-//// Copyright (c) North East London ICB. All rights reserved.
-//// ---------------------------------------------------------------
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
 
 //using System.Threading.Tasks;
 //using FluentAssertions;
@@ -35,9 +35,7 @@
 //                values: "Text is required");
 
 //            var expectedMeshValidationException =
-//                new MeshValidationException(
-//                    innerException: invalidArgumentMeshException,
-//                    validationSummary: GetValidationSummary(invalidArgumentMeshException.Data));
+//                new MeshValidationException(innerException: invalidArgumentMeshException);
 
 //            // when
 //            ValueTask<bool> retrieveAknowledgeMessageByIdTask =

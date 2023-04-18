@@ -8,14 +8,10 @@ namespace LHDS.Core.Models.Orchestrations.Downloads.Exceptions
 {
     public class DownloadOrchestrationValidationException : Xeption
     {
-        private const string validationMessage = "Audit validation errors occurred, please try again.";
-
-        public DownloadOrchestrationValidationException(Xeption innerException, string validationSummary = "")
+        public DownloadOrchestrationValidationException(Xeption innerException)
             : base(
-                  message: validationSummary.Length > 0
-                    ? $"{validationMessage}  Validation errors: {validationSummary}"
-                    : validationMessage,
-                  innerException)
+                message: "Audit validation errors occurred, please try again.",
+                innerException)
         { }
     }
 }

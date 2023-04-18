@@ -8,14 +8,10 @@ namespace LHDS.Core.Models.Foundations.OptOuts.Exceptions
 {
     public class OptOutValidationException : Xeption
     {
-        private const string validationMessage = "OptOut validation errors occurred, please try again.";
-
-        public OptOutValidationException(Xeption innerException, string validationSummary = "")
+        public OptOutValidationException(Xeption innerException)
         : base(
-              message: validationSummary.Length > 0
-                ? $"{validationMessage}  Validation errors: {validationSummary}"
-                : validationMessage,
-              innerException)
+            message: "OptOut validation errors occurred, please try again.",
+            innerException)
         { }
     }
 }

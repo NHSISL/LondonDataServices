@@ -125,11 +125,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
 
         private MeshValidationException CreateAndLogValidationException(Xeption exception)
         {
-            string validationSummary = GetValidationSummary(exception.Data);
-
-            var meshValidationException =
-                new MeshValidationException(exception, validationSummary);
-
+            var meshValidationException = new MeshValidationException(exception);
             this.loggingBroker.LogError(meshValidationException);
 
             return meshValidationException;

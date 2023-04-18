@@ -61,6 +61,46 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         }
 
         [Fact]
+        public async Task ShouldThrowMeshClientDependencyExceptionOnRetrieveTrackingStatusIfDependencyFailsAndLogItAsync()
+        {
+            // given
+            string messageId = GetRandomMessage();
+            string randomMessage = GetRandomMessage();
+            var dependencyException = new Exception(randomMessage);
+
+            var meshClientDependencyException =
+                new MeshClientDependencyException(dependencyException as Xeption);
+
+            var expectedDependencyException =
+                new MeshServiceDependencyException(meshClientDependencyException);
+
+            this.meshBrokerMock.Setup(broker =>
+                broker.TrackMessageAsync(It.IsAny<string>()))
+                    .ThrowsAsync(meshClientDependencyException);
+
+            // when
+            ValueTask<MeshMessage> retrieveTrackingStatusTask =
+                this.meshService.RetrieveTrackingStatusAsync(messageId);
+
+            MeshServiceDependencyException actualDependencyException =
+                await Assert.ThrowsAsync<MeshServiceDependencyException>(retrieveTrackingStatusTask.AsTask);
+
+            // then
+            actualDependencyException.Should().BeEquivalentTo(expectedDependencyException);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.TrackMessageAsync(It.IsAny<string>()),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(expectedDependencyException))),
+                   Times.Once);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
         public async Task ShouldThrowServiceExceptionOnRetrieveTrackingStatusIfServiceErrorOccursAndLogItAsync()
         {
             // given

@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                   .ReturnsAsync(storageSendMessage);
 
             this.meshServiceMock.Setup(service =>
-                service.RetrieveTrackingStatusAsync(randomMessage.MessageId))
+                service.RetrieveTrackingStatusByIdAsync(randomMessage.MessageId))
                     .ReturnsAsync(storageMessage);
 
             // when
@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     Times.Once());
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveTrackingStatusAsync(randomMessage.MessageId),
+                service.RetrieveTrackingStatusByIdAsync(randomMessage.MessageId),
                     Times.Once());
 
             this.meshServiceMock.VerifyNoOtherCalls();

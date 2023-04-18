@@ -52,7 +52,7 @@ namespace LHDS.Core.Services.Processings.Mesh
                 ValidateMeshArgs(message.MessageId);
                 MeshMessage sendMessageResult = await meshService.SendMessageAsync(message);
                 ValidateMeshMessageIsNotNull(sendMessageResult);
-                MeshMessage trackMessage = await this.meshService.RetrieveTrackingStatusAsync(message.MessageId);
+                MeshMessage trackMessage = await this.meshService.RetrieveTrackingStatusByIdAsync(message.MessageId);
                 ValidateMeshMessageIsNotNull(trackMessage);
                 sendMessageResult.TrackingInfo = trackMessage.TrackingInfo;
 

@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             // when
             MeshMessage actualMeshMessage =
-                await this.meshService.RetrieveTrackingStatusAsync(inputMessageId);
+                await this.meshService.RetrieveTrackingStatusByIdAsync(inputMessageId);
 
             // then
             actualMeshMessage.Should().BeEquivalentTo(expectedMessage);

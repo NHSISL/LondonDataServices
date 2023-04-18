@@ -6,9 +6,9 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Orchestrations.OptOuts.Exceptions
 {
-    public class RetrieveOptOutStatusOrchestrationDependencyValidationException : Xeption
+    public class OptOutOrchestrationDependencyValidationException : Xeption
     {
-        public RetrieveOptOutStatusOrchestrationDependencyValidationException(Xeption innerException)
+        public OptOutOrchestrationDependencyValidationException(Xeption innerException)
          : base(
                 message: "Retrieve Opt Out Status orchestration dependency error occurred, fix the errors and try again.",
                 innerException)

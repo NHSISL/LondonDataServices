@@ -21,6 +21,7 @@ using LHDS.Core.Tests.Unit.Services.Processings.CsvMappers;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 {
@@ -147,6 +148,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .OnProperty(optOut => optOut.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        public static TheoryData OptOutDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+
+            };
         }
 
         private string GetValidationSummary(IDictionary data)

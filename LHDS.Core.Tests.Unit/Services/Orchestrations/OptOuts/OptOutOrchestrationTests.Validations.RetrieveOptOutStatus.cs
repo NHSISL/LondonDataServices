@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                key: "OptOutFile",
                values: "Data is required");
 
-            var expectedRetrieveOptOutStatusOrchestrationFileNameValidationException =
+            var expectedRetrieveOptOutStatusOrchestrationOptOutFileValidationException =
                new RetrieveOptOutStatusOrchestrationValidationException(
                    innerException: invalidArgumentRetieveOptOutStatusOrchestrationException,
                    validationSummary: GetValidationSummary(invalidArgumentRetieveOptOutStatusOrchestrationException.Data));
@@ -40,11 +40,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // then
             actualException.Should()
-                .BeEquivalentTo(expectedRetrieveOptOutStatusOrchestrationFileNameValidationException);
+                .BeEquivalentTo(expectedRetrieveOptOutStatusOrchestrationOptOutFileValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    expectedRetrieveOptOutStatusOrchestrationFileNameValidationException))),
+                    expectedRetrieveOptOutStatusOrchestrationOptOutFileValidationException))),
                         Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();

@@ -13,6 +13,10 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.OptOuts;
+using LHDS.Core.Models.Processings.CsvMapper.Exceptions;
+using LHDS.Core.Models.Processings.Documents.Exceptions;
+using LHDS.Core.Models.Processings.Mesh.Exceptions;
+using LHDS.Core.Models.Processings.OptOuts.Exceptions;
 using LHDS.Core.Services.Orchestrations.OptOuts;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Mesh;
@@ -158,7 +162,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             return new TheoryData<Xeption>
             {
-
+                new OptOutProcessingValidationException(innerException),
+                new OptOutProcessingDependencyValidationException(innerException),
+                new DocumentProcessingValidationException(innerException),
+                new DocumentProcessingDependencyValidationException(innerException),
+                new MeshProcessingValidationException(innerException),
+                new MeshProcessingDependencyValidationException(innerException),
+                new CsvMapperProcessingValidationException(innerException),
+                new CsvMapperProcessingDependencyValidationException(innerException),
             };
         }
 

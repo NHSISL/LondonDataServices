@@ -1,0 +1,63 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System.Text;
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.OptOuts;
+using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
+using Moq;
+using Xeptions;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
+{
+    public partial class OptOutOrchestrationTests
+    {
+        [Theory]
+        [MemberData(nameof(OptOutDependencyValidationExceptions))]
+        public async Task ShouldThrowDependencyValidationOnRetrieveOptOutStatusIfDependencyValidationOccursAndLogItAsync(
+            Xeption dependancyValidationException)
+        {
+            // given
+            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomRecieveName = GetRandomString();
+
+            var expectedDependencyException =
+                new OptOutOrchestrationDependencyValidationException(
+                    dependancyValidationException.InnerException as Xeption);
+
+            this.csvMapperProcessingServiceMock.Setup(processing =>
+                 processing.MapCsvDataToObjectAsync<OptOut>(randomBytes))
+                     .ThrowsAsync(dependancyValidationException);
+
+            // when
+            ValueTask retrieveOptOutStatusTask =
+                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomBytes, randomRecieveName);
+
+            OptOutOrchestrationDependencyValidationException actualException =
+                await Assert.ThrowsAsync<OptOutOrchestrationDependencyValidationException>(retrieveOptOutStatusTask.AsTask);
+
+            // then
+            actualException.Should()
+                 .BeEquivalentTo(expectedDependencyException);
+
+            this.csvMapperProcessingServiceMock.Verify(processing =>
+               processing.MapCsvDataToObjectAsync<OptOut>(randomBytes),
+                     Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedDependencyException))),
+                       Times.Once);
+
+            this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

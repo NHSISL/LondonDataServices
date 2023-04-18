@@ -1,186 +1,277 @@
-﻿//// ---------------------------------------------------------------
-//// Copyright (c) North East London ICB. All rights reserved.
-//// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
 
-//using System.Collections.Generic;
-//using System.Threading.Tasks;
-//using FluentAssertions;
-//using LHDS.Core.Models.Foundations.Mesh;
-//using LHDS.Core.Models.Foundations.Mesh.Exceptions;
-//using Moq;
-//using NEL.MESH.Models.Foundations.Mesh;
-//using Xunit;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.Mesh;
+using LHDS.Core.Models.Foundations.Mesh.Exceptions;
+using Moq;
+using NEL.MESH.Models.Foundations.Mesh;
+using Xunit;
 
-//namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
-//{
-//    public partial class MeshServiceTests
-//    {
-//        [Fact]
-//        public async Task ShouldThrowValidationExceptionOnSendFileIfMessageIsNullAsync()
-//        {
-//            // given
-//            MeshMessage nullMeshMessage = null;
-//            Message nullMessage = null;
+namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
+{
+    public partial class MeshServiceTests
+    {
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnSendFileIfMessageIsNullAsync()
+        {
+            // given
+            MeshMessage nullMeshMessage = null;
+            Message nullMessage = null;
 
-//            var nullMessageException =
-//                new NullMeshMessageException();
+            var nullMeshMessageException =
+                new NullMeshMessageException();
 
-//            var expectedMeshValidationException =
-//                new MeshValidationException(nullMessageException);
+            var expectedMeshValidationException =
+                new MeshValidationException(nullMeshMessageException);
 
-//            // when
-//            ValueTask<MeshMessage> addMessageTask =
-//                this.meshService.SendFileAsync(nullMeshMessage);
+            // when
+            ValueTask<MeshMessage> sendFileTask =
+                this.meshService.SendFileAsync(nullMeshMessage);
 
-//            MeshValidationException actualMeshValidationException =
-//                await Assert.ThrowsAsync<MeshValidationException>(() =>
-//                    addMessageTask.AsTask());
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(() =>
+                    sendFileTask.AsTask());
 
-//            // then
-//            actualMeshValidationException.Should()
-//                .BeEquivalentTo(expectedMeshValidationException);
+            // then
+            actualMeshValidationException.Should()
+                .BeEquivalentTo(expectedMeshValidationException);
 
-//            this.meshBrokerMock.Verify(broker =>
-//                broker.SendFileAsync(nullMessage),
-//                        Times.Never);
+            this.meshBrokerMock.Verify(broker =>
+                broker.SendFileAsync(nullMessage),
+                        Times.Never);
 
-//            this.meshBrokerMock.VerifyNoOtherCalls();
-//        }
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedMeshValidationException))),
+                        Times.Once);
 
-//        [Fact]
-//        public async Task ShouldThrowValidationExceptionOnSendFileIfHeadersDictionaryIsNullAsync()
-//        {
-//            // given
-//            MeshMessage meshMessageWithNullHeaders = new MeshMessage
-//            {
-//                Headers = null
-//            };
+            this.meshBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
 
-//            Message messageWithNullHeaders = new Message
-//            {
-//                Headers = null
-//            };
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public async Task ShouldThrowValidationExceptionOnSendFileIfRequiredMessageItemsAreNullAsync(
+            string invalidInput)
+        {
+            // given
+            string inputMessageId = GetRandomString();
 
-//            var nullHeadersException =
-//                new NullHeadersException();
+            MeshMessage randomMeshMessage = new MeshMessage
+            {
+                MessageId = inputMessageId,
+                Headers = null,
+                FileContent = null,
+            };
 
-//            var expectedMeshValidationException =
-//                new MeshValidationException(nullHeadersException);
+            var inputMeshMessage = randomMeshMessage;
 
-//            // when
-//            ValueTask<MeshMessage> sendMessageTask =
-//                this.meshService.SendFileAsync(meshMessageWithNullHeaders);
+            var invalidMeshMessageException =
+                new InvalidMeshMessageException();
 
-//            MeshValidationException actualMeshValidationException =
-//                await Assert.ThrowsAsync<MeshValidationException>(() =>
-//                    sendMessageTask.AsTask());
+            invalidMeshMessageException.AddData(
+                key: nameof(Message.FileContent),
+                values: "Content is required");
 
-//            // then
-//            actualMeshValidationException.Should()
-//                .BeEquivalentTo(expectedMeshValidationException);
+            invalidMeshMessageException.AddData(
+                key: "Headers",
+                values: "Values is required");
 
-//            this.meshBrokerMock.Verify(broker =>
-//                broker.SendFileAsync(messageWithNullHeaders),
-//                        Times.Never);
+            var expectedMeshValidationException =
+                new MeshValidationException(
+                innerException: invalidMeshMessageException,
+                validationSummary: GetValidationSummary(invalidMeshMessageException.Data));
 
-//            this.meshBrokerMock.VerifyNoOtherCalls();
-//        }
+            // when
+            ValueTask<MeshMessage> sendFileTask =
+                this.meshService.SendFileAsync(inputMeshMessage);
 
-//        [Theory]
-//        [InlineData(null)]
-//        [InlineData("")]
-//        [InlineData("   ")]
-//        public async Task ShouldThrowValidationExceptionOnSendFileIfRequiredMessageItemsAreNullAsync(
-//            string invalidInput)
-//        {
-//            // given
-//            byte[] invalidContent = null;
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(() =>
+                    sendFileTask.AsTask());
 
-//            dynamic dynamicMeshMessageProperties =
-//                CreateRandomMeshMessageProperties();
+            // then
+            actualMeshValidationException.Should()
+                .BeEquivalentTo(expectedMeshValidationException);
 
-//            var randomMessage = new Message
-//            {
-//                MessageId = invalidInput,
-//                Headers = dynamicMeshMessageProperties.Headers,
-//                FileContent = invalidContent,
-//                TrackingInfo = MaptToMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
-//            };
+            this.meshBrokerMock.Verify(broker =>
+                broker.SendFileAsync(It.IsAny<Message>()),
+                        Times.Never);
 
-//            var inputMessage = randomMessage;
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedMeshValidationException))),
+                        Times.Once);
 
-//            MeshMessage randomMeshMessage = new MeshMessage
-//            {
-//                MessageId = dynamicMeshMessageProperties.MessageId,
-//                Headers = dynamicMeshMessageProperties.Headers,
-//                StringContent = dynamicMeshMessageProperties.StringContent,
-//                FileContent = dynamicMeshMessageProperties.FileContent,
-//                TrackingInfo = MaptToMeshMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
-//            };
+            this.meshBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
 
-//            var inputMeshMessage = randomMeshMessage;
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnSendFileIfHeaderValuesNotPresentAsync()
+        {
+            // given
+            MeshMessage randomMeshMessage = new MeshMessage
+            {
+                MessageId = GetRandomString(),
+                Headers = new Dictionary<string, List<string>>(),
+                FileContent = Encoding.ASCII.GetBytes(GetRandomString()),
+            };
 
-//            var invalidMeshMessageException =
-//                new InvalidMeshMessageException();
+            var inputMeshMessage = randomMeshMessage;
 
-//            invalidMeshMessageException.AddData(
-//                key: nameof(Message.FileContent),
-//                values: "Content is required");
+            var invalidMeshMessageException =
+                new InvalidMeshMessageException();
 
-//            invalidMeshMessageException.AddData(
-//                key: "Content-Type",
-//                values: "Header value is required");
+            invalidMeshMessageException.AddData(
+                key: "Content-Type",
+                values: "Header value is required");
 
-//            invalidMeshMessageException.AddData(
-//                key: "Mex-FileName",
-//                values: "Header value is required");
+            invalidMeshMessageException.AddData(
+                key: "Mex-FileName",
+                values: "Header value is required");
 
-//            invalidMeshMessageException.AddData(
-//                key: "Mex-From",
-//                values: "Header value is required");
+            invalidMeshMessageException.AddData(
+                key: "Mex-From",
+                values: "Header value is required");
 
-//            invalidMeshMessageException.AddData(
-//                key: "Mex-To",
-//                values: "Header value is required");
+            invalidMeshMessageException.AddData(
+                key: "Mex-To",
+                values: "Header value is required");
 
-//            invalidMeshMessageException.AddData(
-//                key: "Mex-WorkflowID",
-//                values: "Header value is required");
+            invalidMeshMessageException.AddData(
+                key: "Mex-WorkflowID",
+                values: "Header value is required");
 
-//            invalidMeshMessageException.AddData(
-//                key: "Mex-Content-Checksum",
-//                values: "Header value is required");
+            invalidMeshMessageException.AddData(
+                key: "Mex-Content-Checksum",
+                values: "Header value is required");
 
-//            invalidMeshMessageException.AddData(
-//                key: "Mex-Content-Encrypted",
-//                values: "Header value is required");
+            invalidMeshMessageException.AddData(
+                key: "Mex-Content-Encrypted",
+                values: "Header value is required");
 
-//            invalidMeshMessageException.AddData(
-//                key: "Token",
-//                values: "Text is required");
+            var expectedMeshValidationException =
+               new MeshValidationException(
+               innerException: invalidMeshMessageException,
+               validationSummary: GetValidationSummary(invalidMeshMessageException.Data));
 
-//            var expectedMeshValidationException =
-//                new MeshValidationException(
-//                innerException: invalidMeshMessageException,
-//                validationSummary: GetValidationSummary(invalidMeshMessageException.Data));
+            // when
+            ValueTask<MeshMessage> sendFileTask =
+                this.meshService.SendFileAsync(inputMeshMessage);
 
-//            // when
-//            ValueTask<MeshMessage> sendFileTask =
-//                this.meshService.SendFileAsync(inputMeshMessage);
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(() =>
+                    sendFileTask.AsTask());
 
-//            MeshValidationException actualMeshValidationException =
-//                await Assert.ThrowsAsync<MeshValidationException>(() =>
-//                    sendFileTask.AsTask());
+            // then
+            actualMeshValidationException.Should()
+                .BeEquivalentTo(expectedMeshValidationException);
 
-//            // then
-//            actualMeshValidationException.Should()
-//                .BeEquivalentTo(expectedMeshValidationException);
+            this.meshBrokerMock.Verify(broker =>
+                broker.SendFileAsync(It.IsAny<Message>()),
+                        Times.Never);
 
-//            this.meshBrokerMock.Verify(broker =>
-//                broker.SendFileAsync(inputMessage),
-//                        Times.Never);
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedMeshValidationException))),
+                        Times.Once);
 
-//            this.meshBrokerMock.VerifyNoOtherCalls();
-//        }
-//    }
-//}
+            this.meshBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public async Task ShouldThrowValidationExceptionOnSendFileIfHeaderValuesAreInvalidAsync(
+            string invalidInput)
+        {
+            // given
+            MeshMessage randomMeshMessage = new MeshMessage
+            {
+                MessageId = GetRandomString(),
+                Headers = new Dictionary<string, List<string>>(),
+                FileContent = Encoding.ASCII.GetBytes(GetRandomString()),
+            };
+
+            randomMeshMessage.Headers.Add("Content-Type", new List<string> { invalidInput });
+            randomMeshMessage.Headers.Add("Mex-FileName", new List<string> { invalidInput });
+            randomMeshMessage.Headers.Add("Mex-From", new List<string> { invalidInput });
+            randomMeshMessage.Headers.Add("Mex-To", new List<string> { invalidInput });
+            randomMeshMessage.Headers.Add("Mex-WorkflowID", new List<string> { invalidInput });
+            randomMeshMessage.Headers.Add("Mex-Content-Checksum", new List<string> { invalidInput });
+            randomMeshMessage.Headers.Add("Mex-Content-Encrypted", new List<string> { invalidInput });
+
+            var inputMeshMessage = randomMeshMessage;
+
+            var invalidMeshMessageException =
+                new InvalidMeshMessageException();
+
+            invalidMeshMessageException.AddData(
+                key: "Content-Type",
+                values: "Header value is required");
+
+            invalidMeshMessageException.AddData(
+                key: "Mex-FileName",
+                values: "Header value is required");
+
+            invalidMeshMessageException.AddData(
+                key: "Mex-From",
+                values: "Header value is required");
+
+            invalidMeshMessageException.AddData(
+                key: "Mex-To",
+                values: "Header value is required");
+
+            invalidMeshMessageException.AddData(
+                key: "Mex-WorkflowID",
+                values: "Header value is required");
+
+            invalidMeshMessageException.AddData(
+                key: "Mex-Content-Checksum",
+                values: "Header value is required");
+
+            invalidMeshMessageException.AddData(
+                key: "Mex-Content-Encrypted",
+                values: "Header value is required");
+
+            var expectedMeshValidationException =
+               new MeshValidationException(
+               innerException: invalidMeshMessageException,
+               validationSummary: GetValidationSummary(invalidMeshMessageException.Data));
+
+            // when
+            ValueTask<MeshMessage> sendFileTask =
+                this.meshService.SendFileAsync(inputMeshMessage);
+
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(() =>
+                    sendFileTask.AsTask());
+
+            // then
+            actualMeshValidationException.Should()
+                .BeEquivalentTo(expectedMeshValidationException);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.SendFileAsync(It.IsAny<Message>()),
+                        Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedMeshValidationException))),
+                        Times.Once);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

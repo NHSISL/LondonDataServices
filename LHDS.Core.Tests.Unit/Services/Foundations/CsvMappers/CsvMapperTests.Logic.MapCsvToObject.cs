@@ -35,6 +35,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
             // then
             actualOptOuts.Should().BeEquivalentTo(expectedOptOuts);
 
+            this.csvMapperBrokerMock.Verify(broker =>
+                broker.MapCsvToObjectAsync<OptOut>(inputCsvFormattedOptOutData, withHeaderRecord),
+                    Times.Once());
+
             this.csvMapperBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

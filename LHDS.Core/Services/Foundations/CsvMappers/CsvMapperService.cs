@@ -27,7 +27,7 @@ namespace LHDS.Core.Brokers.CsvMappers
                 return await this.csvMapperBroker.MapCsvToObjectAsync<T>(data, hasHeaderRecord);
             });
 
-        public ValueTask<string> MapObjectToCsvAsync<T>(List<T> @object, bool addHeaderRecord) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<string> MapObjectToCsvAsync<T>(List<T> @object, bool addHeaderRecord) =>
+            await this.csvMapperBroker.MapObjectToCsvAsync<T>(@object, addHeaderRecord);
     }
 }

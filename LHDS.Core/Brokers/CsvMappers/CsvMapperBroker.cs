@@ -13,9 +13,9 @@ using CsvHelper.Configuration;
 
 namespace LHDS.Core.Brokers.CsvMappers
 {
-    public class CCsvMapperBroker : ICsvMapperBroker
+    public class CsvMapperBroker : ICsvMapperBroker
     {
-        public async ValueTask<List<T>> MapCsvDataToObjectAsync<T>(string data, bool hasHeaderRecord)
+        public async ValueTask<List<T>> MapCsvToObjectAsync<T>(string data, bool hasHeaderRecord)
         {
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
@@ -30,7 +30,7 @@ namespace LHDS.Core.Brokers.CsvMappers
             }
         }
 
-        public async ValueTask<string> MapObjectToCsvDataAsync<T>(List<T> @object, bool addHeaderRecord)
+        public async ValueTask<string> MapObjectToCsvAsync<T>(List<T> @object, bool addHeaderRecord)
         {
             using (var memoryStream = new MemoryStream())
             using (var streamWriter = new StreamWriter(memoryStream))

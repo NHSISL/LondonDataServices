@@ -31,7 +31,6 @@ namespace LHDS.Core.Brokers.CsvMappers
                    new FailedCsvMapperServiceException(exception);
 
                 throw CreateAndLogServiceException(failedCsvMapperServiceException);
-
             }
         }
 
@@ -44,6 +43,13 @@ namespace LHDS.Core.Brokers.CsvMappers
             catch (InvalidCsvMapperArgumentsException invalidCsvMapperArgumentsException)
             {
                 throw CreateAndLogValidationException(invalidCsvMapperArgumentsException);
+            }
+            catch (Exception exception)
+            {
+                var failedCsvMapperServiceException =
+                   new FailedCsvMapperServiceException(exception);
+
+                throw CreateAndLogServiceException(failedCsvMapperServiceException);
             }
         }
 

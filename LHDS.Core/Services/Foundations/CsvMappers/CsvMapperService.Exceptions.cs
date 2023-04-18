@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.CsvMappers.Exceptions;
 using Xeptions;
@@ -11,9 +12,10 @@ namespace LHDS.Core.Brokers.CsvMappers
 {
     public partial class CsvMapperService : ICsvMapperService
     {
-        private delegate ValueTask<T> ReturningObjectFunction<T>();
+        private delegate ValueTask<string> ReturningStringFunction();
+        private delegate ValueTask<List<T>> ReturningObjectFunction<T>();
 
-        private async ValueTask<T> TryCatch<T>(ReturningObjectFunction<T> returningObjectFunction)
+        private async ValueTask<List<T>> TryCatch<T>(ReturningObjectFunction<T> returningObjectFunction)
         {
             try
             {
@@ -29,9 +31,28 @@ namespace LHDS.Core.Brokers.CsvMappers
                    new FailedCsvMapperServiceException(exception);
 
                 throw CreateAndLogServiceException(failedCsvMapperServiceException);
-
             }
         }
+
+        private async ValueTask<string> TryCatch(ReturningStringFunction returningStringFunction)
+        {
+            try
+            {
+                return await returningStringFunction();
+            }
+            catch (InvalidCsvMapperArgumentsException invalidCsvMapperArgumentsException)
+            {
+                throw CreateAndLogValidationException(invalidCsvMapperArgumentsException);
+            }
+            catch (Exception exception)
+            {
+                var failedCsvMapperServiceException =
+                   new FailedCsvMapperServiceException(exception);
+
+                throw CreateAndLogServiceException(failedCsvMapperServiceException);
+            }
+        }
+
         private CsvMapperValidationException CreateAndLogValidationException(Xeption exception)
         {
             var csvMapperValidationException = new CsvMapperValidationException(exception);

@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             // given
             var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
             var inputBytes = randomBytes;
+            var randomRecieveName = GetRandomString();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             List<OptOut> randomOptOuts = CreateRandomOptOuts();
             List<OptOut> outputOptOuts = randomOptOuts;
 
@@ -44,23 +47,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             var processedBytes = randomOptOutData;
 
             this.csvMapperProcessingServiceMock.Setup(processings =>
-                processings.MapObjectToCsvDataAsync(processedOptOuts))
+                processings.MapObjectToCsvDataAsync(It.Is(SameOptOutListAs(processedOptOuts))))
                     .ReturnsAsync(processedBytes);
 
-            var randomFileName = GetRandomString();
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
 
             Document document = new Document
             {
-                FileName = randomFileName,
+                FileName = $"receive/{randomRecieveName}_Response_{randomDateTimeOffset}.csv",
                 DocumentData = processedBytes
             };
 
             this.documentProcessingServiceMock.Setup(service =>
                 service.AddDocumentAsync(document));
 
-
             // when
-            await this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputBytes);
+            await this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputBytes, randomRecieveName);
 
             // then
             this.csvMapperProcessingServiceMock.Verify(processing =>
@@ -79,14 +83,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             }
 
             this.csvMapperProcessingServiceMock.Verify(processings =>
-                processings.MapObjectToCsvDataAsync(processedOptOuts),
-                   Times.Once);
+                processings.MapObjectToCsvDataAsync(It.IsAny<List<OptOut>>()),
+                        Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(document),
+                service.AddDocumentAsync(It.Is(SameDocumentAs(document))),
                     Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
             this.meshProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
         }

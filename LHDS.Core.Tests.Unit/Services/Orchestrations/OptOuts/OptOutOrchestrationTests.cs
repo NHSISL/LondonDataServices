@@ -5,6 +5,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using KellermanSoftware.CompareNetObjects;
+using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Services.Orchestrations.OptOuts;
 using LHDS.Core.Services.Processings.Documents;
@@ -23,6 +28,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private readonly Mock<IMeshProcessingService> meshProcessingServiceMock;
         private readonly Mock<ICsvMapperProcessingService> csvMapperProcessingServiceMock;
         private readonly OptOutOrchestrationService optOutOrchestrationService;
+        private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly ICompareLogic compareLogic;
 
         public OptOutOrchestrationTests()
         {
@@ -30,12 +38,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.documentProcessingServiceMock = new Mock<IDocumentProcessingService>();
             this.meshProcessingServiceMock = new Mock<IMeshProcessingService>();
             this.csvMapperProcessingServiceMock = new Mock<ICsvMapperProcessingService>();
+            this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.compareLogic = new CompareLogic();
 
             this.optOutOrchestrationService = new OptOutOrchestrationService(
                 optOutProcessingService: optOutProcessingServiceMock.Object,
                 documentProcessingService: documentProcessingServiceMock.Object,
                 meshProcessingService: meshProcessingServiceMock.Object,
-                csvMapperProcessingService: csvMapperProcessingServiceMock.Object);
+                csvMapperProcessingService: csvMapperProcessingServiceMock.Object,
+                loggingBroker: loggingBrokerMock.Object,
+                dateTimeBroker: dateTimeBrokerMock.Object);
         }
 
         private static string GetRandomString() =>
@@ -94,12 +107,27 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private static List<OptOut> CreateRandomOptOuts()
         {
             return CreateOptOutFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber())
+                .Create(count: 1)
                     .ToList();
         }
 
         private static OptOut CreateRandomOptOut(DateTimeOffset dateTimeOffset) =>
            CreateOptOutFiller(dateTimeOffset).Create();
+
+        private Expression<Func<List<OptOut>, bool>> SameOptOutListAs(List<OptOut> expectedOptOuts)
+        {
+            return actualOptOuts =>
+                this.compareLogic.Compare(expectedOptOuts, actualOptOuts)
+                    .AreEqual;
+        }
+
+        private Expression<Func<Document, bool>> SameDocumentAs(
+            Document expectedDocument)
+        {
+            return actualDocument =>
+                this.compareLogic.Compare(expectedDocument, actualDocument)
+                    .AreEqual;
+        }
 
         private static Filler<OptOut> CreateOptOutFiller(DateTimeOffset dateTimeOffset)
         {

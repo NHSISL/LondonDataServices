@@ -8,7 +8,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 {
     public interface IOptOutOrchestrationService
     {
-        ValueTask RetrieveOptOutStatusAsync(byte[] optOutFile);
+        ValueTask RetrieveOptOutStatusAsync(byte[] optOutFile, string requestId);
         ValueTask PushExpiredOptOutsToMeshForRenewalAsync();
         ValueTask RetrieveUpdatedMeshOptOutStatusChangesAsync();
     }

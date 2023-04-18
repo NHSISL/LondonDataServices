@@ -3,7 +3,12 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Mesh;
 using LHDS.Core.Services.Processings.OptOuts;
@@ -17,21 +22,47 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         private readonly IDocumentProcessingService documentProcessingService;
         private readonly IMeshProcessingService meshProcessingService;
         private readonly ICsvMapperProcessingService csvMapperProcessingService;
+        private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ILoggingBroker loggingBroker;
 
         public OptOutOrchestrationService(
             IOptOutProcessingService optOutProcessingService,
             IDocumentProcessingService documentProcessingService,
             IMeshProcessingService meshProcessingService,
-            ICsvMapperProcessingService csvMapperProcessingService)
+            ICsvMapperProcessingService csvMapperProcessingService,
+            IDateTimeBroker dateTimeBroker,
+            ILoggingBroker loggingBroker)
         {
             this.optOutProcessingService = optOutProcessingService;
             this.documentProcessingService = documentProcessingService;
             this.meshProcessingService = meshProcessingService;
             this.csvMapperProcessingService = csvMapperProcessingService;
+            this.dateTimeBroker = dateTimeBroker;
+            this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask RetrieveOptOutStatusAsync(byte[] optOutFile) =>
-            throw new NotImplementedException();
+        public async ValueTask RetrieveOptOutStatusAsync(byte[] optOutFile, string requestId)
+        {
+            List<OptOut> mappedOptOuts =
+                await this.csvMapperProcessingService.MapCsvDataToObjectAsync<OptOut>(optOutFile);
+
+            List<OptOut> processedOptOuts = new List<OptOut>();
+
+            foreach (var optOut in mappedOptOuts)
+            {
+                processedOptOuts.Add(await this.optOutProcessingService.RetrieveOrAddOptOutAsync(optOut));
+            }
+
+            var processedBytes = await this.csvMapperProcessingService.MapObjectToCsvDataAsync(processedOptOuts);
+
+            Document document = new Document
+            {
+                FileName = $"receive/{requestId}_Response_{dateTimeBroker.GetCurrentDateTimeOffset()}.csv",
+                DocumentData = processedBytes
+            };
+
+            await this.documentProcessingService.AddDocumentAsync(document);
+        }
 
         public ValueTask PushExpiredOptOutsToMeshForRenewalAsync() =>
             throw new NotImplementedException();

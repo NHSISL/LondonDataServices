@@ -41,28 +41,31 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask RetrieveOptOutStatusAsync(byte[] optOutFile, string requestId)
-        {
-            List<OptOut> mappedOptOuts =
+        public ValueTask RetrieveOptOutStatusAsync(byte[] optOutFile, string requestId) =>
+            TryCatch(async () =>
+            {
+                ValidateOptOutFileIsNotNull(optOutFile);
+
+                List<OptOut> mappedOptOuts =
                 await this.csvMapperProcessingService.MapCsvDataToObjectAsync<OptOut>(optOutFile);
 
-            List<OptOut> processedOptOuts = new List<OptOut>();
+                List<OptOut> processedOptOuts = new List<OptOut>();
 
-            foreach (var optOut in mappedOptOuts)
-            {
-                processedOptOuts.Add(await this.optOutProcessingService.RetrieveOrAddOptOutAsync(optOut));
-            }
+                foreach (var optOut in mappedOptOuts)
+                {
+                    processedOptOuts.Add(await this.optOutProcessingService.RetrieveOrAddOptOutAsync(optOut));
+                }
 
-            var processedBytes = await this.csvMapperProcessingService.MapObjectToCsvDataAsync(processedOptOuts);
+                var processedBytes = await this.csvMapperProcessingService.MapObjectToCsvDataAsync(processedOptOuts);
 
-            Document document = new Document
-            {
-                FileName = $"receive/{requestId}_Response_{dateTimeBroker.GetCurrentDateTimeOffset()}.csv",
-                DocumentData = processedBytes
-            };
+                Document document = new Document
+                {
+                    FileName = $"receive/{requestId}_Response_{dateTimeBroker.GetCurrentDateTimeOffset()}.csv",
+                    DocumentData = processedBytes
+                };
 
-            await this.documentProcessingService.AddDocumentAsync(document);
-        }
+                await this.documentProcessingService.AddDocumentAsync(document);
+            });
 
         public ValueTask PushExpiredOptOutsToMeshForRenewalAsync() =>
             throw new NotImplementedException();

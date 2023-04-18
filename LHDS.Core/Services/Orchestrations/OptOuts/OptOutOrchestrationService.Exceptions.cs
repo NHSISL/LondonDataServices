@@ -4,6 +4,10 @@
 
 using System.Threading.Tasks;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
+using LHDS.Core.Models.Processings.CsvMapper.Exceptions;
+using LHDS.Core.Models.Processings.Documents.Exceptions;
+using LHDS.Core.Models.Processings.Mesh.Exceptions;
+using LHDS.Core.Models.Processings.OptOuts.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.OptOuts
@@ -22,6 +26,43 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             {
                 throw CreateAndLogValidationException(invalidArgumentRetieveOptOutStatusOrchestrationException);
             }
+            catch (OptOutOrchestrationDependencyValidationException optOutOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(optOutOrchestrationDependencyValidationException);
+            }
+            catch (OptOutProcessingValidationException csvMapperProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvMapperProcessingValidationException);
+            }
+            catch (OptOutProcessingDependencyValidationException csvMapperProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvMapperProcessingDependencyValidationException);
+            }
+            catch (CsvMapperProcessingValidationException csvMapperProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvMapperProcessingValidationException);
+            }
+            catch (CsvMapperProcessingDependencyValidationException csvMapperProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(csvMapperProcessingDependencyValidationException);
+            }
+            catch (MeshProcessingValidationException meshProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshProcessingValidationException);
+            }
+            catch (MeshProcessingDependencyValidationException meshProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshProcessingDependencyValidationException);
+            }
+            catch (DocumentProcessingValidationException meshProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshProcessingValidationException);
+            }
+            catch (DocumentProcessingDependencyValidationException meshProcessingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshProcessingDependencyValidationException);
+            }
+
         }
 
         private OptOutOrchestrationValidationException CreateAndLogValidationException(Xeption exception)

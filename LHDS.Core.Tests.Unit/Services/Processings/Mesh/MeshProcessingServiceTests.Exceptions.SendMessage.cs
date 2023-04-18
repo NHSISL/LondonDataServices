@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     .Throws(dependencyValidationException);
 
             this.meshServiceMock.Setup(service =>
-                service.RetrieveTrackingStatusAsync(randomMessage.MessageId))
+                service.RetrieveTrackingStatusByIdAsync(randomMessage.MessageId))
                     .Throws(dependencyValidationException);
 
             // when
@@ -50,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     Times.Once);
 
             this.meshServiceMock.Verify(service =>
-              service.RetrieveTrackingStatusAsync(randomMessage.MessageId),
+              service.RetrieveTrackingStatusByIdAsync(randomMessage.MessageId),
                   Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -79,7 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     .Throws(dependencyException);
 
             this.meshServiceMock.Setup(service =>
-             service.RetrieveTrackingStatusAsync(randomMessage.MessageId))
+             service.RetrieveTrackingStatusByIdAsync(randomMessage.MessageId))
                  .Throws(dependencyException);
 
             // when
@@ -97,7 +97,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                    Times.Once);
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveTrackingStatusAsync(randomMessage.MessageId),
+                service.RetrieveTrackingStatusByIdAsync(randomMessage.MessageId),
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -129,7 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     .Throws(serviceException);
 
             this.meshServiceMock.Setup(service =>
-               service.RetrieveTrackingStatusAsync(randomMessage.MessageId))
+               service.RetrieveTrackingStatusByIdAsync(randomMessage.MessageId))
                    .Throws(serviceException);
 
             // when
@@ -147,7 +147,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     Times.Once);
 
             this.meshServiceMock.Verify(service =>
-               service.RetrieveTrackingStatusAsync(randomMessage.MessageId),
+               service.RetrieveTrackingStatusByIdAsync(randomMessage.MessageId),
                    Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>

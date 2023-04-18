@@ -219,6 +219,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             return messages;
         }
 
+        private static Message CreateRandomMessage() =>
+            CreateMessageFiller().Create();
+
+        private static Filler<Message> CreateMessageFiller()
+        {
+            var filler = new Filler<Message>();
+            filler.Setup().OnProperty(message => message.Headers)
+                .Use(new Dictionary<string, List<string>>());
+
+            return filler;
+        }
+
         private string GetValidationSummary(IDictionary data)
         {
             StringBuilder validationSummary = new StringBuilder();

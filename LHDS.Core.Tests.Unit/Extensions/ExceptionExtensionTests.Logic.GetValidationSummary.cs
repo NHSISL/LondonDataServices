@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Extensions
             randomXeption.Data.Add("Error2", new List<string> { "Error message 2", "Error message 3" });
 
             string expectedResult = $"{randomXeption.GetType().Name} Errors:  " +
-                $"Error1 => Error message 1;  Error2 => Error message 2, Error message 3;\r\n";
+                $"Error1 => Error message 1;  Error2 => Error message 2, Error message 3;" + Environment.NewLine;
 
             // when
             string actualResult = randomXeption.GetValidationSummary();

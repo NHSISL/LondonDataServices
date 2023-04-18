@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
     public partial class MeshServiceTests
     {
         [Fact]
-        public async Task ShouldThrowMeshClientValidationExceptionOnRetrieveTrackingStatusIfValidationFailsAndLogItAsync()
+        public async Task ShouldThrowMeshServiceDependencyValidationExceptionOnRetrieveTrackingStatusIfValidationFailsAndLogItAsync()
         {
             // given
             string messageId = GetRandomMessage();
@@ -61,7 +61,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         }
 
         [Fact]
-        public async Task ShouldThrowMeshClientDependencyExceptionOnRetrieveTrackingStatusIfDependencyFailsAndLogItAsync()
+        public async Task ShouldThrowMeshServiceDependencyExceptionOnRetrieveTrackingStatusIfDependencyFailsAndLogItAsync()
         {
             // given
             string messageId = GetRandomMessage();

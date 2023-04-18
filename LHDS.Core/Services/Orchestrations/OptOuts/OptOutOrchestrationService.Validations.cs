@@ -16,6 +16,16 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         {
             Validate((Rule: IsInvalid(optOutFile), Parameter: "OptOutFile"));
         }
+        private static void ValidateRequestIdIsNotNull(string requestId)
+        {
+            Validate((Rule: IsInvalid(requestId), Parameter: "RequestId"));
+        }
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
+        };
 
         private static dynamic IsInvalid(byte[] data) => new
         {

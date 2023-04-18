@@ -1,38 +1,46 @@
-﻿//// ---------------------------------------------------------------
-//// Copyright (c) North East London ICB. All rights reserved.
-//// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
 
-//using System.Threading.Tasks;
-//using Moq;
-//using Xunit;
+using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.Mesh;
+using Moq;
+using Xunit;
 
-//namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
-//{
-//    public partial class MeshProcessingServiceTests
-//    {
-//        [Fact]
-//        public async Task ShouldReturnSendMessageAsync()
-//        {
-//            // given
-//            string randomMailboxId = GetRandomString();
-//            string inputMailboxId = randomMailboxId;
-//            string randomMessageId = GetRandomString();
-//            string inputMessageId = randomMessageId;
+namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
+{
+    public partial class MeshProcessingServiceTests
+    {
+        [Fact]
+        public async Task ShouldReturnSendMessageAsync()
+        {
+            // given
+            MeshMessage randomMessage = CreateRandomMessage();
+            MeshMessage storageSendMessage = randomMessage;
+            MeshMessage storageMessage = randomMessage;
 
-//            // when
-//            await this.meshProcessingService.SendMessageAsync(inputMailboxId, inputMessageId);
+            this.meshServiceMock.Setup(service =>
+                service.SendMessageAsync(randomMessage))
+                  .ReturnsAsync(storageSendMessage);
 
-//            // then
-//            this.meshServiceMock.Verify(service =>
-//                service.SendMessageAsync(inputMessageId),
-//                    Times.Once());
+            this.meshServiceMock.Setup(service =>
+                service.RetrieveTrackingStatusAsync(randomMessage.MessageId))
+                    .ReturnsAsync(storageMessage);
 
-//            this.meshServiceMock.Verify(service =>
-//                service.RetrieveTrackingStatusAsync(inputMailboxId, inputMessageId),
-//                    Times.Once());
+            // when
+            await this.meshProcessingService.SendMessageAsync(randomMessage);
 
-//            this.meshServiceMock.VerifyNoOtherCalls();
-//            this.loggingBrokerMock.VerifyNoOtherCalls();
-//        }
-//    }
-//}
+            // then
+            this.meshServiceMock.Verify(service =>
+                service.SendMessageAsync(randomMessage),
+                    Times.Once());
+
+            this.meshServiceMock.Verify(service =>
+                service.RetrieveTrackingStatusAsync(randomMessage.MessageId),
+                    Times.Once());
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

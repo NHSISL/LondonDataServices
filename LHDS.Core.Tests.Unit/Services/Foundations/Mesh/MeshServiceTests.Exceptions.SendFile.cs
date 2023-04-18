@@ -1,5 +1,5 @@
-﻿// ---------------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
+﻿//---------------------------------------------------------------
+//Copyright(c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
 using System;
@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
     public partial class MeshServiceTests
     {
         [Fact]
-        public async Task ShouldThrowMeshClientValidationExceptionOnSendMessageIfValidationFailsAndLogItAsync()
+        public async Task ShouldThrowMeshClientValidationExceptionOnSendFileIfValidationFailsAndLogItAsync()
         {
             // given
             dynamic dynamicMeshMessageProperties = CreateRandomMeshMessageProperties();
@@ -28,7 +28,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             {
                 MessageId = dynamicMeshMessageProperties.MessageId,
                 Headers = dynamicMeshMessageProperties.Headers,
-                StringContent = dynamicMeshMessageProperties.StringContent,
                 FileContent = dynamicMeshMessageProperties.FileContent,
                 TrackingInfo = MaptToMeshMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
             };
@@ -36,21 +35,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             var inputMeshMessage = randomMeshMessage;
             var validationException = new Exception(randomMessage);
 
-            var meshClientValidationException = 
+            var meshClientValidationException =
                 new MeshClientValidationException(validationException as Xeption);
 
-            var expectedDependencyValidationException = 
+            var expectedDependencyValidationException =
                 new MeshServiceDependencyValidationException(meshClientValidationException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.SendMessageAsync(It.IsAny<Message>()))
+                broker.SendFileAsync(It.IsAny<Message>()))
                     .ThrowsAsync(meshClientValidationException);
 
             // when
-            ValueTask<MeshMessage> sendMessageTask = 
-                this.meshService.SendMessageAsync(inputMeshMessage);
+            ValueTask<MeshMessage> sendMessageTask =
+                this.meshService.SendFileAsync(inputMeshMessage);
 
-            MeshServiceDependencyValidationException actualValidationException = 
+            MeshServiceDependencyValidationException actualValidationException =
                 await Assert.ThrowsAsync<MeshServiceDependencyValidationException>(sendMessageTask.AsTask);
 
             // then
@@ -61,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             actualValidationException.Should().BeEquivalentTo(expectedDependencyValidationException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(It.IsAny<Message>()),
+                broker.SendFileAsync(It.IsAny<Message>()),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -73,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         }
 
         [Fact]
-        public async Task ShouldThrowMeshClientDependencyExceptionOnSendMessageIfDependencyFailsAndLogItAsync()
+        public async Task ShouldThrowMeshClientDependencyExceptionOnSendFileIfDependencyFailsAndLogItAsync()
         {
             // given
             dynamic dynamicMeshMessageProperties = CreateRandomMeshMessageProperties();
@@ -91,28 +90,28 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             var inputMeshMessage = randomMeshMessage;
             var dependencyException = new Exception(randomMessage);
 
-            var meshClientDependencyException = 
+            var meshClientDependencyException =
                 new MeshClientDependencyException(dependencyException as Xeption);
 
-            var expectedDependencyException = 
+            var expectedDependencyException =
                 new MeshServiceDependencyException(meshClientDependencyException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.SendMessageAsync(It.IsAny<Message>()))
+                broker.SendFileAsync(It.IsAny<Message>()))
                     .ThrowsAsync(meshClientDependencyException);
 
             // when
-            ValueTask<MeshMessage> sendMessageTask = 
-                this.meshService.SendMessageAsync(inputMeshMessage);
+            ValueTask<MeshMessage> sendMessageTask =
+                this.meshService.SendFileAsync(inputMeshMessage);
 
-            MeshServiceDependencyException actualDependencyException = 
+            MeshServiceDependencyException actualDependencyException =
                 await Assert.ThrowsAsync<MeshServiceDependencyException>(sendMessageTask.AsTask);
 
             // then
             actualDependencyException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(It.IsAny<Message>()),
+                broker.SendFileAsync(It.IsAny<Message>()),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -124,7 +123,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         }
 
         [Fact]
-        public async Task ShouldThrowMeshClientServiceExceptionOnSendMessageIfClientServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowMeshClientServiceExceptionOnSendFileIfClientServiceErrorOccursAndLogItAsync()
         {
             // given
             dynamic dynamicMeshMessageProperties = CreateRandomMeshMessageProperties();
@@ -142,28 +141,28 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             var inputMeshMessage = randomMeshMessage;
             var clientServiceException = new Exception(randomMessage);
 
-            var meshClientServiceException = 
+            var meshClientServiceException =
                 new MeshClientServiceException(clientServiceException as Xeption);
 
-            var expectedClientServiceException = 
+            var expectedClientServiceException =
                 new MeshServiceDependencyException(meshClientServiceException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.SendMessageAsync(It.IsAny<Message>()))
+                broker.SendFileAsync(It.IsAny<Message>()))
                     .ThrowsAsync(meshClientServiceException);
 
             // when
-            ValueTask<MeshMessage> sendMessageTask = 
-                this.meshService.SendMessageAsync(inputMeshMessage);
+            ValueTask<MeshMessage> sendMessageTask =
+                this.meshService.SendFileAsync(inputMeshMessage);
 
-            MeshServiceDependencyException actualDependencyException = 
+            MeshServiceDependencyException actualDependencyException =
                 await Assert.ThrowsAsync<MeshServiceDependencyException>(sendMessageTask.AsTask);
 
             // then
             actualDependencyException.Should().BeEquivalentTo(expectedClientServiceException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(It.IsAny<Message>()),
+                broker.SendFileAsync(It.IsAny<Message>()),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -176,7 +175,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnSendMessageIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnSendFileIfServiceErrorOccursAndLogItAsync()
         {
             // given
             dynamic dynamicMeshMessageProperties =
@@ -201,12 +200,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                new MeshServiceException(failedMeshServiceException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.SendMessageAsync(It.IsAny<Message>()))
+                broker.SendFileAsync(It.IsAny<Message>()))
                     .ThrowsAsync(serviceException);
 
             // when
             ValueTask<MeshMessage> sendMessageTask =
-                this.meshService.SendMessageAsync(inputMeshMessage);
+                this.meshService.SendFileAsync(inputMeshMessage);
 
             MeshServiceException actualMeshServiceException =
                 await Assert.ThrowsAsync<MeshServiceException>
@@ -217,7 +216,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 .BeEquivalentTo(expectedMeshServiceException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(It.IsAny<Message>()),
+                broker.SendFileAsync(It.IsAny<Message>()),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>

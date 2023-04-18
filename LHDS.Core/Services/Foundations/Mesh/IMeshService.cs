@@ -13,7 +13,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
         ValueTask<bool> ValidateMailboxAccessAsync();
         ValueTask<MeshMessage> SendMessageAsync(MeshMessage message);
         ValueTask<MeshMessage> SendFileAsync(MeshMessage message);
-        ValueTask<MeshMessage> RetrieveTrackingStatusAsync(string messageId);
+        ValueTask<MeshMessage> RetrieveTrackingStatusByIdAsync(string messageId);
         ValueTask<List<string>> RetrieveMessagesFromInboxAsync();
         ValueTask<MeshMessage> RetrieveMessageByIdAsync(string messageId);
         ValueTask<bool> AcknowledgeMessageByIdAsync(string inputMessageId);

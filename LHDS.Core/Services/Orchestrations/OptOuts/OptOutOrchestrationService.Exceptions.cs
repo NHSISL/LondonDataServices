@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using LHDS.Core.Models.Processings.CsvMapper.Exceptions;
@@ -102,7 +103,13 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             {
                 throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedOptOutServiceException =
+                    new FailedOptOutOrchestrationServiceException(exception);
 
+                throw CreateAndLogServiceException(failedOptOutServiceException);
+            }
         }
 
         private OptOutOrchestrationValidationException CreateAndLogValidationException(Xeption exception)

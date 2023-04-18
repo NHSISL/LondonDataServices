@@ -56,10 +56,8 @@ namespace LHDS.Core.Services.Processings.OptOuts
 
         private OptOutProcessingValidationException CreateAndLogValidationException(Xeption exception)
         {
-            string validationSummary = GetValidationSummary(exception.Data);
-
             var optOutProcessingValidationException =
-                new OptOutProcessingValidationException(exception, validationSummary);
+                new OptOutProcessingValidationException(exception);
 
             this.loggingBroker.LogError(optOutProcessingValidationException);
 

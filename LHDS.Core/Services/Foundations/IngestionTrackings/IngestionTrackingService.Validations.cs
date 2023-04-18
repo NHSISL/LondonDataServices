@@ -3,10 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 
@@ -216,22 +212,6 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             }
 
             invalidIngestionTrackingException.ThrowIfContainsErrors();
-        }
-
-        private string GetValidationSummary(IDictionary data)
-        {
-            StringBuilder validationSummary = new StringBuilder();
-
-            foreach (DictionaryEntry entry in data)
-            {
-                string errorSummary = ((List<string>)entry.Value)
-                    .Select((string value) => value)
-                    .Aggregate((string current, string next) => current + ", " + next);
-
-                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
-            }
-
-            return validationSummary.ToString();
         }
     }
 }

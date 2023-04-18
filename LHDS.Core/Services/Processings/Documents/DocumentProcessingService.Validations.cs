@@ -2,10 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 
@@ -73,22 +69,6 @@ namespace LHDS.Core.Services.Processings.Documents
             }
 
             invalidDocumentProcessingException.ThrowIfContainsErrors();
-        }
-
-        private string GetValidationSummary(IDictionary data)
-        {
-            StringBuilder validationSummary = new StringBuilder();
-
-            foreach (DictionaryEntry entry in data)
-            {
-                string errorSummary = ((List<string>)entry.Value)
-                    .Select((string value) => value)
-                    .Aggregate((string current, string next) => current + ", " + next);
-
-                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
-            }
-
-            return validationSummary.ToString();
         }
     }
 }

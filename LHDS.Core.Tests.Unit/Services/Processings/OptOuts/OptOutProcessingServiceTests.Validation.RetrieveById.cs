@@ -29,8 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             var expectedOptOutProcessingValidationException =
                 new OptOutProcessingValidationException(
-                    innerException: invalidArgumentOptOutProcessingException,
-                    validationSummary: GetValidationSummary(invalidArgumentOptOutProcessingException.Data));
+                    innerException: invalidArgumentOptOutProcessingException);
 
             // when
             ValueTask<OptOut> RemoveOptOutTask =

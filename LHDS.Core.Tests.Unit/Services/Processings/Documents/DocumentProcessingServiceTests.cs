@@ -3,11 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Services.Foundations.Documents;
@@ -62,22 +58,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                 new DocumentDependencyException(innerException),
                 new DocumentServiceException(innerException)
             };
-        }
-
-        private string GetValidationSummary(IDictionary data)
-        {
-            StringBuilder validationSummary = new StringBuilder();
-
-            foreach (DictionaryEntry entry in data)
-            {
-                string errorSummary = ((List<string>)entry.Value)
-                    .Select((string value) => value)
-                    .Aggregate((string current, string next) => current + ", " + next);
-
-                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
-            }
-
-            return validationSummary.ToString();
         }
     }
 }

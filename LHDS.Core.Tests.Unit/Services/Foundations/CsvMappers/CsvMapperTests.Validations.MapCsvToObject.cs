@@ -1,0 +1,63 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.CsvMappers.Exceptions;
+using LHDS.Core.Models.Foundations.OptOuts;
+using Moq;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
+{
+    public partial class CsvMapperTests
+    {
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnMapCsvToObjectIfInputsIsInvalidAndLogItAsync(
+            string invalidText)
+        {
+            // given
+            string randomCsvFormattedOptOutData = invalidText;
+            string inputCsvFormattedOptOutData = randomCsvFormattedOptOutData;
+            List<OptOut> randomOptouts = CreateRandomOptOuts();
+            List<OptOut> expectedOptOuts = randomOptouts;
+            bool withHeaderRecord = true;
+
+            this.csvMapperBrokerMock.Setup(broker =>
+                broker.MapCsvToObjectAsync<OptOut>(inputCsvFormattedOptOutData, withHeaderRecord))
+                    .ReturnsAsync(expectedOptOuts);
+
+            var invalidCsvMapperArgumentsException = new InvalidCsvMapperArgumentsException();
+
+            invalidCsvMapperArgumentsException.AddData(
+                key: "Data",
+                values: "Text is required");
+
+            var expectedCsvMapperValidationException =
+                new CsvMapperValidationException(innerException: invalidCsvMapperArgumentsException);
+
+            // when
+            ValueTask<List<OptOut>> mapCsvToObjectTask = this.csvMapperService.MapCsvToObjectAsync<OptOut>(
+                data: inputCsvFormattedOptOutData,
+                hasHeaderRecord: withHeaderRecord);
+
+            CsvMapperValidationException actualCsvMapperValidationException =
+                await Assert.ThrowsAsync<CsvMapperValidationException>(mapCsvToObjectTask.AsTask);
+
+            // then
+            actualCsvMapperValidationException.Should().BeEquivalentTo(expectedCsvMapperValidationException);
+
+            this.csvMapperBrokerMock.Verify(broker =>
+                broker.MapCsvToObjectAsync<OptOut>(inputCsvFormattedOptOutData, withHeaderRecord),
+                    Times.Once());
+
+            this.csvMapperBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

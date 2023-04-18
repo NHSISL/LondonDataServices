@@ -113,14 +113,6 @@ namespace LHDS.Core.Services.Foundations.Documents
             return documentValidationExceptionn;
         }
 
-        private Exception CreateAndLogServiceException(Xeption exception)
-        {
-            var documentServiceException = new DocumentServiceException(exception);
-            this.loggingBroker.LogError(documentServiceException);
-
-            return documentServiceException;
-        }
-
         private DocumentDependencyException CreateAndLogDependencyException(Xeption exception)
         {
             var documentDependencyException = new DocumentDependencyException(exception);
@@ -137,6 +129,14 @@ namespace LHDS.Core.Services.Foundations.Documents
             this.loggingBroker.LogError(documentDependencyValidationException);
 
             return documentDependencyValidationException;
+        }
+
+        private DocumentServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var documentServiceException = new DocumentServiceException(exception);
+            this.loggingBroker.LogError(documentServiceException);
+
+            return documentServiceException;
         }
     }
 }

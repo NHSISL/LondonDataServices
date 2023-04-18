@@ -53,7 +53,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
                 return resultMeshMessage;
             });
 
-        public ValueTask<MeshMessage> RetrieveTrackingStatusAsync(string messageId) =>
+        public ValueTask<MeshMessage> RetrieveTrackingStatusByIdAsync(string messageId) =>
             TryCatch(async () =>
             {
                 ValidateMessageId(messageId);

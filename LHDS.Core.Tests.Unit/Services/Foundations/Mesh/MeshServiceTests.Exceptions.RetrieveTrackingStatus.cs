@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<MeshMessage> retrieveTrackingStatusTask =
-                this.meshService.RetrieveTrackingStatusAsync(messageId);
+                this.meshService.RetrieveTrackingStatusByIdAsync(messageId);
 
             MeshServiceDependencyValidationException actualValidationException =
                 await Assert.ThrowsAsync<MeshServiceDependencyValidationException>(retrieveTrackingStatusTask.AsTask);
@@ -80,7 +80,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<MeshMessage> retrieveTrackingStatusTask =
-                this.meshService.RetrieveTrackingStatusAsync(messageId);
+                this.meshService.RetrieveTrackingStatusByIdAsync(messageId);
 
             MeshServiceDependencyException actualDependencyException =
                 await Assert.ThrowsAsync<MeshServiceDependencyException>(retrieveTrackingStatusTask.AsTask);
@@ -119,7 +119,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<MeshMessage> RetrieveTrackingStatusTask =
-                this.meshService.RetrieveTrackingStatusAsync(messageId);
+                this.meshService.RetrieveTrackingStatusByIdAsync(messageId);
 
             MeshServiceException actualMeshServiceException =
                 await Assert.ThrowsAsync<MeshServiceException>

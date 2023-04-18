@@ -37,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<MeshMessage> retrieveTrackingStatusTask =
-                this.meshService.RetrieveTrackingStatusAsync(messageId);
+                this.meshService.RetrieveTrackingStatusByIdAsync(messageId);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(

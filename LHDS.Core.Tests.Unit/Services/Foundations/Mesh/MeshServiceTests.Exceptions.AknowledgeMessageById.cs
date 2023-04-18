@@ -14,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
     public partial class MeshServiceTests
     {
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnAknowledgeMNessageByIdIfServiceErrorOccursAndLogItAsync()
+public async Task ShouldThrowServiceExceptionOnAknowledgeMessageByIdIfServiceErrorOccursAndLogItAsync()
         {
             // given
             string messageId = GetRandomMessage();

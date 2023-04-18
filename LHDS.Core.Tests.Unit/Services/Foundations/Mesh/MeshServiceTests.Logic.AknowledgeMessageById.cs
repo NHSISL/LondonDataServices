@@ -1,46 +1,43 @@
-﻿//// ---------------------------------------------------------------
-//// Copyright (c) North East London ICB. All rights reserved.
-//// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
 
-//using System.Threading.Tasks;
-//using FluentAssertions;
-//using Moq;
-//using Xunit;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Moq;
+using Xunit;
 
-//namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
-//{
-//    public partial class MeshServiceTests
-//    {
-//        [Fact]
-//        public async Task ShouldReturnAknowledgeMessageByIdAsync()
-//        {
-//            // given
-//            string randomMailboxId = GetRandomMessage();
-//            string inputMailboxId = randomMailboxId;
+namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
+{
+    public partial class MeshServiceTests
+    {
+        [Fact]
+        public async Task ShouldReturnAknowledgeMessageByIdAsync()
+        {
+            // given
+            string randomMessageId = GetRandomMessage();
+            string inputMessageId = randomMessageId;
 
-//            string randomMessageId = GetRandomMessage();
-//            string inputMessageId = randomMessageId;
+            bool outputValidationResult = true;
+            bool expectedValidationResult = outputValidationResult;
 
-//            bool outputValidationResult = true;
-//            bool expectedValidationResult = outputValidationResult;
+            this.meshBrokerMock.Setup(broker =>
+                broker.AcknowledgeMessageAsync(inputMessageId))
+                    .ReturnsAsync(outputValidationResult);
 
-//            this.meshBrokerMock.Setup(broker =>
-//                broker.AcknowledgeMessageByIdAsync(inputMailboxId, inputMessageId))
-//                    .ReturnsAsync(outputValidationResult);
+            // when
+            bool actualMeshValidation =
+                await this.meshService.AcknowledgeMessageByIdAsync(inputMessageId);
 
-//            // when
-//            bool actualMeshValidation =
-//                await this.meshService.AcknowledgeMessageByIdAsync(inputMailboxId, inputMessageId);
+            // then
+            actualMeshValidation.Should().Be(expectedValidationResult);
 
-//            // then
-//            actualMeshValidation.Should().Be(expectedValidationResult);
+            this.meshBrokerMock.Verify(broker =>
+                broker.AcknowledgeMessageAsync(inputMessageId),
+                    Times.Once());
 
-//            this.meshBrokerMock.Verify(broker =>
-//                broker.AcknowledgeMessageByIdAsync(inputMailboxId, inputMessageId),
-//                    Times.Once());
-
-//            this.meshBrokerMock.VerifyNoOtherCalls();
-//            this.loggingBrokerMock.VerifyNoOtherCalls();
-//        }
-//    }
-//}
+            this.meshBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

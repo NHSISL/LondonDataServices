@@ -43,7 +43,15 @@ namespace LHDS.Core.Services.Foundations.Mesh
             });
 
         public ValueTask<MeshMessage> SendFileAsync(MeshMessage message) =>
-            throw new System.NotImplementedException();
+            TryCatch(async () =>
+            {
+                ValidateMeshMessageOnSendFile(message);
+                Message convertedMessage = MeshMessageToMessage(message);
+                Message brokerSendMessage = await this.meshBroker.SendFileAsync(convertedMessage);
+                MeshMessage resultMeshMessage = MessageToMeshMessage(brokerSendMessage);
+
+                return resultMeshMessage;
+            });
 
         public ValueTask<MeshMessage> RetrieveTrackingStatusAsync(string messageId) =>
             TryCatch(async () =>

@@ -1,0 +1,28 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using LHDS.Core.Brokers.Loggings;
+
+namespace LHDS.Core.Brokers.CsvMappers
+{
+    public class CsvMapperService : ICsvMapperService
+    {
+        private readonly ICsvMapperBroker csvMapperBroker;
+        private readonly ILoggingBroker loggingBroker;
+
+        public CsvMapperService(ICsvMapperBroker csvMapperBroker, ILoggingBroker loggingBroker)
+        {
+            this.csvMapperBroker = csvMapperBroker;
+            this.loggingBroker = loggingBroker;
+        }
+
+        public ValueTask<List<T>> MapCsvToObjectAsync<T>(string data, bool hasHeaderRecord) =>
+            throw new System.NotImplementedException();
+
+        public ValueTask<string> MapObjectToCsvAsync<T>(List<T> @object, bool addHeaderRecord) =>
+            throw new System.NotImplementedException();
+    }
+}

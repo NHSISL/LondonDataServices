@@ -50,6 +50,10 @@ namespace LHDS.Core.Services.Foundations.Mesh
             {
                 throw CreateAndLogValidationException(invalidMeshException);
             }
+            catch (InvalidArgumentMeshException invalidArgumentMeshException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentMeshException);
+            }
             catch (MeshClientValidationException meshClientValidationException)
             {
                 throw CreateAndLogDependencyValidationException(meshClientValidationException);

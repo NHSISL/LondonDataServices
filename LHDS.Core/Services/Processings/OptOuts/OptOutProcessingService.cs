@@ -73,7 +73,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 OptOut foundOptOut = allOptOuts.FirstOrDefault(optOut =>
                     optOut.NhsNumber == optOutNhsNumber);
 
-                return foundOptOut;
+                return await ValueTask.FromResult(foundOptOut);
             });
     }
 }

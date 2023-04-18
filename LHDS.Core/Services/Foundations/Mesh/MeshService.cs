@@ -7,8 +7,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
-using MeshMessage = LHDS.Core.Models.Foundations.Mesh;
-using Message = NEL.MESH.Models.Foundations.Mesh;
+using LHDS.Core.Models.Foundations.Mesh;
+using NEL.MESH.Models.Foundations.Mesh;
 
 namespace LHDS.Core.Services.Foundations.Mesh
 {
@@ -31,43 +31,50 @@ namespace LHDS.Core.Services.Foundations.Mesh
                 return await this.meshBroker.HandshakeAsync();
             });
 
-        public ValueTask<MeshMessage.MeshMessage> SendMessageAsync(MeshMessage.MeshMessage message) =>
+        public ValueTask<MeshMessage> SendMessageAsync(MeshMessage message) =>
             TryCatch(async () =>
             {   
                 ValidateMeshMessageOnSendMessage(message);
-                Message.Message convertedMessage = MeshMessageToMessage(message);
-                Message.Message brokerSendMessage = await this.meshBroker.SendMessageAsync(convertedMessage);
-                MeshMessage.MeshMessage resultMeshMessage = MessageToMeshMessage(brokerSendMessage);
+                Message convertedMessage = MeshMessageToMessage(message);
+                Message brokerSendMessage = await this.meshBroker.SendMessageAsync(convertedMessage);
+                MeshMessage resultMeshMessage = MessageToMeshMessage(brokerSendMessage);
 
                 return resultMeshMessage;
             });
 
-        public ValueTask<MeshMessage.MeshMessage> SendFileAsync(MeshMessage.MeshMessage message) =>
+        public ValueTask<MeshMessage> SendFileAsync(MeshMessage message) =>
             TryCatch(async () =>
             {
                 ValidateMeshMessageOnSendFile(message);
-                Message.Message convertedMessage = MeshMessageToMessage(message);
-                Message.Message brokerSendMessage = await this.meshBroker.SendFileAsync(convertedMessage);
-                MeshMessage.MeshMessage resultMeshMessage = MessageToMeshMessage(brokerSendMessage);
+                Message convertedMessage = MeshMessageToMessage(message);
+                Message brokerSendMessage = await this.meshBroker.SendFileAsync(convertedMessage);
+                MeshMessage resultMeshMessage = MessageToMeshMessage(brokerSendMessage);
 
                 return resultMeshMessage;
             });
 
-        public ValueTask<MeshMessage.MeshMessage> RetrieveTrackingStatusAsync(string messageId) =>
-            throw new NotImplementedException();
+        public ValueTask<MeshMessage> RetrieveTrackingStatusByIdAsync(string messageId) =>
+            TryCatch(async () =>
+            {
+                ValidateMessageId(messageId);
+                Message brokerTrackMessage = await this.meshBroker.TrackMessageAsync(messageId);
+                MeshMessage resultMeshMessage = MessageToMeshMessage(brokerTrackMessage);
+
+                return resultMeshMessage;
+            });
 
         public ValueTask<List<string>> RetrieveMessagesFromInboxAsync() =>
             throw new System.NotImplementedException();
 
-        public ValueTask<MeshMessage.MeshMessage> RetrieveMessageByIdAsync(string messageId) =>
+        public ValueTask<MeshMessage> RetrieveMessageByIdAsync(string messageId) =>
             throw new System.NotImplementedException();
 
         public ValueTask<bool> AcknowledgeMessageByIdAsync(string messageId) =>
             throw new System.NotImplementedException();
 
-        private static Message.Message MeshMessageToMessage(MeshMessage.MeshMessage meshMessage)
+        private static Message MeshMessageToMessage(MeshMessage meshMessage)
         {
-            return new Message.Message
+            return new Message
             {
                 MessageId = meshMessage.MessageId,
                 Headers = meshMessage.Headers,
@@ -77,9 +84,9 @@ namespace LHDS.Core.Services.Foundations.Mesh
             };
         }
 
-        public static MeshMessage.MeshMessage MessageToMeshMessage(Message.Message message)
+        public static MeshMessage MessageToMeshMessage(Message message)
         {
-            return new MeshMessage.MeshMessage
+            return new MeshMessage
             {
                 MessageId = message.MessageId,
                 Headers = message.Headers,
@@ -89,9 +96,9 @@ namespace LHDS.Core.Services.Foundations.Mesh
             };
         }
 
-        public static MeshMessage.MessageTrackingInfo ConvertToMeshMessageTrackingInfo(Message.TrackingInfo nelTrackingInfo)
+        public static MessageTrackingInfo ConvertToMeshMessageTrackingInfo(TrackingInfo nelTrackingInfo)
         {
-            return new MeshMessage.MessageTrackingInfo
+            return new MessageTrackingInfo
             {
                 AddressType = nelTrackingInfo.AddressType,
                 Checksum = nelTrackingInfo.Checksum,
@@ -126,9 +133,9 @@ namespace LHDS.Core.Services.Foundations.Mesh
             };
         }
 
-        public static Message.TrackingInfo ConvertToMessageTrackingInfo(MeshMessage.MessageTrackingInfo lhdsTrackingInfo)
+        public static TrackingInfo ConvertToMessageTrackingInfo(MessageTrackingInfo lhdsTrackingInfo)
         {
-            return new Message.TrackingInfo
+            return new TrackingInfo
             {
                 AddressType = lhdsTrackingInfo.AddressType,
                 Checksum = lhdsTrackingInfo.Checksum,

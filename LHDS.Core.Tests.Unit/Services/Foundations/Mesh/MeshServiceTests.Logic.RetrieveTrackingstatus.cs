@@ -1,44 +1,45 @@
-﻿//// ---------------------------------------------------------------
-//// Copyright (c) North East London ICB. All rights reserved.
-//// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
 
-//using System.Threading.Tasks;
-//using FluentAssertions;
-//using Moq;
-//using Xunit;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.Mesh;
+using Moq;
+using NEL.MESH.Models.Foundations.Mesh;
+using Xunit;
 
-//namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
-//{
-//    public partial class MeshServiceTests
-//    {
-//        [Fact]
-//        public async Task ShouldReturnRetrieveTrackingStatusAsync()
-//        {
-//            // given
-//            string randomMailboxId = GetRandomMessage();
-//            string inputMailboxId = randomMailboxId;
-//            string randomMessageId = GetRandomMessage();
-//            string inputMessageId = randomMessageId;
-//            string outputValidationResult = GetRandomMessage();
-//            string expectedValidationResult = outputValidationResult;
+namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
+{
+    public partial class MeshServiceTests
+    {
+        [Fact]
+        public async Task ShouldReturnRetrieveTrackingStatusAsync()
+        {
+            // given
+            string randomMessageId = GetRandomMessage();
+            string inputMessageId = randomMessageId;
+            Message outputMessage = CreateRandomMessage();
+            Message expectedMessage = outputMessage.DeepClone();
 
-//            this.meshBrokerMock.Setup(broker =>
-//                broker.GetTrackingStatusAsync(inputMailboxId, inputMessageId))
-//                    .ReturnsAsync(outputValidationResult);
+            this.meshBrokerMock.Setup(broker =>
+                broker.TrackMessageAsync(inputMessageId))
+                    .ReturnsAsync(outputMessage);
 
-//            // when
-//            string actualMeshValidationResult =
-//                await this.meshService.RetrieveTrackingStatusAsync(inputMailboxId, inputMessageId);
+            // when
+            MeshMessage actualMeshMessage =
+                await this.meshService.RetrieveTrackingStatusByIdAsync(inputMessageId);
 
-//            // then
-//            actualMeshValidationResult.Should().Be(expectedValidationResult);
+            // then
+            actualMeshMessage.Should().BeEquivalentTo(expectedMessage);
 
-//            this.meshBrokerMock.Verify(broker =>
-//                broker.GetTrackingStatusAsync(inputMailboxId, inputMessageId),
-//                    Times.Once());
+            this.meshBrokerMock.Verify(broker =>
+                broker.TrackMessageAsync(inputMessageId),
+                    Times.Once());
 
-//            this.meshBrokerMock.VerifyNoOtherCalls();
-//            this.loggingBrokerMock.VerifyNoOtherCalls();
-//        }
-//    }
-//}
+            this.meshBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

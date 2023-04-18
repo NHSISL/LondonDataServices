@@ -8,7 +8,7 @@ using LHDS.Core.Brokers.Loggings;
 
 namespace LHDS.Core.Brokers.CsvMappers
 {
-    public class CsvMapperService : ICsvMapperService
+    public partial class CsvMapperService : ICsvMapperService
     {
         private readonly ICsvMapperBroker csvMapperBroker;
         private readonly ILoggingBroker loggingBroker;
@@ -20,7 +20,12 @@ namespace LHDS.Core.Brokers.CsvMappers
         }
 
         public ValueTask<List<T>> MapCsvToObjectAsync<T>(string data, bool hasHeaderRecord) =>
-            this.csvMapperBroker.MapCsvToObjectAsync<T>(data, hasHeaderRecord);
+            TryCatch(async () =>
+            {
+                ValidateMapCsvToObjectArguments(data, hasHeaderRecord);
+
+                return await this.csvMapperBroker.MapCsvToObjectAsync<T>(data, hasHeaderRecord);
+            });
 
         public ValueTask<string> MapObjectToCsvAsync<T>(List<T> @object, bool addHeaderRecord) =>
             throw new System.NotImplementedException();

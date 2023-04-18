@@ -52,9 +52,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
             // then
             actualCsvMapperValidationException.Should().BeEquivalentTo(expectedCsvMapperValidationException);
 
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedCsvMapperValidationException))),
+                        Times.Once);
+
             this.csvMapperBrokerMock.Verify(broker =>
                 broker.MapCsvToObjectAsync<OptOut>(inputCsvFormattedOptOutData, withHeaderRecord),
-                    Times.Once());
+                    Times.Never());
 
             this.csvMapperBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

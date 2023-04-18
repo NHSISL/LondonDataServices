@@ -28,8 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             var expectedDecryptionOrchestrationFileNameValidationException =
                 new DecryptionOrchestrationValidationException(
-                    innerException: invalidArgumentDecryptionOrchestrationException,
-                    validationSummary: GetValidationSummary(invalidArgumentDecryptionOrchestrationException.Data));
+                    innerException: invalidArgumentDecryptionOrchestrationException);
 
             // when
             ValueTask decryptTask =

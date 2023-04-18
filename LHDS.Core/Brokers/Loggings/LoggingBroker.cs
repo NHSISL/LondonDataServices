@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using LHDS.Core.Extensions.Exceptions;
 using Microsoft.Extensions.Logging;
 
 namespace LHDS.Core.Brokers.Loggings
@@ -27,9 +28,9 @@ namespace LHDS.Core.Brokers.Loggings
             this.logger.LogWarning(message);
 
         public void LogError(Exception exception) =>
-            this.logger.LogError(exception, exception.Message);
+            this.logger.LogError(exception, $"{exception.Message} {exception.GetValidationSummary()}");
 
         public void LogCritical(Exception exception) =>
-            this.logger.LogCritical(exception, exception.Message);
+            this.logger.LogCritical(exception, $"{exception.Message} {exception.GetValidationSummary()}");
     }
 }

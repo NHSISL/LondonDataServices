@@ -8,15 +8,10 @@ namespace LHDS.Core.Models.Clients.DecryptClient.Exceptions
 {
     public class DecryptionClientValidationException : Xeption
     {
-        private const string validationMessage =
-            "Decryption client validation error occurred, fix errors and try again.";
-
-        public DecryptionClientValidationException(Xeption innerException, string validationSummary = "")
+        public DecryptionClientValidationException(Xeption innerException)
             : base(
-                  message: validationSummary.Length > 0
-                    ? $"{validationMessage}  Validation errors: {validationSummary}"
-                    : validationMessage,
-                  innerException)
+                message: "Decryption client validation error occurred, fix errors and try again.",
+                innerException)
         { }
     }
 }

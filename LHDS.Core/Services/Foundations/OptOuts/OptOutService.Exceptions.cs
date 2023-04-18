@@ -103,11 +103,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 
         private OptOutValidationException CreateAndLogValidationException(Xeption exception)
         {
-            string validationSummary = GetValidationSummary(exception.Data);
-
-            var optOutValidationException =
-                new OptOutValidationException(exception, validationSummary);
-
+            var optOutValidationException = new OptOutValidationException(exception);
             this.loggingBroker.LogError(optOutValidationException);
 
             return optOutValidationException;

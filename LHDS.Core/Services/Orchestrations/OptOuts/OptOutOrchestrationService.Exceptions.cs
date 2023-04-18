@@ -62,6 +62,46 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             {
                 throw CreateAndLogDependencyValidationException(meshProcessingDependencyValidationException);
             }
+            catch (OptOutOrchestrationDependencyException optOutOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(optOutOrchestrationDependencyException);
+            }
+            catch (OptOutOrchestrationServiceException optOutOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
+            }
+            catch (OptOutProcessingDependencyException optOutOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(optOutOrchestrationDependencyException);
+            }
+            catch (OptOutProcessingServiceException optOutOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
+            }
+            catch (CsvMapperProcessingDependencyException optOutOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(optOutOrchestrationDependencyException);
+            }
+            catch (CsvMapperProcessingServiceException optOutOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
+            }
+            catch (MeshProcessingDependencyException optOutOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(optOutOrchestrationDependencyException);
+            }
+            catch (MeshProcessingServiceException optOutOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
+            }
+            catch (DocumentProcessingDependencyException optOutOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(optOutOrchestrationDependencyException);
+            }
+            catch (DocumentProcessingServiceException optOutOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(optOutOrchestrationServiceException);
+            }
 
         }
 
@@ -85,6 +125,28 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             this.loggingBroker.LogError(retrieveOptOutStatusOrchestrationDependencyValidationException);
 
             return retrieveOptOutStatusOrchestrationDependencyValidationException;
+        }
+
+        private OptOutOrchestrationDependencyException
+            CreateAndLogDependencyException(Xeption exception)
+        {
+            var optOutOrchestrationDependencyException =
+                new OptOutOrchestrationDependencyException(exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(optOutOrchestrationDependencyException);
+
+            throw optOutOrchestrationDependencyException;
+        }
+
+        private OptOutOrchestrationServiceException
+            CreateAndLogServiceException(Xeption exception)
+        {
+            var optOutOrchestrationServiceException =
+                new OptOutOrchestrationServiceException(exception);
+
+            this.loggingBroker.LogError(optOutOrchestrationServiceException);
+
+            throw optOutOrchestrationServiceException;
         }
     }
 }

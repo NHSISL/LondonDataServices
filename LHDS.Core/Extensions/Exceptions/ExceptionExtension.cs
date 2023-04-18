@@ -35,15 +35,18 @@ namespace LHDS.Core.Extensions.Exceptions
             {
                 validationSummary.Append($"{exception.GetType().Name} Errors:  ");
 
+                StringBuilder errors = new StringBuilder();
+
                 foreach (DictionaryEntry entry in exception.Data)
                 {
                     string errorSummary = ((List<string>)entry.Value)
                         .Select((string value) => value)
                         .Aggregate((string current, string next) => current + ", " + next);
 
-                    validationSummary.Append($"{entry.Key} => {errorSummary};  ");
+                    errors.Append($"{entry.Key} => {errorSummary};  ");
                 }
 
+                validationSummary.Append(errors.ToString().Trim());
                 validationSummary.AppendLine();
             }
 

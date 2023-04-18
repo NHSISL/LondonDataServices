@@ -91,6 +91,10 @@ namespace LHDS.Core.Services.Foundations.Mesh
             {
                 throw CreateAndLogDependencyValidationException(meshClientValidationException);
             }
+            catch (MeshClientDependencyException meshClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(meshClientDependencyException);
+            }
             catch (Exception exception)
             {
                 var failedMeshServiceException =

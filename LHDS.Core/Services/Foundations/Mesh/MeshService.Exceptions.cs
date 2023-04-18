@@ -87,6 +87,10 @@ namespace LHDS.Core.Services.Foundations.Mesh
             {
                 return await returningListofStringsMeshFunction();
             }
+            catch (MeshClientValidationException meshClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshClientValidationException);
+            }
             catch (Exception exception)
             {
                 var failedMeshServiceException =

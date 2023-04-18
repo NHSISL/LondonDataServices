@@ -173,6 +173,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             };
         }
 
+        public static TheoryData OptOutDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new OptOutProcessingDependencyException(innerException),
+                new OptOutProcessingServiceException(innerException),
+                new DocumentProcessingDependencyException(innerException),
+                new DocumentProcessingServiceException(innerException),
+                new MeshProcessingDependencyException(innerException),
+                new MeshProcessingServiceException(innerException),
+                new CsvMapperProcessingDependencyException(innerException),
+                new CsvMapperProcessingServiceException(innerException)
+            };
+        }
+
         private string GetValidationSummary(IDictionary data)
         {
             StringBuilder validationSummary = new StringBuilder();

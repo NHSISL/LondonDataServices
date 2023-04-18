@@ -6,7 +6,6 @@ using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
-using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.OptOuts.Exceptions;
 using Xeptions;
 

@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
+namespace LHDS.Core.Services.Processings.CsvMappers
 {
     internal class CsvMapperProcessingService : ICsvMapperProcessingService
     {

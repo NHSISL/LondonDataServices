@@ -3,9 +3,11 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -18,6 +20,7 @@ using LHDS.Core.Services.Processings.OptOuts;
 using LHDS.Core.Tests.Unit.Services.Processings.CsvMappers;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 {
@@ -128,6 +131,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 this.compareLogic.Compare(expectedDocument, actualDocument)
                     .AreEqual;
         }
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static Filler<OptOut> CreateOptOutFiller(DateTimeOffset dateTimeOffset)
         {
@@ -142,6 +147,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .OnProperty(optOut => optOut.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        private string GetValidationSummary(IDictionary data)
+        {
+            StringBuilder validationSummary = new StringBuilder();
+
+            foreach (DictionaryEntry entry in data)
+            {
+                string errorSummary = ((List<string>)entry.Value)
+                    .Select((string value) => value)
+                    .Aggregate((string current, string next) => current + ", " + next);
+
+                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
+            }
+
+            return validationSummary.ToString();
         }
     }
 }

@@ -72,7 +72,14 @@ namespace LHDS.Core.Services.Foundations.Mesh
             });
 
         public ValueTask<MeshMessage> RetrieveMessageByIdAsync(string messageId) =>
-            throw new System.NotImplementedException();
+            TryCatch(async () =>
+            {
+                ValidateMessageId(messageId);
+                Message brokerRetrieveMessage = await this.meshBroker.RetrieveMessageAsync(messageId);
+                MeshMessage resultMeshMessage = MessageToMeshMessage(brokerRetrieveMessage);
+
+                return resultMeshMessage;
+            });
 
         public ValueTask<bool> AcknowledgeMessageByIdAsync(string messageId) =>
             throw new System.NotImplementedException();

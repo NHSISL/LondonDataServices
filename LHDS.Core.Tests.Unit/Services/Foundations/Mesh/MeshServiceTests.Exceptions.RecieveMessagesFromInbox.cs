@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using Moq;
 using NEL.MESH.Models.Clients.Mesh.Exceptions;
@@ -53,6 +54,45 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(expectedDependencyValidationException))),
+                   Times.Once);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowMeshServiceDependencyExceptionOnRetrieveMessagesFromInboxIfDependencyFailsAndLogItAsync()
+        {
+            // given
+            string randomMessage = GetRandomMessage();
+            var dependencyException = new Exception(randomMessage);
+
+            var meshClientDependencyException =
+                new MeshClientDependencyException(dependencyException as Xeption);
+
+            var expectedDependencyException =
+                new MeshServiceDependencyException(meshClientDependencyException);
+
+            this.meshBrokerMock.Setup(broker =>
+                broker.RetrieveMessagesAsync())
+                    .ThrowsAsync(meshClientDependencyException);
+
+            // when
+            ValueTask<List<string>> retrieveMessagesFromInboxTask =
+                this.meshService.RetrieveMessagesFromInboxAsync();
+
+            MeshServiceDependencyException actualDependencyException =
+                await Assert.ThrowsAsync<MeshServiceDependencyException>(retrieveMessagesFromInboxTask.AsTask);
+
+            // then
+            actualDependencyException.Should().BeEquivalentTo(expectedDependencyException);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.RetrieveMessagesAsync(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(expectedDependencyException))),
                    Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();

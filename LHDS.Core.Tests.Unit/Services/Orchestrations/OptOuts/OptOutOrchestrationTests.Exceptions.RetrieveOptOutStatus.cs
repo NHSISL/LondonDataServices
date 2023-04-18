@@ -59,5 +59,50 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(OptOutDependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnRetrieveOptOutStatusIfDependencyExceptionOccursAndLogItAsync(
+           Xeption dependancyException)
+        {
+            // given
+            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomRecieveName = GetRandomString();
+
+            var expectedDependencyException =
+                new OptOutOrchestrationDependencyException(
+                    dependancyException.InnerException as Xeption);
+
+            this.csvMapperProcessingServiceMock.Setup(processing =>
+                 processing.MapCsvDataToObjectAsync<OptOut>(randomBytes))
+                     .ThrowsAsync(dependancyException);
+
+            // when
+            ValueTask retrieveOptOutStatusTask =
+                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomBytes, randomRecieveName);
+
+            OptOutOrchestrationDependencyException actualException =
+                await Assert.ThrowsAsync<OptOutOrchestrationDependencyException>(retrieveOptOutStatusTask.AsTask);
+
+            // then
+            actualException.Should()
+                 .BeEquivalentTo(expectedDependencyException);
+
+            this.csvMapperProcessingServiceMock.Verify(processing =>
+               processing.MapCsvDataToObjectAsync<OptOut>(randomBytes),
+                     Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedDependencyException))),
+                       Times.Once);
+
+            this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

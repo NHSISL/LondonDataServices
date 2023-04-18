@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -95,6 +96,53 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(
                    expectedDependencyException))),
+                       Times.Once);
+
+            this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnProcessIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            var serviceException = new Exception();
+
+            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomRecieveName = GetRandomString();
+
+            var failedOptOutOrchestrationServiceException =
+               new FailedOptOutOrchestrationServiceException(serviceException);
+
+            var expectedOptOrchestrationServiceException =
+                new OptOutOrchestrationServiceException(failedOptOutOrchestrationServiceException);
+
+            this.csvMapperProcessingServiceMock.Setup(processing =>
+                 processing.MapCsvDataToObjectAsync<OptOut>(randomBytes))
+                     .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask retrieveOptOutStatusTask =
+                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomBytes, randomRecieveName);
+
+            OptOutOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(retrieveOptOutStatusTask.AsTask);
+
+            // then
+            actualException.Should()
+                 .BeEquivalentTo(expectedOptOrchestrationServiceException);
+
+            this.csvMapperProcessingServiceMock.Verify(processing =>
+               processing.MapCsvDataToObjectAsync<OptOut>(randomBytes),
+                     Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedOptOrchestrationServiceException))),
                        Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();

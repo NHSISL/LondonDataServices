@@ -1,38 +1,41 @@
-﻿//// ---------------------------------------------------------------
-//// Copyright (c) North East London ICB. All rights reserved.
-//// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
 
-//using System.Threading.Tasks;
-//using Moq;
-//using Xunit;
+using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.Mesh;
+using Moq;
+using Xunit;
 
-//namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
-//{
-//    public partial class MeshProcessingServiceTests
-//    {
-//        [Fact]
-//        public async Task ShouldReturnRetrieveMessageIdAndAcknowledgeAsync()
-//        {
-//            // given
-//            string randomMailboxId = GetRandomString();
-//            string inputMailboxId = randomMailboxId;
-//            string randomMessageId = GetRandomString();
-//            string inputMessageId = randomMessageId;
+namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
+{
+    public partial class MeshProcessingServiceTests
+    {
+        [Fact]
+        public async Task ShouldReturnRetrieveMessageIdAndAcknowledgeAsync()
+        {
+            // given
+            MeshMessage randomMessage = CreateRandomMessage();
+            MeshMessage storageMessage = randomMessage;
 
-//            // when
-//            await this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(inputMailboxId, inputMessageId);
+            this.meshServiceMock.Setup(service =>
+                service.RetrieveMessageByIdAsync(randomMessage.MessageId))
+                    .ReturnsAsync(storageMessage);
 
-//            // then
-//            this.meshServiceMock.Verify(service =>
-//                service.RetrieveMessageByIdAsync(inputMailboxId, inputMessageId),
-//                    Times.Once());
+            // when
+            await this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(randomMessage.MessageId);
 
-//            this.meshServiceMock.Verify(service =>
-//               service.AcknowledgeMessageByIdAsync(inputMailboxId, inputMessageId),
-//                   Times.Once());
+            // then
+            this.meshServiceMock.Verify(service =>
+                service.RetrieveMessageByIdAsync(randomMessage.MessageId),
+                    Times.Once());
 
-//            this.meshServiceMock.VerifyNoOtherCalls();
-//            this.loggingBrokerMock.VerifyNoOtherCalls();
-//        }
-//    }
-//}
+            this.meshServiceMock.Verify(service =>
+               service.AcknowledgeMessageByIdAsync(randomMessage.MessageId),
+                   Times.Once());
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

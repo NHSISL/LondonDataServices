@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
@@ -15,6 +16,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
     {
         private delegate ValueTask<bool> ReturningBoolMeshFunction();
         private delegate ValueTask<MeshMessage> ReturningMeshMessageFunction();
+        private delegate ValueTask<List<string>> ReturningListofStringsMeshFunction();
         private delegate ValueTask<string> ReturningStringMeshFunction();
 
         private async ValueTask<bool> TryCatch(ReturningBoolMeshFunction returningMeshFunction)
@@ -69,6 +71,29 @@ namespace LHDS.Core.Services.Foundations.Mesh
             catch (MeshClientServiceException meshClientServiceException)
             {
                 throw CreateAndLogDependencyException(meshClientServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedMeshServiceException =
+                    new FailedMeshServiceException(exception);
+
+                throw CreateAndLogServiceException(failedMeshServiceException);
+            }
+        }
+
+        private async ValueTask<List<string>> TryCatch(ReturningListofStringsMeshFunction returningListofStringsMeshFunction)
+        {
+            try
+            {
+                return await returningListofStringsMeshFunction();
+            }
+            catch (MeshClientValidationException meshClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshClientValidationException);
+            }
+            catch (MeshClientDependencyException meshClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(meshClientDependencyException);
             }
             catch (Exception exception)
             {

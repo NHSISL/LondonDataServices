@@ -66,13 +66,15 @@ namespace LHDS.Core.Services.Foundations.Mesh
         public ValueTask<List<string>> RetrieveMessagesFromInboxAsync() =>
             throw new System.NotImplementedException();
 
-        public async ValueTask<MeshMessage> RetrieveMessageByIdAsync(string messageId)
-        {
-            Message brokerRetrieveMessage = await this.meshBroker.RetrieveMessageAsync(messageId);
-            MeshMessage resultMeshMessage = MessageToMeshMessage(brokerRetrieveMessage);
+        public ValueTask<MeshMessage> RetrieveMessageByIdAsync(string messageId) =>
+            TryCatch(async () =>
+            {
+                ValidateMessageId(messageId);
+                Message brokerRetrieveMessage = await this.meshBroker.RetrieveMessageAsync(messageId);
+                MeshMessage resultMeshMessage = MessageToMeshMessage(brokerRetrieveMessage);
 
-            return resultMeshMessage;
-        }
+                return resultMeshMessage;
+            });
 
         public ValueTask<bool> AcknowledgeMessageByIdAsync(string messageId) =>
             throw new System.NotImplementedException();

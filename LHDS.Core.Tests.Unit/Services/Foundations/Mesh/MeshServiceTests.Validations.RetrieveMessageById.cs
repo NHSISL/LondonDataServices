@@ -31,9 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 values: "Text is required");
 
             var expectedMeshValidationException =
-                new MeshValidationException(
-                    innerException: invalidArgumentMeshException,
-                    validationSummary: GetValidationSummary(invalidArgumentMeshException.Data));
+                new MeshValidationException(innerException: invalidArgumentMeshException);
 
             // when
             ValueTask<MeshMessage> retrieveTrackingStatusTask =

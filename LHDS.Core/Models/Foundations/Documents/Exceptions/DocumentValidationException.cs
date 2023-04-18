@@ -8,14 +8,10 @@ namespace LHDS.Core.Models.Foundations.Documents.Exceptions
 {
     public class DocumentValidationException : Xeption
     {
-        private const string validationMessage = "Document validation errors occured, please try again";
-
-        public DocumentValidationException(Xeption innerException, string validationSummary = "")
+        public DocumentValidationException(Xeption innerException)
             : base(
-                  message: validationSummary.Length > 0
-                    ? $"{validationMessage}  Validation errors: {validationSummary}"
-                    : validationMessage,
-                  innerException)
+                message: "Document validation errors occured, please try again",
+                innerException)
         { }
     }
 }

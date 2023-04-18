@@ -125,10 +125,11 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         }
 
         private OptOutOrchestrationDependencyValidationException
-           CreateAndLogDependencyValidationException(Xeption exception)
+            CreateAndLogDependencyValidationException(Xeption exception)
         {
             var retrieveOptOutStatusOrchestrationDependencyValidationException =
                 new OptOutOrchestrationDependencyValidationException(exception.InnerException as Xeption);
+
             this.loggingBroker.LogError(retrieveOptOutStatusOrchestrationDependencyValidationException);
 
             return retrieveOptOutStatusOrchestrationDependencyValidationException;

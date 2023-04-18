@@ -16,6 +16,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         {
             Validate((Rule: IsInvalid(optOutFile), Parameter: "OptOutFile"));
         }
+
         private static void ValidateRequestIdIsNotNull(string requestId)
         {
             Validate((Rule: IsInvalid(requestId), Parameter: "RequestId"));
@@ -49,6 +50,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
             invalidArgumentRetieveOptOutStatusOrchestrationException.ThrowIfContainsErrors();
         }
+
         private string GetValidationSummary(IDictionary data)
         {
             StringBuilder validationSummary = new StringBuilder();
@@ -64,6 +66,5 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
             return validationSummary.ToString();
         }
-
     }
 }

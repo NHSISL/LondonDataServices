@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
     public partial class MeshServiceTests
     {
         [Fact]
-        public async Task ShouldReturnSendMessageAsync()
+        public async Task ShouldReturnSendFileAsync()
         {
             // given
             dynamic dynamicMeshMessageProperties =
@@ -27,7 +27,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             {
                 MessageId = dynamicMeshMessageProperties.MessageId,
                 Headers = dynamicMeshMessageProperties.Headers,
-                StringContent = dynamicMeshMessageProperties.StringContent,
                 FileContent = dynamicMeshMessageProperties.FileContent,
                 TrackingInfo = MaptToMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
             };
@@ -39,27 +38,26 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             {
                 MessageId = dynamicMeshMessageProperties.MessageId,
                 Headers = dynamicMeshMessageProperties.Headers,
-                StringContent = dynamicMeshMessageProperties.StringContent,
                 FileContent = dynamicMeshMessageProperties.FileContent,
                 TrackingInfo = MaptToMeshMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
-            }; 
+            };
 
             var inputMeshMessage = randomMeshMessage;
             var expectedMeshMessage = randomMeshMessage;
 
             this.meshBrokerMock.Setup(broker =>
-                broker.SendMessageAsync(It.Is(SameMessageAs(inputMessage))))
+                broker.SendFileAsync(It.Is(SameMessageAs(inputMessage))))
                     .ReturnsAsync(outputMessage);
 
             // when
             MeshMessage actualMeshMessage =
-                await this.meshService.SendMessageAsync(inputMeshMessage);
+                await this.meshService.SendFileAsync(inputMeshMessage);
 
             // then
             actualMeshMessage.Should().BeEquivalentTo(expectedMeshMessage);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(It.Is(SameMessageAs(inputMessage))),
+                broker.SendFileAsync(It.Is(SameMessageAs(inputMessage))),
                     Times.Once());
 
             this.meshBrokerMock.VerifyNoOtherCalls();

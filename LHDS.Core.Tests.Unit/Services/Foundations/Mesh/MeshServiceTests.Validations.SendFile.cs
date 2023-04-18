@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -16,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
     public partial class MeshServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnSendMessageIfMessageIsNullAsync()
+        public async Task ShouldThrowValidationExceptionOnSendFileIfMessageIsNullAsync()
         {
             // given
             MeshMessage nullMeshMessage = null;
@@ -29,19 +30,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 new MeshValidationException(nullMeshMessageException);
 
             // when
-            ValueTask<MeshMessage> addMessageTask =
-                this.meshService.SendMessageAsync(nullMeshMessage);
+            ValueTask<MeshMessage> sendFileTask =
+                this.meshService.SendFileAsync(nullMeshMessage);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(() =>
-                    addMessageTask.AsTask());
+                    sendFileTask.AsTask());
 
             // then
             actualMeshValidationException.Should()
                 .BeEquivalentTo(expectedMeshValidationException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(nullMessage),
+                broker.SendFileAsync(nullMessage),
                         Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -57,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public async Task ShouldThrowValidationExceptionOnSendMessageIfRequiredMessageItemsAreNullAsync(
+        public async Task ShouldThrowValidationExceptionOnSendFileIfRequiredMessageItemsAreNullAsync(
             string invalidInput)
         {
             // given
@@ -67,7 +68,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             {
                 MessageId = inputMessageId,
                 Headers = null,
-                StringContent = invalidInput,
+                FileContent = null,
             };
 
             var inputMeshMessage = randomMeshMessage;
@@ -76,8 +77,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 new InvalidMeshMessageException();
 
             invalidMeshMessageException.AddData(
-                key: nameof(Message.StringContent),
-                values: "Text is required");
+                key: nameof(Message.FileContent),
+                values: "Content is required");
 
             invalidMeshMessageException.AddData(
                 key: "Headers",
@@ -90,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<MeshMessage> sendFileTask =
-                this.meshService.SendMessageAsync(inputMeshMessage);
+                this.meshService.SendFileAsync(inputMeshMessage);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(() =>
@@ -101,7 +102,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 .BeEquivalentTo(expectedMeshValidationException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(It.IsAny<Message>()),
+                broker.SendFileAsync(It.IsAny<Message>()),
                         Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -114,14 +115,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnSendMessageIfHeaderValuesNotPresentAsync()
+        public async Task ShouldThrowValidationExceptionOnSendFileIfHeaderValuesNotPresentAsync()
         {
             // given
             MeshMessage randomMeshMessage = new MeshMessage
             {
                 MessageId = GetRandomString(),
                 Headers = new Dictionary<string, List<string>>(),
-                StringContent = GetRandomString(),
+                FileContent = Encoding.ASCII.GetBytes(GetRandomString()),
             };
 
             var inputMeshMessage = randomMeshMessage;
@@ -149,6 +150,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 key: "Mex-WorkflowID",
                 values: "Header value is required");
 
+            invalidMeshMessageException.AddData(
+                key: "Mex-Content-Checksum",
+                values: "Header value is required");
+
+            invalidMeshMessageException.AddData(
+                key: "Mex-Content-Encrypted",
+                values: "Header value is required");
+
             var expectedMeshValidationException =
                new MeshValidationException(
                innerException: invalidMeshMessageException,
@@ -156,7 +165,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<MeshMessage> sendFileTask =
-                this.meshService.SendMessageAsync(inputMeshMessage);
+                this.meshService.SendFileAsync(inputMeshMessage);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(() =>
@@ -167,7 +176,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 .BeEquivalentTo(expectedMeshValidationException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(It.IsAny<Message>()),
+                broker.SendFileAsync(It.IsAny<Message>()),
                         Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -183,7 +192,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public async Task ShouldThrowValidationExceptionOnSendMessageIfHeaderValuesAreInvalidAsync(
+        public async Task ShouldThrowValidationExceptionOnSendFileIfHeaderValuesAreInvalidAsync(
             string invalidInput)
         {
             // given
@@ -191,7 +200,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             {
                 MessageId = GetRandomString(),
                 Headers = new Dictionary<string, List<string>>(),
-                StringContent = GetRandomString(),
+                FileContent = Encoding.ASCII.GetBytes(GetRandomString()),
             };
 
             randomMeshMessage.Headers.Add("Content-Type", new List<string> { invalidInput });
@@ -199,6 +208,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             randomMeshMessage.Headers.Add("Mex-From", new List<string> { invalidInput });
             randomMeshMessage.Headers.Add("Mex-To", new List<string> { invalidInput });
             randomMeshMessage.Headers.Add("Mex-WorkflowID", new List<string> { invalidInput });
+            randomMeshMessage.Headers.Add("Mex-Content-Checksum", new List<string> { invalidInput });
+            randomMeshMessage.Headers.Add("Mex-Content-Encrypted", new List<string> { invalidInput });
 
             var inputMeshMessage = randomMeshMessage;
 
@@ -225,6 +236,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 key: "Mex-WorkflowID",
                 values: "Header value is required");
 
+            invalidMeshMessageException.AddData(
+                key: "Mex-Content-Checksum",
+                values: "Header value is required");
+
+            invalidMeshMessageException.AddData(
+                key: "Mex-Content-Encrypted",
+                values: "Header value is required");
+
             var expectedMeshValidationException =
                new MeshValidationException(
                innerException: invalidMeshMessageException,
@@ -232,7 +251,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<MeshMessage> sendFileTask =
-                this.meshService.SendMessageAsync(inputMeshMessage);
+                this.meshService.SendFileAsync(inputMeshMessage);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(() =>
@@ -243,7 +262,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 .BeEquivalentTo(expectedMeshValidationException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(It.IsAny<Message>()),
+                broker.SendFileAsync(It.IsAny<Message>()),
                         Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>

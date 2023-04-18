@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Processings.Documents.Exceptions
+namespace LHDS.Core.Models.Processings.OptOuts.Exceptions
 {
     public class OptOutProcessingDependencyValidationException : Xeption
     {

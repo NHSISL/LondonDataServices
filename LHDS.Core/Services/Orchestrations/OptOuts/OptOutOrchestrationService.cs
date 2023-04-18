@@ -61,7 +61,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                 Document document = new Document
                 {
-                    FileName = $"receive/{requestId}_Response_{dateTimeBroker.GetCurrentDateTimeOffset()}.csv",
+                    FileName = $"receive/{requestId}_Response_{dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss")}.csv",
                     DocumentData = processedBytes
                 };
 

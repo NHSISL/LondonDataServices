@@ -8,11 +8,13 @@ using System.Linq;
 using System.Linq.Expressions;
 using LHDS.Core.Brokers.CsvMappers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.CsvMappers.Exceptions;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Services.Processings.CsvMappers;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
 {
@@ -30,6 +32,32 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
             this.csvMapperProcessingService = new CsvMapperProcessingService(
                 csvMapperService: this.csvMapperServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
+        }
+
+        public static TheoryData DependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new CsvMapperValidationException(innerException),
+                new CsvMapperDependencyValidationException(innerException)
+            };
+        }
+
+        public static TheoryData DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new CsvMapperDependencyException(innerException),
+                new CsvMapperServiceException(innerException)
+            };
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>

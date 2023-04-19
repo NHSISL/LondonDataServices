@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.OptOuts;
 
@@ -15,5 +16,6 @@ namespace LHDS.Core.Services.Processings.OptOuts
         ValueTask<OptOut> RemoveOptOutByIdAsync(Guid optOutId);
         ValueTask<OptOut> RetrieveOptOutByIdAsync(Guid optOutId);
         ValueTask<OptOut> RetrieveOptOutByNhsNumberAsync(string optOutNhsNumber);
+        ValueTask<List<OptOut>> RetrieveAllExpiredOptOutsAsync();
     }
 }

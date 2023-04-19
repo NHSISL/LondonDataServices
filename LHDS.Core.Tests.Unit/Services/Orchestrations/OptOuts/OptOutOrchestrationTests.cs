@@ -12,7 +12,9 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
+using LHDS.Core.Models.Orchestrations.OptOuts;
 using LHDS.Core.Models.Processings.CsvMapper.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
@@ -39,6 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly ICompareLogic compareLogic;
+        private readonly Mock<OptOutConfiguration> optOutConfigurationMock;
 
         public OptOutOrchestrationTests()
         {
@@ -49,6 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.compareLogic = new CompareLogic();
+            this.optOutConfigurationMock = new Mock<OptOutConfiguration>();
 
             this.optOutOrchestrationService = new OptOutOrchestrationService(
                 optOutProcessingService: optOutProcessingServiceMock.Object,
@@ -56,7 +60,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 meshProcessingService: meshProcessingServiceMock.Object,
                 csvMapperProcessingService: csvMapperProcessingServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
-                dateTimeBroker: dateTimeBrokerMock.Object);
+                dateTimeBroker: dateTimeBrokerMock.Object,
+                optOutConfiguration: optOutConfigurationMock.Object);
         }
 
         private static string GetRandomString() =>
@@ -112,21 +117,28 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private static int GetRandomNumber() =>
            new IntRange(min: 2, max: 10).GetValue();
 
-        private static List<OptOut> CreateRandomOptOuts()
+        private static List<OptOut> CreateRandomOptOutsList()
         {
             return CreateOptOutFiller(dateTimeOffset: GetRandomDateTimeOffset())
                 .Create(count: 1)
                     .ToList();
         }
 
-        private static OptOut CreateRandomOptOut(DateTimeOffset dateTimeOffset) =>
-           CreateOptOutFiller(dateTimeOffset).Create();
+        private static OptOut CreateRandomOptOut() =>
+             CreateOptOutFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
         private Expression<Func<List<OptOut>, bool>> SameOptOutListAs(List<OptOut> expectedOptOuts)
         {
             return actualOptOuts =>
                 this.compareLogic.Compare(expectedOptOuts, actualOptOuts)
                     .AreEqual;
+        }
+
+        private static IQueryable<OptOut> CreateRandomOptOuts()
+        {
+            return CreateOptOutFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
         }
 
         private Expression<Func<Document, bool>> SameDocumentAs(
@@ -171,6 +183,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 new CsvMapperProcessingValidationException(innerException),
                 new CsvMapperProcessingDependencyValidationException(innerException),
             };
+        }
+
+        private static MeshMessage CreateRandomMessage() =>
+           CreateMessageFiller().Create();
+
+        private static Filler<MeshMessage> CreateMessageFiller()
+        {
+            var filler = new Filler<MeshMessage>();
+            filler.Setup().OnProperty(message => message.Headers)
+                .Use(new Dictionary<string, List<string>>());
+
+            return filler;
         }
 
         public static TheoryData OptOutDependencyExceptions()

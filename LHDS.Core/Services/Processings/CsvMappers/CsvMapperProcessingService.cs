@@ -30,12 +30,16 @@ namespace LHDS.Core.Services.Processings.CsvMappers
                 return await this.csvMapperService.MapCsvToObjectAsync<T>(data, hasHeaderRecord);
             });
 
-        public ValueTask<string> MapObjectToCsvAsync<T>(List<T> @object, bool addHeaderRecord) =>
+        public ValueTask<string> MapObjectToCsvAsync<T>(
+            List<T> @object,
+            bool addHeaderRecord,
+            bool shouldAddTrailingComma) =>
             TryCatch(async () =>
             {
                 ValidateMapObjectToCsvArguments(@object, addHeaderRecord);
 
-                return await this.csvMapperService.MapObjectToCsvAsync(@object, addHeaderRecord);
+                return await this.csvMapperService
+                    .MapObjectToCsvAsync(@object, addHeaderRecord, shouldAddTrailingComma);
             });
     }
 }

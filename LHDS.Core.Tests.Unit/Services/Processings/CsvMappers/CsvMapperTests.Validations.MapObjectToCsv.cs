@@ -22,9 +22,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
             string randomString = GetRandomString();
             string outputString = randomString;
             bool withHeaderRecord = true;
+            bool shouldAddTrailingComma = true;
 
             this.csvMapperServiceMock.Setup(service =>
-                service.MapObjectToCsvAsync<OptOut>(nullOptOuts, withHeaderRecord))
+                service.MapObjectToCsvAsync<OptOut>(nullOptOuts, withHeaderRecord, shouldAddTrailingComma))
                     .ReturnsAsync(outputString);
 
             var invalidCsvMapperArgumentsException = new InvalidCsvMapperArgumentsException();
@@ -39,7 +40,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
             // when
             ValueTask<string> mapObjectToCsvTask = this.csvMapperProcessingService.MapObjectToCsvAsync<OptOut>(
                 @object: nullOptOuts,
-                addHeaderRecord: withHeaderRecord);
+                addHeaderRecord: withHeaderRecord,
+                shouldAddTrailingComma);
 
             CsvMapperValidationException actualCsvMapperValidationException =
                 await Assert.ThrowsAsync<CsvMapperValidationException>(mapObjectToCsvTask.AsTask);
@@ -53,7 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
                         Times.Once);
 
             this.csvMapperServiceMock.Verify(service =>
-                service.MapObjectToCsvAsync<OptOut>(nullOptOuts, withHeaderRecord),
+                service.MapObjectToCsvAsync<OptOut>(nullOptOuts, withHeaderRecord, shouldAddTrailingComma),
                     Times.Never());
 
             this.csvMapperServiceMock.VerifyNoOtherCalls();

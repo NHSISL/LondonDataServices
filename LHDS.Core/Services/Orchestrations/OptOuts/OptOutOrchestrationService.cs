@@ -48,6 +48,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 ValidateOptOutFileIsNotNull(optOutFile);
                 ValidateRequestIdIsNotNull(requestId);
                 string inputData = Encoding.ASCII.GetString(optOutFile);
+                bool withHeader = false;
+                bool shouldAddTrailingComma = true;
 
                 List<OptOut> mappedOptOuts =
                     await this.csvMapperProcessingService.MapCsvToObjectAsync<OptOut>(inputData, false);
@@ -60,7 +62,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 }
 
                 var processedData = await this.csvMapperProcessingService
-                    .MapObjectToCsvAsync(processedOptOuts, false);
+                    .MapObjectToCsvAsync(processedOptOuts, withHeader, shouldAddTrailingComma);
 
                 byte[] processedBytes = Encoding.ASCII.GetBytes(processedData);
 

@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
                     dependancyValidationException.InnerException as Xeption);
 
             this.csvMapperServiceMock.Setup(service =>
-                service.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), It.IsAny<bool>()))
+                service.MapObjectToCsvAsync(It.IsAny<List<OptOut>>(), It.IsAny<bool>()))
                     .ThrowsAsync(dependancyValidationException);
 
             // when
@@ -53,7 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
                         Times.Once);
 
             this.csvMapperServiceMock.Verify(service =>
-                service.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), It.IsAny<bool>()),
+                service.MapObjectToCsvAsync(It.IsAny<List<OptOut>>(), It.IsAny<bool>()),
                     Times.Once());
 
             this.csvMapperServiceMock.VerifyNoOtherCalls();
@@ -75,7 +75,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
                     dependancyException.InnerException as Xeption);
 
             this.csvMapperServiceMock.Setup(service =>
-                service.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), It.IsAny<bool>()))
+                service.MapObjectToCsvAsync(It.IsAny<List<OptOut>>(), It.IsAny<bool>()))
                     .ThrowsAsync(dependancyException);
 
             // when
@@ -95,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
                         Times.Once);
 
             this.csvMapperServiceMock.Verify(service =>
-                service.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), It.IsAny<bool>()),
+                service.MapObjectToCsvAsync(It.IsAny<List<OptOut>>(), It.IsAny<bool>()),
                     Times.Once());
 
             this.csvMapperServiceMock.VerifyNoOtherCalls();
@@ -115,7 +115,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
                 new FailedCsvMapperServiceException(serviceException);
 
             var expectedCsvMapperServiceException =
-                new CsvMapperServiceException(failedCsvMapperServiceException);
+                new CsvMapperProcessingServiceException(failedCsvMapperServiceException);
 
             this.csvMapperServiceMock.Setup(service =>
                 service.MapObjectToCsvAsync<OptOut>(inputOptOuts, withHeaderRecord))
@@ -126,8 +126,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
                 @object: inputOptOuts,
                 addHeaderRecord: withHeaderRecord);
 
-            CsvMapperServiceException actualCsvMapperServiceException =
-                await Assert.ThrowsAsync<CsvMapperServiceException>(mapCsvToObjectTask.AsTask);
+            CsvMapperProcessingServiceException actualCsvMapperServiceException =
+                await Assert.ThrowsAsync<CsvMapperProcessingServiceException>(mapCsvToObjectTask.AsTask);
 
             // then
             actualCsvMapperServiceException.Should().BeEquivalentTo(expectedCsvMapperServiceException);

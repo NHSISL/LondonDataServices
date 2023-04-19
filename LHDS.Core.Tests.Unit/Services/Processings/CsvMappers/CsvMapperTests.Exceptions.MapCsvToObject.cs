@@ -117,7 +117,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
                 new FailedCsvMapperServiceException(serviceException);
 
             var expectedCsvMapperServiceException =
-                new CsvMapperProcessingDependencyException(failedCsvMapperServiceException);
+                new CsvMapperProcessingServiceException(failedCsvMapperServiceException);
 
             this.csvMapperServiceMock.Setup(service =>
                 service.MapCsvToObjectAsync<OptOut>(inputString, withHeaderRecord))
@@ -128,8 +128,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
                 data: inputString,
                 hasHeaderRecord: withHeaderRecord);
 
-            CsvMapperProcessingDependencyException actualCsvMapperServiceException =
-                await Assert.ThrowsAsync<CsvMapperProcessingDependencyException>(mapCsvToObjectTask.AsTask);
+            CsvMapperProcessingServiceException actualCsvMapperServiceException =
+                await Assert.ThrowsAsync<CsvMapperProcessingServiceException>(mapCsvToObjectTask.AsTask);
 
             // then
             actualCsvMapperServiceException.Should().BeEquivalentTo(expectedCsvMapperServiceException);

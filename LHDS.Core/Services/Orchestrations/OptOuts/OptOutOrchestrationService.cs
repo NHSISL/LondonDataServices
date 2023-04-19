@@ -82,6 +82,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
         public async ValueTask PushExpiredOptOutsToMeshForRenewalAsync()
         {
+            //TODO: Validate you can get config settings
             List<OptOut> mappedOptOuts = await
                 this.optOutProcessingService.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays);
 

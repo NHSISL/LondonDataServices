@@ -2,18 +2,40 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.CsvMappers;
+using LHDS.Core.Brokers.Loggings;
 
 namespace LHDS.Core.Services.Processings.CsvMappers
 {
-    internal class CsvMapperProcessingService : ICsvMapperProcessingService
+    public partial class CsvMapperProcessingService : ICsvMapperProcessingService
     {
-        public ValueTask<List<T>> MapCsvDataToObjectAsync<T>(byte[] data) =>
-            throw new NotImplementedException();
+        private readonly ICsvMapperService csvMapperService;
+        private readonly ILoggingBroker loggingBroker;
 
-        public ValueTask<byte[]> MapObjectToCsvDataAsync<T>(List<T> @object) =>
-            throw new NotImplementedException();
+        public CsvMapperProcessingService(
+            ICsvMapperService csvMapperService,
+            ILoggingBroker loggingBroker)
+        {
+            this.csvMapperService = csvMapperService;
+            this.loggingBroker = loggingBroker;
+        }
+
+        public ValueTask<List<T>> MapCsvToObjectAsync<T>(string data, bool hasHeaderRecord) =>
+            TryCatch(async () =>
+            {
+                ValidateMapCsvToObjectArguments(data, hasHeaderRecord);
+
+                return await this.csvMapperService.MapCsvToObjectAsync<T>(data, hasHeaderRecord);
+            });
+
+        public ValueTask<string> MapObjectToCsvAsync<T>(List<T> @object, bool addHeaderRecord) =>
+            TryCatch(async () =>
+            {
+                ValidateMapObjectToCsvArguments(@object, addHeaderRecord);
+
+                return await this.csvMapperService.MapObjectToCsvAsync(@object, addHeaderRecord);
+            });
     }
 }

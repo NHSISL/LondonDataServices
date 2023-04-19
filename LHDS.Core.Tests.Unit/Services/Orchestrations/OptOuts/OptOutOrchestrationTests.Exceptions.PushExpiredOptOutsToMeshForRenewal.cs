@@ -56,5 +56,48 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
 
         }
+
+        [Theory]
+        [MemberData(nameof(OptOutDependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnPushExpiredOptOutsToMeshIfExpiredIfDependencyExceptionOccursAndLogItAsync(
+           Xeption dependancyException)
+        {
+            // Given
+            var expectedDependencyException =
+               new OptOutOrchestrationDependencyException(
+                   dependancyException.InnerException as Xeption);
+
+            this.optOutProcessingServiceMock.Setup(processings =>
+                processings.RetrieveAllExpiredOptOutsAsync(It.IsAny<int>()))
+                    .ThrowsAsync(dependancyException);
+
+            // When
+            ValueTask pushExpiredOptOutsToMeshIfExpiredTask =
+               this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
+
+            OptOutOrchestrationDependencyException actualException =
+                await Assert.ThrowsAsync<OptOutOrchestrationDependencyException>(
+                    pushExpiredOptOutsToMeshIfExpiredTask.AsTask);
+
+            // Then
+            actualException.Should()
+                 .BeEquivalentTo(expectedDependencyException);
+
+            this.optOutProcessingServiceMock.Verify(processings =>
+                processings.RetrieveAllExpiredOptOutsAsync(It.IsAny<int>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+              broker.LogError(It.Is(SameExceptionAs(
+                  expectedDependencyException))),
+                      Times.Once);
+
+            this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

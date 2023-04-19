@@ -54,7 +54,7 @@ namespace LHDS.Core.Brokers.Mesh
         public ValueTask<Message> RetrieveMessageAsync(string messageId) =>
             this.meshClient.Mailbox.RetrieveMessageAsync(messageId);
 
-        public ValueTask<bool> AcknowledgeMessageAsync(string messageId) =>
+        public ValueTask<bool> AcknowledgeMessageByIdAsync(string messageId) =>
             this.meshClient.Mailbox.AcknowledgeMessageAsync(messageId);
     }
 }

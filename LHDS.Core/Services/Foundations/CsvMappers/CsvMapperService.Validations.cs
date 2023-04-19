@@ -8,7 +8,7 @@ using Xeptions;
 
 namespace LHDS.Core.Brokers.CsvMappers
 {
-    public partial class CsvMapperService : ICsvMapperService
+    public partial class CsvMapperService
     {
         private static void ValidateMapCsvToObjectArguments(string data, bool hasHeaderRecord)
         {

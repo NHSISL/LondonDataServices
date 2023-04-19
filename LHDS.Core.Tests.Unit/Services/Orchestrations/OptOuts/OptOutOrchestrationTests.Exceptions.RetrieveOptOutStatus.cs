@@ -22,7 +22,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             Xeption dependancyValidationException)
         {
             // given
-            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomString = GetRandomString();
+            var randomBytes = Encoding.ASCII.GetBytes(randomString);
             var randomRecieveName = GetRandomString();
 
             var expectedDependencyException =
@@ -30,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     dependancyValidationException.InnerException as Xeption);
 
             this.csvMapperProcessingServiceMock.Setup(processing =>
-                 processing.MapCsvDataToObjectAsync<OptOut>(randomBytes))
+                 processing.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), false))
                      .ThrowsAsync(dependancyValidationException);
 
             // when
@@ -38,14 +39,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomBytes, randomRecieveName);
 
             OptOutOrchestrationDependencyValidationException actualException =
-                await Assert.ThrowsAsync<OptOutOrchestrationDependencyValidationException>(retrieveOptOutStatusTask.AsTask);
+                await Assert.ThrowsAsync<OptOutOrchestrationDependencyValidationException>(
+                    retrieveOptOutStatusTask.AsTask);
 
             // then
             actualException.Should()
                  .BeEquivalentTo(expectedDependencyException);
 
             this.csvMapperProcessingServiceMock.Verify(processing =>
-               processing.MapCsvDataToObjectAsync<OptOut>(randomBytes),
+               processing.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), false),
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -67,7 +69,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
            Xeption dependancyException)
         {
             // given
-            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomString = GetRandomString();
+            var randomBytes = Encoding.ASCII.GetBytes(randomString);
             var randomRecieveName = GetRandomString();
 
             var expectedDependencyException =
@@ -75,7 +78,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     dependancyException.InnerException as Xeption);
 
             this.csvMapperProcessingServiceMock.Setup(processing =>
-                 processing.MapCsvDataToObjectAsync<OptOut>(randomBytes))
+                 processing.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), It.IsAny<bool>()))
                      .ThrowsAsync(dependancyException);
 
             // when
@@ -90,7 +93,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                  .BeEquivalentTo(expectedDependencyException);
 
             this.csvMapperProcessingServiceMock.Verify(processing =>
-               processing.MapCsvDataToObjectAsync<OptOut>(randomBytes),
+               processing.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), It.IsAny<bool>()),
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -122,7 +125,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 new OptOutOrchestrationServiceException(failedOptOutOrchestrationServiceException);
 
             this.csvMapperProcessingServiceMock.Setup(processing =>
-                 processing.MapCsvDataToObjectAsync<OptOut>(randomBytes))
+                 processing.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), It.IsAny<bool>()))
                      .ThrowsAsync(serviceException);
 
             // when
@@ -137,7 +140,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                  .BeEquivalentTo(expectedOptOrchestrationServiceException);
 
             this.csvMapperProcessingServiceMock.Verify(processing =>
-               processing.MapCsvDataToObjectAsync<OptOut>(randomBytes),
+               processing.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), It.IsAny<bool>()),
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

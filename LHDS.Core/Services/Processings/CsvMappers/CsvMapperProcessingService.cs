@@ -10,10 +10,10 @@ namespace LHDS.Core.Services.Processings.CsvMappers
 {
     internal class CsvMapperProcessingService : ICsvMapperProcessingService
     {
-        public ValueTask<List<T>> MapCsvDataToObjectAsync<T>(byte[] data) =>
+        public ValueTask<List<T>> MapCsvToObjectAsync<T>(string data, bool hasHeaderRecord) =>
             throw new NotImplementedException();
 
-        public ValueTask<byte[]> MapObjectToCsvDataAsync<T>(List<T> @object) =>
+        public async ValueTask<string> MapObjectToCsvAsync<T>(List<T> @object, bool addHeaderRecord) =>
             throw new NotImplementedException();
     }
 }

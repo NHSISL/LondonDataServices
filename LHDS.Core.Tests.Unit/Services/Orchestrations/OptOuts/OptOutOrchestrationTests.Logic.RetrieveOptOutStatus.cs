@@ -19,15 +19,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         public async Task ShouldRetrieveOptOutStatusAsync()
         {
             // given
-            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
-            var inputBytes = randomBytes;
+            var randomString = GetRandomString();
+            var inputString = randomString;
+            var inputBytes = Encoding.ASCII.GetBytes(inputString);
             var randomRecieveName = GetRandomString();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            List<OptOut> randomOptOuts = CreateRandomOptOuts();
+            List<OptOut> randomOptOuts = CreateRandomOptOutsList();
             List<OptOut> outputOptOuts = randomOptOuts;
 
             this.csvMapperProcessingServiceMock.Setup(processing =>
-                 processing.MapCsvDataToObjectAsync<OptOut>(inputBytes))
+                 processing.MapCsvToObjectAsync<OptOut>(inputString, false))
                      .ReturnsAsync(outputOptOuts);
 
             List<OptOut> processedOptOuts = new List<OptOut>();
@@ -43,12 +44,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 processedOptOuts.Add(storageOptOut);
             }
 
-            var randomOptOutData = Encoding.ASCII.GetBytes(GetRandomString());
-            var processedBytes = randomOptOutData;
+            var randomOptOutData = GetRandomString();
+            var processedString = randomOptOutData;
+            var processedBytes = Encoding.ASCII.GetBytes(processedString);
 
             this.csvMapperProcessingServiceMock.Setup(processings =>
-                processings.MapObjectToCsvDataAsync(It.Is(SameOptOutListAs(processedOptOuts))))
-                    .ReturnsAsync(processedBytes);
+                processings.MapObjectToCsvAsync(It.Is(SameOptOutListAs(processedOptOuts)), false))
+                    .ReturnsAsync(processedString);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -68,7 +70,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // then
             this.csvMapperProcessingServiceMock.Verify(processing =>
-                  processing.MapCsvDataToObjectAsync<OptOut>(inputBytes),
+                  processing.MapCsvToObjectAsync<OptOut>(inputString, false),
                         Times.Once);
 
             foreach (var optOut in outputOptOuts)
@@ -83,7 +85,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             }
 
             this.csvMapperProcessingServiceMock.Verify(processings =>
-                processings.MapObjectToCsvDataAsync(It.IsAny<List<OptOut>>()),
+                processings.MapObjectToCsvAsync(It.IsAny<List<OptOut>>(), false),
                         Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>

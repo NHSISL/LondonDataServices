@@ -13,11 +13,10 @@ namespace LHDS.Core.Services.Foundations.Mesh
 {
     public partial class MeshService
     {
-        public void ValidateMeshArgs(string mailboxId, string messageId)
+        public void ValidateMeshArgs(string messageId)
         {
-            Validate(
-                (Rule: IsInvalid(mailboxId), Parameter: nameof(mailboxId)),
-                (Rule: IsInvalid(messageId), Parameter: nameof(messageId)));
+            Validate<InvalidMeshMessageException>(
+                (Rule: IsInvalid(messageId), Parameter: "MessageId"));
         }
 
         public void ValidateMeshMessageOnSendMessage(MeshMessage message)
@@ -56,10 +55,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
         }
 
         public void ValidateMessageId(string messageId) =>
-            Validate<InvalidArgumentMeshException>((Rule: IsInvalid(messageId), Parameter: nameof(messageId)));
-
-        public void ValidateMailboxId(string mailboxId) =>
-          Validate((Rule: IsInvalid(mailboxId), Parameter: nameof(mailboxId)));
+            Validate<InvalidArgumentMeshException>((Rule: IsInvalid(messageId), Parameter: "MessageId"));
 
         public void ValidateMeshMessageIsNotNull(MeshMessage message)
         {

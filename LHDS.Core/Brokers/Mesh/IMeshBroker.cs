@@ -16,6 +16,6 @@ namespace LHDS.Core.Brokers.Mesh
         ValueTask<Message> TrackMessageAsync(string messageId);
         ValueTask<List<string>> RetrieveMessagesAsync();
         ValueTask<Message> RetrieveMessageAsync(string messageId);
-        ValueTask<bool> AcknowledgeMessageAsync(string messageId);
+        ValueTask<bool> AcknowledgeMessageByIdAsync(string messageId);
     }
 }

@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // when
             ValueTask retrieveOptOutStatusTask =
-                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomBytes, randomRecieveName);
+                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputBytes, randomRecieveName);
 
             OptOutOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationDependencyValidationException>(
@@ -83,7 +83,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // when
             ValueTask retrieveOptOutStatusTask =
-                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomBytes, randomRecieveName);
+                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputBytes, randomRecieveName);
 
             OptOutOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationDependencyException>(retrieveOptOutStatusTask.AsTask);
@@ -113,10 +113,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         public async Task ShouldThrowServiceExceptionOnProcessIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            var serviceException = new Exception();
-
-            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            string randomString = GetRandomString();
+            byte[] randomBytes = Encoding.ASCII.GetBytes(randomString);
+            byte[] inputBytes = randomBytes;
             var randomRecieveName = GetRandomString();
+            var serviceException = new Exception();
 
             var failedOptOutOrchestrationServiceException =
                new FailedOptOutOrchestrationServiceException(serviceException);
@@ -130,7 +131,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // when
             ValueTask retrieveOptOutStatusTask =
-                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomBytes, randomRecieveName);
+                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputBytes, randomRecieveName);
 
             OptOutOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(retrieveOptOutStatusTask.AsTask);

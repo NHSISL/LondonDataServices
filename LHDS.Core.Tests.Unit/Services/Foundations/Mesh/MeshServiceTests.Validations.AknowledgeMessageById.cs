@@ -52,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                         Times.Once);
 
             this.meshBrokerMock.Verify(broker =>
-               broker.AcknowledgeMessageAsync(messageId),
+               broker.AcknowledgeMessageByIdAsync(messageId),
                    Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

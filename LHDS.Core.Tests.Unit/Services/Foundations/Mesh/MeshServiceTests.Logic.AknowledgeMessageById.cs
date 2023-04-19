@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             bool expectedValidationResult = outputValidationResult;
 
             this.meshBrokerMock.Setup(broker =>
-                broker.AcknowledgeMessageAsync(inputMessageId))
+                broker.AcknowledgeMessageByIdAsync(inputMessageId))
                     .ReturnsAsync(outputValidationResult);
 
             // when
@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             actualMeshValidation.Should().Be(expectedValidationResult);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.AcknowledgeMessageAsync(inputMessageId),
+                broker.AcknowledgeMessageByIdAsync(inputMessageId),
                     Times.Once());
 
             this.meshBrokerMock.VerifyNoOtherCalls();

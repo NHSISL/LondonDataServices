@@ -85,7 +85,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
             TryCatch(async () =>
             {
                 ValidateMessageId(messageId);
-                bool acknowledgedResult = await this.meshBroker.AcknowledgeMessageAsync(messageId);
+                bool acknowledgedResult = await this.meshBroker.AcknowledgeMessageByIdAsync(messageId);
 
                 return acknowledgedResult;
             });

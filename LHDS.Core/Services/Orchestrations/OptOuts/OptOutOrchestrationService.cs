@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts;
 using LHDS.Core.Services.Processings.CsvMappers;
@@ -79,10 +80,25 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 await this.documentProcessingService.AddDocumentAsync(document);
             });
 
-        public ValueTask PushExpiredOptOutsToMeshForRenewalAsync() =>
-            throw new NotImplementedException();
+        public async ValueTask PushExpiredOptOutsToMeshForRenewalAsync()
+        {
+            List<OptOut> mappedOptOuts = await
+                this.optOutProcessingService.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays);
 
-        public ValueTask RetrieveUpdatedMeshOptOutStatusChangesAsync() =>
+            var processedOutputString = await this.csvMapperProcessingService
+                   .MapObjectToCsvAsync(mappedOptOuts, false);
+
+            MeshMessage message = new MeshMessage
+            {
+                StringContent = processedOutputString
+            };
+
+            await this.meshProcessingService.SendMessageAsync(message);
+        }
+
+        public ValueTask RetrieveUpdatedMeshOptOutStatusChangesAsync()
+        {
             throw new NotImplementedException();
+        }
     }
 }

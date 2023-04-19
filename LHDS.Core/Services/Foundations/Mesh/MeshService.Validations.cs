@@ -115,23 +115,6 @@ namespace LHDS.Core.Services.Foundations.Mesh
             return String.IsNullOrWhiteSpace(value);
         }
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
-        {
-            var invalidArgumentMeshException = new InvalidArgumentMeshException();
-
-            foreach ((dynamic rule, string parameter) in validations)
-            {
-                if (rule.Condition)
-                {
-                    invalidArgumentMeshException.UpsertDataList(
-                        key: parameter,
-                        value: rule.Message);
-                }
-            }
-
-            invalidArgumentMeshException.ThrowIfContainsErrors();
-        }
-
         private static void Validate<T>(params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {

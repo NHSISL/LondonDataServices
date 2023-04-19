@@ -84,6 +84,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             TryCatch(async () =>
             {
                 //TODO: Validate you can get configuration settings
+                //ValidateConfigurationSettingsNotNull(optOutConfiguration.ExpiredAfterDays);
+
                 List<OptOut> mappedOptOuts = await
                 this.optOutProcessingService.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays);
 

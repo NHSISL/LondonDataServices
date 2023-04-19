@@ -28,9 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 values: "Id is required");
 
             var expectedAuditValidationException =
-                new AuditValidationException(
-                    innerException: invalidAuditException,
-                    validationSummary: GetValidationSummary(invalidAuditException.Data));
+                new AuditValidationException(innerException: invalidAuditException);
 
             // when
             ValueTask<Audit> removeAuditByIdTask =

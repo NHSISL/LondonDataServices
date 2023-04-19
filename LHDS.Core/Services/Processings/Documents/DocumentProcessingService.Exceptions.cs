@@ -128,10 +128,8 @@ namespace LHDS.Core.Services.Processings.Documents
         private DocumentProcessingValidationException
             CreateAndLogValidationException(Xeption exception)
         {
-            string validationSummary = GetValidationSummary(exception.Data);
-
             var documentProcessingValidationExceptionn =
-                new DocumentProcessingValidationException(exception, validationSummary);
+                new DocumentProcessingValidationException(exception);
 
             this.loggingBroker.LogError(documentProcessingValidationExceptionn);
 

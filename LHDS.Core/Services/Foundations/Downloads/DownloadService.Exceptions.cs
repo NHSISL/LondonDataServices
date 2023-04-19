@@ -67,11 +67,7 @@ namespace LHDS.Core.Services.Foundations.Downloads
 
         private DownloadValidationException CreateAndLogValidationException(Xeption exception)
         {
-            string validationSummary = GetValidationSummary(exception.Data);
-
-            var downloadValidationException =
-                new DownloadValidationException(exception, validationSummary);
-
+            var downloadValidationException = new DownloadValidationException(exception);
             this.loggingBroker.LogError(downloadValidationException);
 
             return downloadValidationException;

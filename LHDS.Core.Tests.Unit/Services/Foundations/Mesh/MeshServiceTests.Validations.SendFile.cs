@@ -85,9 +85,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 values: "Values is required");
 
             var expectedMeshValidationException =
-                new MeshValidationException(
-                innerException: invalidMeshMessageException,
-                validationSummary: GetValidationSummary(invalidMeshMessageException.Data));
+                new MeshValidationException(innerException: invalidMeshMessageException);
 
             // when
             ValueTask<MeshMessage> sendFileTask =
@@ -159,9 +157,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 values: "Header value is required");
 
             var expectedMeshValidationException =
-               new MeshValidationException(
-               innerException: invalidMeshMessageException,
-               validationSummary: GetValidationSummary(invalidMeshMessageException.Data));
+               new MeshValidationException(innerException: invalidMeshMessageException);
 
             // when
             ValueTask<MeshMessage> sendFileTask =
@@ -245,9 +241,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 values: "Header value is required");
 
             var expectedMeshValidationException =
-               new MeshValidationException(
-               innerException: invalidMeshMessageException,
-               validationSummary: GetValidationSummary(invalidMeshMessageException.Data));
+               new MeshValidationException(innerException: invalidMeshMessageException);
 
             // when
             ValueTask<MeshMessage> sendFileTask =

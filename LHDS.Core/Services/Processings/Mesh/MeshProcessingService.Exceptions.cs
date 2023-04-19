@@ -126,10 +126,8 @@ namespace LHDS.Core.Services.Processings.Mesh
         private MeshProcessingValidationException
             CreateAndLogValidationException(Xeption exception)
         {
-            string validationSummary = GetValidationSummary(exception.Data);
-
             var meshProcessingValidationExceptionn =
-                new MeshProcessingValidationException(exception, validationSummary);
+                new MeshProcessingValidationException(exception);
 
             this.loggingBroker.LogError(meshProcessingValidationExceptionn);
 

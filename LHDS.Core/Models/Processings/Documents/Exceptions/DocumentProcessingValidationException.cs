@@ -8,14 +8,10 @@ namespace LHDS.Core.Models.Processings.Documents.Exceptions
 {
     public class DocumentProcessingValidationException : Xeption
     {
-        private const string validationMessage = "Document processing validation errors occured, please try again";
-
-        public DocumentProcessingValidationException(Xeption innerException, string validationSummary = "")
+        public DocumentProcessingValidationException(Xeption innerException)
             : base(
-                  message: validationSummary.Length > 0
-                    ? $"{validationMessage}  Validation errors: {validationSummary}"
-                    : validationMessage,
-                  innerException)
+                message: "Document processing validation errors occured, please try again",
+                innerException)
         { }
     }
 }

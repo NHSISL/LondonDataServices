@@ -28,8 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
             var expectedDownloadOrchestrationFileNameValidationException =
                 new DownloadOrchestrationValidationException(
-                    innerException: invalidArgumentDownloadOrchestrationException,
-                    validationSummary: GetValidationSummary(invalidArgumentDownloadOrchestrationException.Data));
+                    innerException: invalidArgumentDownloadOrchestrationException);
 
             // when
             ValueTask DownloadTask =

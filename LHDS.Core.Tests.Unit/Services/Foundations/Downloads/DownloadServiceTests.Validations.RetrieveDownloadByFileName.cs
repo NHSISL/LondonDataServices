@@ -31,9 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
                 values: "Text is required");
 
             var expectedDownloadValidationException =
-                new DownloadValidationException(
-                    innerException: invalidDownloadException,
-                    validationSummary: GetValidationSummary(invalidDownloadException.Data));
+                new DownloadValidationException(innerException: invalidDownloadException);
 
             // when
             ValueTask<Document> retrieveDownloadByIdTask =

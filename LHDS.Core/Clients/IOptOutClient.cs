@@ -8,6 +8,6 @@ namespace LHDS.Core.Clients
 {
     public interface IOptOutClient
     {
-        ValueTask ProcessAsync();
+        ValueTask RetrieveOptOutStatusAsync(byte[] optOutFile, string requestId);
     }
 }

@@ -53,6 +53,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 ValidateConfigurationSettings();
                 ValidateOptOutFileIsNotNull(optOutFile);
                 ValidateRequestIdIsNotNull(requestId);
+                string inputData = Encoding.ASCII.GetString(optOutFile);
 
                 var inputString = Encoding.ASCII.GetString(optOutFile);
 

@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             bool withHeader = false;
             var randomString = GetRandomString();
             var inputString = randomString;
-            var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
+            var randomBytes = Encoding.ASCII.GetBytes(inputString);
             var inputBytes = randomBytes;
             var randomRecieveName = GetRandomString();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<OptOut> outputOptOuts = randomOptOuts;
 
             this.csvMapperProcessingServiceMock.Setup(processing =>
-                 processing.MapCsvToObjectAsync<OptOut>(inputString, withHeader))
+                 processing.MapCsvToObjectAsync<OptOut>(It.Is(SameStringAs(inputString)), withHeader))
                      .ReturnsAsync(outputOptOuts);
 
             List<OptOut> processedOptOuts = new List<OptOut>();

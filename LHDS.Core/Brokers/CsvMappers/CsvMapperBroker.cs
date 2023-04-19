@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -22,7 +21,7 @@ namespace LHDS.Core.Brokers.CsvMappers
                 HasHeaderRecord = hasHeaderRecord,
             };
 
-            using (var reader = new StreamReader(data))
+            using (var reader = new StringReader(data))
             using (var csv = new CsvReader(reader, config))
             {
                 var records = csv.GetRecords<T>().ToList();
@@ -30,22 +29,29 @@ namespace LHDS.Core.Brokers.CsvMappers
             }
         }
 
-        public async ValueTask<string> MapObjectToCsvAsync<T>(List<T> @object, bool addHeaderRecord)
+        public async ValueTask<string> MapObjectToCsvAsync<T>(
+            List<T> @object,
+            bool addHeaderRecord,
+            bool shouldAddTrailingComma)
         {
-            using (var memoryStream = new MemoryStream())
-            using (var streamWriter = new StreamWriter(memoryStream))
-            using (var csvWriter = new CsvWriter(streamWriter, CultureInfo.InvariantCulture))
+            var csvWriterConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                if (addHeaderRecord)
+                HasHeaderRecord = addHeaderRecord,
+            };
+
+            using (var stringWriter = new StringWriter())
+            using (var csvWriter = new CsvWriter(stringWriter, csvWriterConfig))
+            {
+                foreach (var item in @object)
                 {
-                    csvWriter.WriteHeader<T>();
+                    csvWriter.WriteRecord(item);
+                    if (shouldAddTrailingComma) { csvWriter.WriteField(""); }
                     csvWriter.NextRecord();
                 }
 
-                csvWriter.WriteRecords(@object);
+                var csv = stringWriter.ToString();
 
-                byte[] csvData = memoryStream.ToArray();
-                return await ValueTask.FromResult(Encoding.UTF8.GetString(csvData));
+                return await ValueTask.FromResult(csv);
             }
         }
     }

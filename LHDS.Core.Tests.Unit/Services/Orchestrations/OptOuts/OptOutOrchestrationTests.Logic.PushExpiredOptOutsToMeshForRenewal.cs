@@ -16,14 +16,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         [Fact]
         public async Task ShouldPushExpiredOptOutsToMeshForRenewalStatusAsync()
         {
-            //Given
+            // Given
             List<OptOut> randomOptOuts = CreateRandomOptOutsList();
             List<OptOut> outputOptOuts = randomOptOuts;
-
             var processedOutputString = GetRandomString();
 
             this.optOutProcessingServiceMock.Setup(processings =>
-                   processings.RetrieveAllExpiredOptOutsAsync())
+                   processings.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays))
                        .ReturnsAsync(outputOptOuts);
 
             this.csvMapperProcessingServiceMock.Setup(processings =>
@@ -38,13 +37,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.meshProcessingServiceMock.Setup(processings =>
                 processings.SendMessageAsync(message));
 
-            //When
+            // When
             await this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
-            //Then
+            // Then
 
             this.optOutProcessingServiceMock.Verify(processings =>
-                  processings.RetrieveAllExpiredOptOutsAsync(),
+                  processings.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays),
                     Times.Once);
 
             this.csvMapperProcessingServiceMock.Verify(processings =>
@@ -53,9 +52,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
 
             this.meshProcessingServiceMock.Verify(processings =>
-                  processings.SendMessageAsync(message),
+                  processings.SendMessageAsync(It.Is(SameMessageAs(message))),
                     Times.Once);
-
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
             this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();

@@ -77,10 +77,9 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 return await ValueTask.FromResult(foundOptOut);
             });
 
-        public async ValueTask<List<OptOut>> RetrieveAllExpiredOptOutsAsync()
+        public async ValueTask<List<OptOut>> RetrieveAllExpiredOptOutsAsync(int olderThanDays)
         {
             throw new NotImplementedException();
-            //return await ValueTask.FromResult(new List<OptOut>());
         }
     }
 }

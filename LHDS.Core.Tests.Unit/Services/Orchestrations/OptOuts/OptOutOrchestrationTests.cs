@@ -24,6 +24,7 @@ using LHDS.Core.Services.Processings.CsvMappers;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Mesh;
 using LHDS.Core.Services.Processings.OptOuts;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -41,10 +42,30 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly ICompareLogic compareLogic;
-        private readonly Mock<OptOutConfiguration> optOutConfigurationMock;
+        private readonly OptOutConfiguration optOutConfiguration;
+        private readonly IConfiguration inMemoryConfiguration;
 
         public OptOutOrchestrationTests()
         {
+            var appSettingsStub = new Dictionary<string, string> {
+                {"OptOutSettings:ExpiredAfterDays", GetRandomNumber().ToString()},
+                {"OptOutSettings:InputFolder", GetRandomString()},
+                {"OptOutSettings:OptOutFileHasHeader", "false"},
+                {"OptOutSettings:OutputFolder", GetRandomString()},
+            };
+
+            this.inMemoryConfiguration = new ConfigurationBuilder()
+               .AddInMemoryCollection(appSettingsStub)
+               .Build();
+
+            this.optOutConfiguration = new OptOutConfiguration
+            {
+                ExpiredAfterDays = int.Parse(inMemoryConfiguration["OptOutSettings:ExpiredAfterDays"]),
+                InputFolder = inMemoryConfiguration["OptOutSettings:InputFolder"],
+                OptOutFileHasHeader = bool.Parse(inMemoryConfiguration["OptOutSettings:OptOutFileHasHeader"]),
+                OutputFolder = inMemoryConfiguration["OptOutSettings:OutputFolder"]
+            };
+
             this.optOutProcessingServiceMock = new Mock<IOptOutProcessingService>();
             this.documentProcessingServiceMock = new Mock<IDocumentProcessingService>();
             this.meshProcessingServiceMock = new Mock<IMeshProcessingService>();
@@ -52,7 +73,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.compareLogic = new CompareLogic();
-            this.optOutConfigurationMock = new Mock<OptOutConfiguration>();
 
             this.optOutOrchestrationService = new OptOutOrchestrationService(
                 optOutProcessingService: optOutProcessingServiceMock.Object,
@@ -61,7 +81,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 csvMapperProcessingService: csvMapperProcessingServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
-                optOutConfiguration: optOutConfigurationMock.Object);
+                optOutConfiguration: optOutConfiguration);
         }
 
         private static string GetRandomString() =>
@@ -123,7 +143,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .Create(count: 1)
                     .ToList();
         }
-
         private static OptOut CreateRandomOptOut() =>
              CreateOptOutFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
@@ -148,6 +167,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 this.compareLogic.Compare(expectedDocument, actualDocument)
                     .AreEqual;
         }
+
+        private Expression<Func<MeshMessage, bool>> SameMessageAs(
+            MeshMessage expectedMessage)
+        {
+            return actualMessage =>
+                this.compareLogic.Compare(expectedMessage, actualMessage)
+                    .AreEqual;
+        }
+
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 

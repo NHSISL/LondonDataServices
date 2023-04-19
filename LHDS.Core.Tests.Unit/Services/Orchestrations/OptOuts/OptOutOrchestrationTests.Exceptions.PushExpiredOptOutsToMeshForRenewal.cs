@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
@@ -91,6 +92,50 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
               broker.LogError(It.Is(SameExceptionAs(
                   expectedDependencyException))),
                       Times.Once);
+
+            this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnPushExpiredOptOutsToMeshIfExpiredIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            var serviceException = new Exception();
+
+            var failedOptOutOrchestrationServiceException =
+               new FailedOptOutOrchestrationServiceException(serviceException);
+
+            var expectedOptOrchestrationServiceException =
+                new OptOutOrchestrationServiceException(failedOptOutOrchestrationServiceException);
+
+            this.optOutProcessingServiceMock.Setup(processings =>
+              processings.RetrieveAllExpiredOptOutsAsync(It.IsAny<int>()))
+                  .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask pushExpiredOptOutsToMeshIfExpiredTask =
+                 this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
+
+            OptOutOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(pushExpiredOptOutsToMeshIfExpiredTask.AsTask);
+
+            // then
+            actualException.Should()
+                 .BeEquivalentTo(expectedOptOrchestrationServiceException);
+
+            this.optOutProcessingServiceMock.Verify(processings =>
+                  processings.RetrieveAllExpiredOptOutsAsync(It.IsAny<int>()),
+                      Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedOptOrchestrationServiceException))),
+                       Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
             this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();

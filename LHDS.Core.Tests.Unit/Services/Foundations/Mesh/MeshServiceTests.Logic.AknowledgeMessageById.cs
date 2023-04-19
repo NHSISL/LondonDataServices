@@ -12,7 +12,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
     public partial class MeshServiceTests
     {
         [Fact]
-        public async Task ShouldReturnAknowledgeMessageByIdAsync()
+public async Task ShouldAknowledgeMessageByIdAsync()
         {
             // given
             string randomMessageId = GetRandomMessage();

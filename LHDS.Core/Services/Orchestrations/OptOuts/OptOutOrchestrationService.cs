@@ -50,7 +50,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 string inputData = Encoding.ASCII.GetString(optOutFile);
 
                 List<OptOut> mappedOptOuts =
-                await this.csvMapperProcessingService.MapCsvToObjectAsync<OptOut>(inputData, false);
+                    await this.csvMapperProcessingService.MapCsvToObjectAsync<OptOut>(inputData, false);
 
                 List<OptOut> processedOptOuts = new List<OptOut>();
 

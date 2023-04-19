@@ -6,9 +6,9 @@ using System;
 using LHDS.Core.Models.Foundations.CsvMappers.Exceptions;
 using Xeptions;
 
-namespace LHDS.Core.Brokers.CsvMappers
+namespace LHDS.Core.Services.Processings.CsvMappers
 {
-    public partial class CsvMapperService
+    public partial class CsvMapperProcessingService
     {
         private static void ValidateMapCsvToObjectArguments(string data, bool hasHeaderRecord)
         {

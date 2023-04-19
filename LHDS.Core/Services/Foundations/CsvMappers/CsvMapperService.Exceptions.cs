@@ -10,7 +10,7 @@ using Xeptions;
 
 namespace LHDS.Core.Brokers.CsvMappers
 {
-    public partial class CsvMapperService : ICsvMapperService
+    public partial class CsvMapperService
     {
         private delegate ValueTask<string> ReturningStringFunction();
         private delegate ValueTask<List<T>> ReturningObjectFunction<T>();

@@ -50,6 +50,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         public ValueTask RetrieveOptOutStatusAsync(byte[] optOutFile, string requestId) =>
             TryCatch(async () =>
             {
+                ValidateConfigurationSettings();
                 ValidateOptOutFileIsNotNull(optOutFile);
                 ValidateRequestIdIsNotNull(requestId);
 
@@ -83,8 +84,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         public ValueTask PushExpiredOptOutsToMeshForRenewalAsync() =>
             TryCatch(async () =>
             {
-                //TODO: Validate you can get configuration settings
-                //ValidateConfigurationSettingsNotNull(optOutConfiguration.ExpiredAfterDays);
+                ValidateConfigurationSettings();
 
                 List<OptOut> mappedOptOuts = await
                 this.optOutProcessingService.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays);

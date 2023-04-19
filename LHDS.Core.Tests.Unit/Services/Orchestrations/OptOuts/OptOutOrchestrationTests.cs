@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         public OptOutOrchestrationTests()
         {
             var appSettingsStub = new Dictionary<string, string> {
-                {"OptOutSettings:ExpiredAfterDays", GetRandomNumber().ToString()},
+                {"OptOutSettings:ExpiredAfterDays", "7"},
                 {"OptOutSettings:InputFolder", GetRandomString()},
                 {"OptOutSettings:OptOutFileHasHeader", "false"},
                 {"OptOutSettings:OutputFolder", GetRandomString()},
@@ -75,13 +75,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.compareLogic = new CompareLogic();
 
             this.optOutOrchestrationService = new OptOutOrchestrationService(
-                optOutProcessingService: optOutProcessingServiceMock.Object,
-                documentProcessingService: documentProcessingServiceMock.Object,
-                meshProcessingService: meshProcessingServiceMock.Object,
-                csvMapperProcessingService: csvMapperProcessingServiceMock.Object,
-                loggingBroker: loggingBrokerMock.Object,
-                dateTimeBroker: dateTimeBrokerMock.Object,
-                optOutConfiguration: optOutConfiguration);
+                optOutProcessingService: this.optOutProcessingServiceMock.Object,
+                documentProcessingService: this.documentProcessingServiceMock.Object,
+                meshProcessingService: this.meshProcessingServiceMock.Object,
+                csvMapperProcessingService: this.csvMapperProcessingServiceMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object,
+                dateTimeBroker: this.dateTimeBrokerMock.Object,
+                optOutConfiguration: this.optOutConfiguration);
         }
 
         private static string GetRandomString() =>

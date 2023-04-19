@@ -29,8 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             var expectedRetrieveOptOutStatusOrchestrationOptOutFileValidationException =
                new OptOutOrchestrationValidationException(
-                   innerException: invalidArgumentRetieveOptOutStatusOrchestrationException,
-                   validationSummary: GetValidationSummary(invalidArgumentRetieveOptOutStatusOrchestrationException.Data));
+                   innerException: invalidArgumentRetieveOptOutStatusOrchestrationException);
 
             // when
             ValueTask RetrieveOptOutStatusTask =
@@ -73,8 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             var expectedRetrieveOptOutStatusOrchestrationOptOutFileValidationException =
                new OptOutOrchestrationValidationException(
-                   innerException: invalidArgumentRetieveOptOutStatusOrchestrationException,
-                   validationSummary: GetValidationSummary(invalidArgumentRetieveOptOutStatusOrchestrationException.Data));
+                   innerException: invalidArgumentRetieveOptOutStatusOrchestrationException);
 
             // when
             ValueTask RetrieveOptOutStatusTask =

@@ -136,6 +136,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 this.compareLogic.Compare(expectedDocument, actualDocument)
                     .AreEqual;
         }
+
+        private Expression<Func<string, bool>> SameStringAs(string expectedString)
+        {
+            return actualString =>
+                this.compareLogic.Compare(expectedString, actualString)
+                    .AreEqual;
+        }
+
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 

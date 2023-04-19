@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -46,9 +47,10 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             {
                 ValidateOptOutFileIsNotNull(optOutFile);
                 ValidateRequestIdIsNotNull(requestId);
+                string inputData = Encoding.ASCII.GetString(optOutFile);
 
                 List<OptOut> mappedOptOuts =
-                await this.csvMapperProcessingService.MapCsvDataToObjectAsync<OptOut>(optOutFile);
+                    await this.csvMapperProcessingService.MapCsvToObjectAsync<OptOut>(inputData, false);
 
                 List<OptOut> processedOptOuts = new List<OptOut>();
 
@@ -57,11 +59,15 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     processedOptOuts.Add(await this.optOutProcessingService.RetrieveOrAddOptOutAsync(optOut));
                 }
 
-                var processedBytes = await this.csvMapperProcessingService.MapObjectToCsvDataAsync(processedOptOuts);
+                var processedData = await this.csvMapperProcessingService
+                    .MapObjectToCsvAsync(processedOptOuts, false);
+
+                byte[] processedBytes = Encoding.ASCII.GetBytes(processedData);
 
                 Document document = new Document
                 {
-                    FileName = $"receive/{requestId}_Response_{dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss")}.csv",
+                    FileName = $"receive/{requestId}_Response_{dateTimeBroker
+                        .GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss")}.csv",
                     DocumentData = processedBytes
                 };
 

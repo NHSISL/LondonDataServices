@@ -9,7 +9,7 @@ namespace LHDS.Core.Services.Processings.CsvMappers
 {
     public interface ICsvMapperProcessingService
     {
-        ValueTask<List<T>> MapCsvDataToObjectAsync<T>(byte[] data);
-        ValueTask<byte[]> MapObjectToCsvDataAsync<T>(List<T> @object);
+        ValueTask<List<T>> MapCsvToObjectAsync<T>(string data, bool hasHeaderRecord);
+        ValueTask<string> MapObjectToCsvAsync<T>(List<T> @object, bool addHeaderRecord);
     }
 }

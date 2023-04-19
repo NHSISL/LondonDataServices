@@ -80,22 +80,23 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 await this.documentProcessingService.AddDocumentAsync(document);
             });
 
-        public async ValueTask PushExpiredOptOutsToMeshForRenewalAsync()
-        {
-            //TODO: Validate you can get config settings
-            List<OptOut> mappedOptOuts = await
+        public ValueTask PushExpiredOptOutsToMeshForRenewalAsync() =>
+            TryCatch(async () =>
+            {
+                //TODO: Validate you can get configuration settings
+                List<OptOut> mappedOptOuts = await
                 this.optOutProcessingService.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays);
 
-            var processedOutputString = await this.csvMapperProcessingService
-                   .MapObjectToCsvAsync(mappedOptOuts, false);
+                var processedOutputString = await this.csvMapperProcessingService
+                       .MapObjectToCsvAsync(mappedOptOuts, false);
 
-            MeshMessage message = new MeshMessage
-            {
-                StringContent = processedOutputString
-            };
+                MeshMessage message = new MeshMessage
+                {
+                    StringContent = processedOutputString
+                };
 
-            await this.meshProcessingService.SendMessageAsync(message);
-        }
+                await this.meshProcessingService.SendMessageAsync(message);
+            });
 
         public ValueTask RetrieveUpdatedMeshOptOutStatusChangesAsync()
         {

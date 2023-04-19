@@ -22,6 +22,11 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             Validate((Rule: IsInvalid(requestId), Parameter: "RequestId"));
         }
 
+        //private static void ValidateConfigurationSettingsNotNull(string ConfigSectionName)
+        //{
+        //    throw new System.NotSupportedException();
+        //}
+
         private static dynamic IsInvalid(string text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),

@@ -12,7 +12,9 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
+using LHDS.Core.Models.Orchestrations.OptOuts;
 using LHDS.Core.Models.Processings.CsvMapper.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
@@ -22,6 +24,7 @@ using LHDS.Core.Services.Processings.CsvMappers;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Mesh;
 using LHDS.Core.Services.Processings.OptOuts;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -39,9 +42,34 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly ICompareLogic compareLogic;
+        private readonly OptOutConfiguration optOutConfiguration;
+        private readonly IConfiguration inMemoryConfiguration;
 
         public OptOutOrchestrationTests()
         {
+            var appSettingsStub = new Dictionary<string, string> {
+                {"OptOutSettings:ExpiredAfterDays", "7"},
+                {"OptOutSettings:InputFolder", GetRandomString()},
+                {"OptOutSettings:OptOutFileHasHeader", "false"},
+                {"OptOutSettings:OutputFolder", GetRandomString()},
+                {"OptOutSettings:OptOutFileRequireTrailingComma", "true"},
+            };
+
+            this.inMemoryConfiguration = new ConfigurationBuilder()
+               .AddInMemoryCollection(appSettingsStub)
+               .Build();
+
+            this.optOutConfiguration = new OptOutConfiguration
+            {
+                ExpiredAfterDays = int.Parse(inMemoryConfiguration["OptOutSettings:ExpiredAfterDays"]),
+                InputFolder = inMemoryConfiguration["OptOutSettings:InputFolder"],
+                OptOutFileHasHeader = bool.Parse(inMemoryConfiguration["OptOutSettings:OptOutFileHasHeader"]),
+                OutputFolder = inMemoryConfiguration["OptOutSettings:OutputFolder"],
+
+                OptOutFileRequireTrailingComma =
+                    bool.Parse(inMemoryConfiguration["OptOutSettings:OptOutFileRequireTrailingComma"]),
+            };
+
             this.optOutProcessingServiceMock = new Mock<IOptOutProcessingService>();
             this.documentProcessingServiceMock = new Mock<IDocumentProcessingService>();
             this.meshProcessingServiceMock = new Mock<IMeshProcessingService>();
@@ -51,12 +79,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.compareLogic = new CompareLogic();
 
             this.optOutOrchestrationService = new OptOutOrchestrationService(
-                optOutProcessingService: optOutProcessingServiceMock.Object,
-                documentProcessingService: documentProcessingServiceMock.Object,
-                meshProcessingService: meshProcessingServiceMock.Object,
-                csvMapperProcessingService: csvMapperProcessingServiceMock.Object,
-                loggingBroker: loggingBrokerMock.Object,
-                dateTimeBroker: dateTimeBrokerMock.Object);
+                optOutProcessingService: this.optOutProcessingServiceMock.Object,
+                documentProcessingService: this.documentProcessingServiceMock.Object,
+                meshProcessingService: this.meshProcessingServiceMock.Object,
+                csvMapperProcessingService: this.csvMapperProcessingServiceMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object,
+                dateTimeBroker: this.dateTimeBrokerMock.Object,
+                optOutConfiguration: this.optOutConfiguration);
         }
 
         private static string GetRandomString() =>
@@ -107,12 +136,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         }
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
-           new DateTimeRange(earliestDate: new DateTime()).GetValue();
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
         private static int GetRandomNumber() =>
-           new IntRange(min: 2, max: 10).GetValue();
+            new IntRange(min: 2, max: 10).GetValue();
 
-        private static List<OptOut> CreateRandomOptOuts()
+        private static List<OptOut> CreateRandomOptOutsList()
         {
             return CreateOptOutFiller(dateTimeOffset: GetRandomDateTimeOffset())
                 .Create(count: 1)
@@ -122,11 +151,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private static List<string> GetRandomMessages(int count)
         {
             var messages = new List<string>();
+
             for (int i = 0; i < count; i++)
             {
                 string message = new MnemonicString(wordCount: GetRandomNumber()).GetValue();
                 messages.Add(message);
             }
+
             return messages;
         }
         private static OptOut CreateRandomOptOut(DateTimeOffset dateTimeOffset) =>
@@ -139,6 +170,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .AreEqual;
         }
 
+        private static IQueryable<OptOut> CreateRandomOptOuts()
+        {
+            return CreateOptOutFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
+
         private Expression<Func<Document, bool>> SameDocumentAs(
             Document expectedDocument)
         {
@@ -147,10 +185,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .AreEqual;
         }
 
-        private Expression<Func<string, bool>> SameStringAs(string expectedString)
+        private Expression<Func<MeshMessage, bool>> SameMessageAs(
+            MeshMessage expectedMessage)
         {
-            return actualString =>
-                this.compareLogic.Compare(expectedString, actualString)
+            return actualMessage =>
+                this.compareLogic.Compare(expectedMessage, actualMessage)
                     .AreEqual;
         }
 
@@ -189,6 +228,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 new CsvMapperProcessingValidationException(innerException),
                 new CsvMapperProcessingDependencyValidationException(innerException),
             };
+        }
+
+        private static MeshMessage CreateRandomMessage() =>
+           CreateMessageFiller().Create();
+
+        private static Filler<MeshMessage> CreateMessageFiller()
+        {
+            var filler = new Filler<MeshMessage>();
+            filler.Setup().OnProperty(message => message.Headers)
+                .Use(new Dictionary<string, List<string>>());
+
+            return filler;
         }
 
         public static TheoryData OptOutDependencyExceptions()

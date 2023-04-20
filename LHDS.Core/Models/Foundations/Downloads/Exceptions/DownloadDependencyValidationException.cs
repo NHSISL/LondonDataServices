@@ -9,6 +9,9 @@ namespace LHDS.Core.Models.Foundations.Downloads.Exceptions
     public class DownloadDependencyValidationException : Xeption
     {
         public DownloadDependencyValidationException(Xeption innerException)
-            : base(message: "Download dependency validation occurred, please try again.", innerException) { }
+            : base(
+                  message: "Download dependency validation occurred, please try again.",
+                  innerException)
+        { }
     }
 }

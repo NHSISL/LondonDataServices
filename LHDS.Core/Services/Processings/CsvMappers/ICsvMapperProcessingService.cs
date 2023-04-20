@@ -10,6 +10,6 @@ namespace LHDS.Core.Services.Processings.CsvMappers
     public interface ICsvMapperProcessingService
     {
         ValueTask<List<T>> MapCsvToObjectAsync<T>(string data, bool hasHeaderRecord);
-        ValueTask<string> MapObjectToCsvAsync<T>(List<T> @object, bool addHeaderRecord);
+        ValueTask<string> MapObjectToCsvAsync<T>(List<T> @object, bool addHeaderRecord, bool shouldAddTrailingComma);
     }
 }

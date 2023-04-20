@@ -10,5 +10,6 @@ namespace LHDS.Core.Models.Orchestrations.OptOuts
         public string OutputFolder { get; set; }
         public int ExpiredAfterDays { get; set; }
         public bool OptOutFileHasHeader { get; set; }
+        public bool OptOutFileRequireTrailingComma { get; set; }
     }
 }

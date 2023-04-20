@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             this.meshProcessingServiceMock.Setup(processings =>
                 processings.RetrieveMessageIdsFromInboxAsync())
-                     .ThrowsAsync(dependancyValidationException);
+                    .ThrowsAsync(dependancyValidationException);
 
             // When
             ValueTask updateOptOutExpiredOptOutsToMeshIfExpiredTask =
@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             this.meshProcessingServiceMock.Verify(processings =>
                 processings.RetrieveMessageIdsFromInboxAsync(),
-                       Times.Once);
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -55,5 +55,47 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
         }
 
+        [Theory]
+        [MemberData(nameof(OptOutDependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnUpdateIfDependencyExceptionOccursAndLogItAsync(
+           Xeption dependancyException)
+        {
+            // Given
+            var expectedDependencyException =
+                new OptOutOrchestrationDependencyException(
+                    dependancyException.InnerException as Xeption);
+
+            this.meshProcessingServiceMock.Setup(processings =>
+               processings.RetrieveMessageIdsFromInboxAsync())
+                    .ThrowsAsync(dependancyException);
+
+            // When
+            ValueTask updateOptOutExpiredOptOutsToMeshIfExpiredTask =
+                this.optOutOrchestrationService.RetrieveUpdatedMeshOptOutStatusChangesAsync();
+
+            OptOutOrchestrationDependencyException actualException =
+                await Assert.ThrowsAsync<OptOutOrchestrationDependencyException>(
+                    updateOptOutExpiredOptOutsToMeshIfExpiredTask.AsTask);
+
+            // Then
+            actualException.Should()
+                .BeEquivalentTo(expectedDependencyException);
+
+            this.meshProcessingServiceMock.Verify(processings =>
+                processings.RetrieveMessageIdsFromInboxAsync(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDependencyException))),
+                        Times.Once);
+
+            this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         {
             // Given
             var expectedDependencyException =
-               new OptOutOrchestrationDependencyValidationException(
+                new OptOutOrchestrationDependencyValidationException(
                    dependancyValidationException.InnerException as Xeption);
 
             this.optOutProcessingServiceMock.Setup(processings =>
@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // When
             ValueTask pushExpiredOptOutsToMeshIfExpiredTask =
-               this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
+                this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             OptOutOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationDependencyValidationException>(
@@ -38,16 +38,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // Then
             actualException.Should()
-                 .BeEquivalentTo(expectedDependencyException);
+                .BeEquivalentTo(expectedDependencyException);
 
             this.optOutProcessingServiceMock.Verify(processings =>
                 processings.RetrieveAllExpiredOptOutsAsync(It.IsAny<int>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-              broker.LogError(It.Is(SameExceptionAs(
-                  expectedDependencyException))),
-                      Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDependencyException))),
+                        Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
             this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
@@ -65,8 +65,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         {
             // Given
             var expectedDependencyException =
-               new OptOutOrchestrationDependencyException(
-                   dependancyException.InnerException as Xeption);
+                new OptOutOrchestrationDependencyException(
+                    dependancyException.InnerException as Xeption);
 
             this.optOutProcessingServiceMock.Setup(processings =>
                 processings.RetrieveAllExpiredOptOutsAsync(It.IsAny<int>()))
@@ -74,7 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // When
             ValueTask pushExpiredOptOutsToMeshIfExpiredTask =
-               this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
+                this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             OptOutOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationDependencyException>(
@@ -82,16 +82,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // Then
             actualException.Should()
-                 .BeEquivalentTo(expectedDependencyException);
+                .BeEquivalentTo(expectedDependencyException);
 
             this.optOutProcessingServiceMock.Verify(processings =>
                 processings.RetrieveAllExpiredOptOutsAsync(It.IsAny<int>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-              broker.LogError(It.Is(SameExceptionAs(
-                  expectedDependencyException))),
-                      Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDependencyException))),
+                        Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
             this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
@@ -108,18 +108,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             var serviceException = new Exception();
 
             var failedOptOutOrchestrationServiceException =
-               new FailedOptOutOrchestrationServiceException(serviceException);
+                new FailedOptOutOrchestrationServiceException(serviceException);
 
             var expectedOptOrchestrationServiceException =
                 new OptOutOrchestrationServiceException(failedOptOutOrchestrationServiceException);
 
             this.optOutProcessingServiceMock.Setup(processings =>
-              processings.RetrieveAllExpiredOptOutsAsync(It.IsAny<int>()))
-                  .ThrowsAsync(serviceException);
+                processings.RetrieveAllExpiredOptOutsAsync(It.IsAny<int>()))
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask pushExpiredOptOutsToMeshIfExpiredTask =
-                 this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
+                this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             OptOutOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(
@@ -127,16 +127,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // then
             actualException.Should()
-                 .BeEquivalentTo(expectedOptOrchestrationServiceException);
+                .BeEquivalentTo(expectedOptOrchestrationServiceException);
 
             this.optOutProcessingServiceMock.Verify(processings =>
-                  processings.RetrieveAllExpiredOptOutsAsync(It.IsAny<int>()),
-                      Times.Once);
+                processings.RetrieveAllExpiredOptOutsAsync(It.IsAny<int>()),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
-                   expectedOptOrchestrationServiceException))),
-                       Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOptOrchestrationServiceException))),
+                        Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
             this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();

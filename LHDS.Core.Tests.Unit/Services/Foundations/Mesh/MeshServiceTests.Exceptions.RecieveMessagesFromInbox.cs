@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldThrowMeshServiceDependencyValidationExceptionOnRecieveMessagesFromInboxIfValidationFailsAndLogItAsync()
         {
             // given
-            string randomMessage = GetRandomMessage();
+            string randomMessage = GetRandomString();
             var validationException = new Exception(randomMessage);
 
             var meshClientValidationException =
@@ -64,7 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldThrowMeshServiceDependencyExceptionOnRetrieveMessagesFromInboxIfDependencyFailsAndLogItAsync()
         {
             // given
-            string randomMessage = GetRandomMessage();
+            string randomMessage = GetRandomString();
             var dependencyException = new Exception(randomMessage);
 
             var meshClientDependencyException =
@@ -103,7 +103,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldThrowServiceExceptionOnRecieveMessagesFromInboxIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            string messageId = GetRandomMessage();
+            string messageId = GetRandomString();
             var serviceException = new Exception();
 
             var failedMeshServiceException =

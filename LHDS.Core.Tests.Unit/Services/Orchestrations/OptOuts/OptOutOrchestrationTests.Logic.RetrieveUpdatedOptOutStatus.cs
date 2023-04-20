@@ -21,9 +21,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         public async Task ShouldRetrieveUpdatedMeshOptOutStatusChangesAsync()
         {
             bool withHeader = optOutConfiguration.OptOutFileHasHeader;
+            string batchReference = GetRandomString();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             List<string> outputMessageIds = GetRandomStrings(GetRandomNumber());
-            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds);
+            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, batchReference);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -36,7 +37,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             List<OptOutIdentifier> randomOutputIdentifiers = CreateRandomListOfOptOutIdentifiers();
             List<OptOutIdentifier> outputOptOutIdentifierConsentedList = randomOutputIdentifiers;
-            string batchReference = GetRandomString();
             List<OptOutIdentifier> randomOutputIdentifierBatch = CreateRandomListOfOptOutIdentifiers();
             randomOutputIdentifierBatch.AddRange(outputOptOutIdentifierConsentedList);
             List<OptOut> randomOptOutBatch = CreateRandomOptOutsList(randomOutputIdentifierBatch, batchReference);
@@ -52,38 +52,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<OptOut> nonConsentedoptOutItems = outputOptOutBatch.Except(consentedoptOutItems).ToList();
 
             List<OptOut> differences = new List<OptOut>();
-
-            foreach (var item in consentedoptOutItems)
-            {
-                if (item.OptOutStatus != "Opt-In")
-                {
-                    item.UpdatedDate = randomDateTimeOffset;
-                    item.CacheTime = randomDateTimeOffset;
-                    item.OptOutStatus = "Opt-In";
-
-                    this.optOutProcessingServiceMock.Setup(processings =>
-                        processings.ModifyOptOutAsync(item))
-                            .ReturnsAsync(item);
-
-                    differences.Add(item);
-                }
-            }
-
-            foreach (var item in nonConsentedoptOutItems)
-            {
-                if (item.OptOutStatus != "Opt-Out")
-                {
-                    item.UpdatedDate = randomDateTimeOffset;
-                    item.CacheTime = randomDateTimeOffset;
-                    item.OptOutStatus = "Opt-Out";
-
-                    this.optOutProcessingServiceMock.Setup(processings =>
-                        processings.ModifyOptOutAsync(item))
-                            .ReturnsAsync(item);
-
-                    differences.Add(item);
-                }
-            }
 
             List<OptOutIdentifier> differentIdentifiers = differences
                 .Select(item => new OptOutIdentifier { NhsNumber = item.NhsNumber }).ToList();
@@ -118,6 +86,38 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         this.optOutConfiguration.OptOutFileRequireTrailingComma))
                             .ReturnsAsync(csvDifferences);
 
+                foreach (var item in consentedoptOutItems)
+                {
+                    if (item.OptOutStatus != "Opt-In")
+                    {
+                        item.UpdatedDate = randomDateTimeOffset;
+                        item.CacheTime = randomDateTimeOffset;
+                        item.OptOutStatus = "Opt-In";
+
+                        this.optOutProcessingServiceMock.Setup(processings =>
+                            processings.ModifyOptOutAsync(item))
+                                .ReturnsAsync(item);
+
+                        differences.Add(item);
+                    }
+                }
+
+                foreach (var item in nonConsentedoptOutItems)
+                {
+                    if (item.OptOutStatus != "Opt-Out")
+                    {
+                        item.UpdatedDate = randomDateTimeOffset;
+                        item.CacheTime = randomDateTimeOffset;
+                        item.OptOutStatus = "Opt-Out";
+
+                        this.optOutProcessingServiceMock.Setup(processings =>
+                            processings.ModifyOptOutAsync(item))
+                                .ReturnsAsync(item);
+
+                        differences.Add(item);
+                    }
+                }
+
                 Document document = new Document
                 {
                     DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
@@ -132,7 +132,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             // Then
             this.dateTimeBrokerMock.Verify(broker =>
                broker.GetCurrentDateTimeOffset(),
-                    Times.Once);
+                    Times.AtLeastOnce());
 
             this.meshProcessingServiceMock.Verify(Processings =>
                 Processings.RetrieveMessageIdsFromInboxAsync(),
@@ -145,17 +145,49 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 // Get message
                 this.meshProcessingServiceMock.Verify(processings =>
                     processings.RetrieveAndAcknowledgeMessageByIdAsync(messageId),
-                        Times.Exactly(outputMessageIds.Count));
+                        Times.Once());
 
                 // Map message content to object
                 this.csvMapperProcessingServiceMock.Verify(processings =>
                     processings.MapCsvToObjectAsync<OptOutIdentifier>(message.StringContent, withHeader),
-                        Times.Exactly(outputMessageIds.Count));
+                        Times.Once());
 
                 // Get original batch
                 this.optOutProcessingServiceMock.Verify(processings =>
                     processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference),
                         Times.Exactly(outputMessageIds.Count));
+
+                foreach (var item in consentedoptOutItems)
+                {
+                    if (item.OptOutStatus != "Opt-In")
+                    {
+                        item.UpdatedDate = randomDateTimeOffset;
+                        item.CacheTime = randomDateTimeOffset;
+                        item.OptOutStatus = "Opt-In";
+
+                        this.optOutProcessingServiceMock.Verify(processings =>
+                            processings.ModifyOptOutAsync(item),
+                                Times.AtLeastOnce());
+
+                        differences.Add(item);
+                    }
+                }
+
+                foreach (var item in nonConsentedoptOutItems)
+                {
+                    if (item.OptOutStatus != "Opt-Out")
+                    {
+                        item.UpdatedDate = randomDateTimeOffset;
+                        item.CacheTime = randomDateTimeOffset;
+                        item.OptOutStatus = "Opt-Out";
+
+                        this.optOutProcessingServiceMock.Verify(processings =>
+                            processings.ModifyOptOutAsync(item),
+                                Times.AtLeastOnce());
+
+                        differences.Add(item);
+                    }
+                }
 
                 string csvDifferences = CreateNewCsvList(
                     differentIdentifiers,

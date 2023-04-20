@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
@@ -33,7 +32,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
 
         public ValueTask<MeshMessage> SendMessageAsync(MeshMessage message) =>
             TryCatch(async () =>
-            {   
+            {
                 ValidateMeshMessageOnSendMessage(message);
                 Message convertedMessage = MeshMessageToMessage(message);
                 Message brokerSendMessage = await this.meshBroker.SendMessageAsync(convertedMessage);

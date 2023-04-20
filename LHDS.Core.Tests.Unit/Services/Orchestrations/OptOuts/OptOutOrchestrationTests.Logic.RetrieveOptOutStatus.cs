@@ -19,6 +19,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         public async Task ShouldRetrieveOptOutStatusAsync()
         {
             // given
+            bool withHeader = false;
+            bool shouldAddTrailingComma = true;
             var randomString = GetRandomString();
             var inputString = randomString;
             var inputBytes = Encoding.ASCII.GetBytes(inputString);
@@ -49,8 +51,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             var processedBytes = Encoding.ASCII.GetBytes(processedString);
 
             this.csvMapperProcessingServiceMock.Setup(processings =>
-                processings.MapObjectToCsvAsync(It.Is(SameOptOutListAs(processedOptOuts)), false))
-                    .ReturnsAsync(processedString);
+                processings.MapObjectToCsvAsync(
+                    It.Is(SameOptOutListAs(processedOptOuts)),
+                    withHeader,
+                    shouldAddTrailingComma))
+                        .ReturnsAsync(processedString);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -85,7 +90,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             }
 
             this.csvMapperProcessingServiceMock.Verify(processings =>
-                processings.MapObjectToCsvAsync(It.IsAny<List<OptOut>>(), false),
+                processings.MapObjectToCsvAsync(It.IsAny<List<OptOut>>(), withHeader, shouldAddTrailingComma),
                         Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>

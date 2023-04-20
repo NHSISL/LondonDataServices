@@ -22,21 +22,23 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
             string randomCsvFormattedOptOutData = GetRandomString();
             string expectedCsvFormattedOptOutData = randomCsvFormattedOptOutData;
             bool withHeaderRecord = true;
+            bool shouldAddTrailingComma = true;
 
             this.csvMapperServiceMock.Setup(service =>
-                service.MapObjectToCsvAsync<OptOut>(inputOptOuts, withHeaderRecord))
+                service.MapObjectToCsvAsync<OptOut>(inputOptOuts, withHeaderRecord, shouldAddTrailingComma))
                     .ReturnsAsync(expectedCsvFormattedOptOutData);
 
             // when
             string actualCsvFormattedOptOutData = await this.csvMapperProcessingService.MapObjectToCsvAsync<OptOut>(
                 @object: inputOptOuts,
-                addHeaderRecord: withHeaderRecord);
+                addHeaderRecord: withHeaderRecord,
+                shouldAddTrailingComma);
 
             // then
             actualCsvFormattedOptOutData.Should().BeEquivalentTo(expectedCsvFormattedOptOutData);
 
             this.csvMapperServiceMock.Verify(service =>
-                service.MapObjectToCsvAsync<OptOut>(inputOptOuts, withHeaderRecord),
+                service.MapObjectToCsvAsync<OptOut>(inputOptOuts, withHeaderRecord, shouldAddTrailingComma),
                     Times.Once());
 
             this.csvMapperServiceMock.VerifyNoOtherCalls();

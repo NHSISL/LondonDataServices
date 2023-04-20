@@ -27,12 +27,16 @@ namespace LHDS.Core.Brokers.CsvMappers
                 return await this.csvMapperBroker.MapCsvToObjectAsync<T>(data, hasHeaderRecord);
             });
 
-        public ValueTask<string> MapObjectToCsvAsync<T>(List<T> @object, bool addHeaderRecord) =>
-            TryCatch(async () =>
-            {
-                ValidateMapObjectToCsvArguments(@object, addHeaderRecord);
+        public ValueTask<string> MapObjectToCsvAsync<T>(
+            List<T> @object,
+            bool addHeaderRecord,
+            bool shouldAddTrailingComma) =>
+        TryCatch(async () =>
+        {
+            ValidateMapObjectToCsvArguments(@object, addHeaderRecord);
 
-                return await this.csvMapperBroker.MapObjectToCsvAsync(@object, addHeaderRecord);
-            });
+            return await this.csvMapperBroker
+                .MapObjectToCsvAsync(@object, addHeaderRecord, shouldAddTrailingComma);
+        });
     }
 }

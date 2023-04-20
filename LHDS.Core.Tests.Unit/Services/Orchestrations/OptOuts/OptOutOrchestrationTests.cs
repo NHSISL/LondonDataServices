@@ -136,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         }
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
-            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+            new DateTimeRange(earliestDate: new DateTime().AddDays(7)).GetValue();
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
@@ -144,11 +144,58 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private static List<OptOut> CreateRandomOptOutsList()
         {
             return CreateOptOutFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: 1)
+                .Create(count: GetRandomNumber())
                     .ToList();
         }
 
-        private static List<string> GetRandomMessages(int count)
+        private string CreateNewCsvList(List<OptOutIdentifier> differentIdentifiers, bool hasTrailingComma)
+        {
+            StringBuilder builder = new StringBuilder();
+
+            foreach (var item in differentIdentifiers)
+            {
+                if (hasTrailingComma)
+                {
+                    builder.AppendLine($"{item},");
+                }
+                else
+                {
+                    builder.AppendLine($"{item}");
+                }
+            }
+
+            return builder.ToString();
+        }
+
+        private static List<OptOut> CreateRandomOptOutsList(List<OptOutIdentifier> items, string batchReference)
+        {
+            var identifiers = new List<OptOut>();
+
+            foreach (var item in items)
+            {
+                var optOut = CreateOptOutFiller(GetRandomDateTimeOffset()).Create();
+                optOut.NhsNumber = item.NhsNumber;
+                optOut.BatchReference = batchReference;
+                identifiers.Add(optOut);
+            }
+
+            return identifiers;
+        }
+
+        private static List<OptOutIdentifier> CreateRandomListOfOptOutIdentifiers()
+        {
+            var identifiers = new List<OptOutIdentifier>();
+            var count = GetRandomNumber();
+
+            for (int i = 0; i < count; i++)
+            {
+                identifiers.Add(CreateOptOutIdentifierFiller().Create());
+            }
+
+            return identifiers;
+        }
+
+        private static List<string> GetRandomStrings(int count)
         {
             var messages = new List<string>();
 
@@ -160,6 +207,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             return messages;
         }
+
+        private static List<MeshMessage> GetRandomMessages(List<string> items)
+        {
+            List<MeshMessage> messageList = new List<MeshMessage>();
+
+            foreach (var item in items)
+            {
+                var message = CreateRandomMessage();
+                message.MessageId = item;
+                messageList.Add(message);
+            }
+
+            return messageList;
+        }
+
         private static OptOut CreateRandomOptOut(DateTimeOffset dateTimeOffset) =>
            CreateOptOutFiller(dateTimeOffset).Create();
 
@@ -207,6 +269,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .OnProperty(optOut => optOut.OptOutStatus).Use(GetRandomString())
                 .OnProperty(optOut => optOut.CreatedBy).Use(user)
                 .OnProperty(optOut => optOut.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static Filler<OptOutIdentifier> CreateOptOutIdentifierFiller()
+        {
+            var filler = new Filler<OptOutIdentifier>();
+
+            filler.Setup()
+                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber());
 
             return filler;
         }

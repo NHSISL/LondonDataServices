@@ -48,6 +48,22 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 return await this.optOutService.ModifyOptOutAsync(optOut);
             });
 
+        //public ValueTask<OptOut> ModifyOptOutStatusAsync(OptOut optOut) =>
+        //    TryCatch(async () =>
+        //    {
+        //        ValidateOptOutProcessingOnModify(optOut);
+
+        //        OptOut maybeOptOut = await this.optOutService.RetrieveOptOutByIdAsync(optOut.Id);
+
+        //        if (maybeOptOut.OptOutStatus != optOut.OptOutStatus)
+        //        {
+        //            return await this.optOutService.ModifyOptOutAsync(optOut);
+        //        }
+
+        //        return optOut;
+        //    });
+
+
         public ValueTask<OptOut> RemoveOptOutByIdAsync(Guid optOutId) =>
             TryCatch(async () =>
             {
@@ -77,10 +93,11 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 return await ValueTask.FromResult(foundOptOut);
             });
 
-        public async ValueTask<List<OptOut>> RetrieveAllExpiredOptOutsAsync(int olderThanDays)
-        {
+        public ValueTask<List<OptOut>> RetrieveAllExpiredOptOutsAsync(int olderThanDays) =>
             throw new NotImplementedException();
-        }
+
+        public ValueTask<List<OptOut>> RetrieveAllOptOutsByBatchReferenceAsync(string batchReference) =>
+            throw new NotImplementedException();
     }
 }
 

@@ -8,14 +8,10 @@ namespace LHDS.Core.Models.Orchestrations.OptOuts.Exceptions
 {
     public class OptOutOrchestrationValidationException : Xeption
     {
-        private const string validationMessage = "Retrieve OptOut Status orchestration validation errors occurred, please try again.";
-
-        public OptOutOrchestrationValidationException(Xeption innerException, string validationSummary = "")
+        public OptOutOrchestrationValidationException(Xeption innerException)
             : base(
-                  message: validationSummary.Length > 0
-                    ? $"{validationMessage}  Validation errors: {validationSummary}"
-                    : validationMessage,
-                  innerException)
+                message: "Retrieve OptOut Status orchestration validation errors occurred, please try again.",
+                innerException)
         { }
     }
 }

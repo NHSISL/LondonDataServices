@@ -27,7 +27,6 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 throw new NullOptOutProcessingException();
             }
         }
-
         public void ValidateOptOutId(Guid optOutId) =>
             Validate((Rule: IsInvalid(optOutId), Parameter: nameof(OptOut.Id)));
 

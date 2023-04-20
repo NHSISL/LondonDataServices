@@ -52,6 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 {"OptOutSettings:InputFolder", GetRandomString()},
                 {"OptOutSettings:OptOutFileHasHeader", "false"},
                 {"OptOutSettings:OutputFolder", GetRandomString()},
+                {"OptOutSettings:OptOutFileRequireTrailingComma", "true"},
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()
@@ -63,7 +64,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 ExpiredAfterDays = int.Parse(inMemoryConfiguration["OptOutSettings:ExpiredAfterDays"]),
                 InputFolder = inMemoryConfiguration["OptOutSettings:InputFolder"],
                 OptOutFileHasHeader = bool.Parse(inMemoryConfiguration["OptOutSettings:OptOutFileHasHeader"]),
-                OutputFolder = inMemoryConfiguration["OptOutSettings:OutputFolder"]
+                OutputFolder = inMemoryConfiguration["OptOutSettings:OutputFolder"],
+                OptOutFileRequireTrailingComma = inMemoryConfiguration["OptOutSettings:OptOutFileRequireTrailingComma"],
             };
 
             this.optOutProcessingServiceMock = new Mock<IOptOutProcessingService>();

@@ -3,6 +3,8 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -50,6 +52,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
+        private static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 10).GetValue();
+
         public static TheoryData DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
@@ -89,6 +94,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 .OnProperty(optOut => optOut.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        private static List<OptOut> CreateRandomOptOuts()
+        {
+            return CreateOptOutFiller(GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .ToList();
         }
 
         private static string GenerateValidNhsNumber()

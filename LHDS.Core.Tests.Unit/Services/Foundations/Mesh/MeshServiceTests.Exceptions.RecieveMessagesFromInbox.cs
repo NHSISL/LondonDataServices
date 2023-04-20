@@ -31,12 +31,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 new MeshServiceDependencyValidationException(meshClientValidationException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.RetrieveMessagesAsync())
+                broker.RetrieveMessageIdsAsync())
                     .ThrowsAsync(meshClientValidationException);
 
             // when
             ValueTask<List<string>> retrieveMessagesFromInboxTask =
-                this.meshService.RetrieveMessagesFromInboxAsync();
+                this.meshService.RetrieveMessageIdsFromInboxAsync();
 
             MeshServiceDependencyValidationException actualValidationException =
                 await Assert.ThrowsAsync<MeshServiceDependencyValidationException>(retrieveMessagesFromInboxTask.AsTask);
@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             actualValidationException.Should().BeEquivalentTo(expectedDependencyValidationException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.RetrieveMessagesAsync(),
+                broker.RetrieveMessageIdsAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -74,12 +74,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 new MeshServiceDependencyException(meshClientDependencyException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.RetrieveMessagesAsync())
+                broker.RetrieveMessageIdsAsync())
                     .ThrowsAsync(meshClientDependencyException);
 
             // when
             ValueTask<List<string>> retrieveMessagesFromInboxTask =
-                this.meshService.RetrieveMessagesFromInboxAsync();
+                this.meshService.RetrieveMessageIdsFromInboxAsync();
 
             MeshServiceDependencyException actualDependencyException =
                 await Assert.ThrowsAsync<MeshServiceDependencyException>(retrieveMessagesFromInboxTask.AsTask);
@@ -88,7 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             actualDependencyException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.RetrieveMessagesAsync(),
+                broker.RetrieveMessageIdsAsync(),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -113,12 +113,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                new MeshServiceException(failedMeshServiceException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.RetrieveMessagesAsync())
+                broker.RetrieveMessageIdsAsync())
                     .ThrowsAsync(serviceException);
 
             // when
             ValueTask<List<string>> retrieveMessagesFromInboxTask =
-                this.meshService.RetrieveMessagesFromInboxAsync();
+                this.meshService.RetrieveMessageIdsFromInboxAsync();
 
             MeshServiceException actualMeshServiceException =
                 await Assert.ThrowsAsync<MeshServiceException>
@@ -129,7 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 .BeEquivalentTo(expectedMeshServiceException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.RetrieveMessagesAsync(),
+                broker.RetrieveMessageIdsAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

@@ -15,11 +15,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
         {
             // given
             // when
-            await this.meshProcessingService.RetrieveMessagesFromInboxAsync();
+            await this.meshProcessingService.RetrieveMessageIdsFromInboxAsync();
 
             // then
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessagesFromInboxAsync(),
+                service.RetrieveMessageIdsFromInboxAsync(),
                     Times.Once());
 
             this.meshServiceMock.VerifyNoOtherCalls();

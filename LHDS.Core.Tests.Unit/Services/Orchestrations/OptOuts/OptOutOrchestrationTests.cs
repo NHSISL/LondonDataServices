@@ -52,6 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 {"OptOutSettings:InputFolder", GetRandomString()},
                 {"OptOutSettings:OptOutFileHasHeader", "false"},
                 {"OptOutSettings:OutputFolder", GetRandomString()},
+                {"OptOutSettings:OptOutFileRequireTrailingComma", "true"},
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()

@@ -71,7 +71,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 ExpiredAfterDays = 2,
                 InputFolder = invalidText,
                 OptOutFileHasHeader = false,
-                OutputFolder = invalidText
+                OutputFolder = invalidText,
+                OptOutFileRequireTrailingComma = true,
             };
 
             var invalidOptOutOrchestrationService = new OptOutOrchestrationService(

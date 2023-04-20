@@ -111,8 +111,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
         public async ValueTask RetrieveUpdatedMeshOptOutStatusChangesAsync()
         {
+            ValidateConfigurationSettings();
             bool withHeader = this.optOutConfiguration.OptOutFileHasHeader;
-            bool shouldAddTrailingComma = this.optOutConfiguration.OptOutFileRequireTrailingComma;
 
             List<string> outputMessageIds = await
                 this.meshProcessingService.RetrieveMessageIdsFromInboxAsync();

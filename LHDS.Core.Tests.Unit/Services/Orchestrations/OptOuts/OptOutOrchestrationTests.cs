@@ -119,6 +119,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .ToList();
         }
 
+        private static List<string> GetRandomMessages(int count)
+        {
+            var messages = new List<string>();
+            for (int i = 0; i < count; i++)
+            {
+                string message = new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+                messages.Add(message);
+            }
+            return messages;
+        }
         private static OptOut CreateRandomOptOut(DateTimeOffset dateTimeOffset) =>
            CreateOptOutFiller(dateTimeOffset).Create();
 

@@ -3,10 +3,8 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using Moq;
 using Xeptions;
@@ -18,36 +16,32 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
     {
         [Theory]
         [MemberData(nameof(OptOutDependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationOnRetrieveOptOutStatusIfDependencyValidationOccursAndLogItAsync(
-            Xeption dependancyValidationException)
+        public async Task ShouldThrowDependencyValidationOnPushIfDependValidationOccursAndLogItAsync(
+           Xeption dependancyValidationException)
         {
-            // given
-            var randomString = GetRandomString();
-            var randomBytes = Encoding.ASCII.GetBytes(randomString);
-            var randomRecieveName = GetRandomString();
-
+            // Given
             var expectedDependencyException =
                 new OptOutOrchestrationDependencyValidationException(
-                    dependancyValidationException.InnerException as Xeption);
+                   dependancyValidationException.InnerException as Xeption);
 
-            this.csvMapperProcessingServiceMock.Setup(processing =>
-                processing.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), false))
+            this.optOutProcessingServiceMock.Setup(processings =>
+                processings.RetrieveAllExpiredOptOutsAsync(It.IsAny<int>()))
                     .ThrowsAsync(dependancyValidationException);
 
-            // when
-            ValueTask retrieveOptOutStatusTask =
-                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomBytes, randomRecieveName);
+            // When
+            ValueTask pushExpiredOptOutsToMeshIfExpiredTask =
+                this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             OptOutOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationDependencyValidationException>(
-                    retrieveOptOutStatusTask.AsTask);
+                    pushExpiredOptOutsToMeshIfExpiredTask.AsTask);
 
-            // then
+            // Then
             actualException.Should()
                 .BeEquivalentTo(expectedDependencyException);
 
-            this.csvMapperProcessingServiceMock.Verify(processing =>
-                processing.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), false),
+            this.optOutProcessingServiceMock.Verify(processings =>
+                processings.RetrieveAllExpiredOptOutsAsync(It.IsAny<int>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -61,39 +55,37 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+
         }
 
         [Theory]
         [MemberData(nameof(OptOutDependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnRetrieveOptOutStatusIfDependencyExceptionOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnPushIfDependencyExceptionOccursAndLogItAsync(
            Xeption dependancyException)
         {
-            // given
-            var randomString = GetRandomString();
-            var randomBytes = Encoding.ASCII.GetBytes(randomString);
-            var randomRecieveName = GetRandomString();
-
+            // Given
             var expectedDependencyException =
                 new OptOutOrchestrationDependencyException(
                     dependancyException.InnerException as Xeption);
 
-            this.csvMapperProcessingServiceMock.Setup(processing =>
-                processing.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), It.IsAny<bool>()))
+            this.optOutProcessingServiceMock.Setup(processings =>
+                processings.RetrieveAllExpiredOptOutsAsync(It.IsAny<int>()))
                     .ThrowsAsync(dependancyException);
 
-            // when
-            ValueTask retrieveOptOutStatusTask =
-                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomBytes, randomRecieveName);
+            // When
+            ValueTask pushExpiredOptOutsToMeshIfExpiredTask =
+                this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             OptOutOrchestrationDependencyException actualException =
-                await Assert.ThrowsAsync<OptOutOrchestrationDependencyException>(retrieveOptOutStatusTask.AsTask);
+                await Assert.ThrowsAsync<OptOutOrchestrationDependencyException>(
+                    pushExpiredOptOutsToMeshIfExpiredTask.AsTask);
 
-            // then
+            // Then
             actualException.Should()
                 .BeEquivalentTo(expectedDependencyException);
 
-            this.csvMapperProcessingServiceMock.Verify(processing =>
-                processing.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), It.IsAny<bool>()),
+            this.optOutProcessingServiceMock.Verify(processings =>
+                processings.RetrieveAllExpiredOptOutsAsync(It.IsAny<int>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -110,13 +102,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnProcessIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnPushIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            string randomString = GetRandomString();
-            byte[] randomBytes = Encoding.ASCII.GetBytes(randomString);
-            byte[] inputBytes = randomBytes;
-            var randomRecieveName = GetRandomString();
             var serviceException = new Exception();
 
             var failedOptOutOrchestrationServiceException =
@@ -125,23 +113,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             var expectedOptOrchestrationServiceException =
                 new OptOutOrchestrationServiceException(failedOptOutOrchestrationServiceException);
 
-            this.csvMapperProcessingServiceMock.Setup(processing =>
-                processing.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), It.IsAny<bool>()))
+            this.optOutProcessingServiceMock.Setup(processings =>
+                processings.RetrieveAllExpiredOptOutsAsync(It.IsAny<int>()))
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask retrieveOptOutStatusTask =
-                this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputBytes, randomRecieveName);
+            ValueTask pushExpiredOptOutsToMeshIfExpiredTask =
+                this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             OptOutOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(retrieveOptOutStatusTask.AsTask);
+                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(
+                    pushExpiredOptOutsToMeshIfExpiredTask.AsTask);
 
             // then
             actualException.Should()
                 .BeEquivalentTo(expectedOptOrchestrationServiceException);
 
-            this.csvMapperProcessingServiceMock.Verify(processing =>
-                processing.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), It.IsAny<bool>()),
+            this.optOutProcessingServiceMock.Verify(processings =>
+                processings.RetrieveAllExpiredOptOutsAsync(It.IsAny<int>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

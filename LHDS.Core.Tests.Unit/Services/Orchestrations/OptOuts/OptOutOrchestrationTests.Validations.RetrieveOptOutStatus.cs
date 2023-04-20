@@ -21,23 +21,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             var randomString = GetRandomString();
 
             var invalidArgumentRetieveOptOutStatusOrchestrationException =
-               new InvalidArgumentOptOutOrchestrationException();
+                new InvalidArgumentOptOutOrchestrationException();
 
             invalidArgumentRetieveOptOutStatusOrchestrationException.AddData(
                key: "OptOutFile",
                values: "Data is required");
 
             var expectedRetrieveOptOutStatusOrchestrationOptOutFileValidationException =
-               new OptOutOrchestrationValidationException(
-                   innerException: invalidArgumentRetieveOptOutStatusOrchestrationException,
-                   validationSummary: GetValidationSummary(invalidArgumentRetieveOptOutStatusOrchestrationException.Data));
+                new OptOutOrchestrationValidationException(
+                    innerException: invalidArgumentRetieveOptOutStatusOrchestrationException);
 
             // when
             ValueTask RetrieveOptOutStatusTask =
                 this.optOutOrchestrationService.RetrieveOptOutStatusAsync(invalidData, randomString);
 
             OptOutOrchestrationValidationException actualException =
-               await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(RetrieveOptOutStatusTask.AsTask);
+                await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(RetrieveOptOutStatusTask.AsTask);
 
             // then
             actualException.Should()
@@ -65,23 +64,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             byte[] randomBytes = Encoding.UTF8.GetBytes(randomString);
 
             var invalidArgumentRetieveOptOutStatusOrchestrationException =
-               new InvalidArgumentOptOutOrchestrationException();
+                new InvalidArgumentOptOutOrchestrationException();
 
             invalidArgumentRetieveOptOutStatusOrchestrationException.AddData(
                key: "RequestId",
                values: "Text is required");
 
             var expectedRetrieveOptOutStatusOrchestrationOptOutFileValidationException =
-               new OptOutOrchestrationValidationException(
-                   innerException: invalidArgumentRetieveOptOutStatusOrchestrationException,
-                   validationSummary: GetValidationSummary(invalidArgumentRetieveOptOutStatusOrchestrationException.Data));
+                new OptOutOrchestrationValidationException(
+                    innerException: invalidArgumentRetieveOptOutStatusOrchestrationException);
 
             // when
             ValueTask RetrieveOptOutStatusTask =
                 this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomBytes, invalidText);
 
             OptOutOrchestrationValidationException actualException =
-               await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(RetrieveOptOutStatusTask.AsTask);
+                await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(RetrieveOptOutStatusTask.AsTask);
 
             // then
             actualException.Should()

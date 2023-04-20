@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<OptOut> outputOptOutBatch = randomOptOutBatch;
 
             List<string> consentedIdentifiers = outputOptOutIdentifierConsentedList
-                    .Select(identifier => identifier.NhsNumber).ToList();
+                .Select(identifier => identifier.NhsNumber).ToList();
 
             List<OptOut> consentedoptOutItems =
                 outputOptOutBatch.Where(optout => consentedIdentifiers.Contains(optout.NhsNumber)).ToList();

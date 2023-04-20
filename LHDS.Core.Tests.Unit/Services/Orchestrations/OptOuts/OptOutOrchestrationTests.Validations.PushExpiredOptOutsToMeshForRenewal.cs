@@ -63,7 +63,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionIfConfigurationSettingsIsInvalidAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionIfConfigurationSettingsIsInvalidAndLogItAsync(
+            string invalidText)
         {
             // Given
             var invalidOptOutConfiguration = new OptOutConfiguration
@@ -104,7 +105,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                invalidOptOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             OptOutOrchestrationValidationException actualException =
-              await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(pushExpOptOutsToMeshIfExpiredTask.AsTask);
+              await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(
+                  pushExpOptOutsToMeshIfExpiredTask.AsTask);
 
             // Then
             actualException.Should()

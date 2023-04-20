@@ -23,6 +23,14 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             {
                 await returningRetrieveOptOutFunction();
             }
+            catch (NullConfigOptOutOrchestrationException nullConfigOptOutOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullConfigOptOutOrchestrationException);
+            }
+            catch (InvalidConfigOptOutOrchestrationException invalidConfigOptOutOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidConfigOptOutOrchestrationException);
+            }
             catch (InvalidArgumentOptOutOrchestrationException invalidArgumentRetieveOptOutStatusOrchestrationException)
             {
                 throw CreateAndLogValidationException(invalidArgumentRetieveOptOutStatusOrchestrationException);
@@ -114,10 +122,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
         private OptOutOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
-            string validationSummary = GetValidationSummary(exception.Data);
-
             var decryptionOrchestrationValidationException =
-                new OptOutOrchestrationValidationException(exception, validationSummary);
+                new OptOutOrchestrationValidationException(exception);
 
             this.loggingBroker.LogError(decryptionOrchestrationValidationException);
 

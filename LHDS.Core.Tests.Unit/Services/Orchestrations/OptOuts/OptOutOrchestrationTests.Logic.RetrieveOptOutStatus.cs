@@ -19,19 +19,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         public async Task ShouldRetrieveOptOutStatusAsync()
         {
             // given
-            bool withHeader = false;
+            bool withHeader = optOutConfiguration.OptOutFileHasHeader;
+            bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
             var randomString = GetRandomString();
             var inputString = randomString;
-            var randomBytes = Encoding.ASCII.GetBytes(inputString);
-            var inputBytes = randomBytes;
+            var inputBytes = Encoding.ASCII.GetBytes(inputString);
             var randomRecieveName = GetRandomString();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            List<OptOut> randomOptOuts = CreateRandomOptOuts();
+            List<OptOut> randomOptOuts = CreateRandomOptOutsList();
             List<OptOut> outputOptOuts = randomOptOuts;
 
             this.csvMapperProcessingServiceMock.Setup(processing =>
-                 processing.MapCsvToObjectAsync<OptOut>(It.Is(SameStringAs(inputString)), withHeader))
-                     .ReturnsAsync(outputOptOuts);
+                processing.MapCsvToObjectAsync<OptOut>(inputString, false))
+                    .ReturnsAsync(outputOptOuts);
 
             List<OptOut> processedOptOuts = new List<OptOut>();
 
@@ -40,18 +40,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 var storageOptOut = optOut;
 
                 this.optOutProcessingServiceMock.Setup(service =>
-                   service.RetrieveOrAddOptOutAsync(optOut))
-                       .ReturnsAsync(storageOptOut);
+                    service.RetrieveOrAddOptOutAsync(optOut))
+                        .ReturnsAsync(storageOptOut);
 
                 processedOptOuts.Add(storageOptOut);
             }
 
-            var processedString = GetRandomString();
+            var randomOptOutData = GetRandomString();
+            var processedString = randomOptOutData;
             var processedBytes = Encoding.ASCII.GetBytes(processedString);
 
             this.csvMapperProcessingServiceMock.Setup(processings =>
-                processings.MapObjectToCsvAsync(It.Is(SameOptOutListAs(processedOptOuts)), withHeader))
-                    .ReturnsAsync(processedString);
+                processings.MapObjectToCsvAsync(
+                    It.Is(SameOptOutListAs(processedOptOuts)),
+                    withHeader,
+                    shouldAddTrailingComma))
+                        .ReturnsAsync(processedString);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -59,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             Document document = new Document
             {
-                FileName = $"receive/{randomRecieveName}_Response_{randomDateTimeOffset.ToString("yyyyMMddHHmmss")}.csv",
+                FileName = $"{optOutConfiguration.OutputFolder}/{randomRecieveName}_Response_{randomDateTimeOffset.ToString("yyyyMMddHHmmss")}.csv",
                 DocumentData = processedBytes
             };
 
@@ -71,23 +75,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // then
             this.csvMapperProcessingServiceMock.Verify(processing =>
-                  processing.MapCsvToObjectAsync<OptOut>(inputString, withHeader),
-                        Times.Once);
+                processing.MapCsvToObjectAsync<OptOut>(inputString, false),
+                    Times.Once);
 
             foreach (var optOut in outputOptOuts)
             {
                 var storageOptOut = optOut;
 
                 this.optOutProcessingServiceMock.Verify(service =>
-                   service.RetrieveOrAddOptOutAsync(optOut),
+                    service.RetrieveOrAddOptOutAsync(optOut),
                         Times.Once);
 
                 processedOptOuts.Add(storageOptOut);
             }
 
             this.csvMapperProcessingServiceMock.Verify(processings =>
-                processings.MapObjectToCsvAsync(It.IsAny<List<OptOut>>(), withHeader),
-                        Times.Once);
+                processings.MapObjectToCsvAsync(It.IsAny<List<OptOut>>(), withHeader, shouldAddTrailingComma),
+                    Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
                 service.AddDocumentAsync(It.Is(SameDocumentAs(document))),

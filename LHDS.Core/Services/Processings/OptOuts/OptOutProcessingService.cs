@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
@@ -75,6 +76,11 @@ namespace LHDS.Core.Services.Processings.OptOuts
 
                 return await ValueTask.FromResult(foundOptOut);
             });
+
+        public async ValueTask<List<OptOut>> RetrieveAllExpiredOptOutsAsync(int olderThanDays)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

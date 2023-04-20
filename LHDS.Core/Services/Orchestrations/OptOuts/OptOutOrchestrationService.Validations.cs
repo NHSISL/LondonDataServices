@@ -2,11 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
+using LHDS.Core.Models.Orchestrations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.OptOuts
 {
@@ -14,12 +13,32 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
     {
         private static void ValidateOptOutFileIsNotNull(byte[] optOutFile)
         {
-            Validate((Rule: IsInvalid(optOutFile), Parameter: "OptOutFile"));
+            Validate<InvalidArgumentOptOutOrchestrationException>((Rule: IsInvalid(optOutFile), Parameter: "OptOutFile"));
         }
 
         private static void ValidateRequestIdIsNotNull(string requestId)
         {
-            Validate((Rule: IsInvalid(requestId), Parameter: "RequestId"));
+            Validate<InvalidArgumentOptOutOrchestrationException>((Rule: IsInvalid(requestId), Parameter: "RequestId"));
+        }
+
+        private void ValidateConfigurationSettings()
+        {
+            this.ValidateConfigurationIsNotNull();
+
+            Validate<InvalidConfigOptOutOrchestrationException>(
+                (Rule: IsInvalid(this.optOutConfiguration.OutputFolder),
+                    Parameter: nameof(OptOutConfiguration.OutputFolder)),
+
+                (Rule: IsInvalid(this.optOutConfiguration.ExpiredAfterDays),
+                    Parameter: nameof(OptOutConfiguration.ExpiredAfterDays)));
+        }
+
+        private void ValidateConfigurationIsNotNull()
+        {
+            if (this.optOutConfiguration is null)
+            {
+                throw new NullConfigOptOutOrchestrationException();
+            }
         }
 
         private static dynamic IsInvalid(string text) => new
@@ -28,43 +47,34 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             Message = "Text is required"
         };
 
+        private static dynamic IsInvalid(int value) => new
+        {
+            Condition = value < 7,
+            Message = "Value is required"
+        };
+
         private static dynamic IsInvalid(byte[] data) => new
         {
             Condition = data == null || data.Length == 0,
             Message = "Data is required"
         };
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidArgumentRetieveOptOutStatusOrchestrationException = new InvalidArgumentOptOutOrchestrationException();
+            var invalidDataException = (T)Activator.CreateInstance(typeof(T));
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidArgumentRetieveOptOutStatusOrchestrationException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidArgumentRetieveOptOutStatusOrchestrationException.ThrowIfContainsErrors();
-        }
-
-        private string GetValidationSummary(IDictionary data)
-        {
-            StringBuilder validationSummary = new StringBuilder();
-
-            foreach (DictionaryEntry entry in data)
-            {
-                string errorSummary = ((List<string>)entry.Value)
-                    .Select((string value) => value)
-                    .Aggregate((string current, string next) => current + ", " + next);
-
-                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
-            }
-
-            return validationSummary.ToString();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

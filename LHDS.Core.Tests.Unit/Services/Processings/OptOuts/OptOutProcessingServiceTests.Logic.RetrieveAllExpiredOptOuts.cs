@@ -21,28 +21,30 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
         {
             // given
             int olderThanDays = GetRandomNumber();
-            List<OptOut> randomOptOuts = CreateRandomOptOuts();
-            List<OptOut> retrievedOptOuts = randomOptOuts.DeepClone();
-            List<OptOut> expectedOptOuts = new List<OptOut>();
-            DateTime today = DateTime.UtcNow;
+            DateTimeOffset currentDate = GetRandomDateTimeOffset();
+            DateTimeOffset expireDate = currentDate.AddDays(-olderThanDays);
 
-            foreach (OptOut optOut in randomOptOuts)
-            {
-                if (optOut.CreatedDate < today.AddDays(-olderThanDays))
-                {
-                   expectedOptOuts.Add(optOut);
-                }
-            }
+            IQueryable<OptOut> randomOptOuts = CreateRandomOptOuts(expireDate);
+            IQueryable<OptOut> retrievedOptOuts = randomOptOuts.DeepClone();
+
+            List<OptOut> expectedOptOuts = retrievedOptOuts 
+                .Where(optOut => optOut.CacheTime < expireDate)
+                    .ToList();
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(currentDate);
 
             this.optOutServiceMock.Setup(service =>
                 service.RetrieveAllOptOuts())
-                    .Returns(retrievedOptOuts.AsQueryable());
+                        .Returns(retrievedOptOuts);
 
             // when
             List<OptOut> actualOptOuts =
                 await this.optOutProcessingService.RetrieveAllExpiredOptOutsAsync(olderThanDays);
 
             // then
+            actualOptOuts.Count().Should().Be(3);
             actualOptOuts.Should().BeEquivalentTo(expectedOptOuts);
 
             this.optOutServiceMock.Verify(service =>

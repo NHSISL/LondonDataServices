@@ -40,8 +40,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 var storageOptOut = optOut;
 
                 this.optOutProcessingServiceMock.Setup(service =>
-                   service.RetrieveOrAddOptOutAsync(optOut))
-                       .ReturnsAsync(storageOptOut);
+                    service.RetrieveOrAddOptOutAsync(optOut))
+                        .ReturnsAsync(storageOptOut);
 
                 processedOptOuts.Add(storageOptOut);
             }

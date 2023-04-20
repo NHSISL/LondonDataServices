@@ -30,18 +30,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 optOutConfiguration: invalidOptOutConfiguration);
 
             var nullConfigOptOutOrchestrationException =
-              new NullConfigOptOutOrchestrationException();
+                new NullConfigOptOutOrchestrationException();
 
             var expectedPushExpiredOptOutsToMeshIfExpiredOrchestrationOptOutFileValidationException =
-              new OptOutOrchestrationValidationException(
-                  innerException: nullConfigOptOutOrchestrationException);
+                new OptOutOrchestrationValidationException(
+                    innerException: nullConfigOptOutOrchestrationException);
 
             // When
             ValueTask pushExpOptOutsToMeshIfExpiredTask =
                 invalidOptOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             OptOutOrchestrationValidationException actualException =
-              await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(pushExpOptOutsToMeshIfExpiredTask.AsTask);
+                await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(pushExpOptOutsToMeshIfExpiredTask.AsTask);
 
             // Then
             actualException.Should()
@@ -86,7 +86,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 optOutConfiguration: invalidOptOutConfiguration);
 
             var invalidConfigOptOutOrchestrationException =
-              new InvalidConfigOptOutOrchestrationException();
+                new InvalidConfigOptOutOrchestrationException();
 
             invalidConfigOptOutOrchestrationException.AddData(
                 key: nameof(OptOutConfiguration.OutputFolder),
@@ -97,16 +97,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                values: "Value is required");
 
             var expectedPushExpiredOptOutsToMeshIfExpiredOrchestrationOptOutFileValidationException =
-              new OptOutOrchestrationValidationException(
-                  innerException: invalidConfigOptOutOrchestrationException);
+                new OptOutOrchestrationValidationException(
+                    innerException: invalidConfigOptOutOrchestrationException);
 
             // When
             ValueTask pushExpOptOutsToMeshIfExpiredTask =
-               invalidOptOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
+                invalidOptOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             OptOutOrchestrationValidationException actualException =
-              await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(
-                  pushExpOptOutsToMeshIfExpiredTask.AsTask);
+                await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(
+                    pushExpOptOutsToMeshIfExpiredTask.AsTask);
 
             // Then
             actualException.Should()

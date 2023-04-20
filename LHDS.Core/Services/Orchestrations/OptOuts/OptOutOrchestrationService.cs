@@ -53,9 +53,12 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 ValidateConfigurationSettings();
                 ValidateOptOutFileIsNotNull(optOutFile);
                 ValidateRequestIdIsNotNull(requestId);
-                string inputData = Encoding.ASCII.GetString(optOutFile);
-                bool withHeader = optOutConfiguration.OptOutFileHasHeader;
-                bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
+
+                bool withHeader =
+                    optOutConfiguration.OptOutFileHasHeader;
+
+                bool shouldAddTrailingComma =
+                    optOutConfiguration.OptOutFileRequireTrailingComma;
 
                 var inputString = Encoding.ASCII.GetString(optOutFile);
 
@@ -92,7 +95,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 bool shouldAddTrailingComma = true;
 
                 List<OptOut> mappedOptOuts = await
-                this.optOutProcessingService.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays);
+                    this.optOutProcessingService
+                        .RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays);
 
                 var processedOutputString = await this.csvMapperProcessingService
                        .MapObjectToCsvAsync(mappedOptOuts, withHeader, shouldAddTrailingComma);
@@ -105,9 +109,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 await this.meshProcessingService.SendMessageAsync(message);
             });
 
-        public ValueTask RetrieveUpdatedMeshOptOutStatusChangesAsync()
-        {
+        public ValueTask RetrieveUpdatedMeshOptOutStatusChangesAsync() =>
             throw new NotImplementedException();
-        }
     }
 }

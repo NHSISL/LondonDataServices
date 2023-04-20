@@ -54,8 +54,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 ValidateOptOutFileIsNotNull(optOutFile);
                 ValidateRequestIdIsNotNull(requestId);
                 string inputData = Encoding.ASCII.GetString(optOutFile);
-                bool withHeader = false;
-                bool shouldAddTrailingComma = true;
+                bool withHeader = optOutConfiguration.OptOutFileHasHeader;
+                bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
 
                 var inputString = Encoding.ASCII.GetString(optOutFile);
 
@@ -72,7 +72,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 var processedData = await this.csvMapperProcessingService
                     .MapObjectToCsvAsync(processedOptOuts, withHeader, shouldAddTrailingComma);
 
-                var processedBytes = Encoding.ASCII.GetBytes(processedString);
+                var processedBytes = Encoding.ASCII.GetBytes(processedData);
 
                 Document document = new Document
                 {
@@ -88,12 +88,14 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
+                bool withHeader = false;
+                bool shouldAddTrailingComma = true;
 
                 List<OptOut> mappedOptOuts = await
                 this.optOutProcessingService.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays);
 
                 var processedOutputString = await this.csvMapperProcessingService
-                       .MapObjectToCsvAsync(mappedOptOuts, false);
+                       .MapObjectToCsvAsync(mappedOptOuts, withHeader, shouldAddTrailingComma);
 
                 MeshMessage message = new MeshMessage
                 {

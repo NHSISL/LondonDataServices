@@ -65,7 +65,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 InputFolder = inMemoryConfiguration["OptOutSettings:InputFolder"],
                 OptOutFileHasHeader = bool.Parse(inMemoryConfiguration["OptOutSettings:OptOutFileHasHeader"]),
                 OutputFolder = inMemoryConfiguration["OptOutSettings:OutputFolder"],
-                OptOutFileRequireTrailingComma = inMemoryConfiguration["OptOutSettings:OptOutFileRequireTrailingComma"],
+
+                OptOutFileRequireTrailingComma =
+                    bool.Parse(inMemoryConfiguration["OptOutSettings:OptOutFileRequireTrailingComma"]),
             };
 
             this.optOutProcessingServiceMock = new Mock<IOptOutProcessingService>();

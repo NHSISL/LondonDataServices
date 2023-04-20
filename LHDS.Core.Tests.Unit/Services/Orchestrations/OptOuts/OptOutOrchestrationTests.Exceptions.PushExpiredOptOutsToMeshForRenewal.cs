@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
     {
         [Theory]
         [MemberData(nameof(OptOutDependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationOnPushExpiredOptOutsToMeshIfExpiredIfDependencyValidationOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationOnPushIfDependValidationOccursAndLogItAsync(
            Xeption dependancyValidationException)
         {
             // Given
@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
         [Theory]
         [MemberData(nameof(OptOutDependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnPushExpiredOptOutsToMeshIfExpiredIfDependencyExceptionOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnPushIfDependencyExceptionOccursAndLogItAsync(
            Xeption dependancyException)
         {
             // Given
@@ -102,7 +102,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnPushExpiredOptOutsToMeshIfExpiredIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnPushIfServiceErrorOccursAndLogItAsync()
         {
             // given
             var serviceException = new Exception();
@@ -122,7 +122,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                  this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             OptOutOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(pushExpiredOptOutsToMeshIfExpiredTask.AsTask);
+                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(
+                    pushExpiredOptOutsToMeshIfExpiredTask.AsTask);
 
             // then
             actualException.Should()

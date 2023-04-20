@@ -2,8 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -91,8 +91,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
-                bool withHeader = false;
-                bool shouldAddTrailingComma = true;
+                bool withHeader = this.optOutConfiguration.OptOutFileHasHeader;
+                bool shouldAddTrailingComma = this.optOutConfiguration.OptOutFileRequireTrailingComma;
 
                 List<OptOut> mappedOptOuts = await
                     this.optOutProcessingService
@@ -109,7 +109,86 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 await this.meshProcessingService.SendMessageAsync(message);
             });
 
-        public ValueTask RetrieveUpdatedMeshOptOutStatusChangesAsync() =>
-            throw new NotImplementedException();
+        public async ValueTask RetrieveUpdatedMeshOptOutStatusChangesAsync()
+        {
+            bool withHeader = this.optOutConfiguration.OptOutFileHasHeader;
+            bool shouldAddTrailingComma = this.optOutConfiguration.OptOutFileRequireTrailingComma;
+
+            List<string> outputMessageIds = await
+                this.meshProcessingService.RetrieveMessageIdsFromInboxAsync();
+
+            foreach (string messageId in outputMessageIds)
+            {
+                MeshMessage message = await meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(messageId);
+                string batchReference = message.Headers["Mex-LocalID"].FirstOrDefault();
+
+                List<OptOutIdentifier> outputOptOutIdentifierConsentedList =
+                    await csvMapperProcessingService.MapCsvToObjectAsync<OptOutIdentifier>(
+                        message.StringContent,
+                        withHeader);
+
+                List<OptOut> originalBatch = await this.optOutProcessingService
+                    .RetrieveAllOptOutsByBatchReferenceAsync(batchReference);
+
+                List<string> consentedIdentifiers = outputOptOutIdentifierConsentedList
+                    .Select(optOut => optOut.NhsNumber).ToList();
+
+                List<OptOut> consentedOptouts = originalBatch
+                    .Where(optOut => consentedIdentifiers.Contains(optOut.NhsNumber)).ToList();
+
+                List<OptOut> nonConsentedOptouts = originalBatch.Except(consentedOptouts).ToList();
+
+                List<OptOut> delta = new List<OptOut>();
+
+                foreach (var item in consentedOptouts)
+                {
+                    if (item.OptOutStatus != "Opt-In")
+                    {
+                        var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                        item.UpdatedDate = dateTime;
+                        item.CacheTime = dateTime;
+                        item.OptOutStatus = "Opt-In";
+
+                        await this.optOutProcessingService.ModifyOptOutAsync(item);
+                        delta.Add(item);
+                    }
+                }
+
+                foreach (var item in nonConsentedOptouts)
+                {
+                    if (item.OptOutStatus != "Opt-Out")
+                    {
+                        var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                        item.UpdatedDate = dateTime;
+                        item.CacheTime = dateTime;
+                        item.OptOutStatus = "Opt-Out";
+
+                        await this.optOutProcessingService.ModifyOptOutAsync(item);
+                        delta.Add(item);
+                    }
+                }
+
+                List<OptOutIdentifier> differentIdentifiers = delta
+                    .Select(identifier => new OptOutIdentifier { NhsNumber = identifier.NhsNumber }).ToList();
+
+                string csvDifferences = await this.csvMapperProcessingService
+                    .MapObjectToCsvAsync(
+                        @object: differentIdentifiers,
+                        addHeaderRecord: this.optOutConfiguration.OptOutFileHasHeader,
+                        shouldAddTrailingComma: this.optOutConfiguration.OptOutFileRequireTrailingComma);
+
+                Document document = new Document
+                {
+                    DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
+                    FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_Response_" +
+                        $"{this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss")}.csv",
+                };
+
+                await this.documentProcessingService.AddDocumentAsync(document);
+            }
+
+        }
     }
 }

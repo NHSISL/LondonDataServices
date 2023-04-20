@@ -208,7 +208,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             return messages;
         }
 
-        private static List<MeshMessage> GetRandomMessages(List<string> items)
+        private static List<MeshMessage> GetRandomMessages(List<string> items, string batchReference)
         {
             List<MeshMessage> messageList = new List<MeshMessage>();
 
@@ -216,6 +216,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             {
                 var message = CreateRandomMessage();
                 message.MessageId = item;
+                message.Headers["Mex-LocalID"] = new List<string> { batchReference };
                 messageList.Add(message);
             }
 
@@ -252,6 +253,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         {
             return actualMessage =>
                 this.compareLogic.Compare(expectedMessage, actualMessage)
+                    .AreEqual;
+        }
+
+        private Expression<Func<string, bool>> SameStringAs(
+            string expectedString)
+        {
+            return actualString =>
+                this.compareLogic.Compare(expectedString, actualString)
                     .AreEqual;
         }
 
@@ -302,6 +311,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             };
         }
 
+        public static Dictionary<string, List<string>> CreateMandatoryHeaders()
+        {
+            var dictionary = new Dictionary<string, List<string>>
+            {
+                { "Content-Type", new List<string> { GetRandomString() } },
+                { "Mex-FileName", new List<string> { GetRandomString() } },
+                { "Mex-From", new List<string> { GetRandomString() } },
+                { "Mex-To", new List<string> { GetRandomString() } },
+                { "Mex-WorkflowID", new List<string> { GetRandomString() } },
+                { "Mex-Content-Checksum", new List<string> { GetRandomString() } },
+                { "Mex-Content-Encrypted", new List<string> { GetRandomString() } },
+                { "Mex-LocalID", new List<string> { GetRandomString() } }
+            };
+
+            return dictionary;
+        }
+
         private static MeshMessage CreateRandomMessage() =>
            CreateMessageFiller().Create();
 
@@ -309,7 +335,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         {
             var filler = new Filler<MeshMessage>();
             filler.Setup().OnProperty(message => message.Headers)
-                .Use(new Dictionary<string, List<string>>());
+                .Use(CreateMandatoryHeaders());
 
             return filler;
         }

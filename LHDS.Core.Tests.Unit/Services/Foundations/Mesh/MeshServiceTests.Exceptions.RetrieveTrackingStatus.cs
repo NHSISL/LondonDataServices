@@ -20,8 +20,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldThrowMeshServiceDependencyValidationExceptionOnRetrieveTrackingStatusIfValidationFailsAndLogItAsync()
         {
             // given
-            string messageId = GetRandomMessage();
-            string randomMessage = GetRandomMessage();
+            string messageId = GetRandomString();
+            string randomMessage = GetRandomString();
             var validationException = new Exception(randomMessage);
 
             var meshClientValidationException =
@@ -64,8 +64,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldThrowMeshServiceDependencyExceptionOnRetrieveTrackingStatusIfDependencyFailsAndLogItAsync()
         {
             // given
-            string messageId = GetRandomMessage();
-            string randomMessage = GetRandomMessage();
+            string messageId = GetRandomString();
+            string randomMessage = GetRandomString();
             var dependencyException = new Exception(randomMessage);
 
             var meshClientDependencyException =
@@ -104,7 +104,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldThrowServiceExceptionOnRetrieveTrackingStatusIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            string messageId = GetRandomMessage();
+            string messageId = GetRandomString();
             var serviceException = new Exception();
 
             var failedMeshServiceException =

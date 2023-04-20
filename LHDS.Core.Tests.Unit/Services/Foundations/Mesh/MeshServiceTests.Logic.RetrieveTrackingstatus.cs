@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldReturnRetrieveTrackingStatusAsync()
         {
             // given
-            string randomMessageId = GetRandomMessage();
+            string randomMessageId = GetRandomString();
             string inputMessageId = randomMessageId;
             Message outputMessage = CreateRandomMessage();
             Message expectedMessage = outputMessage.DeepClone();

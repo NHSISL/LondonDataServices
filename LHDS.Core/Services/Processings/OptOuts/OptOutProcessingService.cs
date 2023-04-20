@@ -10,6 +10,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.OptOuts;
+using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.Core.Services.Processings.OptOuts
 {
@@ -81,19 +82,22 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 return await ValueTask.FromResult(foundOptOut);
             });
 
-        public async ValueTask<List<OptOut>> RetrieveAllExpiredOptOutsAsync(int olderThanDays)
-        {
-            var expirationDate = this.dateTimeBroker
-                .GetCurrentDateTimeOffset().AddDays(-olderThanDays);
+        public ValueTask<List<OptOut>> RetrieveAllExpiredOptOutsAsync(int olderThanDays) =>
+            TryCatch(async () =>
+            {
+                ValidateOlderThanDays(olderThanDays);
 
-            IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
+                var expirationDate = this.dateTimeBroker
+                    .GetCurrentDateTimeOffset().AddDays(-olderThanDays);
 
-            List<OptOut> expiredOptOuts = allOptOuts
-                .Where(optOut => optOut.CacheTime < expirationDate)
-                    .ToList();
+                IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
 
-            return await ValueTask.FromResult(expiredOptOuts);
-        }
+                List<OptOut> expiredOptOuts = allOptOuts
+                    .Where(optOut => optOut.CacheTime < expirationDate)
+                        .ToList();
+
+                return expiredOptOuts;
+            });
     }
 }
 

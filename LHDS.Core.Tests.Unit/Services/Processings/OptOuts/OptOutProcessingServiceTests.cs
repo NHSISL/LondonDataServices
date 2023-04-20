@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using FluentAssertions;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -58,6 +59,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
+
+        private static int GetRandomExpiryDays(int expiryMax) =>
+            new IntRange(max: expiryMax -1).GetValue();
 
         public static TheoryData DependencyValidationExceptions()
         {

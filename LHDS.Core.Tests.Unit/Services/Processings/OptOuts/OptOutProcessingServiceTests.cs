@@ -90,6 +90,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 new OptOutServiceException(innerException)
             };
         }
+        
         private static IQueryable<OptOut> CreateRandomOptOuts(string batchReference)
         {
             List<OptOut> optOuts = new List<OptOut>();

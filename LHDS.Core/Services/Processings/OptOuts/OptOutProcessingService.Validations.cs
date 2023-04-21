@@ -33,6 +33,9 @@ namespace LHDS.Core.Services.Processings.OptOuts
         public void ValidateOptOutNhsNumber(string optOutNhsNumber) =>
             Validate((Rule: IsInvalid(optOutNhsNumber), Parameter: nameof(OptOut.NhsNumber)));
 
+        public void ValidateOptOutBatchReference(string batchReference) =>
+            Validate((Rule: IsInvalid(batchReference), Parameter: nameof(OptOut.BatchReference)));
+
         public void ValidateOlderThanDays(int olderThanDays) =>
             Validate((Rule: IsInvalid(olderThanDays), Parameter: "OlderThanDays"));
 

@@ -78,10 +78,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 new OptOutDependencyValidationException(innerException)
             };
         }
-
-        private static int GetRandomNumber() =>
-            new IntRange(min: 2, max: 10).GetValue();
-
         public static TheoryData DependencyExceptions()
         {
             string randomMessage = GetRandomString();

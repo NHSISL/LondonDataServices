@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -34,11 +35,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     innerException: invalidArgumentOptOutProcessingException);
 
             // when
-            ValueTask<OptOut> RemoveOptOutTask =
-                this.optOutProcessingService.RetrieveOptOutByNhsNumberAsync(invalidBatchReference);
+            ValueTask<List<OptOut>> RetrieveOptOutTask =
+                this.optOutProcessingService.RetrieveAllOptOutsByBatchReferenceAsync(batchReference: invalidBatchReference);
 
             OptOutProcessingValidationException actualOptOutProcessingValidationException =
-                await Assert.ThrowsAsync<OptOutProcessingValidationException>(RemoveOptOutTask.AsTask);
+                await Assert.ThrowsAsync<OptOutProcessingValidationException>(RetrieveOptOutTask.AsTask);
 
             //then
             actualOptOutProcessingValidationException.Should()

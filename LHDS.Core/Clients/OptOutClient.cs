@@ -81,5 +81,36 @@ namespace LHDS.Core.Clients
                     optOutOrchestrationServiceException.InnerException as Xeption);
             }
         }
+
+        public async ValueTask RetrieveUpdatedMeshOptOutStatusChangesAsync()
+        {
+            try
+            {
+                await this.optOutOrchestrationService.RetrieveUpdatedMeshOptOutStatusChangesAsync();
+            }
+            catch (OptOutOrchestrationValidationException optOutOrchestrationValidationException)
+            {
+                throw new OptOutClientValidationException(
+                    optOutOrchestrationValidationException.InnerException as Xeption);
+            }
+            catch (OptOutOrchestrationDependencyValidationException
+                optOutOrchestrationDependencyValidationException)
+            {
+                throw new OptOutClientValidationException(
+                    optOutOrchestrationDependencyValidationException.InnerException as Xeption);
+            }
+            catch (OptOutOrchestrationDependencyException
+                optOutOrchestrationDependencyException)
+            {
+                throw new OptOutClientDependencyException(
+                    optOutOrchestrationDependencyException.InnerException as Xeption);
+            }
+            catch (OptOutOrchestrationServiceException
+                optOutOrchestrationServiceException)
+            {
+                throw new OptOutClientServiceException(
+                    optOutOrchestrationServiceException.InnerException as Xeption);
+            }
+        }
     }
 }

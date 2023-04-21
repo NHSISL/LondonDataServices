@@ -20,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
         public async Task ShouldRetrieveAllExpiredOptoutsAsync()
         {
             // given
-            int olderThanDays = GetRandomNumber();
+            int olderThanDays = GetRandomValidExpiryDays(7);
             DateTimeOffset currentDate = GetRandomDateTimeOffset();
             DateTimeOffset expireDate = currentDate.AddDays(-olderThanDays);
 

@@ -22,14 +22,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             Xeption dependencyValidationException)
         {
             // given
-            int randomNumber = GetRandomNumber();
+            int randomNumber = GetRandomValidExpiryDays(7);
 
             var expectedOptOutProcessingDependencyValidationException =
                 new OptOutProcessingDependencyValidationException(
                     dependencyValidationException.InnerException as Xeption);
 
-            this.optOutServiceMock.Setup(service =>
-                service.RetrieveAllOptOuts())
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
                     .Throws(dependencyValidationException);
 
             // when
@@ -43,9 +43,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             actualException.Should().BeEquivalentTo(
                 expectedOptOutProcessingDependencyValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.optOutServiceMock.Verify(service =>
                 service.RetrieveAllOptOuts(),
-                    Times.Once);
+                    Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(

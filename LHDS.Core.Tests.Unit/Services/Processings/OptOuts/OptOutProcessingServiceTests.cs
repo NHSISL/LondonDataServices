@@ -63,6 +63,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
         private static int GetRandomExpiryDays(int expiryMax) =>
             new IntRange(max: expiryMax -1).GetValue();
 
+        private static int GetRandomValidExpiryDays(int expiryMin) =>
+            new IntRange(min: expiryMin + 1, max: 20).GetValue();
+
         public static TheoryData DependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();

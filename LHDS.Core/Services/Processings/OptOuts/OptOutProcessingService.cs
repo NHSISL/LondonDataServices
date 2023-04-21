@@ -87,8 +87,8 @@ namespace LHDS.Core.Services.Processings.OptOuts
             {
                 ValidateOlderThanDays(olderThanDays);
 
-                var expirationDate = this.dateTimeBroker
-                    .GetCurrentDateTimeOffset().AddDays(-olderThanDays);
+                var expirationDate = this.dateTimeBroker.
+                    GetCurrentDateTimeOffset().AddDays(-olderThanDays);
 
                 IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
 

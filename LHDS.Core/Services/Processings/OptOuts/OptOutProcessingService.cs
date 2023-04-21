@@ -83,9 +83,6 @@ namespace LHDS.Core.Services.Processings.OptOuts
             });
 
         public ValueTask<List<OptOut>> RetrieveAllExpiredOptOutsAsync(int olderThanDays) =>
-            throw new NotImplementedException();
-
-        public ValueTask<List<OptOut>> RetrieveAllOptOutsByBatchReferenceAsync(string batchReference) =>
             TryCatch(async () =>
             {
                 ValidateOlderThanDays(olderThanDays);

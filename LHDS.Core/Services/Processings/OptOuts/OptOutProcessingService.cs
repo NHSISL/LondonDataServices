@@ -101,6 +101,20 @@ namespace LHDS.Core.Services.Processings.OptOuts
 
                 return expiredOptOuts;
             });
+
+        public ValueTask<List<OptOut>> RetrieveAllOptOutsByBatchReferenceAsync(string batchReference) =>
+            TryCatch(async () =>
+            {
+                ValidateOptOutBatchReference(batchReference);
+
+                IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
+
+                List<OptOut> foundOptOuts = allOptOuts.Where(optOut =>
+                    optOut.BatchReference == batchReference)
+                        .ToList();
+
+                return await ValueTask.FromResult(foundOptOuts);
+            });
     }
 }
 

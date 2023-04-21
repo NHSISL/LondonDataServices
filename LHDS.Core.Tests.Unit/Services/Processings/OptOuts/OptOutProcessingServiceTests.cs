@@ -78,7 +78,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 new OptOutDependencyValidationException(innerException)
             };
         }
-
         public static TheoryData DependencyExceptions()
         {
             string randomMessage = GetRandomString();
@@ -90,6 +89,24 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 new OptOutDependencyException(innerException),
                 new OptOutServiceException(innerException)
             };
+        }
+        
+        private static IQueryable<OptOut> CreateRandomOptOuts(string batchReference)
+        {
+            List<OptOut> optOuts = new List<OptOut>();
+
+            for (int i = 0; i < 6; i++)
+            {
+                OptOut randomOptOut = CreateRandomOptOut(GetRandomDateTimeOffset());
+                optOuts.Add(randomOptOut);
+
+                if (i % 2 == 0)
+                {
+                    randomOptOut.BatchReference = batchReference;
+                }
+            }
+
+            return optOuts.AsQueryable();
         }
 
         private static Filler<OptOut> CreateOptOutFiller(DateTimeOffset dateTimeOffset)

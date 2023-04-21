@@ -49,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedOptOutProcessingDependencyValidationException))),
-                            Times.Once);
+                        Times.Once);
 
             this.optOutServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

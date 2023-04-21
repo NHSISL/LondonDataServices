@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             Xeption dependencyValidationException)
         {
             // given
-            int randomNumber = GetRandomValidExpiryDays(7);
+            int olderThanDays = GetRandomValidExpiryDays(7);
 
             var expectedOptOutProcessingDependencyValidationException =
                 new OptOutProcessingDependencyValidationException(
@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             // when
             ValueTask<List<OptOut>> retrieveAllExpiredOptOutsTask =
-                this.optOutProcessingService.RetrieveAllExpiredOptOutsAsync(randomNumber);
+                this.optOutProcessingService.RetrieveAllExpiredOptOutsAsync(olderThanDays);
 
             OptOutProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<OptOutProcessingDependencyValidationException>(retrieveAllExpiredOptOutsTask.AsTask);
@@ -53,7 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
-                     expectedOptOutProcessingDependencyValidationException))),
+                    expectedOptOutProcessingDependencyValidationException))),
                          Times.Once);
 
             this.optOutServiceMock.VerifyNoOtherCalls();
@@ -66,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
         Xeption dependencyException)
         {
             // given
-            int randomNumber = GetRandomValidExpiryDays(7);
+            int olderThanDays = GetRandomValidExpiryDays(7);
 
             var expectedOptOutProcessingDependencyException =
                 new OptOutProcessingDependencyException(
@@ -78,7 +78,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             // when
             ValueTask<List<OptOut>> optOutRetrieveExpiredTask =
-                this.optOutProcessingService.RetrieveAllExpiredOptOutsAsync(randomNumber);
+                this.optOutProcessingService.RetrieveAllExpiredOptOutsAsync(olderThanDays);
 
             OptOutProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<OptOutProcessingDependencyException>(optOutRetrieveExpiredTask.AsTask);
@@ -107,7 +107,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
         public async Task ShouldThrowServiceExceptionOnRetrieveAllExpiredOptOutsIfServiceErrorOccursAsync()
         {
             // given
-            int randomNumber = 8;
+            int olderThanDays = GetRandomValidExpiryDays(7);
 
             var serviceException = new Exception();
 
@@ -124,7 +124,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             // when
             ValueTask<List<OptOut>> retrieveExpiretOptOuts =
-                this.optOutProcessingService.RetrieveAllExpiredOptOutsAsync(randomNumber);
+                this.optOutProcessingService.RetrieveAllExpiredOptOutsAsync(olderThanDays);
 
             OptOutProcessingServiceException actualException =
                 await Assert.ThrowsAsync<OptOutProcessingServiceException>(retrieveExpiretOptOuts.AsTask);

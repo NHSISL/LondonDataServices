@@ -14,7 +14,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
         ValueTask<MeshMessage> SendMessageAsync(MeshMessage message);
         ValueTask<MeshMessage> SendFileAsync(MeshMessage message);
         ValueTask<MeshMessage> RetrieveTrackingStatusByIdAsync(string messageId);
-        ValueTask<List<string>> RetrieveMessagesFromInboxAsync();
+        ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync();
         ValueTask<MeshMessage> RetrieveMessageByIdAsync(string messageId);
         ValueTask<bool> AcknowledgeMessageByIdAsync(string inputMessageId);
     }

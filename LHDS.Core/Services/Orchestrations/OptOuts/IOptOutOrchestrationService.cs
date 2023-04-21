@@ -10,6 +10,6 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
     {
         ValueTask RetrieveOptOutStatusAsync(byte[] optOutFile, string requestId);
         ValueTask PushExpiredOptOutsToMeshForRenewalAsync();
-        ValueTask RetrieveUpdatedMeshOptOutStatusChangesAsync();
+        ValueTask RetrieveUpdatedMeshConsentStatusesChangesAsync();
     }
 }

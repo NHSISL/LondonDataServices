@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // When
             ValueTask updateOptOutExpiredOptOutsToMeshIfExpiredTask =
-                this.optOutOrchestrationService.RetrieveUpdatedMeshOptOutStatusChangesAsync();
+                this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
 
             OptOutOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationDependencyValidationException>(
@@ -72,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // When
             ValueTask updateOptOutExpiredOptOutsToMeshIfExpiredTask =
-                this.optOutOrchestrationService.RetrieveUpdatedMeshOptOutStatusChangesAsync();
+                this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
 
             OptOutOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationDependencyException>(
@@ -117,7 +117,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // when
             ValueTask updateOptOutExpiredOptOutsToMeshIfExpiredTask =
-                this.optOutOrchestrationService.RetrieveUpdatedMeshOptOutStatusChangesAsync();
+                this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
 
             OptOutOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(

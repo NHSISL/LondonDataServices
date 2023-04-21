@@ -138,8 +138,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime().AddDays(7)).GetValue();
 
-        private static int GetRandomNumber() =>
-            new IntRange(min: 2, max: 10).GetValue();
+        private static int GetRandomNumber(int min = 2, int max = 10) =>
+            new IntRange(min, max).GetValue();
 
         private static List<OptOut> CreateRandomOptOutsList()
         {
@@ -167,7 +167,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             return builder.ToString();
         }
 
-        private static List<OptOut> CreateRandomOptOutsList(List<OptOutIdentifier> items, string batchReference)
+        private static List<OptOut> CreateRandomOptOutsList(
+            List<OptOutIdentifier> items,
+            string batchReference,
+            string status)
         {
             var identifiers = new List<OptOut>();
 
@@ -175,6 +178,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             {
                 var optOut = CreateOptOutFiller(GetRandomDateTimeOffset()).Create();
                 optOut.NhsNumber = item.NhsNumber;
+                optOut.OptOutStatus = status;
                 optOut.BatchReference = batchReference;
                 identifiers.Add(optOut);
             }
@@ -182,10 +186,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             return identifiers;
         }
 
-        private static List<OptOutIdentifier> CreateRandomListOfOptOutIdentifiers()
+        private static List<OptOutIdentifier> CreateRandomListOfOptOutIdentifiers(int count)
         {
             var identifiers = new List<OptOutIdentifier>();
-            var count = GetRandomNumber();
 
             for (int i = 0; i < count; i++)
             {
@@ -275,7 +278,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
-                .OnProperty(optOut => optOut.OptOutStatus).Use(GetRandomString())
+                .OnProperty(optOut => optOut.OptOutStatus).Use("Unknown")
                 .OnProperty(optOut => optOut.CreatedBy).Use(user)
                 .OnProperty(optOut => optOut.UpdatedBy).Use(user);
 

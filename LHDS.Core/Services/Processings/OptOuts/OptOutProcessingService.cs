@@ -84,7 +84,13 @@ namespace LHDS.Core.Services.Processings.OptOuts
 
         public async ValueTask<List<OptOut>> RetrieveAllOptOutsByBatchReferenceAsync(string batchReference)
         {
-            throw new NotImplementedException();
+            IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
+
+            List<OptOut> foundOptOuts = allOptOuts.Where(optOut =>
+                optOut.BatchReference == batchReference)
+                    .ToList();
+
+            return await ValueTask.FromResult(foundOptOuts);
         }
     }
 }

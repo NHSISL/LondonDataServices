@@ -27,6 +27,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 processings.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays))
                     .ReturnsAsync(outputOptOuts);
 
+
+
             this.csvMapperProcessingServiceMock.Setup(processings =>
                 processings.MapObjectToCsvAsync(outputOptOuts, withHeader, shouldAddTrailingComma))
                     .ReturnsAsync(processedOutputString);

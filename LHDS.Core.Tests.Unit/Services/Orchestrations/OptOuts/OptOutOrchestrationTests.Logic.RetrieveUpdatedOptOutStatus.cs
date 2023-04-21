@@ -118,6 +118,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
                     item.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Setup(processings =>
@@ -134,6 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
                     item.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Setup(processings =>
@@ -183,7 +185,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 foreach (var item in consentedItems)
                 {
                     item.UpdatedDate = randomDateTimeOffset;
-                    item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
                     item.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
@@ -195,6 +197,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 {
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
                     item.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
@@ -334,6 +337,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
                     item.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Setup(processings =>
@@ -350,6 +354,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
                     item.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Setup(processings =>
@@ -400,6 +405,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 {
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
                     item.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
@@ -411,6 +417,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 {
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
                     item.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
@@ -552,6 +559,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
                     item.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Setup(processings =>
@@ -568,6 +576,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
                     item.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Setup(processings =>
@@ -618,6 +627,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 {
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
                     item.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
@@ -629,6 +639,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 {
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
                     item.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
@@ -770,6 +781,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
                     item.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Setup(processings =>
@@ -786,6 +798,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
                     item.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Setup(processings =>
@@ -836,6 +849,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 {
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
                     item.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
@@ -847,6 +861,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 {
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
                     item.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
@@ -988,6 +1003,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
                     item.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Setup(processings =>
@@ -1004,6 +1020,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
                     item.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Setup(processings =>
@@ -1054,6 +1071,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 {
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
                     item.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
@@ -1065,6 +1083,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 {
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
                     item.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Verify(processings =>

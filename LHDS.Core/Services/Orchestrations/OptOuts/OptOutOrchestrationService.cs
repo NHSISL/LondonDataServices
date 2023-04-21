@@ -109,21 +109,21 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 await this.meshProcessingService.SendMessageAsync(message);
             });
 
-        public ValueTask RetrieveUpdatedMeshOptOutStatusChangesAsync() =>
+        public ValueTask RetrieveUpdatedMeshConsentStatusesChangesAsync() =>
             TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
                 bool withHeader = this.optOutConfiguration.OptOutFileHasHeader;
 
-                List<string> outputMessageIds = await
+                List<string> messageIds = await
                     this.meshProcessingService.RetrieveMessageIdsFromInboxAsync();
 
-                foreach (string messageId in outputMessageIds)
+                foreach (string messageId in messageIds)
                 {
                     MeshMessage message = await meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(messageId);
                     string batchReference = message.Headers["Mex-LocalID"].FirstOrDefault();
 
-                    List<OptOutIdentifier> outputOptOutIdentifierConsentedList =
+                    List<OptOutIdentifier> consentedIdentifierList =
                         await csvMapperProcessingService.MapCsvToObjectAsync<OptOutIdentifier>(
                             message.StringContent,
                             withHeader);
@@ -131,44 +131,44 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     List<OptOut> originalBatch = await this.optOutProcessingService
                         .RetrieveAllOptOutsByBatchReferenceAsync(batchReference);
 
-                    List<string> consentedIdentifiers = outputOptOutIdentifierConsentedList
+                    List<string> consentedIdentifiers = consentedIdentifierList
                         .Select(optOut => optOut.NhsNumber).ToList();
 
-                    List<OptOut> consentedOptouts = originalBatch
+                    List<OptOut> consentedList = originalBatch
                         .Where(optOut => consentedIdentifiers.Contains(optOut.NhsNumber)).ToList();
 
-                    List<OptOut> nonConsentedOptouts = originalBatch.Except(consentedOptouts).ToList();
+                    List<OptOut> nonConsentedList = originalBatch.Except(consentedList).ToList();
 
                     List<OptOut> delta = new List<OptOut>();
 
-                    foreach (var item in consentedOptouts)
+                    foreach (var item in consentedList)
                     {
                         if (item.OptOutStatus != "Opt-In")
                         {
-                            var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-
-                            item.UpdatedDate = dateTime;
-                            item.CacheTime = dateTime;
-                            item.OptOutStatus = "Opt-In";
-
-                            await this.optOutProcessingService.ModifyOptOutAsync(item);
                             delta.Add(item);
                         }
+
+                        var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                        item.UpdatedDate = dateTime;
+                        item.CacheTime = dateTime;
+                        item.OptOutStatus = "Opt-In";
+
+                        await this.optOutProcessingService.ModifyOptOutAsync(item);
                     }
 
-                    foreach (var item in nonConsentedOptouts)
+                    foreach (var item in nonConsentedList)
                     {
                         if (item.OptOutStatus != "Opt-Out")
                         {
-                            var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-
-                            item.UpdatedDate = dateTime;
-                            item.CacheTime = dateTime;
-                            item.OptOutStatus = "Opt-Out";
-
-                            await this.optOutProcessingService.ModifyOptOutAsync(item);
                             delta.Add(item);
                         }
+
+                        var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                        item.UpdatedDate = dateTime;
+                        item.CacheTime = dateTime;
+                        item.OptOutStatus = "Opt-Out";
+
+                        await this.optOutProcessingService.ModifyOptOutAsync(item);
                     }
 
                     List<OptOutIdentifier> differentIdentifiers = delta

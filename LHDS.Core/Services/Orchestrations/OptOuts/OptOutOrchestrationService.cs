@@ -151,6 +151,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
                         item.UpdatedDate = dateTime;
                         item.CacheTime = dateTime;
+                        item.LastSentToMesh = dateTime;
                         item.OptOutStatus = "Opt-In";
 
                         await this.optOutProcessingService.ModifyOptOutAsync(item);
@@ -166,6 +167,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
                         item.UpdatedDate = dateTime;
                         item.CacheTime = dateTime;
+                        item.LastSentToMesh = dateTime;
                         item.OptOutStatus = "Opt-Out";
 
                         await this.optOutProcessingService.ModifyOptOutAsync(item);

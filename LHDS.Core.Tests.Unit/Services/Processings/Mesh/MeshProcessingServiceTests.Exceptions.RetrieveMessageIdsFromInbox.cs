@@ -81,9 +81,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
-                     expectedMeshProcessingDependencyException))),
-                         Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedMeshProcessingDependencyException))),
+                        Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -121,9 +121,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
-                     expectedMeshProcessingServiveException))),
-                         Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedMeshProcessingServiveException))),
+                        Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

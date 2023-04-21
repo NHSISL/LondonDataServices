@@ -15,7 +15,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 public async Task ShouldAknowledgeMessageByIdAsync()
         {
             // given
-            string randomMessageId = GetRandomMessage();
+            string randomMessageId = GetRandomString();
             string inputMessageId = randomMessageId;
 
             bool outputValidationResult = true;

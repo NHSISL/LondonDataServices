@@ -1,0 +1,1128 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Mesh;
+using LHDS.Core.Models.Foundations.OptOuts;
+using Moq;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
+{
+    public partial class OptOutOrchestrationTests
+    {
+        [Fact]
+        public async Task ShouldRetrieveUpdatedMeshOptOutStatusesAndUpdateCacheAsync()
+        {
+            // Given
+            bool withHeader = optOutConfiguration.OptOutFileHasHeader;
+            string batchReference = GetRandomString();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            List<string> outputMessageIds = GetRandomStrings(GetRandomNumber(max: 3));
+            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, batchReference);
+
+            List<OptOutIdentifier> outputIdentifierUnknownList =
+                CreateRandomListOfOptOutIdentifiers(GetRandomNumber(max: 3));
+
+            List<OptOutIdentifier> outputIdentifierConsentedList =
+                CreateRandomListOfOptOutIdentifiers(GetRandomNumber(max: 3));
+
+            List<OptOutIdentifier> outputIdentifierNonConsentedList =
+                CreateRandomListOfOptOutIdentifiers(GetRandomNumber(max: 3));
+
+            List<OptOutIdentifier> randomOutputIdentifierBatch = new List<OptOutIdentifier>();
+            randomOutputIdentifierBatch.AddRange(outputIdentifierUnknownList);
+            randomOutputIdentifierBatch.AddRange(outputIdentifierConsentedList);
+            randomOutputIdentifierBatch.AddRange(outputIdentifierNonConsentedList);
+
+            List<OptOut> randomUnkownConsentBatch =
+                CreateRandomOptOutsList(outputIdentifierUnknownList, batchReference, "Unknown");
+
+            List<OptOut> randomConsentBatch =
+                CreateRandomOptOutsList(outputIdentifierConsentedList, batchReference, "Opt-In");
+
+            List<OptOut> randomNonConsentBatch =
+                CreateRandomOptOutsList(outputIdentifierConsentedList, batchReference, "Opt-In");
+
+            List<OptOut> outputBatch = new List<OptOut>();
+            outputBatch.AddRange(randomUnkownConsentBatch);
+            outputBatch.AddRange(randomConsentBatch);
+            outputBatch.AddRange(randomNonConsentBatch);
+
+            List<string> consentedIdentifiers = outputIdentifierConsentedList
+                .Select(identifier => identifier.NhsNumber).ToList();
+
+            List<OptOut> consentedItems =
+                outputBatch.Where(optout => consentedIdentifiers.Contains(optout.NhsNumber)).ToList();
+
+            List<OptOut> nonConsentedItems =
+                outputBatch.Except(consentedItems).ToList();
+
+            List<OptOut> differences = new List<OptOut>();
+
+            List<OptOutIdentifier> differentIdentifiers = differences
+                .Select(item => new OptOutIdentifier { NhsNumber = item.NhsNumber }).ToList();
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // Given
+            this.meshProcessingServiceMock.Setup(processings =>
+                processings.RetrieveMessageIdsFromInboxAsync())
+                    .ReturnsAsync(outputMessageIds);
+
+            foreach (string messageId in outputMessageIds)
+            {
+                var message = outputMessages.First(message => message.MessageId == messageId);
+
+                // Get message
+                this.meshProcessingServiceMock.Setup(processings =>
+                    processings.RetrieveAndAcknowledgeMessageByIdAsync(messageId))
+                        .ReturnsAsync(message);
+
+                // Map message content to object
+                this.csvMapperProcessingServiceMock.Setup(processings =>
+                    processings.MapCsvToObjectAsync<OptOutIdentifier>(message.StringContent, withHeader))
+                        .ReturnsAsync(outputIdentifierConsentedList);
+
+                // Get original batch
+                this.optOutProcessingServiceMock.Setup(processings =>
+                    processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference))
+                        .ReturnsAsync(outputBatch);
+
+                string csvDifferences = CreateNewCsvList(
+                    differentIdentifiers,
+                    this.optOutConfiguration.OptOutFileRequireTrailingComma);
+
+                this.csvMapperProcessingServiceMock.Setup(processings =>
+                    processings.MapObjectToCsvAsync<OptOutIdentifier>(
+                        differentIdentifiers,
+                        this.optOutConfiguration.OptOutFileHasHeader,
+                        this.optOutConfiguration.OptOutFileRequireTrailingComma))
+                            .ReturnsAsync(csvDifferences);
+
+                foreach (var item in consentedItems)
+                {
+                    if (item.OptOutStatus != "Opt-In")
+                    {
+                        differences.Add(item);
+                    }
+
+                    item.UpdatedDate = randomDateTimeOffset;
+                    item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
+                    item.OptOutStatus = "Opt-In";
+
+                    this.optOutProcessingServiceMock.Setup(processings =>
+                        processings.ModifyOptOutAsync(item))
+                            .ReturnsAsync(item);
+                }
+
+                foreach (var item in nonConsentedItems)
+                {
+                    if (item.OptOutStatus != "Opt-Out")
+                    {
+                        differences.Add(item);
+                    }
+
+                    item.UpdatedDate = randomDateTimeOffset;
+                    item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
+                    item.OptOutStatus = "Opt-Out";
+
+                    this.optOutProcessingServiceMock.Setup(processings =>
+                        processings.ModifyOptOutAsync(item))
+                            .ReturnsAsync(item);
+                }
+
+                Document document = new Document
+                {
+                    DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
+                    FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_Response_" +
+                        $"{randomDateTimeOffset.ToString("yyyyMMddHHmmss")}.csv",
+                };
+            }
+
+            // When
+            await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+
+            // Then
+            this.dateTimeBrokerMock.Verify(broker =>
+               broker.GetCurrentDateTimeOffset(),
+                    Times.AtLeastOnce());
+
+            this.meshProcessingServiceMock.Verify(Processings =>
+                Processings.RetrieveMessageIdsFromInboxAsync(),
+                    Times.Once);
+
+            foreach (string messageId in outputMessageIds)
+            {
+                var message = outputMessages.First(message => message.MessageId == messageId);
+
+                // Get message
+                this.meshProcessingServiceMock.Verify(processings =>
+                    processings.RetrieveAndAcknowledgeMessageByIdAsync(messageId),
+                        Times.Once());
+
+                // Map message content to object
+                this.csvMapperProcessingServiceMock.Verify(processings =>
+                    processings.MapCsvToObjectAsync<OptOutIdentifier>(message.StringContent, withHeader),
+                        Times.Once());
+
+                // Get original batch
+                this.optOutProcessingServiceMock.Verify(processings =>
+                    processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference),
+                        Times.Exactly(outputMessageIds.Count));
+
+                foreach (var item in consentedItems)
+                {
+                    item.UpdatedDate = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
+                    item.OptOutStatus = "Opt-In";
+
+                    this.optOutProcessingServiceMock.Verify(processings =>
+                        processings.ModifyOptOutAsync(item),
+                            Times.Exactly(outputMessageIds.Count));
+                }
+
+                foreach (var item in nonConsentedItems)
+                {
+                    item.UpdatedDate = randomDateTimeOffset;
+                    item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
+                    item.OptOutStatus = "Opt-Out";
+
+                    this.optOutProcessingServiceMock.Verify(processings =>
+                        processings.ModifyOptOutAsync(item),
+                            Times.Exactly(outputMessageIds.Count));
+                }
+
+                string csvDifferences = CreateNewCsvList(
+                    differentIdentifiers,
+                    this.optOutConfiguration.OptOutFileRequireTrailingComma);
+
+                differences.Count.Should().Be(outputBatch.Count - consentedItems.Count);
+
+                this.csvMapperProcessingServiceMock.Verify(processings =>
+                    processings.MapObjectToCsvAsync<OptOutIdentifier>(
+                        differentIdentifiers,
+                        this.optOutConfiguration.OptOutFileHasHeader,
+                        this.optOutConfiguration.OptOutFileRequireTrailingComma),
+                            Times.Exactly(outputMessageIds.Count));
+
+                Document document = new Document
+                {
+                    DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
+                    FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_Response_" +
+                        $"{randomDateTimeOffset.ToString("yyyyMMddHHmmss")}.csv",
+                };
+
+                this.documentProcessingServiceMock.Verify(processings =>
+                    processings.AddDocumentAsync(It.Is(SameDocumentAs(document))),
+                        Times.Exactly(outputMessageIds.Count));
+            }
+
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldRetrieveUpdatedMeshOptOutStatusesAndMarkUnkownsAsOptOutAndWriteDeltaAsync()
+        {
+            // Given
+            bool withHeader = optOutConfiguration.OptOutFileHasHeader;
+            string batchReference = GetRandomString();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            List<string> outputMessageIds = GetRandomStrings(GetRandomNumber(max: 3));
+            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, batchReference);
+
+            List<OptOutIdentifier> outputIdentifierUnknownList =
+                CreateRandomListOfOptOutIdentifiers(GetRandomNumber(max: 3));
+
+            List<OptOutIdentifier> outputIdentifierConsentedList =
+                new List<OptOutIdentifier>();
+
+            List<OptOutIdentifier> outputIdentifierNonConsentedList =
+                new List<OptOutIdentifier>();
+
+            List<OptOutIdentifier> randomOutputIdentifierBatch = new List<OptOutIdentifier>();
+            randomOutputIdentifierBatch.AddRange(outputIdentifierUnknownList);
+            randomOutputIdentifierBatch.AddRange(outputIdentifierConsentedList);
+            randomOutputIdentifierBatch.AddRange(outputIdentifierNonConsentedList);
+
+            List<OptOut> randomUnkownConsentBatch =
+                CreateRandomOptOutsList(outputIdentifierUnknownList, batchReference, "Unknown");
+
+            List<OptOut> randomConsentBatch =
+                new List<OptOut>();
+
+            List<OptOut> randomNonConsentBatch =
+                new List<OptOut>();
+
+            List<OptOut> outputBatch = new List<OptOut>();
+            outputBatch.AddRange(randomUnkownConsentBatch);
+            outputBatch.AddRange(randomConsentBatch);
+            outputBatch.AddRange(randomNonConsentBatch);
+
+            List<string> consentedIdentifiers = outputIdentifierConsentedList
+                .Select(identifier => identifier.NhsNumber).ToList();
+
+            List<OptOut> consentedItems =
+                outputBatch.Where(optout => consentedIdentifiers.Contains(optout.NhsNumber)).ToList();
+
+            List<OptOut> nonConsentedItems =
+                outputBatch.Except(consentedItems).ToList();
+
+            List<OptOut> differences = new List<OptOut>();
+
+            List<OptOutIdentifier> differentIdentifiers = differences
+                .Select(item => new OptOutIdentifier { NhsNumber = item.NhsNumber }).ToList();
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // Given
+            this.meshProcessingServiceMock.Setup(processings =>
+                processings.RetrieveMessageIdsFromInboxAsync())
+                    .ReturnsAsync(outputMessageIds);
+
+            foreach (string messageId in outputMessageIds)
+            {
+                var message = outputMessages.First(message => message.MessageId == messageId);
+
+                // Get message
+                this.meshProcessingServiceMock.Setup(processings =>
+                    processings.RetrieveAndAcknowledgeMessageByIdAsync(messageId))
+                        .ReturnsAsync(message);
+
+                // Map message content to object
+                this.csvMapperProcessingServiceMock.Setup(processings =>
+                    processings.MapCsvToObjectAsync<OptOutIdentifier>(message.StringContent, withHeader))
+                        .ReturnsAsync(outputIdentifierConsentedList);
+
+                // Get original batch
+                this.optOutProcessingServiceMock.Setup(processings =>
+                    processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference))
+                        .ReturnsAsync(outputBatch);
+
+                string csvDifferences = CreateNewCsvList(
+                    differentIdentifiers,
+                    this.optOutConfiguration.OptOutFileRequireTrailingComma);
+
+                this.csvMapperProcessingServiceMock.Setup(processings =>
+                    processings.MapObjectToCsvAsync<OptOutIdentifier>(
+                        differentIdentifiers,
+                        this.optOutConfiguration.OptOutFileHasHeader,
+                        this.optOutConfiguration.OptOutFileRequireTrailingComma))
+                            .ReturnsAsync(csvDifferences);
+
+                foreach (var item in consentedItems)
+                {
+                    if (item.OptOutStatus != "Opt-In")
+                    {
+                        differences.Add(item);
+                    }
+
+                    item.UpdatedDate = randomDateTimeOffset;
+                    item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
+                    item.OptOutStatus = "Opt-In";
+
+                    this.optOutProcessingServiceMock.Setup(processings =>
+                        processings.ModifyOptOutAsync(item))
+                            .ReturnsAsync(item);
+                }
+
+                foreach (var item in nonConsentedItems)
+                {
+                    if (item.OptOutStatus != "Opt-Out")
+                    {
+                        differences.Add(item);
+                    }
+
+                    item.UpdatedDate = randomDateTimeOffset;
+                    item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
+                    item.OptOutStatus = "Opt-Out";
+
+                    this.optOutProcessingServiceMock.Setup(processings =>
+                        processings.ModifyOptOutAsync(item))
+                            .ReturnsAsync(item);
+                }
+
+                Document document = new Document
+                {
+                    DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
+                    FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_Response_" +
+                        $"{randomDateTimeOffset.ToString("yyyyMMddHHmmss")}.csv",
+                };
+            }
+
+            // When
+            await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+
+            // Then
+            this.dateTimeBrokerMock.Verify(broker =>
+               broker.GetCurrentDateTimeOffset(),
+                    Times.AtLeastOnce());
+
+            this.meshProcessingServiceMock.Verify(Processings =>
+                Processings.RetrieveMessageIdsFromInboxAsync(),
+                    Times.Once);
+
+            foreach (string messageId in outputMessageIds)
+            {
+                var message = outputMessages.First(message => message.MessageId == messageId);
+
+                // Get message
+                this.meshProcessingServiceMock.Verify(processings =>
+                    processings.RetrieveAndAcknowledgeMessageByIdAsync(messageId),
+                        Times.Once());
+
+                // Map message content to object
+                this.csvMapperProcessingServiceMock.Verify(processings =>
+                    processings.MapCsvToObjectAsync<OptOutIdentifier>(message.StringContent, withHeader),
+                        Times.Once());
+
+                // Get original batch
+                this.optOutProcessingServiceMock.Verify(processings =>
+                    processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference),
+                        Times.Exactly(outputMessageIds.Count));
+
+                foreach (var item in consentedItems)
+                {
+                    item.UpdatedDate = randomDateTimeOffset;
+                    item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
+                    item.OptOutStatus = "Opt-In";
+
+                    this.optOutProcessingServiceMock.Verify(processings =>
+                        processings.ModifyOptOutAsync(item),
+                            Times.Exactly(outputMessageIds.Count));
+                }
+
+                foreach (var item in nonConsentedItems)
+                {
+                    item.UpdatedDate = randomDateTimeOffset;
+                    item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
+                    item.OptOutStatus = "Opt-Out";
+
+                    this.optOutProcessingServiceMock.Verify(processings =>
+                        processings.ModifyOptOutAsync(item),
+                            Times.Exactly(outputMessageIds.Count));
+                }
+
+                string csvDifferences = CreateNewCsvList(
+                    differentIdentifiers,
+                    this.optOutConfiguration.OptOutFileRequireTrailingComma);
+
+                consentedItems.Count.Should().Be(0);
+                nonConsentedItems.Count.Should().Be(outputIdentifierUnknownList.Count);
+                differences.Count.Should().Be(outputBatch.Count - consentedItems.Count);
+
+                this.csvMapperProcessingServiceMock.Verify(processings =>
+                    processings.MapObjectToCsvAsync<OptOutIdentifier>(
+                        differentIdentifiers,
+                        this.optOutConfiguration.OptOutFileHasHeader,
+                        this.optOutConfiguration.OptOutFileRequireTrailingComma),
+                            Times.Exactly(outputMessageIds.Count));
+
+                Document document = new Document
+                {
+                    DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
+                    FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_Response_" +
+                        $"{randomDateTimeOffset.ToString("yyyyMMddHHmmss")}.csv",
+                };
+
+                this.documentProcessingServiceMock.Verify(processings =>
+                    processings.AddDocumentAsync(It.Is(SameDocumentAs(document))),
+                        Times.Exactly(outputMessageIds.Count));
+            }
+
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldRetrieveUpdatedMeshOptOutStatusesAndMarkUnkownsAsOptInAndWriteDeltaAsync()
+        {
+            // Given
+            bool withHeader = optOutConfiguration.OptOutFileHasHeader;
+            string batchReference = GetRandomString();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            List<string> outputMessageIds = GetRandomStrings(GetRandomNumber(max: 3));
+            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, batchReference);
+
+            List<OptOutIdentifier> outputIdentifierUnknownList =
+                new List<OptOutIdentifier>();
+
+            List<OptOutIdentifier> outputIdentifierConsentedList =
+                CreateRandomListOfOptOutIdentifiers(GetRandomNumber(max: 3));
+
+            List<OptOutIdentifier> outputIdentifierNonConsentedList =
+                new List<OptOutIdentifier>();
+
+            List<OptOutIdentifier> randomOutputIdentifierBatch = new List<OptOutIdentifier>();
+            randomOutputIdentifierBatch.AddRange(outputIdentifierUnknownList);
+            randomOutputIdentifierBatch.AddRange(outputIdentifierConsentedList);
+            randomOutputIdentifierBatch.AddRange(outputIdentifierNonConsentedList);
+
+            List<OptOut> randomUnkownConsentBatch =
+                CreateRandomOptOutsList(outputIdentifierConsentedList, batchReference, "Unknown");
+
+            List<OptOut> randomConsentBatch =
+                new List<OptOut>();
+
+            List<OptOut> randomNonConsentBatch =
+                new List<OptOut>();
+
+            List<OptOut> outputBatch = new List<OptOut>();
+            outputBatch.AddRange(randomUnkownConsentBatch);
+            outputBatch.AddRange(randomConsentBatch);
+            outputBatch.AddRange(randomNonConsentBatch);
+
+            List<string> consentedIdentifiers = outputIdentifierConsentedList
+                .Select(identifier => identifier.NhsNumber).ToList();
+
+            List<OptOut> consentedItems =
+                outputBatch.Where(optout => consentedIdentifiers.Contains(optout.NhsNumber)).ToList();
+
+            List<OptOut> nonConsentedItems =
+                outputBatch.Except(consentedItems).ToList();
+
+            List<OptOut> differences = new List<OptOut>();
+
+            List<OptOutIdentifier> differentIdentifiers = differences
+                .Select(item => new OptOutIdentifier { NhsNumber = item.NhsNumber }).ToList();
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // Given
+            this.meshProcessingServiceMock.Setup(processings =>
+                processings.RetrieveMessageIdsFromInboxAsync())
+                    .ReturnsAsync(outputMessageIds);
+
+            foreach (string messageId in outputMessageIds)
+            {
+                var message = outputMessages.First(message => message.MessageId == messageId);
+
+                // Get message
+                this.meshProcessingServiceMock.Setup(processings =>
+                    processings.RetrieveAndAcknowledgeMessageByIdAsync(messageId))
+                        .ReturnsAsync(message);
+
+                // Map message content to object
+                this.csvMapperProcessingServiceMock.Setup(processings =>
+                    processings.MapCsvToObjectAsync<OptOutIdentifier>(message.StringContent, withHeader))
+                        .ReturnsAsync(outputIdentifierConsentedList);
+
+                // Get original batch
+                this.optOutProcessingServiceMock.Setup(processings =>
+                    processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference))
+                        .ReturnsAsync(outputBatch);
+
+                string csvDifferences = CreateNewCsvList(
+                    differentIdentifiers,
+                    this.optOutConfiguration.OptOutFileRequireTrailingComma);
+
+                this.csvMapperProcessingServiceMock.Setup(processings =>
+                    processings.MapObjectToCsvAsync<OptOutIdentifier>(
+                        differentIdentifiers,
+                        this.optOutConfiguration.OptOutFileHasHeader,
+                        this.optOutConfiguration.OptOutFileRequireTrailingComma))
+                            .ReturnsAsync(csvDifferences);
+
+                foreach (var item in consentedItems)
+                {
+                    if (item.OptOutStatus != "Opt-In")
+                    {
+                        differences.Add(item);
+                    }
+
+                    item.UpdatedDate = randomDateTimeOffset;
+                    item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
+                    item.OptOutStatus = "Opt-In";
+
+                    this.optOutProcessingServiceMock.Setup(processings =>
+                        processings.ModifyOptOutAsync(item))
+                            .ReturnsAsync(item);
+                }
+
+                foreach (var item in nonConsentedItems)
+                {
+                    if (item.OptOutStatus != "Opt-Out")
+                    {
+                        differences.Add(item);
+                    }
+
+                    item.UpdatedDate = randomDateTimeOffset;
+                    item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
+                    item.OptOutStatus = "Opt-Out";
+
+                    this.optOutProcessingServiceMock.Setup(processings =>
+                        processings.ModifyOptOutAsync(item))
+                            .ReturnsAsync(item);
+                }
+
+                Document document = new Document
+                {
+                    DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
+                    FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_Response_" +
+                        $"{randomDateTimeOffset.ToString("yyyyMMddHHmmss")}.csv",
+                };
+            }
+
+            // When
+            await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+
+            // Then
+            this.dateTimeBrokerMock.Verify(broker =>
+               broker.GetCurrentDateTimeOffset(),
+                    Times.AtLeastOnce());
+
+            this.meshProcessingServiceMock.Verify(Processings =>
+                Processings.RetrieveMessageIdsFromInboxAsync(),
+                    Times.Once);
+
+            foreach (string messageId in outputMessageIds)
+            {
+                var message = outputMessages.First(message => message.MessageId == messageId);
+
+                // Get message
+                this.meshProcessingServiceMock.Verify(processings =>
+                    processings.RetrieveAndAcknowledgeMessageByIdAsync(messageId),
+                        Times.Once());
+
+                // Map message content to object
+                this.csvMapperProcessingServiceMock.Verify(processings =>
+                    processings.MapCsvToObjectAsync<OptOutIdentifier>(message.StringContent, withHeader),
+                        Times.Once());
+
+                // Get original batch
+                this.optOutProcessingServiceMock.Verify(processings =>
+                    processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference),
+                        Times.Exactly(outputMessageIds.Count));
+
+                foreach (var item in consentedItems)
+                {
+                    item.UpdatedDate = randomDateTimeOffset;
+                    item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
+                    item.OptOutStatus = "Opt-In";
+
+                    this.optOutProcessingServiceMock.Verify(processings =>
+                        processings.ModifyOptOutAsync(item),
+                            Times.Exactly(outputMessageIds.Count));
+                }
+
+                foreach (var item in nonConsentedItems)
+                {
+                    item.UpdatedDate = randomDateTimeOffset;
+                    item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
+                    item.OptOutStatus = "Opt-Out";
+
+                    this.optOutProcessingServiceMock.Verify(processings =>
+                        processings.ModifyOptOutAsync(item),
+                            Times.Exactly(outputMessageIds.Count));
+                }
+
+                string csvDifferences = CreateNewCsvList(
+                    differentIdentifiers,
+                    this.optOutConfiguration.OptOutFileRequireTrailingComma);
+
+                consentedItems.Count.Should().Be(outputIdentifierConsentedList.Count);
+                nonConsentedItems.Count.Should().Be(0);
+                differences.Count.Should().Be(outputIdentifierConsentedList.Count);
+
+                this.csvMapperProcessingServiceMock.Verify(processings =>
+                    processings.MapObjectToCsvAsync<OptOutIdentifier>(
+                        differentIdentifiers,
+                        this.optOutConfiguration.OptOutFileHasHeader,
+                        this.optOutConfiguration.OptOutFileRequireTrailingComma),
+                            Times.Exactly(outputMessageIds.Count));
+
+                Document document = new Document
+                {
+                    DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
+                    FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_Response_" +
+                        $"{randomDateTimeOffset.ToString("yyyyMMddHHmmss")}.csv",
+                };
+
+                this.documentProcessingServiceMock.Verify(processings =>
+                    processings.AddDocumentAsync(It.Is(SameDocumentAs(document))),
+                        Times.Exactly(outputMessageIds.Count));
+            }
+
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldRetrieveUpdatedMeshOptOutStatusesAndMarkOptOutAsOptInAndWriteDeltaAsync()
+        {
+            // Given
+            bool withHeader = optOutConfiguration.OptOutFileHasHeader;
+            string batchReference = GetRandomString();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            List<string> outputMessageIds = GetRandomStrings(GetRandomNumber(max: 3));
+            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, batchReference);
+
+            List<OptOutIdentifier> outputIdentifierUnknownList =
+                new List<OptOutIdentifier>();
+
+            List<OptOutIdentifier> outputIdentifierConsentedList =
+                CreateRandomListOfOptOutIdentifiers(GetRandomNumber(max: 3));
+
+            List<OptOutIdentifier> outputIdentifierNonConsentedList =
+                new List<OptOutIdentifier>();
+
+            List<OptOutIdentifier> randomOutputIdentifierBatch = new List<OptOutIdentifier>();
+            randomOutputIdentifierBatch.AddRange(outputIdentifierUnknownList);
+            randomOutputIdentifierBatch.AddRange(outputIdentifierConsentedList);
+            randomOutputIdentifierBatch.AddRange(outputIdentifierNonConsentedList);
+
+            List<OptOut> randomUnkownConsentBatch =
+                new List<OptOut>();
+
+            List<OptOut> randomConsentBatch =
+                new List<OptOut>();
+
+            List<OptOut> randomNonConsentBatch =
+                CreateRandomOptOutsList(outputIdentifierConsentedList, batchReference, "Unknown");
+
+            List<OptOut> outputBatch = new List<OptOut>();
+            outputBatch.AddRange(randomUnkownConsentBatch);
+            outputBatch.AddRange(randomConsentBatch);
+            outputBatch.AddRange(randomNonConsentBatch);
+
+            List<string> consentedIdentifiers = outputIdentifierConsentedList
+                .Select(identifier => identifier.NhsNumber).ToList();
+
+            List<OptOut> consentedItems =
+                outputBatch.Where(optout => consentedIdentifiers.Contains(optout.NhsNumber)).ToList();
+
+            List<OptOut> nonConsentedItems =
+                outputBatch.Except(consentedItems).ToList();
+
+            List<OptOut> differences = new List<OptOut>();
+
+            List<OptOutIdentifier> differentIdentifiers = differences
+                .Select(item => new OptOutIdentifier { NhsNumber = item.NhsNumber }).ToList();
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // Given
+            this.meshProcessingServiceMock.Setup(processings =>
+                processings.RetrieveMessageIdsFromInboxAsync())
+                    .ReturnsAsync(outputMessageIds);
+
+            foreach (string messageId in outputMessageIds)
+            {
+                var message = outputMessages.First(message => message.MessageId == messageId);
+
+                // Get message
+                this.meshProcessingServiceMock.Setup(processings =>
+                    processings.RetrieveAndAcknowledgeMessageByIdAsync(messageId))
+                        .ReturnsAsync(message);
+
+                // Map message content to object
+                this.csvMapperProcessingServiceMock.Setup(processings =>
+                    processings.MapCsvToObjectAsync<OptOutIdentifier>(message.StringContent, withHeader))
+                        .ReturnsAsync(outputIdentifierConsentedList);
+
+                // Get original batch
+                this.optOutProcessingServiceMock.Setup(processings =>
+                    processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference))
+                        .ReturnsAsync(outputBatch);
+
+                string csvDifferences = CreateNewCsvList(
+                    differentIdentifiers,
+                    this.optOutConfiguration.OptOutFileRequireTrailingComma);
+
+                this.csvMapperProcessingServiceMock.Setup(processings =>
+                    processings.MapObjectToCsvAsync<OptOutIdentifier>(
+                        differentIdentifiers,
+                        this.optOutConfiguration.OptOutFileHasHeader,
+                        this.optOutConfiguration.OptOutFileRequireTrailingComma))
+                            .ReturnsAsync(csvDifferences);
+
+                foreach (var item in consentedItems)
+                {
+                    if (item.OptOutStatus != "Opt-In")
+                    {
+                        differences.Add(item);
+                    }
+
+                    item.UpdatedDate = randomDateTimeOffset;
+                    item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
+                    item.OptOutStatus = "Opt-In";
+
+                    this.optOutProcessingServiceMock.Setup(processings =>
+                        processings.ModifyOptOutAsync(item))
+                            .ReturnsAsync(item);
+                }
+
+                foreach (var item in nonConsentedItems)
+                {
+                    if (item.OptOutStatus != "Opt-Out")
+                    {
+                        differences.Add(item);
+                    }
+
+                    item.UpdatedDate = randomDateTimeOffset;
+                    item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
+                    item.OptOutStatus = "Opt-Out";
+
+                    this.optOutProcessingServiceMock.Setup(processings =>
+                        processings.ModifyOptOutAsync(item))
+                            .ReturnsAsync(item);
+                }
+
+                Document document = new Document
+                {
+                    DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
+                    FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_Response_" +
+                        $"{randomDateTimeOffset.ToString("yyyyMMddHHmmss")}.csv",
+                };
+            }
+
+            // When
+            await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+
+            // Then
+            this.dateTimeBrokerMock.Verify(broker =>
+               broker.GetCurrentDateTimeOffset(),
+                    Times.AtLeastOnce());
+
+            this.meshProcessingServiceMock.Verify(Processings =>
+                Processings.RetrieveMessageIdsFromInboxAsync(),
+                    Times.Once);
+
+            foreach (string messageId in outputMessageIds)
+            {
+                var message = outputMessages.First(message => message.MessageId == messageId);
+
+                // Get message
+                this.meshProcessingServiceMock.Verify(processings =>
+                    processings.RetrieveAndAcknowledgeMessageByIdAsync(messageId),
+                        Times.Once());
+
+                // Map message content to object
+                this.csvMapperProcessingServiceMock.Verify(processings =>
+                    processings.MapCsvToObjectAsync<OptOutIdentifier>(message.StringContent, withHeader),
+                        Times.Once());
+
+                // Get original batch
+                this.optOutProcessingServiceMock.Verify(processings =>
+                    processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference),
+                        Times.Exactly(outputMessageIds.Count));
+
+                foreach (var item in consentedItems)
+                {
+                    item.UpdatedDate = randomDateTimeOffset;
+                    item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
+                    item.OptOutStatus = "Opt-In";
+
+                    this.optOutProcessingServiceMock.Verify(processings =>
+                        processings.ModifyOptOutAsync(item),
+                            Times.Exactly(outputMessageIds.Count));
+                }
+
+                foreach (var item in nonConsentedItems)
+                {
+                    item.UpdatedDate = randomDateTimeOffset;
+                    item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
+                    item.OptOutStatus = "Opt-Out";
+
+                    this.optOutProcessingServiceMock.Verify(processings =>
+                        processings.ModifyOptOutAsync(item),
+                            Times.Exactly(outputMessageIds.Count));
+                }
+
+                string csvDifferences = CreateNewCsvList(
+                    differentIdentifiers,
+                    this.optOutConfiguration.OptOutFileRequireTrailingComma);
+
+                consentedItems.Count.Should().Be(outputIdentifierConsentedList.Count);
+                nonConsentedItems.Count.Should().Be(0);
+                differences.Count.Should().Be(outputIdentifierConsentedList.Count);
+
+                this.csvMapperProcessingServiceMock.Verify(processings =>
+                    processings.MapObjectToCsvAsync<OptOutIdentifier>(
+                        differentIdentifiers,
+                        this.optOutConfiguration.OptOutFileHasHeader,
+                        this.optOutConfiguration.OptOutFileRequireTrailingComma),
+                            Times.Exactly(outputMessageIds.Count));
+
+                Document document = new Document
+                {
+                    DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
+                    FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_Response_" +
+                        $"{randomDateTimeOffset.ToString("yyyyMMddHHmmss")}.csv",
+                };
+
+                this.documentProcessingServiceMock.Verify(processings =>
+                    processings.AddDocumentAsync(It.Is(SameDocumentAs(document))),
+                        Times.Exactly(outputMessageIds.Count));
+            }
+
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldRetrieveUpdatedMeshOptOutStatusesAndNotWriteDeltaIfNoChangesAsync()
+        {
+            // Given
+            bool withHeader = optOutConfiguration.OptOutFileHasHeader;
+            string batchReference = GetRandomString();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            List<string> outputMessageIds = GetRandomStrings(GetRandomNumber(max: 3));
+            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, batchReference);
+
+            List<OptOutIdentifier> outputIdentifierUnknownList =
+                new List<OptOutIdentifier>();
+
+            List<OptOutIdentifier> outputIdentifierConsentedList =
+                CreateRandomListOfOptOutIdentifiers(GetRandomNumber(max: 3));
+
+            List<OptOutIdentifier> outputIdentifierNonConsentedList =
+                CreateRandomListOfOptOutIdentifiers(GetRandomNumber(max: 3));
+
+            List<OptOutIdentifier> randomOutputIdentifierBatch = new List<OptOutIdentifier>();
+            randomOutputIdentifierBatch.AddRange(outputIdentifierUnknownList);
+            randomOutputIdentifierBatch.AddRange(outputIdentifierConsentedList);
+            randomOutputIdentifierBatch.AddRange(outputIdentifierNonConsentedList);
+
+            List<OptOut> randomUnkownConsentBatch =
+                new List<OptOut>();
+
+            List<OptOut> randomConsentBatch =
+                CreateRandomOptOutsList(outputIdentifierConsentedList, batchReference, "Opt-In");
+
+            List<OptOut> randomNonConsentBatch =
+                CreateRandomOptOutsList(outputIdentifierNonConsentedList, batchReference, "Opt-Out");
+
+            List<OptOut> outputBatch = new List<OptOut>();
+            outputBatch.AddRange(randomUnkownConsentBatch);
+            outputBatch.AddRange(randomConsentBatch);
+            outputBatch.AddRange(randomNonConsentBatch);
+
+            List<string> consentedIdentifiers = outputIdentifierConsentedList
+                .Select(identifier => identifier.NhsNumber).ToList();
+
+            List<OptOut> consentedItems =
+                outputBatch.Where(optout => consentedIdentifiers.Contains(optout.NhsNumber)).ToList();
+
+            List<OptOut> nonConsentedItems =
+                outputBatch.Except(consentedItems).ToList();
+
+            List<OptOut> differences = new List<OptOut>();
+
+            List<OptOutIdentifier> differentIdentifiers = differences
+                .Select(item => new OptOutIdentifier { NhsNumber = item.NhsNumber }).ToList();
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // Given
+            this.meshProcessingServiceMock.Setup(processings =>
+                processings.RetrieveMessageIdsFromInboxAsync())
+                    .ReturnsAsync(outputMessageIds);
+
+            foreach (string messageId in outputMessageIds)
+            {
+                var message = outputMessages.First(message => message.MessageId == messageId);
+
+                // Get message
+                this.meshProcessingServiceMock.Setup(processings =>
+                    processings.RetrieveAndAcknowledgeMessageByIdAsync(messageId))
+                        .ReturnsAsync(message);
+
+                // Map message content to object
+                this.csvMapperProcessingServiceMock.Setup(processings =>
+                    processings.MapCsvToObjectAsync<OptOutIdentifier>(message.StringContent, withHeader))
+                        .ReturnsAsync(outputIdentifierConsentedList);
+
+                // Get original batch
+                this.optOutProcessingServiceMock.Setup(processings =>
+                    processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference))
+                        .ReturnsAsync(outputBatch);
+
+                string csvDifferences = CreateNewCsvList(
+                    differentIdentifiers,
+                    this.optOutConfiguration.OptOutFileRequireTrailingComma);
+
+                this.csvMapperProcessingServiceMock.Setup(processings =>
+                    processings.MapObjectToCsvAsync<OptOutIdentifier>(
+                        differentIdentifiers,
+                        this.optOutConfiguration.OptOutFileHasHeader,
+                        this.optOutConfiguration.OptOutFileRequireTrailingComma))
+                            .ReturnsAsync(csvDifferences);
+
+                foreach (var item in consentedItems)
+                {
+                    if (item.OptOutStatus != "Opt-In")
+                    {
+                        differences.Add(item);
+                    }
+
+                    item.UpdatedDate = randomDateTimeOffset;
+                    item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
+                    item.OptOutStatus = "Opt-In";
+
+                    this.optOutProcessingServiceMock.Setup(processings =>
+                        processings.ModifyOptOutAsync(item))
+                            .ReturnsAsync(item);
+                }
+
+                foreach (var item in nonConsentedItems)
+                {
+                    if (item.OptOutStatus != "Opt-Out")
+                    {
+                        differences.Add(item);
+                    }
+
+                    item.UpdatedDate = randomDateTimeOffset;
+                    item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
+                    item.OptOutStatus = "Opt-Out";
+
+                    this.optOutProcessingServiceMock.Setup(processings =>
+                        processings.ModifyOptOutAsync(item))
+                            .ReturnsAsync(item);
+                }
+
+                Document document = new Document
+                {
+                    DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
+                    FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_Response_" +
+                        $"{randomDateTimeOffset.ToString("yyyyMMddHHmmss")}.csv",
+                };
+            }
+
+            // When
+            await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+
+            // Then
+            this.dateTimeBrokerMock.Verify(broker =>
+               broker.GetCurrentDateTimeOffset(),
+                    Times.AtLeastOnce());
+
+            this.meshProcessingServiceMock.Verify(Processings =>
+                Processings.RetrieveMessageIdsFromInboxAsync(),
+                    Times.Once);
+
+            foreach (string messageId in outputMessageIds)
+            {
+                var message = outputMessages.First(message => message.MessageId == messageId);
+
+                // Get message
+                this.meshProcessingServiceMock.Verify(processings =>
+                    processings.RetrieveAndAcknowledgeMessageByIdAsync(messageId),
+                        Times.Once());
+
+                // Map message content to object
+                this.csvMapperProcessingServiceMock.Verify(processings =>
+                    processings.MapCsvToObjectAsync<OptOutIdentifier>(message.StringContent, withHeader),
+                        Times.Once());
+
+                // Get original batch
+                this.optOutProcessingServiceMock.Verify(processings =>
+                    processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference),
+                        Times.Exactly(outputMessageIds.Count));
+
+                foreach (var item in consentedItems)
+                {
+                    item.UpdatedDate = randomDateTimeOffset;
+                    item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
+                    item.OptOutStatus = "Opt-In";
+
+                    this.optOutProcessingServiceMock.Verify(processings =>
+                        processings.ModifyOptOutAsync(item),
+                            Times.Exactly(outputMessageIds.Count));
+                }
+
+                foreach (var item in nonConsentedItems)
+                {
+                    item.UpdatedDate = randomDateTimeOffset;
+                    item.CacheTime = randomDateTimeOffset;
+                    item.LastSentToMesh = randomDateTimeOffset;
+                    item.OptOutStatus = "Opt-Out";
+
+                    this.optOutProcessingServiceMock.Verify(processings =>
+                        processings.ModifyOptOutAsync(item),
+                            Times.Exactly(outputMessageIds.Count));
+                }
+
+                string csvDifferences = CreateNewCsvList(
+                    differentIdentifiers,
+                    this.optOutConfiguration.OptOutFileRequireTrailingComma);
+
+                consentedItems.Count.Should().Be(outputIdentifierConsentedList.Count);
+                nonConsentedItems.Count.Should().Be(outputIdentifierNonConsentedList.Count);
+                differences.Count.Should().Be(0);
+
+                this.csvMapperProcessingServiceMock.Verify(processings =>
+                    processings.MapObjectToCsvAsync<OptOutIdentifier>(
+                        differentIdentifiers,
+                        this.optOutConfiguration.OptOutFileHasHeader,
+                        this.optOutConfiguration.OptOutFileRequireTrailingComma),
+                            Times.Exactly(outputMessageIds.Count));
+
+                Document document = new Document
+                {
+                    DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
+                    FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_Response_" +
+                        $"{randomDateTimeOffset.ToString("yyyyMMddHHmmss")}.csv",
+                };
+
+                this.documentProcessingServiceMock.Verify(processings =>
+                    processings.AddDocumentAsync(It.Is(SameDocumentAs(document))),
+                        Times.Exactly(outputMessageIds.Count));
+            }
+
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+        }
+    }
+}

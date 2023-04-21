@@ -102,5 +102,51 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             this.optOutServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllExpiredOptOutsIfServiceErrorOccursAsync()
+        {
+            // given
+            int randomNumber = 8;
+
+            var serviceException = new Exception();
+
+            var failedOptOutProcessingServiceException =
+                new FailedOptOutProcessingServiceException(serviceException);
+
+            var expectedOptOutProcessingServiveException =
+                new OptOutProcessingServiceException(
+                    failedOptOutProcessingServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<List<OptOut>> retrieveExpiretOptOuts =
+                this.optOutProcessingService.RetrieveAllExpiredOptOutsAsync(randomNumber);
+
+            OptOutProcessingServiceException actualException =
+                await Assert.ThrowsAsync<OptOutProcessingServiceException>(retrieveExpiretOptOuts.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedOptOutProcessingServiveException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.optOutServiceMock.Verify(service =>
+                service.RetrieveAllOptOuts(),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedOptOutProcessingServiveException))),
+                         Times.Once);
+
+            this.optOutServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

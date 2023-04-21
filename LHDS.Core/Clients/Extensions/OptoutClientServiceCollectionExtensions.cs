@@ -31,7 +31,7 @@ namespace LHDS.Core.Clients.Extensions
 {
     public static class OptOutClientServiceCollectionExtensions
     {
-        public static IServiceCollection AddOptutClient(
+        public static IServiceCollection AddOptOutClient(
             this IServiceCollection services,
             IConfiguration configuration)
         {
@@ -68,7 +68,6 @@ namespace LHDS.Core.Clients.Extensions
             AddBrokers(services);
             AddServices(services);
             AddOrchestrations(services);
-            services.AddSingleton(meshConfig);
 
             return services;
         }

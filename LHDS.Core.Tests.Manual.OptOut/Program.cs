@@ -15,11 +15,8 @@ namespace LHDS.Core.Tests.Manual.OptOut
     {
         static async Task Main(string[] args)
         {
-            var environmentName = args.FirstOrDefault() ?? "Development";
-
             var configurationBuilder = new ConfigurationBuilder()
-                .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables();
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
             IConfiguration configuration = configurationBuilder.Build();
 
@@ -56,7 +53,12 @@ namespace LHDS.Core.Tests.Manual.OptOut
                         switch (selectedMethod)
                         {
                             case 1:
-                                //await optOutClient.RetrieveOptOutStatusAsync();
+                                byte[] fileBytes = File.ReadAllBytes(@"Resources\testfile.csv");
+
+                                FileInfo fi = new FileInfo(@"Resources\testfile.csv");
+                                var fileName = fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length);
+
+                                await optOutClient.RetrieveOptOutStatusAsync(optOutFile: fileBytes, fileName: fileName);
                                 break;
                             case 2:
                                 await optOutClient.PushExpiredOptOutsToMeshForRenewalAsync();

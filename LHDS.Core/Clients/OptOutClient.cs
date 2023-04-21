@@ -20,11 +20,11 @@ namespace LHDS.Core.Clients
             this.optOutOrchestrationService = optOutOrchestrationService;
         }
 
-        public async ValueTask RetrieveOptOutStatusAsync(byte[] optOutFile, string requestId)
+        public async ValueTask RetrieveOptOutStatusAsync(byte[] optOutFile, string fileName)
         {
             try
             {
-                await this.optOutOrchestrationService.RetrieveOptOutStatusAsync(optOutFile, requestId);
+                await this.optOutOrchestrationService.RetrieveOptOutStatusAsync(optOutFile, fileName);
             }
             catch (OptOutOrchestrationValidationException optOutOrchestrationValidationException)
             {

@@ -47,12 +47,12 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             this.optOutConfiguration = optOutConfiguration;
         }
 
-        public ValueTask RetrieveOptOutStatusAsync(byte[] optOutFile, string requestId) =>
+        public ValueTask RetrieveOptOutStatusAsync(byte[] optOutFile, string fileName) =>
             TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
                 ValidateOptOutFileIsNotNull(optOutFile);
-                ValidateRequestIdIsNotNull(requestId);
+                ValidateRequestIdIsNotNull(fileName);
 
                 bool withHeader =
                     optOutConfiguration.OptOutFileHasHeader;
@@ -79,7 +79,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                 Document document = new Document
                 {
-                    FileName = $"{optOutConfiguration.OutputFolder}/{requestId}_Response_{dateTimeBroker
+                    FileName = $"{optOutConfiguration.OutputFolder}/{fileName}_Response_{dateTimeBroker
                         .GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss")}.csv",
                     DocumentData = processedBytes
                 };

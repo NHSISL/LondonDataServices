@@ -67,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     dependancyException.InnerException as Xeption);
 
             this.meshProcessingServiceMock.Setup(processings =>
-               processings.RetrieveMessageIdsFromInboxAsync())
+                processings.RetrieveMessageIdsFromInboxAsync())
                     .ThrowsAsync(dependancyException);
 
             // When

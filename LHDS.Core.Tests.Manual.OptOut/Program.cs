@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Manual.OptOut
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
-                .AddOptutClient(configuration)
+                .AddOptOutClient(configuration)
                 .BuildServiceProvider();
 
             var optOutClient = serviceProvider.GetService<IOptOutClient>();

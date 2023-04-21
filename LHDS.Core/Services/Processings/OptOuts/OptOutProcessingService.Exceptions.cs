@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
@@ -14,6 +15,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
     public partial class OptOutProcessingService
     {
         private delegate ValueTask<OptOut> ReturningOptOutFunction();
+        private delegate ValueTask<List<OptOut>> ReturningOptOutListFunction();
 
         private async ValueTask<OptOut> TryCatch(ReturningOptOutFunction returningOptOutFunction)
         {
@@ -36,6 +38,41 @@ namespace LHDS.Core.Services.Processings.OptOuts
             catch (OptOutDependencyValidationException optOutDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(optOutDependencyValidationException);
+            }
+            catch (OptOutDependencyException optOutDependencyException)
+            {
+                throw CreateAndLogDependencyException(optOutDependencyException);
+            }
+            catch (OptOutServiceException optOutServiceException)
+            {
+                throw CreateAndLogDependencyException(optOutServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedOptOutProcessingServiceException =
+                    new FailedOptOutProcessingServiceException(exception);
+
+                throw CreateAndLogServiceException(failedOptOutProcessingServiceException);
+            }
+        }
+
+        private async ValueTask<List<OptOut>> TryCatch(ReturningOptOutListFunction returningOptOutListFunction)
+        {
+            try
+            {
+                return await returningOptOutListFunction();
+            }
+            catch (InvalidArgumentOptOutProcessingException invalidArgumentOptOutProcessingException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentOptOutProcessingException);
+            }
+            catch (OptOutDependencyValidationException optOutDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(optOutDependencyValidationException);
+            }
+            catch (OptOutValidationException optOutValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(optOutValidationException);
             }
             catch (OptOutDependencyException optOutDependencyException)
             {

@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
         public async Task ShouldThrowValidationExceptionsOnRetrieveAllExpiredOptOutsIfOlderThanDaysIsNullAndLogItAsync()
         {
             // given
-            int invalidInput = GetRandomExpiryDays(7);
+            int invalidInput = 6;
             int inputOlderThanDays = invalidInput;
 
             var invalidArgumentOptOutProcessingException =

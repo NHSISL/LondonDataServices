@@ -112,7 +112,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 new OptOutOrchestrationServiceException(failedOptOutOrchestrationServiceException);
 
             this.meshProcessingServiceMock.Setup(processings =>
-              processings.RetrieveMessageIdsFromInboxAsync())
+                processings.RetrieveMessageIdsFromInboxAsync())
                    .ThrowsAsync(serviceException);
 
             // when

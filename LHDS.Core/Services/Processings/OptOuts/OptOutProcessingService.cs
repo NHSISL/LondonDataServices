@@ -6,9 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.OptOuts;
+using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.Core.Services.Processings.OptOuts
 {
@@ -16,13 +18,16 @@ namespace LHDS.Core.Services.Processings.OptOuts
     {
         private readonly IOptOutService optOutService;
         private readonly ILoggingBroker loggingBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
 
         public OptOutProcessingService(
             IOptOutService optOutService,
-            ILoggingBroker loggingBroker)
+            ILoggingBroker loggingBroker,
+            IDateTimeBroker dateTimeBroker)
         {
             this.optOutService = optOutService;
             this.loggingBroker = loggingBroker;
+            this.dateTimeBroker = dateTimeBroker;
         }
 
         public ValueTask<OptOut> RetrieveOrAddOptOutAsync(OptOut optOut) =>
@@ -77,10 +82,22 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 return await ValueTask.FromResult(foundOptOut);
             });
 
-        public async ValueTask<List<OptOut>> RetrieveAllExpiredOptOutsAsync(int olderThanDays)
-        {
-            throw new NotImplementedException();
-        }
+        public ValueTask<List<OptOut>> RetrieveAllExpiredOptOutsAsync(int olderThanDays) =>
+            TryCatch(async () =>
+            {
+                ValidateOlderThanDays(olderThanDays);
+
+                var expirationDate = this.dateTimeBroker.
+                    GetCurrentDateTimeOffset().AddDays(-olderThanDays);
+
+                IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
+
+                List<OptOut> expiredOptOuts = allOptOuts
+                    .Where(optOut => optOut.CacheTime < expirationDate)
+                        .ToList();
+
+                return expiredOptOuts;
+            });
 
         public async ValueTask<List<OptOut>> RetrieveAllOptOutsByBatchReferenceAsync(string batchReference)
         {

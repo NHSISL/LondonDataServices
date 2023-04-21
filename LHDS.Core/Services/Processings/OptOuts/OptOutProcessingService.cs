@@ -81,6 +81,11 @@ namespace LHDS.Core.Services.Processings.OptOuts
         {
             throw new NotImplementedException();
         }
+
+        public async ValueTask<List<OptOut>> RetrieveAllOptOutsByBatchReferenceAsync(string batchReference)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

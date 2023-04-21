@@ -99,16 +99,19 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 return expiredOptOuts;
             });
 
-        public async ValueTask<List<OptOut>> RetrieveAllOptOutsByBatchReferenceAsync(string batchReference)
-        {
-            IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
+        public ValueTask<List<OptOut>> RetrieveAllOptOutsByBatchReferenceAsync(string batchReference) =>
+            TryCatch(async () =>
+            {
+                ValidateOptOutBatchReference(batchReference);
 
-            List<OptOut> foundOptOuts = allOptOuts.Where(optOut =>
-                optOut.BatchReference == batchReference)
-                    .ToList();
+                IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
 
-            return await ValueTask.FromResult(foundOptOuts);
-        }
+                List<OptOut> foundOptOuts = allOptOuts.Where(optOut =>
+                    optOut.BatchReference == batchReference)
+                        .ToList();
+
+                return await ValueTask.FromResult(foundOptOuts);
+            });
     }
 }
 

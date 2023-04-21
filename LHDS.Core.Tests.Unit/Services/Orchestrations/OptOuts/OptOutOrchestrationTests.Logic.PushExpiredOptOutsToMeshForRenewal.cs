@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -17,17 +18,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         public async Task ShouldPushExpiredOptOutsToMeshForRenewalStatusAsync()
         {
             // Given
+            DateTimeOffset randomDate = GetRandomDateTimeOffset();
+            DateTimeOffset currentDateTime = randomDate;
             bool withHeader = optOutConfiguration.OptOutFileHasHeader;
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
             List<OptOut> randomOptOuts = CreateRandomOptOutsList();
             List<OptOut> outputOptOuts = randomOptOuts;
             var processedOutputString = GetRandomString();
 
-            this.optOutProcessingServiceMock.Setup(processings =>
-                processings.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays))
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDate);
+
+            this.optOutProcessingServiceMock.Setup(processing =>
+                processing.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays))
                     .ReturnsAsync(outputOptOuts);
 
-
+            var batchReference = Guid.NewGuid().ToString();
 
             this.csvMapperProcessingServiceMock.Setup(processings =>
                 processings.MapObjectToCsvAsync(outputOptOuts, withHeader, shouldAddTrailingComma))
@@ -40,6 +47,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             this.meshProcessingServiceMock.Setup(processings =>
                 processings.SendMessageAsync(message));
+
+            foreach (var optOut in outputOptOuts)
+            {
+                optOut.LastSentToMesh = currentDateTime;
+                optOut.UpdatedDate = currentDateTime;
+                optOut.BatchReference = batchReference;
+
+                this.optOutProcessingServiceMock.Setup(processing =>
+                    processing.ModifyOptOutAsync(optOut))
+                        .ReturnsAsync(optOut);
+            }
 
             // When
             await this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
@@ -58,6 +76,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.meshProcessingServiceMock.Verify(processings =>
                 processings.SendMessageAsync(It.Is(SameMessageAs(message))),
                     Times.Once);
+
+            foreach (var optOut in outputOptOuts)
+            {
+                optOut.LastSentToMesh = currentDateTime;
+                optOut.UpdatedDate = currentDateTime;
+                optOut.BatchReference = batchReference;
+
+                this.optOutProcessingServiceMock.Setup(processing =>
+                    processing.ModifyOptOutAsync(optOut))
+                        .ReturnsAsync(optOut);
+            }
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
             this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();

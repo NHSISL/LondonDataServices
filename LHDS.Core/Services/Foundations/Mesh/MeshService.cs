@@ -62,10 +62,10 @@ namespace LHDS.Core.Services.Foundations.Mesh
                 return resultMeshMessage;
             });
 
-        public ValueTask<List<string>> RetrieveMessagesFromInboxAsync() =>
+        public ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync() =>
             TryCatch(async () =>
             {
-                List<string> messages = await this.meshBroker.RetrieveMessagesAsync();
+                List<string> messages = await this.meshBroker.RetrieveMessageIdsAsync();
 
                 return messages;
             });

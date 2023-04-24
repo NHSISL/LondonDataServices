@@ -136,19 +136,98 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         }
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
-            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+            new DateTimeRange(earliestDate: new DateTime().AddDays(7)).GetValue();
 
-        private static int GetRandomNumber() =>
-            new IntRange(min: 2, max: 10).GetValue();
+        private static int GetRandomNumber(int min = 2, int max = 10) =>
+            new IntRange(min, max).GetValue();
 
         private static List<OptOut> CreateRandomOptOutsList()
         {
             return CreateOptOutFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: 1)
+                .Create(count: GetRandomNumber())
                     .ToList();
         }
-        private static OptOut CreateRandomOptOut() =>
-             CreateOptOutFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+
+        private string CreateNewCsvList(List<OptOutIdentifier> differentIdentifiers, bool hasTrailingComma)
+        {
+            StringBuilder builder = new StringBuilder();
+
+            foreach (var item in differentIdentifiers)
+            {
+                if (hasTrailingComma)
+                {
+                    builder.AppendLine($"{item},");
+                }
+                else
+                {
+                    builder.AppendLine($"{item}");
+                }
+            }
+
+            return builder.ToString();
+        }
+
+        private static List<OptOut> CreateRandomOptOutsList(
+            List<OptOutIdentifier> items,
+            string batchReference,
+            string status)
+        {
+            var identifiers = new List<OptOut>();
+
+            foreach (var item in items)
+            {
+                var optOut = CreateOptOutFiller(GetRandomDateTimeOffset()).Create();
+                optOut.NhsNumber = item.NhsNumber;
+                optOut.OptOutStatus = status;
+                optOut.BatchReference = batchReference;
+                identifiers.Add(optOut);
+            }
+
+            return identifiers;
+        }
+
+        private static List<OptOutIdentifier> CreateRandomListOfOptOutIdentifiers(int count)
+        {
+            var identifiers = new List<OptOutIdentifier>();
+
+            for (int i = 0; i < count; i++)
+            {
+                identifiers.Add(CreateOptOutIdentifierFiller().Create());
+            }
+
+            return identifiers;
+        }
+
+        private static List<string> GetRandomStrings(int count)
+        {
+            var messages = new List<string>();
+
+            for (int i = 0; i < count; i++)
+            {
+                string message = new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+                messages.Add(message);
+            }
+
+            return messages;
+        }
+
+        private static List<MeshMessage> GetRandomMessages(List<string> items, string batchReference)
+        {
+            List<MeshMessage> messageList = new List<MeshMessage>();
+
+            foreach (var item in items)
+            {
+                var message = CreateRandomMessage();
+                message.MessageId = item;
+                message.Headers["Mex-LocalID"] = new List<string> { batchReference };
+                messageList.Add(message);
+            }
+
+            return messageList;
+        }
+
+        private static OptOut CreateRandomOptOut(DateTimeOffset dateTimeOffset) =>
+           CreateOptOutFiller(dateTimeOffset).Create();
 
         private Expression<Func<List<OptOut>, bool>> SameOptOutListAs(List<OptOut> expectedOptOuts)
         {
@@ -180,6 +259,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .AreEqual;
         }
 
+        private Expression<Func<string, bool>> SameStringAs(
+            string expectedString)
+        {
+            return actualString =>
+                this.compareLogic.Compare(expectedString, actualString)
+                    .AreEqual;
+        }
+
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
@@ -191,9 +278,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
-                .OnProperty(optOut => optOut.OptOutStatus).Use(GetRandomString())
+                .OnProperty(optOut => optOut.OptOutStatus).Use("Unknown")
                 .OnProperty(optOut => optOut.CreatedBy).Use(user)
                 .OnProperty(optOut => optOut.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static Filler<OptOutIdentifier> CreateOptOutIdentifierFiller()
+        {
+            var filler = new Filler<OptOutIdentifier>();
+
+            filler.Setup()
+                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber());
 
             return filler;
         }
@@ -217,6 +314,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             };
         }
 
+        public static Dictionary<string, List<string>> CreateMandatoryHeaders()
+        {
+            var dictionary = new Dictionary<string, List<string>>
+            {
+                { "Content-Type", new List<string> { GetRandomString() } },
+                { "Mex-FileName", new List<string> { GetRandomString() } },
+                { "Mex-From", new List<string> { GetRandomString() } },
+                { "Mex-To", new List<string> { GetRandomString() } },
+                { "Mex-WorkflowID", new List<string> { GetRandomString() } },
+                { "Mex-Content-Checksum", new List<string> { GetRandomString() } },
+                { "Mex-Content-Encrypted", new List<string> { GetRandomString() } },
+                { "Mex-LocalID", new List<string> { GetRandomString() } }
+            };
+
+            return dictionary;
+        }
+
         private static MeshMessage CreateRandomMessage() =>
            CreateMessageFiller().Create();
 
@@ -224,7 +338,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         {
             var filler = new Filler<MeshMessage>();
             filler.Setup().OnProperty(message => message.Headers)
-                .Use(new Dictionary<string, List<string>>());
+                .Use(CreateMandatoryHeaders());
 
             return filler;
         }

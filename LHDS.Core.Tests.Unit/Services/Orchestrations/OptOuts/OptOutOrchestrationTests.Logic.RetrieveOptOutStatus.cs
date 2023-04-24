@@ -63,7 +63,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             Document document = new Document
             {
-                FileName = $"{optOutConfiguration.OutputFolder}/{randomRecieveName}_Response_{randomDateTimeOffset.ToString("yyyyMMddHHmmss")}.csv",
+                FileName = $"{optOutConfiguration.OutputFolder}/{randomRecieveName}_Response_" +
+                    $"{randomDateTimeOffset.ToString("yyyyMMddHHmmss")}.csv",
                 DocumentData = processedBytes
             };
 

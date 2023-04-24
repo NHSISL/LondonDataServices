@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 public async Task ShouldThrowServiceExceptionOnAknowledgeMessageByIdIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            string messageId = GetRandomMessage();
+            string messageId = GetRandomString();
             var serviceException = new Exception();
 
             var failedMeshServiceException =

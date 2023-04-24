@@ -3,7 +3,9 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
@@ -13,6 +15,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Orchestrations.OptOuts;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
@@ -52,29 +55,33 @@ namespace LHDS.Core.Clients.Extensions
                     bool.Parse(GetSettings(configuration, "OptOutSettings:OptOutFileRequireTrailingComma", true)),
             };
 
-            var meshConfig = new NEL.MESH.Models.Configurations.MeshConfiguration
+            var meshConfig = new MeshConfiguration
             {
                 MailboxId = GetSettings(configuration, "MeshConfiguration:MailboxId", true),
                 Password = GetSettings(configuration, "MeshConfiguration:Password", true),
                 Key = GetSettings(configuration, "MeshConfiguration:Key", true),
-                //RootCertificate = GetSettings(configuration, "MeshConfiguration:RootCertificate", true),
-                //IntermediateCertificates = GetSettings(configuration, "MeshConfiguration:IntermediateCertificates", true),
+                Url = GetSettings(configuration, "MeshConfiguration:Url", true),
+                MexClientVersion = GetSettings(configuration, "MeshConfiguration:MexClientVersion", true),
+                MexOSName = GetSettings(configuration, "MeshConfiguration:MexOSName", true),
+                MexOSVersion = GetSettings(configuration, "MeshConfiguration:MexOSVersion", true),
+
+                RootCertificate = GetCertificate(configuration, "MeshConfiguration:RootCertificate", true),
+
+                IntermediateCertificates = GetCertificates(
+                    configuration, "MeshConfiguration:IntermediateCertificates", false),
+
+                ClientCertificate = GetCertificate(configuration, "MeshConfiguration:ClientCertificate", true),
             };
 
             services.AddSingleton(meshConfig);
 
             AddClients(services, blobServiceUri, azureTenantId, optOptOutConfiguration);
-            AddProcessingServices(services);
             AddBrokers(services);
-            AddServices(services);
             AddOrchestrations(services);
+            AddProcessingServices(services);
+            AddServices(services);
 
             return services;
-        }
-
-        private static void AddOrchestrations(IServiceCollection services)
-        {
-            services.AddSingleton<IOptOutOrchestrationService, OptOutOrchestrationService>();
         }
 
         private static void AddClients(IServiceCollection services, string blobServiceUri, string azureTenantId, OptOutConfiguration optOptOutConfiguration)
@@ -101,16 +108,6 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
         }
 
-        private static void AddServices(IServiceCollection services)
-        {
-            services.AddSingleton<IAuditService, AuditService>();
-            services.AddSingleton<ICsvMapperService, CsvMapperService>();
-            services.AddSingleton<IDocumentService, DocumentService>();
-            services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
-            services.AddSingleton<IMeshService, MeshService>();
-            services.AddSingleton<IOptOutService, OptOutService>();
-        }
-
         private static void AddBrokers(IServiceCollection services)
         {
             services.AddSingleton<ILoggingBroker, LoggingBroker>();
@@ -122,12 +119,27 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IStorageBroker, StorageBroker>();
         }
 
+        private static void AddOrchestrations(IServiceCollection services)
+        {
+            services.AddSingleton<IOptOutOrchestrationService, OptOutOrchestrationService>();
+        }
+
         private static void AddProcessingServices(IServiceCollection services)
         {
             services.AddSingleton<ICsvMapperProcessingService, CsvMapperProcessingService>();
             services.AddSingleton<IDocumentProcessingService, DocumentProcessingService>();
             services.AddSingleton<IMeshProcessingService, MeshProcessingService>();
             services.AddSingleton<IOptOutProcessingService, OptOutProcessingService>();
+        }
+
+        private static void AddServices(IServiceCollection services)
+        {
+            services.AddSingleton<IAuditService, AuditService>();
+            services.AddSingleton<ICsvMapperService, CsvMapperService>();
+            services.AddSingleton<IDocumentService, DocumentService>();
+            services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
+            services.AddSingleton<IMeshService, MeshService>();
+            services.AddSingleton<IOptOutService, OptOutService>();
         }
 
         private static string GetSettings(IConfiguration configuration, string configurationKey, bool mandatory = true)
@@ -143,6 +155,50 @@ namespace LHDS.Core.Clients.Extensions
             }
 
             return value;
+        }
+
+        private static X509Certificate2 GetCertificate(IConfiguration configuration, string configurationKey, bool mandatory = true)
+        {
+            var value = configuration[configurationKey];
+
+            if (string.IsNullOrEmpty(value))
+            {
+                if (mandatory)
+                {
+                    throw new Exception($"Configuration value {configurationKey} does not exist");
+                }
+            }
+
+            byte[] certBytes = Convert.FromBase64String(value);
+
+            return new X509Certificate2(certBytes);
+        }
+
+        private static X509Certificate2Collection GetCertificates(IConfiguration configuration, string configurationKey, bool mandatory = true)
+        {
+            List<string> intermediateCertificates =
+               configuration.GetSection(configurationKey)
+                   .Get<List<string>>();
+
+            if (intermediateCertificates == null)
+            {
+                intermediateCertificates = new List<string>();
+            }
+
+            if (mandatory && intermediateCertificates.Count == 0)
+            {
+                throw new Exception($"Configuration value {configurationKey} does not exist");
+            }
+
+            var certificates = new X509Certificate2Collection();
+
+            foreach (string item in intermediateCertificates)
+            {
+                byte[] certBytes = Convert.FromBase64String(item);
+                certificates.Add(new X509Certificate2(certBytes));
+            }
+
+            return certificates;
         }
     }
 }

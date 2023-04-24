@@ -17,8 +17,8 @@ namespace LHDS.Core.Tests.Manual.Landings
         static async Task Main(string[] args)
         {
             var environmentName = args.FirstOrDefault() ?? "Development";
-            var configurationBuilder = new ConfigurationBuilder()
 
+            var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)

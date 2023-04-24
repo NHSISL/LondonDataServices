@@ -15,8 +15,13 @@ namespace LHDS.Core.Tests.Manual.OptOut
     {
         static async Task Main(string[] args)
         {
+            var environmentName = args.FirstOrDefault() ?? "Development";
+
             var configurationBuilder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
 
@@ -53,12 +58,7 @@ namespace LHDS.Core.Tests.Manual.OptOut
                         switch (selectedMethod)
                         {
                             case 1:
-                                byte[] fileBytes = File.ReadAllBytes(@"Resources\testfile.csv");
-
-                                FileInfo fi = new FileInfo(@"Resources\testfile.csv");
-                                var fileName = fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length);
-
-                                await optOutClient.RetrieveOptOutStatusAsync(optOutFile: fileBytes, fileName: fileName);
+                                await RetrieveOptOutstatusAsync(optOutClient);
                                 break;
                             case 2:
                                 await optOutClient.PushExpiredOptOutsToMeshForRenewalAsync();
@@ -79,6 +79,16 @@ namespace LHDS.Core.Tests.Manual.OptOut
                 logger.LogError(ex);
                 Console.WriteLine(ex.Message);
             }
+        }
+
+        private static async Task RetrieveOptOutstatusAsync(IOptOutClient? optOutClient)
+        {
+            byte[] fileBytes = File.ReadAllBytes(@"Resources\testfile.csv");
+
+            FileInfo fi = new FileInfo(@"Resources\testfile.csv");
+            var fileName = fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length);
+
+            await optOutClient.RetrieveOptOutStatusAsync(optOutFile: fileBytes, fileName: fileName);
         }
     }
 }

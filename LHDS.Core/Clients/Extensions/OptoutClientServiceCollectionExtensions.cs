@@ -11,6 +11,7 @@ using Azure.Identity;
 using Azure.Storage.Blobs;
 using LHDS.Core.Brokers.CsvMappers;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Storages.Blobs;
@@ -116,6 +117,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
             services.AddSingleton<ICsvMapperBroker, CsvMapperBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
+            services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IMeshBroker, MeshBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
         }

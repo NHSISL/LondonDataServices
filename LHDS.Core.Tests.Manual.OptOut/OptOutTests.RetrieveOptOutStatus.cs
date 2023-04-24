@@ -22,11 +22,10 @@ namespace LHDS.Core.Tests.Manual.OptOut
                 await optOutClient.RetrieveOptOutStatusAsync(optOutFile: fileBytes, fileName: fileName);
                 var outputLocation = $"{optOutConfiguration.OutputFolder}/{fileName}_Response_%DateStamp%.csv";
                 output.WriteLine($"Check if new file is available at {outputLocation}");
-                Assert.True(true);
             }
             catch (Exception ex)
             {
-                Assert.Fail(ex.Message);
+                Assert.Fail($"{ex.Message} {ex?.InnerException?.Message} {ex.StackTrace}");
             }
 
         }

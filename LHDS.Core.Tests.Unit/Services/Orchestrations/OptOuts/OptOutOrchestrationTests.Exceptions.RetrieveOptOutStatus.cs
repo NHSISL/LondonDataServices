@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     dependancyValidationException.InnerException as Xeption);
 
             this.csvMapperProcessingServiceMock.Setup(processing =>
-                processing.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), false))
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<string>(), false))
                     .ThrowsAsync(dependancyValidationException);
 
             // when
@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .BeEquivalentTo(expectedDependencyException);
 
             this.csvMapperProcessingServiceMock.Verify(processing =>
-                processing.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), false),
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<string>(), false),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

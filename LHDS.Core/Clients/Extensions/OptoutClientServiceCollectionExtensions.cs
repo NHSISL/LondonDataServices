@@ -55,6 +55,9 @@ namespace LHDS.Core.Clients.Extensions
 
                 OptOutFileRequireTrailingComma =
                     bool.Parse(GetSettings(configuration, "OptOutSettings:OptOutFileRequireTrailingComma", true)),
+
+                To = GetSettings(configuration, "OptOutSettings:To"),
+                WorkflowId = GetSettings(configuration, "OptOutSettings:WorkflowId"),
             };
 
             var meshConfig = new MeshConfiguration

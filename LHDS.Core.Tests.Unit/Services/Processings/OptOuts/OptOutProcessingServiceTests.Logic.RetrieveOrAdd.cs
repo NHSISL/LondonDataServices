@@ -3,8 +3,11 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.OptOuts;
 using Moq;
 using Xunit;
@@ -22,13 +25,23 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             OptOut randomOptOut = CreateRandomOptOut(randomDateTimeOffset);
             OptOut inputOptOut = randomOptOut;
+            OptOut storageOptOut = inputOptOut.DeepClone();
+            List<OptOut> optOutlist = CreateRandomOptOuts(string.Empty).ToList();
+
+            this.optOutServiceMock.Setup(service =>
+                service.RetrieveAllOptOuts())
+                    .Returns(optOutlist.AsQueryable);
+
+            this.optOutServiceMock.Setup(service =>
+                service.AddOptOutAsync(inputOptOut))
+                    .ReturnsAsync(storageOptOut);
 
             // when
             await this.optOutProcessingService.RetrieveOrAddOptOutAsync(inputOptOut);
 
             // then
             this.optOutServiceMock.Verify(service =>
-                service.RetrieveOptOutByIdAsync(inputOptOut.Id),
+                service.RetrieveAllOptOuts(),
                     Times.Once);
 
             this.optOutServiceMock.Verify(service =>
@@ -46,10 +59,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             OptOut existingOptOut = CreateRandomOptOut(randomDateTimeOffset);
             OptOut existingOptOutFound = existingOptOut;
+            OptOut storageOptOut = existingOptOut.DeepClone();
+            List<OptOut> optOutlist = CreateRandomOptOuts(string.Empty).ToList();
+            optOutlist.Add(storageOptOut);
 
-            this.optOutServiceMock.Setup(service =>
-                service.RetrieveOptOutByIdAsync(existingOptOut.Id))
-                    .ReturnsAsync(existingOptOutFound);
+            this.optOutServiceMock.Setup(processings =>
+                processings.RetrieveAllOptOuts())
+                    .Returns(optOutlist.AsQueryable);
 
             // when
             OptOut retrievedOptOut = await this.optOutProcessingService.RetrieveOrAddOptOutAsync(existingOptOut);
@@ -58,7 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             retrievedOptOut.Should().BeEquivalentTo(existingOptOutFound);
 
             this.optOutServiceMock.Verify(service =>
-                service.RetrieveOptOutByIdAsync(existingOptOut.Id),
+                service.RetrieveAllOptOuts(),
                     Times.Once);
 
             this.optOutServiceMock.Verify(service =>

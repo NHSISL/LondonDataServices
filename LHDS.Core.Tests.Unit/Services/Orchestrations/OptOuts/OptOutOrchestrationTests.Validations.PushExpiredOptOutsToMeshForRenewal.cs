@@ -27,6 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 csvMapperProcessingService: this.csvMapperProcessingServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
+                identifierBroker: this.identifierBrokerMock.Object,
                 optOutConfiguration: invalidOptOutConfiguration);
 
             var nullConfigOptOutOrchestrationException =
@@ -83,6 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 csvMapperProcessingService: this.csvMapperProcessingServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
+                identifierBroker: this.identifierBrokerMock.Object,
                 optOutConfiguration: invalidOptOutConfiguration);
 
             var invalidConfigOptOutOrchestrationException =

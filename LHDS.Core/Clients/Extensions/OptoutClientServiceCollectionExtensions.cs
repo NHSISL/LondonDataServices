@@ -40,6 +40,7 @@ namespace LHDS.Core.Clients.Extensions
         {
             var blobServiceUri = GetSettings(configuration, "BlobStorage:azureBlobServiceUri", true);
             var azureTenantId = GetSettings(configuration, "BlobStorage:azureTenantId", true);
+
             services.AddSingleton<IConfiguration>(_ => configuration);
             var optOptOutConfiguration = new OptOutConfiguration
             {

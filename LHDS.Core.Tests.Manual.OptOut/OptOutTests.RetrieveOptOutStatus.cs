@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Manual.OptOut
                 var fileName = fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length);
                 await optOutClient.RetrieveOptOutStatusAsync(optOutFile: fileBytes, fileName: fileName);
                 var outputLocation = $"{optOutConfiguration.OutputFolder}/{fileName}_Response_%DateStamp%.csv";
-                output.WriteLine($"Check if new file is available at {outputLocation}");
+                output.WriteLine("WARNING: Do a manual check to see if items were moved to the receive location.");
             }
             catch (Exception ex)
             {

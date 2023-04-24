@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -31,6 +32,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         private readonly IIdentifierBroker identifierBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly OptOutConfiguration optOutConfiguration;
+        private readonly MeshConfiguration meshConfiguration;
 
         public OptOutOrchestrationService(
             IOptOutProcessingService optOutProcessingService,
@@ -40,7 +42,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker,
             ILoggingBroker loggingBroker,
-            OptOutConfiguration optOutConfiguration)
+            OptOutConfiguration optOutConfiguration,
+            MeshConfiguration meshConfiguration)
         {
             this.optOutProcessingService = optOutProcessingService;
             this.documentProcessingService = documentProcessingService;
@@ -50,6 +53,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             this.identifierBroker = identifierBroker;
             this.loggingBroker = loggingBroker;
             this.optOutConfiguration = optOutConfiguration;
+            this.meshConfiguration = meshConfiguration;
         }
 
         public ValueTask RetrieveOptOutStatusAsync(byte[] optOutFile, string fileName) =>
@@ -121,14 +125,21 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 var processedOutputString = await this.csvMapperProcessingService
                        .MapObjectToCsvAsync(mappedOptOuts, withHeader, shouldAddTrailingComma);
 
+                string batchReference = this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss");
+
                 MeshMessage message = new MeshMessage
                 {
-                    StringContent = processedOutputString
+                    StringContent = processedOutputString,
+                    Headers = new Dictionary<string, List<string>>()
                 };
 
-                await this.meshProcessingService.SendMessageAsync(message);
+                message.Headers.Add("Content-Type", new List<string> { "text/plain" });
+                message.Headers.Add("Mex-FileName", new List<string> { batchReference });
+                message.Headers.Add("Mex-From", new List<string> { this.meshConfiguration.MailboxId });
+                message.Headers.Add("Mex-To", new List<string> { this.optOutConfiguration.To });
+                message.Headers.Add("Mex-WorkflowID", new List<string> { this.optOutConfiguration.WorkflowId });
 
-                string batchReference = this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss");
+                message = await this.meshProcessingService.SendMessageAsync(message);
 
                 foreach (var optOut in mappedOptOuts)
                 {

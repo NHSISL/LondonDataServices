@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 processing.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays))
                     .ReturnsAsync(outputOptOuts);
 
-            var batchReference = Guid.NewGuid().ToString();
+            string batchReference = randomDate.ToString("yyyyMMddHHmmss");
 
             this.csvMapperProcessingServiceMock.Setup(processings =>
                 processings.MapObjectToCsvAsync(outputOptOuts, withHeader, shouldAddTrailingComma))
@@ -83,9 +83,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 optOut.UpdatedDate = currentDateTime;
                 optOut.BatchReference = batchReference;
 
-                this.optOutProcessingServiceMock.Setup(processing =>
-                    processing.ModifyOptOutAsync(optOut))
-                        .ReturnsAsync(optOut);
+                this.optOutProcessingServiceMock.Verify(processing =>
+                    processing.ModifyOptOutAsync(optOut),
+                        Times.Once());
             }
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();

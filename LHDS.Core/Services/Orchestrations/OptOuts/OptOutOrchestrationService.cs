@@ -107,6 +107,18 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 };
 
                 await this.meshProcessingService.SendMessageAsync(message);
+
+                string batchReference = this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss");
+
+                foreach (var optOut in mappedOptOuts)
+                {
+                    var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                    optOut.LastSentToMesh = dateTime;
+                    optOut.UpdatedDate = dateTime;
+                    optOut.BatchReference = batchReference;
+
+                    await this.optOutProcessingService.ModifyOptOutAsync(optOut);
+                }
             });
 
         public ValueTask RetrieveUpdatedMeshConsentStatusesChangesAsync() =>

@@ -26,12 +26,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     dependencyValidationException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>
-                service.RetrieveMessagesFromInboxAsync())
+                service.RetrieveMessageIdsFromInboxAsync())
                     .Throws(dependencyValidationException);
 
             // when
             ValueTask<List<string>> retrieveMessageByIdsTask =
-                this.meshProcessingService.RetrieveMessagesFromInboxAsync();
+                this.meshProcessingService.RetrieveMessageIdsFromInboxAsync();
 
             MeshProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<MeshProcessingDependencyValidationException>(retrieveMessageByIdsTask.AsTask);
@@ -40,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             actualException.Should().BeEquivalentTo(expectedMeshProcessingDependencyValidationException);
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessagesFromInboxAsync(),
+                service.RetrieveMessageIdsFromInboxAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -63,12 +63,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     dependencyException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>
-                service.RetrieveMessagesFromInboxAsync())
+                service.RetrieveMessageIdsFromInboxAsync())
                     .Throws(dependencyException);
 
             // when
             ValueTask<List<string>> retrieveMessageByIdsTask =
-                this.meshProcessingService.RetrieveMessagesFromInboxAsync();
+                this.meshProcessingService.RetrieveMessageIdsFromInboxAsync();
 
             MeshProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<MeshProcessingDependencyException>(retrieveMessageByIdsTask.AsTask);
@@ -77,13 +77,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             actualException.Should().BeEquivalentTo(expectedMeshProcessingDependencyException);
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessagesFromInboxAsync(),
+                service.RetrieveMessageIdsFromInboxAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
-                     expectedMeshProcessingDependencyException))),
-                         Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedMeshProcessingDependencyException))),
+                        Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -103,12 +103,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     failedMeshProcessingServiceException);
 
             this.meshServiceMock.Setup(service =>
-                service.RetrieveMessagesFromInboxAsync())
+                service.RetrieveMessageIdsFromInboxAsync())
                     .Throws(serviceException);
 
             // when
             ValueTask<List<string>> retrievRetrieveMessageIdsFromInboxTask =
-                this.meshProcessingService.RetrieveMessagesFromInboxAsync();
+                this.meshProcessingService.RetrieveMessageIdsFromInboxAsync();
 
             MeshProcessingServiceException actualException =
                 await Assert.ThrowsAsync<MeshProcessingServiceException>(retrievRetrieveMessageIdsFromInboxTask.AsTask);
@@ -117,13 +117,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             actualException.Should().BeEquivalentTo(expectedMeshProcessingServiveException);
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessagesFromInboxAsync(),
+                service.RetrieveMessageIdsFromInboxAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
-                     expectedMeshProcessingServiveException))),
-                         Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedMeshProcessingServiveException))),
+                        Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

@@ -20,18 +20,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             List<string> expectedMessages = outputMessages;
 
             this.meshBrokerMock.Setup(broker =>
-                broker.RetrieveMessagesAsync())
+                broker.RetrieveMessageIdsAsync())
                     .ReturnsAsync(outputMessages);
 
             // when
             List<string> actualMessages =
-                await this.meshService.RetrieveMessagesFromInboxAsync();
+                await this.meshService.RetrieveMessageIdsFromInboxAsync();
 
             // then
             actualMessages.Should().BeSameAs(expectedMessages);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.RetrieveMessagesAsync(),
+                broker.RetrieveMessageIdsAsync(),
                     Times.Once());
 
             this.meshBrokerMock.VerifyNoOtherCalls();

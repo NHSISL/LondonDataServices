@@ -41,9 +41,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         private static int GetRandomNumber() =>
           new IntRange(min: 2, max: 10).GetValue();
 
-        private static string GetRandomString() =>
-            new MnemonicString().GetValue();
-
         private static dynamic GetRandomTrackingInfo()
         {
             return new
@@ -159,13 +156,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         {
             var dictionary = new Dictionary<string, List<string>>
             {
-                { "Content-Type", new List<string> { GetRandomMessage() } },
-                { "Mex-FileName", new List<string> { GetRandomMessage() } },
-                { "Mex-From", new List<string> { GetRandomMessage() } },
-                { "Mex-To", new List<string> { GetRandomMessage() } },
-                { "Mex-WorkflowID", new List<string> { GetRandomMessage() } },
-                { "Mex-Content-Checksum", new List<string> { GetRandomMessage() } },
-                { "Mex-Content-Encrypted", new List<string> { GetRandomMessage() } }
+                { "Content-Type", new List<string> { GetRandomString() } },
+                { "Mex-FileName", new List<string> { GetRandomString() } },
+                { "Mex-From", new List<string> { GetRandomString() } },
+                { "Mex-To", new List<string> { GetRandomString() } },
+                { "Mex-WorkflowID", new List<string> { GetRandomString() } },
+                { "Mex-Content-Checksum", new List<string> { GetRandomString() } },
+                { "Mex-Content-Encrypted", new List<string> { GetRandomString() } }
             };
 
             return dictionary;
@@ -203,7 +200,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
         }
 
-        private static string GetRandomMessage() =>
+        private static string GetRandomString() =>
           new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
         private static List<string> GetRandomMessages(int count)

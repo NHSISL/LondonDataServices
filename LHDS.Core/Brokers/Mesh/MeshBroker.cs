@@ -48,7 +48,7 @@ namespace LHDS.Core.Brokers.Mesh
         public ValueTask<Message> TrackMessageAsync(string messageId) =>
             this.meshClient.Mailbox.TrackMessageAsync(messageId);
 
-        public ValueTask<List<string>> RetrieveMessagesAsync() =>
+        public ValueTask<List<string>> RetrieveMessageIdsAsync() =>
             this.meshClient.Mailbox.RetrieveMessagesAsync();
 
         public ValueTask<Message> RetrieveMessageAsync(string messageId) =>

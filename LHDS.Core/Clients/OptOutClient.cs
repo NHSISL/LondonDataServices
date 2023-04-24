@@ -82,11 +82,11 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask RetrieveUpdatedMeshOptOutStatusChangesAsync()
+        public async ValueTask RetrieveUpdatedMeshConsentStatusesChangesAsync()
         {
             try
             {
-                await this.optOutOrchestrationService.RetrieveUpdatedMeshOptOutStatusChangesAsync();
+                await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
             }
             catch (OptOutOrchestrationValidationException optOutOrchestrationValidationException)
             {

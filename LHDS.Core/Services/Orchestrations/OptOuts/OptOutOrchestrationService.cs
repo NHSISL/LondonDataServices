@@ -2,11 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -26,6 +28,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         private readonly IMeshProcessingService meshProcessingService;
         private readonly ICsvMapperProcessingService csvMapperProcessingService;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly IIdentifierBroker identifierBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly OptOutConfiguration optOutConfiguration;
 
@@ -35,6 +38,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             IMeshProcessingService meshProcessingService,
             ICsvMapperProcessingService csvMapperProcessingService,
             IDateTimeBroker dateTimeBroker,
+            IIdentifierBroker identifierBroker,
             ILoggingBroker loggingBroker,
             OptOutConfiguration optOutConfiguration)
         {
@@ -43,6 +47,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             this.meshProcessingService = meshProcessingService;
             this.csvMapperProcessingService = csvMapperProcessingService;
             this.dateTimeBroker = dateTimeBroker;
+            this.identifierBroker = identifierBroker;
             this.loggingBroker = loggingBroker;
             this.optOutConfiguration = optOutConfiguration;
         }
@@ -62,14 +67,29 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                 var inputString = Encoding.ASCII.GetString(optOutFile);
 
-                List<OptOut> mappedOptOuts =
-                await this.csvMapperProcessingService.MapCsvToObjectAsync<OptOut>(inputString, false);
+                List<OptOutIdentifier> mappedOptOuts =
+                await this.csvMapperProcessingService.MapCsvToObjectAsync<OptOutIdentifier>(inputString, false);
 
                 List<OptOut> processedOptOuts = new List<OptOut>();
 
                 foreach (var optOut in mappedOptOuts)
                 {
-                    processedOptOuts.Add(await this.optOutProcessingService.RetrieveOrAddOptOutAsync(optOut));
+                    DateTimeOffset timeStamp = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                    OptOut item = await this.optOutProcessingService
+                        .RetrieveOrAddOptOutAsync(
+                            new OptOut
+                            {
+                                Id = this.identifierBroker.GetIdentifier(),
+                                NhsNumber = optOut.NhsNumber,
+                                OptOutStatus = "Unknown",
+                                CreatedDate = timeStamp,
+                                UpdatedDate = timeStamp,
+                                CreatedBy = "System",
+                                UpdatedBy = "System"
+                            });
+
+                    processedOptOuts.Add(item);
                 }
 
                 var processedData = await this.csvMapperProcessingService

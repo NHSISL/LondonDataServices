@@ -10,6 +10,7 @@ using System.Linq.Expressions;
 using System.Text;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -41,6 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private readonly OptOutOrchestrationService optOutOrchestrationService;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly ICompareLogic compareLogic;
         private readonly OptOutConfiguration optOutConfiguration;
         private readonly IConfiguration inMemoryConfiguration;
@@ -76,6 +78,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.csvMapperProcessingServiceMock = new Mock<ICsvMapperProcessingService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.compareLogic = new CompareLogic();
 
             this.optOutOrchestrationService = new OptOutOrchestrationService(
@@ -85,6 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 csvMapperProcessingService: this.csvMapperProcessingServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
+                identifierBroker: this.identifierBrokerMock.Object,
                 optOutConfiguration: this.optOutConfiguration);
         }
 
@@ -141,6 +145,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private static int GetRandomNumber(int min = 2, int max = 10) =>
             new IntRange(min, max).GetValue();
 
+        private static List<OptOutIdentifier> CreateRandomOptOutIdentifiersList()
+        {
+            return CreateOptOutIdentifierFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .ToList();
+        }
         private static List<OptOut> CreateRandomOptOutsList()
         {
             return CreateOptOutFiller(dateTimeOffset: GetRandomDateTimeOffset())
@@ -251,6 +261,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .AreEqual;
         }
 
+        private Expression<Func<OptOut, bool>> SameOptOutAs(
+            OptOut expectedOptOut)
+        {
+            return actualOptOut =>
+                this.compareLogic.Compare(expectedOptOut, actualOptOut)
+                    .AreEqual;
+        }
+
         private Expression<Func<MeshMessage, bool>> SameMessageAs(
             MeshMessage expectedMessage)
         {
@@ -281,6 +299,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .OnProperty(optOut => optOut.OptOutStatus).Use("Unknown")
                 .OnProperty(optOut => optOut.CreatedBy).Use(user)
                 .OnProperty(optOut => optOut.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static Filler<OptOutIdentifier> CreateOptOutIdentifierFiller(DateTimeOffset dateTimeOffset)
+        {
+            var filler = new Filler<OptOutIdentifier>();
+
+            filler.Setup()
+                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber());
 
             return filler;
         }

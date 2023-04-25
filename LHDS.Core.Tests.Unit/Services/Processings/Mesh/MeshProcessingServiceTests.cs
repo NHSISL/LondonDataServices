@@ -65,6 +65,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
         private static MeshMessage CreateRandomMessage() =>
             CreateMessageFiller().Create();
 
+        private static MeshMessage CreateRandomSendMessage()
+        {
+            MeshMessage message = CreateMessageFiller().Create();
+            message.MessageId = null;
+            message.TrackingInfo = null;
+
+            return message;
+        }
+
         private static Filler<MeshMessage> CreateMessageFiller()
         {
             var filler = new Filler<MeshMessage>();

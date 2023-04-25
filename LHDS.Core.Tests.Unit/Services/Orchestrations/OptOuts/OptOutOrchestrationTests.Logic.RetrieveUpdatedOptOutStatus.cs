@@ -79,9 +79,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 processings.RetrieveMessageIdsFromInboxAsync())
                     .ReturnsAsync(outputMessageIds);
 
+            List<MeshMessage> meshMessageList = new List<MeshMessage>();
+
             foreach (string messageId in outputMessageIds)
             {
                 var message = outputMessages.First(message => message.MessageId == messageId);
+                meshMessageList.Add(message);
 
                 // Get message
                 this.meshProcessingServiceMock.Setup(processings =>
@@ -146,7 +149,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 Document document = new Document
                 {
                     DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
-                    FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_Response_" +
+                    FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_response_" +
                         $"{randomDateTimeOffset.ToString("yyyyMMddHHmmss")}.csv",
                 };
             }

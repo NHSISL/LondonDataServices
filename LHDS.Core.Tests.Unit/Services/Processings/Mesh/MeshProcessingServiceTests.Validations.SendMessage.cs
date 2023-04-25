@@ -13,6 +13,48 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 {
     public partial class MeshProcessingServiceTests
     {
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfArgsIsInvalidAndLogItAsync(
+            string invalidText)
+        {
+            // given
+            MeshMessage randomMessage = CreateRandomMessage();
+            randomMessage.MessageId = invalidText;
+
+            var invalidMeshProcessingArgumentException =
+                new InvalidMeshProcessingArgumentException();
+
+            invalidMeshProcessingArgumentException.AddData(
+               key: nameof(randomMessage.MessageId),
+               values: "Text is required");
+
+            var expectedMeshProcessingValidationException =
+            new MeshProcessingValidationException(
+                   innerException: invalidMeshProcessingArgumentException);
+
+            // when
+            ValueTask<MeshMessage> retrieveSendMessageTask =
+                this.meshProcessingService.SendMessageAsync(randomMessage);
+
+            MeshProcessingValidationException actualMeshProcessingValidationException =
+                await Assert.ThrowsAsync<MeshProcessingValidationException>(retrieveSendMessageTask.AsTask);
+
+            //then
+            actualMeshProcessingValidationException.Should()
+                .BeEquivalentTo(expectedMeshProcessingValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedMeshProcessingValidationException))),
+                        Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
         [Fact]
         public async Task ShouldThrowValidationExceptionOnSendMessageIfReturnIsNullAndLogItAsync()
         {

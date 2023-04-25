@@ -51,10 +51,7 @@ namespace LHDS.Core.Services.Processings.Mesh
             {
                 MeshMessage sendMessageResult = await meshService.SendMessageAsync(message);
                 ValidateMeshMessageIsNotNull(sendMessageResult);
-
-                MeshMessage trackMessage =
-                    await this.meshService.RetrieveTrackingStatusByIdAsync(sendMessageResult.MessageId);
-
+                MeshMessage trackMessage = await this.meshService.RetrieveTrackingStatusByIdAsync(message.MessageId);
                 ValidateMeshMessageIsNotNull(trackMessage);
                 sendMessageResult.TrackingInfo = trackMessage.TrackingInfo;
 

@@ -61,11 +61,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             string invalidInput)
         {
             // given
-            string inputMessageId = GetRandomString();
-
             MeshMessage randomMeshMessage = new MeshMessage
             {
-                MessageId = inputMessageId,
+                MessageId = invalidInput,
                 Headers = null,
                 StringContent = invalidInput,
             };
@@ -74,6 +72,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             var invalidMeshMessageException =
                 new InvalidMeshMessageException();
+
+            invalidMeshMessageException.AddData(
+                key: nameof(Message.MessageId),
+                values: "Text is required");
 
             invalidMeshMessageException.AddData(
                 key: nameof(Message.StringContent),

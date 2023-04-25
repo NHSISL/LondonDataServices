@@ -157,7 +157,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 return message;
             });
 
-        public ValueTask RetrieveUpdatedMeshConsentStatusesChangesAsync() =>
+        public ValueTask<List<MeshMessage>> RetrieveUpdatedMeshConsentStatusesChangesAsync() =>
             TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
@@ -166,9 +166,12 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 List<string> messageIds = await
                     this.meshProcessingService.RetrieveMessageIdsFromInboxAsync();
 
+                List<MeshMessage> meshMessageList = new List<MeshMessage>();
+
                 foreach (string messageId in messageIds)
                 {
                     MeshMessage message = await meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(messageId);
+                    meshMessageList.Add(message);
                     string batchReference = message.Headers["Mex-LocalID"].FirstOrDefault();
 
                     List<OptOutIdentifier> consentedIdentifierList =
@@ -233,12 +236,14 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     Document document = new Document
                     {
                         DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
-                        FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_Response_" +
+                        FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_received_" +
                             $"{this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss")}.csv",
                     };
 
                     await this.documentProcessingService.AddDocumentAsync(document);
                 }
+
+                return meshMessageList;
             });
     }
 }

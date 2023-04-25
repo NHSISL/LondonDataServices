@@ -115,6 +115,10 @@ namespace LHDS.Core.Services.Foundations.Mesh
 
         public static MessageTrackingInfo ConvertToMeshMessageTrackingInfo(TrackingInfo trackingInfo)
         {
+            if (trackingInfo == null)
+            {
+                return null;
+            }
 
             return new MessageTrackingInfo
             {
@@ -153,6 +157,10 @@ namespace LHDS.Core.Services.Foundations.Mesh
 
         public static TrackingInfo ConvertToMessageTrackingInfo(MessageTrackingInfo trackingInfo)
         {
+            if (trackingInfo == null)
+            {
+                return null;
+            }
 
             return new TrackingInfo
             {

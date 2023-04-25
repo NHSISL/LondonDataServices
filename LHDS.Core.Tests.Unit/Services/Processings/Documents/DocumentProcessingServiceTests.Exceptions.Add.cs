@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask documentAddTask =
+            ValueTask<string> documentAddTask =
                 this.documentProcessingService.AddDocumentAsync(inputDocument);
 
             DocumentProcessingDependencyValidationException actualException =
@@ -88,7 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     .Throws(dependencyException);
 
             // when
-            ValueTask documentAddTask =
+            ValueTask<string> documentAddTask =
                 this.documentProcessingService.AddDocumentAsync(inputDocument);
 
             DocumentProcessingDependencyException actualException =
@@ -137,7 +137,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     .Throws(serviceException);
 
             // when
-            ValueTask addDocumentTask =
+            ValueTask<string> addDocumentTask =
                 this.documentProcessingService.AddDocumentAsync(inputDocument);
 
             DocumentProcessingServiceException actualException =

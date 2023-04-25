@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                 new DocumentProcessingValidationException(nullDocumentProcessingException);
 
             // when
-            ValueTask AddDocumentTask =
+            ValueTask<string> AddDocumentTask =
                 this.documentProcessingService.AddDocumentAsync(nullDocument);
 
             DocumentProcessingValidationException actualDocumentProcessingValidationException =

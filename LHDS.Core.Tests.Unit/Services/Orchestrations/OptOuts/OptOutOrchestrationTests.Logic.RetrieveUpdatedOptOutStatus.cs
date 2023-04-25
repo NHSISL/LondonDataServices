@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -27,6 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             List<string> outputMessageIds = GetRandomStrings(GetRandomNumber(max: 3));
             List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, batchReference);
+            List<MeshMessage> expectedMessages = outputMessages.DeepClone();
 
             List<OptOutIdentifier> outputIdentifierUnknownList =
                 CreateRandomListOfOptOutIdentifiers(GetRandomNumber(max: 3));
@@ -155,9 +157,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             }
 
             // When
-            await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+            List<MeshMessage> actualMeshMessages =
+                await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
 
             // Then
+            actualMeshMessages.Should().BeEquivalentTo(expectedMessages);
+            actualMeshMessages.Count.Should().Be(outputMessageIds.Count);
+
             this.dateTimeBrokerMock.Verify(broker =>
                broker.GetCurrentDateTimeOffset(),
                     Times.AtLeastOnce());

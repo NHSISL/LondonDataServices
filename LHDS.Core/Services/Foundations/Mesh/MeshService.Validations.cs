@@ -24,7 +24,8 @@ namespace LHDS.Core.Services.Foundations.Mesh
             ValidateMeshMessageIsNotNull(message);
 
             Validate<InvalidMeshMessageException>(
-                (Rule: IsInvalid(message.StringContent), Parameter: nameof(message.StringContent)),
+                (Rule: IsInvalid(message.MessageId), Parameter: nameof(message.MessageId)),
+            (Rule: IsInvalid(message.StringContent), Parameter: nameof(message.StringContent)),
                 (Rule: IsInvalid(message.Headers), Parameter: nameof(message.Headers)));
 
             Validate<InvalidMeshMessageException>(

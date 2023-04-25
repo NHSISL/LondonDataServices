@@ -122,8 +122,11 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     this.optOutProcessingService
                         .RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays);
 
+                List<OptOutIdentifier> mappedOutOutIdentifiers =
+                    mappedOptOuts.Select(optout => new OptOutIdentifier { NhsNumber = optout.NhsNumber }).ToList();
+
                 var processedOutputString = await this.csvMapperProcessingService
-                       .MapObjectToCsvAsync(mappedOptOuts, withHeader, shouldAddTrailingComma);
+                       .MapObjectToCsvAsync(mappedOutOutIdentifiers, withHeader, shouldAddTrailingComma);
 
                 string batchReference = this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss");
 

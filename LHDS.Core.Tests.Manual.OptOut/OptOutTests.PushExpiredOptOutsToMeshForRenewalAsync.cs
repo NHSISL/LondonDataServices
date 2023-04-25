@@ -4,6 +4,8 @@
 
 using System;
 using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.Mesh;
 using Xunit;
 
 namespace LHDS.Core.Tests.Manual.OptOut
@@ -15,7 +17,9 @@ namespace LHDS.Core.Tests.Manual.OptOut
         {
             try
             {
-                await optOutClient.PushExpiredOptOutsToMeshForRenewalAsync();
+                MeshMessage message = await optOutClient.PushExpiredOptOutsToMeshForRenewalAsync();
+                message.Should().NotBeNull();
+                message.MessageId.Should().NotBeNullOrWhiteSpace();
             }
             catch (Exception ex)
             {

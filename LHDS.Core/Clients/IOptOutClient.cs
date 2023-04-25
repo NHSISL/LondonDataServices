@@ -3,13 +3,14 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.Mesh;
 
 namespace LHDS.Core.Clients
 {
     public interface IOptOutClient
     {
         ValueTask RetrieveOptOutStatusAsync(byte[] optOutFile, string fileName);
-        ValueTask PushExpiredOptOutsToMeshForRenewalAsync();
+        ValueTask<MeshMessage> PushExpiredOptOutsToMeshForRenewalAsync();
         ValueTask RetrieveUpdatedMeshConsentStatusesChangesAsync();
     }
 }

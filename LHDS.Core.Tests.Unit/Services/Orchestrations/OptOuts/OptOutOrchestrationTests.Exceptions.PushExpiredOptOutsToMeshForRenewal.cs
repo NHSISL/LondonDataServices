@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using Moq;
 using Xeptions;
@@ -29,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .ThrowsAsync(dependancyValidationException);
 
             // When
-            ValueTask pushExpiredOptOutsToMeshIfExpiredTask =
+            ValueTask<MeshMessage> pushExpiredOptOutsToMeshIfExpiredTask =
                 this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             OptOutOrchestrationDependencyValidationException actualException =
@@ -73,7 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .ThrowsAsync(dependancyException);
 
             // When
-            ValueTask pushExpiredOptOutsToMeshIfExpiredTask =
+            ValueTask<MeshMessage> pushExpiredOptOutsToMeshIfExpiredTask =
                 this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             OptOutOrchestrationDependencyException actualException =
@@ -118,7 +119,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask pushExpiredOptOutsToMeshIfExpiredTask =
+            ValueTask<MeshMessage> pushExpiredOptOutsToMeshIfExpiredTask =
                 this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             OptOutOrchestrationServiceException actualException =

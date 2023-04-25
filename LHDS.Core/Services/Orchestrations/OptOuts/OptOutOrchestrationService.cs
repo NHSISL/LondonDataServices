@@ -111,7 +111,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 await this.documentProcessingService.AddDocumentAsync(document);
             });
 
-        public ValueTask PushExpiredOptOutsToMeshForRenewalAsync() =>
+        public ValueTask<MeshMessage> PushExpiredOptOutsToMeshForRenewalAsync() =>
             TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
@@ -122,11 +122,11 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     this.optOutProcessingService
                         .RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays);
 
-                List<OptOutIdentifier> mappedOutOutIdentifiers =
+                List<OptOutIdentifier> mappedOptOutIdentifiers =
                     mappedOptOuts.Select(optout => new OptOutIdentifier { NhsNumber = optout.NhsNumber }).ToList();
 
                 var processedOutputString = await this.csvMapperProcessingService
-                       .MapObjectToCsvAsync(mappedOutOutIdentifiers, withHeader, shouldAddTrailingComma);
+                       .MapObjectToCsvAsync(mappedOptOutIdentifiers, withHeader, shouldAddTrailingComma);
 
                 string batchReference = this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss");
 
@@ -153,6 +153,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                     await this.optOutProcessingService.ModifyOptOutAsync(optOut);
                 }
+
+                return message;
             });
 
         public ValueTask RetrieveUpdatedMeshConsentStatusesChangesAsync() =>

@@ -332,6 +332,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .AreEqual;
         }
 
+        private Expression<Func<List<OptOutIdentifier>, bool>> SameOptOutIdentifierListAs(
+           List<OptOutIdentifier> expectedOptOutIdentifierList)
+        {
+            return actualOptOutIdentifierList =>
+                this.compareLogic.Compare(expectedOptOutIdentifierList, actualOptOutIdentifierList)
+                    .AreEqual;
+        }
+
         private Expression<Func<MeshMessage, bool>> SameMessageAs(
             MeshMessage expectedMessage)
         {

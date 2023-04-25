@@ -28,7 +28,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 loggingBroker: this.loggingBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
-                optOutConfiguration: invalidOptOutConfiguration);
+                optOutConfiguration: invalidOptOutConfiguration,
+                meshConfiguration: this.meshConfiguration);
 
             var nullConfigOptOutOrchestrationException =
                 new NullConfigOptOutOrchestrationException();
@@ -85,7 +86,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 loggingBroker: this.loggingBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
-                optOutConfiguration: invalidOptOutConfiguration);
+                optOutConfiguration: invalidOptOutConfiguration,
+                meshConfiguration: this.meshConfiguration);
 
             var invalidConfigOptOutOrchestrationException =
                 new InvalidConfigOptOutOrchestrationException();

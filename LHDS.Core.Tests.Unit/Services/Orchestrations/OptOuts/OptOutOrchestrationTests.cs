@@ -7,11 +7,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -46,6 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private readonly ICompareLogic compareLogic;
         private readonly OptOutConfiguration optOutConfiguration;
         private readonly IConfiguration inMemoryConfiguration;
+        private readonly MeshConfiguration meshConfiguration;
 
         public OptOutOrchestrationTests()
         {
@@ -55,6 +58,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 {"OptOutSettings:OptOutFileHasHeader", "false"},
                 {"OptOutSettings:OutputFolder", GetRandomString()},
                 {"OptOutSettings:OptOutFileRequireTrailingComma", "true"},
+                {"MeshConfiguration:MailboxId", GetRandomString()},
+                {"MeshConfiguration:Password", GetRandomString()},
+                {"MeshConfiguration:Key", GetRandomString()},
+                {"MeshConfiguration:Url", GetRandomString()},
+                {"MeshConfiguration:MexClientVersion", GetRandomString()},
+                {"MeshConfiguration:MexOSName", GetRandomString()},
+                {"MeshConfiguration:MexOSVersion", GetRandomString()},
+                {"MeshConfiguration:RootCertificate", null},
+                {"MeshConfiguration:IntermediateCertificates", null},
+                {"MeshConfiguration:ClientCertificate", null}
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()
@@ -70,6 +83,26 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 OptOutFileRequireTrailingComma =
                     bool.Parse(inMemoryConfiguration["OptOutSettings:OptOutFileRequireTrailingComma"]),
+            };
+
+            this.meshConfiguration = new MeshConfiguration
+            {
+                MailboxId = inMemoryConfiguration["MeshConfiguration:MailboxId"],
+                Password = inMemoryConfiguration["MeshConfiguration:Password"],
+                Key = inMemoryConfiguration["MeshConfiguration:Key"],
+                Url = inMemoryConfiguration["MeshConfiguration:Url"],
+                MexClientVersion = inMemoryConfiguration["MeshConfiguration:MexClientVersion"],
+                MexOSName = inMemoryConfiguration["MeshConfiguration:MexOSName"],
+                MexOSVersion = inMemoryConfiguration["MeshConfiguration:MexOSVersion"],
+
+                RootCertificate = GetCertificate(inMemoryConfiguration["MeshConfiguration:RootCertificate"]),
+
+                IntermediateCertificates =
+                     GetCertificates(inMemoryConfiguration
+                        .GetSection("MeshConfiguration:IntermediateCertificates")
+                            .Get<List<string>>()),
+
+                ClientCertificate = GetCertificate(inMemoryConfiguration["MeshConfiguration:ClientCertificate"])
             };
 
             this.optOutProcessingServiceMock = new Mock<IOptOutProcessingService>();
@@ -89,7 +122,37 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 loggingBroker: this.loggingBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,
-                optOutConfiguration: this.optOutConfiguration);
+                optOutConfiguration: this.optOutConfiguration,
+                meshConfiguration: this.meshConfiguration);
+        }
+
+        private X509Certificate2Collection GetCertificates(List<string> values)
+        {
+            var certificates = new X509Certificate2Collection();
+
+            if (values == null || values.Count == 0)
+            {
+                return certificates;
+            }
+
+            foreach (string item in values)
+            {
+                certificates.Add(GetCertificate(item));
+            }
+
+            return certificates;
+        }
+
+        private X509Certificate2 GetCertificate(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return new X509Certificate2();
+            }
+
+            byte[] certBytes = Convert.FromBase64String(value);
+
+            return new X509Certificate2(certBytes);
         }
 
         private static string GetRandomString() =>

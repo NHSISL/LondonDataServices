@@ -24,13 +24,17 @@ namespace LHDS.Core.Tests.Manual.OptOut
 
                 string DocumentFileName = await optOutClient
                     .RetrieveOptOutStatusAsync(optOutFile: fileBytes, fileName: fileName);
+
                 DocumentFileName.Should().NotBeNullOrWhiteSpace();
 
                 Document retreiveDocument =
-                    await documentService.RetrieveDocumentByFileNameAsync(DocumentFileName);
+                    await documentService
+                    .RetrieveDocumentByFileNameAsync(DocumentFileName);
+
                 retreiveDocument.DocumentData.Should().NotBeNull();
 
-                await documentService.RemoveDocumentByFileNameAsync(DocumentFileName);
+                await documentService
+                    .RemoveDocumentByFileNameAsync(DocumentFileName);
             }
             catch (Exception ex)
             {

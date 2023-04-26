@@ -195,7 +195,6 @@ namespace LHDS.Core.Services.Foundations.Mesh
                 Version = trackingInfo.Version,
                 WorkflowId = trackingInfo.WorkflowId,
             };
-
         }
     }
 }

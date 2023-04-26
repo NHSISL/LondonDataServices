@@ -49,6 +49,8 @@ namespace LHDS.Core.Services.Foundations.Documents
                  byte[] retrievedDocument = await this.blobStorageBroker
                      .SelectByFileNameAsync(fileName: fileName);
 
+                 ValidateStorageDocument(retrievedDocument, fileName);
+
                  var document = new Document
                  {
                      FileName = fileName,

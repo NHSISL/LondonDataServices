@@ -2,12 +2,15 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -26,8 +29,10 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         private readonly IMeshProcessingService meshProcessingService;
         private readonly ICsvMapperProcessingService csvMapperProcessingService;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly IIdentifierBroker identifierBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly OptOutConfiguration optOutConfiguration;
+        private readonly MeshConfiguration meshConfiguration;
 
         public OptOutOrchestrationService(
             IOptOutProcessingService optOutProcessingService,
@@ -35,24 +40,28 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             IMeshProcessingService meshProcessingService,
             ICsvMapperProcessingService csvMapperProcessingService,
             IDateTimeBroker dateTimeBroker,
+            IIdentifierBroker identifierBroker,
             ILoggingBroker loggingBroker,
-            OptOutConfiguration optOutConfiguration)
+            OptOutConfiguration optOutConfiguration,
+            MeshConfiguration meshConfiguration)
         {
             this.optOutProcessingService = optOutProcessingService;
             this.documentProcessingService = documentProcessingService;
             this.meshProcessingService = meshProcessingService;
             this.csvMapperProcessingService = csvMapperProcessingService;
             this.dateTimeBroker = dateTimeBroker;
+            this.identifierBroker = identifierBroker;
             this.loggingBroker = loggingBroker;
             this.optOutConfiguration = optOutConfiguration;
+            this.meshConfiguration = meshConfiguration;
         }
 
-        public ValueTask RetrieveOptOutStatusAsync(byte[] optOutFile, string requestId) =>
+        public ValueTask RetrieveOptOutStatusAsync(byte[] optOutFile, string fileName) =>
             TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
                 ValidateOptOutFileIsNotNull(optOutFile);
-                ValidateRequestIdIsNotNull(requestId);
+                ValidateRequestIdIsNotNull(fileName);
 
                 bool withHeader =
                     optOutConfiguration.OptOutFileHasHeader;
@@ -62,14 +71,29 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                 var inputString = Encoding.ASCII.GetString(optOutFile);
 
-                List<OptOut> mappedOptOuts =
-                await this.csvMapperProcessingService.MapCsvToObjectAsync<OptOut>(inputString, false);
+                List<OptOutIdentifier> mappedOptOuts =
+                await this.csvMapperProcessingService.MapCsvToObjectAsync<OptOutIdentifier>(inputString, false);
 
                 List<OptOut> processedOptOuts = new List<OptOut>();
 
                 foreach (var optOut in mappedOptOuts)
                 {
-                    processedOptOuts.Add(await this.optOutProcessingService.RetrieveOrAddOptOutAsync(optOut));
+                    DateTimeOffset timeStamp = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                    OptOut item = await this.optOutProcessingService
+                        .RetrieveOrAddOptOutAsync(
+                            new OptOut
+                            {
+                                Id = this.identifierBroker.GetIdentifier(),
+                                NhsNumber = optOut.NhsNumber,
+                                OptOutStatus = "Unknown",
+                                CreatedDate = timeStamp,
+                                UpdatedDate = timeStamp,
+                                CreatedBy = "System",
+                                UpdatedBy = "System"
+                            });
+
+                    processedOptOuts.Add(item);
                 }
 
                 var processedData = await this.csvMapperProcessingService
@@ -79,7 +103,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                 Document document = new Document
                 {
-                    FileName = $"{optOutConfiguration.OutputFolder}/{requestId}_Response_{dateTimeBroker
+                    FileName = $"{optOutConfiguration.OutputFolder}/{fileName}_Response_{dateTimeBroker
                         .GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss")}.csv",
                     DocumentData = processedBytes
                 };
@@ -87,7 +111,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 await this.documentProcessingService.AddDocumentAsync(document);
             });
 
-        public ValueTask PushExpiredOptOutsToMeshForRenewalAsync() =>
+        public ValueTask<MeshMessage> PushExpiredOptOutsToMeshForRenewalAsync() =>
             TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
@@ -98,17 +122,27 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     this.optOutProcessingService
                         .RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays);
 
+                List<OptOutIdentifier> mappedOptOutIdentifiers =
+                    mappedOptOuts.Select(optout => new OptOutIdentifier { NhsNumber = optout.NhsNumber }).ToList();
+
                 var processedOutputString = await this.csvMapperProcessingService
-                       .MapObjectToCsvAsync(mappedOptOuts, withHeader, shouldAddTrailingComma);
+                       .MapObjectToCsvAsync(mappedOptOutIdentifiers, withHeader, shouldAddTrailingComma);
+
+                string batchReference = this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss");
 
                 MeshMessage message = new MeshMessage
                 {
-                    StringContent = processedOutputString
+                    StringContent = processedOutputString,
+                    Headers = new Dictionary<string, List<string>>()
                 };
 
-                await this.meshProcessingService.SendMessageAsync(message);
+                message.Headers.Add("Content-Type", new List<string> { "text/plain" });
+                message.Headers.Add("Mex-FileName", new List<string> { batchReference });
+                message.Headers.Add("Mex-From", new List<string> { this.meshConfiguration.MailboxId });
+                message.Headers.Add("Mex-To", new List<string> { this.optOutConfiguration.To });
+                message.Headers.Add("Mex-WorkflowID", new List<string> { this.optOutConfiguration.WorkflowId });
 
-                string batchReference = this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss");
+                message = await this.meshProcessingService.SendMessageAsync(message);
 
                 foreach (var optOut in mappedOptOuts)
                 {
@@ -119,6 +153,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                     await this.optOutProcessingService.ModifyOptOutAsync(optOut);
                 }
+
+                return message;
             });
 
         public ValueTask RetrieveUpdatedMeshConsentStatusesChangesAsync() =>

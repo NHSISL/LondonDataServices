@@ -61,11 +61,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             string invalidInput)
         {
             // given
-            string inputMessageId = GetRandomString();
-
             MeshMessage randomMeshMessage = new MeshMessage
             {
-                MessageId = inputMessageId,
                 Headers = null,
                 StringContent = invalidInput,
             };

@@ -7,10 +7,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -41,18 +44,30 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private readonly OptOutOrchestrationService optOutOrchestrationService;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly ICompareLogic compareLogic;
         private readonly OptOutConfiguration optOutConfiguration;
         private readonly IConfiguration inMemoryConfiguration;
+        private readonly MeshConfiguration meshConfiguration;
 
         public OptOutOrchestrationTests()
         {
             var appSettingsStub = new Dictionary<string, string> {
-                {"OptOutSettings:ExpiredAfterDays", "7"},
-                {"OptOutSettings:InputFolder", GetRandomString()},
-                {"OptOutSettings:OptOutFileHasHeader", "false"},
-                {"OptOutSettings:OutputFolder", GetRandomString()},
-                {"OptOutSettings:OptOutFileRequireTrailingComma", "true"},
+                { "OptOutSettings:ExpiredAfterDays", "7" },
+                { "OptOutSettings:InputFolder", GetRandomString() },
+                { "OptOutSettings:OptOutFileHasHeader", "false" },
+                { "OptOutSettings:OutputFolder", GetRandomString() },
+                { "OptOutSettings:OptOutFileRequireTrailingComma", "true" },
+                { "MeshConfiguration:MailboxId", GetRandomString() },
+                { "MeshConfiguration:Password", GetRandomString() },
+                { "MeshConfiguration:Key", GetRandomString() },
+                { "MeshConfiguration:Url", GetRandomString() },
+                { "MeshConfiguration:MexClientVersion", GetRandomString() },
+                { "MeshConfiguration:MexOSName", GetRandomString() },
+                { "MeshConfiguration:MexOSVersion", GetRandomString() },
+                { "MeshConfiguration:RootCertificate", null },
+                { "MeshConfiguration:IntermediateCertificates", null },
+                { "MeshConfiguration:ClientCertificate", null }
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()
@@ -70,12 +85,33 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     bool.Parse(inMemoryConfiguration["OptOutSettings:OptOutFileRequireTrailingComma"]),
             };
 
+            this.meshConfiguration = new MeshConfiguration
+            {
+                MailboxId = inMemoryConfiguration["MeshConfiguration:MailboxId"],
+                Password = inMemoryConfiguration["MeshConfiguration:Password"],
+                Key = inMemoryConfiguration["MeshConfiguration:Key"],
+                Url = inMemoryConfiguration["MeshConfiguration:Url"],
+                MexClientVersion = inMemoryConfiguration["MeshConfiguration:MexClientVersion"],
+                MexOSName = inMemoryConfiguration["MeshConfiguration:MexOSName"],
+                MexOSVersion = inMemoryConfiguration["MeshConfiguration:MexOSVersion"],
+
+                RootCertificate = GetCertificate(inMemoryConfiguration["MeshConfiguration:RootCertificate"]),
+
+                IntermediateCertificates =
+                     GetCertificates(inMemoryConfiguration
+                        .GetSection("MeshConfiguration:IntermediateCertificates")
+                            .Get<List<string>>()),
+
+                ClientCertificate = GetCertificate(inMemoryConfiguration["MeshConfiguration:ClientCertificate"])
+            };
+
             this.optOutProcessingServiceMock = new Mock<IOptOutProcessingService>();
             this.documentProcessingServiceMock = new Mock<IDocumentProcessingService>();
             this.meshProcessingServiceMock = new Mock<IMeshProcessingService>();
             this.csvMapperProcessingServiceMock = new Mock<ICsvMapperProcessingService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.compareLogic = new CompareLogic();
 
             this.optOutOrchestrationService = new OptOutOrchestrationService(
@@ -85,7 +121,38 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 csvMapperProcessingService: this.csvMapperProcessingServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
-                optOutConfiguration: this.optOutConfiguration);
+                identifierBroker: this.identifierBrokerMock.Object,
+                optOutConfiguration: this.optOutConfiguration,
+                meshConfiguration: this.meshConfiguration);
+        }
+
+        private X509Certificate2Collection GetCertificates(List<string> values)
+        {
+            var certificates = new X509Certificate2Collection();
+
+            if (values == null || values.Count == 0)
+            {
+                return certificates;
+            }
+
+            foreach (string item in values)
+            {
+                certificates.Add(GetCertificate(item));
+            }
+
+            return certificates;
+        }
+
+        private X509Certificate2 GetCertificate(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return new X509Certificate2();
+            }
+
+            byte[] certBytes = Convert.FromBase64String(value);
+
+            return new X509Certificate2(certBytes);
         }
 
         private static string GetRandomString() =>
@@ -141,6 +208,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private static int GetRandomNumber(int min = 2, int max = 10) =>
             new IntRange(min, max).GetValue();
 
+        private static List<OptOutIdentifier> CreateRandomOptOutIdentifiersList()
+        {
+            return CreateOptOutIdentifierFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .ToList();
+        }
         private static List<OptOut> CreateRandomOptOutsList()
         {
             return CreateOptOutFiller(dateTimeOffset: GetRandomDateTimeOffset())
@@ -251,6 +324,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .AreEqual;
         }
 
+        private Expression<Func<OptOut, bool>> SameOptOutAs(
+            OptOut expectedOptOut)
+        {
+            return actualOptOut =>
+                this.compareLogic.Compare(expectedOptOut, actualOptOut)
+                    .AreEqual;
+        }
+
+        private Expression<Func<List<OptOutIdentifier>, bool>> SameOptOutIdentifierListAs(
+           List<OptOutIdentifier> expectedOptOutIdentifierList)
+        {
+            return actualOptOutIdentifierList =>
+                this.compareLogic.Compare(expectedOptOutIdentifierList, actualOptOutIdentifierList)
+                    .AreEqual;
+        }
+
         private Expression<Func<MeshMessage, bool>> SameMessageAs(
             MeshMessage expectedMessage)
         {
@@ -281,6 +370,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .OnProperty(optOut => optOut.OptOutStatus).Use("Unknown")
                 .OnProperty(optOut => optOut.CreatedBy).Use(user)
                 .OnProperty(optOut => optOut.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static Filler<OptOutIdentifier> CreateOptOutIdentifierFiller(DateTimeOffset dateTimeOffset)
+        {
+            var filler = new Filler<OptOutIdentifier>();
+
+            filler.Setup()
+                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber());
 
             return filler;
         }

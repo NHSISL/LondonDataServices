@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     dependancyValidationException.InnerException as Xeption);
 
             this.csvMapperProcessingServiceMock.Setup(processing =>
-                processing.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), false))
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<string>(), false))
                     .ThrowsAsync(dependancyValidationException);
 
             // when
@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .BeEquivalentTo(expectedDependencyException);
 
             this.csvMapperProcessingServiceMock.Verify(processing =>
-                processing.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), false),
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<string>(), false),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -61,6 +61,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -78,7 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     dependancyException.InnerException as Xeption);
 
             this.csvMapperProcessingServiceMock.Setup(processing =>
-                processing.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), It.IsAny<bool>()))
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<string>(), It.IsAny<bool>()))
                     .ThrowsAsync(dependancyException);
 
             // when
@@ -93,7 +94,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .BeEquivalentTo(expectedDependencyException);
 
             this.csvMapperProcessingServiceMock.Verify(processing =>
-                processing.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), It.IsAny<bool>()),
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<string>(), It.IsAny<bool>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -107,6 +108,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -126,7 +128,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 new OptOutOrchestrationServiceException(failedOptOutOrchestrationServiceException);
 
             this.csvMapperProcessingServiceMock.Setup(processing =>
-                processing.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), It.IsAny<bool>()))
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<string>(), It.IsAny<bool>()))
                     .ThrowsAsync(serviceException);
 
             // when
@@ -141,7 +143,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 .BeEquivalentTo(expectedOptOrchestrationServiceException);
 
             this.csvMapperProcessingServiceMock.Verify(processing =>
-                processing.MapCsvToObjectAsync<OptOut>(It.IsAny<string>(), It.IsAny<bool>()),
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<string>(), It.IsAny<bool>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -155,6 +157,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

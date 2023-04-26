@@ -4,7 +4,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
 using Moq;
@@ -24,6 +26,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
             List<OptOut> randomOptOuts = CreateRandomOptOutsList();
             List<OptOut> outputOptOuts = randomOptOuts;
+
+            List<OptOutIdentifier> mappedOptOuts = outputOptOuts
+                .Select(optout => new OptOutIdentifier { NhsNumber = optout.NhsNumber }).ToList();
+
             var processedOutputString = GetRandomString();
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -37,16 +43,26 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             string batchReference = randomDate.ToString("yyyyMMddHHmmss");
 
             this.csvMapperProcessingServiceMock.Setup(processings =>
-                processings.MapObjectToCsvAsync(outputOptOuts, withHeader, shouldAddTrailingComma))
-                    .ReturnsAsync(processedOutputString);
+                processings.MapObjectToCsvAsync(
+                    It.Is(SameOptOutIdentifierListAs(mappedOptOuts)), withHeader, shouldAddTrailingComma))
+                        .ReturnsAsync(processedOutputString);
 
             MeshMessage message = new MeshMessage
             {
-                StringContent = processedOutputString
+                StringContent = processedOutputString,
+                Headers = new Dictionary<string, List<string>>()
             };
 
+            message.Headers.Add("Content-Type", new List<string> { "text/plain" });
+            message.Headers.Add("Mex-FileName", new List<string> { batchReference });
+            message.Headers.Add("Mex-From", new List<string> { this.meshConfiguration.MailboxId });
+            message.Headers.Add("Mex-To", new List<string> { this.optOutConfiguration.To });
+            message.Headers.Add("Mex-WorkflowID", new List<string> { this.optOutConfiguration.WorkflowId });
+            MeshMessage outputMessage = message.DeepClone();
+
             this.meshProcessingServiceMock.Setup(processings =>
-                processings.SendMessageAsync(message));
+                processings.SendMessageAsync(It.Is(SameMessageAs(message))))
+                    .ReturnsAsync(outputMessage);
 
             foreach (var optOut in outputOptOuts)
             {
@@ -69,9 +85,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     Times.Once);
 
             this.csvMapperProcessingServiceMock.Verify(processings =>
-                processings.MapObjectToCsvAsync(It.IsAny<List<OptOut>>(), withHeader, shouldAddTrailingComma),
+                processings.MapObjectToCsvAsync(It.IsAny<List<OptOutIdentifier>>(), withHeader, shouldAddTrailingComma),
                     Times.Once);
-
 
             this.meshProcessingServiceMock.Verify(processings =>
                 processings.SendMessageAsync(It.Is(SameMessageAs(message))),

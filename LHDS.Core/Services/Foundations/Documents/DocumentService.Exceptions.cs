@@ -59,9 +59,13 @@ namespace LHDS.Core.Services.Foundations.Documents
             {
                 return await returningDocumentFunction();
             }
-            catch (InvalidDocumentException exception)
+            catch (InvalidDocumentException invalidDocumentException)
             {
-                throw CreateAndLogValidationException(exception);
+                throw CreateAndLogValidationException(invalidDocumentException);
+            }
+            catch (NotFoundDocumentException notFoundDocumentException)
+            {
+                throw CreateAndLogValidationException(notFoundDocumentException);
             }
             catch (RequestFailedException requestFailedException)
             {
@@ -83,9 +87,9 @@ namespace LHDS.Core.Services.Foundations.Documents
             {
                 return await returningStringFunction();
             }
-            catch (InvalidDocumentException exception)
+            catch (InvalidDocumentException invalidDocumentException)
             {
-                throw CreateAndLogValidationException(exception);
+                throw CreateAndLogValidationException(invalidDocumentException);
             }
             catch (RequestFailedException requestFailedException)
             {

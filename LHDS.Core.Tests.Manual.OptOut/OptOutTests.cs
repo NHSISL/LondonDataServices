@@ -6,6 +6,7 @@ using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Orchestrations.OptOuts;
 using LHDS.Core.Services.Foundations.Documents;
+using LHDS.Core.Services.Foundations.Mesh;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,7 @@ namespace LHDS.Core.Tests.Manual.OptOut
     {
         private readonly IOptOutClient optOutClient;
         private readonly IDocumentService documentService;
+        private readonly IMeshService meshService;
         private readonly OptOutConfiguration optOutConfiguration;
         private readonly ITestOutputHelper output;
 
@@ -45,6 +47,7 @@ namespace LHDS.Core.Tests.Manual.OptOut
 
             this.optOutClient = serviceProvider.GetService<IOptOutClient>();
             this.documentService = serviceProvider.GetService<IDocumentService>();
+            this.meshService = serviceProvider.GetService<IMeshService>();
             this.optOutConfiguration = serviceProvider.GetService<OptOutConfiguration>();
         }
     }

@@ -113,77 +113,87 @@ namespace LHDS.Core.Services.Foundations.Mesh
             };
         }
 
-        public static MessageTrackingInfo ConvertToMeshMessageTrackingInfo(TrackingInfo nelTrackingInfo)
+        public static MessageTrackingInfo ConvertToMeshMessageTrackingInfo(TrackingInfo trackingInfo)
         {
+            if (trackingInfo == null)
+            {
+                return null;
+            }
+
             return new MessageTrackingInfo
             {
-                AddressType = nelTrackingInfo.AddressType,
-                Checksum = nelTrackingInfo.Checksum,
-                ChunkCount = nelTrackingInfo.ChunkCount,
-                CompressFlag = nelTrackingInfo.CompressFlag,
-                DownloadTimestamp = nelTrackingInfo.DownloadTimestamp,
-                DtsId = nelTrackingInfo.DtsId,
-                EncryptedFlag = nelTrackingInfo.EncryptedFlag,
-                ExpiryTime = nelTrackingInfo.ExpiryTime,
-                FileName = nelTrackingInfo.FileName,
-                FileSize = nelTrackingInfo.FileSize,
-                IsCompressed = nelTrackingInfo.IsCompressed,
-                LocalId = nelTrackingInfo.LocalId,
-                MeshRecipientOdsCode = nelTrackingInfo.MeshRecipientOdsCode,
-                MessageId = nelTrackingInfo.MessageId,
-                MessageType = nelTrackingInfo.MessageType,
-                PartnerId = nelTrackingInfo.PartnerId,
-                Recipient = nelTrackingInfo.Recipient,
-                RecipientName = nelTrackingInfo.RecipientName,
-                RecipientOrgCode = nelTrackingInfo.RecipientOrgCode,
-                RecipientSmtp = nelTrackingInfo.RecipientSmtp,
-                Sender = nelTrackingInfo.Sender,
-                SenderName = nelTrackingInfo.SenderName,
-                SenderOdsCode = nelTrackingInfo.SenderOdsCode,
-                SenderOrgCode = nelTrackingInfo.SenderOrgCode,
-                SenderSmtp = nelTrackingInfo.SenderSmtp,
-                Status = nelTrackingInfo.Status,
-                StatusSuccess = nelTrackingInfo.StatusSuccess,
-                UploadTimestamp = nelTrackingInfo.UploadTimestamp,
-                Version = nelTrackingInfo.Version,
-                WorkflowId = nelTrackingInfo.WorkflowId,
+                AddressType = trackingInfo.AddressType,
+                Checksum = trackingInfo.Checksum,
+                ChunkCount = trackingInfo.ChunkCount,
+                CompressFlag = trackingInfo.CompressFlag,
+                DownloadTimestamp = trackingInfo.DownloadTimestamp,
+                DtsId = trackingInfo.DtsId,
+                EncryptedFlag = trackingInfo.EncryptedFlag,
+                ExpiryTime = trackingInfo.ExpiryTime,
+                FileName = trackingInfo.FileName,
+                FileSize = trackingInfo.FileSize,
+                IsCompressed = trackingInfo.IsCompressed,
+                LocalId = trackingInfo.LocalId,
+                MeshRecipientOdsCode = trackingInfo.MeshRecipientOdsCode,
+                MessageId = trackingInfo.MessageId,
+                MessageType = trackingInfo.MessageType,
+                PartnerId = trackingInfo.PartnerId,
+                Recipient = trackingInfo.Recipient,
+                RecipientName = trackingInfo.RecipientName,
+                RecipientOrgCode = trackingInfo.RecipientOrgCode,
+                RecipientSmtp = trackingInfo.RecipientSmtp,
+                Sender = trackingInfo.Sender,
+                SenderName = trackingInfo.SenderName,
+                SenderOdsCode = trackingInfo.SenderOdsCode,
+                SenderOrgCode = trackingInfo.SenderOrgCode,
+                SenderSmtp = trackingInfo.SenderSmtp,
+                Status = trackingInfo.Status,
+                StatusSuccess = trackingInfo.StatusSuccess,
+                UploadTimestamp = trackingInfo.UploadTimestamp,
+                Version = trackingInfo.Version,
+                WorkflowId = trackingInfo.WorkflowId,
             };
         }
 
-        public static TrackingInfo ConvertToMessageTrackingInfo(MessageTrackingInfo lhdsTrackingInfo)
+        public static TrackingInfo ConvertToMessageTrackingInfo(MessageTrackingInfo trackingInfo)
         {
+            if (trackingInfo == null)
+            {
+                return null;
+            }
+
             return new TrackingInfo
             {
-                AddressType = lhdsTrackingInfo.AddressType,
-                Checksum = lhdsTrackingInfo.Checksum,
-                ChunkCount = lhdsTrackingInfo.ChunkCount,
-                CompressFlag = lhdsTrackingInfo.CompressFlag,
-                DownloadTimestamp = lhdsTrackingInfo.DownloadTimestamp,
-                DtsId = lhdsTrackingInfo.DtsId,
-                EncryptedFlag = lhdsTrackingInfo.EncryptedFlag,
-                ExpiryTime = lhdsTrackingInfo.ExpiryTime,
-                FileName = lhdsTrackingInfo.FileName,
-                FileSize = lhdsTrackingInfo.FileSize,
-                IsCompressed = lhdsTrackingInfo.IsCompressed,
-                LocalId = lhdsTrackingInfo.LocalId,
-                MeshRecipientOdsCode = lhdsTrackingInfo.MeshRecipientOdsCode,
-                MessageId = lhdsTrackingInfo.MessageId,
-                MessageType = lhdsTrackingInfo.MessageType,
-                PartnerId = lhdsTrackingInfo.PartnerId,
-                Recipient = lhdsTrackingInfo.Recipient,
-                RecipientName = lhdsTrackingInfo.RecipientName,
-                RecipientOrgCode = lhdsTrackingInfo.RecipientOrgCode,
-                RecipientSmtp = lhdsTrackingInfo.RecipientSmtp,
-                Sender = lhdsTrackingInfo.Sender,
-                SenderName = lhdsTrackingInfo.SenderName,
-                SenderOdsCode = lhdsTrackingInfo.SenderOdsCode,
-                SenderOrgCode = lhdsTrackingInfo.SenderOrgCode,
-                SenderSmtp = lhdsTrackingInfo.SenderSmtp,
-                Status = lhdsTrackingInfo.Status,
-                StatusSuccess = lhdsTrackingInfo.StatusSuccess,
-                UploadTimestamp = lhdsTrackingInfo.UploadTimestamp,
-                Version = lhdsTrackingInfo.Version,
-                WorkflowId = lhdsTrackingInfo.WorkflowId,
+                AddressType = trackingInfo.AddressType,
+                Checksum = trackingInfo.Checksum,
+                ChunkCount = trackingInfo.ChunkCount,
+                CompressFlag = trackingInfo.CompressFlag,
+                DownloadTimestamp = trackingInfo.DownloadTimestamp,
+                DtsId = trackingInfo.DtsId,
+                EncryptedFlag = trackingInfo.EncryptedFlag,
+                ExpiryTime = trackingInfo.ExpiryTime,
+                FileName = trackingInfo.FileName,
+                FileSize = trackingInfo.FileSize,
+                IsCompressed = trackingInfo.IsCompressed,
+                LocalId = trackingInfo.LocalId,
+                MeshRecipientOdsCode = trackingInfo.MeshRecipientOdsCode,
+                MessageId = trackingInfo.MessageId,
+                MessageType = trackingInfo.MessageType,
+                PartnerId = trackingInfo.PartnerId,
+                Recipient = trackingInfo.Recipient,
+                RecipientName = trackingInfo.RecipientName,
+                RecipientOrgCode = trackingInfo.RecipientOrgCode,
+                RecipientSmtp = trackingInfo.RecipientSmtp,
+                Sender = trackingInfo.Sender,
+                SenderName = trackingInfo.SenderName,
+                SenderOdsCode = trackingInfo.SenderOdsCode,
+                SenderOrgCode = trackingInfo.SenderOrgCode,
+                SenderSmtp = trackingInfo.SenderSmtp,
+                Status = trackingInfo.Status,
+                StatusSuccess = trackingInfo.StatusSuccess,
+                UploadTimestamp = trackingInfo.UploadTimestamp,
+                Version = trackingInfo.Version,
+                WorkflowId = trackingInfo.WorkflowId,
             };
         }
     }

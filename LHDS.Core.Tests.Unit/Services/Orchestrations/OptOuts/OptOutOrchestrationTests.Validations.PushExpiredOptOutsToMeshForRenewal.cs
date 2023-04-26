@@ -4,6 +4,7 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Orchestrations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using LHDS.Core.Services.Orchestrations.OptOuts;
@@ -27,7 +28,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 csvMapperProcessingService: this.csvMapperProcessingServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
-                optOutConfiguration: invalidOptOutConfiguration);
+                identifierBroker: this.identifierBrokerMock.Object,
+                optOutConfiguration: invalidOptOutConfiguration,
+                meshConfiguration: this.meshConfiguration);
 
             var nullConfigOptOutOrchestrationException =
                 new NullConfigOptOutOrchestrationException();
@@ -37,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: nullConfigOptOutOrchestrationException);
 
             // When
-            ValueTask pushExpOptOutsToMeshIfExpiredTask =
+            ValueTask<MeshMessage> pushExpOptOutsToMeshIfExpiredTask =
                 invalidOptOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             OptOutOrchestrationValidationException actualException =
@@ -83,7 +86,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 csvMapperProcessingService: this.csvMapperProcessingServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
-                optOutConfiguration: invalidOptOutConfiguration);
+                identifierBroker: this.identifierBrokerMock.Object,
+                optOutConfiguration: invalidOptOutConfiguration,
+                meshConfiguration: this.meshConfiguration);
 
             var invalidConfigOptOutOrchestrationException =
                 new InvalidConfigOptOutOrchestrationException();
@@ -101,7 +106,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: invalidConfigOptOutOrchestrationException);
 
             // When
-            ValueTask pushExpOptOutsToMeshIfExpiredTask =
+            ValueTask<MeshMessage> pushExpOptOutsToMeshIfExpiredTask =
                 invalidOptOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             OptOutOrchestrationValidationException actualException =

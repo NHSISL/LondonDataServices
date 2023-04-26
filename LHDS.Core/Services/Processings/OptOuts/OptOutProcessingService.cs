@@ -10,7 +10,6 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.OptOuts;
-using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.Core.Services.Processings.OptOuts
 {
@@ -35,7 +34,8 @@ namespace LHDS.Core.Services.Processings.OptOuts
             {
                 ValidateOptOutProcessingOnRetrieveOrAdd(optOut);
 
-                OptOut maybeOptOut = await this.optOutService.RetrieveOptOutByIdAsync(optOut.Id);
+                OptOut maybeOptOut = this.optOutService.RetrieveAllOptOuts()
+                    .FirstOrDefault(item => item.NhsNumber == optOut.NhsNumber);
 
                 if (maybeOptOut == null)
                 {
@@ -96,7 +96,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
                     .Where(optOut => optOut.CacheTime < expirationDate)
                         .ToList();
 
-                return expiredOptOuts;
+                return await ValueTask.FromResult(expiredOptOuts);
             });
 
         public ValueTask<List<OptOut>> RetrieveAllOptOutsByBatchReferenceAsync(string batchReference) =>

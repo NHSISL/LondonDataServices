@@ -17,6 +17,54 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
     public partial class MeshServiceTests
     {
         [Fact]
+        public async Task ShouldReturnSendFileAsyncWithNullTrackingInfo()
+        {
+            // given
+            dynamic dynamicMeshMessageProperties =
+                CreateRandomMeshMessageProperties();
+
+            var randomMessage = new Message
+            {
+                MessageId = dynamicMeshMessageProperties.MessageId,
+                Headers = dynamicMeshMessageProperties.Headers,
+                FileContent = dynamicMeshMessageProperties.FileContent,
+                TrackingInfo = null
+            };
+
+            var inputMessage = randomMessage;
+            var outputMessage = inputMessage;
+
+            MeshMessage randomMeshMessage = new MeshMessage
+            {
+                MessageId = dynamicMeshMessageProperties.MessageId,
+                Headers = dynamicMeshMessageProperties.Headers,
+                FileContent = dynamicMeshMessageProperties.FileContent,
+                TrackingInfo = null
+            };
+
+            var inputMeshMessage = randomMeshMessage;
+            var expectedMeshMessage = randomMeshMessage;
+
+            this.meshBrokerMock.Setup(broker =>
+                broker.SendFileAsync(It.Is(SameMessageAs(inputMessage))))
+                    .ReturnsAsync(outputMessage);
+
+            // when
+            MeshMessage actualMeshMessage =
+                await this.meshService.SendFileAsync(inputMeshMessage);
+
+            // then
+            actualMeshMessage.Should().BeEquivalentTo(expectedMeshMessage);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.SendFileAsync(It.Is(SameMessageAs(inputMessage))),
+                    Times.Once());
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
         public async Task ShouldReturnSendFileAsync()
         {
             // given

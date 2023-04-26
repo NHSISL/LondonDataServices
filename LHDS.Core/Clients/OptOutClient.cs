@@ -4,6 +4,7 @@
 
 using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.OptOutClient.Exceptions;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using LHDS.Core.Services.Orchestrations.OptOuts;
 using Xeptions;
@@ -20,11 +21,11 @@ namespace LHDS.Core.Clients
             this.optOutOrchestrationService = optOutOrchestrationService;
         }
 
-        public async ValueTask RetrieveOptOutStatusAsync(byte[] optOutFile, string requestId)
+        public async ValueTask RetrieveOptOutStatusAsync(byte[] optOutFile, string fileName)
         {
             try
             {
-                await this.optOutOrchestrationService.RetrieveOptOutStatusAsync(optOutFile, requestId);
+                await this.optOutOrchestrationService.RetrieveOptOutStatusAsync(optOutFile, fileName);
             }
             catch (OptOutOrchestrationValidationException optOutOrchestrationValidationException)
             {
@@ -51,11 +52,11 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask PushExpiredOptOutsToMeshForRenewalAsync()
+        public async ValueTask<MeshMessage> PushExpiredOptOutsToMeshForRenewalAsync()
         {
             try
             {
-                await this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
+                return await this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
             }
             catch (OptOutOrchestrationValidationException optOutOrchestrationValidationException)
             {

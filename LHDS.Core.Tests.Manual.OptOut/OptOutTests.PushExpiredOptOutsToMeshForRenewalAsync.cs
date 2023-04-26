@@ -20,6 +20,9 @@ namespace LHDS.Core.Tests.Manual.OptOut
                 MeshMessage message = await optOutClient.PushExpiredOptOutsToMeshForRenewalAsync();
                 message.Should().NotBeNull();
                 message.MessageId.Should().NotBeNullOrWhiteSpace();
+                var messageId = message.MessageId;
+                //bool messageAcked = await meshService.AcknowledgeMessageByIdAsync(messageId);
+                //messageAcked.Should().BeTrue();
             }
             catch (Exception ex)
             {

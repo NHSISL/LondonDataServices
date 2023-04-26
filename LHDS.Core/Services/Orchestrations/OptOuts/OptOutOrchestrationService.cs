@@ -237,7 +237,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     {
                         DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
                         FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_response_" +
-                            $"{this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss")}.csv",
+                            $"{this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss")}.csv"
                     };
 
                     await this.documentProcessingService.AddDocumentAsync(document);

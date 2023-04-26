@@ -236,7 +236,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     Document document = new Document
                     {
                         DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
-                        FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_received_" +
+                        FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_response_" +
                             $"{this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss")}.csv",
                     };
 

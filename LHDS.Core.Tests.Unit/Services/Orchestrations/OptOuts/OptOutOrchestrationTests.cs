@@ -53,21 +53,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         public OptOutOrchestrationTests()
         {
             var appSettingsStub = new Dictionary<string, string> {
-                {"OptOutSettings:ExpiredAfterDays", "7"},
-                {"OptOutSettings:InputFolder", GetRandomString()},
-                {"OptOutSettings:OptOutFileHasHeader", "false"},
-                {"OptOutSettings:OutputFolder", GetRandomString()},
-                {"OptOutSettings:OptOutFileRequireTrailingComma", "true"},
-                {"MeshConfiguration:MailboxId", GetRandomString()},
-                {"MeshConfiguration:Password", GetRandomString()},
-                {"MeshConfiguration:Key", GetRandomString()},
-                {"MeshConfiguration:Url", GetRandomString()},
-                {"MeshConfiguration:MexClientVersion", GetRandomString()},
-                {"MeshConfiguration:MexOSName", GetRandomString()},
-                {"MeshConfiguration:MexOSVersion", GetRandomString()},
-                {"MeshConfiguration:RootCertificate", null},
-                {"MeshConfiguration:IntermediateCertificates", null},
-                {"MeshConfiguration:ClientCertificate", null}
+                { "OptOutSettings:ExpiredAfterDays", "7" },
+                { "OptOutSettings:InputFolder", GetRandomString() },
+                { "OptOutSettings:OptOutFileHasHeader", "false" },
+                { "OptOutSettings:OutputFolder", GetRandomString() },
+                { "OptOutSettings:OptOutFileRequireTrailingComma", "true" },
+                { "MeshConfiguration:MailboxId", GetRandomString() },
+                { "MeshConfiguration:Password", GetRandomString() },
+                { "MeshConfiguration:Key", GetRandomString() },
+                { "MeshConfiguration:Url", GetRandomString() },
+                { "MeshConfiguration:MexClientVersion", GetRandomString() },
+                { "MeshConfiguration:MexOSName", GetRandomString() },
+                { "MeshConfiguration:MexOSVersion", GetRandomString() },
+                { "MeshConfiguration:RootCertificate", null },
+                { "MeshConfiguration:IntermediateCertificates", null },
+                { "MeshConfiguration:ClientCertificate", null }
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()

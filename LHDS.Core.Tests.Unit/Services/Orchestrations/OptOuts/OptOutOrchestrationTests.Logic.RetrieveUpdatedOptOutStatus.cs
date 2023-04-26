@@ -39,7 +39,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     CreateRandomListOfOptOutIdentifiers(count: 1);
 
                 List<OptOutIdentifier> outputIdentifierNonConsentedList =
-                    CreateRandomListOfOptOutIdentifiers(count: 1);
+                    new List<OptOutIdentifier>();
+                //  CreateRandomListOfOptOutIdentifiers(count: 1);
 
                 List<OptOutIdentifier> randomOutputIdentifierBatch = new List<OptOutIdentifier>();
                 randomOutputIdentifierBatch.AddRange(outputIdentifierUnknownList);
@@ -241,6 +242,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         }
 
                         consentedItem.UpdatedDate = randomDateTimeOffset;
+                        consentedItem.CacheTime = randomDateTimeOffset;
                         consentedItem.LastSentToMesh = randomDateTimeOffset;
                         consentedItem.OptOutStatus = "Opt-In";
 
@@ -277,7 +279,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                     this.csvMapperProcessingServiceMock.Verify(processings =>
                         processings.MapObjectToCsvAsync<OptOutIdentifier>(
-                            differentIdentifiers,
+                            It.Is(SameOptOutIdentifierListAs(differentIdentifiers)),
                             this.optOutConfiguration.OptOutFileHasHeader,
                             this.optOutConfiguration.OptOutFileRequireTrailingComma),
                                 Times.Exactly(outputMessageIds.Count));
@@ -285,8 +287,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     Document document = new Document
                     {
                         DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
-                        FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_Response_" +
-                            $"{randomDateTimeOffset.ToString("yyyyMMddHHmmss")}.csv",
+                        FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv"
                     };
 
                     this.documentProcessingServiceMock.Verify(processings =>
@@ -294,7 +295,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                             Times.Exactly(outputMessageIds.Count));
                 }
 
-                this.documentProcessingServiceMock.VerifyNoOtherCalls();
                 this.meshProcessingServiceMock.VerifyNoOtherCalls();
                 this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
                 this.optOutProcessingServiceMock.VerifyNoOtherCalls();

@@ -210,20 +210,20 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         await this.optOutProcessingService.ModifyOptOutAsync(item);
                     }
 
-                    foreach (var item in nonConsentedList)
+                    foreach (var nonConsentedListItem in nonConsentedList)
                     {
-                        if (item.OptOutStatus != "Opt-Out")
+                        if (nonConsentedListItem.OptOutStatus != "Opt-Out")
                         {
-                            delta.Add(item);
+                            delta.Add(nonConsentedListItem);
                         }
 
                         var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                        item.UpdatedDate = dateTime;
-                        item.CacheTime = dateTime;
-                        item.LastSentToMesh = dateTime;
-                        item.OptOutStatus = "Opt-Out";
+                        nonConsentedListItem.UpdatedDate = dateTime;
+                        nonConsentedListItem.CacheTime = dateTime;
+                        nonConsentedListItem.LastSentToMesh = dateTime;
+                        nonConsentedListItem.OptOutStatus = "Opt-Out";
 
-                        await this.optOutProcessingService.ModifyOptOutAsync(item);
+                        await this.optOutProcessingService.ModifyOptOutAsync(nonConsentedListItem);
                     }
 
                     List<OptOutIdentifier> differentIdentifiers = delta

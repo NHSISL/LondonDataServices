@@ -39,8 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     CreateRandomListOfOptOutIdentifiers(count: 1);
 
                 List<OptOutIdentifier> outputIdentifierNonConsentedList =
-                    new List<OptOutIdentifier>();
-                //  CreateRandomListOfOptOutIdentifiers(count: 1);
+                    CreateRandomListOfOptOutIdentifiers(count: 1);
 
                 List<OptOutIdentifier> randomOutputIdentifierBatch = new List<OptOutIdentifier>();
                 randomOutputIdentifierBatch.AddRange(outputIdentifierUnknownList);

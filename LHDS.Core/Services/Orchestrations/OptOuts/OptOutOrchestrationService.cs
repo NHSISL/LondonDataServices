@@ -170,14 +170,17 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                 foreach (string messageId in messageIds)
                 {
-                    MeshMessage message = await meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(messageId);
+                    MeshMessage message = await meshProcessingService
+                        .RetrieveAndAcknowledgeMessageByIdAsync(messageId);
+
                     meshMessageList.Add(message);
-                    string batchReference = message.Headers["Mex-LocalID"].FirstOrDefault();
 
                     List<OptOutIdentifier> consentedIdentifierList =
                         await csvMapperProcessingService.MapCsvToObjectAsync<OptOutIdentifier>(
                             message.StringContent,
                             withHeader);
+
+                    string batchReference = message.Headers["Mex-LocalID"].FirstOrDefault();
 
                     List<OptOut> originalBatch = await this.optOutProcessingService
                         .RetrieveAllOptOutsByBatchReferenceAsync(batchReference);
@@ -189,7 +192,6 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         .Where(optOut => consentedIdentifiers.Contains(optOut.NhsNumber)).ToList();
 
                     List<OptOut> nonConsentedList = originalBatch.Except(consentedList).ToList();
-
                     List<OptOut> delta = new List<OptOut>();
 
                     foreach (var item in consentedList)
@@ -236,8 +238,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     Document document = new Document
                     {
                         DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
-                        FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_response_" +
-                            $"{this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss")}.csv"
+                        FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv"
                     };
 
                     await this.documentProcessingService.AddDocumentAsync(document);

@@ -229,11 +229,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             {
                 if (hasTrailingComma)
                 {
-                    builder.AppendLine($"{item},");
+                    builder.AppendLine($"{item.NhsNumber},");
                 }
                 else
                 {
-                    builder.AppendLine($"{item}");
+                    builder.AppendLine($"{item.NhsNumber}");
                 }
             }
 

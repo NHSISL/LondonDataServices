@@ -5,6 +5,8 @@
 using System;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 
 namespace LHDS.Core.Services.Foundations.Documents
 {
@@ -33,6 +35,16 @@ namespace LHDS.Core.Services.Foundations.Documents
             }
         }
 
+        private static void ValidateStorageDocument(
+            byte[] maybeRetrievedDocument,
+            string fileName)
+        {
+            if (maybeRetrievedDocument is null)
+            {
+                throw new NotFoundDocumentException(fileName);
+            }
+        }
+
         private static dynamic IsInvalid(byte[] data) => new
         {
             Condition = (data == null || data.Length == 0),
@@ -44,6 +56,7 @@ namespace LHDS.Core.Services.Foundations.Documents
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
         };
+
 
         private void ValidateDeleteArguments(string fileName)
         {

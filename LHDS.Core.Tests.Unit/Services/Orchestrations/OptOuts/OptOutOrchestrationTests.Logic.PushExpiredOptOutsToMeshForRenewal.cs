@@ -58,7 +58,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             message.Headers.Add("Mex-From", new List<string> { this.meshConfiguration.MailboxId });
             message.Headers.Add("Mex-To", new List<string> { this.optOutConfiguration.To });
             message.Headers.Add("Mex-WorkflowID", new List<string> { this.optOutConfiguration.WorkflowId });
-
             MeshMessage outputMessage = message.DeepClone();
 
             this.meshProcessingServiceMock.Setup(processings =>

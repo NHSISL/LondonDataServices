@@ -40,7 +40,6 @@ namespace LHDS.Core.Tests.Manual.OptOut
             {
                 Assert.Fail($"{ex.Message} {ex?.InnerException?.Message} {ex.StackTrace}");
             }
-
         }
     }
 }

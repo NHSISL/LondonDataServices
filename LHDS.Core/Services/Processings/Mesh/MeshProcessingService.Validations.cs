@@ -2,9 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
+using Xeptions;
 
 namespace LHDS.Core.Services.Processings.Mesh
 {
@@ -12,7 +14,7 @@ namespace LHDS.Core.Services.Processings.Mesh
     {
         public void ValidateMeshArgs(string MessageId)
         {
-            Validate(
+            Validate<InvalidMeshProcessingArgumentException>(
                 (Rule: IsInvalid(MessageId), Parameter: nameof(MessageId)));
         }
 
@@ -28,10 +30,8 @@ namespace LHDS.Core.Services.Processings.Mesh
         {
             ValidateMeshMessageIsNotNull(message);
 
-            if (message.MessageId is null)
-            {
-                throw new InvalidMeshMessageException();
-            }
+            Validate<InvalidMeshMessageException>(
+               (Rule: IsInvalid(message.MessageId), Parameter: nameof(message.MessageId)));
         }
 
         public void ValidateMeshMessage(MeshMessage meshMessage)
@@ -45,21 +45,22 @@ namespace LHDS.Core.Services.Processings.Mesh
             Message = "Text is required"
         };
 
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
         {
-            var invalidMeshProcessingException = new InvalidMeshProcessingArgumentException();
+            var invalidDataException = (T)Activator.CreateInstance(typeof(T));
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidMeshProcessingException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidMeshProcessingException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
     }
 }

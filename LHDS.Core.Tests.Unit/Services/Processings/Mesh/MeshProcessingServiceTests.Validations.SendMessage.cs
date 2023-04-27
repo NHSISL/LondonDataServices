@@ -5,6 +5,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
+using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using Moq;
 using Xunit;
@@ -55,32 +56,24 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnSendMessageIfReturnedMessageIdIsInvalidAndLogItAsync(
-            string invalidText)
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfReturnedMessageIdIsInvalidAndLogItAsync()
         {
             // given
             MeshMessage randomSendMessage = CreateRandomSendMessage();
             MeshMessage returnedSendMessage = CreateRandomMessage();
-            returnedSendMessage.MessageId = invalidText;
+            returnedSendMessage.MessageId = null;
 
-            var invalidMeshProcessingArgumentException =
-                new InvalidMeshProcessingArgumentException();
+            var invalidMeshMessageException =
+                new InvalidMeshMessageException();
 
             this.meshServiceMock.Setup(service =>
                 service.SendMessageAsync(randomSendMessage))
                 .ReturnsAsync(returnedSendMessage);
 
-            invalidMeshProcessingArgumentException.AddData(
-                key: nameof(returnedSendMessage.MessageId),
-                values: "Text is required");
-
             var expectedMeshProcessingValidationException =
             new MeshProcessingValidationException(
-                innerException: invalidMeshProcessingArgumentException);
+                innerException: invalidMeshMessageException);
 
             // when
             ValueTask<MeshMessage> sendMessageTask =

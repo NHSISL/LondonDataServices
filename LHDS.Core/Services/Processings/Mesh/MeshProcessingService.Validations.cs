@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using LHDS.Core.Models.Foundations.Mesh;
+using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
 
 namespace LHDS.Core.Services.Processings.Mesh
@@ -27,8 +28,10 @@ namespace LHDS.Core.Services.Processings.Mesh
         {
             ValidateMeshMessageIsNotNull(message);
 
-            Validate(
-                (Rule: IsInvalid(message.MessageId), Parameter: nameof(message.MessageId)));
+            if (message.MessageId is null)
+            {
+                throw new InvalidMeshMessageException();
+            }
         }
 
         public void ValidateMeshMessage(MeshMessage meshMessage)

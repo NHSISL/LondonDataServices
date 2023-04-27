@@ -1,0 +1,97 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.Mesh;
+using LHDS.Core.Models.Foundations.Mesh.Exceptions;
+using LHDS.Core.Models.Foundations.OptOuts;
+using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
+using LHDS.Core.Models.Processings.Mesh.Exceptions;
+using Moq;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
+{
+    public partial class OptOutOrchestrationTests
+    {
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnRetrieveUpdatedOptOutStatusIfRequiredRetreivedMessageHeaderIsInvalidAndLogItAsync(
+            string invalidInput)
+        {
+            // given
+            string randomString = GetRandomString();
+            MeshMessage randomMessage = CreateRandomMessage();
+            randomMessage.MessageId = randomString;
+            MeshMessage retrievedMessage = randomMessage;
+            List<string> retrievedMessageIds = new List<string> { retrievedMessage.MessageId };
+
+            this.meshProcessingServiceMock.Setup(service => 
+                service.RetrieveMessageIdsFromInboxAsync())
+                    .ReturnsAsync(retrievedMessageIds);
+
+            retrievedMessage.Headers.Remove("Mex-LocalID");
+            retrievedMessage.Headers.Add("Mex-LocalID", new List<string> { invalidInput });
+
+            var invalidMeshMessageException =
+                new InvalidMeshMessageException();
+
+            this.meshProcessingServiceMock.Setup(service =>
+                service.RetrieveAndAcknowledgeMessageByIdAsync(It.IsAny<string>()))
+                    .ReturnsAsync(retrievedMessage);
+
+            invalidMeshMessageException.AddData(
+                key: "Mex-LocalID",
+                values: "Header value is required");
+
+            var expectedOptOutOrchestrationValidationException =
+            new OptOutOrchestrationValidationException(
+                innerException: invalidMeshMessageException);
+
+            // when
+            ValueTask<List<MeshMessage>> retrieveUpdatedOptOutStatusTask =
+                this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+
+            OptOutOrchestrationValidationException actualOptOutOrchestrationValidationException =
+                await Assert.ThrowsAsync<OptOutOrchestrationValidationException>(() =>
+                    retrieveUpdatedOptOutStatusTask.AsTask());
+
+            //then
+            actualOptOutOrchestrationValidationException.Should()
+                .BeEquivalentTo(expectedOptOutOrchestrationValidationException);
+
+            this.csvMapperProcessingServiceMock.Verify(processings =>
+                    processings.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<string>(), It.IsAny<bool>()),
+                        Times.Once());
+
+            this.meshProcessingServiceMock.Verify(service =>
+                service.RetrieveMessageIdsFromInboxAsync(),
+                    Times.Once);
+
+            
+
+            this.meshProcessingServiceMock.Verify(service =>
+                service.RetrieveAndAcknowledgeMessageByIdAsync(It.IsAny<string>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOptOutOrchestrationValidationException))),
+                        Times.Once);
+
+            this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

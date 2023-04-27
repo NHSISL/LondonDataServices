@@ -56,7 +56,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             this.meshConfiguration = meshConfiguration;
         }
 
-        public ValueTask RetrieveOptOutStatusAsync(byte[] optOutFile, string fileName) =>
+        public ValueTask<string> RetrieveOptOutStatusAsync(byte[] optOutFile, string fileName) =>
             TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
@@ -108,7 +108,9 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     DocumentData = processedBytes
                 };
 
-                await this.documentProcessingService.AddDocumentAsync(document);
+                string saveDocument = await this.documentProcessingService.AddDocumentAsync(document);
+
+                return saveDocument;
             });
 
         public ValueTask<MeshMessage> PushExpiredOptOutsToMeshForRenewalAsync() =>

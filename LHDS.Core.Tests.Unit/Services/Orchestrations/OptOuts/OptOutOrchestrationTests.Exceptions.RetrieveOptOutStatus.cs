@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .ThrowsAsync(dependancyValidationException);
 
             // when
-            ValueTask retrieveOptOutStatusTask =
+            ValueTask<string> retrieveOptOutStatusTask =
                 this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomBytes, randomRecieveName);
 
             OptOutOrchestrationDependencyValidationException actualException =
@@ -83,7 +83,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .ThrowsAsync(dependancyException);
 
             // when
-            ValueTask retrieveOptOutStatusTask =
+            ValueTask<string> retrieveOptOutStatusTask =
                 this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomBytes, randomRecieveName);
 
             OptOutOrchestrationDependencyException actualException =
@@ -132,7 +132,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask retrieveOptOutStatusTask =
+            ValueTask<string> retrieveOptOutStatusTask =
                 this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputBytes, randomRecieveName);
 
             OptOutOrchestrationServiceException actualException =

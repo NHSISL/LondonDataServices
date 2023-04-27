@@ -10,7 +10,7 @@ namespace LHDS.Core.Clients
 {
     public interface IOptOutClient
     {
-        ValueTask RetrieveOptOutStatusAsync(byte[] optOutFile, string fileName);
+        ValueTask<string> RetrieveOptOutStatusAsync(byte[] optOutFile, string fileName);
         ValueTask<MeshMessage> PushExpiredOptOutsToMeshForRenewalAsync();
         ValueTask<List<MeshMessage>> RetrieveUpdatedMeshConsentStatusesChangesAsync();
     }

@@ -20,8 +20,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             var randomMessageId = GetRandomString();
             MeshMessage randomSendMessage = CreateRandomSendMessage();
             MeshMessage storageSendMessage = randomSendMessage.DeepClone();
-            MeshMessage storageMessage = storageSendMessage.DeepClone();
-            storageMessage.MessageId = randomMessageId;
+            MeshMessage randomStorageMessage = CreateRandomMessage();
+            MeshMessage storageMessage = randomStorageMessage.DeepClone();
             MeshMessage randomTrackingMessage = CreateRandomMessage();
             MeshMessage trackingStorageMessage = randomTrackingMessage;
             MeshMessage expectedMessage = storageMessage.DeepClone();

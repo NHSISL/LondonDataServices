@@ -229,11 +229,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             {
                 if (hasTrailingComma)
                 {
-                    builder.AppendLine($"{item},");
+                    builder.AppendLine($"{item.NhsNumber},");
                 }
                 else
                 {
-                    builder.AppendLine($"{item}");
+                    builder.AppendLine($"{item.NhsNumber}");
                 }
             }
 
@@ -284,7 +284,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             return messages;
         }
 
-        private static List<MeshMessage> GetRandomMessages(List<string> items, string batchReference)
+        private static List<MeshMessage> GetRandomMessages(List<string> items)
         {
             List<MeshMessage> messageList = new List<MeshMessage>();
 
@@ -292,7 +292,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             {
                 var message = CreateRandomMessage();
                 message.MessageId = item;
-                message.Headers["Mex-LocalID"] = new List<string> { batchReference };
+                message.Headers["Mex-LocalID"] = new List<string> { GetRandomString() }; // BatchReference
                 messageList.Add(message);
             }
 

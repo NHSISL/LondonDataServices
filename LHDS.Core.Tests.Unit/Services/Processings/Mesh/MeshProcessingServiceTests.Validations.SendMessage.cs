@@ -55,6 +55,58 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfReturnedMessageIdIsInvalidAndLogItAsync(
+            string invalidText)
+        {
+            // given
+            MeshMessage randomSendMessage = CreateRandomSendMessage();
+            MeshMessage returnedSendMessage = CreateRandomMessage();
+            returnedSendMessage.MessageId = invalidText;
+
+            var invalidMeshProcessingArgumentException =
+                new InvalidMeshProcessingArgumentException();
+
+            this.meshServiceMock.Setup(service =>
+                service.SendMessageAsync(randomSendMessage))
+                .ReturnsAsync(returnedSendMessage);
+
+            invalidMeshProcessingArgumentException.AddData(
+                key: nameof(returnedSendMessage.MessageId),
+                values: "Text is required");
+
+            var expectedMeshProcessingValidationException =
+            new MeshProcessingValidationException(
+                innerException: invalidMeshProcessingArgumentException);
+
+            // when
+            ValueTask<MeshMessage> sendMessageTask =
+                this.meshProcessingService.SendMessageAsync(randomSendMessage);
+
+            MeshProcessingValidationException actualMeshProcessingValidationException =
+                await Assert.ThrowsAsync<MeshProcessingValidationException>(() =>
+                    sendMessageTask.AsTask());
+
+            //then
+            actualMeshProcessingValidationException.Should()
+                .BeEquivalentTo(expectedMeshProcessingValidationException);
+
+            this.meshServiceMock.Verify(service =>
+                service.SendMessageAsync(randomSendMessage),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedMeshProcessingValidationException))),
+                        Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
         [Fact]
         public async Task ShouldThrowValidationExceptionOnSendMessageIRetrieveTrackingStatusIsNullAndLogItAsync()
         {

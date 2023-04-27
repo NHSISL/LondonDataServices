@@ -56,13 +56,17 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact]
-        public async Task ShouldThrowValidationExceptionOnSendMessageIfReturnedMessageIdIsInvalidAndLogItAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfReturnedMessageIdIsInvalidAndLogItAsync(
+            string invalidText)
         {
             // given
             MeshMessage randomSendMessage = CreateRandomSendMessage();
             MeshMessage returnedSendMessage = CreateRandomMessage();
-            returnedSendMessage.MessageId = null;
+            returnedSendMessage.MessageId = invalidText;
 
             var invalidMeshMessageException =
                 new InvalidMeshMessageException();
@@ -70,6 +74,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             this.meshServiceMock.Setup(service =>
                 service.SendMessageAsync(randomSendMessage))
                 .ReturnsAsync(returnedSendMessage);
+
+            invalidMeshMessageException.AddData(
+                key: nameof(returnedSendMessage.MessageId),
+                values: "Text is required");
 
             var expectedMeshProcessingValidationException =
             new MeshProcessingValidationException(

@@ -23,6 +23,14 @@ namespace LHDS.Core.Services.Processings.Mesh
             }
         }
 
+        private static void ValidateSendMessage(MeshMessage message)
+        {
+            ValidateMeshMessageIsNotNull(message);
+
+            Validate(
+                (Rule: IsInvalid(message.MessageId), Parameter: nameof(message.MessageId)));
+        }
+
         public void ValidateMeshMessage(MeshMessage meshMessage)
         {
             ValidateMeshMessageIsNotNull(meshMessage);

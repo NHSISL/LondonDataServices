@@ -22,12 +22,13 @@ namespace LHDS.Core.Services.Processings.Documents
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask AddDocumentAsync(Document document) =>
+        public ValueTask<string> AddDocumentAsync(Document document) =>
             TryCatch(async () =>
             {
                 ValidateDocumentProcessingOnAdd(document);
-
                 await this.documentService.AddDocumentAsync(document);
+
+                return document.FileName;
             });
 
         public ValueTask<Document> RetrieveDocumentByFileNameAsync(string fileName) =>

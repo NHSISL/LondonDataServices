@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: invalidArgumentRetieveOptOutStatusOrchestrationException);
 
             // when
-            ValueTask RetrieveOptOutStatusTask =
+            ValueTask<string> RetrieveOptOutStatusTask =
                 this.optOutOrchestrationService.RetrieveOptOutStatusAsync(invalidData, randomString);
 
             OptOutOrchestrationValidationException actualException =
@@ -76,7 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: invalidArgumentRetieveOptOutStatusOrchestrationException);
 
             // when
-            ValueTask RetrieveOptOutStatusTask =
+            ValueTask<string> RetrieveOptOutStatusTask =
                 this.optOutOrchestrationService.RetrieveOptOutStatusAsync(randomBytes, invalidText);
 
             OptOutOrchestrationValidationException actualException =

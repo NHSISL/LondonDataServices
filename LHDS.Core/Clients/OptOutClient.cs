@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.OptOutClient.Exceptions;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -83,11 +84,11 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask RetrieveUpdatedMeshConsentStatusesChangesAsync()
+        public async ValueTask<List<MeshMessage>> RetrieveUpdatedMeshConsentStatusesChangesAsync()
         {
             try
             {
-                await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+                return await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
             }
             catch (OptOutOrchestrationValidationException optOutOrchestrationValidationException)
             {

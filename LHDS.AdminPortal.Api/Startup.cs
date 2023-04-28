@@ -19,6 +19,7 @@ using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Processings.OptOuts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -168,6 +169,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<ISupplierService, SupplierService>();
             services.AddTransient<IAuditService, AuditService>();
             services.AddTransient<IDocumentService, DocumentService>();
+            services.AddTransient<IOptOutService, OptOutService>();
 
             var blobServiceUri = GetSettings(configuration, "blobStorage:azureBlobServiceUri", true);
             var azureTenantId = GetSettings(configuration, "blobStorage:azureTenantId", true);

@@ -5,7 +5,6 @@
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
-using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.OptOuts.Exceptions;
 using LHDS.Core.Services.Processings.OptOuts;
 using Microsoft.AspNetCore.Mvc;

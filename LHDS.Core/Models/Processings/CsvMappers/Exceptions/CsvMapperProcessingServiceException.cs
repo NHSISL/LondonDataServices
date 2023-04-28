@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Processings.CsvMapper.Exceptions
+namespace LHDS.Core.Models.Processings.CsvMappers.Exceptions
 {
     public class CsvMapperProcessingServiceException : Xeption
     {

@@ -5,6 +5,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
+using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using Moq;
 using Xunit;
@@ -45,6 +46,58 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             this.meshServiceMock.Verify(service =>
                service.SendMessageAsync(nonExistMessage),
                Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedMeshProcessingValidationException))),
+                        Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfReturnedMessageIdIsInvalidAndLogItAsync(
+            string invalidText)
+        {
+            // given
+            MeshMessage randomSendMessage = CreateRandomSendMessage();
+            MeshMessage returnedSendMessage = CreateRandomMessage();
+            returnedSendMessage.MessageId = invalidText;
+
+            var invalidMeshMessageException =
+                new InvalidMeshMessageException();
+
+            this.meshServiceMock.Setup(service =>
+                service.SendMessageAsync(randomSendMessage))
+                .ReturnsAsync(returnedSendMessage);
+
+            invalidMeshMessageException.AddData(
+                key: nameof(returnedSendMessage.MessageId),
+                values: "Text is required");
+
+            var expectedMeshProcessingValidationException =
+            new MeshProcessingValidationException(
+                innerException: invalidMeshMessageException);
+
+            // when
+            ValueTask<MeshMessage> sendMessageTask =
+                this.meshProcessingService.SendMessageAsync(randomSendMessage);
+
+            MeshProcessingValidationException actualMeshProcessingValidationException =
+                await Assert.ThrowsAsync<MeshProcessingValidationException>(() =>
+                    sendMessageTask.AsTask());
+
+            //then
+            actualMeshProcessingValidationException.Should()
+                .BeEquivalentTo(expectedMeshProcessingValidationException);
+
+            this.meshServiceMock.Verify(service =>
+                service.SendMessageAsync(randomSendMessage),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

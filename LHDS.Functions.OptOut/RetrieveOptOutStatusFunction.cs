@@ -31,12 +31,12 @@ namespace LHDS.Functions.OptOut
 
         [Function("RetrieveOptOutStatusFunction")]
         public void Run(
-            [BlobTrigger("optout/received/{name}", Connection = "BlobStorage")] string myBlob, string name)
+            [BlobTrigger("optout/drop/{name}", Connection = "BlobStorage")] string myBlob, string name)
         {
             this.loggingBroker
                 .LogInformation(
                     $"C# Blob trigger function Processing blob\n " +
-                    $"Name: optout/received/{{name}} \n Data: {myBlob}");
+                    $"Name: optout/drop/{{name}} \n Data: {myBlob}");
 
             try
             {

@@ -3,6 +3,10 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using LHDS.Core.Models.Foundations.Mesh;
+using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using LHDS.Core.Models.Orchestrations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using Xeptions;
@@ -41,6 +45,12 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             }
         }
 
+        private static void ValidateLocalIdHeaderExists(MeshMessage message)
+        {
+            Validate<InvalidMeshMessageException>(
+                (Rule: IsInvalid(message.Headers, "Mex-LocalID"), Parameter: "Mex-LocalID"));
+        }
+
         private static dynamic IsInvalid(string text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
@@ -58,6 +68,26 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             Condition = data == null || data.Length == 0,
             Message = "Data is required"
         };
+
+        private static dynamic IsInvalid(Dictionary<string, List<string>> dictionary, string key) => new
+        {
+            Condition = IsInvalidKey(dictionary, key),
+            Message = "Header value is required"
+        };
+
+        private static bool IsInvalidKey(Dictionary<string, List<string>> dictionary, string key)
+        {
+            bool keyExists = dictionary.ContainsKey(key);
+
+            if (!keyExists)
+            {
+                return true;
+            }
+
+            string value = dictionary[key].FirstOrDefault();
+
+            return String.IsNullOrWhiteSpace(value);
+        }
 
         private static void Validate<T>(params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption

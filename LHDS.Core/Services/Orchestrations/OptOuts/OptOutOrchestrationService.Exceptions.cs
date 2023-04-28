@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
-using LHDS.Core.Models.Processings.CsvMapper.Exceptions;
+using LHDS.Core.Models.Processings.CsvMappers.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using LHDS.Core.Models.Processings.OptOuts.Exceptions;

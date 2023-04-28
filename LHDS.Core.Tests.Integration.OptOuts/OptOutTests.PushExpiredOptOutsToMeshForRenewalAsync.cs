@@ -6,7 +6,7 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace LHDS.Core.Tests.Manual.OptOut
+namespace LHDS.Core.Tests.Integration.OptOuts
 {
     public partial class OptOutTests
     {

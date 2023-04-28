@@ -3,10 +3,15 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Mesh;
 using Xunit;
 
-namespace LHDS.Core.Tests.Manual.OptOuts
+namespace LHDS.Core.Tests.Integration.OptOuts
 {
     public partial class OptOutTests
     {
@@ -15,29 +20,33 @@ namespace LHDS.Core.Tests.Manual.OptOuts
         {
             try
             {
-                //OptOut inputOptOut = new OptOut();
+                // given
+                string batchReference = Guid.NewGuid().ToString();
+                await SetupTestNhsNumbersForRetrieveUpdatedMesh(batchReference);
+                string content = await SetupSimulatedMeshMessage(batchReference);
+                string expectedContent = content;
 
-                //MeshMessage message = new MeshMessage
-                //{
-                //    StringContent = processedOutputString,
-                //    Headers = new Dictionary<string, List<string>>()
-                //};
+                // when
+                List<MeshMessage> messages = await this.optOutClient.RetrieveUpdatedMeshConsentStatusesChangesAsync();
 
-                //message.Headers.Add("Content-Type", new List<string> { "text/plain" });
-                //message.Headers.Add("Mex-FileName", new List<string> { batchReference });
-                //message.Headers.Add("Mex-From", new List<string> { this.meshConfiguration.MailboxId });
-                //message.Headers.Add("Mex-To", new List<string> { this.optOutConfiguration.To });
-                //message.Headers.Add("Mex-WorkflowID", new List<string> { this.optOutConfiguration.WorkflowId });
+                // then
 
-                //List<MeshMessage> messages = await optOutClient.RetrieveUpdatedMeshConsentStatusesChangesAsync();
-                //message.Should().NotBeNull();
-                //message.MessageId.Should().NotBeNullOrWhiteSpace();
+                foreach (MeshMessage message in messages)
+                {
+                    string filepath =
+                        $"{optOutConfiguration.OutputFolder}/{message.Headers["Mex-LocalID"]}_deltaresponse.csv";
+
+                    Document document = await this.documentService.RetrieveDocumentByFileNameAsync(filepath);
+                    document.Should().NotBeNull();
+                    string actualContent = Encoding.ASCII.GetString(document.DocumentData);
+                    actualContent.Should().Be(expectedContent);
+                    await this.documentService.RemoveDocumentByFileNameAsync(filepath);
+                }
             }
             catch (Exception ex)
             {
                 Assert.Fail($"{ex.Message} {ex?.InnerException?.Message} {ex.StackTrace}");
             }
-
         }
     }
 }

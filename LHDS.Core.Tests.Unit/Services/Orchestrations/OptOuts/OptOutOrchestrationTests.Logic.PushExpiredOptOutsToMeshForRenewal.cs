@@ -79,7 +79,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             await this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             // Then
-
             this.optOutProcessingServiceMock.Verify(processings =>
                 processings.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays),
                     Times.Once);

@@ -9,7 +9,7 @@ using FluentAssertions;
 using LHDS.Core.Models.Foundations.Documents;
 using Xunit;
 
-namespace LHDS.Core.Tests.Manual.OptOut
+namespace LHDS.Core.Tests.Integration.OptOuts
 {
     public partial class OptOutTests
     {

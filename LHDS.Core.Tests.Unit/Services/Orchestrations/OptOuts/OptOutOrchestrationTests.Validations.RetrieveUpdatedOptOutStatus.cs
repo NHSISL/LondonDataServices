@@ -75,8 +75,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 service.RetrieveMessageIdsFromInboxAsync(),
                     Times.Once);
 
-
-
             this.meshProcessingServiceMock.Verify(service =>
                 service.RetrieveAndAcknowledgeMessageByIdAsync(It.IsAny<string>()),
                     Times.Once);

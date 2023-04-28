@@ -50,7 +50,23 @@ namespace LHDS.Core.Services.Processings.OptOuts
             {
                 ValidateOptOutProcessingOnModify(optOut);
 
-                return await this.optOutService.ModifyOptOutAsync(optOut);
+                IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
+
+                OptOut maybeOptOut = allOptOuts.FirstOrDefault(optOut =>
+                    optOut.NhsNumber == optOut.NhsNumber);
+
+                if (maybeOptOut == null)
+                {
+                    return await this.optOutService.AddOptOutAsync(optOut);
+                }
+
+                maybeOptOut.OptOutStatus = optOut.OptOutStatus;
+                maybeOptOut.BatchReference = optOut.BatchReference;
+                maybeOptOut.CacheTime = optOut.CacheTime;
+                maybeOptOut.LastSentToMesh = optOut.LastSentToMesh;
+                maybeOptOut.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+
+                return await this.optOutService.ModifyOptOutAsync(maybeOptOut);
             });
 
         public ValueTask<OptOut> RemoveOptOutByIdAsync(Guid optOutId) =>

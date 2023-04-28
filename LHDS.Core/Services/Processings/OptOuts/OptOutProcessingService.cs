@@ -3,8 +3,10 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.OptOuts;
@@ -15,13 +17,16 @@ namespace LHDS.Core.Services.Processings.OptOuts
     {
         private readonly IOptOutService optOutService;
         private readonly ILoggingBroker loggingBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
 
         public OptOutProcessingService(
             IOptOutService optOutService,
-            ILoggingBroker loggingBroker)
+            ILoggingBroker loggingBroker,
+            IDateTimeBroker dateTimeBroker)
         {
             this.optOutService = optOutService;
             this.loggingBroker = loggingBroker;
+            this.dateTimeBroker = dateTimeBroker;
         }
 
         public ValueTask<OptOut> RetrieveOrAddOptOutAsync(OptOut optOut) =>
@@ -29,7 +34,8 @@ namespace LHDS.Core.Services.Processings.OptOuts
             {
                 ValidateOptOutProcessingOnRetrieveOrAdd(optOut);
 
-                OptOut maybeOptOut = await this.optOutService.RetrieveOptOutByIdAsync(optOut.Id);
+                OptOut maybeOptOut = this.optOutService.RetrieveAllOptOuts()
+                    .FirstOrDefault(item => item.NhsNumber == optOut.NhsNumber);
 
                 if (maybeOptOut == null)
                 {
@@ -73,7 +79,38 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 OptOut foundOptOut = allOptOuts.FirstOrDefault(optOut =>
                     optOut.NhsNumber == optOutNhsNumber);
 
-                return foundOptOut;
+                return await ValueTask.FromResult(foundOptOut);
+            });
+
+        public ValueTask<List<OptOut>> RetrieveAllExpiredOptOutsAsync(int olderThanDays) =>
+            TryCatch(async () =>
+            {
+                ValidateOlderThanDays(olderThanDays);
+
+                var expirationDate = this.dateTimeBroker.
+                    GetCurrentDateTimeOffset().AddDays(-olderThanDays);
+
+                IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
+
+                List<OptOut> expiredOptOuts = allOptOuts
+                    .Where(optOut => optOut.CacheTime < expirationDate)
+                        .ToList();
+
+                return await ValueTask.FromResult(expiredOptOuts);
+            });
+
+        public ValueTask<List<OptOut>> RetrieveAllOptOutsByBatchReferenceAsync(string batchReference) =>
+            TryCatch(async () =>
+            {
+                ValidateOptOutBatchReference(batchReference);
+
+                IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
+
+                List<OptOut> foundOptOuts = allOptOuts.Where(optOut =>
+                    optOut.BatchReference == batchReference)
+                        .ToList();
+
+                return await ValueTask.FromResult(foundOptOuts);
             });
     }
 }

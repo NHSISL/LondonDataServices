@@ -5,8 +5,11 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using Moq;
+using NEL.MESH.Models.Clients.Mesh.Exceptions;
+using Xeptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
@@ -14,11 +17,94 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
     public partial class MeshServiceTests
     {
         [Fact]
+        public async Task ShouldThrowMeshServiceDependencyValidationExceptionOnRetrieveMessageByIdIfValidationFailsAndLogItAsync()
+        {
+            // given
+            string messageId = GetRandomString();
+            string randomMessage = GetRandomString();
+            var validationException = new Exception(randomMessage);
+
+            var meshClientValidationException =
+                new MeshClientValidationException(validationException as Xeption);
+
+            var expectedDependencyValidationException =
+                new MeshServiceDependencyValidationException(meshClientValidationException);
+
+            this.meshBrokerMock.Setup(broker =>
+                broker.RetrieveMessageAsync(It.IsAny<string>()))
+                    .ThrowsAsync(meshClientValidationException);
+
+            // when
+            ValueTask<MeshMessage> retrieveTrackingStatusTask =
+                this.meshService.RetrieveMessageByIdAsync(messageId);
+
+            MeshServiceDependencyValidationException actualValidationException =
+                await Assert.ThrowsAsync<MeshServiceDependencyValidationException>(retrieveTrackingStatusTask.AsTask);
+
+            // then
+            MeshServiceDependencyValidationException actualMeshServiceDependencyValidationException =
+                await Assert.ThrowsAsync<MeshServiceDependencyValidationException>(
+                    retrieveTrackingStatusTask.AsTask);
+
+            actualValidationException.Should().BeEquivalentTo(expectedDependencyValidationException);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.RetrieveMessageAsync(It.IsAny<string>()),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(expectedDependencyValidationException))),
+                   Times.Once);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowMeshServiceDependencyExceptionOnRetrieveMessageByIdIfDependencyFailsAndLogItAsync()
+        {
+            // given
+            string messageId = GetRandomString();
+            string randomMessage = GetRandomString();
+            var dependencyException = new Exception(randomMessage);
+
+            var meshClientDependencyException =
+                new MeshClientDependencyException(dependencyException as Xeption);
+
+            var expectedDependencyException =
+                new MeshServiceDependencyException(meshClientDependencyException);
+
+            this.meshBrokerMock.Setup(broker =>
+                broker.RetrieveMessageAsync(It.IsAny<string>()))
+                    .ThrowsAsync(meshClientDependencyException);
+
+            // when
+            ValueTask<MeshMessage> retrieveTrackingStatusTask =
+                this.meshService.RetrieveMessageByIdAsync(messageId);
+
+            MeshServiceDependencyException actualDependencyException =
+                await Assert.ThrowsAsync<MeshServiceDependencyException>(retrieveTrackingStatusTask.AsTask);
+
+            // then
+            actualDependencyException.Should().BeEquivalentTo(expectedDependencyException);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.RetrieveMessageAsync(It.IsAny<string>()),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(expectedDependencyException))),
+                   Times.Once);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
         public async Task ShouldThrowServiceExceptionOnRetrieveMessageByIdIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            string mailboxId = GetRandomMessage();
-            string messageId = GetRandomMessage();
+            string messageId = GetRandomString();
             var serviceException = new Exception();
 
             var failedMeshServiceException =
@@ -28,23 +114,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                new MeshServiceException(failedMeshServiceException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.GetMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()))
+                broker.RetrieveMessageAsync(It.IsAny<string>()))
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<string> RetrieveAknowledgeMessageByIdTask =
-                this.meshService.RetrieveMessageByIdAsync(mailboxId, messageId);
+            ValueTask<MeshMessage> retrieveMessageByIdAsync =
+                this.meshService.RetrieveMessageByIdAsync(messageId);
 
             MeshServiceException actualMeshServiceException =
                 await Assert.ThrowsAsync<MeshServiceException>
-                    (RetrieveAknowledgeMessageByIdTask.AsTask);
+                    (retrieveMessageByIdAsync.AsTask);
 
             // then
             actualMeshServiceException.Should()
                 .BeEquivalentTo(expectedMeshServiceException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.GetMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()),
+                broker.RetrieveMessageAsync(It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

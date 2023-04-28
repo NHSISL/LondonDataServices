@@ -5,7 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
+using NEL.MESH.Models.Clients.Mesh.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.Mesh
@@ -13,8 +15,9 @@ namespace LHDS.Core.Services.Foundations.Mesh
     public partial class MeshService
     {
         private delegate ValueTask<bool> ReturningBoolMeshFunction();
+        private delegate ValueTask<MeshMessage> ReturningMeshMessageFunction();
+        private delegate ValueTask<List<string>> ReturningListofStringsMeshFunction();
         private delegate ValueTask<string> ReturningStringMeshFunction();
-        private delegate ValueTask<List<string>> ReturningStringsMeshFunction();
 
         private async ValueTask<bool> TryCatch(ReturningBoolMeshFunction returningMeshFunction)
         {
@@ -25,6 +28,72 @@ namespace LHDS.Core.Services.Foundations.Mesh
             catch (InvalidArgumentMeshException invalidArgumentMeshException)
             {
                 throw CreateAndLogValidationException(invalidArgumentMeshException);
+            }
+            catch (Exception exception)
+            {
+                var failedMeshServiceException =
+                    new FailedMeshServiceException(exception);
+
+                throw CreateAndLogServiceException(failedMeshServiceException);
+            }
+        }
+
+        private async ValueTask<MeshMessage> TryCatch(ReturningMeshMessageFunction returningMeshMessageFunction)
+        {
+            try
+            {
+                return await returningMeshMessageFunction();
+            }
+            catch (NullMeshMessageException nullMeshMessageException)
+            {
+                throw CreateAndLogValidationException(nullMeshMessageException);
+            }
+            catch (InvalidMeshMessageException invalidMeshException)
+            {
+                throw CreateAndLogValidationException(invalidMeshException);
+            }
+            catch (InvalidArgumentMeshException invalidArgumentMeshException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentMeshException);
+            }
+            catch (MeshClientValidationException meshClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshClientValidationException);
+            }
+            catch (MeshClientDependencyException meshClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(meshClientDependencyException);
+            }
+            catch (MeshServiceDependencyValidationException invalidMeshException)
+            {
+                throw CreateAndLogDependencyException(invalidMeshException);
+            }
+            catch (MeshClientServiceException meshClientServiceException)
+            {
+                throw CreateAndLogDependencyException(meshClientServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedMeshServiceException =
+                    new FailedMeshServiceException(exception);
+
+                throw CreateAndLogServiceException(failedMeshServiceException);
+            }
+        }
+
+        private async ValueTask<List<string>> TryCatch(ReturningListofStringsMeshFunction returningListofStringsMeshFunction)
+        {
+            try
+            {
+                return await returningListofStringsMeshFunction();
+            }
+            catch (MeshClientValidationException meshClientValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshClientValidationException);
+            }
+            catch (MeshClientDependencyException meshClientDependencyException)
+            {
+                throw CreateAndLogDependencyException(meshClientDependencyException);
             }
             catch (Exception exception)
             {
@@ -54,32 +123,9 @@ namespace LHDS.Core.Services.Foundations.Mesh
             }
         }
 
-        private async ValueTask<List<string>> TryCatch(ReturningStringsMeshFunction returningStringsMeshFunction)
-        {
-            try
-            {
-                return await returningStringsMeshFunction();
-            }
-            catch (InvalidArgumentMeshException invalidArgumentMeshException)
-            {
-                throw CreateAndLogValidationException(invalidArgumentMeshException);
-            }
-            catch (Exception exception)
-            {
-                var failedMeshServiceException =
-                    new FailedMeshServiceException(exception);
-
-                throw CreateAndLogServiceException(failedMeshServiceException);
-            }
-        }
-
         private MeshValidationException CreateAndLogValidationException(Xeption exception)
         {
-            string validationSummary = GetValidationSummary(exception.Data);
-
-            var meshValidationException =
-                new MeshValidationException(exception, validationSummary);
-
+            var meshValidationException = new MeshValidationException(exception);
             this.loggingBroker.LogError(meshValidationException);
 
             return meshValidationException;
@@ -92,6 +138,24 @@ namespace LHDS.Core.Services.Foundations.Mesh
             this.loggingBroker.LogError(meshServiceException);
 
             return meshServiceException;
+        }
+
+        private MeshServiceDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var meshServiceDependencyException = new MeshServiceDependencyException(exception);
+            this.loggingBroker.LogError(meshServiceDependencyException);
+
+            return meshServiceDependencyException;
+        }
+
+        private MeshServiceDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var meshServiceDependencyValidationException =
+                new MeshServiceDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(meshServiceDependencyValidationException);
+
+            return meshServiceDependencyValidationException;
         }
     }
 }

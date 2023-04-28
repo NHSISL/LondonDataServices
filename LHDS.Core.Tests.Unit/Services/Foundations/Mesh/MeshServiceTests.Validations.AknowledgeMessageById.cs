@@ -20,28 +20,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             string invalidText)
         {
             // given
-            string mailboxId = invalidText;
             string messageId = invalidText;
 
             var invalidArgumentMeshException =
                 new InvalidArgumentMeshException();
 
             invalidArgumentMeshException.AddData(
-                key: nameof(mailboxId),
-                values: "Text is required");
-
-            invalidArgumentMeshException.AddData(
-                key: nameof(messageId),
+                key: "MessageId",
                 values: "Text is required");
 
             var expectedMeshValidationException =
-                new MeshValidationException(
-                    innerException: invalidArgumentMeshException,
-                    validationSummary: GetValidationSummary(invalidArgumentMeshException.Data));
+                new MeshValidationException(innerException: invalidArgumentMeshException);
 
             // when
             ValueTask<bool> retrieveAknowledgeMessageByIdTask =
-                this.meshService.AcknowledgeMessageByIdAsync(mailboxId, messageId);
+                this.meshService.AcknowledgeMessageByIdAsync(messageId);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(
@@ -57,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                         Times.Once);
 
             this.meshBrokerMock.Verify(broker =>
-               broker.AcknowledgeMessageByIdAsync(mailboxId, messageId),
+               broker.AcknowledgeMessageByIdAsync(messageId),
                    Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

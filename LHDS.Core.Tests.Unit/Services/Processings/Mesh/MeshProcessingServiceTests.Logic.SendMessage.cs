@@ -3,6 +3,9 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
+using FluentAssertions;
+using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.Mesh;
 using Moq;
 using Xunit;
 
@@ -14,21 +17,37 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
         public async Task ShouldReturnSendMessageAsync()
         {
             // given
-            string randomMailboxId = GetRandomString();
-            string inputMailboxId = randomMailboxId;
-            string randomMessageId = GetRandomString();
-            string inputMessageId = randomMessageId;
+            var randomMessageId = GetRandomString();
+            MeshMessage randomSendMessage = CreateRandomSendMessage();
+            MeshMessage storageSendMessage = randomSendMessage.DeepClone();
+            MeshMessage storageMessage = storageSendMessage.DeepClone();
+            storageMessage.MessageId = randomMessageId;
+            MeshMessage randomTrackingMessage = CreateRandomMessage();
+            MeshMessage trackingStorageMessage = randomTrackingMessage;
+            MeshMessage expectedMessage = storageMessage.DeepClone();
+            expectedMessage.TrackingInfo = trackingStorageMessage.TrackingInfo;
+
+            this.meshServiceMock.Setup(service =>
+                service.SendMessageAsync(storageSendMessage))
+                  .ReturnsAsync(storageMessage);
+
+            this.meshServiceMock.Setup(service =>
+                service.RetrieveTrackingStatusByIdAsync(storageMessage.MessageId))
+                    .ReturnsAsync(trackingStorageMessage);
 
             // when
-            await this.meshProcessingService.SendMessageAsync(inputMailboxId, inputMessageId);
+            MeshMessage actualMessage =
+                await this.meshProcessingService.SendMessageAsync(storageSendMessage);
 
             // then
+            actualMessage.Should().BeEquivalentTo(expectedMessage);
+
             this.meshServiceMock.Verify(service =>
-                service.SendMessageAsync(inputMessageId),
+                service.SendMessageAsync(storageSendMessage),
                     Times.Once());
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveTrackingStatusAsync(inputMailboxId, inputMessageId),
+                service.RetrieveTrackingStatusByIdAsync(storageMessage.MessageId),
                     Times.Once());
 
             this.meshServiceMock.VerifyNoOtherCalls();

@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
         public async Task ShouldThrowDependencyValidationExOnValidateAccessIfDependencyValidationErrOccursAndLogItAsync(
-           Xeption dependencyValidationException)
+            Xeption dependencyValidationException)
         {
             // given
             var expectedMeshProcessingDependencyValidationException =
@@ -54,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
         public async Task ShouldThrowDependencyOnValidateAccessIfDependencyErrorOccursAndLogItAsync(
-                Xeption dependencyException)
+            Xeption dependencyException)
         {
             // given
             var expectedMeshProcessingDependencyException =

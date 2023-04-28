@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldThrowServiceExceptionOnValidateAccessIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            string exceptionMessage = GetRandomMessage();
+            string exceptionMessage = GetRandomString();
             var serviceException = new Exception(exceptionMessage);
 
             var failedMeshServiceException =
@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                new MeshServiceException(failedMeshServiceException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.ValidateAccessAsync())
+                broker.HandshakeAsync())
                     .ThrowsAsync(serviceException);
 
             // when
@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 .BeEquivalentTo(expectedMeshServiceException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.ValidateAccessAsync(),
+                broker.HandshakeAsync(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

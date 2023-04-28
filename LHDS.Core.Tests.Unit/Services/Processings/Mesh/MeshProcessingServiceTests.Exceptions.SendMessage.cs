@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using Moq;
 using Xeptions;
@@ -20,24 +21,23 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             Xeption dependencyValidationException)
         {
             // given
-            string mailboxId = GetRandomString();
-            string messageId = GetRandomString();
+            MeshMessage randomMessage = CreateRandomMessage();
 
             var expectedMeshProcessingDependencyValidationException =
                 new MeshProcessingDependencyValidationException(
                     dependencyValidationException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>
-                service.RetrieveMessageByIdAsync(mailboxId, messageId))
+                service.SendMessageAsync(randomMessage))
                     .Throws(dependencyValidationException);
 
             this.meshServiceMock.Setup(service =>
-                service.RetrieveTrackingStatusAsync(mailboxId, messageId))
+                service.RetrieveTrackingStatusByIdAsync(randomMessage.MessageId))
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask<string> retrieveSendMessageTask =
-                this.meshProcessingService.SendMessageAsync(mailboxId, messageId);
+            ValueTask<MeshMessage> retrieveSendMessageTask =
+                this.meshProcessingService.SendMessageAsync(randomMessage);
 
             MeshProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<MeshProcessingDependencyValidationException>(retrieveSendMessageTask.AsTask);
@@ -46,12 +46,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             actualException.Should().BeEquivalentTo(expectedMeshProcessingDependencyValidationException);
 
             this.meshServiceMock.Verify(service =>
-                service.SendMessageAsync(messageId),
-                    Times.Never);
+                service.SendMessageAsync(randomMessage),
+                    Times.Once);
 
             this.meshServiceMock.Verify(service =>
-              service.RetrieveTrackingStatusAsync(mailboxId, messageId),
-                  Times.Once);
+              service.RetrieveTrackingStatusByIdAsync(randomMessage.MessageId),
+                  Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
@@ -68,24 +68,23 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             Xeption dependencyException)
         {
             // given
-            string mailboxId = GetRandomString();
-            string messageId = GetRandomString();
+            MeshMessage randomMessage = CreateRandomMessage();
 
             var expectedMeshProcessingDependencyException =
                 new MeshProcessingDependencyException(
                     dependencyException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>
-             service.RetrieveTrackingStatusAsync(mailboxId, messageId))
-                 .Throws(dependencyException);
-
-            this.meshServiceMock.Setup(service =>
-                service.SendMessageAsync(messageId))
+                service.SendMessageAsync(randomMessage))
                     .Throws(dependencyException);
 
+            this.meshServiceMock.Setup(service =>
+             service.RetrieveTrackingStatusByIdAsync(randomMessage.MessageId))
+                 .Throws(dependencyException);
+
             // when
-            ValueTask<string> retrieveMessageAndAcknowledgeTask =
-                this.meshProcessingService.SendMessageAsync(mailboxId, messageId);
+            ValueTask<MeshMessage> retrieveMessageAndAcknowledgeTask =
+                this.meshProcessingService.SendMessageAsync(randomMessage);
 
             MeshProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<MeshProcessingDependencyException>(retrieveMessageAndAcknowledgeTask.AsTask);
@@ -94,12 +93,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             actualException.Should().BeEquivalentTo(expectedMeshProcessingDependencyException);
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveTrackingStatusAsync(mailboxId, messageId),
-                    Times.Once);
+               service.SendMessageAsync(randomMessage),
+                   Times.Once);
 
             this.meshServiceMock.Verify(service =>
-               service.SendMessageAsync(messageId),
-                   Times.Never);
+                service.RetrieveTrackingStatusByIdAsync(randomMessage.MessageId),
+                    Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
@@ -114,8 +113,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
         public async Task ShouldThrowServiceExceptionOnSendMessageIfServiceErrorOccursAsync()
         {
             // given
-            string mailboxId = GetRandomString();
-            string messageId = GetRandomString();
+            MeshMessage randomMessage = CreateRandomMessage();
 
             var serviceException = new Exception();
 
@@ -127,12 +125,16 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     failedMeshProcessingServiceException);
 
             this.meshServiceMock.Setup(service =>
-                service.SendMessageAsync(messageId))
+                service.SendMessageAsync(randomMessage))
                     .Throws(serviceException);
 
+            this.meshServiceMock.Setup(service =>
+               service.RetrieveTrackingStatusByIdAsync(randomMessage.MessageId))
+                   .Throws(serviceException);
+
             // when
-            ValueTask<string> retrieveSendMessageTask =
-                this.meshProcessingService.SendMessageAsync(mailboxId, messageId);
+            ValueTask<MeshMessage> retrieveSendMessageTask =
+                this.meshProcessingService.SendMessageAsync(randomMessage);
 
             MeshProcessingServiceException actualException =
                 await Assert.ThrowsAsync<MeshProcessingServiceException>(retrieveSendMessageTask.AsTask);
@@ -141,12 +143,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             actualException.Should().BeEquivalentTo(expectedMeshProcessingServiveException);
 
             this.meshServiceMock.Verify(service =>
-                service.SendMessageAsync(messageId),
+                service.SendMessageAsync(randomMessage),
                     Times.Once);
 
             this.meshServiceMock.Verify(service =>
-               service.RetrieveTrackingStatusAsync(mailboxId, messageId),
-                   Times.Once);
+               service.RetrieveTrackingStatusByIdAsync(randomMessage.MessageId),
+                   Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(

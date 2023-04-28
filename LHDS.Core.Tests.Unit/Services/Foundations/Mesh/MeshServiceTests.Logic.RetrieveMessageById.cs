@@ -4,7 +4,10 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.Mesh;
 using Moq;
+using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
@@ -15,26 +18,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldReturnRetrieveMessageByIdAsync()
         {
             // given
-            string randomMailboxId = GetRandomMessage();
-            string inputMailboxId = randomMailboxId;
-            string randomMessageId = GetRandomMessage();
+            string randomMessageId = GetRandomString();
             string inputMessageId = randomMessageId;
-            string outputValidationResult = "";
-            string expectedValidationResult = outputValidationResult;
+            Message outputMessage = CreateRandomMessage();
+            Message expectedMessage = outputMessage.DeepClone();
 
             this.meshBrokerMock.Setup(broker =>
-                broker.GetMessageByIdAsync(inputMailboxId, inputMessageId))
-                    .ReturnsAsync(outputValidationResult);
+                broker.RetrieveMessageAsync(inputMessageId))
+                    .ReturnsAsync(outputMessage);
 
             // when
-            string actualMeshValidationResult =
-                await this.meshService.RetrieveMessageByIdAsync(inputMailboxId, inputMessageId);
+            MeshMessage actualMeshMessage =
+                await this.meshService.RetrieveMessageByIdAsync(inputMessageId);
 
             // then
-            actualMeshValidationResult.Should().Be(expectedValidationResult);
+            actualMeshMessage.Should().BeEquivalentTo(expectedMessage);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.GetMessageByIdAsync(inputMailboxId, inputMessageId),
+                broker.RetrieveMessageAsync(inputMessageId),
                     Times.Once());
 
             this.meshBrokerMock.VerifyNoOtherCalls();

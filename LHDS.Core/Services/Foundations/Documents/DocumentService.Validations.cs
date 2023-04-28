@@ -3,12 +3,10 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 
 namespace LHDS.Core.Services.Foundations.Documents
 {
@@ -37,6 +35,16 @@ namespace LHDS.Core.Services.Foundations.Documents
             }
         }
 
+        private static void ValidateStorageDocument(
+            byte[] maybeRetrievedDocument,
+            string fileName)
+        {
+            if (maybeRetrievedDocument is null)
+            {
+                throw new NotFoundDocumentException(fileName);
+            }
+        }
+
         private static dynamic IsInvalid(byte[] data) => new
         {
             Condition = (data == null || data.Length == 0),
@@ -48,6 +56,7 @@ namespace LHDS.Core.Services.Foundations.Documents
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
         };
+
 
         private void ValidateDeleteArguments(string fileName)
         {
@@ -76,22 +85,6 @@ namespace LHDS.Core.Services.Foundations.Documents
             }
 
             invalidDocumentException.ThrowIfContainsErrors();
-        }
-
-        private string GetValidationSummary(IDictionary data)
-        {
-            StringBuilder validationSummary = new StringBuilder();
-
-            foreach (DictionaryEntry entry in data)
-            {
-                string errorSummary = ((List<string>)entry.Value)
-                    .Select((string value) => value)
-                    .Aggregate((string current, string next) => current + ", " + next);
-
-                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
-            }
-
-            return validationSummary.ToString();
         }
     }
 }

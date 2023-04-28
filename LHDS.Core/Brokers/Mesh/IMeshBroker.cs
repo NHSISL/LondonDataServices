@@ -4,21 +4,18 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NEL.MESH.Models.Foundations.Mesh;
 
 namespace LHDS.Core.Brokers.Mesh
 {
     public interface IMeshBroker
     {
-        ValueTask<bool> ValidateAccessAsync();
-
-        ValueTask<bool> AcknowledgeMessageByIdAsync(string mailboxId, string messageId);
-
-        ValueTask<List<string>> GetMessageIdsFromInboxAsync(string mailboxId);
-
-        ValueTask<string> GetMessageByIdAsync(string mailboxId, string messageId);
-
-        ValueTask<string> SendMessageAsync(string messageId);
-
-        ValueTask<string> GetTrackingStatusAsync(string mailboxId, string messageId);
+        ValueTask<bool> HandshakeAsync();
+        ValueTask<Message> SendMessageAsync(Message message);
+        ValueTask<Message> SendFileAsync(Message message);
+        ValueTask<Message> TrackMessageAsync(string messageId);
+        ValueTask<List<string>> RetrieveMessageIdsAsync();
+        ValueTask<Message> RetrieveMessageAsync(string messageId);
+        ValueTask<bool> AcknowledgeMessageByIdAsync(string messageId);
     }
 }

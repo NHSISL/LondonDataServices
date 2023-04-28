@@ -14,11 +14,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
     public partial class MeshServiceTests
     {
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnAknowledgeMNessageByIdIfServiceErrorOccursAndLogItAsync()
+public async Task ShouldThrowServiceExceptionOnAknowledgeMessageByIdIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            string mailboxId = GetRandomMessage();
-            string messageId = GetRandomMessage();
+            string messageId = GetRandomString();
             var serviceException = new Exception();
 
             var failedMeshServiceException =
@@ -28,12 +27,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                new MeshServiceException(failedMeshServiceException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.AcknowledgeMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()))
+                broker.AcknowledgeMessageByIdAsync(It.IsAny<string>()))
                     .ThrowsAsync(serviceException);
 
             // when
             ValueTask<bool> RetrieveAknowledgeMessageByIdTask =
-                this.meshService.AcknowledgeMessageByIdAsync(mailboxId, messageId);
+                this.meshService.AcknowledgeMessageByIdAsync(messageId);
 
             MeshServiceException actualMeshServiceException =
                 await Assert.ThrowsAsync<MeshServiceException>
@@ -44,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 .BeEquivalentTo(expectedMeshServiceException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.AcknowledgeMessageByIdAsync(It.IsAny<string>(), It.IsAny<string>()),
+                broker.AcknowledgeMessageByIdAsync(It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

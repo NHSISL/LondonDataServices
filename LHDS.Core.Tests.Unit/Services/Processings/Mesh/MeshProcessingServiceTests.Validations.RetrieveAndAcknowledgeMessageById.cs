@@ -4,6 +4,7 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using Moq;
 using Xunit;
@@ -20,31 +21,27 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             string invalidText)
         {
             // given
-            string mailboxId = invalidText;
-            string messageId = invalidText;
+            MeshMessage randomMessage = CreateRandomMessage();
+            randomMessage.MessageId = invalidText;
 
             var invalidMeshProcessingArgumentException =
                 new InvalidMeshProcessingArgumentException();
 
             invalidMeshProcessingArgumentException.AddData(
-                key: nameof(mailboxId),
+                key: nameof(randomMessage.MessageId),
                 values: "Text is required");
-
-            invalidMeshProcessingArgumentException.AddData(
-               key: nameof(messageId),
-               values: "Text is required");
 
             var expectedMeshProcessingValidationException =
             new MeshProcessingValidationException(
-                   innerException: invalidMeshProcessingArgumentException,
-                   validationSummary: GetValidationSummary(invalidMeshProcessingArgumentException.Data));
+                innerException: invalidMeshProcessingArgumentException);
 
             // when
-            ValueTask<string> retrieveMessageIdsFromInboxTask =
-                this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(mailboxId, messageId);
+            ValueTask<MeshMessage> retrieveMessageIdsFromInboxTask =
+                this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(randomMessage.MessageId);
 
             MeshProcessingValidationException actualMeshProcessingValidationException =
-                await Assert.ThrowsAsync<MeshProcessingValidationException>(retrieveMessageIdsFromInboxTask.AsTask);
+                await Assert.ThrowsAsync<MeshProcessingValidationException>(() =>
+                    retrieveMessageIdsFromInboxTask.AsTask());
 
             //then
             actualMeshProcessingValidationException.Should()

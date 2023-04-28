@@ -11,18 +11,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
     public partial class MeshProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldReturnRetrieveMessageIdsFromInboxAsync()
+        public async Task ShouldReturnRetrieveMessagesFromInboxAsync()
         {
             // given
-            string randomMessageId = GetRandomString();
-            string inputMailboxId = randomMessageId;
-
             // when
-            await this.meshProcessingService.RetrieveMessageIdsFromInboxAsync(inputMailboxId);
+            await this.meshProcessingService.RetrieveMessageIdsFromInboxAsync();
 
             // then
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessageIdsFromInboxAsync(inputMailboxId),
+                service.RetrieveMessageIdsFromInboxAsync(),
                     Times.Once());
 
             this.meshServiceMock.VerifyNoOtherCalls();

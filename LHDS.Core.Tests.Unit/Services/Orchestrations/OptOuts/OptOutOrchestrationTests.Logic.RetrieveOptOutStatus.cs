@@ -1,0 +1,140 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.OptOuts;
+using Moq;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
+{
+    public partial class OptOutOrchestrationTests
+    {
+        [Fact]
+        public async Task ShouldRetrieveOptOutStatusAsync()
+        {
+            // given
+            bool withHeader = optOutConfiguration.OptOutFileHasHeader;
+            Guid identifier = Guid.NewGuid();
+            bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
+            var randomString = GetRandomString();
+            var inputString = randomString;
+            var inputBytes = Encoding.ASCII.GetBytes(inputString);
+            var randomRecieveName = GetRandomString();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            List<OptOutIdentifier> randomOptOuts = CreateRandomOptOutIdentifiersList();
+            List<OptOutIdentifier> outputOptOuts = randomOptOuts;
+
+            this.csvMapperProcessingServiceMock.Setup(processing =>
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, false))
+                    .ReturnsAsync(outputOptOuts);
+
+            this.identifierBrokerMock.Setup(processing =>
+                processing.GetIdentifier())
+                    .Returns(identifier);
+
+            List<OptOut> processedOptOuts = new List<OptOut>();
+
+            foreach (var optOut in outputOptOuts)
+            {
+                var inputOptOut = new OptOut
+                {
+                    Id = identifier,
+                    NhsNumber = optOut.NhsNumber,
+                    OptOutStatus = "Unknown",
+                    CreatedDate = randomDateTimeOffset,
+                    UpdatedDate = randomDateTimeOffset,
+                    CreatedBy = "System",
+                    UpdatedBy = "System"
+                };
+
+                var storageOptOut = inputOptOut;
+
+                this.optOutProcessingServiceMock.Setup(service =>
+                    service.RetrieveOrAddOptOutAsync(It.Is(SameOptOutAs(inputOptOut))))
+                        .ReturnsAsync(storageOptOut);
+
+                processedOptOuts.Add(storageOptOut);
+            }
+
+            var randomOptOutData = GetRandomString();
+            var processedString = randomOptOutData;
+
+            this.csvMapperProcessingServiceMock.Setup(processings =>
+                processings.MapObjectToCsvAsync(
+                    It.Is(SameOptOutListAs(processedOptOuts)),
+                    withHeader,
+                    shouldAddTrailingComma))
+                        .ReturnsAsync(processedString);
+
+            var processedBytes = Encoding.ASCII.GetBytes(processedString);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            Document document = new Document
+            {
+                FileName = $"{optOutConfiguration.OutputFolder}/{randomRecieveName}_Response_" +
+                    $"{randomDateTimeOffset.ToString("yyyyMMddHHmmss")}.csv",
+                DocumentData = processedBytes
+            };
+
+            this.documentProcessingServiceMock.Setup(service =>
+                service.AddDocumentAsync(document));
+
+            // when
+            await this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputBytes, randomRecieveName);
+
+            // then
+            this.csvMapperProcessingServiceMock.Verify(processing =>
+                processing.MapCsvToObjectAsync<OptOutIdentifier>(inputString, false),
+                    Times.Once);
+
+            foreach (var optOut in outputOptOuts)
+            {
+                var inputOptOut = new OptOut
+                {
+                    Id = identifier,
+                    NhsNumber = optOut.NhsNumber,
+                    OptOutStatus = "Unknown",
+                    CreatedDate = randomDateTimeOffset,
+                    UpdatedDate = randomDateTimeOffset,
+                    CreatedBy = "System",
+                    UpdatedBy = "System"
+                };
+
+                var storageOptOut = inputOptOut;
+
+                this.optOutProcessingServiceMock.Verify(service =>
+                    service.RetrieveOrAddOptOutAsync(It.Is(SameOptOutAs(inputOptOut))),
+                        Times.Exactly(outputOptOuts.Count));
+
+                processedOptOuts.Add(storageOptOut);
+            }
+
+            this.identifierBrokerMock.Verify(processing =>
+                processing.GetIdentifier(),
+                    Times.Exactly(outputOptOuts.Count));
+
+            this.csvMapperProcessingServiceMock.Verify(processings =>
+                processings.MapObjectToCsvAsync(It.IsAny<List<OptOut>>(), withHeader, shouldAddTrailingComma),
+                    Times.Once);
+
+            this.documentProcessingServiceMock.Verify(service =>
+                service.AddDocumentAsync(It.Is(SameDocumentAs(document))),
+                    Times.Once);
+
+            this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

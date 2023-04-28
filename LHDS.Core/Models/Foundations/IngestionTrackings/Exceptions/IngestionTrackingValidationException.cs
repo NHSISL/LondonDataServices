@@ -8,15 +8,10 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions
 {
     public class IngestionTrackingValidationException : Xeption
     {
-        private const string validationMessage =
-            "Ingestion tracking validation errors occurred, fix the errors and try again.";
-
-        public IngestionTrackingValidationException(Xeption innerException, string validationSummary = "")
+        public IngestionTrackingValidationException(Xeption innerException)
             : base(
-                  message: validationSummary.Length > 0
-                    ? $"{validationMessage}  Validation errors: {validationSummary}"
-                    : validationMessage,
-                  innerException)
+                message: "Ingestion tracking validation errors occurred, fix the errors and try again.",
+                innerException)
         { }
     }
 }

@@ -4,6 +4,7 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using Moq;
 using Xunit;
@@ -20,28 +21,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             string invalidText)
         {
             // given
-            string mailboxId = invalidText;
             string messageId = invalidText;
 
             var invalidArgumentMeshException =
                 new InvalidArgumentMeshException();
 
             invalidArgumentMeshException.AddData(
-                key: nameof(mailboxId),
-                values: "Text is required");
-
-            invalidArgumentMeshException.AddData(
-                key: nameof(messageId),
+                key: "MessageId",
                 values: "Text is required");
 
             var expectedMeshValidationException =
-                new MeshValidationException(
-                    innerException: invalidArgumentMeshException,
-                    validationSummary: GetValidationSummary(invalidArgumentMeshException.Data));
+                new MeshValidationException(innerException: invalidArgumentMeshException);
 
             // when
-            ValueTask<string> retrieveTrackingStatusTask =
-                this.meshService.RetrieveTrackingStatusAsync(mailboxId, messageId);
+            ValueTask<MeshMessage> retrieveTrackingStatusTask =
+                this.meshService.RetrieveTrackingStatusByIdAsync(messageId);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(
@@ -57,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                         Times.Once);
 
             this.meshBrokerMock.Verify(broker =>
-               broker.GetTrackingStatusAsync(mailboxId, messageId),
+               broker.TrackMessageAsync(messageId),
                    Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

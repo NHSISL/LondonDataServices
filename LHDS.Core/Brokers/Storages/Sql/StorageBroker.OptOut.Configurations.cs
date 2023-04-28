@@ -20,6 +20,11 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .Property(optOut => optOut.OptOutStatus)
                 .HasMaxLength(50)
                 .IsRequired();
+
+            modelBuilder.Entity<OptOut>()
+                .Property(optOut => optOut.BatchReference)
+                .HasMaxLength(50)
+                .IsRequired();
         }
     }
 }

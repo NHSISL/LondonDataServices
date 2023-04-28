@@ -92,9 +92,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 values: "Text is required");
 
             var expectedAuditValidationException =
-                new AuditValidationException(
-                    innerException: invalidAuditException,
-                    validationSummary: GetValidationSummary(invalidAuditException.Data));
+                new AuditValidationException(innerException: invalidAuditException);
 
             // when
             ValueTask<Audit> addAuditTask =
@@ -145,9 +143,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 values: $"Date is not the same as {nameof(Audit.CreatedDate)}");
 
             var expectedAuditValidationException =
-                new AuditValidationException(
-                    innerException: invalidAuditException,
-                    validationSummary: GetValidationSummary(invalidAuditException.Data));
+                new AuditValidationException(innerException: invalidAuditException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -200,9 +196,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 values: $"Text is not the same as {nameof(Audit.CreatedBy)}");
 
             var expectedAuditValidationException =
-                new AuditValidationException(
-                    innerException: invalidAuditException,
-                    validationSummary: GetValidationSummary(invalidAuditException.Data));
+                new AuditValidationException(innerException: invalidAuditException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -260,9 +254,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 values: "Date is not recent");
 
             var expectedAuditValidationException =
-                new AuditValidationException(
-                    innerException: invalidAuditException,
-                    validationSummary: GetValidationSummary(invalidAuditException.Data));
+                new AuditValidationException(innerException: invalidAuditException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())

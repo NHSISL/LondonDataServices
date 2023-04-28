@@ -3,15 +3,16 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Services.Foundations.Mesh;
 using Moq;
+using NEL.MESH.Models.Foundations.Mesh;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
@@ -22,11 +23,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         private readonly Mock<IMeshBroker> meshBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IMeshService meshService;
+        private readonly ICompareLogic compareLogic;
 
         public MeshServiceTests()
         {
             this.meshBrokerMock = new Mock<IMeshBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.compareLogic = new CompareLogic();
 
             this.meshService = new MeshService(
                 meshBroker: this.meshBrokerMock.Object,
@@ -38,7 +41,166 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         private static int GetRandomNumber() =>
           new IntRange(min: 2, max: 10).GetValue();
 
-        private static string GetRandomMessage() =>
+        private static dynamic GetRandomTrackingInfo()
+        {
+            return new
+            {
+                AddressType = GetRandomString(),
+                Checksum = GetRandomString(),
+                ChunkCount = GetRandomNumber(),
+                CompressFlag = GetRandomString(),
+                DownloadTimestamp = GetRandomString(),
+                DtsId = GetRandomString(),
+                EncryptedFlag = GetRandomString(),
+                ExpiryTime = GetRandomString(),
+                FileName = GetRandomString(),
+                FileSize = GetRandomNumber(),
+                IsCompressed = GetRandomString(),
+                LocalId = GetRandomString(),
+                MeshRecipientOdsCode = GetRandomString(),
+                MessageId = GetRandomString(),
+                MessageType = GetRandomString(),
+                PartnerId = GetRandomString(),
+                Recipient = GetRandomString(),
+                RecipientName = GetRandomString(),
+                RecipientOrgCode = GetRandomString(),
+                RecipientSmtp = GetRandomString(),
+                Sender = GetRandomString(),
+                SenderName = GetRandomString(),
+                SenderOdsCode = GetRandomString(),
+                SenderOrgCode = GetRandomString(),
+                SenderSmtp = GetRandomString(),
+                Status = GetRandomString(),
+                StatusSuccess = GetRandomString(),
+                UploadTimestamp = GetRandomString(),
+                Version = GetRandomString(),
+                WorkflowId = GetRandomString()
+            };
+        }
+
+        private static MessageTrackingInfo MaptToMeshMessageTrackingInfo(dynamic dynamicTrackingInfo)
+        {
+            return new MessageTrackingInfo
+            {
+                AddressType = dynamicTrackingInfo.AddressType,
+                Checksum = dynamicTrackingInfo.Checksum,
+                ChunkCount = dynamicTrackingInfo.ChunkCount,
+                CompressFlag = dynamicTrackingInfo.CompressFlag,
+                DownloadTimestamp = dynamicTrackingInfo.DownloadTimestamp,
+                DtsId = dynamicTrackingInfo.DtsId,
+                EncryptedFlag = dynamicTrackingInfo.EncryptedFlag,
+                ExpiryTime = dynamicTrackingInfo.ExpiryTime,
+                FileName = dynamicTrackingInfo.FileName,
+                FileSize = dynamicTrackingInfo.FileSize,
+                IsCompressed = dynamicTrackingInfo.IsCompressed,
+                LocalId = dynamicTrackingInfo.LocalId,
+                MeshRecipientOdsCode = dynamicTrackingInfo.MeshRecipientOdsCode,
+                MessageId = dynamicTrackingInfo.MessageId,
+                MessageType = dynamicTrackingInfo.MessageType,
+                PartnerId = dynamicTrackingInfo.PartnerId,
+                Recipient = dynamicTrackingInfo.Recipient,
+                RecipientName = dynamicTrackingInfo.RecipientName,
+                RecipientOrgCode = dynamicTrackingInfo.RecipientOrgCode,
+                RecipientSmtp = dynamicTrackingInfo.RecipientSmtp,
+                Sender = dynamicTrackingInfo.Sender,
+                SenderName = dynamicTrackingInfo.SenderName,
+                SenderOdsCode = dynamicTrackingInfo.SenderOdsCode,
+                SenderOrgCode = dynamicTrackingInfo.SenderOrgCode,
+                SenderSmtp = dynamicTrackingInfo.SenderSmtp,
+                Status = dynamicTrackingInfo.Status,
+                StatusSuccess = dynamicTrackingInfo.StatusSuccess,
+                UploadTimestamp = dynamicTrackingInfo.UploadTimestamp,
+                Version = dynamicTrackingInfo.Version,
+                WorkflowId = dynamicTrackingInfo.WorkflowId,
+            };
+        }
+
+        private static TrackingInfo MaptToMessageTrackingInfo(dynamic dynamicTrackingInfo)
+        {
+            return new TrackingInfo
+            {
+                AddressType = dynamicTrackingInfo.AddressType,
+                Checksum = dynamicTrackingInfo.Checksum,
+                ChunkCount = dynamicTrackingInfo.ChunkCount,
+                CompressFlag = dynamicTrackingInfo.CompressFlag,
+                DownloadTimestamp = dynamicTrackingInfo.DownloadTimestamp,
+                DtsId = dynamicTrackingInfo.DtsId,
+                EncryptedFlag = dynamicTrackingInfo.EncryptedFlag,
+                ExpiryTime = dynamicTrackingInfo.ExpiryTime,
+                FileName = dynamicTrackingInfo.FileName,
+                FileSize = dynamicTrackingInfo.FileSize,
+                IsCompressed = dynamicTrackingInfo.IsCompressed,
+                LocalId = dynamicTrackingInfo.LocalId,
+                MeshRecipientOdsCode = dynamicTrackingInfo.MeshRecipientOdsCode,
+                MessageId = dynamicTrackingInfo.MessageId,
+                MessageType = dynamicTrackingInfo.MessageType,
+                PartnerId = dynamicTrackingInfo.PartnerId,
+                Recipient = dynamicTrackingInfo.Recipient,
+                RecipientName = dynamicTrackingInfo.RecipientName,
+                RecipientOrgCode = dynamicTrackingInfo.RecipientOrgCode,
+                RecipientSmtp = dynamicTrackingInfo.RecipientSmtp,
+                Sender = dynamicTrackingInfo.Sender,
+                SenderName = dynamicTrackingInfo.SenderName,
+                SenderOdsCode = dynamicTrackingInfo.SenderOdsCode,
+                SenderOrgCode = dynamicTrackingInfo.SenderOrgCode,
+                SenderSmtp = dynamicTrackingInfo.SenderSmtp,
+                Status = dynamicTrackingInfo.Status,
+                StatusSuccess = dynamicTrackingInfo.StatusSuccess,
+                UploadTimestamp = dynamicTrackingInfo.UploadTimestamp,
+                Version = dynamicTrackingInfo.Version,
+                WorkflowId = dynamicTrackingInfo.WorkflowId,
+            };
+        }
+
+        public static Dictionary<string, List<string>> CreateMandatoryHeaders()
+        {
+            var dictionary = new Dictionary<string, List<string>>
+            {
+                { "Content-Type", new List<string> { GetRandomString() } },
+                { "Mex-FileName", new List<string> { GetRandomString() } },
+                { "Mex-From", new List<string> { GetRandomString() } },
+                { "Mex-To", new List<string> { GetRandomString() } },
+                { "Mex-WorkflowID", new List<string> { GetRandomString() } },
+                { "Mex-Content-Checksum", new List<string> { GetRandomString() } },
+                { "Mex-Content-Encrypted", new List<string> { GetRandomString() } }
+            };
+
+            return dictionary;
+        }
+
+        private static List<string> RandomStringList(int count)
+        {
+            var list = new List<string>();
+
+            for (int i = 0; i < count; i++)
+            {
+                list.Add(GetRandomString());
+            }
+
+            return list;
+        }
+
+        public static dynamic CreateRandomMeshMessageProperties()
+        {
+            return new
+            {
+                MessageId = GetRandomString(),
+                Headers = CreateMandatoryHeaders(),
+                StringContent = GetRandomString(),
+                FileContent = Encoding.ASCII.GetBytes(GetRandomString()),
+                TrackingInfo = GetRandomTrackingInfo()
+            };
+        }
+
+        private Expression<Func<Message, bool>> SameMessageAs(Message expectedMessage)
+        {
+            return actualMessage =>
+                this.compareLogic.Compare(expectedMessage, actualMessage)
+                    .AreEqual;
+
+        }
+
+        private static string GetRandomString() =>
           new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
         private static List<string> GetRandomMessages(int count)
@@ -52,20 +214,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             return messages;
         }
 
-        private string GetValidationSummary(IDictionary data)
+        private static Message CreateRandomMessage() =>
+            CreateMessageFiller().Create();
+
+        private static Filler<Message> CreateMessageFiller()
         {
-            StringBuilder validationSummary = new StringBuilder();
+            var filler = new Filler<Message>();
+            filler.Setup().OnProperty(message => message.Headers)
+                .Use(new Dictionary<string, List<string>>());
 
-            foreach (DictionaryEntry entry in data)
-            {
-                string errorSummary = ((List<string>)entry.Value)
-                    .Select((string value) => value)
-                    .Aggregate((string current, string next) => current + ", " + next);
-
-                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
-            }
-
-            return validationSummary.ToString();
+            return filler;
         }
     }
 }

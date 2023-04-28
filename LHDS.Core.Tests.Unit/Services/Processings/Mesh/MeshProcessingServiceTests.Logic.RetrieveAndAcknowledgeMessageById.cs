@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.Mesh;
 using Moq;
 using Xunit;
 
@@ -14,21 +15,23 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
         public async Task ShouldReturnRetrieveMessageIdAndAcknowledgeAsync()
         {
             // given
-            string randomMailboxId = GetRandomString();
-            string inputMailboxId = randomMailboxId;
-            string randomMessageId = GetRandomString();
-            string inputMessageId = randomMessageId;
+            MeshMessage randomMessage = CreateRandomMessage();
+            MeshMessage storageMessage = randomMessage;
+
+            this.meshServiceMock.Setup(service =>
+                service.RetrieveMessageByIdAsync(randomMessage.MessageId))
+                    .ReturnsAsync(storageMessage);
 
             // when
-            await this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(inputMailboxId, inputMessageId);
+            await this.meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(randomMessage.MessageId);
 
             // then
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessageByIdAsync(inputMailboxId, inputMessageId),
+                service.RetrieveMessageByIdAsync(randomMessage.MessageId),
                     Times.Once());
 
             this.meshServiceMock.Verify(service =>
-               service.AcknowledgeMessageByIdAsync(inputMailboxId, inputMessageId),
+               service.AcknowledgeMessageByIdAsync(randomMessage.MessageId),
                    Times.Once());
 
             this.meshServiceMock.VerifyNoOtherCalls();

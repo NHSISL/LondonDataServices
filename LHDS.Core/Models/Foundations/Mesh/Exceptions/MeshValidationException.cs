@@ -8,14 +8,10 @@ namespace LHDS.Core.Models.Foundations.Mesh.Exceptions
 {
     public class MeshValidationException : Xeption
     {
-        private const string validationMessage = "Mesh validation errors occurred, please try again.";
-
-        public MeshValidationException(Xeption innerException, string validationSummary = "")
+        public MeshValidationException(Xeption innerException)
             : base(
-                  message: validationSummary.Length > 0
-                    ? $"{validationMessage}  Validation errors: {validationSummary}"
-                    : validationMessage,
-                  innerException)
+                message: "Mesh validation errors occurred, please try again.",
+                innerException)
         { }
     }
 }

@@ -19,9 +19,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             bool expectedValidationResult = outputValidationResult;
 
             this.meshBrokerMock.Setup(broker =>
-                broker.ValidateAccessAsync())
+                broker.HandshakeAsync())
                     .ReturnsAsync(outputValidationResult);
-
+            
             // when
             bool actualMeshValidationResult =
                 await this.meshService.ValidateMailboxAccessAsync();
@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             actualMeshValidationResult.Should().Be(expectedValidationResult);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.ValidateAccessAsync(),
+                broker.HandshakeAsync(),
                     Times.Once());
 
             this.meshBrokerMock.VerifyNoOtherCalls();

@@ -3,11 +3,11 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
+using FluentAssertions;
+using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
@@ -24,26 +24,29 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
     {
         private readonly Mock<IOptOutService> optOutServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly OptOutProcessingService optOutProcessingService;
 
         public OptOutProcessingServiceTests()
         {
             optOutServiceMock = new Mock<IOptOutService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
+            dateTimeBrokerMock = new Mock<IDateTimeBroker>();
 
             this.optOutProcessingService = new OptOutProcessingService(
                 optOutService: optOutServiceMock.Object,
-                loggingBroker: loggingBrokerMock.Object);
+                loggingBroker: loggingBrokerMock.Object,
+                dateTimeBroker: dateTimeBrokerMock.Object );
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
            actualException => actualException.SameExceptionAs(expectedException);
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
-        new DateTimeRange(earliestDate: new DateTime()).GetValue();
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
         private static OptOut CreateRandomOptOut(DateTimeOffset dateTimeOffset) =>
-        CreateOptOutFiller(dateTimeOffset).Create();
+            CreateOptOutFiller(dateTimeOffset).Create();
 
         private static OptOut CreateRandomOptOut() =>
             CreateOptOutFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
@@ -53,6 +56,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
+
+        private static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 10).GetValue();
+
+        private static int GetRandomExpiryDays(int expiryMax) =>
+            new IntRange(max: expiryMax -1).GetValue();
+
+        private static int GetRandomValidExpiryDays(int expiryMin) =>
+            new IntRange(min: expiryMin + 1, max: 20).GetValue();
 
         public static TheoryData DependencyValidationExceptions()
         {
@@ -66,7 +78,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 new OptOutDependencyValidationException(innerException)
             };
         }
-
         public static TheoryData DependencyExceptions()
         {
             string randomMessage = GetRandomString();
@@ -78,6 +89,24 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 new OptOutDependencyException(innerException),
                 new OptOutServiceException(innerException)
             };
+        }
+        
+        private static IQueryable<OptOut> CreateRandomOptOuts(string batchReference)
+        {
+            List<OptOut> optOuts = new List<OptOut>();
+
+            for (int i = 0; i < 6; i++)
+            {
+                OptOut randomOptOut = CreateRandomOptOut(GetRandomDateTimeOffset());
+                optOuts.Add(randomOptOut);
+
+                if (i % 2 == 0)
+                {
+                    randomOptOut.BatchReference = batchReference;
+                }
+            }
+
+            return optOuts.AsQueryable();
         }
 
         private static Filler<OptOut> CreateOptOutFiller(DateTimeOffset dateTimeOffset)
@@ -93,6 +122,26 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 .OnProperty(optOut => optOut.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        private static IQueryable<OptOut> CreateRandomOptOuts()
+        {
+            return CreateOptOutFiller(GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
+
+        private static IQueryable<OptOut> CreateRandomOptOuts(DateTimeOffset expireDate)
+        {
+            List<OptOut> optOuts = new List<OptOut>();
+            DateTimeOffset start = expireDate.AddDays(-3);
+
+            for (int i = 0; i < 6; i++)
+            {
+                optOuts.Add(CreateRandomOptOut(start.AddDays(i)));
+            }
+
+            return optOuts.AsQueryable();
         }
 
         private static string GenerateValidNhsNumber()
@@ -137,22 +186,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             string checkNumber = total.ToString();
 
             return $"{formattedNhsNumber}{checkNumber}";
-        }
-
-        private string GetValidationSummary(IDictionary data)
-        {
-            StringBuilder validationSummary = new StringBuilder();
-
-            foreach (DictionaryEntry entry in data)
-            {
-                string errorSummary = ((List<string>)entry.Value)
-                    .Select((string value) => value)
-                    .Aggregate((string current, string next) => current + ", " + next);
-
-                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
-            }
-
-            return validationSummary.ToString();
         }
     }
 }

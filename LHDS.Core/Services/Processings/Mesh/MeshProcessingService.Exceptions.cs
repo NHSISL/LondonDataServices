@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using Xeptions;
@@ -14,7 +15,7 @@ namespace LHDS.Core.Services.Processings.Mesh
     public partial class MeshProcessingService
     {
         private delegate ValueTask<bool> ReturningBoolMeshFunction();
-        private delegate ValueTask<string> ReturningStringMeshFunction();
+        private delegate ValueTask<MeshMessage> ReturningMessageMeshFunction();
         private delegate ValueTask<List<string>> ReturningStringsMeshFunction();
 
         private async ValueTask<bool> TryCatch(ReturningBoolMeshFunction returningMeshFunction)
@@ -48,15 +49,19 @@ namespace LHDS.Core.Services.Processings.Mesh
             }
         }
 
-        private async ValueTask<string> TryCatch(ReturningStringMeshFunction returningStringMeshFunction)
+        private async ValueTask<MeshMessage> TryCatch(ReturningMessageMeshFunction returningMessageMeshFunction)
         {
             try
             {
-                return await returningStringMeshFunction();
+                return await returningMessageMeshFunction();
             }
             catch (MeshValidationException meshValidationException)
             {
                 throw CreateAndLogDependencyValidationException(meshValidationException);
+            }
+            catch (NullMeshProcessingException exception)
+            {
+                throw CreateAndLogValidationException(exception);
             }
             catch (MeshDependencyValidationException meshDependencyValidationException)
             {
@@ -121,10 +126,8 @@ namespace LHDS.Core.Services.Processings.Mesh
         private MeshProcessingValidationException
             CreateAndLogValidationException(Xeption exception)
         {
-            string validationSummary = GetValidationSummary(exception.Data);
-
             var meshProcessingValidationExceptionn =
-                new MeshProcessingValidationException(exception, validationSummary);
+                new MeshProcessingValidationException(exception);
 
             this.loggingBroker.LogError(meshProcessingValidationExceptionn);
 

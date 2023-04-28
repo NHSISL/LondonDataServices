@@ -8,14 +8,10 @@ namespace LHDS.Core.Models.Foundations.Downloads.Exceptions
 {
     public class DownloadValidationException : Xeption
     {
-        private const string validationMessage = "Download validation errors occurred, please try again.";
-
-        public DownloadValidationException(Xeption innerException, string validationSummary = "")
+        public DownloadValidationException(Xeption innerException)
             : base(
-                  message: validationSummary.Length > 0
-                    ? $"{validationMessage}  Validation errors: {validationSummary}"
-                    : validationMessage,
-                  innerException)
+                message: "Download validation errors occurred, please try again.",
+                innerException)
         { }
     }
 }

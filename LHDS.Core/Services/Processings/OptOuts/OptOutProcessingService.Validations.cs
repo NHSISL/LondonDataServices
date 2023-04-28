@@ -3,10 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Processings.OptOuts.Exceptions;
 
@@ -31,12 +27,17 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 throw new NullOptOutProcessingException();
             }
         }
-
         public void ValidateOptOutId(Guid optOutId) =>
             Validate((Rule: IsInvalid(optOutId), Parameter: nameof(OptOut.Id)));
 
         public void ValidateOptOutNhsNumber(string optOutNhsNumber) =>
             Validate((Rule: IsInvalid(optOutNhsNumber), Parameter: nameof(OptOut.NhsNumber)));
+
+        public void ValidateOptOutBatchReference(string batchReference) =>
+            Validate((Rule: IsInvalid(batchReference), Parameter: nameof(OptOut.BatchReference)));
+
+        public void ValidateOlderThanDays(int olderThanDays) =>
+            Validate((Rule: IsInvalid(olderThanDays), Parameter: "OlderThanDays"));
 
         private static dynamic IsInvalid(Guid id) => new
         {
@@ -48,6 +49,12 @@ namespace LHDS.Core.Services.Processings.OptOuts
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
+        };
+
+        private static dynamic IsInvalid(int value) => new
+        {
+            Condition = value < 7,
+            Message = "Value is required"
         };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
@@ -65,22 +72,6 @@ namespace LHDS.Core.Services.Processings.OptOuts
             }
 
             invalidArgumentOptOutProcessingException.ThrowIfContainsErrors();
-        }
-
-        private string GetValidationSummary(IDictionary data)
-        {
-            StringBuilder validationSummary = new StringBuilder();
-
-            foreach (DictionaryEntry entry in data)
-            {
-                string errorSummary = ((List<string>)entry.Value)
-                    .Select((string value) => value)
-                    .Aggregate((string current, string next) => current + ", " + next);
-
-                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
-            }
-
-            return validationSummary.ToString();
         }
     }
 }

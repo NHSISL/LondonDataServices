@@ -6,7 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.OptOuts;
-using LHDS.Core.Models.Processings.Documents.Exceptions;
+using LHDS.Core.Models.Processings.OptOuts.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     dependencyValidationException.InnerException as Xeption);
 
             this.optOutServiceMock.Setup(service =>
-                service.RetrieveOptOutByIdAsync(inputOptOut.Id))
+                service.RetrieveAllOptOuts())
                     .Throws(dependencyValidationException);
 
             // when
@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 expectedOptOutProcessingDependencyValidationException);
 
             this.optOutServiceMock.Verify(service =>
-                service.RetrieveOptOutByIdAsync(inputOptOut.Id),
+                service.RetrieveAllOptOuts(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -70,7 +70,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     dependencyValidationException.InnerException as Xeption);
 
             this.optOutServiceMock.Setup(service =>
-                service.AddOptOutAsync(inputOptOut))
+                service.RetrieveAllOptOuts())
                     .Throws(dependencyValidationException);
 
             // when
@@ -85,11 +85,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 expectedOptOutProcessingDependencyValidationException);
 
             this.optOutServiceMock.Verify(service =>
-                service.RetrieveOptOutByIdAsync(inputOptOut.Id),
-                    Times.Once);
-
-            this.optOutServiceMock.Verify(service =>
-                service.AddOptOutAsync(inputOptOut),
+                service.RetrieveAllOptOuts(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -115,7 +111,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     dependencyValidationException.InnerException as Xeption);
 
             this.optOutServiceMock.Setup(service =>
-                service.RetrieveOptOutByIdAsync(inputOptOut.Id))
+                service.RetrieveAllOptOuts())
                     .Throws(dependencyValidationException);
 
             // when
@@ -130,7 +126,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 expectedOptOutProcessingDependencyException);
 
             this.optOutServiceMock.Verify(service =>
-                service.RetrieveOptOutByIdAsync(inputOptOut.Id),
+                service.RetrieveAllOptOuts(),
                     Times.Once);
 
             this.optOutServiceMock.Verify(service =>
@@ -161,11 +157,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     dependencyValidationException.InnerException as Xeption);
 
             this.optOutServiceMock.Setup(service =>
-                service.RetrieveOptOutByIdAsync(inputOptOut.Id))
-                    .ReturnsAsync(value: null);
-
-            this.optOutServiceMock.Setup(service =>
-                service.AddOptOutAsync(inputOptOut))
+                service.RetrieveAllOptOuts())
                     .Throws(dependencyValidationException);
 
             // when
@@ -180,12 +172,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 expectedOptOutProcessingDependencyException);
 
             this.optOutServiceMock.Verify(service =>
-                service.RetrieveOptOutByIdAsync(inputOptOut.Id),
+                service.RetrieveAllOptOuts(),
                     Times.Once);
 
             this.optOutServiceMock.Verify(service =>
                 service.AddOptOutAsync(inputOptOut),
-                    Times.Once);
+                    Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
@@ -213,7 +205,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     failedOptOutProcessingServiceException);
 
             this.optOutServiceMock.Setup(service =>
-                service.RetrieveOptOutByIdAsync(inputOptOut.Id))
+                service.RetrieveAllOptOuts())
                     .Throws(serviceException);
 
             // when
@@ -227,7 +219,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             actualException.Should().BeEquivalentTo(expectedOptOutProcessingServiveException);
 
             this.optOutServiceMock.Verify(service =>
-                service.RetrieveOptOutByIdAsync(inputOptOut.Id),
+                service.RetrieveAllOptOuts(),
                     Times.Once);
 
             this.optOutServiceMock.Verify(service =>
@@ -260,11 +252,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     failedOptOutProcessingServiceException);
 
             this.optOutServiceMock.Setup(service =>
-                service.RetrieveOptOutByIdAsync(inputOptOut.Id))
-                    .ReturnsAsync(value: null);
-
-            this.optOutServiceMock.Setup(service =>
-                service.AddOptOutAsync(inputOptOut))
+                service.RetrieveAllOptOuts())
                     .Throws(serviceException);
 
             // when
@@ -278,12 +266,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             actualException.Should().BeEquivalentTo(expectedOptOutProcessingServiveException);
 
             this.optOutServiceMock.Verify(service =>
-                service.RetrieveOptOutByIdAsync(inputOptOut.Id),
+                service.RetrieveAllOptOuts(),
                     Times.Once);
 
             this.optOutServiceMock.Verify(service =>
                 service.AddOptOutAsync(inputOptOut),
-                    Times.Once);
+                    Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(

@@ -107,9 +107,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 values: "Text is required");
 
             var expectedOptOutValidationException =
-                new OptOutValidationException(
-                    innerException: invalidOptOutException,
-                    validationSummary: GetValidationSummary(invalidOptOutException.Data));
+                new OptOutValidationException(innerException: invalidOptOutException);
 
             // when
             ValueTask<OptOut> modifyOptOutTask =
@@ -177,9 +175,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 values: $"Text length should not be greater than {optOutStatusMaxLength}");
 
             var expectedOptOutValidationException =
-                new OptOutValidationException(
-                    innerException: invalidOptOutException,
-                    validationSummary: GetValidationSummary(invalidOptOutException.Data));
+                new OptOutValidationException(innerException: invalidOptOutException);
 
             // when
             ValueTask<OptOut> modifyOptOutTask =
@@ -237,9 +233,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 values: $"NHS Number invalid");
 
             var expectedOptOutValidationException =
-                new OptOutValidationException(
-                    innerException: invalidOptOutException,
-                    validationSummary: GetValidationSummary(invalidOptOutException.Data));
+                new OptOutValidationException(innerException: invalidOptOutException);
 
             // when
             ValueTask<OptOut> modifyOptOutTask =
@@ -285,9 +279,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 values: $"Date is the same as {nameof(OptOut.CreatedDate)}");
 
             var expectedOptOutValidationException =
-                new OptOutValidationException(
-                    innerException: invalidOptOutException,
-                    validationSummary: GetValidationSummary(invalidOptOutException.Data));
+                new OptOutValidationException(innerException: invalidOptOutException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -340,9 +332,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 values: "Date is not recent");
 
             var expectedOptOutValidationException =
-                new OptOutValidationException(
-                    innerException: invalidOptOutException,
-                    validationSummary: GetValidationSummary(invalidOptOutException.Data));
+                new OptOutValidationException(innerException: invalidOptOutException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -450,9 +440,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 values: $"Date is not the same as {nameof(OptOut.CreatedDate)}");
 
             var expectedOptOutValidationException =
-                new OptOutValidationException(
-                    innerException: invalidOptOutException,
-                    validationSummary: GetValidationSummary(invalidOptOutException.Data));
+                new OptOutValidationException(innerException: invalidOptOutException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectOptOutByIdAsync(invalidOptOut.Id))
@@ -510,9 +498,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 values: $"Text is not the same as {nameof(OptOut.CreatedBy)}");
 
             var expectedOptOutValidationException =
-                new OptOutValidationException(
-                    innerException: invalidOptOutException,
-                    validationSummary: GetValidationSummary(invalidOptOutException.Data));
+                new OptOutValidationException(innerException: invalidOptOutException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectOptOutByIdAsync(invalidOptOut.Id))
@@ -567,9 +553,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 values: $"Date is the same as {nameof(OptOut.UpdatedDate)}");
 
             var expectedOptOutValidationException =
-                new OptOutValidationException(
-                    innerException: invalidOptOutException,
-                    validationSummary: GetValidationSummary(invalidOptOutException.Data));
+                new OptOutValidationException(innerException: invalidOptOutException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectOptOutByIdAsync(invalidOptOut.Id))

@@ -2,11 +2,14 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Services.Foundations.Documents;
 using Microsoft.Extensions.Configuration;
 using Moq;
@@ -38,9 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                 values: "Text is required");
 
             var expectedDocumentValidationException
-                = new DocumentValidationException(
-                    innerException: invalidDocumentException,
-                    validationSummary: GetValidationSummary(invalidDocumentException.Data));
+                = new DocumentValidationException(innerException: invalidDocumentException);
 
             var appSettingsStub = new Dictionary<string, string> {
                 {"blobContainerName", invalidInput}
@@ -77,6 +78,48 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowNotFoundExceptionOnRetrieveByFileNameIfDocumentIsNotFoundAndLogItAsync()
+        {
+            //given
+            string someFileName = GetRandomString();
+            byte[] nullByte = null;
+
+            var notFoundDocumentException =
+                new NotFoundDocumentException(someFileName);
+
+            var expectedDocumentValidationException =
+                new DocumentValidationException(notFoundDocumentException);
+
+            this.blobStorageBrokerMock.Setup(broker =>
+                broker.SelectByFileNameAsync(It.IsAny<string>()))
+                    .ReturnsAsync(nullByte);
+
+            //when
+            ValueTask<Document> retrieveDocumentByIdTask =
+                this.documentService.RetrieveDocumentByFileNameAsync(someFileName);
+
+            DocumentValidationException actualDocumentValidationException =
+                await Assert.ThrowsAsync<DocumentValidationException>(
+                    retrieveDocumentByIdTask.AsTask);
+
+            //then
+            actualDocumentValidationException.Should().BeEquivalentTo(expectedDocumentValidationException);
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.SelectByFileNameAsync(It.IsAny<string>()),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDocumentValidationException))),
+                        Times.Once);
+
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Services.Foundations.Mesh;
 
 namespace LHDS.Core.Services.Processings.Mesh
@@ -28,32 +29,36 @@ namespace LHDS.Core.Services.Processings.Mesh
                return await this.meshService.ValidateMailboxAccessAsync();
            });
 
-        public ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync(string mailboxId) =>
-            TryCatch(async () =>
+        public ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync() =>
+         TryCatch(async () =>
             {
-                ValidateGetArguments(mailboxId);
-
-                return await this.meshService.RetrieveMessageIdsFromInboxAsync(mailboxId);
+                return await this.meshService.RetrieveMessageIdsFromInboxAsync();
             });
 
-        public ValueTask<string> RetrieveAndAcknowledgeMessageByIdAsync(string mailboxId, string messageId) =>
+        public ValueTask<MeshMessage> RetrieveAndAcknowledgeMessageByIdAsync(string messageId) =>
             TryCatch(async () =>
             {
-                ValidateMeshArgs(mailboxId, messageId);
-                var retrievedMessage = await this.meshService.RetrieveMessageByIdAsync(mailboxId, messageId);
-                await this.meshService.AcknowledgeMessageByIdAsync(mailboxId, messageId);
+                ValidateMeshArgs(messageId);
+                MeshMessage retrievedMessage = await meshService.RetrieveMessageByIdAsync(messageId);
+                ValidateMeshMessageIsNotNull(retrievedMessage);
+                bool ackResult = await meshService.AcknowledgeMessageByIdAsync(messageId);
 
                 return retrievedMessage;
             });
 
-        public ValueTask<string> SendMessageAsync(string mailboxId, string messageId) =>
+        public ValueTask<MeshMessage> SendMessageAsync(MeshMessage message) =>
             TryCatch(async () =>
             {
-                ValidateMeshArgs(mailboxId, messageId);
-                var trackMessage = await this.meshService.RetrieveTrackingStatusAsync(mailboxId, messageId);
-                await this.meshService.SendMessageAsync(messageId);
+                MeshMessage sendMessageResult = await meshService.SendMessageAsync(message);
+                ValidateMeshMessageIsNotNull(sendMessageResult);
 
-                return trackMessage;
+                MeshMessage trackMessage =
+                    await this.meshService.RetrieveTrackingStatusByIdAsync(sendMessageResult.MessageId);
+
+                ValidateMeshMessageIsNotNull(trackMessage);
+                sendMessageResult.TrackingInfo = trackMessage.TrackingInfo;
+
+                return sendMessageResult;
             });
     }
 }

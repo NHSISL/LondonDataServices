@@ -12,6 +12,7 @@ namespace LHDS.Core.Models.Foundations.OptOuts
         public Guid Id { get; set; }
         public string NhsNumber { get; set; }
         public string OptOutStatus { get; set; }
+        public string BatchReference { get; set; }
         public DateTimeOffset CacheTime { get; set; }
         public DateTimeOffset LastSentToMesh { get; set; }
         public string CreatedBy { get; set; }

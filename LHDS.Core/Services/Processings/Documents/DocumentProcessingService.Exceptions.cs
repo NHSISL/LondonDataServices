@@ -90,6 +90,7 @@ namespace LHDS.Core.Services.Processings.Documents
                 throw CreateAndLogServiceException(failedDocumentProcessingServiceException);
             }
         }
+
         private async ValueTask<string> TryCatch(ReturningStringFunction returningStringFunction)
         {
             try
@@ -100,9 +101,17 @@ namespace LHDS.Core.Services.Processings.Documents
             {
                 throw CreateAndLogValidationException(exception);
             }
+            catch (NullDocumentProcessingException nullDocumentException)
+            {
+                throw CreateAndLogValidationException(nullDocumentException);
+            }
             catch (DocumentValidationException documentValidationException)
             {
                 throw CreateAndLogDependencyValidationException(documentValidationException);
+            }
+            catch (DocumentProcessingValidationException documentProcessingValidationException)
+            {
+                throw CreateAndLogValidationException(documentProcessingValidationException);
             }
             catch (DocumentDependencyValidationException documentDependencyValidationException)
             {
@@ -128,10 +137,8 @@ namespace LHDS.Core.Services.Processings.Documents
         private DocumentProcessingValidationException
             CreateAndLogValidationException(Xeption exception)
         {
-            string validationSummary = GetValidationSummary(exception.Data);
-
             var documentProcessingValidationExceptionn =
-                new DocumentProcessingValidationException(exception, validationSummary);
+                new DocumentProcessingValidationException(exception);
 
             this.loggingBroker.LogError(documentProcessingValidationExceptionn);
 

@@ -3,12 +3,10 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using LHDS.Core.Services.Foundations.Mesh;
 using LHDS.Core.Services.Processings.Mesh;
@@ -64,20 +62,25 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             };
         }
 
-        private string GetValidationSummary(IDictionary data)
+        private static MeshMessage CreateRandomMessage() =>
+            CreateMessageFiller().Create();
+
+        private static MeshMessage CreateRandomSendMessage()
         {
-            StringBuilder validationSummary = new StringBuilder();
+            MeshMessage message = CreateMessageFiller().Create();
+            message.MessageId = null;
+            message.TrackingInfo = null;
 
-            foreach (DictionaryEntry entry in data)
-            {
-                string errorSummary = ((List<string>)entry.Value)
-                    .Select((string value) => value)
-                    .Aggregate((string current, string next) => current + ", " + next);
+            return message;
+        }
 
-                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
-            }
+        private static Filler<MeshMessage> CreateMessageFiller()
+        {
+            var filler = new Filler<MeshMessage>();
+            filler.Setup().OnProperty(message => message.Headers)
+                .Use(new Dictionary<string, List<string>>());
 
-            return validationSummary.ToString();
+            return filler;
         }
     }
 }

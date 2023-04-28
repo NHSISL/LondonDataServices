@@ -28,9 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 values: "Id is required");
 
             var expectedIngestionTrackingValidationException =
-                new IngestionTrackingValidationException(
-                    innerException: invalidIngestionTrackingException,
-                    validationSummary: GetValidationSummary(invalidIngestionTrackingException.Data));
+                new IngestionTrackingValidationException(innerException: invalidIngestionTrackingException);
 
             // when
             ValueTask<IngestionTracking> removeIngestionTrackingByIdTask =

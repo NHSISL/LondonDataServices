@@ -35,7 +35,15 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
         public IQueryable<PdsAudit> RetrieveAllPdsAudits() =>
             TryCatch(() => this.storageBroker.SelectAllPdsAudits());
 
-        public async ValueTask<PdsAudit> RetrievePdsAuditByIdAsync(Guid pdsAuditId) =>
-            await this.storageBroker.SelectPdsAuditByIdAsync(pdsAuditId);
+        public ValueTask<PdsAudit> RetrievePdsAuditByIdAsync(Guid pdsAuditId) =>
+            TryCatch(async () =>
+            {
+                ValidatePdsAuditId(pdsAuditId);
+
+                PdsAudit maybePdsAudit = await this.storageBroker
+                    .SelectPdsAuditByIdAsync(pdsAuditId);
+
+                return maybePdsAudit;
+            });
     }
 }

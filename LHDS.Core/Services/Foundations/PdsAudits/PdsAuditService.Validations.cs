@@ -24,7 +24,13 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                     firstDate: pdsAudit.UpdatedDate,
                     secondDate: pdsAudit.CreatedDate,
                     secondDateName: nameof(PdsAudit.CreatedDate)),
-                Parameter: nameof(PdsAudit.UpdatedDate)));
+                Parameter: nameof(PdsAudit.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    firstId: pdsAudit.UpdatedByUserId,
+                    secondId: pdsAudit.CreatedByUserId,
+                    secondIdName: nameof(PdsAudit.CreatedByUserId)),
+                Parameter: nameof(PdsAudit.UpdatedByUserId)));
         }
 
         private static void ValidatePdsAuditIsNotNull(PdsAudit pdsAudit)
@@ -54,6 +60,15 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
             {
                 Condition = firstDate != secondDate,
                 Message = $"Date is not the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            Guid firstId,
+            Guid secondId,
+            string secondIdName) => new
+            {
+                Condition = firstId != secondId,
+                Message = $"Id is not the same as {secondIdName}"
             };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

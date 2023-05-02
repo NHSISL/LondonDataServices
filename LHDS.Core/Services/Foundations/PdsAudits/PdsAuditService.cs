@@ -22,7 +22,12 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<PdsAudit> AddPdsAuditAsync(PdsAudit pdsAudit) =>
-            await this.storageBroker.InsertPdsAuditAsync(pdsAudit);
+        public ValueTask<PdsAudit> AddPdsAuditAsync(PdsAudit pdsAudit) =>
+            TryCatch(async () =>
+            {
+                ValidatePdsAuditOnAdd(pdsAudit);
+
+                return await this.storageBroker.InsertPdsAuditAsync(pdsAudit);
+            });
     }
 }

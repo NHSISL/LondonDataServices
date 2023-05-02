@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.PdsAudits;
 using LHDS.Core.Models.PdsAudits.Exceptions;
@@ -139,7 +140,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 await Assert.ThrowsAsync<PdsAuditDependencyValidationException>(
                     addPdsAuditTask.AsTask);
 
-            actualPdsAuditDependencyValidationException.Should().BeEquivalentTo(expectedPdsAuditValidationException);
+            actualPdsAuditDependencyValidationException.Should()
+                .BeEquivalentTo(expectedPdsAuditValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -157,6 +159,55 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnAddIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            PdsAudit somePdsAudit = CreateRandomPdsAudit();
+
+            var databaseUpdateException =
+                new DbUpdateException();
+
+            var failedPdsAuditStorageException =
+                new FailedPdsAuditStorageException(databaseUpdateException);
+
+            var expectedPdsAuditDependencyException =
+                new PdsAuditDependencyException(failedPdsAuditStorageException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<PdsAudit> addPdsAuditTask =
+                this.pdsAuditService.AddPdsAuditAsync(somePdsAudit);
+
+            PdsAuditDependencyException actualPdsAuditDependencyException =
+                await Assert.ThrowsAsync<PdsAuditDependencyException>(
+                    addPdsAuditTask.AsTask);
+
+            // then
+            actualPdsAuditDependencyException.Should()
+                .BeEquivalentTo(expectedPdsAuditDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertPdsAuditAsync(It.IsAny<PdsAudit>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedPdsAuditDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

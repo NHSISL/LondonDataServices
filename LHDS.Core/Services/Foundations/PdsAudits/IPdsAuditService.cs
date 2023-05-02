@@ -10,5 +10,6 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
         ValueTask<PdsAudit> AddPdsAuditAsync(PdsAudit pdsAudit);
         IQueryable<PdsAudit> RetrieveAllPdsAudits();
         ValueTask<PdsAudit> RetrievePdsAuditByIdAsync(Guid pdsAuditId);
+        ValueTask<PdsAudit> ModifyPdsAuditAsync(PdsAudit pdsAudit);
     }
 }

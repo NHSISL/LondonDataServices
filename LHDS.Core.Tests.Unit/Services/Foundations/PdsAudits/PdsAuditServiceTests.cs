@@ -64,6 +64,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static PdsAudit CreateRandomModifyPdsAudit(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            PdsAudit randomPdsAudit = CreateRandomPdsAudit(dateTimeOffset);
+
+            randomPdsAudit.CreatedDate =
+                randomPdsAudit.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomPdsAudit;
+        }
+
         private static IQueryable<PdsAudit> CreateRandomPdsAudits()
         {
             return CreatePdsAuditFiller(dateTimeOffset: GetRandomDateTimeOffset())

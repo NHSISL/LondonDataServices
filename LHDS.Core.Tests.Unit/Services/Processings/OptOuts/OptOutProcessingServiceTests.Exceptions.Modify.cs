@@ -112,7 +112,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     failedOptOutProcessingServiceException);
 
             this.optOutServiceMock.Setup(service =>
-                service.ModifyOptOutAsync(inputOptOut))
+                service.RetrieveAllOptOuts())
                     .Throws(serviceException);
 
             // when
@@ -126,7 +126,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             actualException.Should().BeEquivalentTo(expectedOptOutProcessingServiveException);
 
             this.optOutServiceMock.Verify(service =>
-                service.ModifyOptOutAsync(inputOptOut),
+                service.RetrieveAllOptOuts(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

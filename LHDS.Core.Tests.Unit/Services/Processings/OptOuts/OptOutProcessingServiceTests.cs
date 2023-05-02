@@ -141,6 +141,17 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             return optOuts.AsQueryable();
         }
 
+        private OptOut SelectRandomOptOut(IQueryable<OptOut> optOuts)
+        {
+            Random random = new Random();
+
+            OptOut optOut = optOuts.OrderBy(item => random.Next())
+                .Take(1)
+                    .SingleOrDefault();
+
+            return optOut;
+        }
+
         private static string GenerateValidNhsNumber()
         {
             int total = 10;

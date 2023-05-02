@@ -173,9 +173,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.SelectPdsAuditByIdAsync(invalidPdsAudit.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -279,8 +279,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     expectedPdsAuditValidationException))),
                         Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -338,8 +338,65 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                    expectedPdsAuditValidationException))),
                        Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfCreatedUserIdDontMacthStorageAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            PdsAudit randomPdsAudit = CreateRandomModifyPdsAudit(randomDateTimeOffset);
+            PdsAudit invalidPdsAudit = randomPdsAudit.DeepClone();
+            PdsAudit storagePdsAudit = invalidPdsAudit.DeepClone();
+            invalidPdsAudit.CreatedByUserId = Guid.NewGuid();
+            storagePdsAudit.UpdatedDate = storagePdsAudit.CreatedDate;
+
+            var invalidPdsAuditException = new InvalidPdsAuditException();
+
+            invalidPdsAuditException.AddData(
+                key: nameof(PdsAudit.CreatedByUserId),
+                values: $"Id is not the same as {nameof(PdsAudit.CreatedByUserId)}");
+
+            var expectedPdsAuditValidationException =
+                new PdsAuditValidationException(invalidPdsAuditException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectPdsAuditByIdAsync(invalidPdsAudit.Id))
+                .ReturnsAsync(storagePdsAudit);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<PdsAudit> modifyPdsAuditTask =
+                this.pdsAuditService.ModifyPdsAuditAsync(invalidPdsAudit);
+
+            PdsAuditValidationException actualPdsAuditValidationException =
+                await Assert.ThrowsAsync<PdsAuditValidationException>(
+                    modifyPdsAuditTask.AsTask);
+
+            // then
+            actualPdsAuditValidationException.Should().BeEquivalentTo(expectedPdsAuditValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectPdsAuditByIdAsync(invalidPdsAudit.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedPdsAuditValidationException))),
+                       Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

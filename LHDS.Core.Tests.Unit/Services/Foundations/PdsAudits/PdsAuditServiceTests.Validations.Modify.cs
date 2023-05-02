@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -110,6 +111,47 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdatePdsAuditAsync(It.IsAny<PdsAudit>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            PdsAudit randomPdsAudit = CreateRandomPdsAudit(randomDateTimeOffset);
+            PdsAudit invalidPdsAudit = randomPdsAudit;
+            var invalidPdsAuditException = new InvalidPdsAuditException();
+
+            invalidPdsAuditException.AddData(
+                key: nameof(PdsAudit.UpdatedDate),
+                values: $"Date is the same as {nameof(PdsAudit.CreatedDate)}");
+
+            var expectedPdsAuditValidationException =
+                new PdsAuditValidationException(invalidPdsAuditException);
+
+            // when
+            ValueTask<PdsAudit> modifyPdsAuditTask =
+                this.pdsAuditService.ModifyPdsAuditAsync(invalidPdsAudit);
+
+            PdsAuditValidationException actualPdsAuditValidationException =
+                await Assert.ThrowsAsync<PdsAuditValidationException>(
+                    modifyPdsAuditTask.AsTask);
+
+            // then
+            actualPdsAuditValidationException.Should().BeEquivalentTo(expectedPdsAuditValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedPdsAuditValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectPdsAuditByIdAsync(invalidPdsAudit.Id),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

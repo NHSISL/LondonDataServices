@@ -1,0 +1,57 @@
+using System;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Microsoft.Data.SqlClient;
+using Moq;
+using LHDS.Core.Models.PdsAudits;
+using LHDS.Core.Models.PdsAudits.Exceptions;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
+{
+    public partial class PdsAuditServiceTests
+    {
+        [Fact]
+        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveByIdIfSqlErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            SqlException sqlException = GetSqlException();
+
+            var failedPdsAuditStorageException =
+                new FailedPdsAuditStorageException(sqlException);
+
+            var expectedPdsAuditDependencyException =
+                new PdsAuditDependencyException(failedPdsAuditStorageException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectPdsAuditByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(sqlException);
+
+            // when
+            ValueTask<PdsAudit> retrievePdsAuditByIdTask =
+                this.pdsAuditService.RetrievePdsAuditByIdAsync(someId);
+
+            PdsAuditDependencyException actualPdsAuditDependencyException =
+                await Assert.ThrowsAsync<PdsAuditDependencyException>(
+                    retrievePdsAuditByIdTask.AsTask);
+
+            // then
+            actualPdsAuditDependencyException.Should()
+                .BeEquivalentTo(expectedPdsAuditDependencyException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectPdsAuditByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedPdsAuditDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

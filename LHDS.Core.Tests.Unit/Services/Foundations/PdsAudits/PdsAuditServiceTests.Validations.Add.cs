@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -83,6 +84,53 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             invalidPdsAuditException.AddData(
                 key: nameof(PdsAudit.UpdatedByUserId),
                 values: "Id is required");
+
+            var expectedPdsAuditValidationException =
+                new PdsAuditValidationException(invalidPdsAuditException);
+
+            // when
+            ValueTask<PdsAudit> addPdsAuditTask =
+                this.pdsAuditService.AddPdsAuditAsync(invalidPdsAudit);
+
+            PdsAuditValidationException actualPdsAuditValidationException =
+                await Assert.ThrowsAsync<PdsAuditValidationException>(
+                    addPdsAuditTask.AsTask);
+
+            // then
+            actualPdsAuditValidationException.Should()
+                .BeEquivalentTo(expectedPdsAuditValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedPdsAuditValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertPdsAuditAsync(It.IsAny<PdsAudit>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateDatesIsNotSameAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNumber();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            PdsAudit randomPdsAudit = CreateRandomPdsAudit(randomDateTimeOffset);
+            PdsAudit invalidPdsAudit = randomPdsAudit;
+
+            invalidPdsAudit.UpdatedDate =
+                invalidPdsAudit.CreatedDate.AddDays(randomNumber);
+
+            var invalidPdsAuditException = new InvalidPdsAuditException();
+
+            invalidPdsAuditException.AddData(
+                key: nameof(PdsAudit.UpdatedDate),
+                values: $"Date is not the same as {nameof(PdsAudit.CreatedDate)}");
 
             var expectedPdsAuditValidationException =
                 new PdsAuditValidationException(invalidPdsAuditException);

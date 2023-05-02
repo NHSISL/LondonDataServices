@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.PdsAudits;
 using LHDS.Core.Models.PdsAudits.Exceptions;
 using Xeptions;
@@ -23,6 +24,13 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
             {
                 throw CreateAndLogValidationException(invalidPdsAuditException);
             }
+            catch (SqlException sqlException)
+            {
+                var failedPdsAuditStorageException =
+                    new FailedPdsAuditStorageException(sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedPdsAuditStorageException);
+            }
         }
 
         private PdsAuditValidationException CreateAndLogValidationException(Xeption exception)
@@ -33,6 +41,14 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
             this.loggingBroker.LogError(pdsAuditValidationException);
 
             return pdsAuditValidationException;
+        }
+
+        private PdsAuditDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        {
+            var pdsAuditDependencyException = new PdsAuditDependencyException(exception);
+            this.loggingBroker.LogCritical(pdsAuditDependencyException);
+
+            return pdsAuditDependencyException;
         }
     }
 }

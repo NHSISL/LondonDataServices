@@ -38,6 +38,16 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
         private void ValidatePdsAuditOnModify(PdsAudit pdsAudit)
         {
             ValidatePdsAuditIsNotNull(pdsAudit);
+
+            Validate(
+                (Rule: IsInvalid(pdsAudit.Id), Parameter: nameof(PdsAudit.Id)),
+
+                // TODO: Add any other required validation rules
+
+                (Rule: IsInvalid(pdsAudit.CreatedDate), Parameter: nameof(PdsAudit.CreatedDate)),
+                (Rule: IsInvalid(pdsAudit.CreatedByUserId), Parameter: nameof(PdsAudit.CreatedByUserId)),
+                (Rule: IsInvalid(pdsAudit.UpdatedDate), Parameter: nameof(PdsAudit.UpdatedDate)),
+                (Rule: IsInvalid(pdsAudit.UpdatedByUserId), Parameter: nameof(PdsAudit.UpdatedByUserId)));
         }
 
         public void ValidatePdsAuditId(Guid pdsAuditId) =>

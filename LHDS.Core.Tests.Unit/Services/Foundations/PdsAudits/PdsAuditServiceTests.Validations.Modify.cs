@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using Moq;
 using LHDS.Core.Models.PdsAudits;
 using LHDS.Core.Models.PdsAudits.Exceptions;
@@ -122,9 +123,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.UpdatePdsAuditAsync(It.IsAny<PdsAudit>()),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -172,9 +173,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.SelectPdsAuditByIdAsync(invalidPdsAudit.Id),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -277,6 +278,65 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedPdsAuditValidationException))),
                         Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfStorageCreatedDateNotSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNegativeNumber();
+            int randomMinutes = randomNumber;
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            PdsAudit randomPdsAudit = CreateRandomModifyPdsAudit(randomDateTimeOffset);
+            PdsAudit invalidPdsAudit = randomPdsAudit.DeepClone();
+            PdsAudit storagePdsAudit = invalidPdsAudit.DeepClone();
+            storagePdsAudit.CreatedDate = storagePdsAudit.CreatedDate.AddMinutes(randomMinutes);
+            storagePdsAudit.UpdatedDate = storagePdsAudit.UpdatedDate.AddMinutes(randomMinutes);
+            var invalidPdsAuditException = new InvalidPdsAuditException();
+
+            invalidPdsAuditException.AddData(
+                key: nameof(PdsAudit.CreatedDate),
+                values: $"Date is not the same as {nameof(PdsAudit.CreatedDate)}");
+
+            var expectedPdsAuditValidationException =
+                new PdsAuditValidationException(invalidPdsAuditException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectPdsAuditByIdAsync(invalidPdsAudit.Id))
+                .ReturnsAsync(storagePdsAudit);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<PdsAudit> modifyPdsAuditTask =
+                this.pdsAuditService.ModifyPdsAuditAsync(invalidPdsAudit);
+
+            PdsAuditValidationException actualPdsAuditValidationException =
+                await Assert.ThrowsAsync<PdsAuditValidationException>(
+                    modifyPdsAuditTask.AsTask);
+
+            // then
+            actualPdsAuditValidationException.Should()
+                .BeEquivalentTo(expectedPdsAuditValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectPdsAuditByIdAsync(invalidPdsAudit.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedPdsAuditValidationException))),
+                       Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

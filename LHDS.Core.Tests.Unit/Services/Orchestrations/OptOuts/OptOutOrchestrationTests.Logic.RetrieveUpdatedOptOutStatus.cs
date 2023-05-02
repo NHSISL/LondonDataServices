@@ -130,7 +130,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
-                        processing.ModifyOptOutAsync(item))
+                        processing.AddOrModifyOptOutAsync(item))
                             .ReturnsAsync(item);
                 }
 
@@ -147,7 +147,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
-                        processing.ModifyOptOutAsync(item))
+                        processing.AddOrModifyOptOutAsync(item))
                             .ReturnsAsync(item);
                 }
 
@@ -243,7 +243,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     consentedItem.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
-                        processings.ModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
+                        processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
                             Times.Exactly(outputMessageIds.Count));
                 }
 
@@ -260,7 +260,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     nonConsentedItem.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
-                        processings.ModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
+                        processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
                             Times.Exactly(outputMessageIds.Count));
                 }
 
@@ -406,7 +406,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
-                        processing.ModifyOptOutAsync(item))
+                        processing.AddOrModifyOptOutAsync(item))
                             .ReturnsAsync(item);
                 }
 
@@ -423,7 +423,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
-                        processing.ModifyOptOutAsync(item))
+                        processing.AddOrModifyOptOutAsync(item))
                             .ReturnsAsync(item);
                 }
 
@@ -519,7 +519,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     consentedItem.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
-                        processings.ModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
+                        processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
                             Times.Exactly(outputMessageIds.Count));
                 }
 
@@ -536,7 +536,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     nonConsentedItem.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
-                        processings.ModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
+                        processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
                             Times.Exactly(outputMessageIds.Count));
                 }
 
@@ -683,7 +683,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
-                        processing.ModifyOptOutAsync(item))
+                        processing.AddOrModifyOptOutAsync(item))
                             .ReturnsAsync(item);
                 }
 
@@ -700,7 +700,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
-                        processing.ModifyOptOutAsync(item))
+                        processing.AddOrModifyOptOutAsync(item))
                             .ReturnsAsync(item);
                 }
 
@@ -796,7 +796,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     consentedItem.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
-                        processings.ModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
+                        processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
                             Times.Exactly(outputMessageIds.Count));
                 }
 
@@ -813,7 +813,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     nonConsentedItem.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
-                        processings.ModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
+                        processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
                             Times.Exactly(outputMessageIds.Count));
                 }
 
@@ -958,7 +958,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
-                        processing.ModifyOptOutAsync(item))
+                        processing.AddOrModifyOptOutAsync(item))
                             .ReturnsAsync(item);
                 }
 
@@ -975,7 +975,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
-                        processing.ModifyOptOutAsync(item))
+                        processing.AddOrModifyOptOutAsync(item))
                             .ReturnsAsync(item);
                 }
 
@@ -1071,7 +1071,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     consentedItem.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
-                        processings.ModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
+                        processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
                             Times.Exactly(outputMessageIds.Count));
                 }
 
@@ -1088,7 +1088,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     nonConsentedItem.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
-                        processings.ModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
+                        processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
                             Times.Exactly(outputMessageIds.Count));
                 }
 
@@ -1235,7 +1235,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
-                        processing.ModifyOptOutAsync(item))
+                        processing.AddOrModifyOptOutAsync(item))
                             .ReturnsAsync(item);
                 }
 
@@ -1252,7 +1252,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
-                        processing.ModifyOptOutAsync(item))
+                        processing.AddOrModifyOptOutAsync(item))
                             .ReturnsAsync(item);
                 }
 
@@ -1348,7 +1348,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     consentedItem.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
-                        processings.ModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
+                        processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
                             Times.Exactly(outputMessageIds.Count));
                 }
 
@@ -1365,7 +1365,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     nonConsentedItem.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
-                        processings.ModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
+                        processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
                             Times.Exactly(outputMessageIds.Count));
                 }
 

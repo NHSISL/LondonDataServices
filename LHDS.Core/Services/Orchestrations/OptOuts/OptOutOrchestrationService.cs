@@ -153,7 +153,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     optOut.UpdatedDate = dateTime;
                     optOut.BatchReference = batchReference;
 
-                    await this.optOutProcessingService.ModifyOptOutAsync(optOut);
+                    await this.optOutProcessingService.AddOrModifyOptOutAsync(optOut);
                 }
 
                 return message;
@@ -209,7 +209,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         item.LastSentToMesh = dateTime;
                         item.OptOutStatus = "Opt-In";
 
-                        await this.optOutProcessingService.ModifyOptOutAsync(item);
+                        await this.optOutProcessingService.AddOrModifyOptOutAsync(item);
                     }
 
                     foreach (var nonConsentedListItem in nonConsentedList)
@@ -225,7 +225,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         nonConsentedListItem.LastSentToMesh = dateTime;
                         nonConsentedListItem.OptOutStatus = "Opt-Out";
 
-                        await this.optOutProcessingService.ModifyOptOutAsync(nonConsentedListItem);
+                        await this.optOutProcessingService.AddOrModifyOptOutAsync(nonConsentedListItem);
                     }
 
                     List<OptOutIdentifier> differentIdentifiers = delta

@@ -63,20 +63,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             DateTimeOffset randomDateTimeOffset =
                 GetRandomDateTimeOffset();
 
-            OptOut randomOptOut = CreateRandomOptOut(randomDateTimeOffset);
+            IQueryable<OptOut> allOptOuts = CreateRandomOptOuts();
+            OptOut randomOptOut = SelectRandomOptOut(allOptOuts);
             OptOut inputOptOut = randomOptOut;
-            OptOut createdOptOut = randomOptOut.DeepClone();
             OptOut updatedOptOut = inputOptOut.DeepClone();
             OptOut expectedOptOut = updatedOptOut.DeepClone();
-            IQueryable<OptOut> allOptOuts = CreateRandomOptOuts();
 
             this.optOutServiceMock.Setup(service =>
                 service.RetrieveAllOptOuts())
                     .Returns(allOptOuts);
-
-            this.optOutServiceMock.Setup(service =>
-               service.AddOptOutAsync(inputOptOut))
-                   .ReturnsAsync(createdOptOut);
 
             this.optOutServiceMock.Setup(service =>
                 service.ModifyOptOutAsync(inputOptOut))
@@ -88,6 +83,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             // then
             actualOptOut.Should().BeEquivalentTo(expectedOptOut);
+
+            this.optOutServiceMock.Verify(service =>
+               service.RetrieveAllOptOuts(),
+                   Times.Once);
 
             this.optOutServiceMock.Verify(service =>
                 service.ModifyOptOutAsync(inputOptOut),

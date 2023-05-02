@@ -47,7 +47,13 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                 (Rule: IsInvalid(pdsAudit.CreatedDate), Parameter: nameof(PdsAudit.CreatedDate)),
                 (Rule: IsInvalid(pdsAudit.CreatedByUserId), Parameter: nameof(PdsAudit.CreatedByUserId)),
                 (Rule: IsInvalid(pdsAudit.UpdatedDate), Parameter: nameof(PdsAudit.UpdatedDate)),
-                (Rule: IsInvalid(pdsAudit.UpdatedByUserId), Parameter: nameof(PdsAudit.UpdatedByUserId)));
+                (Rule: IsInvalid(pdsAudit.UpdatedByUserId), Parameter: nameof(PdsAudit.UpdatedByUserId)),
+
+                (Rule: IsSame(
+                    firstDate: pdsAudit.UpdatedDate,
+                    secondDate: pdsAudit.CreatedDate,
+                    secondDateName: nameof(PdsAudit.CreatedDate)),
+                Parameter: nameof(PdsAudit.UpdatedDate)));
         }
 
         public void ValidatePdsAuditId(Guid pdsAuditId) =>
@@ -80,6 +86,15 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,

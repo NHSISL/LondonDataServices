@@ -38,6 +38,14 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
         public void ValidatePdsAuditId(Guid pdsAuditId) =>
             Validate((Rule: IsInvalid(pdsAuditId), Parameter: nameof(PdsAudit.Id)));
 
+        private static void ValidateStoragePdsAudit(PdsAudit maybePdsAudit, Guid pdsAuditId)
+        {
+            if (maybePdsAudit is null)
+            {
+                throw new NotFoundPdsAuditException(pdsAuditId);
+            }
+        }
+
         private static void ValidatePdsAuditIsNotNull(PdsAudit pdsAudit)
         {
             if (pdsAudit is null)

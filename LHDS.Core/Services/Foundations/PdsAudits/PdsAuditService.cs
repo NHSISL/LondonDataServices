@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -29,5 +30,8 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
 
                 return await this.storageBroker.InsertPdsAuditAsync(pdsAudit);
             });
+
+        public IQueryable<PdsAudit> RetrieveAllPdsAudits() =>
+            throw new System.NotImplementedException();
     }
 }

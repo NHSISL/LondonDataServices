@@ -167,5 +167,56 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyErrorOccursAndLogAsync()
+        {
+            // given
+            PdsAudit randomPdsAudit = CreateRandomPdsAudit();
+            var databaseUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedPdsAuditException =
+                new LockedPdsAuditException(databaseUpdateConcurrencyException);
+
+            var expectedPdsAuditDependencyValidationException =
+                new PdsAuditDependencyValidationException(lockedPdsAuditException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<PdsAudit> modifyPdsAuditTask =
+                this.pdsAuditService.ModifyPdsAuditAsync(randomPdsAudit);
+
+            PdsAuditDependencyValidationException actualPdsAuditDependencyValidationException =
+                await Assert.ThrowsAsync<PdsAuditDependencyValidationException>(
+                    modifyPdsAuditTask.AsTask);
+
+            // then
+            actualPdsAuditDependencyValidationException.Should()
+                .BeEquivalentTo(expectedPdsAuditDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectPdsAuditByIdAsync(randomPdsAudit.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedPdsAuditDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdatePdsAuditAsync(randomPdsAudit),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

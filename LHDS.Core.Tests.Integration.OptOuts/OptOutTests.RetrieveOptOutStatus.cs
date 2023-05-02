@@ -2,11 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
-using System.IO;
 using System.Threading.Tasks;
-using FluentAssertions;
-using LHDS.Core.Models.Foundations.Documents;
 using Xunit;
 
 namespace LHDS.Core.Tests.Integration.OptOuts
@@ -16,30 +12,32 @@ namespace LHDS.Core.Tests.Integration.OptOuts
         [Fact(Skip = "Excluded from pipeline")]
         public async Task ShouldRetreiveOptOutStatusAsync()
         {
-            try
-            {
-                byte[] fileBytes = File.ReadAllBytes(@"Resources\testfile.csv");
-                FileInfo fi = new FileInfo(@"Resources\testfile.csv");
-                var fileName = fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length);
+            //TODO:  fix from DH to replace this tests
 
-                string DocumentFileName = await optOutClient
-                    .RetrieveOptOutStatusAsync(optOutFile: fileBytes, fileName: fileName);
+            //try
+            //{
+            //    byte[] fileBytes = File.ReadAllBytes(@"Resources\testfile.csv");
+            //    FileInfo fi = new FileInfo(@"Resources\testfile.csv");
+            //    var fileName = fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length);
 
-                DocumentFileName.Should().NotBeNullOrWhiteSpace();
+            //    string DocumentFileName = await optOutClient
+            //        .RetrieveOptOutStatusAsync(optOutFile: fileBytes, fileName: fileName);
 
-                Document retreiveDocument =
-                    await documentService
-                    .RetrieveDocumentByFileNameAsync(DocumentFileName);
+            //    DocumentFileName.Should().NotBeNullOrWhiteSpace();
 
-                retreiveDocument.DocumentData.Should().NotBeNull();
+            //    Document retreiveDocument =
+            //        await documentService
+            //        .RetrieveDocumentByFileNameAsync(DocumentFileName);
 
-                await documentService
-                    .RemoveDocumentByFileNameAsync(DocumentFileName);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail($"{ex.Message} {ex?.InnerException?.Message} {ex.StackTrace}");
-            }
+            //    retreiveDocument.DocumentData.Should().NotBeNull();
+
+            //    await documentService
+            //        .RemoveDocumentByFileNameAsync(DocumentFileName);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Assert.Fail($"{ex.Message} {ex?.InnerException?.Message} {ex.StackTrace}");
+            //}
         }
     }
 }

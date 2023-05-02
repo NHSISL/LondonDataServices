@@ -49,5 +49,46 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomMessage();
+            var serviceException = new Exception(exceptionMessage);
+
+            var failedPdsAuditServiceException =
+                new FailedPdsAuditServiceException(serviceException);
+
+            var expectedPdsAuditServiceException =
+                new PdsAuditServiceException(failedPdsAuditServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllPdsAudits())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllPdsAuditsAction = () =>
+                this.pdsAuditService.RetrieveAllPdsAudits();
+
+            PdsAuditServiceException actualPdsAuditServiceException =
+                Assert.Throws<PdsAuditServiceException>(retrieveAllPdsAuditsAction);
+
+            // then
+            actualPdsAuditServiceException.Should()
+                .BeEquivalentTo(expectedPdsAuditServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllPdsAudits(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedPdsAuditServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

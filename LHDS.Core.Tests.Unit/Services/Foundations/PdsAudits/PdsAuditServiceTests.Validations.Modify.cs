@@ -84,7 +84,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 
             invalidPdsAuditException.AddData(
                 key: nameof(PdsAudit.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(PdsAudit.CreatedDate)}"
+                });
 
             invalidPdsAuditException.AddData(
                 key: nameof(PdsAudit.UpdatedByUserId),

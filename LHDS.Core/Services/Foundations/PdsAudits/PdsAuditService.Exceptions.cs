@@ -19,6 +19,10 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
             {
                 throw CreateAndLogValidationException(nullPdsAuditException);
             }
+            catch (InvalidPdsAuditException invalidPdsAuditException)
+            {
+                throw CreateAndLogValidationException(invalidPdsAuditException);
+            }
         }
 
         private PdsAuditValidationException CreateAndLogValidationException(Xeption exception)

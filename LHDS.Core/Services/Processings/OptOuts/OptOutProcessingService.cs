@@ -45,15 +45,15 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 return maybeOptOut;
             });
 
-        public ValueTask<OptOut> ModifyOptOutAsync(OptOut optOut) =>
+        public ValueTask<OptOut> AddOrModifyOptOutAsync(OptOut optOut) =>
             TryCatch(async () =>
             {
                 ValidateOptOutProcessingOnModify(optOut);
 
                 IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
 
-                OptOut maybeOptOut = allOptOuts.FirstOrDefault(optOut =>
-                    optOut.NhsNumber == optOut.NhsNumber);
+                OptOut maybeOptOut = allOptOuts.FirstOrDefault(item =>
+                    item.NhsNumber == optOut.NhsNumber);
 
                 if (maybeOptOut == null)
                 {

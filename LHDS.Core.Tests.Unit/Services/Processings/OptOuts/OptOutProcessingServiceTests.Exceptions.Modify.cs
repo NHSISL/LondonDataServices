@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             // when
             ValueTask<OptOut> optOutModifyTask =
-                this.optOutProcessingService.ModifyOptOutAsync(inputOptOut);
+                this.optOutProcessingService.AddOrModifyOptOutAsync(inputOptOut);
 
             OptOutProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<OptOutProcessingDependencyValidationException>(optOutModifyTask.AsTask);
@@ -75,7 +75,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             // when
             ValueTask<OptOut> optOutModifyTask =
-                this.optOutProcessingService.ModifyOptOutAsync(inputOptOut);
+                this.optOutProcessingService.AddOrModifyOptOutAsync(inputOptOut);
 
             OptOutProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<OptOutProcessingDependencyException>(optOutModifyTask.AsTask);
@@ -117,7 +117,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             // when
             ValueTask<OptOut> optOutModifyTask =
-                this.optOutProcessingService.ModifyOptOutAsync(inputOptOut);
+                this.optOutProcessingService.AddOrModifyOptOutAsync(inputOptOut);
 
             OptOutProcessingServiceException actualException =
                 await Assert.ThrowsAsync<OptOutProcessingServiceException>(optOutModifyTask.AsTask);

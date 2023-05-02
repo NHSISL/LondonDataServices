@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -208,6 +209,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedPdsAuditDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdatePdsAuditAsync(randomPdsAudit),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnModifyIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            PdsAudit randomPdsAudit = CreateRandomPdsAudit();
+            var serviceException = new Exception();
+
+            var failedPdsAuditServiceException =
+                new FailedPdsAuditServiceException(serviceException);
+
+            var expectedPdsAuditServiceException =
+                new PdsAuditServiceException(failedPdsAuditServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<PdsAudit> modifyPdsAuditTask =
+                this.pdsAuditService.ModifyPdsAuditAsync(randomPdsAudit);
+
+            PdsAuditServiceException actualPdsAuditServiceException =
+                await Assert.ThrowsAsync<PdsAuditServiceException>(
+                    modifyPdsAuditTask.AsTask);
+
+            // then
+            actualPdsAuditServiceException.Should()
+                .BeEquivalentTo(expectedPdsAuditServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectPdsAuditByIdAsync(randomPdsAudit.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedPdsAuditServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

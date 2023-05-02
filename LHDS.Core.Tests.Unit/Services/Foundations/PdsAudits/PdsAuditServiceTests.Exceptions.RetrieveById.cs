@@ -53,5 +53,48 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedPdsAuditServiceException =
+                new FailedPdsAuditServiceException(serviceException);
+
+            var expectedPdsAuditServiceException =
+                new PdsAuditServiceException(failedPdsAuditServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectPdsAuditByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<PdsAudit> retrievePdsAuditByIdTask =
+                this.pdsAuditService.RetrievePdsAuditByIdAsync(someId);
+
+            PdsAuditServiceException actualPdsAuditServiceException =
+                await Assert.ThrowsAsync<PdsAuditServiceException>(
+                    retrievePdsAuditByIdTask.AsTask);
+
+            // then
+            actualPdsAuditServiceException.Should()
+                .BeEquivalentTo(expectedPdsAuditServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectPdsAuditByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedPdsAuditServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

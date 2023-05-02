@@ -54,6 +54,12 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
 
                 throw CreateAndLogDependencyValidationException(invalidPdsAuditReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedPdsAuditException = new LockedPdsAuditException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedPdsAuditException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedPdsAuditStorageException =

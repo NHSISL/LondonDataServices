@@ -144,6 +144,71 @@ namespace LHDS.Core.Tests.Integration.OptOuts
             return setupOptOut;
         }
 
+        private async ValueTask<List<OptOut>> SetupExpiredTestNhsNumbersForRetrieveUpdatedMesh(string batchReference)
+        {
+            DateTimeOffset auditDateTime = DateTimeOffset.UtcNow;
+            DateTimeOffset expiredDateTime = DateTimeOffset.UtcNow.AddDays(-14);
+            List<OptOut> setupOptOut = new List<OptOut>();
+
+            setupOptOut.Add(new OptOut
+            {
+                Id = Guid.NewGuid(),
+                NhsNumber = "9694116481",
+                LastSentToMesh = expiredDateTime,
+                OptOutStatus = "Unknown",
+                CacheTime = expiredDateTime,
+                CreatedDate = auditDateTime,
+                UpdatedDate = auditDateTime,
+                CreatedBy = "System",
+                UpdatedBy = "System",
+                BatchReference = batchReference
+            });
+
+            setupOptOut.Add(new OptOut
+            {
+                Id = Guid.NewGuid(),
+                NhsNumber = "9694116511",
+                LastSentToMesh = expiredDateTime,
+                OptOutStatus = "Unknown",
+                CacheTime = expiredDateTime,
+                CreatedDate = auditDateTime,
+                UpdatedDate = auditDateTime,
+                CreatedBy = "System",
+                UpdatedBy = "System",
+                BatchReference = batchReference
+            });
+
+            setupOptOut.Add(new OptOut
+            {
+                Id = Guid.NewGuid(),
+                NhsNumber = "9694116473",
+                LastSentToMesh = expiredDateTime,
+                OptOutStatus = "Unknown",
+                CacheTime = expiredDateTime,
+                CreatedDate = auditDateTime,
+                UpdatedDate = auditDateTime,
+                CreatedBy = "System",
+                UpdatedBy = "System",
+                BatchReference = batchReference
+            });
+
+            foreach (var optOut in setupOptOut)
+            {
+                var maybeOptOut = this.optOutService.RetrieveAllOptOuts()
+                    .Where(opt => opt.NhsNumber == optOut.NhsNumber)
+                        .FirstOrDefault();
+
+                if (maybeOptOut != null)
+                {
+                    await this.optOutService.RemoveOptOutByIdAsync(maybeOptOut.Id);
+                }
+
+                await this.optOutService.AddOptOutAsync(optOut);
+            }
+
+            return setupOptOut;
+        }
+
         private async ValueTask<string> SetupSimulatedMeshMessage(string batchReference)
         {
             MeshMessage simulatedMeshReply = new MeshMessage

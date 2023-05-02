@@ -108,5 +108,55 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            PdsAudit somePdsAudit = CreateRandomPdsAudit();
+            string randomMessage = GetRandomMessage();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidPdsAuditReferenceException =
+                new InvalidPdsAuditReferenceException(foreignKeyConstraintConflictException);
+
+            var expectedPdsAuditValidationException =
+                new PdsAuditDependencyValidationException(invalidPdsAuditReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<PdsAudit> addPdsAuditTask =
+                this.pdsAuditService.AddPdsAuditAsync(somePdsAudit);
+
+            // then
+            PdsAuditDependencyValidationException actualPdsAuditDependencyValidationException =
+                await Assert.ThrowsAsync<PdsAuditDependencyValidationException>(
+                    addPdsAuditTask.AsTask);
+
+            actualPdsAuditDependencyValidationException.Should().BeEquivalentTo(expectedPdsAuditValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedPdsAuditValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertPdsAuditAsync(somePdsAudit),
+                    Times.Never());
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

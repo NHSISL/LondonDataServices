@@ -63,6 +63,23 @@ namespace LHDS.Core.Tests.Integration.OptOuts
             this.optOutConfiguration = serviceProvider.GetService<OptOutConfiguration>();
         }
 
+        private static string GetHeaderValue(MeshMessage message, string keyToFind)
+        {
+            List<string> value = new List<string>();
+
+            foreach (var key in message.Headers.Keys)
+            {
+                if (key.ToLower() == keyToFind.ToLower())
+                {
+                    message.Headers.TryGetValue(key, out value);
+
+                    break;
+                }
+            }
+
+            return value.FirstOrDefault();
+        }
+
         private async ValueTask<List<OptOut>> SetupTestNhsNumbersForRetrieveUpdatedMesh(string batchReference)
         {
             DateTimeOffset currentDateTime = DateTimeOffset.UtcNow;
@@ -148,5 +165,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
 
             return simulatedMeshReply.StringContent;
         }
+
+
     }
 }

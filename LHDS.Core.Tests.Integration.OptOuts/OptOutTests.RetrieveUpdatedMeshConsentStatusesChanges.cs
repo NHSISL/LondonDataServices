@@ -4,11 +4,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
+using LHDS.Core.Models.Foundations.OptOuts;
 using Xunit;
 
 namespace LHDS.Core.Tests.Integration.OptOuts
@@ -24,7 +26,8 @@ namespace LHDS.Core.Tests.Integration.OptOuts
                 string batchReference = Guid.NewGuid().ToString();
                 await SetupTestNhsNumbersForRetrieveUpdatedMesh(batchReference);
                 string content = await SetupSimulatedMeshMessage(batchReference);
-                string expectedContent = content;
+                List<OptOutIdentifier> expectedContent = ConvertToOptOutIdentifierList(content)
+                    .OrderBy(item => item.NhsNumber).ToList();
 
                 // when
                 List<MeshMessage> messages = await this.optOutClient.RetrieveUpdatedMeshConsentStatusesChangesAsync();
@@ -34,12 +37,17 @@ namespace LHDS.Core.Tests.Integration.OptOuts
                 foreach (MeshMessage message in messages)
                 {
                     string filepath =
-                        $"{optOutConfiguration.OutputFolder}/{message.Headers["Mex-Localid"]}_deltaresponse.csv";
+                        $"{optOutConfiguration.OutputFolder}/{GetHeaderValue(message, "Mex-LocalID")}"
+                        + "_deltaresponse.csv";
 
                     Document document = await this.documentService.RetrieveDocumentByFileNameAsync(filepath);
                     document.Should().NotBeNull();
-                    string actualContent = Encoding.ASCII.GetString(document.DocumentData);
-                    actualContent.Should().Be(expectedContent);
+
+                    List<OptOutIdentifier> actualContent =
+                        ConvertToOptOutIdentifierList(Encoding.ASCII.GetString(document.DocumentData))
+                            .OrderBy(item => item.NhsNumber).ToList();
+
+                    actualContent.Should().BeEquivalentTo(expectedContent);
                     await this.documentService.RemoveDocumentByFileNameAsync(filepath);
                 }
             }
@@ -47,6 +55,17 @@ namespace LHDS.Core.Tests.Integration.OptOuts
             {
                 Assert.Fail($"{ex.Message} {ex?.InnerException?.Message} {ex.StackTrace}");
             }
+        }
+
+        private static List<OptOutIdentifier> ConvertToOptOutIdentifierList(string content)
+        {
+            List<string> stringList = content.Replace("\r\n", string.Empty)
+                .Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            List<OptOutIdentifier> optOutIdentifierList = stringList
+                .Select(item => new OptOutIdentifier { NhsNumber = item }).ToList();
+
+            return optOutIdentifierList;
         }
     }
 }

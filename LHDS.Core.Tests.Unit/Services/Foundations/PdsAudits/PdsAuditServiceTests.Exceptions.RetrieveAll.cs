@@ -2,8 +2,8 @@ using System;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
-using LHDS.Core.Models.PdsAudits.Exceptions;
 using Xunit;
+using LHDS.Core.Models.Foundations.PdsAudits.Exceptions;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 {

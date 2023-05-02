@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Clients.OptOutClient.Exceptions
+namespace LHDS.Core.Models.Clients.OptOut.Exceptions
 {
     public class OptOutClientDependencyException : Xeption
     {

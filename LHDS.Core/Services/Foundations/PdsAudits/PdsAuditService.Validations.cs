@@ -1,6 +1,10 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
-using LHDS.Core.Models.PdsAudits;
-using LHDS.Core.Models.PdsAudits.Exceptions;
+using LHDS.Core.Models.Foundations.PdsAudits;
+using LHDS.Core.Models.Foundations.PdsAudits.Exceptions;
 
 namespace LHDS.Core.Services.Foundations.PdsAudits
 {
@@ -12,13 +16,12 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
 
             Validate(
                 (Rule: IsInvalid(pdsAudit.Id), Parameter: nameof(PdsAudit.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(pdsAudit.FileName), Parameter: nameof(PdsAudit.FileName)),
+                (Rule: IsInvalid(pdsAudit.Message), Parameter: nameof(PdsAudit.Message)),
                 (Rule: IsInvalid(pdsAudit.CreatedDate), Parameter: nameof(PdsAudit.CreatedDate)),
-                (Rule: IsInvalid(pdsAudit.CreatedByUserId), Parameter: nameof(PdsAudit.CreatedByUserId)),
+                (Rule: IsInvalid(pdsAudit.CreatedBy), Parameter: nameof(PdsAudit.CreatedBy)),
                 (Rule: IsInvalid(pdsAudit.UpdatedDate), Parameter: nameof(PdsAudit.UpdatedDate)),
-                (Rule: IsInvalid(pdsAudit.UpdatedByUserId), Parameter: nameof(PdsAudit.UpdatedByUserId)),
+                (Rule: IsInvalid(pdsAudit.UpdatedBy), Parameter: nameof(PdsAudit.UpdatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: pdsAudit.UpdatedDate,
@@ -27,10 +30,10 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                 Parameter: nameof(PdsAudit.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    firstId: pdsAudit.UpdatedByUserId,
-                    secondId: pdsAudit.CreatedByUserId,
-                    secondIdName: nameof(PdsAudit.CreatedByUserId)),
-                Parameter: nameof(PdsAudit.UpdatedByUserId)),
+                    first: pdsAudit.UpdatedBy,
+                    second: pdsAudit.CreatedBy,
+                    secondName: nameof(PdsAudit.CreatedBy)),
+                Parameter: nameof(PdsAudit.UpdatedBy)),
 
                 (Rule: IsNotRecent(pdsAudit.CreatedDate), Parameter: nameof(PdsAudit.CreatedDate)));
         }
@@ -41,13 +44,12 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
 
             Validate(
                 (Rule: IsInvalid(pdsAudit.Id), Parameter: nameof(PdsAudit.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(pdsAudit.FileName), Parameter: nameof(PdsAudit.FileName)),
+                (Rule: IsInvalid(pdsAudit.Message), Parameter: nameof(PdsAudit.Message)),
                 (Rule: IsInvalid(pdsAudit.CreatedDate), Parameter: nameof(PdsAudit.CreatedDate)),
-                (Rule: IsInvalid(pdsAudit.CreatedByUserId), Parameter: nameof(PdsAudit.CreatedByUserId)),
+                (Rule: IsInvalid(pdsAudit.CreatedBy), Parameter: nameof(PdsAudit.CreatedBy)),
                 (Rule: IsInvalid(pdsAudit.UpdatedDate), Parameter: nameof(PdsAudit.UpdatedDate)),
-                (Rule: IsInvalid(pdsAudit.UpdatedByUserId), Parameter: nameof(PdsAudit.UpdatedByUserId)),
+                (Rule: IsInvalid(pdsAudit.UpdatedBy), Parameter: nameof(PdsAudit.UpdatedBy)),
 
                 (Rule: IsSame(
                     firstDate: pdsAudit.UpdatedDate,
@@ -87,10 +89,10 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                 Parameter: nameof(PdsAudit.CreatedDate)),
 
                 (Rule: IsNotSame(
-                    firstId: inputPdsAudit.CreatedByUserId,
-                    secondId: storagePdsAudit.CreatedByUserId,
-                    secondIdName: nameof(PdsAudit.CreatedByUserId)),
-                Parameter: nameof(PdsAudit.CreatedByUserId)),
+                    first: inputPdsAudit.CreatedBy,
+                    second: storagePdsAudit.CreatedBy,
+                    secondName: nameof(PdsAudit.CreatedBy)),
+                Parameter: nameof(PdsAudit.CreatedBy)),
 
                 (Rule: IsSame(
                     firstDate: inputPdsAudit.UpdatedDate,
@@ -103,6 +105,12 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
         {
             Condition = id == Guid.Empty,
             Message = "Id is required"
+        };
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = String.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
         };
 
         private static dynamic IsInvalid(DateTimeOffset date) => new
@@ -128,6 +136,15 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                 Condition = firstDate != secondDate,
                 Message = $"Date is not the same as {secondDateName}"
             };
+
+        private static dynamic IsNotSame(
+           string first,
+           string second,
+           string secondName) => new
+           {
+               Condition = first != second,
+               Message = $"Text is not the same as {secondName}"
+           };
 
         private static dynamic IsNotSame(
             Guid firstId,

@@ -1,10 +1,14 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.PdsAudits;
+using LHDS.Core.Models.Foundations.PdsAudits.Exceptions;
 using Moq;
-using LHDS.Core.Models.PdsAudits;
-using LHDS.Core.Models.PdsAudits.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
@@ -69,19 +73,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 key: nameof(PdsAudit.Id),
                 values: "Id is required");
 
-            //invalidPdsAuditException.AddData(
-            //    key: nameof(PdsAudit.Name),
-            //    values: "Text is required");
+            invalidPdsAuditException.AddData(
+                key: nameof(PdsAudit.FileName),
+                values: "Text is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the PdsAudit model
+            invalidPdsAuditException.AddData(
+                key: nameof(PdsAudit.Message),
+                values: "Text is required");
 
             invalidPdsAuditException.AddData(
                 key: nameof(PdsAudit.CreatedDate),
                 values: "Date is required");
 
             invalidPdsAuditException.AddData(
-                key: nameof(PdsAudit.CreatedByUserId),
-                values: "Id is required");
+                key: nameof(PdsAudit.CreatedBy),
+                values: "Text is required");
 
             invalidPdsAuditException.AddData(
                 key: nameof(PdsAudit.UpdatedDate),
@@ -92,8 +98,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 });
 
             invalidPdsAuditException.AddData(
-                key: nameof(PdsAudit.UpdatedByUserId),
-                values: "Id is required");
+                key: nameof(PdsAudit.UpdatedBy),
+                values: "Text is required");
 
             var expectedPdsAuditValidationException =
                 new PdsAuditValidationException(invalidPdsAuditException);
@@ -351,14 +357,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             PdsAudit randomPdsAudit = CreateRandomModifyPdsAudit(randomDateTimeOffset);
             PdsAudit invalidPdsAudit = randomPdsAudit.DeepClone();
             PdsAudit storagePdsAudit = invalidPdsAudit.DeepClone();
-            invalidPdsAudit.CreatedByUserId = Guid.NewGuid();
+            invalidPdsAudit.CreatedBy = Guid.NewGuid().ToString();
             storagePdsAudit.UpdatedDate = storagePdsAudit.CreatedDate;
 
             var invalidPdsAuditException = new InvalidPdsAuditException();
 
             invalidPdsAuditException.AddData(
-                key: nameof(PdsAudit.CreatedByUserId),
-                values: $"Id is not the same as {nameof(PdsAudit.CreatedByUserId)}");
+                key: nameof(PdsAudit.CreatedBy),
+                values: $"Text is not the same as {nameof(PdsAudit.CreatedBy)}");
 
             var expectedPdsAuditValidationException =
                 new PdsAuditValidationException(invalidPdsAuditException);

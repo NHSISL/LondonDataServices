@@ -111,5 +111,48 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveWhenSqlExceptionOccursAndLogItAsync()
+        {
+            // given
+            Guid somePdsAuditId = Guid.NewGuid();
+            SqlException sqlException = GetSqlException();
+
+            var failedPdsAuditStorageException =
+                new FailedPdsAuditStorageException(sqlException);
+
+            var expectedPdsAuditDependencyException =
+                new PdsAuditDependencyException(failedPdsAuditStorageException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectPdsAuditByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(sqlException);
+
+            // when
+            ValueTask<PdsAudit> deletePdsAuditTask =
+                this.pdsAuditService.RemovePdsAuditByIdAsync(somePdsAuditId);
+
+            PdsAuditDependencyException actualPdsAuditDependencyException =
+                await Assert.ThrowsAsync<PdsAuditDependencyException>(
+                    deletePdsAuditTask.AsTask);
+
+            // then
+            actualPdsAuditDependencyException.Should()
+                .BeEquivalentTo(expectedPdsAuditDependencyException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectPdsAuditByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedPdsAuditDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

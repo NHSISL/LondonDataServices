@@ -103,8 +103,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                 Document document = new Document
                 {
-                    FileName = $"{optOutConfiguration.OutputFolder}/{fileName}_Response_{dateTimeBroker
-                        .GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss")}.csv",
+                    FileName = $"{optOutConfiguration.OutputFolder}/{fileName}_Response.csv",
                     DocumentData = processedBytes
                 };
 
@@ -182,7 +181,9 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                             message.StringContent,
                             withHeader);
 
-                    string batchReference = message.Headers["Mex-Localid"].FirstOrDefault();
+                    string batchReference =
+                        message.Headers["Mex-LocalID"].FirstOrDefault()
+                            ?? message.Headers["Mex-Localid"].FirstOrDefault();
 
                     List<OptOut> originalBatch = await this.optOutProcessingService
                         .RetrieveAllOptOutsByBatchReferenceAsync(batchReference);

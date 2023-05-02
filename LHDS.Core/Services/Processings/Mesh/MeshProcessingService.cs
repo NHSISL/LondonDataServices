@@ -50,7 +50,7 @@ namespace LHDS.Core.Services.Processings.Mesh
             TryCatch(async () =>
             {
                 MeshMessage sendMessageResult = await meshService.SendMessageAsync(message);
-                ValidateMeshMessageIsNotNull(sendMessageResult);
+                ValidateSendMessage(sendMessageResult);
 
                 MeshMessage trackMessage =
                     await this.meshService.RetrieveTrackingStatusByIdAsync(sendMessageResult.MessageId);

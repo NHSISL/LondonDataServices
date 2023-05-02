@@ -22,6 +22,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             PdsAudit storagePdsAudit = inputPdsAudit;
             PdsAudit expectedPdsAudit = storagePdsAudit.DeepClone();
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertPdsAuditAsync(inputPdsAudit))
                     .ReturnsAsync(storagePdsAudit);
@@ -33,13 +37,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             // then
             actualPdsAudit.Should().BeEquivalentTo(expectedPdsAudit);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertPdsAuditAsync(inputPdsAudit),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

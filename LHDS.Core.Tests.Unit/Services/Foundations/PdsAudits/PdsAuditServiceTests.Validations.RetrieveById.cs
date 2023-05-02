@@ -1,9 +1,13 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.PdsAudits;
+using LHDS.Core.Models.Foundations.PdsAudits.Exceptions;
 using Moq;
-using LHDS.Core.Models.PdsAudits;
-using LHDS.Core.Models.PdsAudits.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits

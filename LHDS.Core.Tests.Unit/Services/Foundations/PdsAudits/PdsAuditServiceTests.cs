@@ -1,14 +1,18 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
-using Microsoft.Data.SqlClient;
-using Moq;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages;
-using LHDS.Core.Models.PdsAudits;
+using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Services.Foundations.PdsAudits;
+using Microsoft.Data.SqlClient;
+using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
@@ -90,15 +94,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 
         private static Filler<PdsAudit> CreatePdsAuditFiller(DateTimeOffset dateTimeOffset)
         {
-            Guid userId = Guid.NewGuid();
+            string user = Guid.NewGuid().ToString();
             var filler = new Filler<PdsAudit>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(pdsAudit => pdsAudit.CreatedByUserId).Use(userId)
-                .OnProperty(pdsAudit => pdsAudit.UpdatedByUserId).Use(userId);
-
-            // TODO: Complete the filler setup e.g. ignore related properties etc...
+                .OnProperty(pdsAudit => pdsAudit.CreatedBy).Use(user)
+                .OnProperty(pdsAudit => pdsAudit.UpdatedBy).Use(user);
 
             return filler;
         }

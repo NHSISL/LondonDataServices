@@ -1,7 +1,7 @@
 using System;
 using Xeptions;
 
-namespace LHDS.Core.Models.PdsAudits.Exceptions
+namespace LHDS.Core.Models.Foundations.PdsAudits.Exceptions
 {
     public class FailedPdsAuditServiceException : Xeption
     {

@@ -90,7 +90,13 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                     firstId: inputPdsAudit.CreatedByUserId,
                     secondId: storagePdsAudit.CreatedByUserId,
                     secondIdName: nameof(PdsAudit.CreatedByUserId)),
-                Parameter: nameof(PdsAudit.CreatedByUserId)));
+                Parameter: nameof(PdsAudit.CreatedByUserId)),
+
+                (Rule: IsSame(
+                    firstDate: inputPdsAudit.UpdatedDate,
+                    secondDate: storagePdsAudit.UpdatedDate,
+                    secondDateName: nameof(PdsAudit.UpdatedDate)),
+                Parameter: nameof(PdsAudit.UpdatedDate)));
         }
 
         private static dynamic IsInvalid(Guid id) => new

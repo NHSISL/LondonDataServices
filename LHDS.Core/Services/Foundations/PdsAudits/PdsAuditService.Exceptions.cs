@@ -78,6 +78,13 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                     new FailedPdsAuditStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedPdsAuditStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedPdsAuditServiceException =
+                    new FailedPdsAuditServiceException(exception);
+
+                throw CreateAndLogServiceException(failedPdsAuditServiceException);
+            }
         }
 
         private PdsAuditValidationException CreateAndLogValidationException(Xeption exception)

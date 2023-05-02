@@ -77,6 +77,16 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
             }
         }
 
+        private static void ValidateAgainstStoragePdsAuditOnModify(PdsAudit inputPdsAudit, PdsAudit storagePdsAudit)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputPdsAudit.CreatedDate,
+                    secondDate: storagePdsAudit.CreatedDate,
+                    secondDateName: nameof(PdsAudit.CreatedDate)),
+                Parameter: nameof(PdsAudit.CreatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

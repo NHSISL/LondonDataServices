@@ -35,6 +35,11 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                 (Rule: IsNotRecent(pdsAudit.CreatedDate), Parameter: nameof(PdsAudit.CreatedDate)));
         }
 
+        private void ValidatePdsAuditOnModify(PdsAudit pdsAudit)
+        {
+            ValidatePdsAuditIsNotNull(pdsAudit);
+        }
+
         public void ValidatePdsAuditId(Guid pdsAuditId) =>
             Validate((Rule: IsInvalid(pdsAuditId), Parameter: nameof(PdsAudit.Id)));
 

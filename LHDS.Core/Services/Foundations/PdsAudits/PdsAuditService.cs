@@ -48,7 +48,12 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                 return maybePdsAudit;
             });
 
-        public async ValueTask<PdsAudit> ModifyPdsAuditAsync(PdsAudit pdsAudit) =>
-            await this.storageBroker.UpdatePdsAuditAsync(pdsAudit);
+        public ValueTask<PdsAudit> ModifyPdsAuditAsync(PdsAudit pdsAudit) =>
+            TryCatch(async () =>
+            {
+                ValidatePdsAuditOnModify(pdsAudit);
+
+                return await this.storageBroker.UpdatePdsAuditAsync(pdsAudit);
+            });
     }
 }

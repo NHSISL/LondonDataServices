@@ -48,7 +48,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         private static void ValidateLocalIdHeaderExists(MeshMessage message)
         {
             Validate<InvalidMeshMessageException>(
-                (Rule: IsInvalid(message.Headers, "Mex-LocalID"), Parameter: "Mex-LocalID"));
+                (Rule: IsInvalidMatchCase(message, "Mex-LocalID"), Parameter: "Mex-LocalID"));
         }
 
         private static dynamic IsInvalid(string text) => new
@@ -74,6 +74,26 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             Condition = IsInvalidKey(dictionary, key),
             Message = "Header value is required"
         };
+
+        private static dynamic IsInvalidMatchCase(MeshMessage message, string keyToFind)
+        {
+            List<string> value = new List<string>();
+
+            foreach (var key in message.Headers.Keys)
+            {
+                if (key.ToLower() == keyToFind.ToLower())
+                {
+                    message.Headers.TryGetValue(key, out value);
+                    break;
+                }
+            }
+
+            return new
+            {
+                Condition = (value == null || value.Count == 0),
+                Message = "Header value is required"
+            };
+        }
 
         private static bool IsInvalidKey(Dictionary<string, List<string>> dictionary, string key)
         {

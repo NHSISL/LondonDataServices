@@ -28,6 +28,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
+                broker.SelectPdsAuditByIdAsync(pdsAuditId))
+                    .ReturnsAsync(storagePdsAudit);
+
+            this.storageBrokerMock.Setup(broker =>
                 broker.UpdatePdsAuditAsync(inputPdsAudit))
                     .ReturnsAsync(updatedPdsAudit);
 
@@ -43,12 +47,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
+                broker.SelectPdsAuditByIdAsync(inputPdsAudit.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
                 broker.UpdatePdsAuditAsync(inputPdsAudit),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -1,59 +1,62 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages;
+using FluentAssertions;
+using Force.DeepCloner;
+using Moq;
 using LHDS.Core.Models.PdsAudits;
+using Xunit;
 
-namespace LHDS.Core.Services.Foundations.PdsAudits
+namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 {
-    public partial class PdsAuditService : IPdsAuditService
+    public partial class PdsAuditServiceTests
     {
-        private readonly IStorageBroker storageBroker;
-        private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ILoggingBroker loggingBroker;
-
-        public PdsAuditService(
-            IStorageBroker storageBroker,
-            IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker)
+        [Fact]
+        public async Task ShouldModifyPdsAuditAsync()
         {
-            this.storageBroker = storageBroker;
-            this.dateTimeBroker = dateTimeBroker;
-            this.loggingBroker = loggingBroker;
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            PdsAudit randomPdsAudit = CreateRandomModifyPdsAudit(randomDateTimeOffset);
+            PdsAudit inputPdsAudit = randomPdsAudit;
+            PdsAudit storagePdsAudit = inputPdsAudit.DeepClone();
+            storagePdsAudit.UpdatedDate = randomPdsAudit.CreatedDate;
+            PdsAudit updatedPdsAudit = inputPdsAudit;
+            PdsAudit expectedPdsAudit = updatedPdsAudit.DeepClone();
+            Guid pdsAuditId = inputPdsAudit.Id;
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectPdsAuditByIdAsync(pdsAuditId))
+                    .ReturnsAsync(storagePdsAudit);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.UpdatePdsAuditAsync(inputPdsAudit))
+                    .ReturnsAsync(updatedPdsAudit);
+
+            // when
+            PdsAudit actualPdsAudit =
+                await this.pdsAuditService.ModifyPdsAuditAsync(inputPdsAudit);
+
+            // then
+            actualPdsAudit.Should().BeEquivalentTo(expectedPdsAudit);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectPdsAuditByIdAsync(inputPdsAudit.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdatePdsAuditAsync(inputPdsAudit),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
-
-        public ValueTask<PdsAudit> AddPdsAuditAsync(PdsAudit pdsAudit) =>
-            TryCatch(async () =>
-            {
-                ValidatePdsAuditOnAdd(pdsAudit);
-
-                return await this.storageBroker.InsertPdsAuditAsync(pdsAudit);
-            });
-
-        public IQueryable<PdsAudit> RetrieveAllPdsAudits() =>
-            TryCatch(() => this.storageBroker.SelectAllPdsAudits());
-
-        public ValueTask<PdsAudit> RetrievePdsAuditByIdAsync(Guid pdsAuditId) =>
-            TryCatch(async () =>
-            {
-                ValidatePdsAuditId(pdsAuditId);
-
-                PdsAudit maybePdsAudit = await this.storageBroker
-                    .SelectPdsAuditByIdAsync(pdsAuditId);
-
-                ValidateStoragePdsAudit(maybePdsAudit, pdsAuditId);
-
-                return maybePdsAudit;
-            });
-
-        public ValueTask<PdsAudit> ModifyPdsAuditAsync(PdsAudit pdsAudit) =>
-            TryCatch(async () =>
-            {
-                ValidatePdsAuditOnModify(pdsAudit);
-
-                return await this.storageBroker.UpdatePdsAuditAsync(pdsAudit);
-            });
     }
 }

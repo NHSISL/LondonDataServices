@@ -11,6 +11,7 @@ namespace LHDS.Core.Models.Foundations.PdsAudits
     {
         public Guid Id { get; set; }
         public Guid CorrelationId { get; set; }
+        public string FileName { get; set; }
         public string Message { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }

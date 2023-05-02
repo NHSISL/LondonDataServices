@@ -181,9 +181,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                             message.StringContent,
                             withHeader);
 
-                    string batchReference =
-                        message.Headers["Mex-LocalID"].FirstOrDefault()
-                            ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                    string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                     List<OptOut> originalBatch = await this.optOutProcessingService
                         .RetrieveAllOptOutsByBatchReferenceAsync(batchReference);
@@ -249,5 +247,22 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                 return meshMessageList;
             });
+
+        private static string GetHeaderValue(MeshMessage message, string keyToFind)
+        {
+            List<string> value = new List<string>();
+
+            foreach (var key in message.Headers.Keys)
+            {
+                if (key.ToLower() == keyToFind.ToLower())
+                {
+                    message.Headers.TryGetValue(key, out value);
+
+                    break;
+                }
+            }
+
+            return value.FirstOrDefault();
+        }
     }
 }

@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
             });
 
         public IQueryable<PdsAudit> RetrieveAllPdsAudits() =>
-            throw new System.NotImplementedException();
+            this.storageBroker.SelectAllPdsAudits();
     }
 }

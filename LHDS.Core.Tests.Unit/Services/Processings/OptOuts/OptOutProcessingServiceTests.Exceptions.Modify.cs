@@ -70,7 +70,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     dependencyException.InnerException as Xeption);
 
             this.optOutServiceMock.Setup(service =>
-                service.ModifyOptOutAsync(inputOptOut))
+                service.RetrieveAllOptOuts())
                     .Throws(dependencyException);
 
             // when
@@ -84,7 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             actualException.Should().BeEquivalentTo(expectedOptOutProcessingDependencyException);
 
             this.optOutServiceMock.Verify(service =>
-                service.ModifyOptOutAsync(inputOptOut),
+                service.RetrieveAllOptOuts(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

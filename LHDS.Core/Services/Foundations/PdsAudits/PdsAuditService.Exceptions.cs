@@ -36,6 +36,10 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
 
                 throw CreateAndLogCriticalDependencyException(failedPdsAuditStorageException);
             }
+            catch (NotFoundPdsAuditException notFoundPdsAuditException)
+            {
+                throw CreateAndLogValidationException(notFoundPdsAuditException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsPdsAuditException =

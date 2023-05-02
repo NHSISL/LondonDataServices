@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
     public partial class PdsAuditService
     {
         private delegate ValueTask<PdsAudit> ReturningPdsAuditFunction();
+        private delegate IQueryable<PdsAudit> ReturningPdsAuditsFunction();
 
         private async ValueTask<PdsAudit> TryCatch(ReturningPdsAuditFunction returningPdsAuditFunction)
         {
@@ -61,6 +63,20 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                     new FailedPdsAuditServiceException(exception);
 
                 throw CreateAndLogServiceException(failedPdsAuditServiceException);
+            }
+        }
+
+        private IQueryable<PdsAudit> TryCatch(ReturningPdsAuditsFunction returningPdsAuditsFunction)
+        {
+            try
+            {
+                return returningPdsAuditsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedPdsAuditStorageException =
+                    new FailedPdsAuditStorageException(sqlException);
+                throw CreateAndLogCriticalDependencyException(failedPdsAuditStorageException);
             }
         }
 

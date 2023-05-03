@@ -230,7 +230,5 @@ namespace LHDS.Core.Tests.Integration.OptOuts
 
             return simulatedMeshReply.StringContent;
         }
-
-
     }
 }

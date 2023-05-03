@@ -377,8 +377,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 // Get original batch storage
                 string batchReference =
-                   message.Headers["Mex-LocalID"].FirstOrDefault()
-                       ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                    message.Headers["Mex-LocalID"].FirstOrDefault()
+                        ?? message.Headers["Mex-Localid"].FirstOrDefault();
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -493,8 +493,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 // Get original batch storage
                 string batchReference =
-                   message.Headers["Mex-LocalID"].FirstOrDefault()
-                       ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                    message.Headers["Mex-LocalID"].FirstOrDefault()
+                        ?? message.Headers["Mex-Localid"].FirstOrDefault();
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -660,8 +660,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 // Get original batch storage
                 string batchReference =
-                  message.Headers["Mex-LocalID"].FirstOrDefault()
-                      ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                    message.Headers["Mex-LocalID"].FirstOrDefault()
+                        ?? message.Headers["Mex-Localid"].FirstOrDefault();
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -776,8 +776,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 // Get original batch storage
                 string batchReference =
-                  message.Headers["Mex-LocalID"].FirstOrDefault()
-                      ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                    message.Headers["Mex-LocalID"].FirstOrDefault()
+                        ?? message.Headers["Mex-Localid"].FirstOrDefault();
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -1224,8 +1224,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 // Get original batch storage
                 string batchReference =
-                  message.Headers["Mex-LocalID"].FirstOrDefault()
-                      ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                    message.Headers["Mex-LocalID"].FirstOrDefault()
+                        ?? message.Headers["Mex-Localid"].FirstOrDefault();
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -1340,8 +1340,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 // Get original batch storage
                 string batchReference =
-                  message.Headers["Mex-LocalID"].FirstOrDefault()
-                      ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                    message.Headers["Mex-LocalID"].FirstOrDefault()
+                        ?? message.Headers["Mex-Localid"].FirstOrDefault();
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)

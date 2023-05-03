@@ -29,12 +29,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     dependencyValidationException.InnerException as Xeption);
 
             this.optOutServiceMock.Setup(service =>
-                service.ModifyOptOutAsync(inputOptOut))
+                service.RetrieveAllOptOuts())
                     .Throws(dependencyValidationException);
 
             // when
             ValueTask<OptOut> optOutModifyTask =
-                this.optOutProcessingService.ModifyOptOutAsync(inputOptOut);
+                this.optOutProcessingService.AddOrModifyOptOutAsync(inputOptOut);
 
             OptOutProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<OptOutProcessingDependencyValidationException>(optOutModifyTask.AsTask);
@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 expectedOptOutProcessingDependencyValidationException);
 
             this.optOutServiceMock.Verify(service =>
-                service.ModifyOptOutAsync(inputOptOut),
+                service.RetrieveAllOptOuts(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -70,12 +70,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     dependencyException.InnerException as Xeption);
 
             this.optOutServiceMock.Setup(service =>
-                service.ModifyOptOutAsync(inputOptOut))
+                service.RetrieveAllOptOuts())
                     .Throws(dependencyException);
 
             // when
             ValueTask<OptOut> optOutModifyTask =
-                this.optOutProcessingService.ModifyOptOutAsync(inputOptOut);
+                this.optOutProcessingService.AddOrModifyOptOutAsync(inputOptOut);
 
             OptOutProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<OptOutProcessingDependencyException>(optOutModifyTask.AsTask);
@@ -84,7 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             actualException.Should().BeEquivalentTo(expectedOptOutProcessingDependencyException);
 
             this.optOutServiceMock.Verify(service =>
-                service.ModifyOptOutAsync(inputOptOut),
+                service.RetrieveAllOptOuts(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -112,12 +112,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     failedOptOutProcessingServiceException);
 
             this.optOutServiceMock.Setup(service =>
-                service.ModifyOptOutAsync(inputOptOut))
+                service.RetrieveAllOptOuts())
                     .Throws(serviceException);
 
             // when
             ValueTask<OptOut> optOutModifyTask =
-                this.optOutProcessingService.ModifyOptOutAsync(inputOptOut);
+                this.optOutProcessingService.AddOrModifyOptOutAsync(inputOptOut);
 
             OptOutProcessingServiceException actualException =
                 await Assert.ThrowsAsync<OptOutProcessingServiceException>(optOutModifyTask.AsTask);
@@ -126,7 +126,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             actualException.Should().BeEquivalentTo(expectedOptOutProcessingServiveException);
 
             this.optOutServiceMock.Verify(service =>
-                service.ModifyOptOutAsync(inputOptOut),
+                service.RetrieveAllOptOuts(),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

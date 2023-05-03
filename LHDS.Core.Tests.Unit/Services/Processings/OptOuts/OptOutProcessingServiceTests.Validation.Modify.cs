@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             // when
             ValueTask<OptOut> RetrieveOrAddOptOutTask =
-                this.optOutProcessingService.ModifyOptOutAsync(nullOptOut);
+                this.optOutProcessingService.AddOrModifyOptOutAsync(nullOptOut);
 
             OptOutProcessingValidationException actualOptOutProcessingValidationException =
                 await Assert.ThrowsAsync<OptOutProcessingValidationException>(RetrieveOrAddOptOutTask.AsTask);

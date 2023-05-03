@@ -12,7 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace LHDS.Core.Tests.Manual.Decryption
+namespace LHDS.Core.Tests.Integration.Decryptions
 {
     internal class Program
     {

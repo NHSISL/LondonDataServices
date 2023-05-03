@@ -47,7 +47,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             foreach (var message in outputMessages)
             {
-                string batchReference = message.Headers["Mex-LocalID"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
+
                 List<OptOut> randomUnkownConsentBatch =
                     CreateRandomOptOutsList(outputIdentifierUnknownList, batchReference, "Unknown");
 
@@ -90,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         .ReturnsAsync(outputIdentifierConsentedList);
 
                 // Get original batch storage
-                string batchReference = message.Headers["Mex-LocalID"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -130,7 +131,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
-                        processing.ModifyOptOutAsync(item))
+                        processing.AddOrModifyOptOutAsync(item))
                             .ReturnsAsync(item);
                 }
 
@@ -147,7 +148,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
-                        processing.ModifyOptOutAsync(item))
+                        processing.AddOrModifyOptOutAsync(item))
                             .ReturnsAsync(item);
                 }
 
@@ -204,7 +205,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once());
 
                 // Get original batch storage
-                string batchReference = message.Headers["Mex-LocalID"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -243,7 +244,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     consentedItem.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
-                        processings.ModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
+                        processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
                             Times.Exactly(outputMessageIds.Count));
                 }
 
@@ -260,7 +261,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     nonConsentedItem.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
-                        processings.ModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
+                        processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
                             Times.Exactly(outputMessageIds.Count));
                 }
 
@@ -325,7 +326,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             foreach (var message in outputMessages)
             {
-                string batchReference = message.Headers["Mex-LocalID"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
+
                 List<OptOut> randomUnkownConsentBatch = new List<OptOut>();
 
                 List<OptOut> randomConsentBatch =
@@ -366,7 +368,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         .ReturnsAsync(outputIdentifierConsentedList);
 
                 // Get original batch storage
-                string batchReference = message.Headers["Mex-LocalID"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -406,7 +408,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
-                        processing.ModifyOptOutAsync(item))
+                        processing.AddOrModifyOptOutAsync(item))
                             .ReturnsAsync(item);
                 }
 
@@ -423,7 +425,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
-                        processing.ModifyOptOutAsync(item))
+                        processing.AddOrModifyOptOutAsync(item))
                             .ReturnsAsync(item);
                 }
 
@@ -480,7 +482,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once());
 
                 // Get original batch storage
-                string batchReference = message.Headers["Mex-LocalID"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -519,7 +521,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     consentedItem.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
-                        processings.ModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
+                        processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
                             Times.Exactly(outputMessageIds.Count));
                 }
 
@@ -536,7 +538,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     nonConsentedItem.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
-                        processings.ModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
+                        processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
                             Times.Exactly(outputMessageIds.Count));
                 }
 
@@ -600,7 +602,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             foreach (var message in outputMessages)
             {
-                string batchReference = message.Headers["Mex-LocalID"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> randomUnkownConsentBatch =
                     CreateRandomOptOutsList(outputIdentifierUnknownList, batchReference, "Unknown");
@@ -643,7 +645,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         .ReturnsAsync(outputIdentifierConsentedList);
 
                 // Get original batch storage
-                string batchReference = message.Headers["Mex-LocalID"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -683,7 +685,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
-                        processing.ModifyOptOutAsync(item))
+                        processing.AddOrModifyOptOutAsync(item))
                             .ReturnsAsync(item);
                 }
 
@@ -700,7 +702,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
-                        processing.ModifyOptOutAsync(item))
+                        processing.AddOrModifyOptOutAsync(item))
                             .ReturnsAsync(item);
                 }
 
@@ -757,7 +759,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once());
 
                 // Get original batch storage
-                string batchReference = message.Headers["Mex-LocalID"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -796,7 +798,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     consentedItem.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
-                        processings.ModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
+                        processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
                             Times.Exactly(outputMessageIds.Count));
                 }
 
@@ -813,7 +815,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     nonConsentedItem.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
-                        processings.ModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
+                        processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
                             Times.Exactly(outputMessageIds.Count));
                 }
 
@@ -876,7 +878,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             foreach (var message in outputMessages)
             {
-                string batchReference = message.Headers["Mex-LocalID"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> randomUnkownConsentBatch = new List<OptOut>();
 
@@ -918,7 +920,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         .ReturnsAsync(outputIdentifierConsentedList);
 
                 // Get original batch storage
-                string batchReference = message.Headers["Mex-LocalID"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -958,7 +960,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
-                        processing.ModifyOptOutAsync(item))
+                        processing.AddOrModifyOptOutAsync(item))
                             .ReturnsAsync(item);
                 }
 
@@ -975,7 +977,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
-                        processing.ModifyOptOutAsync(item))
+                        processing.AddOrModifyOptOutAsync(item))
                             .ReturnsAsync(item);
                 }
 
@@ -1032,7 +1034,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once());
 
                 // Get original batch storage
-                string batchReference = message.Headers["Mex-LocalID"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -1071,7 +1073,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     consentedItem.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
-                        processings.ModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
+                        processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
                             Times.Exactly(outputMessageIds.Count));
                 }
 
@@ -1088,7 +1090,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     nonConsentedItem.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
-                        processings.ModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
+                        processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
                             Times.Exactly(outputMessageIds.Count));
                 }
 
@@ -1152,7 +1154,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             foreach (var message in outputMessages)
             {
-                string batchReference = message.Headers["Mex-LocalID"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> randomUnkownConsentBatch = new List<OptOut>();
 
@@ -1195,7 +1197,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         .ReturnsAsync(outputIdentifierConsentedList);
 
                 // Get original batch storage
-                string batchReference = message.Headers["Mex-LocalID"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -1235,7 +1237,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
-                        processing.ModifyOptOutAsync(item))
+                        processing.AddOrModifyOptOutAsync(item))
                             .ReturnsAsync(item);
                 }
 
@@ -1252,7 +1254,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
-                        processing.ModifyOptOutAsync(item))
+                        processing.AddOrModifyOptOutAsync(item))
                             .ReturnsAsync(item);
                 }
 
@@ -1309,7 +1311,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once());
 
                 // Get original batch storage
-                string batchReference = message.Headers["Mex-LocalID"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -1348,7 +1350,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     consentedItem.OptOutStatus = "Opt-In";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
-                        processings.ModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
+                        processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
                             Times.Exactly(outputMessageIds.Count));
                 }
 
@@ -1365,7 +1367,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     nonConsentedItem.OptOutStatus = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
-                        processings.ModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
+                        processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
                             Times.Exactly(outputMessageIds.Count));
                 }
 

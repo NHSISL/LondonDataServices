@@ -35,7 +35,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .ReturnsAsync(retrievedMessageIds);
 
             retrievedMessage.Headers.Remove("Mex-LocalID");
-            // retrievedMessage.Headers.Add("Mex-LocalID", new List<string> { invalidInput });
 
             var invalidMeshMessageException =
                 new InvalidMeshMessageException();

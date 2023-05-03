@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Clients.OptOut.Exceptions;
+using LHDS.Core.Models.Clients.OptOutClient.Exceptions;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using LHDS.Core.Services.Orchestrations.OptOuts;

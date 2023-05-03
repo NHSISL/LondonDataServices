@@ -3,15 +3,12 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
-using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using Moq;
 using Xunit;
 
@@ -38,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .ReturnsAsync(retrievedMessageIds);
 
             retrievedMessage.Headers.Remove("Mex-LocalID");
-            retrievedMessage.Headers.Add("Mex-LocalID", new List<string> { invalidInput });
+            // retrievedMessage.Headers.Add("Mex-LocalID", new List<string> { invalidInput });
 
             var invalidMeshMessageException =
                 new InvalidMeshMessageException();

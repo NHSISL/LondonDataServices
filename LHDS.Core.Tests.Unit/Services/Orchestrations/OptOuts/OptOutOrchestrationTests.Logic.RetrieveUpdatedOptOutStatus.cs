@@ -47,9 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             foreach (var message in outputMessages)
             {
-                string batchReference =
-                    message.Headers["Mex-LocalID"].FirstOrDefault()
-                        ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> randomUnkownConsentBatch =
                     CreateRandomOptOutsList(outputIdentifierUnknownList, batchReference, "Unknown");
@@ -93,9 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         .ReturnsAsync(outputIdentifierConsentedList);
 
                 // Get original batch storage
-                string batchReference =
-                    message.Headers["Mex-LocalID"].FirstOrDefault()
-                        ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -209,9 +205,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once());
 
                 // Get original batch storage
-                string batchReference =
-                    message.Headers["Mex-LocalID"].FirstOrDefault()
-                        ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -332,9 +326,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             foreach (var message in outputMessages)
             {
-                string batchReference =
-                    message.Headers["Mex-LocalID"].FirstOrDefault()
-                        ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> randomUnkownConsentBatch = new List<OptOut>();
 
@@ -376,9 +368,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         .ReturnsAsync(outputIdentifierConsentedList);
 
                 // Get original batch storage
-                string batchReference =
-                    message.Headers["Mex-LocalID"].FirstOrDefault()
-                        ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -492,9 +482,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once());
 
                 // Get original batch storage
-                string batchReference =
-                    message.Headers["Mex-LocalID"].FirstOrDefault()
-                        ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -614,9 +602,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             foreach (var message in outputMessages)
             {
-                string batchReference =
-                    message.Headers["Mex-LocalID"].FirstOrDefault()
-                        ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> randomUnkownConsentBatch =
                     CreateRandomOptOutsList(outputIdentifierUnknownList, batchReference, "Unknown");
@@ -659,9 +645,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         .ReturnsAsync(outputIdentifierConsentedList);
 
                 // Get original batch storage
-                string batchReference =
-                    message.Headers["Mex-LocalID"].FirstOrDefault()
-                        ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -775,9 +759,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once());
 
                 // Get original batch storage
-                string batchReference =
-                    message.Headers["Mex-LocalID"].FirstOrDefault()
-                        ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -896,9 +878,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             foreach (var message in outputMessages)
             {
-                string batchReference =
-                    message.Headers["Mex-LocalID"].FirstOrDefault()
-                        ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> randomUnkownConsentBatch = new List<OptOut>();
 
@@ -940,9 +920,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         .ReturnsAsync(outputIdentifierConsentedList);
 
                 // Get original batch storage
-                string batchReference =
-                    message.Headers["Mex-LocalID"].FirstOrDefault()
-                        ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -1056,9 +1034,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once());
 
                 // Get original batch storage
-                string batchReference =
-                    message.Headers["Mex-LocalID"].FirstOrDefault()
-                        ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -1178,9 +1154,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             foreach (var message in outputMessages)
             {
-                string batchReference =
-                  message.Headers["Mex-LocalID"].FirstOrDefault()
-                      ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> randomUnkownConsentBatch = new List<OptOut>();
 
@@ -1223,9 +1197,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         .ReturnsAsync(outputIdentifierConsentedList);
 
                 // Get original batch storage
-                string batchReference =
-                    message.Headers["Mex-LocalID"].FirstOrDefault()
-                        ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)
@@ -1339,9 +1311,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once());
 
                 // Get original batch storage
-                string batchReference =
-                    message.Headers["Mex-LocalID"].FirstOrDefault()
-                        ?? message.Headers["Mex-Localid"].FirstOrDefault();
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                 List<OptOut> batchSpecificOptOuts =
                     outputBatch.Where(optout => optout.BatchReference == batchReference)

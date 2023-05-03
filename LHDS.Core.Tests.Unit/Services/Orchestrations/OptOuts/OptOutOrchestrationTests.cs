@@ -202,6 +202,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             return $"{formattedNhsNumber}{checkNumber}";
         }
 
+        private static string GetHeaderValue(MeshMessage message, string keyToFind)
+        {
+            List<string> value = new List<string>();
+
+            foreach (var key in message.Headers.Keys)
+            {
+                if (key.ToLower() == keyToFind.ToLower())
+                {
+                    message.Headers.TryGetValue(key, out value);
+
+                    break;
+                }
+            }
+
+            return value.FirstOrDefault();
+        }
+
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime().AddDays(7)).GetValue();
 

@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using FluentAssertions;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -36,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             this.optOutProcessingService = new OptOutProcessingService(
                 optOutService: optOutServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
-                dateTimeBroker: dateTimeBrokerMock.Object );
+                dateTimeBroker: dateTimeBrokerMock.Object);
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
@@ -61,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             new IntRange(min: 2, max: 10).GetValue();
 
         private static int GetRandomExpiryDays(int expiryMax) =>
-            new IntRange(max: expiryMax -1).GetValue();
+            new IntRange(max: expiryMax - 1).GetValue();
 
         private static int GetRandomValidExpiryDays(int expiryMin) =>
             new IntRange(min: expiryMin + 1, max: 20).GetValue();
@@ -90,7 +89,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 new OptOutServiceException(innerException)
             };
         }
-        
+
         private static IQueryable<OptOut> CreateRandomOptOuts(string batchReference)
         {
             List<OptOut> optOuts = new List<OptOut>();
@@ -126,9 +125,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
         private static IQueryable<OptOut> CreateRandomOptOuts()
         {
-            return CreateOptOutFiller(GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber())
-                    .AsQueryable();
+            return CreateRandomOptOuts(GetRandomDateTimeOffset());
         }
 
         private static IQueryable<OptOut> CreateRandomOptOuts(DateTimeOffset expireDate)
@@ -142,6 +139,17 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             }
 
             return optOuts.AsQueryable();
+        }
+
+        private OptOut SelectRandomOptOut(IQueryable<OptOut> optOuts)
+        {
+            Random random = new Random();
+
+            OptOut optOut = optOuts.OrderBy(item => random.Next())
+                .Take(1)
+                    .SingleOrDefault();
+
+            return optOut;
         }
 
         private static string GenerateValidNhsNumber()

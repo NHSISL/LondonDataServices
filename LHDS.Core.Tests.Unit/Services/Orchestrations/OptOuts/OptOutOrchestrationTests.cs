@@ -18,7 +18,7 @@ using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts;
-using LHDS.Core.Models.Processings.CsvMapper.Exceptions;
+using LHDS.Core.Models.Processings.CsvMappers.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using LHDS.Core.Models.Processings.OptOuts.Exceptions;
@@ -200,6 +200,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             string checkNumber = total.ToString();
 
             return $"{formattedNhsNumber}{checkNumber}";
+        }
+
+        private static string GetHeaderValue(MeshMessage message, string keyToFind)
+        {
+            List<string> value = new List<string>();
+
+            foreach (var key in message.Headers.Keys)
+            {
+                if (key.ToLower() == keyToFind.ToLower())
+                {
+                    message.Headers.TryGetValue(key, out value);
+
+                    break;
+                }
+            }
+
+            return value.FirstOrDefault();
         }
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>

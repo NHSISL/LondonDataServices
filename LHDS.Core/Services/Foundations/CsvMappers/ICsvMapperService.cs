@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace LHDS.Core.Brokers.CsvMappers
+namespace LHDS.Core.Services.Foundations.CsvMappers
 {
     public interface ICsvMapperService
     {

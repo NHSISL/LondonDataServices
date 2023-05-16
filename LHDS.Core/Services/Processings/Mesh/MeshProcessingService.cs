@@ -61,9 +61,8 @@ namespace LHDS.Core.Services.Processings.Mesh
                 return sendMessageResult;
             });
 
-        public ValueTask<MeshMessage> RetrieveMessageByIdAsync(string messageId) =>
-            throw new System.NotImplementedException();
-
+        public async ValueTask<MeshMessage> RetrieveMessageByIdAsync(string messageId) =>
+            await meshService.RetrieveMessageByIdAsync(messageId);
 
         public ValueTask<MeshMessage> AcknowledgeMessageByIdAsync(string messageId) =>
             throw new System.NotImplementedException();

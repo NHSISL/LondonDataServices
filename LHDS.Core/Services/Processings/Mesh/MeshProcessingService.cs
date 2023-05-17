@@ -70,7 +70,13 @@ namespace LHDS.Core.Services.Processings.Mesh
                 return retrievedMessage;
             });
 
-        public async ValueTask<bool> AcknowledgeMessageByIdAsync(string messageId) =>
-            await meshService.AcknowledgeMessageByIdAsync(messageId);
+        public ValueTask<bool> AcknowledgeMessageByIdAsync(string messageId) =>
+            TryCatch(async () =>
+            {
+                ValidateMeshArgs(messageId);
+                bool ackResult = await meshService.AcknowledgeMessageByIdAsync(messageId);
+
+                return ackResult;
+            });
     }
 }

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;

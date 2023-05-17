@@ -2,6 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
+using System.Threading.Tasks;
+using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Clients;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Logging;
+
 namespace LHDS.Functions.OptOut
 {
     public class RetrieveOptOutStatusFunction

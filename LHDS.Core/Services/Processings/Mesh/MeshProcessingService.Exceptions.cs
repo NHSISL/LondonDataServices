@@ -40,6 +40,10 @@ namespace LHDS.Core.Services.Processings.Mesh
             {
                 throw CreateAndLogDependencyException(meshServiceException);
             }
+            catch (InvalidMeshProcessingArgumentException exception)
+            {
+                throw CreateAndLogValidationException(exception);
+            }
             catch (Exception exception)
             {
                 var failedMeshProcessingServiceException =

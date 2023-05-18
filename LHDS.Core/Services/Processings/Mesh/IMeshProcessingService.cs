@@ -15,6 +15,6 @@ namespace LHDS.Core.Services.Processings.Mesh
         ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync();
         ValueTask<MeshMessage> RetrieveAndAcknowledgeMessageByIdAsync(string messageId);
         ValueTask<MeshMessage> RetrieveMessageByIdAsync(string messageId);
-        ValueTask<MeshMessage> AcknowledgeMessageByIdAsync(string messageId);
+        ValueTask<bool> AcknowledgeMessageByIdAsync(string messageId);
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.CsvMappers.Exceptions;
 using LHDS.Core.Models.Foundations.OptOuts;
-using LHDS.Core.Models.Processings.CsvMapper.Exceptions;
+using LHDS.Core.Models.Processings.CsvMappers.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;

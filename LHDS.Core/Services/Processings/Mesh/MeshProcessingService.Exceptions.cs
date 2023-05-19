@@ -18,11 +18,15 @@ namespace LHDS.Core.Services.Processings.Mesh
         private delegate ValueTask<MeshMessage> ReturningMessageMeshFunction();
         private delegate ValueTask<List<string>> ReturningStringsMeshFunction();
 
-        private async ValueTask<bool> TryCatch(ReturningBoolMeshFunction returningMeshFunction)
+        private async ValueTask<bool> TryCatch(ReturningBoolMeshFunction returningBoolMeshFunction)
         {
             try
             {
-                return await returningMeshFunction();
+                return await returningBoolMeshFunction();
+            }
+            catch (InvalidMeshProcessingArgumentException exception)
+            {
+                throw CreateAndLogValidationException(exception);
             }
             catch (MeshValidationException meshValidationException)
             {
@@ -55,6 +59,10 @@ namespace LHDS.Core.Services.Processings.Mesh
             {
                 return await returningMessageMeshFunction();
             }
+            catch (InvalidMeshProcessingArgumentException exception)
+            {
+                throw CreateAndLogValidationException(exception);
+            }
             catch (MeshValidationException meshValidationException)
             {
                 throw CreateAndLogDependencyValidationException(meshValidationException);
@@ -62,6 +70,10 @@ namespace LHDS.Core.Services.Processings.Mesh
             catch (NullMeshProcessingException exception)
             {
                 throw CreateAndLogValidationException(exception);
+            }
+            catch (InvalidMeshMessageException invalidMeshException)
+            {
+                throw CreateAndLogValidationException(invalidMeshException);
             }
             catch (MeshDependencyValidationException meshDependencyValidationException)
             {
@@ -74,10 +86,6 @@ namespace LHDS.Core.Services.Processings.Mesh
             catch (MeshServiceException meshServiceException)
             {
                 throw CreateAndLogDependencyException(meshServiceException);
-            }
-            catch (InvalidMeshProcessingArgumentException exception)
-            {
-                throw CreateAndLogValidationException(exception);
             }
             catch (Exception exception)
             {

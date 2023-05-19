@@ -18,7 +18,7 @@ using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts;
-using LHDS.Core.Models.Processings.CsvMapper.Exceptions;
+using LHDS.Core.Models.Processings.CsvMappers.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using LHDS.Core.Models.Processings.OptOuts.Exceptions;
@@ -202,6 +202,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             return $"{formattedNhsNumber}{checkNumber}";
         }
 
+        private static string GetHeaderValue(MeshMessage message, string keyToFind)
+        {
+            List<string> value = new List<string>();
+
+            foreach (var key in message.Headers.Keys)
+            {
+                if (key.ToLower() == keyToFind.ToLower())
+                {
+                    message.Headers.TryGetValue(key, out value);
+
+                    break;
+                }
+            }
+
+            return value.FirstOrDefault();
+        }
+
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime().AddDays(7)).GetValue();
 
@@ -229,11 +246,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             {
                 if (hasTrailingComma)
                 {
-                    builder.AppendLine($"{item},");
+                    builder.AppendLine($"{item.NhsNumber},");
                 }
                 else
                 {
-                    builder.AppendLine($"{item}");
+                    builder.AppendLine($"{item.NhsNumber}");
                 }
             }
 
@@ -284,7 +301,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             return messages;
         }
 
-        private static List<MeshMessage> GetRandomMessages(List<string> items, string batchReference)
+        private static List<MeshMessage> GetRandomMessages(List<string> items)
         {
             List<MeshMessage> messageList = new List<MeshMessage>();
 
@@ -292,7 +309,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             {
                 var message = CreateRandomMessage();
                 message.MessageId = item;
-                message.Headers["Mex-LocalID"] = new List<string> { batchReference };
+                message.Headers["Mex-LocalID"] = new List<string> { GetRandomString() }; // BatchReference
                 messageList.Add(message);
             }
 

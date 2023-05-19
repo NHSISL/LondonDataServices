@@ -103,8 +103,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                 Document document = new Document
                 {
-                    FileName = $"{optOutConfiguration.OutputFolder}/{fileName}_Response_{dateTimeBroker
-                        .GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss")}.csv",
+                    FileName = $"{optOutConfiguration.OutputFolder}/{fileName}_Response.csv",
                     DocumentData = processedBytes
                 };
 
@@ -153,13 +152,13 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     optOut.UpdatedDate = dateTime;
                     optOut.BatchReference = batchReference;
 
-                    await this.optOutProcessingService.ModifyOptOutAsync(optOut);
+                    await this.optOutProcessingService.AddOrModifyOptOutAsync(optOut);
                 }
 
                 return message;
             });
 
-        public ValueTask RetrieveUpdatedMeshConsentStatusesChangesAsync() =>
+        public ValueTask<List<MeshMessage>> RetrieveUpdatedMeshConsentStatusesChangesAsync() =>
             TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
@@ -168,15 +167,23 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 List<string> messageIds = await
                     this.meshProcessingService.RetrieveMessageIdsFromInboxAsync();
 
+                List<MeshMessage> meshMessageList = new List<MeshMessage>();
+
                 foreach (string messageId in messageIds)
                 {
-                    MeshMessage message = await meshProcessingService.RetrieveAndAcknowledgeMessageByIdAsync(messageId);
-                    string batchReference = message.Headers["Mex-LocalID"].FirstOrDefault();
+                    MeshMessage message = await meshProcessingService
+                        .RetrieveAndAcknowledgeMessageByIdAsync(messageId);
+
+                    meshMessageList.Add(message);
 
                     List<OptOutIdentifier> consentedIdentifierList =
                         await csvMapperProcessingService.MapCsvToObjectAsync<OptOutIdentifier>(
                             message.StringContent,
                             withHeader);
+
+                    ValidateLocalIdHeaderExists(message);
+
+                    string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
                     List<OptOut> originalBatch = await this.optOutProcessingService
                         .RetrieveAllOptOutsByBatchReferenceAsync(batchReference);
@@ -188,7 +195,6 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         .Where(optOut => consentedIdentifiers.Contains(optOut.NhsNumber)).ToList();
 
                     List<OptOut> nonConsentedList = originalBatch.Except(consentedList).ToList();
-
                     List<OptOut> delta = new List<OptOut>();
 
                     foreach (var item in consentedList)
@@ -204,23 +210,23 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         item.LastSentToMesh = dateTime;
                         item.OptOutStatus = "Opt-In";
 
-                        await this.optOutProcessingService.ModifyOptOutAsync(item);
+                        await this.optOutProcessingService.AddOrModifyOptOutAsync(item);
                     }
 
-                    foreach (var item in nonConsentedList)
+                    foreach (var nonConsentedListItem in nonConsentedList)
                     {
-                        if (item.OptOutStatus != "Opt-Out")
+                        if (nonConsentedListItem.OptOutStatus != "Opt-Out")
                         {
-                            delta.Add(item);
+                            delta.Add(nonConsentedListItem);
                         }
 
                         var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                        item.UpdatedDate = dateTime;
-                        item.CacheTime = dateTime;
-                        item.LastSentToMesh = dateTime;
-                        item.OptOutStatus = "Opt-Out";
+                        nonConsentedListItem.UpdatedDate = dateTime;
+                        nonConsentedListItem.CacheTime = dateTime;
+                        nonConsentedListItem.LastSentToMesh = dateTime;
+                        nonConsentedListItem.OptOutStatus = "Opt-Out";
 
-                        await this.optOutProcessingService.ModifyOptOutAsync(item);
+                        await this.optOutProcessingService.AddOrModifyOptOutAsync(nonConsentedListItem);
                     }
 
                     List<OptOutIdentifier> differentIdentifiers = delta
@@ -235,12 +241,30 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     Document document = new Document
                     {
                         DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
-                        FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_Response_" +
-                            $"{this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss")}.csv",
+                        FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv"
                     };
 
                     await this.documentProcessingService.AddDocumentAsync(document);
                 }
+
+                return meshMessageList;
             });
+
+        private static string GetHeaderValue(MeshMessage message, string keyToFind)
+        {
+            List<string> value = new List<string>();
+
+            foreach (var key in message.Headers.Keys)
+            {
+                if (key.ToLower() == keyToFind.ToLower())
+                {
+                    message.Headers.TryGetValue(key, out value);
+
+                    break;
+                }
+            }
+
+            return value.FirstOrDefault();
+        }
     }
 }

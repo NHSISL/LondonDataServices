@@ -93,7 +93,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             try
             {
                 OptOut modifiedOptOut =
-                    await this.optOutProcessingService.ModifyOptOutAsync(optOut);
+                    await this.optOutProcessingService.AddOrModifyOptOutAsync(optOut);
 
                 return Ok(modifiedOptOut);
             }

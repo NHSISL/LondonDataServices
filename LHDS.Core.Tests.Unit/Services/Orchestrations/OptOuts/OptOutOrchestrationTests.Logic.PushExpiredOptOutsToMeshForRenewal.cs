@@ -71,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 optOut.BatchReference = batchReference;
 
                 this.optOutProcessingServiceMock.Setup(processing =>
-                    processing.ModifyOptOutAsync(optOut))
+                    processing.AddOrModifyOptOutAsync(optOut))
                         .ReturnsAsync(optOut);
             }
 
@@ -79,7 +79,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             await this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
             // Then
-
             this.optOutProcessingServiceMock.Verify(processings =>
                 processings.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays),
                     Times.Once);
@@ -99,7 +98,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 optOut.BatchReference = batchReference;
 
                 this.optOutProcessingServiceMock.Verify(processing =>
-                    processing.ModifyOptOutAsync(optOut),
+                    processing.AddOrModifyOptOutAsync(optOut),
                         Times.Once());
             }
 

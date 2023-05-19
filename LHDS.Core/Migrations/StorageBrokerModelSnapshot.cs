@@ -125,7 +125,6 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("BatchReference")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -160,6 +159,40 @@ namespace LHDS.Core.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OptOuts");
+                });
+
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.PdsAudits.PdsAudit", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CorrelationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("UpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PdsAudits");
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.Suppliers.Supplier", b =>

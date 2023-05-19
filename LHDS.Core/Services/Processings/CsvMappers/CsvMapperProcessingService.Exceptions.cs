@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.CsvMappers.Exceptions;
-using LHDS.Core.Models.Processings.CsvMapper.Exceptions;
+using LHDS.Core.Models.Processings.CsvMappers.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Processings.CsvMappers

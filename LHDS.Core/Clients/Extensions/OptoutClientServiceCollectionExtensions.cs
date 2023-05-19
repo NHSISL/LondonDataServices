@@ -19,6 +19,7 @@ using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Orchestrations.OptOuts;
 using LHDS.Core.Services.Foundations.Audits;
+using LHDS.Core.Services.Foundations.CsvMappers;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Mesh;
@@ -115,10 +116,10 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddBrokers(IServiceCollection services)
         {
-            services.AddSingleton<ILoggingBroker, LoggingBroker>();
+            services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
-            services.AddSingleton<ICsvMapperBroker, CsvMapperBroker>();
+            services.AddTransient<ICsvMapperBroker, CsvMapperBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IMeshBroker, MeshBroker>();
@@ -127,25 +128,25 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddOrchestrations(IServiceCollection services)
         {
-            services.AddSingleton<IOptOutOrchestrationService, OptOutOrchestrationService>();
+            services.AddTransient<IOptOutOrchestrationService, OptOutOrchestrationService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)
         {
-            services.AddSingleton<ICsvMapperProcessingService, CsvMapperProcessingService>();
-            services.AddSingleton<IDocumentProcessingService, DocumentProcessingService>();
-            services.AddSingleton<IMeshProcessingService, MeshProcessingService>();
-            services.AddSingleton<IOptOutProcessingService, OptOutProcessingService>();
+            services.AddTransient<ICsvMapperProcessingService, CsvMapperProcessingService>();
+            services.AddTransient<IDocumentProcessingService, DocumentProcessingService>();
+            services.AddTransient<IMeshProcessingService, MeshProcessingService>();
+            services.AddTransient<IOptOutProcessingService, OptOutProcessingService>();
         }
 
         private static void AddServices(IServiceCollection services)
         {
-            services.AddSingleton<IAuditService, AuditService>();
-            services.AddSingleton<ICsvMapperService, CsvMapperService>();
-            services.AddSingleton<IDocumentService, DocumentService>();
+            services.AddTransient<IAuditService, AuditService>();
+            services.AddTransient<ICsvMapperService, CsvMapperService>();
+            services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
-            services.AddSingleton<IMeshService, MeshService>();
-            services.AddSingleton<IOptOutService, OptOutService>();
+            services.AddTransient<IMeshService, MeshService>();
+            services.AddTransient<IOptOutService, OptOutService>();
         }
 
         private static string GetSettings(IConfiguration configuration, string configurationKey, bool mandatory = true)

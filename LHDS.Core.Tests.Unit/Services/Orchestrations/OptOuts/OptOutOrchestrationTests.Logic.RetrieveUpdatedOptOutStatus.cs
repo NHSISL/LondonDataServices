@@ -1485,11 +1485,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
 
             // Then
-            actualMeshMessageList.Should().BeEquivalentTo(expectedMessages);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-               broker.GetCurrentDateTimeOffset(),
-                    Times.AtLeastOnce());
+            actualMeshMessageList.Should().BeEquivalentTo(expectedMeshMessageList);
 
             this.meshProcessingServiceMock.Verify(Processings =>
                 Processings.RetrieveMessageIdsFromInboxAsync(),

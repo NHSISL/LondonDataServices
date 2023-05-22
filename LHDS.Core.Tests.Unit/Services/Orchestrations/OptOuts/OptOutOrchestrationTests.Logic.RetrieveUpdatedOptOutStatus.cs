@@ -27,8 +27,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             List<string> outputMessageIds = GetRandomStrings(count: 1);
             List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds);
+            MeshMessage firstMessage = outputMessages.FirstOrDefault();
+            firstMessage.Headers["Mex-WorkflowID"] = new List<string> { this.meshConfiguration.WorkflowId };
             List<MeshMessage> expectedMessages = outputMessages.DeepClone();
-
+            
             List<OptOutIdentifier> outputIdentifierUnknownList =
                 CreateRandomListOfOptOutIdentifiers(count: 1);
 
@@ -80,7 +82,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 // Get message
                 this.meshProcessingServiceMock.Setup(processing =>
-                    processing.RetrieveAndAcknowledgeMessageByIdAsync(messageId))
+                    processing.RetrieveMessageByIdAsync(messageId))
                         .ReturnsAsync(message);
 
                 meshMessageList.Add(message);
@@ -171,6 +173,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
                     FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv",
                 };
+
+                this.meshProcessingServiceMock.Setup(processings =>
+                    processings.AcknowledgeMessageByIdAsync(messageId));
             }
 
             List<MeshMessage> expectedMeshMessageList = meshMessageList.DeepClone();
@@ -196,7 +201,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 // Get message
                 this.meshProcessingServiceMock.Verify(processings =>
-                    processings.RetrieveAndAcknowledgeMessageByIdAsync(messageId),
+                    processings.RetrieveMessageByIdAsync(messageId),
                         Times.Once());
 
                 // Map message content to object
@@ -290,6 +295,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 this.documentProcessingServiceMock.Verify(processings =>
                     processings.AddDocumentAsync(It.Is(SameDocumentAs(document))),
                         Times.Exactly(outputMessageIds.Count));
+
+                this.meshProcessingServiceMock.Verify(processings =>
+                    processings.AcknowledgeMessageByIdAsync(messageId),
+                        Times.Once());
             }
 
             this.meshProcessingServiceMock.VerifyNoOtherCalls();
@@ -306,6 +315,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             List<string> outputMessageIds = GetRandomStrings(count: 1);
             List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds);
+            MeshMessage firstMessage = outputMessages.FirstOrDefault();
+            firstMessage.Headers["Mex-WorkflowID"] = new List<string> { this.meshConfiguration.WorkflowId };
             List<MeshMessage> expectedMessages = outputMessages.DeepClone();
 
             List<OptOutIdentifier> outputIdentifierUnknownList =
@@ -357,7 +368,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 // Get message
                 this.meshProcessingServiceMock.Setup(processing =>
-                    processing.RetrieveAndAcknowledgeMessageByIdAsync(messageId))
+                    processing.RetrieveMessageByIdAsync(messageId))
                         .ReturnsAsync(message);
 
                 meshMessageList.Add(message);
@@ -448,6 +459,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
                     FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv",
                 };
+
+                this.meshProcessingServiceMock.Setup(processings =>
+                    processings.AcknowledgeMessageByIdAsync(messageId));
             }
 
             List<MeshMessage> expectedMeshMessageList = meshMessageList.DeepClone();
@@ -473,7 +487,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 // Get message
                 this.meshProcessingServiceMock.Verify(processings =>
-                    processings.RetrieveAndAcknowledgeMessageByIdAsync(messageId),
+                    processings.RetrieveMessageByIdAsync(messageId),
                         Times.Once());
 
                 // Map message content to object
@@ -567,6 +581,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 this.documentProcessingServiceMock.Verify(processings =>
                     processings.AddDocumentAsync(It.Is(SameDocumentAs(document))),
                         Times.Exactly(outputMessageIds.Count));
+
+                this.meshProcessingServiceMock.Verify(processings =>
+                    processings.AcknowledgeMessageByIdAsync(messageId),
+                        Times.Once());
             }
 
             this.meshProcessingServiceMock.VerifyNoOtherCalls();
@@ -583,6 +601,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             List<string> outputMessageIds = GetRandomStrings(count: 1);
             List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds);
+            MeshMessage firstMessage = outputMessages.FirstOrDefault();
+            firstMessage.Headers["Mex-WorkflowID"] = new List<string> { this.meshConfiguration.WorkflowId };
             List<MeshMessage> expectedMessages = outputMessages.DeepClone();
 
             List<OptOutIdentifier> outputIdentifierUnknownList =
@@ -634,7 +654,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 // Get message
                 this.meshProcessingServiceMock.Setup(processing =>
-                    processing.RetrieveAndAcknowledgeMessageByIdAsync(messageId))
+                    processing.RetrieveMessageByIdAsync(messageId))
                         .ReturnsAsync(message);
 
                 meshMessageList.Add(message);
@@ -725,6 +745,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
                     FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv",
                 };
+
+                this.meshProcessingServiceMock.Setup(processings =>
+                    processings.AcknowledgeMessageByIdAsync(messageId));
             }
 
             List<MeshMessage> expectedMeshMessageList = meshMessageList.DeepClone();
@@ -750,7 +773,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 // Get message
                 this.meshProcessingServiceMock.Verify(processings =>
-                    processings.RetrieveAndAcknowledgeMessageByIdAsync(messageId),
+                    processings.RetrieveMessageByIdAsync(messageId),
                         Times.Once());
 
                 // Map message content to object
@@ -844,6 +867,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 this.documentProcessingServiceMock.Verify(processings =>
                     processings.AddDocumentAsync(It.Is(SameDocumentAs(document))),
                         Times.Exactly(outputMessageIds.Count));
+
+                this.meshProcessingServiceMock.Verify(processings =>
+                    processings.AcknowledgeMessageByIdAsync(messageId),
+                        Times.Once());
             }
 
             this.meshProcessingServiceMock.VerifyNoOtherCalls();
@@ -860,6 +887,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             List<string> outputMessageIds = GetRandomStrings(count: 1);
             List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds);
+            MeshMessage firstMessage = outputMessages.FirstOrDefault();
+            firstMessage.Headers["Mex-WorkflowID"] = new List<string> { this.meshConfiguration.WorkflowId };
             List<MeshMessage> expectedMessages = outputMessages.DeepClone();
 
             List<OptOutIdentifier> outputIdentifierUnknownList = new List<OptOutIdentifier>();
@@ -909,7 +938,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 // Get message
                 this.meshProcessingServiceMock.Setup(processing =>
-                    processing.RetrieveAndAcknowledgeMessageByIdAsync(messageId))
+                    processing.RetrieveMessageByIdAsync(messageId))
                         .ReturnsAsync(message);
 
                 meshMessageList.Add(message);
@@ -1000,6 +1029,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
                     FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv",
                 };
+
+                this.meshProcessingServiceMock.Setup(processings =>
+                    processings.AcknowledgeMessageByIdAsync(messageId));
             }
 
             List<MeshMessage> expectedMeshMessageList = meshMessageList.DeepClone();
@@ -1025,7 +1057,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 // Get message
                 this.meshProcessingServiceMock.Verify(processings =>
-                    processings.RetrieveAndAcknowledgeMessageByIdAsync(messageId),
+                    processings.RetrieveMessageByIdAsync(messageId),
                         Times.Once());
 
                 // Map message content to object
@@ -1119,6 +1151,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 this.documentProcessingServiceMock.Verify(processings =>
                     processings.AddDocumentAsync(It.Is(SameDocumentAs(document))),
                         Times.Exactly(outputMessageIds.Count));
+
+                this.meshProcessingServiceMock.Verify(processings =>
+                    processings.AcknowledgeMessageByIdAsync(messageId),
+                        Times.Once());
             }
 
             this.meshProcessingServiceMock.VerifyNoOtherCalls();
@@ -1135,6 +1171,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             List<string> outputMessageIds = GetRandomStrings(count: 1);
             List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds);
+            MeshMessage firstMessage = outputMessages.FirstOrDefault();
+            firstMessage.Headers["Mex-WorkflowID"] = new List<string> { this.meshConfiguration.WorkflowId };
             List<MeshMessage> expectedMessages = outputMessages.DeepClone();
 
             List<OptOutIdentifier> outputIdentifierUnknownList = new List<OptOutIdentifier>();
@@ -1186,7 +1224,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 // Get message
                 this.meshProcessingServiceMock.Setup(processing =>
-                    processing.RetrieveAndAcknowledgeMessageByIdAsync(messageId))
+                    processing.RetrieveMessageByIdAsync(messageId))
                         .ReturnsAsync(message);
 
                 meshMessageList.Add(message);
@@ -1277,6 +1315,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
                     FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv",
                 };
+
+                this.meshProcessingServiceMock.Setup(processings =>
+                    processings.AcknowledgeMessageByIdAsync(messageId));
+
             }
 
             List<MeshMessage> expectedMeshMessageList = meshMessageList.DeepClone();
@@ -1302,7 +1344,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 // Get message
                 this.meshProcessingServiceMock.Verify(processings =>
-                    processings.RetrieveAndAcknowledgeMessageByIdAsync(messageId),
+                    processings.RetrieveMessageByIdAsync(messageId),
                         Times.Once());
 
                 // Map message content to object
@@ -1396,6 +1438,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 this.documentProcessingServiceMock.Verify(processings =>
                     processings.AddDocumentAsync(It.Is(SameDocumentAs(document))),
                         Times.Exactly(outputMessageIds.Count));
+
+                this.meshProcessingServiceMock.Verify(processings =>
+                    processings.AcknowledgeMessageByIdAsync(messageId),
+                        Times.Once());
             }
 
             this.meshProcessingServiceMock.VerifyNoOtherCalls();
@@ -1403,5 +1449,101 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldRetrieveMeshOptOutStatusesButExcludeUnmatchedWorkflowIdCacheAsync()
+        {
+            // Given
+            bool withHeader = optOutConfiguration.OptOutFileHasHeader;
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            List<string> outputMessageIds = GetRandomStrings(count: 1);
+            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds);
+            MeshMessage firstMessage = outputMessages.FirstOrDefault();
+            List<MeshMessage> expectedMessages = outputMessages.DeepClone();
+
+
+            List<OptOutIdentifier> outputIdentifierUnknownList =
+                CreateRandomListOfOptOutIdentifiers(count: 1);
+
+            List<OptOutIdentifier> outputIdentifierConsentedList =
+                CreateRandomListOfOptOutIdentifiers(count: 1);
+
+            List<OptOutIdentifier> outputIdentifierNonConsentedList =
+                CreateRandomListOfOptOutIdentifiers(count: 1);
+
+            List<OptOutIdentifier> randomOutputIdentifierBatch = new List<OptOutIdentifier>();
+            randomOutputIdentifierBatch.AddRange(outputIdentifierUnknownList);
+            randomOutputIdentifierBatch.AddRange(outputIdentifierConsentedList);
+            randomOutputIdentifierBatch.AddRange(outputIdentifierNonConsentedList);
+
+            List<OptOut> outputBatch = new List<OptOut>();
+
+            foreach (var message in outputMessages)
+            {
+                string batchReference = GetHeaderValue(message, "Mex-LocalID");
+
+                List<OptOut> randomUnkownConsentBatch =
+                    CreateRandomOptOutsList(outputIdentifierUnknownList, batchReference, "Unknown");
+
+                List<OptOut> randomConsentBatch =
+                    CreateRandomOptOutsList(outputIdentifierConsentedList, batchReference, "Opt-In");
+
+                List<OptOut> randomNonConsentBatch =
+                    CreateRandomOptOutsList(outputIdentifierNonConsentedList, batchReference, "Opt-In");
+
+                outputBatch.AddRange(randomUnkownConsentBatch);
+                outputBatch.AddRange(randomConsentBatch);
+                outputBatch.AddRange(randomNonConsentBatch);
+            }
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            this.meshProcessingServiceMock.Setup(processings =>
+                processings.RetrieveMessageIdsFromInboxAsync())
+                    .ReturnsAsync(outputMessageIds);
+
+            List<MeshMessage> meshMessageList = new List<MeshMessage>();
+
+            foreach (string messageId in outputMessageIds)
+            {
+                var message = outputMessages.First(message => message.MessageId == messageId);
+
+                // Get message
+                this.meshProcessingServiceMock.Setup(processing =>
+                    processing.RetrieveMessageByIdAsync(messageId))
+                        .ReturnsAsync(message);
+            }
+
+            List<MeshMessage> expectedMeshMessageList = meshMessageList.DeepClone();
+
+            // When
+            List<MeshMessage> actualMeshMessageList =
+                await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+
+            // Then
+            actualMeshMessageList.Should().BeEquivalentTo(expectedMeshMessageList);
+
+            this.meshProcessingServiceMock.Verify(Processings =>
+                Processings.RetrieveMessageIdsFromInboxAsync(),
+                    Times.Once);
+
+            foreach (string messageId in outputMessageIds)
+            {
+                var message = outputMessages.First(message => message.MessageId == messageId);
+
+                // Get message
+                this.meshProcessingServiceMock.Verify(processings =>
+                    processings.RetrieveMessageByIdAsync(messageId),
+                        Times.Once());
+            }
+
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+        }
+
     }
 }

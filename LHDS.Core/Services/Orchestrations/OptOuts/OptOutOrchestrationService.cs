@@ -125,7 +125,12 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         .RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays);
 
                 List<OptOutIdentifier> mappedOptOutIdentifiers =
-                    mappedOptOuts.Select(optout => new OptOutIdentifier { NhsNumber = optout.NhsNumber }).ToList();
+                    mappedOptOuts.Select(optout => new OptOutIdentifier
+                    {
+                        NhsNumber = optout.NhsNumber,
+                        UniqueReference = optout.UniqueReference,
+                        Status = optout.Status
+                    }).ToList();
 
                 var processedOutputString = await this.csvMapperProcessingService
                        .MapObjectToCsvAsync(mappedOptOutIdentifiers, withHeader, shouldAddTrailingComma);
@@ -191,7 +196,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         .RetrieveAllOptOutsByBatchReferenceAsync(batchReference);
 
                     List<string> consentedIdentifiers = consentedIdentifierList
-                        .Select(optOut => optOut.NhsNumber).ToList();
+                        .Select(optOut => optOut.NhsNumber)
+                        .ToList();
 
                     List<OptOut> consentedList = originalBatch
                         .Where(optOut => consentedIdentifiers.Contains(optOut.NhsNumber)).ToList();
@@ -232,7 +238,11 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     }
 
                     List<OptOutIdentifier> differentIdentifiers = delta
-                        .Select(identifier => new OptOutIdentifier { NhsNumber = identifier.NhsNumber }).ToList();
+                        .Select(identifier => new OptOutIdentifier
+                        {
+                            NhsNumber = identifier.NhsNumber,
+                            UniqueReference = identifier.UniqueReference,
+                        }).ToList();
 
                     string csvDifferences = await this.csvMapperProcessingService
                         .MapObjectToCsvAsync(

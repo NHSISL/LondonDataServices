@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
 {
     public partial class OptOutTests
     {
-        [Fact(Skip = "Integration Tests")]
+        [Fact]
         public async Task RetrieveUpdatedMeshConsentStatusesChanges()
         {
             try
@@ -59,13 +59,25 @@ namespace LHDS.Core.Tests.Integration.OptOuts
 
         private static List<OptOutIdentifier> ConvertToOptOutIdentifierList(string content)
         {
-            List<string> stringList = content.Replace("\r\n", string.Empty)
-                .Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+            List<OptOutIdentifier> optOutIdentifiers = new List<OptOutIdentifier>();
 
-            List<OptOutIdentifier> optOutIdentifierList = stringList
-                .Select(item => new OptOutIdentifier { NhsNumber = item }).ToList();
+            string[] lines = content.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
-            return optOutIdentifierList;
+            foreach (string line in lines)
+            {
+                string[] parts = line.Split(',');
+
+                OptOutIdentifier identifier = new OptOutIdentifier
+                {
+                    UniqueReference = parts[0],
+                    NhsNumber = parts[1],
+                    Status = parts[2]
+                };
+
+                optOutIdentifiers.Add(identifier);
+            }
+
+            return optOutIdentifiers;
         }
     }
 }

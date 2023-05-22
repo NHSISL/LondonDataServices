@@ -397,8 +397,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             filler.Setup()
                 .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
-                .OnProperty(optOut => optOut.UniqueReference).Use(GetRandomString());
-
+                .OnProperty(optOut => optOut.UniqueReference).Use(GetRandomString())
+                .OnProperty(optOut => optOut.Status).Use(GetRandomString());
             return filler;
         }
 

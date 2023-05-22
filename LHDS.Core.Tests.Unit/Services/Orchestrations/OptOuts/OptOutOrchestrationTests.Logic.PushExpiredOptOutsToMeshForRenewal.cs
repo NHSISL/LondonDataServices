@@ -28,7 +28,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<OptOut> outputOptOuts = randomOptOuts;
 
             List<OptOutIdentifier> mappedOptOuts = outputOptOuts
-                .Select(optout => new OptOutIdentifier { NhsNumber = optout.NhsNumber }).ToList();
+                .Select(optout => new OptOutIdentifier
+                {
+                    NhsNumber = optout.NhsNumber,
+                    UniqueReference = optout.UniqueReference,
+                    Status = optout.Status
+                }).ToList();
 
             var processedOutputString = GetRandomString();
 

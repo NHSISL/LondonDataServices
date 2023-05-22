@@ -381,7 +381,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 // Use the consented list to only get the items that need to be opt-in from the storage
                 List<string> consentedIdentifiers = outputIdentifierConsentedList
-                    .Select(identifier => identifier.NhsNumber).ToList();
+                    .Select(identifier => identifier.NhsNumber)
+                    .ToList();
 
                 List<OptOut> expectedBatchSpecificOptOuts = batchSpecificOptOuts.DeepClone();
 
@@ -430,7 +431,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 }
 
                 List<OptOutIdentifier> differentIdentifiers = delta
-                    .Select(item => new OptOutIdentifier { NhsNumber = item.NhsNumber }).ToList();
+                    .Select(item => new OptOutIdentifier
+                    {
+                        NhsNumber = item.NhsNumber,
+                        UniqueReference = item.UniqueReference,
+                    }).ToList();
 
                 string csvDifferences = CreateNewCsvList(
                     differentIdentifiers,
@@ -543,7 +548,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 }
 
                 List<OptOutIdentifier> differentIdentifiers = delta
-                   .Select(item => new OptOutIdentifier { NhsNumber = item.NhsNumber }).ToList();
+                   .Select(item => new OptOutIdentifier
+                   {
+                       NhsNumber = item.NhsNumber,
+                       UniqueReference = item.UniqueReference
+                   }).ToList();
 
                 string csvDifferences = CreateNewCsvList(
                     differentIdentifiers,

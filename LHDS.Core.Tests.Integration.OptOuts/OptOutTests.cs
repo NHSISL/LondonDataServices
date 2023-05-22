@@ -91,6 +91,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
                 NhsNumber = "9694116414",
                 LastSentToMesh = currentDateTime,
                 Status = "Unknown",
+                UniqueReference = "4d30a841-05f2-43e1-afa1-4280498841ff",
                 CacheTime = currentDateTime,
                 CreatedDate = currentDateTime,
                 UpdatedDate = currentDateTime,
@@ -105,6 +106,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
                 NhsNumber = "9694116422",
                 LastSentToMesh = currentDateTime,
                 Status = "Unknown",
+                UniqueReference = "0b21baa4-0a36-4f4a-b7c7-06b401981a45",
                 CacheTime = currentDateTime,
                 CreatedDate = currentDateTime,
                 UpdatedDate = currentDateTime,
@@ -119,6 +121,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
                 NhsNumber = "9694116430",
                 LastSentToMesh = currentDateTime,
                 Status = "Unknown",
+                UniqueReference = "8a935b2d-9e7d-4655-8488-66d4837c81c1",
                 CacheTime = currentDateTime,
                 CreatedDate = currentDateTime,
                 UpdatedDate = currentDateTime,
@@ -156,6 +159,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
                 NhsNumber = "9694116481",
                 LastSentToMesh = expiredDateTime,
                 Status = "Unknown",
+                UniqueReference = "9e48851c-76c1-4db1-aa78-c36c0eb86223",
                 CacheTime = expiredDateTime,
                 CreatedDate = auditDateTime,
                 UpdatedDate = auditDateTime,
@@ -170,6 +174,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
                 NhsNumber = "9694116511",
                 LastSentToMesh = expiredDateTime,
                 Status = "Unknown",
+                UniqueReference = "9e48851c-76c1-4db1-aa78-c36c0eb86224",
                 CacheTime = expiredDateTime,
                 CreatedDate = auditDateTime,
                 UpdatedDate = auditDateTime,
@@ -184,6 +189,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
                 NhsNumber = "9694116473",
                 LastSentToMesh = expiredDateTime,
                 Status = "Unknown",
+                UniqueReference = "9e48851c-76c1-4db1-aa78-c36c0eb86225",
                 CacheTime = expiredDateTime,
                 CreatedDate = auditDateTime,
                 UpdatedDate = auditDateTime,
@@ -213,9 +219,9 @@ namespace LHDS.Core.Tests.Integration.OptOuts
         {
             MeshMessage simulatedMeshReply = new MeshMessage
             {
-                StringContent = "9694116414," + Environment.NewLine
-                                    + "9694116422," + Environment.NewLine
-                                    + "9694116430," + Environment.NewLine,
+                StringContent = "4d30a841-05f2-43e1-afa1-4280498841ff,9694116414,Unknown" + Environment.NewLine
+                                    + "0b21baa4-0a36-4f4a-b7c7-06b401981a45,9694116422,Unknown" + Environment.NewLine
+                                    + "8a935b2d-9e7d-4655-8488-66d4837c81c1,9694116430,Unknown" + Environment.NewLine,
                 Headers = {
                         { "Content-Type", new List<string> { "text/plain" } },
                         { "Mex-From", new List<string> { this.meshConfiguration.MailboxId } },

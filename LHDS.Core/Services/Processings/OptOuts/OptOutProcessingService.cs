@@ -60,7 +60,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
                     return await this.optOutService.AddOptOutAsync(optOut);
                 }
 
-                maybeOptOut.OptOutStatus = optOut.OptOutStatus;
+                maybeOptOut.Status = optOut.Status;
                 maybeOptOut.BatchReference = optOut.BatchReference;
                 maybeOptOut.CacheTime = optOut.CacheTime;
                 maybeOptOut.LastSentToMesh = optOut.LastSentToMesh;

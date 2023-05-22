@@ -72,7 +72,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 var inputString = Encoding.ASCII.GetString(optOutFile);
 
                 List<OptOutIdentifier> mappedOptOuts =
-                await this.csvMapperProcessingService.MapCsvToObjectAsync<OptOutIdentifier>(inputString, false);
+                    await this.csvMapperProcessingService.MapCsvToObjectAsync<OptOutIdentifier>(inputString, false);
 
                 List<OptOut> processedOptOuts = new List<OptOut>();
 
@@ -86,7 +86,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                             {
                                 Id = this.identifierBroker.GetIdentifier(),
                                 NhsNumber = optOut.NhsNumber,
-                                OptOutStatus = "Unknown",
+                                Status = string.IsNullOrWhiteSpace(optOut.Status) ? "Unknown" : optOut.Status,
+                                UniqueReference = optOut.UniqueReference,
                                 CreatedDate = timeStamp,
                                 UpdatedDate = timeStamp,
                                 CreatedBy = "System",
@@ -139,6 +140,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                 message.Headers.Add("Content-Type", new List<string> { "text/plain" });
                 message.Headers.Add("Mex-FileName", new List<string> { batchReference });
+                message.Headers.Add("Mex-LocalID", new List<string> { batchReference });
                 message.Headers.Add("Mex-From", new List<string> { this.meshConfiguration.MailboxId });
                 message.Headers.Add("Mex-To", new List<string> { this.optOutConfiguration.To });
                 message.Headers.Add("Mex-WorkflowID", new List<string> { this.optOutConfiguration.WorkflowId });
@@ -199,7 +201,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                     foreach (var item in consentedList)
                     {
-                        if (item.OptOutStatus != "Opt-In")
+                        if (item.Status != "Opt-In")
                         {
                             delta.Add(item);
                         }
@@ -208,14 +210,14 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         item.UpdatedDate = dateTime;
                         item.CacheTime = dateTime;
                         item.LastSentToMesh = dateTime;
-                        item.OptOutStatus = "Opt-In";
+                        item.Status = "Opt-In";
 
                         await this.optOutProcessingService.AddOrModifyOptOutAsync(item);
                     }
 
                     foreach (var nonConsentedListItem in nonConsentedList)
                     {
-                        if (nonConsentedListItem.OptOutStatus != "Opt-Out")
+                        if (nonConsentedListItem.Status != "Opt-Out")
                         {
                             delta.Add(nonConsentedListItem);
                         }
@@ -224,7 +226,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         nonConsentedListItem.UpdatedDate = dateTime;
                         nonConsentedListItem.CacheTime = dateTime;
                         nonConsentedListItem.LastSentToMesh = dateTime;
-                        nonConsentedListItem.OptOutStatus = "Opt-Out";
+                        nonConsentedListItem.Status = "Opt-Out";
 
                         await this.optOutProcessingService.AddOrModifyOptOutAsync(nonConsentedListItem);
                     }

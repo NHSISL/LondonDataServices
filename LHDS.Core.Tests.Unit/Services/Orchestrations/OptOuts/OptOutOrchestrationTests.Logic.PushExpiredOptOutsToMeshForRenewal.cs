@@ -55,6 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             message.Headers.Add("Content-Type", new List<string> { "text/plain" });
             message.Headers.Add("Mex-FileName", new List<string> { batchReference });
+            message.Headers.Add("Mex-LocalID", new List<string> { batchReference });
             message.Headers.Add("Mex-From", new List<string> { this.meshConfiguration.MailboxId });
             message.Headers.Add("Mex-To", new List<string> { this.optOutConfiguration.To });
             message.Headers.Add("Mex-WorkflowID", new List<string> { this.optOutConfiguration.WorkflowId });

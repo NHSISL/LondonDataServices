@@ -19,6 +19,7 @@ namespace LHDS.Core.Brokers.CsvMappers
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = hasHeaderRecord,
+                MissingFieldFound = null
             };
 
             using (var reader = new StringReader(data))

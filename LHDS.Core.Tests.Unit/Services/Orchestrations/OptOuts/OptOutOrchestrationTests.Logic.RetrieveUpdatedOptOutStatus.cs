@@ -604,6 +604,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             MeshMessage firstMessage = outputMessages.FirstOrDefault();
             firstMessage.Headers["Mex-WorkflowID"] = new List<string> { this.meshConfiguration.WorkflowId };
             List<MeshMessage> expectedMessages = outputMessages.DeepClone();
+            bool IsAcknowledged = true;
 
             List<OptOutIdentifier> outputIdentifierUnknownList =
                 CreateRandomListOfOptOutIdentifiers(count: 1);

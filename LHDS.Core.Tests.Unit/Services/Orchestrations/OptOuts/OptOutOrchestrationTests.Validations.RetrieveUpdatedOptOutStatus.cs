@@ -21,12 +21,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         [InlineData("")]
         [InlineData(" ")]
         public async Task ShouldThrowValidationExceptionOnRetrieveUpdatedOptOutStatusIfRequiredRetreivedMessageHeaderIsInvalidAndLogItAsync(
-            string invalidInput)
+                string invalidInput)
         {
             // given
             string randomString = GetRandomString();
             MeshMessage randomMessage = CreateRandomMessage();
             randomMessage.MessageId = randomString;
+            randomMessage.Headers["Mex-WorkflowID"] = new List<string> { this.meshConfiguration.WorkflowId };
             MeshMessage retrievedMessage = randomMessage;
             List<string> retrievedMessageIds = new List<string> { retrievedMessage.MessageId };
 
@@ -40,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 new InvalidMeshMessageException();
 
             this.meshProcessingServiceMock.Setup(service =>
-                service.RetrieveAndAcknowledgeMessageByIdAsync(It.IsAny<string>()))
+                service.RetrieveMessageByIdAsync(It.IsAny<string>()))
                     .ReturnsAsync(retrievedMessage);
 
             invalidMeshMessageException.AddData(
@@ -72,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     Times.Once);
 
             this.meshProcessingServiceMock.Verify(service =>
-                service.RetrieveAndAcknowledgeMessageByIdAsync(It.IsAny<string>()),
+                service.RetrieveMessageByIdAsync(It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

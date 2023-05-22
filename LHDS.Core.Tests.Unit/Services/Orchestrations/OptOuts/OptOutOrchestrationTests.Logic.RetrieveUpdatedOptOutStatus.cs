@@ -120,7 +120,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (var item in consentedItems)
                 {
-                    if (item.OptOutStatus != "Opt-In")
+                    if (item.Status != "Opt-In")
                     {
                         delta.Add(item);
                     }
@@ -128,7 +128,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
                     item.LastSentToMesh = randomDateTimeOffset;
-                    item.OptOutStatus = "Opt-In";
+                    item.Status = "Opt-In";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
                         processing.AddOrModifyOptOutAsync(item))
@@ -137,7 +137,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (var item in nonConsentedItems)
                 {
-                    if (item.OptOutStatus != "Opt-Out")
+                    if (item.Status != "Opt-Out")
                     {
                         delta.Add(item);
                     }
@@ -145,7 +145,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
                     item.LastSentToMesh = randomDateTimeOffset;
-                    item.OptOutStatus = "Opt-Out";
+                    item.Status = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
                         processing.AddOrModifyOptOutAsync(item))
@@ -233,7 +233,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (OptOut consentedItem in consentedItems)
                 {
-                    if (consentedItem.OptOutStatus != "Opt-In")
+                    if (consentedItem.Status != "Opt-In")
                     {
                         delta.Add(consentedItem);
                     }
@@ -241,7 +241,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     consentedItem.UpdatedDate = randomDateTimeOffset;
                     consentedItem.CacheTime = randomDateTimeOffset;
                     consentedItem.LastSentToMesh = randomDateTimeOffset;
-                    consentedItem.OptOutStatus = "Opt-In";
+                    consentedItem.Status = "Opt-In";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
                         processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
@@ -250,7 +250,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (OptOut nonConsentedItem in nonConsentedItems)
                 {
-                    if (nonConsentedItem.OptOutStatus != "Opt-Out")
+                    if (nonConsentedItem.Status != "Opt-Out")
                     {
                         delta.Add(nonConsentedItem);
                     }
@@ -258,7 +258,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     nonConsentedItem.UpdatedDate = randomDateTimeOffset;
                     nonConsentedItem.CacheTime = randomDateTimeOffset;
                     nonConsentedItem.LastSentToMesh = randomDateTimeOffset;
-                    nonConsentedItem.OptOutStatus = "Opt-Out";
+                    nonConsentedItem.Status = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
                         processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
@@ -397,7 +397,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (var item in consentedItems)
                 {
-                    if (item.OptOutStatus != "Opt-In")
+                    if (item.Status != "Opt-In")
                     {
                         delta.Add(item);
                     }
@@ -405,7 +405,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
                     item.LastSentToMesh = randomDateTimeOffset;
-                    item.OptOutStatus = "Opt-In";
+                    item.Status = "Opt-In";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
                         processing.AddOrModifyOptOutAsync(item))
@@ -414,7 +414,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (var item in nonConsentedItems)
                 {
-                    if (item.OptOutStatus != "Opt-Out")
+                    if (item.Status != "Opt-Out")
                     {
                         delta.Add(item);
                     }
@@ -422,7 +422,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
                     item.LastSentToMesh = randomDateTimeOffset;
-                    item.OptOutStatus = "Opt-Out";
+                    item.Status = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
                         processing.AddOrModifyOptOutAsync(item))
@@ -510,7 +510,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (OptOut consentedItem in consentedItems)
                 {
-                    if (consentedItem.OptOutStatus != "Opt-In")
+                    if (consentedItem.Status != "Opt-In")
                     {
                         delta.Add(consentedItem);
                     }
@@ -518,7 +518,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     consentedItem.UpdatedDate = randomDateTimeOffset;
                     consentedItem.CacheTime = randomDateTimeOffset;
                     consentedItem.LastSentToMesh = randomDateTimeOffset;
-                    consentedItem.OptOutStatus = "Opt-In";
+                    consentedItem.Status = "Opt-In";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
                         processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
@@ -527,7 +527,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (OptOut nonConsentedItem in nonConsentedItems)
                 {
-                    if (nonConsentedItem.OptOutStatus != "Opt-Out")
+                    if (nonConsentedItem.Status != "Opt-Out")
                     {
                         delta.Add(nonConsentedItem);
                     }
@@ -535,7 +535,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     nonConsentedItem.UpdatedDate = randomDateTimeOffset;
                     nonConsentedItem.CacheTime = randomDateTimeOffset;
                     nonConsentedItem.LastSentToMesh = randomDateTimeOffset;
-                    nonConsentedItem.OptOutStatus = "Opt-Out";
+                    nonConsentedItem.Status = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
                         processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
@@ -674,7 +674,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (var item in consentedItems)
                 {
-                    if (item.OptOutStatus != "Opt-In")
+                    if (item.Status != "Opt-In")
                     {
                         delta.Add(item);
                     }
@@ -682,7 +682,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
                     item.LastSentToMesh = randomDateTimeOffset;
-                    item.OptOutStatus = "Opt-In";
+                    item.Status = "Opt-In";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
                         processing.AddOrModifyOptOutAsync(item))
@@ -691,7 +691,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (var item in nonConsentedItems)
                 {
-                    if (item.OptOutStatus != "Opt-Out")
+                    if (item.Status != "Opt-Out")
                     {
                         delta.Add(item);
                     }
@@ -699,7 +699,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
                     item.LastSentToMesh = randomDateTimeOffset;
-                    item.OptOutStatus = "Opt-Out";
+                    item.Status = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
                         processing.AddOrModifyOptOutAsync(item))
@@ -787,7 +787,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (OptOut consentedItem in consentedItems)
                 {
-                    if (consentedItem.OptOutStatus != "Opt-In")
+                    if (consentedItem.Status != "Opt-In")
                     {
                         delta.Add(consentedItem);
                     }
@@ -795,7 +795,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     consentedItem.UpdatedDate = randomDateTimeOffset;
                     consentedItem.CacheTime = randomDateTimeOffset;
                     consentedItem.LastSentToMesh = randomDateTimeOffset;
-                    consentedItem.OptOutStatus = "Opt-In";
+                    consentedItem.Status = "Opt-In";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
                         processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
@@ -804,7 +804,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (OptOut nonConsentedItem in nonConsentedItems)
                 {
-                    if (nonConsentedItem.OptOutStatus != "Opt-Out")
+                    if (nonConsentedItem.Status != "Opt-Out")
                     {
                         delta.Add(nonConsentedItem);
                     }
@@ -812,7 +812,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     nonConsentedItem.UpdatedDate = randomDateTimeOffset;
                     nonConsentedItem.CacheTime = randomDateTimeOffset;
                     nonConsentedItem.LastSentToMesh = randomDateTimeOffset;
-                    nonConsentedItem.OptOutStatus = "Opt-Out";
+                    nonConsentedItem.Status = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
                         processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
@@ -949,7 +949,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (var item in consentedItems)
                 {
-                    if (item.OptOutStatus != "Opt-In")
+                    if (item.Status != "Opt-In")
                     {
                         delta.Add(item);
                     }
@@ -957,7 +957,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
                     item.LastSentToMesh = randomDateTimeOffset;
-                    item.OptOutStatus = "Opt-In";
+                    item.Status = "Opt-In";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
                         processing.AddOrModifyOptOutAsync(item))
@@ -966,7 +966,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (var item in nonConsentedItems)
                 {
-                    if (item.OptOutStatus != "Opt-Out")
+                    if (item.Status != "Opt-Out")
                     {
                         delta.Add(item);
                     }
@@ -974,7 +974,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
                     item.LastSentToMesh = randomDateTimeOffset;
-                    item.OptOutStatus = "Opt-Out";
+                    item.Status = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
                         processing.AddOrModifyOptOutAsync(item))
@@ -1062,7 +1062,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (OptOut consentedItem in consentedItems)
                 {
-                    if (consentedItem.OptOutStatus != "Opt-In")
+                    if (consentedItem.Status != "Opt-In")
                     {
                         delta.Add(consentedItem);
                     }
@@ -1070,7 +1070,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     consentedItem.UpdatedDate = randomDateTimeOffset;
                     consentedItem.CacheTime = randomDateTimeOffset;
                     consentedItem.LastSentToMesh = randomDateTimeOffset;
-                    consentedItem.OptOutStatus = "Opt-In";
+                    consentedItem.Status = "Opt-In";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
                         processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
@@ -1079,7 +1079,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (OptOut nonConsentedItem in nonConsentedItems)
                 {
-                    if (nonConsentedItem.OptOutStatus != "Opt-Out")
+                    if (nonConsentedItem.Status != "Opt-Out")
                     {
                         delta.Add(nonConsentedItem);
                     }
@@ -1087,7 +1087,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     nonConsentedItem.UpdatedDate = randomDateTimeOffset;
                     nonConsentedItem.CacheTime = randomDateTimeOffset;
                     nonConsentedItem.LastSentToMesh = randomDateTimeOffset;
-                    nonConsentedItem.OptOutStatus = "Opt-Out";
+                    nonConsentedItem.Status = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
                         processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),
@@ -1226,7 +1226,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (var item in consentedItems)
                 {
-                    if (item.OptOutStatus != "Opt-In")
+                    if (item.Status != "Opt-In")
                     {
                         delta.Add(item);
                     }
@@ -1234,7 +1234,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
                     item.LastSentToMesh = randomDateTimeOffset;
-                    item.OptOutStatus = "Opt-In";
+                    item.Status = "Opt-In";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
                         processing.AddOrModifyOptOutAsync(item))
@@ -1243,7 +1243,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (var item in nonConsentedItems)
                 {
-                    if (item.OptOutStatus != "Opt-Out")
+                    if (item.Status != "Opt-Out")
                     {
                         delta.Add(item);
                     }
@@ -1251,7 +1251,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     item.UpdatedDate = randomDateTimeOffset;
                     item.CacheTime = randomDateTimeOffset;
                     item.LastSentToMesh = randomDateTimeOffset;
-                    item.OptOutStatus = "Opt-Out";
+                    item.Status = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Setup(processing =>
                         processing.AddOrModifyOptOutAsync(item))
@@ -1339,7 +1339,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (OptOut consentedItem in consentedItems)
                 {
-                    if (consentedItem.OptOutStatus != "Opt-In")
+                    if (consentedItem.Status != "Opt-In")
                     {
                         delta.Add(consentedItem);
                     }
@@ -1347,7 +1347,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     consentedItem.UpdatedDate = randomDateTimeOffset;
                     consentedItem.CacheTime = randomDateTimeOffset;
                     consentedItem.LastSentToMesh = randomDateTimeOffset;
-                    consentedItem.OptOutStatus = "Opt-In";
+                    consentedItem.Status = "Opt-In";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
                         processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(consentedItem))),
@@ -1356,7 +1356,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (OptOut nonConsentedItem in nonConsentedItems)
                 {
-                    if (nonConsentedItem.OptOutStatus != "Opt-Out")
+                    if (nonConsentedItem.Status != "Opt-Out")
                     {
                         delta.Add(nonConsentedItem);
                     }
@@ -1364,7 +1364,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     nonConsentedItem.UpdatedDate = randomDateTimeOffset;
                     nonConsentedItem.CacheTime = randomDateTimeOffset;
                     nonConsentedItem.LastSentToMesh = randomDateTimeOffset;
-                    nonConsentedItem.OptOutStatus = "Opt-Out";
+                    nonConsentedItem.Status = "Opt-Out";
 
                     this.optOutProcessingServiceMock.Verify(processings =>
                         processings.AddOrModifyOptOutAsync(It.Is(SameOptOutAs(nonConsentedItem))),

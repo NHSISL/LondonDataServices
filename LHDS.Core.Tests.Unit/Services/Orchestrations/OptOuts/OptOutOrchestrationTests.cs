@@ -268,7 +268,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             {
                 var optOut = CreateOptOutFiller(GetRandomDateTimeOffset()).Create();
                 optOut.NhsNumber = item.NhsNumber;
-                optOut.OptOutStatus = status;
+                optOut.Status = status;
                 optOut.BatchReference = batchReference;
                 identifiers.Add(optOut);
             }
@@ -384,7 +384,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
-                .OnProperty(optOut => optOut.OptOutStatus).Use("Unknown")
+                .OnProperty(optOut => optOut.Status).Use("Unknown")
                 .OnProperty(optOut => optOut.CreatedBy).Use(user)
                 .OnProperty(optOut => optOut.UpdatedBy).Use(user);
 
@@ -396,7 +396,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             var filler = new Filler<OptOutIdentifier>();
 
             filler.Setup()
-                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber());
+                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
+                .OnProperty(optOut => optOut.UniqueReference).Use(GetRandomString());
 
             return filler;
         }

@@ -153,7 +153,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 }
 
                 List<OptOutIdentifier> differentIdentifiers = delta
-                    .Select(item => new OptOutIdentifier { NhsNumber = item.NhsNumber }).ToList();
+                    .Select(item => new OptOutIdentifier
+                    {
+                        NhsNumber = item.NhsNumber,
+                        UniqueReference = item.UniqueReference
+                    }).ToList();
 
                 string csvDifferences = CreateNewCsvList(
                     differentIdentifiers,
@@ -266,7 +270,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 }
 
                 List<OptOutIdentifier> differentIdentifiers = delta
-                   .Select(item => new OptOutIdentifier { NhsNumber = item.NhsNumber }).ToList();
+                   .Select(item => new OptOutIdentifier
+                   {
+                       NhsNumber = item.NhsNumber,
+                       UniqueReference = item.UniqueReference
+                   }).ToList();
 
                 string csvDifferences = CreateNewCsvList(
                     differentIdentifiers,

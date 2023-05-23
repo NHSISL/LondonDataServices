@@ -21,6 +21,5 @@ namespace LHDS.Core.Models.Brokers.Mesh
         public string MexClientVersion { get; set; }
         public string MexOSName { get; set; }
         public string MexOSVersion { get; set; }
-        public string WorkflowId { get; set; }
     }
 }

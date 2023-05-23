@@ -67,8 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 { "MeshConfiguration:MexOSVersion", GetRandomString() },
                 { "MeshConfiguration:RootCertificate", null },
                 { "MeshConfiguration:IntermediateCertificates", null },
-                { "MeshConfiguration:ClientCertificate", null },
-                { "MeshConfiguration:WorkflowId", GetRandomString() }
+                { "MeshConfiguration:ClientCertificate", null }
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()
@@ -95,7 +94,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 MexClientVersion = inMemoryConfiguration["MeshConfiguration:MexClientVersion"],
                 MexOSName = inMemoryConfiguration["MeshConfiguration:MexOSName"],
                 MexOSVersion = inMemoryConfiguration["MeshConfiguration:MexOSVersion"],
-                WorkflowId = inMemoryConfiguration["MeshConfiguration:WorkflowId"],
 
                 RootCertificate = GetCertificate(inMemoryConfiguration["MeshConfiguration:RootCertificate"]),
 

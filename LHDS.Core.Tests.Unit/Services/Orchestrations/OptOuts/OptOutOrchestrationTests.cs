@@ -276,13 +276,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             return identifiers;
         }
 
-        private static List<OptOutIdentifier> CreateRandomListOfOptOutIdentifiers(int count)
+        private static List<OptOutIdentifier> CreateRandomListOfOptOutIdentifiers(int count, string status)
         {
             var identifiers = new List<OptOutIdentifier>();
 
             for (int i = 0; i < count; i++)
             {
-                identifiers.Add(CreateOptOutIdentifierFiller().Create());
+                var item = CreateOptOutIdentifierFiller().Create();
+                item.Status = status;
+                identifiers.Add(item);
             }
 
             return identifiers;
@@ -301,15 +303,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             return messages;
         }
 
-        private static List<MeshMessage> GetRandomMessages(List<string> items)
+        private static List<MeshMessage> GetRandomMessages(
+            List<string> items,
+            List<OptOutIdentifier> outputIdentifierConsentedList)
         {
             List<MeshMessage> messageList = new List<MeshMessage>();
 
             foreach (var item in items)
             {
+                StringBuilder sb = new StringBuilder();
+                outputIdentifierConsentedList.ForEach(item => sb.Append($"{item.NhsNumber},"));
+
                 var message = CreateRandomMessage();
                 message.MessageId = item;
                 message.Headers["Mex-LocalID"] = new List<string> { GetRandomString() }; // BatchReference
+                message.StringContent = sb.ToString();
+
                 messageList.Add(message);
             }
 
@@ -352,10 +361,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private Expression<Func<List<OptOutIdentifier>, bool>> SameOptOutIdentifierListAs(
            List<OptOutIdentifier> expectedOptOutIdentifierList)
         {
+
             return actualOptOutIdentifierList =>
-                this.compareLogic.Compare(expectedOptOutIdentifierList, actualOptOutIdentifierList)
-                    .AreEqual;
+                CompareList(expectedOptOutIdentifierList, actualOptOutIdentifierList);
         }
+
+        private bool CompareList(List<OptOutIdentifier> expected, List<OptOutIdentifier> actual)
+        {
+            var result = compareLogic.Compare(expected, actual).AreEqual;
+
+            return result;
+        }
+
 
         private Expression<Func<MeshMessage, bool>> SameMessageAs(
             MeshMessage expectedMessage)
@@ -398,7 +415,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             filler.Setup()
                 .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
                 .OnProperty(optOut => optOut.UniqueReference).Use(GetRandomString())
-                .OnProperty(optOut => optOut.Status).Use(GetRandomString());
+                .OnProperty(optOut => optOut.Status).Use(GetRandomString())
+                .OnProperty(optOut => optOut.StatusChangedDateTime).Use(GetRandomDateTimeOffset());
             return filler;
         }
 
@@ -407,7 +425,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             var filler = new Filler<OptOutIdentifier>();
 
             filler.Setup()
-                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber());
+                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
+                .OnProperty(optOut => optOut.UniqueReference).Use(GetRandomString())
+                .OnProperty(optOut => optOut.Status).Use(GetRandomString())
+                .OnProperty(optOut => optOut.StatusChangedDateTime).Use(GetRandomDateTimeOffset());
 
             return filler;
         }

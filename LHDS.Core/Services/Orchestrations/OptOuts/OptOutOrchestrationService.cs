@@ -72,7 +72,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 var inputString = Encoding.ASCII.GetString(optOutFile);
 
                 List<OptOutIdentifier> mappedOptOuts =
-                    await this.csvMapperProcessingService.MapCsvToObjectAsync<OptOutIdentifier>(inputString, false);
+                    await this.csvMapperProcessingService
+                        .MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader);
 
                 List<OptOut> processedOptOuts = new List<OptOut>();
 
@@ -183,10 +184,12 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                     meshMessageList.Add(message);
 
+                    List<string> consentedStringList =
+                        message.StringContent.Replace(",", string.Empty)
+                        .Split("\r\n", StringSplitOptions.RemoveEmptyEntries).ToList();
+
                     List<OptOutIdentifier> consentedIdentifierList =
-                        await csvMapperProcessingService.MapCsvToObjectAsync<OptOutIdentifier>(
-                            message.StringContent,
-                            withHeader);
+                        consentedStringList.Select(item => new OptOutIdentifier { NhsNumber = item }).ToList();
 
                     ValidateLocalIdHeaderExists(message);
 
@@ -242,6 +245,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         {
                             NhsNumber = identifier.NhsNumber,
                             UniqueReference = identifier.UniqueReference,
+                            Status = identifier.Status,
+                            StatusChangedDateTime = identifier.CacheTime
                         }).ToList();
 
                     string csvDifferences = await this.csvMapperProcessingService

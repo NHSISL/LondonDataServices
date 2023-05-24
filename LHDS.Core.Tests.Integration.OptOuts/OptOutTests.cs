@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
@@ -18,6 +19,7 @@ using LHDS.Core.Services.Foundations.OptOuts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Tynamix.ObjectFiller;
 using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Integration.OptOuts
@@ -88,7 +90,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
             setupOptOut.Add(new OptOut
             {
                 Id = Guid.NewGuid(),
-                NhsNumber = "9694116414",
+                NhsNumber = GenerateValidNhsNumber(),
                 LastSentToMesh = currentDateTime,
                 Status = "Unknown",
                 UniqueReference = "4d30a841-05f2-43e1-afa1-4280498841ff",
@@ -103,10 +105,10 @@ namespace LHDS.Core.Tests.Integration.OptOuts
             setupOptOut.Add(new OptOut
             {
                 Id = Guid.NewGuid(),
-                NhsNumber = "9694116422",
+                NhsNumber = GenerateValidNhsNumber(),
                 LastSentToMesh = currentDateTime,
-                Status = "Unknown",
-                UniqueReference = "0b21baa4-0a36-4f4a-b7c7-06b401981a45",
+                Status = "Opt-Out",
+                UniqueReference = "8a935b2d-9e7d-4655-8488-66d4837c81c1",
                 CacheTime = currentDateTime,
                 CreatedDate = currentDateTime,
                 UpdatedDate = currentDateTime,
@@ -118,10 +120,25 @@ namespace LHDS.Core.Tests.Integration.OptOuts
             setupOptOut.Add(new OptOut
             {
                 Id = Guid.NewGuid(),
-                NhsNumber = "9694116430",
+                NhsNumber = GenerateValidNhsNumber(),
+                LastSentToMesh = currentDateTime,
+                Status = "Opt-In",
+                UniqueReference = "8a935b2d-9e7d-4655-8488-66d4837c81c2",
+                CacheTime = currentDateTime,
+                CreatedDate = currentDateTime,
+                UpdatedDate = currentDateTime,
+                CreatedBy = "System",
+                UpdatedBy = "System",
+                BatchReference = batchReference
+            });
+
+            setupOptOut.Add(new OptOut
+            {
+                Id = Guid.NewGuid(),
+                NhsNumber = GenerateValidNhsNumber(),
                 LastSentToMesh = currentDateTime,
                 Status = "Unknown",
-                UniqueReference = "8a935b2d-9e7d-4655-8488-66d4837c81c1",
+                UniqueReference = "8a935b2d-9e7d-4655-8488-66d4837c81c43",
                 CacheTime = currentDateTime,
                 CreatedDate = currentDateTime,
                 UpdatedDate = currentDateTime,
@@ -215,13 +232,18 @@ namespace LHDS.Core.Tests.Integration.OptOuts
             return setupOptOut;
         }
 
-        private async ValueTask<string> SetupSimulatedMeshMessage(string batchReference)
+        private async ValueTask<string> SetupSimulatedMeshMessage(string batchReference, List<string> idsFromMesh)
         {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var id in idsFromMesh)
+            {
+                sb.AppendLine($"{id},");
+            }
+
             MeshMessage simulatedMeshReply = new MeshMessage
             {
-                StringContent = "4d30a841-05f2-43e1-afa1-4280498841ff,9694116414,Unknown" + Environment.NewLine
-                                    + "0b21baa4-0a36-4f4a-b7c7-06b401981a45,9694116422,Unknown" + Environment.NewLine
-                                    + "8a935b2d-9e7d-4655-8488-66d4837c81c1,9694116430,Unknown" + Environment.NewLine,
+                StringContent = sb.ToString(),
                 Headers = {
                         { "Content-Type", new List<string> { "text/plain" } },
                         { "Mex-From", new List<string> { this.meshConfiguration.MailboxId } },
@@ -235,6 +257,50 @@ namespace LHDS.Core.Tests.Integration.OptOuts
             await this.meshService.SendMessageAsync(simulatedMeshReply);
 
             return simulatedMeshReply.StringContent;
+        }
+
+        private static string GenerateValidNhsNumber()
+        {
+            int total = 10;
+            string formattedNhsNumber = string.Empty;
+
+            while (total == 10)
+            {
+                var randomNumber = new LongRange(100000000, 999999999);
+                formattedNhsNumber = randomNumber.GetValue().ToString();
+                int[] multiplers = new int[] { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
+                int currentNumber;
+                int currentSum = 0;
+                int currentMultipler;
+                string currentString;
+                int remainder;
+
+                for (int i = 0; i <= 8; i++)
+                {
+                    currentString = formattedNhsNumber.Substring(i, 1);
+
+                    currentNumber = Convert.ToInt16(currentString);
+                    currentMultipler = multiplers[i];
+                    currentSum = currentSum + (currentNumber * currentMultipler);
+                }
+
+                remainder = currentSum % 11;
+                total = 11 - remainder;
+
+                if (total.Equals(11))
+                {
+                    total = 0;
+                }
+
+                if (total != 10)
+                {
+                    break;
+                }
+            }
+
+            string checkNumber = total.ToString();
+
+            return $"{formattedNhsNumber}{checkNumber}";
         }
     }
 }

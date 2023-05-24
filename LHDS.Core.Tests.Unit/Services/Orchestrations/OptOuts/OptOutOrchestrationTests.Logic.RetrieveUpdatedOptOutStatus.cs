@@ -25,23 +25,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             // Given
             bool withHeader = optOutConfiguration.OptOutFileHasHeader;
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            List<string> outputMessageIds = GetRandomStrings(count: 1);
-            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds);
-            List<MeshMessage> expectedMessages = outputMessages.DeepClone();
 
             List<OptOutIdentifier> outputIdentifierUnknownList =
-                CreateRandomListOfOptOutIdentifiers(count: 1);
+                CreateRandomListOfOptOutIdentifiers(count: 1, status: "Unknown");
 
             List<OptOutIdentifier> outputIdentifierConsentedList =
-                CreateRandomListOfOptOutIdentifiers(count: 1);
+                CreateRandomListOfOptOutIdentifiers(count: 1, status: "Opt-In");
 
             List<OptOutIdentifier> outputIdentifierNonConsentedList =
-                CreateRandomListOfOptOutIdentifiers(count: 1);
+                CreateRandomListOfOptOutIdentifiers(count: 1, status: "Opt-Out");
 
             List<OptOutIdentifier> randomOutputIdentifierBatch = new List<OptOutIdentifier>();
             randomOutputIdentifierBatch.AddRange(outputIdentifierUnknownList);
             randomOutputIdentifierBatch.AddRange(outputIdentifierConsentedList);
             randomOutputIdentifierBatch.AddRange(outputIdentifierNonConsentedList);
+
+            List<string> outputMessageIds = GetRandomStrings(count: 1);
+            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, outputIdentifierConsentedList);
+            List<MeshMessage> expectedMessages = outputMessages.DeepClone();
 
             List<OptOut> outputBatch = new List<OptOut>();
 
@@ -311,25 +312,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         {
             // Given
             bool withHeader = optOutConfiguration.OptOutFileHasHeader;
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            List<string> outputMessageIds = GetRandomStrings(count: 1);
-            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds);
-            List<MeshMessage> expectedMessages = outputMessages.DeepClone();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset().Date;
 
             List<OptOutIdentifier> outputIdentifierUnknownList =
-                CreateRandomListOfOptOutIdentifiers(count: 1);
+                CreateRandomListOfOptOutIdentifiers(count: 1, status: "Unknown");
 
             List<OptOutIdentifier> outputIdentifierConsentedList =
-                CreateRandomListOfOptOutIdentifiers(count: 1);
+                CreateRandomListOfOptOutIdentifiers(count: 1, status: "Opt-In");
 
             List<OptOutIdentifier> outputIdentifierNonConsentedList =
-                CreateRandomListOfOptOutIdentifiers(count: 1);
+                CreateRandomListOfOptOutIdentifiers(count: 1, status: "Opt-Out");
 
             List<OptOutIdentifier> randomOutputIdentifierBatch = new List<OptOutIdentifier>();
             randomOutputIdentifierBatch.AddRange(outputIdentifierUnknownList);
             randomOutputIdentifierBatch.AddRange(outputIdentifierConsentedList);
             randomOutputIdentifierBatch.AddRange(outputIdentifierNonConsentedList);
-
+            List<string> outputMessageIds = GetRandomStrings(count: 1);
+            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, outputIdentifierConsentedList);
+            List<MeshMessage> expectedMessages = outputMessages.DeepClone();
             List<OptOut> outputBatch = new List<OptOut>();
 
             foreach (var message in outputMessages)
@@ -369,11 +369,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         .ReturnsAsync(message);
 
                 meshMessageList.Add(message);
-
-                // Map message content to object
-                this.csvMapperProcessingServiceMock.Setup(processing =>
-                    processing.MapCsvToObjectAsync<OptOutIdentifier>(message.StringContent, withHeader))
-                        .ReturnsAsync(outputIdentifierConsentedList);
 
                 // Get original batch storage
                 string batchReference = GetHeaderValue(message, "Mex-LocalID");
@@ -438,20 +433,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                             .ReturnsAsync(item);
                 }
 
-                List<OptOutIdentifier> differentIdentifiers = delta
+                List<OptOutIdentifier> setupDifferentIdentifiers = delta
                     .Select(item => new OptOutIdentifier
                     {
                         NhsNumber = item.NhsNumber,
                         UniqueReference = item.UniqueReference,
+                        StatusChangedDateTime = item.CacheTime,
+                        Status = item.Status,
                     }).ToList();
 
                 string csvDifferences = CreateNewCsvList(
-                    differentIdentifiers,
+                    setupDifferentIdentifiers,
                     this.optOutConfiguration.OptOutFileRequireTrailingComma);
 
                 this.csvMapperProcessingServiceMock.Setup(processings =>
                     processings.MapObjectToCsvAsync<OptOutIdentifier>(
-                        It.Is(SameOptOutIdentifierListAs(differentIdentifiers)),
+                        It.Is(SameOptOutIdentifierListAs(setupDifferentIdentifiers)),
                         this.optOutConfiguration.OptOutFileHasHeader,
                         this.optOutConfiguration.OptOutFileRequireTrailingComma))
                             .ReturnsAsync(csvDifferences);
@@ -487,11 +484,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 // Get message
                 this.meshProcessingServiceMock.Verify(processings =>
                     processings.RetrieveAndAcknowledgeMessageByIdAsync(messageId),
-                        Times.Once());
-
-                // Map message content to object
-                this.csvMapperProcessingServiceMock.Verify(processings =>
-                    processings.MapCsvToObjectAsync<OptOutIdentifier>(message.StringContent, withHeader),
                         Times.Once());
 
                 // Get original batch storage
@@ -555,22 +547,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                             Times.Exactly(outputMessageIds.Count));
                 }
 
-                List<OptOutIdentifier> differentIdentifiers = delta
+                List<OptOutIdentifier> verifyDifferentIdentifiers = delta
                    .Select(item => new OptOutIdentifier
                    {
                        NhsNumber = item.NhsNumber,
-                       UniqueReference = item.UniqueReference
+                       UniqueReference = item.UniqueReference,
+                       StatusChangedDateTime = item.CacheTime,
+                       Status = item.Status
                    }).ToList();
 
                 string csvDifferences = CreateNewCsvList(
-                    differentIdentifiers,
+                    verifyDifferentIdentifiers,
                     this.optOutConfiguration.OptOutFileRequireTrailingComma);
 
                 delta.Count.Should().Be(consentedItems.Count);
 
                 this.csvMapperProcessingServiceMock.Verify(processings =>
                     processings.MapObjectToCsvAsync<OptOutIdentifier>(
-                        It.Is(SameOptOutIdentifierListAs(differentIdentifiers)),
+                        It.Is(SameOptOutIdentifierListAs(verifyDifferentIdentifiers)),
                         this.optOutConfiguration.OptOutFileHasHeader,
                         this.optOutConfiguration.OptOutFileRequireTrailingComma),
                             Times.Exactly(outputMessageIds.Count));
@@ -598,12 +592,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             // Given
             bool withHeader = optOutConfiguration.OptOutFileHasHeader;
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            List<string> outputMessageIds = GetRandomStrings(count: 1);
-            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds);
-            List<MeshMessage> expectedMessages = outputMessages.DeepClone();
 
             List<OptOutIdentifier> outputIdentifierUnknownList =
-                CreateRandomListOfOptOutIdentifiers(count: 1);
+                CreateRandomListOfOptOutIdentifiers(count: 1, status: "Unknown");
 
             List<OptOutIdentifier> outputIdentifierConsentedList = new List<OptOutIdentifier>();
 
@@ -614,6 +605,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             randomOutputIdentifierBatch.AddRange(outputIdentifierUnknownList);
             randomOutputIdentifierBatch.AddRange(outputIdentifierConsentedList);
             randomOutputIdentifierBatch.AddRange(outputIdentifierNonConsentedList);
+
+            List<string> outputMessageIds = GetRandomStrings(count: 1);
+            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, outputIdentifierConsentedList);
+            List<MeshMessage> expectedMessages = outputMessages.DeepClone();
 
             List<OptOut> outputBatch = new List<OptOut>();
 
@@ -883,22 +878,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             // Given
             bool withHeader = optOutConfiguration.OptOutFileHasHeader;
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            List<string> outputMessageIds = GetRandomStrings(count: 1);
-            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds);
-            List<MeshMessage> expectedMessages = outputMessages.DeepClone();
-
             List<OptOutIdentifier> outputIdentifierUnknownList = new List<OptOutIdentifier>();
-
             List<OptOutIdentifier> outputIdentifierConsentedList = new List<OptOutIdentifier>();
 
             List<OptOutIdentifier> outputIdentifierNonConsentedList =
-                CreateRandomListOfOptOutIdentifiers(count: 1);
+                CreateRandomListOfOptOutIdentifiers(count: 1, status: "Opt-In");
 
             List<OptOutIdentifier> randomOutputIdentifierBatch = new List<OptOutIdentifier>();
             randomOutputIdentifierBatch.AddRange(outputIdentifierUnknownList);
             randomOutputIdentifierBatch.AddRange(outputIdentifierConsentedList);
             randomOutputIdentifierBatch.AddRange(outputIdentifierNonConsentedList);
 
+            List<string> outputMessageIds = GetRandomStrings(count: 1);
+            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, outputIdentifierConsentedList);
+            List<MeshMessage> expectedMessages = outputMessages.DeepClone();
             List<OptOut> outputBatch = new List<OptOut>();
 
             foreach (var message in outputMessages)
@@ -1053,11 +1046,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     processings.RetrieveAndAcknowledgeMessageByIdAsync(messageId),
                         Times.Once());
 
-                // Map message content to object
-                this.csvMapperProcessingServiceMock.Verify(processings =>
-                    processings.MapCsvToObjectAsync<OptOutIdentifier>(message.StringContent, withHeader),
-                        Times.Once());
-
                 // Get original batch storage
                 string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
@@ -1158,23 +1146,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             // Given
             bool withHeader = optOutConfiguration.OptOutFileHasHeader;
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            List<string> outputMessageIds = GetRandomStrings(count: 1);
-            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds);
-            List<MeshMessage> expectedMessages = outputMessages.DeepClone();
-
             List<OptOutIdentifier> outputIdentifierUnknownList = new List<OptOutIdentifier>();
 
             List<OptOutIdentifier> outputIdentifierConsentedList =
-                 CreateRandomListOfOptOutIdentifiers(GetRandomNumber(max: 3));
+                 CreateRandomListOfOptOutIdentifiers(GetRandomNumber(max: 3), status: "Opt-In");
 
             List<OptOutIdentifier> outputIdentifierNonConsentedList =
-                CreateRandomListOfOptOutIdentifiers(GetRandomNumber(max: 3));
+                CreateRandomListOfOptOutIdentifiers(GetRandomNumber(max: 3), status: "Opt-Out");
 
             List<OptOutIdentifier> randomOutputIdentifierBatch = new List<OptOutIdentifier>();
             randomOutputIdentifierBatch.AddRange(outputIdentifierUnknownList);
             randomOutputIdentifierBatch.AddRange(outputIdentifierConsentedList);
             randomOutputIdentifierBatch.AddRange(outputIdentifierNonConsentedList);
-
+            List<string> outputMessageIds = GetRandomStrings(count: 1);
+            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, outputIdentifierConsentedList);
+            List<MeshMessage> expectedMessages = outputMessages.DeepClone();
             List<OptOut> outputBatch = new List<OptOut>();
 
             foreach (var message in outputMessages)

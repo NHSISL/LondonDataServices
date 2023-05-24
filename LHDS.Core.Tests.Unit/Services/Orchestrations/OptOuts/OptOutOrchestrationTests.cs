@@ -312,7 +312,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             foreach (var item in items)
             {
                 StringBuilder sb = new StringBuilder();
-                outputIdentifierConsentedList.ForEach(item => sb.Append($"{item.NhsNumber},"));
+                outputIdentifierConsentedList.ForEach(item => sb.AppendLine($"{item.NhsNumber},"));
 
                 var message = CreateRandomMessage();
                 message.MessageId = item;

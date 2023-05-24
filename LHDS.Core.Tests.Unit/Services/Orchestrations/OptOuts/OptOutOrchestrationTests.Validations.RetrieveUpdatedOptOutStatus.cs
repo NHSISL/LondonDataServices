@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
-using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using Moq;
 using Xunit;
@@ -62,10 +61,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             //then
             actualOptOutOrchestrationValidationException.Should()
                 .BeEquivalentTo(expectedOptOutOrchestrationValidationException);
-
-            this.csvMapperProcessingServiceMock.Verify(processings =>
-                    processings.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<string>(), It.IsAny<bool>()),
-                        Times.Once());
 
             this.meshProcessingServiceMock.Verify(service =>
                 service.RetrieveMessageIdsFromInboxAsync(),

@@ -651,11 +651,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 meshMessageList.Add(message);
 
-                // Map message content to object
-                this.csvMapperProcessingServiceMock.Setup(processing =>
-                    processing.MapCsvToObjectAsync<OptOutIdentifier>(message.StringContent, withHeader))
-                        .ReturnsAsync(outputIdentifierConsentedList);
-
                 // Get original batch storage
                 string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
@@ -722,7 +717,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .Select(item => new OptOutIdentifier
                     {
                         NhsNumber = item.NhsNumber,
-                        UniqueReference = item.UniqueReference
+                        UniqueReference = item.UniqueReference,
+                        StatusChangedDateTime = item.CacheTime,
+                        Status = item.Status,
                     }).ToList();
 
                 string csvDifferences = CreateNewCsvList(
@@ -767,11 +764,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 // Get message
                 this.meshProcessingServiceMock.Verify(processings =>
                     processings.RetrieveAndAcknowledgeMessageByIdAsync(messageId),
-                        Times.Once());
-
-                // Map message content to object
-                this.csvMapperProcessingServiceMock.Verify(processings =>
-                    processings.MapCsvToObjectAsync<OptOutIdentifier>(message.StringContent, withHeader),
                         Times.Once());
 
                 // Get original batch storage
@@ -839,7 +831,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                    .Select(item => new OptOutIdentifier
                    {
                        NhsNumber = item.NhsNumber,
-                       UniqueReference = item.UniqueReference
+                       UniqueReference = item.UniqueReference,
+                       StatusChangedDateTime = item.CacheTime,
+                       Status = item.Status,
                    }).ToList();
 
                 string csvDifferences = CreateNewCsvList(

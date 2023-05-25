@@ -6,9 +6,9 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Processings.Mesh.Exceptions
 {
-    public class NullMeshProcessingException : Xeption
+    public class NullMeshMessageProcessingException : Xeption
     {
-        public NullMeshProcessingException()
+        public NullMeshMessageProcessingException()
             : base(message: $"Mesh processing service exception. Message is Null.")
         { }
     }

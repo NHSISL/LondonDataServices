@@ -59,6 +59,8 @@ namespace LHDS.Core.Services.Processings.Mesh
             string accept = "application/json") =>
             TryCatch((ReturningMessageMeshFunction)(async () =>
             {
+                ValidateMeshMessageOnSendMessage(mexTo, mexWorkflowId, fileContent);
+
                 MeshMessage sendMessageResult = await meshService.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,

@@ -133,7 +133,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         Status = optout.Status
                     }).ToList();
 
-                var processedOutputString = await this.csvMapperProcessingService
+                var processedString = await this.csvMapperProcessingService
                        .MapObjectToCsvAsync(mappedOptOutIdentifiers, withHeader, shouldAddTrailingComma);
 
                 string batchReference = this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss");
@@ -141,10 +141,14 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 MeshMessage message = await this.meshProcessingService.SendMessageAsync(
                     mexTo: this.optOutConfiguration.To,
                     mexWorkflowId: this.optOutConfiguration.WorkflowId,
-                    fileContent: Encoding.UTF8.GetBytes(processedOutputString),
+                    fileContent: Encoding.UTF8.GetBytes(processedString),
+                    mexSubject: string.Empty,
                     mexLocalId: batchReference,
-                    mexFileName: batchReference,
-                    contentType: "text/plain");
+                    mexFileName: $"{batchReference}.txt",
+                    mexContentChecksum: string.Empty,
+                    contentType: "text/plain",
+                    contentEncoding: string.Empty,
+                    accept: "application/json");
 
                 foreach (var optOut in mappedOptOuts)
                 {

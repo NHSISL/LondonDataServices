@@ -58,6 +58,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 { "OptOutSettings:OptOutFileHasHeader", "false" },
                 { "OptOutSettings:OutputFolder", GetRandomString() },
                 { "OptOutSettings:OptOutFileRequireTrailingComma", "true" },
+                { "OptOutSettings:To", GetRandomString() },
+                { "OptOutSettings:WorkflowId", GetRandomString() },
                 { "MeshConfiguration:MailboxId", GetRandomString() },
                 { "MeshConfiguration:Password", GetRandomString() },
                 { "MeshConfiguration:Key", GetRandomString() },
@@ -83,6 +85,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 OptOutFileRequireTrailingComma =
                     bool.Parse(inMemoryConfiguration["OptOutSettings:OptOutFileRequireTrailingComma"]),
+
+                To = inMemoryConfiguration["OptOutSettings:InputFolder"],
+                WorkflowId = inMemoryConfiguration["OptOutSettings:WorkflowId"],
             };
 
             this.meshConfiguration = new MeshConfiguration

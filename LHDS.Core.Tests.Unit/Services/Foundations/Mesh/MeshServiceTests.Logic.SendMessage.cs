@@ -57,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 MessageId = dynamicMeshMessageProperties.MessageId,
                 Headers = dynamicMeshMessageProperties.Headers,
                 FileContent = dynamicMeshMessageProperties.FileContent,
-                TrackingInfo = MaptToMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
+                TrackingInfo = MaptToMeshMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
             };
 
             var expectedMeshMessage = randomMeshMessage;

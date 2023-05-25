@@ -37,12 +37,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 new InvalidMeshMessageException();
 
             invalidMeshMessageException.AddData(
-                key: "Mex-To",
-                values: "Header value is required");
+                key: "MexTo",
+                values: "Text is required");
 
             invalidMeshMessageException.AddData(
-                key: "Mex-WorkflowID",
-                values: "Header value is required");
+                key: "MexWorkflowId",
+                values: "Text is required");
 
             var expectedMeshValidationException =
                new MeshValidationException(innerException: invalidMeshMessageException);

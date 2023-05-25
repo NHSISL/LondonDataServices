@@ -167,12 +167,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         this.optOutConfiguration.OptOutFileHasHeader,
                         this.optOutConfiguration.OptOutFileRequireTrailingComma))
                             .ReturnsAsync(csvDifferences);
-
-                Document document = new Document
-                {
-                    DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
-                    FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv",
-                };
             }
 
             List<MeshMessage> expectedMeshMessageList = meshMessageList.DeepClone();
@@ -446,12 +440,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         this.optOutConfiguration.OptOutFileHasHeader,
                         this.optOutConfiguration.OptOutFileRequireTrailingComma))
                             .ReturnsAsync(csvDifferences);
-
-                Document document = new Document
-                {
-                    DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
-                    FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv",
-                };
             }
 
             List<MeshMessage> expectedMeshMessageList = meshMessageList.DeepClone();
@@ -726,12 +714,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         this.optOutConfiguration.OptOutFileHasHeader,
                         this.optOutConfiguration.OptOutFileRequireTrailingComma))
                             .ReturnsAsync(csvDifferences);
-
-                Document document = new Document
-                {
-                    DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
-                    FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv",
-                };
             }
 
             List<MeshMessage> expectedMeshMessageList = meshMessageList.DeepClone();
@@ -1011,12 +993,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         this.optOutConfiguration.OptOutFileHasHeader,
                         this.optOutConfiguration.OptOutFileRequireTrailingComma))
                             .ReturnsAsync(csvDifferences);
-
-                Document document = new Document
-                {
-                    DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
-                    FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv",
-                };
             }
 
             List<MeshMessage> expectedMeshMessageList = meshMessageList.DeepClone();
@@ -1288,12 +1264,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         this.optOutConfiguration.OptOutFileHasHeader,
                         this.optOutConfiguration.OptOutFileRequireTrailingComma))
                             .ReturnsAsync(csvDifferences);
-
-                Document document = new Document
-                {
-                    DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
-                    FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv",
-                };
             }
 
             List<MeshMessage> expectedMeshMessageList = meshMessageList.DeepClone();

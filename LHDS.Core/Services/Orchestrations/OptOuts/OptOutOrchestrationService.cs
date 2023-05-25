@@ -258,6 +258,14 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                                 shouldAddTrailingComma: this.optOutConfiguration.OptOutFileRequireTrailingComma);
 
                         string fileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv";
+
+                        Console.WriteLine($"Delta items: {delta.Count}");
+                        Console.WriteLine($"DifferentIdentifiers: {string.Join(", ", differentIdentifiers.Select(identifier => identifier.NhsNumber))}");
+
+                        Console.WriteLine($"Content: {csvDifferences}");
+                        Console.WriteLine($"FileName: {fileName}");
+
+
                         ValidateDocumentRequirements(csvDifferences, fileName);
 
                         Document document = new Document

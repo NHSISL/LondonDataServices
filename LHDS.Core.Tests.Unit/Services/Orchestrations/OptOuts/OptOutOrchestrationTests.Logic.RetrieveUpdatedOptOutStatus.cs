@@ -1403,7 +1403,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         It.Is(SameOptOutIdentifierListAs(differentIdentifiers)),
                         this.optOutConfiguration.OptOutFileHasHeader,
                         this.optOutConfiguration.OptOutFileRequireTrailingComma),
-                            Times.Exactly(outputMessageIds.Count));
+                            Times.Never);
 
                 Document document = new Document
                 {
@@ -1413,7 +1413,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 this.documentProcessingServiceMock.Verify(processings =>
                     processings.AddDocumentAsync(It.Is(SameDocumentAs(document))),
-                        Times.Exactly(outputMessageIds.Count));
+                        Times.Never);
             }
 
             this.meshProcessingServiceMock.VerifyNoOtherCalls();

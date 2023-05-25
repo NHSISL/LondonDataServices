@@ -317,7 +317,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 var message = CreateRandomMessage();
                 message.MessageId = item;
                 message.Headers["Mex-LocalID"] = new List<string> { GetRandomString() }; // BatchReference
-                message.StringContent = sb.ToString();
+                message.FileContent = Encoding.UTF8.GetBytes(sb.ToString());
 
                 messageList.Add(message);
             }

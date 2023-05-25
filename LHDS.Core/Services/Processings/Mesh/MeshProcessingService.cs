@@ -46,10 +46,31 @@ namespace LHDS.Core.Services.Processings.Mesh
                 return retrievedMessage;
             });
 
-        public ValueTask<MeshMessage> SendMessageAsync(MeshMessage message) =>
-            TryCatch(async () =>
+        public ValueTask<MeshMessage> SendMessageAsync(
+            string mexTo,
+            string mexWorkflowId,
+            byte[] fileContent,
+            string mexSubject = "",
+            string mexLocalId = "",
+            string mexFileName = "",
+            string mexContentChecksum = "",
+            string contentType = "application/octet-stream",
+            string contentEncoding = "",
+            string accept = "application/json") =>
+            TryCatch((ReturningMessageMeshFunction)(async () =>
             {
-                MeshMessage sendMessageResult = await meshService.SendMessageAsync(message);
+                MeshMessage sendMessageResult = await meshService.SendMessageAsync(
+                    mexTo,
+                    mexWorkflowId,
+                    fileContent,
+                    mexSubject,
+                    mexLocalId,
+                    mexFileName,
+                    mexContentChecksum,
+                    contentType,
+                    contentEncoding,
+                    accept);
+
                 ValidateSendMessage(sendMessageResult);
 
                 MeshMessage trackMessage =
@@ -59,7 +80,7 @@ namespace LHDS.Core.Services.Processings.Mesh
                 sendMessageResult.TrackingInfo = trackMessage.TrackingInfo;
 
                 return sendMessageResult;
-            });
+            }));
 
         public ValueTask<MeshMessage> RetrieveMessageByIdAsync(string messageId) =>
             TryCatch(async () =>

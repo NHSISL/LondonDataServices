@@ -919,10 +919,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         .ReturnsAsync(message);
 
                 meshMessageList.Add(message);
+                string stringContent = Encoding.UTF8.GetString(message.FileContent);
 
                 // Map message content to object
                 this.csvMapperProcessingServiceMock.Setup(processing =>
-                    processing.MapCsvToObjectAsync<OptOutIdentifier>(message.StringContent, withHeader))
+                    processing.MapCsvToObjectAsync<OptOutIdentifier>(stringContent, withHeader))
                         .ReturnsAsync(outputIdentifierConsentedList);
 
                 // Get original batch storage

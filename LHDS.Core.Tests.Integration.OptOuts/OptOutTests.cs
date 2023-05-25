@@ -85,67 +85,68 @@ namespace LHDS.Core.Tests.Integration.OptOuts
         private async ValueTask<List<OptOut>> SetupTestNhsNumbersForRetrieveUpdatedMesh(string batchReference)
         {
             DateTimeOffset currentDateTime = DateTimeOffset.UtcNow;
-            List<OptOut> setupOptOut = new List<OptOut>();
-
-            setupOptOut.Add(new OptOut
+            List<OptOut> setupOptOut = new List<OptOut>
             {
-                Id = Guid.NewGuid(),
-                NhsNumber = GenerateValidNhsNumber(),
-                LastSentToMesh = currentDateTime,
-                Status = "Unknown",
-                UniqueReference = "4d30a841-05f2-43e1-afa1-4280498841ff",
-                CacheTime = currentDateTime,
-                CreatedDate = currentDateTime,
-                UpdatedDate = currentDateTime,
-                CreatedBy = "System",
-                UpdatedBy = "System",
-                BatchReference = batchReference
-            });
+                new OptOut
+                {
+                    Id = Guid.NewGuid(),
+                    NhsNumber = GenerateValidNhsNumber(),
+                    LastSentToMesh = currentDateTime,
+                    Status = "Unknown",
+                    UniqueReference = "4d30a841-05f2-43e1-afa1-4280498841ff",
+                    CacheTime = currentDateTime,
+                    CreatedDate = currentDateTime,
+                    UpdatedDate = currentDateTime,
+                    CreatedBy = "System",
+                    UpdatedBy = "System",
+                    BatchReference = batchReference
+                },
 
-            setupOptOut.Add(new OptOut
-            {
-                Id = Guid.NewGuid(),
-                NhsNumber = GenerateValidNhsNumber(),
-                LastSentToMesh = currentDateTime,
-                Status = "Opt-Out",
-                UniqueReference = "8a935b2d-9e7d-4655-8488-66d4837c81c1",
-                CacheTime = currentDateTime,
-                CreatedDate = currentDateTime,
-                UpdatedDate = currentDateTime,
-                CreatedBy = "System",
-                UpdatedBy = "System",
-                BatchReference = batchReference
-            });
+                new OptOut
+                {
+                    Id = Guid.NewGuid(),
+                    NhsNumber = GenerateValidNhsNumber(),
+                    LastSentToMesh = currentDateTime,
+                    Status = "Opt-Out",
+                    UniqueReference = "8a935b2d-9e7d-4655-8488-66d4837c81c1",
+                    CacheTime = currentDateTime,
+                    CreatedDate = currentDateTime,
+                    UpdatedDate = currentDateTime,
+                    CreatedBy = "System",
+                    UpdatedBy = "System",
+                    BatchReference = batchReference
+                },
 
-            setupOptOut.Add(new OptOut
-            {
-                Id = Guid.NewGuid(),
-                NhsNumber = GenerateValidNhsNumber(),
-                LastSentToMesh = currentDateTime,
-                Status = "Opt-In",
-                UniqueReference = "8a935b2d-9e7d-4655-8488-66d4837c81c2",
-                CacheTime = currentDateTime,
-                CreatedDate = currentDateTime,
-                UpdatedDate = currentDateTime,
-                CreatedBy = "System",
-                UpdatedBy = "System",
-                BatchReference = batchReference
-            });
+                new OptOut
+                {
+                    Id = Guid.NewGuid(),
+                    NhsNumber = GenerateValidNhsNumber(),
+                    LastSentToMesh = currentDateTime,
+                    Status = "Opt-In",
+                    UniqueReference = "8a935b2d-9e7d-4655-8488-66d4837c81c2",
+                    CacheTime = currentDateTime,
+                    CreatedDate = currentDateTime,
+                    UpdatedDate = currentDateTime,
+                    CreatedBy = "System",
+                    UpdatedBy = "System",
+                    BatchReference = batchReference
+                },
 
-            setupOptOut.Add(new OptOut
-            {
-                Id = Guid.NewGuid(),
-                NhsNumber = GenerateValidNhsNumber(),
-                LastSentToMesh = currentDateTime,
-                Status = "Unknown",
-                UniqueReference = "8a935b2d-9e7d-4655-8488-66d4837c81c43",
-                CacheTime = currentDateTime,
-                CreatedDate = currentDateTime,
-                UpdatedDate = currentDateTime,
-                CreatedBy = "System",
-                UpdatedBy = "System",
-                BatchReference = batchReference
-            });
+                new OptOut
+                {
+                    Id = Guid.NewGuid(),
+                    NhsNumber = GenerateValidNhsNumber(),
+                    LastSentToMesh = currentDateTime,
+                    Status = "Unknown",
+                    UniqueReference = "8a935b2d-9e7d-4655-8488-66d4837c81c43",
+                    CacheTime = currentDateTime,
+                    CreatedDate = currentDateTime,
+                    UpdatedDate = currentDateTime,
+                    CreatedBy = "System",
+                    UpdatedBy = "System",
+                    BatchReference = batchReference
+                }
+            };
 
             foreach (var optOut in setupOptOut)
             {
@@ -168,52 +169,53 @@ namespace LHDS.Core.Tests.Integration.OptOuts
         {
             DateTimeOffset auditDateTime = DateTimeOffset.UtcNow;
             DateTimeOffset expiredDateTime = DateTimeOffset.UtcNow.AddDays(-14);
-            List<OptOut> setupOptOut = new List<OptOut>();
-
-            setupOptOut.Add(new OptOut
+            List<OptOut> setupOptOut = new List<OptOut>
             {
-                Id = Guid.NewGuid(),
-                NhsNumber = "9694116481",
-                LastSentToMesh = expiredDateTime,
-                Status = "Unknown",
-                UniqueReference = "9e48851c-76c1-4db1-aa78-c36c0eb86223",
-                CacheTime = expiredDateTime,
-                CreatedDate = auditDateTime,
-                UpdatedDate = auditDateTime,
-                CreatedBy = "System",
-                UpdatedBy = "System",
-                BatchReference = batchReference
-            });
+                new OptOut
+                {
+                    Id = Guid.NewGuid(),
+                    NhsNumber = "9694116481",
+                    LastSentToMesh = expiredDateTime,
+                    Status = "Unknown",
+                    UniqueReference = "9e48851c-76c1-4db1-aa78-c36c0eb86223",
+                    CacheTime = expiredDateTime,
+                    CreatedDate = auditDateTime,
+                    UpdatedDate = auditDateTime,
+                    CreatedBy = "System",
+                    UpdatedBy = "System",
+                    BatchReference = batchReference
+                },
 
-            setupOptOut.Add(new OptOut
-            {
-                Id = Guid.NewGuid(),
-                NhsNumber = "9694116511",
-                LastSentToMesh = expiredDateTime,
-                Status = "Unknown",
-                UniqueReference = "9e48851c-76c1-4db1-aa78-c36c0eb86224",
-                CacheTime = expiredDateTime,
-                CreatedDate = auditDateTime,
-                UpdatedDate = auditDateTime,
-                CreatedBy = "System",
-                UpdatedBy = "System",
-                BatchReference = batchReference
-            });
+                new OptOut
+                {
+                    Id = Guid.NewGuid(),
+                    NhsNumber = "9694116511",
+                    LastSentToMesh = expiredDateTime,
+                    Status = "Unknown",
+                    UniqueReference = "9e48851c-76c1-4db1-aa78-c36c0eb86224",
+                    CacheTime = expiredDateTime,
+                    CreatedDate = auditDateTime,
+                    UpdatedDate = auditDateTime,
+                    CreatedBy = "System",
+                    UpdatedBy = "System",
+                    BatchReference = batchReference
+                },
 
-            setupOptOut.Add(new OptOut
-            {
-                Id = Guid.NewGuid(),
-                NhsNumber = "9694116473",
-                LastSentToMesh = expiredDateTime,
-                Status = "Unknown",
-                UniqueReference = "9e48851c-76c1-4db1-aa78-c36c0eb86225",
-                CacheTime = expiredDateTime,
-                CreatedDate = auditDateTime,
-                UpdatedDate = auditDateTime,
-                CreatedBy = "System",
-                UpdatedBy = "System",
-                BatchReference = batchReference
-            });
+                new OptOut
+                {
+                    Id = Guid.NewGuid(),
+                    NhsNumber = "9694116473",
+                    LastSentToMesh = expiredDateTime,
+                    Status = "Unknown",
+                    UniqueReference = "9e48851c-76c1-4db1-aa78-c36c0eb86225",
+                    CacheTime = expiredDateTime,
+                    CreatedDate = auditDateTime,
+                    UpdatedDate = auditDateTime,
+                    CreatedBy = "System",
+                    UpdatedBy = "System",
+                    BatchReference = batchReference
+                }
+            };
 
             foreach (var optOut in setupOptOut)
             {
@@ -234,29 +236,22 @@ namespace LHDS.Core.Tests.Integration.OptOuts
 
         private async ValueTask<string> SetupSimulatedMeshMessage(string batchReference, List<string> idsFromMesh)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder stringContent = new StringBuilder();
 
             foreach (var id in idsFromMesh)
             {
-                sb.AppendLine($"{id},");
+                stringContent.AppendLine($"{id},");
             }
 
-            MeshMessage simulatedMeshReply = new MeshMessage
-            {
-                StringContent = sb.ToString(),
-                Headers = {
-                        { "Content-Type", new List<string> { "text/plain" } },
-                        { "Mex-From", new List<string> { this.meshConfiguration.MailboxId } },
-                        { "Mex-To", new List<string> { this.meshConfiguration.MailboxId } },
-                        { "Mex-WorkflowID", new List<string> { this.optOutConfiguration.WorkflowId } },
-                        { "Mex-LocalID", new List<string> { batchReference } },
-                        { "Mex-FileName", new List<string> { batchReference } },
-                    }
-            };
+            await this.meshService.SendMessageAsync(
+                mexTo: this.meshConfiguration.MailboxId,
+                mexWorkflowId: this.optOutConfiguration.WorkflowId,
+                fileContent: Encoding.UTF8.GetBytes(stringContent.ToString()),
+                mexLocalId: batchReference,
+                mexFileName: batchReference,
+                contentType: "text/plain");
 
-            await this.meshService.SendMessageAsync(simulatedMeshReply);
-
-            return simulatedMeshReply.StringContent;
+            return stringContent.ToString();
         }
 
         private static string GenerateValidNhsNumber()

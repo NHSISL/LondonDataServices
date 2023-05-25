@@ -56,6 +56,13 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 (Rule: IsInvalid(batchReference), Parameter: "BatchReference"));
         }
 
+        private static void ValidateDocumentRequirements(string content, string fileName)
+        {
+            Validate<InvalidArgumentOptOutOrchestrationException>(
+                (Rule: IsInvalid(content), Parameter: "Content"),
+                (Rule: IsInvalid(fileName), Parameter: "FileName"));
+        }
+
         private static dynamic IsInvalid(string text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),

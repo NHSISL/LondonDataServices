@@ -255,10 +255,13 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                             addHeaderRecord: this.optOutConfiguration.OptOutFileHasHeader,
                             shouldAddTrailingComma: this.optOutConfiguration.OptOutFileRequireTrailingComma);
 
+                    string fileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv";
+                    ValidateDocumentRequirements(csvDifferences, fileName);
+
                     Document document = new Document
                     {
                         DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
-                        FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv"
+                        FileName = fileName
                     };
 
                     await this.documentProcessingService.AddDocumentAsync(document);

@@ -37,12 +37,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             new InvalidMeshProcessingArgumentException();
 
             invalidMeshProcessingArgumentException.AddData(
-                key: "Mex-To",
-                values: "Header value is required");
+                key: "MexTo",
+                values: "Text is required");
 
             invalidMeshProcessingArgumentException.AddData(
-                key: "Mex-WorkflowID",
-                values: "Header value is required");
+                key: "MexWorkflowId",
+                values: "Text is required");
 
             var expectedMeshProcessingValidationException =
             new MeshProcessingValidationException(
@@ -82,7 +82,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     contentType,
                     contentEncoding,
                     accept),
-                        Times.Once);
+                        Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -156,7 +156,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                     contentType,
                     contentEncoding,
                     accept),
-                        Times.Once);
+                        Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -198,7 +198,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             MeshMessage nullTrackingMessage = null;
 
             var nullMeshProcessingException =
-               new NullMeshProcessingException();
+               new NullMeshMessageProcessingException();
 
             var expectedMeshProcessingValidationException =
                 new MeshProcessingValidationException(nullMeshProcessingException);

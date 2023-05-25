@@ -58,9 +58,6 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
         private static void ValidateDocumentRequirements(string content, string fileName)
         {
-            Console.WriteLine($"Content: {content}");
-            Console.WriteLine($"FileName: {fileName}");
-
             Validate<InvalidArgumentOptOutOrchestrationException>(
                 (Rule: IsInvalid(content), Parameter: "Content"),
                 (Rule: IsInvalid(fileName), Parameter: "FileName"));

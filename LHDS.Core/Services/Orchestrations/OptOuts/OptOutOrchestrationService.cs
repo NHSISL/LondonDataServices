@@ -240,31 +240,34 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         await this.optOutProcessingService.AddOrModifyOptOutAsync(nonConsentedListItem);
                     }
 
-                    List<OptOutIdentifier> differentIdentifiers = delta
-                        .Select(identifier => new OptOutIdentifier
-                        {
-                            NhsNumber = identifier.NhsNumber,
-                            UniqueReference = identifier.UniqueReference,
-                            Status = identifier.Status,
-                            StatusChangedDateTime = identifier.CacheTime
-                        }).ToList();
-
-                    string csvDifferences = await this.csvMapperProcessingService
-                        .MapObjectToCsvAsync(
-                            @object: differentIdentifiers,
-                            addHeaderRecord: this.optOutConfiguration.OptOutFileHasHeader,
-                            shouldAddTrailingComma: this.optOutConfiguration.OptOutFileRequireTrailingComma);
-
-                    string fileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv";
-                    ValidateDocumentRequirements(csvDifferences, fileName);
-
-                    Document document = new Document
+                    if (delta.Count > 0)
                     {
-                        DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
-                        FileName = fileName
-                    };
+                        List<OptOutIdentifier> differentIdentifiers = delta
+                            .Select(identifier => new OptOutIdentifier
+                            {
+                                NhsNumber = identifier.NhsNumber,
+                                UniqueReference = identifier.UniqueReference,
+                                Status = identifier.Status,
+                                StatusChangedDateTime = identifier.CacheTime
+                            }).ToList();
 
-                    await this.documentProcessingService.AddDocumentAsync(document);
+                        string csvDifferences = await this.csvMapperProcessingService
+                            .MapObjectToCsvAsync(
+                                @object: differentIdentifiers,
+                                addHeaderRecord: this.optOutConfiguration.OptOutFileHasHeader,
+                                shouldAddTrailingComma: this.optOutConfiguration.OptOutFileRequireTrailingComma);
+
+                        string fileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv";
+                        ValidateDocumentRequirements(csvDifferences, fileName);
+
+                        Document document = new Document
+                        {
+                            DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
+                            FileName = fileName
+                        };
+
+                        await this.documentProcessingService.AddDocumentAsync(document);
+                    }
                 }
 
                 return meshMessageList;

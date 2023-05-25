@@ -866,11 +866,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             // Given
             bool withHeader = optOutConfiguration.OptOutFileHasHeader;
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            List<OptOutIdentifier> outputIdentifierUnknownList = new List<OptOutIdentifier>();
-            List<OptOutIdentifier> outputIdentifierConsentedList = new List<OptOutIdentifier>();
+
+            List<OptOutIdentifier> outputIdentifierUnknownList =
+                new List<OptOutIdentifier>();
+
+            List<OptOutIdentifier> outputIdentifierConsentedList =
+                CreateRandomListOfOptOutIdentifiers(count: 1, status: "Opt-Out");
 
             List<OptOutIdentifier> outputIdentifierNonConsentedList =
-                CreateRandomListOfOptOutIdentifiers(count: 1, status: "Opt-In");
+                new List<OptOutIdentifier>();
 
             List<OptOutIdentifier> randomOutputIdentifierBatch = new List<OptOutIdentifier>();
             randomOutputIdentifierBatch.AddRange(outputIdentifierUnknownList);
@@ -889,7 +893,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 List<OptOut> randomUnkownConsentBatch = new List<OptOut>();
 
                 List<OptOut> randomConsentBatch =
-                   CreateRandomOptOutsList(outputIdentifierNonConsentedList, batchReference, "Opt-Out");
+                   CreateRandomOptOutsList(outputIdentifierConsentedList, batchReference, "Opt-Out");
 
                 List<OptOut> randomNonConsentBatch = new List<OptOut>();
 
@@ -989,7 +993,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 }
 
                 List<OptOutIdentifier> differentIdentifiers = delta
-                    .Select(item => new OptOutIdentifier { NhsNumber = item.NhsNumber }).ToList();
+                    .Select(item => new OptOutIdentifier
+                    {
+                        NhsNumber = item.NhsNumber,
+                        UniqueReference = item.UniqueReference,
+                        StatusChangedDateTime = item.CacheTime,
+                        Status = item.Status,
+                    }).ToList();
 
                 string csvDifferences = CreateNewCsvList(
                     differentIdentifiers,
@@ -1097,7 +1107,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 }
 
                 List<OptOutIdentifier> differentIdentifiers = delta
-                   .Select(item => new OptOutIdentifier { NhsNumber = item.NhsNumber }).ToList();
+                   .Select(item => new OptOutIdentifier
+                   {
+                       NhsNumber = item.NhsNumber,
+                       UniqueReference = item.UniqueReference,
+                       StatusChangedDateTime = item.CacheTime,
+                       Status = item.Status,
+                   }).ToList();
 
                 string csvDifferences = CreateNewCsvList(
                     differentIdentifiers,

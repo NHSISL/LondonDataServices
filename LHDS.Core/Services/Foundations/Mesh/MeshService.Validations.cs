@@ -19,39 +19,12 @@ namespace LHDS.Core.Services.Foundations.Mesh
                 (Rule: IsInvalid(messageId), Parameter: "MessageId"));
         }
 
-        public void ValidateMeshMessageOnSendMessage(MeshMessage message)
+        public void ValidateMeshMessageOnSendMessage(string mexTo, string workflowId, byte[] fileContent)
         {
-            ValidateMeshMessageIsNotNull(message);
-
             Validate<InvalidMeshMessageException>(
-                (Rule: IsInvalid(message.StringContent), Parameter: nameof(message.StringContent)),
-                (Rule: IsInvalid(message.Headers), Parameter: nameof(message.Headers)));
-
-            Validate<InvalidMeshMessageException>(
-                (Rule: IsInvalid(message.StringContent), Parameter: nameof(message.StringContent)),
-                (Rule: IsInvalid(message.Headers, "Content-Type"), Parameter: "Content-Type"),
-                (Rule: IsInvalid(message.Headers, "Mex-FileName"), Parameter: "Mex-FileName"),
-                (Rule: IsInvalid(message.Headers, "Mex-From"), Parameter: "Mex-From"),
-                (Rule: IsInvalid(message.Headers, "Mex-To"), Parameter: "Mex-To"),
-                (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"));
-        }
-
-        public void ValidateMeshMessageOnSendFile(MeshMessage message)
-        {
-            ValidateMeshMessageIsNotNull(message);
-
-            Validate<InvalidMeshMessageException>(
-                (Rule: IsInvalid(message.FileContent), Parameter: nameof(message.FileContent)),
-                (Rule: IsInvalid(message.Headers), Parameter: nameof(message.Headers)));
-
-            Validate<InvalidMeshMessageException>(
-                (Rule: IsInvalid(message.Headers, "Content-Type"), Parameter: "Content-Type"),
-                (Rule: IsInvalid(message.Headers, "Mex-FileName"), Parameter: "Mex-FileName"),
-                (Rule: IsInvalid(message.Headers, "Mex-From"), Parameter: "Mex-From"),
-                (Rule: IsInvalid(message.Headers, "Mex-To"), Parameter: "Mex-To"),
-                (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"),
-                (Rule: IsInvalid(message.Headers, "Mex-Content-Checksum"), Parameter: "Mex-Content-Checksum"),
-                (Rule: IsInvalid(message.Headers, "Mex-Content-Encrypted"), Parameter: "Mex-Content-Encrypted"));
+                (Rule: IsInvalid(mexTo), Parameter: "MexTo"),
+                (Rule: IsInvalid(workflowId), Parameter: "MexWorkflowId"),
+                (Rule: IsInvalid(fileContent), Parameter: "FileContent"));
         }
 
         public void ValidateMessageId(string messageId) =>

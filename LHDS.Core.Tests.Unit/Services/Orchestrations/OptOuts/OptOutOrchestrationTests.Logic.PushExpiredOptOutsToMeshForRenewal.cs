@@ -5,8 +5,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
 using Moq;
@@ -52,23 +52,42 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     It.Is(SameOptOutIdentifierListAs(mappedOptOuts)), withHeader, shouldAddTrailingComma))
                         .ReturnsAsync(processedOutputString);
 
-            MeshMessage message = new MeshMessage
-            {
-                StringContent = processedOutputString,
-                Headers = new Dictionary<string, List<string>>()
-            };
+            string mexTo = this.optOutConfiguration.To;
+            string mexWorkflowId = this.optOutConfiguration.WorkflowId;
+            byte[] fileContent = Encoding.UTF8.GetBytes(processedOutputString);
+            string mexSubject = string.Empty;
+            string mexLocalId = batchReference;
+            string mexFileName = $"{batchReference}.txt";
+            string mexContentChecksum = string.Empty;
+            string contentType = "text/plain";
+            string contentEncoding = string.Empty;
+            string accept = "application/json";
 
-            message.Headers.Add("Content-Type", new List<string> { "text/plain" });
-            message.Headers.Add("Mex-FileName", new List<string> { batchReference });
-            message.Headers.Add("Mex-LocalID", new List<string> { batchReference });
-            message.Headers.Add("Mex-From", new List<string> { this.meshConfiguration.MailboxId });
-            message.Headers.Add("Mex-To", new List<string> { this.optOutConfiguration.To });
-            message.Headers.Add("Mex-WorkflowID", new List<string> { this.optOutConfiguration.WorkflowId });
-            MeshMessage outputMessage = message.DeepClone();
+            MeshMessage outputMessage = ComposeMessage.CreateMeshMessage(
+                mexTo,
+                mexWorkflowId,
+                fileContent,
+                mexSubject,
+                mexLocalId,
+                mexFileName,
+                mexContentChecksum,
+                contentType,
+                contentEncoding,
+                accept);
 
             this.meshProcessingServiceMock.Setup(processings =>
-                processings.SendMessageAsync(It.Is(SameMessageAs(message))))
-                    .ReturnsAsync(outputMessage);
+                processings.SendMessageAsync(
+                    mexTo,
+                    mexWorkflowId,
+                    fileContent,
+                    mexSubject,
+                    mexLocalId,
+                    mexFileName,
+                    mexContentChecksum,
+                    contentType,
+                    contentEncoding,
+                    accept))
+                        .ReturnsAsync(outputMessage);
 
             foreach (var optOut in outputOptOuts)
             {
@@ -94,8 +113,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     Times.Once);
 
             this.meshProcessingServiceMock.Verify(processings =>
-                processings.SendMessageAsync(It.Is(SameMessageAs(message))),
-                    Times.Once);
+                processings.SendMessageAsync(
+                    mexTo,
+                    mexWorkflowId,
+                    fileContent,
+                    mexSubject,
+                    mexLocalId,
+                    mexFileName,
+                    mexContentChecksum,
+                    contentType,
+                    contentEncoding,
+                    accept),
+                        Times.Once);
 
             foreach (var optOut in outputOptOuts)
             {

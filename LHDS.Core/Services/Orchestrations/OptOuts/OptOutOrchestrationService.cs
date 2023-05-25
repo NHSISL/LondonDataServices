@@ -193,6 +193,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                     string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
+                    ValidateBacthReferenceExists(batchReference);
+
                     List<OptOut> originalBatch = await this.optOutProcessingService
                         .RetrieveAllOptOutsByBatchReferenceAsync(batchReference);
 

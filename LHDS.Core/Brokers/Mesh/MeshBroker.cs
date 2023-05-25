@@ -39,11 +39,30 @@ namespace LHDS.Core.Brokers.Mesh
         public ValueTask<bool> HandshakeAsync() =>
             this.meshClient.Mailbox.HandshakeAsync();
 
-        public ValueTask<Message> SendMessageAsync(Message message) =>
-            this.meshClient.Mailbox.SendMessageAsync(message);
-
-        public ValueTask<Message> SendFileAsync(Message message) =>
-            this.meshClient.Mailbox.SendFileAsync(message);
+        public ValueTask<Message> SendMessageAsync(
+            string mexTo,
+            string mexWorkflowId,
+            byte[] fileContent,
+            string mexSubject = "",
+            string mexLocalId = "",
+            string mexFileName = "",
+            string mexContentChecksum = "",
+            string contentType = "application/octet-stream",
+            string contentEncoding = "",
+            string accept = "application/json")
+        {
+            return this.meshClient.Mailbox.SendMessageAsync(
+                mexTo: mexTo,
+                mexWorkflowId: mexWorkflowId,
+                fileContent: fileContent,
+                mexSubject: mexSubject,
+                mexLocalId: mexLocalId,
+                mexFileName: mexFileName,
+                mexContentChecksum: mexContentChecksum,
+                contentType: contentType,
+                contentEncoding: contentEncoding,
+                accept: accept);
+        }
 
         public ValueTask<Message> TrackMessageAsync(string messageId) =>
             this.meshClient.Mailbox.TrackMessageAsync(messageId);

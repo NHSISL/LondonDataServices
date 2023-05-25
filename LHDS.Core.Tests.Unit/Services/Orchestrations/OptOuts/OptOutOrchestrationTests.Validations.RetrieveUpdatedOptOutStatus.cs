@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
-using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using Moq;
 using Xunit;
@@ -35,20 +34,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             retrievedMessage.Headers.Remove("Mex-LocalID");
 
-            var invalidMeshMessageException =
-                new InvalidMeshMessageException();
+            var invalidMeshMessageOrchestrationException =
+                new InvalidMeshMessageOrchestrationException();
 
             this.meshProcessingServiceMock.Setup(service =>
                 service.RetrieveAndAcknowledgeMessageByIdAsync(It.IsAny<string>()))
                     .ReturnsAsync(retrievedMessage);
 
-            invalidMeshMessageException.AddData(
+            invalidMeshMessageOrchestrationException.AddData(
                 key: "Mex-LocalID",
                 values: "Header value is required");
 
             var expectedOptOutOrchestrationValidationException =
             new OptOutOrchestrationValidationException(
-                innerException: invalidMeshMessageException);
+                innerException: invalidMeshMessageOrchestrationException);
 
             // when
             ValueTask<List<MeshMessage>> retrieveUpdatedOptOutStatusTask =

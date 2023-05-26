@@ -30,7 +30,8 @@ namespace LHDS.Core.Brokers.Mesh
                 ClientCertificate = this.meshConfiguration.ClientCertificate,
                 MexClientVersion = this.meshConfiguration.MexClientVersion,
                 MexOSName = this.meshConfiguration.MexOSName,
-                MexOSVersion = this.meshConfiguration.MexOSVersion
+                MexOSVersion = this.meshConfiguration.MexOSVersion,
+                MaxChunkSizeInMegabytes = this.meshConfiguration.MaxChunkSizeInMegabytes,
             };
 
             this.meshClient = new MeshClient(config);
@@ -51,17 +52,24 @@ namespace LHDS.Core.Brokers.Mesh
             string contentEncoding = "",
             string accept = "application/json")
         {
-            return await this.meshClient.Mailbox.SendMessageAsync(
-                mexTo: mexTo,
-                mexWorkflowId: mexWorkflowId,
-                fileContent: fileContent,
-                mexSubject: mexSubject,
-                mexLocalId: mexLocalId,
-                mexFileName: mexFileName,
-                mexContentChecksum: mexContentChecksum,
-                contentType: contentType,
-                contentEncoding: contentEncoding,
-                accept: accept);
+            try
+            {
+                return await this.meshClient.Mailbox.SendMessageAsync(
+                    mexTo: mexTo,
+                    mexWorkflowId: mexWorkflowId,
+                    fileContent: fileContent,
+                    mexSubject: mexSubject,
+                    mexLocalId: mexLocalId,
+                    mexFileName: mexFileName,
+                    mexContentChecksum: mexContentChecksum,
+                    contentType: contentType,
+                    contentEncoding: contentEncoding,
+                    accept: accept);
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async ValueTask<Message> TrackMessageAsync(string messageId) =>

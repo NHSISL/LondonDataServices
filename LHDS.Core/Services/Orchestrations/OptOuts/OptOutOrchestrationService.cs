@@ -118,7 +118,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
-                bool withHeader = this.optOutConfiguration.OptOutFileHasHeader;
+                bool withHeader = false;
                 bool shouldAddTrailingComma = this.optOutConfiguration.OptOutFileRequireTrailingComma;
 
                 List<OptOut> mappedOptOuts = await

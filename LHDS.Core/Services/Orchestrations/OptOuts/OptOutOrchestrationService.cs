@@ -134,7 +134,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     }).ToList();
 
                 var processedString = await this.csvMapperProcessingService
-                       .MapObjectToCsvAsync(mappedOptOutIdentifiers, withHeader, shouldAddTrailingComma);
+                       .MapObjectToCsvAsync(mappedOptOutIdentifiers, false, shouldAddTrailingComma);
 
                 string batchReference = this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss");
 

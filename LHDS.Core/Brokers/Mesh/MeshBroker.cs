@@ -36,10 +36,10 @@ namespace LHDS.Core.Brokers.Mesh
             this.meshClient = new MeshClient(config);
         }
 
-        public ValueTask<bool> HandshakeAsync() =>
-            this.meshClient.Mailbox.HandshakeAsync();
+        public async ValueTask<bool> HandshakeAsync() =>
+            await this.meshClient.Mailbox.HandshakeAsync();
 
-        public ValueTask<Message> SendMessageAsync(
+        public async ValueTask<Message> SendMessageAsync(
             string mexTo,
             string mexWorkflowId,
             byte[] fileContent,
@@ -51,7 +51,7 @@ namespace LHDS.Core.Brokers.Mesh
             string contentEncoding = "",
             string accept = "application/json")
         {
-            return this.meshClient.Mailbox.SendMessageAsync(
+            return await this.meshClient.Mailbox.SendMessageAsync(
                 mexTo: mexTo,
                 mexWorkflowId: mexWorkflowId,
                 fileContent: fileContent,
@@ -64,16 +64,16 @@ namespace LHDS.Core.Brokers.Mesh
                 accept: accept);
         }
 
-        public ValueTask<Message> TrackMessageAsync(string messageId) =>
-            this.meshClient.Mailbox.TrackMessageAsync(messageId);
+        public async ValueTask<Message> TrackMessageAsync(string messageId) =>
+            await this.meshClient.Mailbox.TrackMessageAsync(messageId);
 
-        public ValueTask<List<string>> RetrieveMessageIdsAsync() =>
-            this.meshClient.Mailbox.RetrieveMessagesAsync();
+        public async ValueTask<List<string>> RetrieveMessageIdsAsync() =>
+            await this.meshClient.Mailbox.RetrieveMessagesAsync();
 
-        public ValueTask<Message> RetrieveMessageAsync(string messageId) =>
-            this.meshClient.Mailbox.RetrieveMessageAsync(messageId);
+        public async ValueTask<Message> RetrieveMessageAsync(string messageId) =>
+            await this.meshClient.Mailbox.RetrieveMessageAsync(messageId);
 
-        public ValueTask<bool> AcknowledgeMessageByIdAsync(string messageId) =>
-            this.meshClient.Mailbox.AcknowledgeMessageAsync(messageId);
+        public async ValueTask<bool> AcknowledgeMessageByIdAsync(string messageId) =>
+            await this.meshClient.Mailbox.AcknowledgeMessageAsync(messageId);
     }
 }

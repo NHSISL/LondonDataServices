@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
 {
     public partial class OptOutTests
     {
-        [Fact(Skip = "Excluded from pipeline")]
+        [Fact]
         public async Task RetrieveUpdatedMeshConsentStatusesChanges()
         {
             try

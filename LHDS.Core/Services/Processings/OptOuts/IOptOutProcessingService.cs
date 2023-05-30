@@ -21,6 +21,6 @@ namespace LHDS.Core.Services.Processings.OptOuts
 
         ValueTask<List<OptOut>> ConsolidateOptOutChangesAndReturnChangesOnly(
             List<OptOut> currentOptOutList,
-            List<OptOut> consentedItems);
+            List<string> consentedItems);
     }
 }

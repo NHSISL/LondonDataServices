@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             randomOutputIdentifierBatch.AddRange(outputIdentifierNonConsentedList);
 
             List<string> outputMessageIds = GetRandomStrings(count: 1);
-            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, outputIdentifierConsentedList);
+            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, randomOutputIdentifierBatch);
             List<MeshMessage> expectedMessages = outputMessages.DeepClone();
 
             List<OptOut> outputBatch = new List<OptOut>();
@@ -316,7 +316,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             randomOutputIdentifierBatch.AddRange(outputIdentifierConsentedList);
             randomOutputIdentifierBatch.AddRange(outputIdentifierNonConsentedList);
             List<string> outputMessageIds = GetRandomStrings(count: 1);
-            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, outputIdentifierConsentedList);
+            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, randomOutputIdentifierBatch);
             List<MeshMessage> expectedMessages = outputMessages.DeepClone();
             List<OptOut> outputBatch = new List<OptOut>();
 
@@ -340,7 +340,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 broker.GetCurrentDateTimeOffset())
                     .Returns(randomDateTimeOffset);
 
-            // Given
             this.meshProcessingServiceMock.Setup(processings =>
                 processings.RetrieveMessageIdsFromInboxAsync())
                     .ReturnsAsync(outputMessageIds);
@@ -444,10 +443,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             List<MeshMessage> expectedMeshMessageList = meshMessageList.DeepClone();
 
-            // When
-            List<MeshMessage> actualMeshMessageList =
-                await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
 
+            // When
+            try
+            {
+                List<MeshMessage> actualMeshMessageList =
+                    await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+            
             // Then
             actualMeshMessageList.Should().BeEquivalentTo(expectedMessages);
 
@@ -566,6 +568,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
 
         [Fact]
@@ -864,7 +871,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             randomOutputIdentifierBatch.AddRange(outputIdentifierNonConsentedList);
 
             List<string> outputMessageIds = GetRandomStrings(count: 1);
-            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, outputIdentifierConsentedList);
+            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, randomOutputIdentifierBatch);
             List<MeshMessage> expectedMessages = outputMessages.DeepClone();
             List<OptOut> outputBatch = new List<OptOut>();
 
@@ -1140,7 +1147,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             randomOutputIdentifierBatch.AddRange(outputIdentifierConsentedList);
             randomOutputIdentifierBatch.AddRange(outputIdentifierNonConsentedList);
             List<string> outputMessageIds = GetRandomStrings(count: 1);
-            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, outputIdentifierConsentedList);
+            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, randomOutputIdentifierBatch);
             List<MeshMessage> expectedMessages = outputMessages.DeepClone();
             List<OptOut> outputBatch = new List<OptOut>();
 

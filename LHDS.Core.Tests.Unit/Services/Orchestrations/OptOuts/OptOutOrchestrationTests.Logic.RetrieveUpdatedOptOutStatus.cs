@@ -28,7 +28,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<string> outputMessageIds = GetRandomStrings(count: 1);
             List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds);
             MeshMessage firstMessage = outputMessages.FirstOrDefault();
-            firstMessage.Headers["Mex-WorkflowID"] = new List<string> { this.meshConfiguration.WorkflowId };
+            string randomWorkflowId = GetRandomWorkflowId();
+            firstMessage.Headers["Mex-WorkflowID"] = new List<string> { randomWorkflowId };
             List<MeshMessage> expectedMessages = outputMessages.DeepClone();
             
             List<OptOutIdentifier> outputIdentifierUnknownList =

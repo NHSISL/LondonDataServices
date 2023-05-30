@@ -246,6 +246,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         originalConsentedItems,
                         randomConsentedIdentifiers),
                             Times.Exactly(outputMessageIds.Count));
+
+                csvMapperProcessingServiceMock.Verify(processings =>
+                    processings.MapObjectToCsvAsync<OptOutIdentifier>(
+                        It.IsAny<List<OptOutIdentifier>>(),
+                        It.IsAny<bool>(),
+                        It.IsAny<bool>()),
+                            Times.Never);
+
+                documentProcessingServiceMock.Verify(processings =>
+                    processings.AddDocumentAsync(It.IsAny<Document>()),
+                        Times.Never);
             }
 
             meshProcessingServiceMock.VerifyNoOtherCalls();

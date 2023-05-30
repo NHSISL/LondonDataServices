@@ -312,8 +312,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             List<string> outputMessageIds = GetRandomStrings(count: 1);
             List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds);
-            MeshMessage firstMessage = outputMessages.FirstOrDefault();
-            firstMessage.Headers["Mex-WorkflowID"] = new List<string> { this.meshConfiguration.WorkflowId };
+
+            foreach (var message in outputMessages)
+            {
+                message.Headers["Mex-WorkflowID"] = new List<string> { this.meshConfiguration.WorkflowId };
+            }
+
             List<MeshMessage> expectedMessages = outputMessages.DeepClone();
 
             List<OptOutIdentifier> outputIdentifierUnknownList =
@@ -598,8 +602,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             List<string> outputMessageIds = GetRandomStrings(count: 1);
             List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds);
-            MeshMessage firstMessage = outputMessages.FirstOrDefault();
-            firstMessage.Headers["Mex-WorkflowID"] = new List<string> { this.meshConfiguration.WorkflowId };
+
+            foreach (var message in outputMessages)
+            {
+                message.Headers["Mex-WorkflowID"] = new List<string> { this.meshConfiguration.WorkflowId };
+            }
+
             List<MeshMessage> expectedMessages = outputMessages.DeepClone();
             bool IsAcknowledged = true;
 
@@ -885,8 +893,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             List<string> outputMessageIds = GetRandomStrings(count: 1);
             List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds);
-            MeshMessage firstMessage = outputMessages.FirstOrDefault();
-            firstMessage.Headers["Mex-WorkflowID"] = new List<string> { this.meshConfiguration.WorkflowId };
+
+            foreach (var message in outputMessages)
+            {
+                message.Headers["Mex-WorkflowID"] = new List<string> { this.meshConfiguration.WorkflowId };
+            }
+
             List<MeshMessage> expectedMessages = outputMessages.DeepClone();
 
             List<OptOutIdentifier> outputIdentifierUnknownList = new List<OptOutIdentifier>();
@@ -1169,8 +1181,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             List<string> outputMessageIds = GetRandomStrings(count: 1);
             List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds);
-            MeshMessage firstMessage = outputMessages.FirstOrDefault();
-            firstMessage.Headers["Mex-WorkflowID"] = new List<string> { this.meshConfiguration.WorkflowId };
+
+            foreach (var message in outputMessages)
+            {
+                message.Headers["Mex-WorkflowID"] = new List<string> { this.meshConfiguration.WorkflowId };
+            }
+
             List<MeshMessage> expectedMessages = outputMessages.DeepClone();
 
             List<OptOutIdentifier> outputIdentifierUnknownList = new List<OptOutIdentifier>();

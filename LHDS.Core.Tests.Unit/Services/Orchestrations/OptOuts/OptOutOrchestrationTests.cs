@@ -480,6 +480,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             };
         }
 
+        public string GetRandomWorkflowId()
+        {
+            var random = new Random();
+            var workflowId = random.Next(1000, 9999).ToString(); // Generates a random four-digit workflowId
+            return workflowId;
+        }
+
         private string GetValidationSummary(IDictionary data)
         {
             StringBuilder validationSummary = new StringBuilder();

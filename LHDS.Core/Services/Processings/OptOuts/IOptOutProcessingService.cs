@@ -18,6 +18,6 @@ namespace LHDS.Core.Services.Processings.OptOuts
         ValueTask<OptOut> RetrieveOptOutByNhsNumberAsync(string optOutNhsNumber);
         ValueTask<List<OptOut>> RetrieveAllExpiredOptOutsAsync(int olderThanDays);
         ValueTask<List<OptOut>> RetrieveAllOptOutsByBatchReferenceAsync(string batchReference);
-        ValueTask<List<OptOut>> ConsolidateOptOutChanges(List<OptOut> currentOptOutList, List<OptOut> consentedItems);
+        ValueTask<List<OptOut>> ConsolidateOptOutChangesAndReturnChangesOnly(List<OptOut> currentOptOutList, List<OptOut> consentedItems);
     }
 }

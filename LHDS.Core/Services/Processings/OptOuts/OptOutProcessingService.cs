@@ -128,6 +128,11 @@ namespace LHDS.Core.Services.Processings.OptOuts
 
                 return await ValueTask.FromResult(foundOptOuts);
             });
+
+        public ValueTask<List<OptOut>> ConsolidateOptOutChanges(
+            List<OptOut> currentOptOutList,
+            List<OptOut> consentedItems) =>
+                throw new NotImplementedException();
     }
 }
 

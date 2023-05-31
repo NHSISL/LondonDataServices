@@ -35,17 +35,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
         {
             ValidateOptOutListProcessingIsNotNull(optOutList);
 
-            foreach (var item in optOutList)
-            {
-                ValidateOptOutProcessingIsNotNull(item);
-            }
-
             ValidateOptOutProcessingConsentedItemsListIsNotNull(consentedItemsList);
-
-            foreach (var item in consentedItemsList)
-            {
-                Validate((Rule: IsInvalid(item), Parameter: nameof(item)));
-            }
         }
 
         private static void ValidateOptOutListProcessingIsNotNull(List<OptOut> optOutList)

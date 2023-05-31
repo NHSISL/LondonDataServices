@@ -181,13 +181,10 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                     meshMessageList.Add(message);
 
-                    List<string> consentedStringList = Encoding.UTF8
+                    List<string> consentedIdentifiers = Encoding.UTF8
                         .GetString(message.FileContent)
                             .Replace(",", string.Empty)
                                 .Split("\r\n", StringSplitOptions.RemoveEmptyEntries).ToList();
-
-                    List<OptOutIdentifier> consentedIdentifierList =
-                        consentedStringList.Select(item => new OptOutIdentifier { NhsNumber = item }).ToList();
 
                     ValidateLocalIdHeaderExists(message);
 
@@ -198,47 +195,11 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     List<OptOut> originalBatch = await this.optOutProcessingService
                         .RetrieveAllOptOutsByBatchReferenceAsync(batchReference);
 
-                    List<string> consentedIdentifiers = consentedIdentifierList
-                        .Select(optOut => optOut.NhsNumber)
-                        .ToList();
-
-                    List<OptOut> consentedList = originalBatch
+                    List<OptOut> consentedItems = originalBatch
                         .Where(optOut => consentedIdentifiers.Contains(optOut.NhsNumber)).ToList();
 
-                    List<OptOut> nonConsentedList = originalBatch.Except(consentedList).ToList();
-                    List<OptOut> delta = new List<OptOut>();
-
-                    foreach (var item in consentedList)
-                    {
-                        if (item.Status != "Opt-In")
-                        {
-                            delta.Add(item);
-                        }
-
-                        var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                        item.UpdatedDate = dateTime;
-                        item.CacheTime = dateTime;
-                        item.LastSentToMesh = dateTime;
-                        item.Status = "Opt-In";
-
-                        await this.optOutProcessingService.AddOrModifyOptOutAsync(item);
-                    }
-
-                    foreach (var nonConsentedListItem in nonConsentedList)
-                    {
-                        if (nonConsentedListItem.Status != "Opt-Out")
-                        {
-                            delta.Add(nonConsentedListItem);
-                        }
-
-                        var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                        nonConsentedListItem.UpdatedDate = dateTime;
-                        nonConsentedListItem.CacheTime = dateTime;
-                        nonConsentedListItem.LastSentToMesh = dateTime;
-                        nonConsentedListItem.Status = "Opt-Out";
-
-                        await this.optOutProcessingService.AddOrModifyOptOutAsync(nonConsentedListItem);
-                    }
+                    List<OptOut> delta = await this.optOutProcessingService
+                        .ConsolidateOptOutChangesAndReturnChangesOnly(originalBatch, consentedIdentifiers);
 
                     if (delta.Count > 0)
                     {

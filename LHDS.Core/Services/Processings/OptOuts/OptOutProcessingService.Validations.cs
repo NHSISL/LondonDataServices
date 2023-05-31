@@ -33,25 +33,9 @@ namespace LHDS.Core.Services.Processings.OptOuts
             List<OptOut> optOutList, 
             List<string> consentedItemsList)
         {
-            ValidateOptOutListProcessingIsNotNull(optOutList);
-
-            ValidateOptOutProcessingConsentedItemsListIsNotNull(consentedItemsList);
-        }
-
-        private static void ValidateOptOutListProcessingIsNotNull(List<OptOut> optOutList)
-        {
-            if (optOutList is null)
-            {
-                throw new NullOptOutListProcessingException();
-            }
-        }
-
-        private static void ValidateOptOutProcessingConsentedItemsListIsNotNull(List<string> consentedItemsList)
-        {
-            if (consentedItemsList is null)
-            {
-                throw new NullOptOutConsentedItemsListProcessingException();
-            }
+            Validate(
+                (Rule: IsInvalid(optOutList), Parameter: "OptOutList"),
+                (Rule: IsInvalid(consentedItemsList), Parameter: "ConsentedItemsList"));
         }
 
         public void ValidateOptOutId(Guid optOutId) =>
@@ -84,6 +68,18 @@ namespace LHDS.Core.Services.Processings.OptOuts
             Message = "Value is required"
         };
 
+        private static dynamic IsInvalid(List<OptOut> optOutList) => new
+        {
+            Condition = optOutList == null,
+            Message = "Opt out list is required"
+        };
+
+        private static dynamic IsInvalid(List<string> stringList) => new
+        {
+            Condition = stringList == null,
+            Message = "String list is required"
+        };
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidArgumentOptOutProcessingException = new InvalidArgumentOptOutProcessingException();
@@ -102,4 +98,3 @@ namespace LHDS.Core.Services.Processings.OptOuts
         }
     }
 }
-

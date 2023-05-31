@@ -23,11 +23,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             List<OptOut> nullOptOutList = null;
             List<string> randomStringList = RandomStringList(randomNumber);
 
-            var nullOptOutListProcessingException =
-                new NullOptOutListProcessingException();
+            var invalidArgumentOptOutProcessingException =
+                new InvalidArgumentOptOutProcessingException();
+
+            invalidArgumentOptOutProcessingException.AddData(
+                key: "OptOutList",
+                values: "Opt out list is required");
 
             var expectedOptOutProcessingValidationException =
-                new OptOutProcessingValidationException(innerException: nullOptOutListProcessingException);
+                new OptOutProcessingValidationException(innerException: invalidArgumentOptOutProcessingException);
 
             // when
             ValueTask<List<OptOut>> ConsolidateChangesOptOutTask =
@@ -58,12 +62,16 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             List<OptOut> randomOptOutsList = CreateRandomOptOutList(randomString);
             List<string> nullStringList = null;
 
-            var nullOptOutConsentedItemsListProcessingException =
-                new NullOptOutConsentedItemsListProcessingException();
+            var invalidArgumentOptOutProcessingException =
+                new InvalidArgumentOptOutProcessingException();
+
+            invalidArgumentOptOutProcessingException.AddData(
+                key: "ConsentedItemsList",
+                values: "String list is required");
 
             var expectedOptOutProcessingValidationException =
                 new OptOutProcessingValidationException(
-                    innerException: nullOptOutConsentedItemsListProcessingException);
+                    innerException: invalidArgumentOptOutProcessingException);
 
             // when
             ValueTask<List<OptOut>> ConsolidateChangesOptOutTask =

@@ -129,10 +129,53 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 return await ValueTask.FromResult(foundOptOuts);
             });
 
-        public ValueTask<List<OptOut>> ConsolidateOptOutChangesAndReturnChangesOnly(
+        public async ValueTask<List<OptOut>> ConsolidateOptOutChangesAndReturnChangesOnly(
             List<OptOut> currentOptOutList,
-            List<string> consentedItems) =>
-                throw new NotImplementedException();
+            List<string> consentedItems)
+        {
+            List<OptOut> consentedList = currentOptOutList
+                .Where(optOut => consentedItems.Contains(optOut.NhsNumber))
+                    .ToList();
+
+            List<OptOut> nonConsentedList = currentOptOutList
+                .Except(consentedList).ToList();
+
+            List<OptOut> delta = new List<OptOut>();
+
+            foreach (var item in consentedList)
+            {
+                if (item.Status != "Opt-In")
+                {
+                    delta.Add(item);
+                }
+
+                var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                item.UpdatedDate = dateTime;
+                item.CacheTime = dateTime;
+                item.LastSentToMesh = dateTime;
+                item.Status = "Opt-In";
+
+                await this.optOutService.ModifyOptOutAsync(item);
+            }
+
+            foreach (var nonConsentedListItem in nonConsentedList)
+            {
+                if (nonConsentedListItem.Status != "Opt-Out")
+                {
+                    delta.Add(nonConsentedListItem);
+                }
+
+                var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                nonConsentedListItem.UpdatedDate = dateTime;
+                nonConsentedListItem.CacheTime = dateTime;
+                nonConsentedListItem.LastSentToMesh = dateTime;
+                nonConsentedListItem.Status = "Opt-Out";
+
+                await this.optOutService.ModifyOptOutAsync(nonConsentedListItem);
+            }
+
+            return delta;
+        }
     }
 }
 

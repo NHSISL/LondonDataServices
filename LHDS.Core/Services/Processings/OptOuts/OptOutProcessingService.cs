@@ -134,7 +134,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
             List<string> consentedItems) =>
             TryCatch(async () =>
         {
-            ValidateOptOutProcessingOnConsolidate(currentOptOutList);
+            ValidateCurrentOptOutListProcessingOnConsolidate(currentOptOutList);
 
             List<OptOut> consentedList = currentOptOutList
                 .Where(optOut => consentedItems.Contains(optOut.NhsNumber))

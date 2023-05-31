@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Extensions.Exceptions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -268,7 +269,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             }
             catch (System.Exception ex)
             {
-                output.WriteLine(ex.Message);
+                output.WriteLine($"Error: {ex.Message}, Validation: {ex.GetValidationSummary()}");
             }
 
         }

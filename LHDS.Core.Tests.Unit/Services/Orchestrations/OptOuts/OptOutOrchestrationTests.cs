@@ -32,6 +32,7 @@ using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 {
@@ -49,9 +50,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private readonly OptOutConfiguration optOutConfiguration;
         private readonly IConfiguration inMemoryConfiguration;
         private readonly MeshConfiguration meshConfiguration;
+        private readonly ITestOutputHelper output;
 
-        public OptOutOrchestrationTests()
+        public OptOutOrchestrationTests(ITestOutputHelper output)
         {
+            this.output = output;
+
             var appSettingsStub = new Dictionary<string, string> {
                 { "OptOutSettings:ExpiredAfterDays", "7" },
                 { "OptOutSettings:InputFolder", GetRandomString() },

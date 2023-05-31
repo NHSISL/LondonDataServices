@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -97,13 +98,61 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 new NullOptOutConsentedItemsListProcessingException();
 
             var expectedOptOutProcessingValidationException =
-                new OptOutProcessingValidationException(innerException: nullOptOutConsentedItemsListProcessingException);
+                new OptOutProcessingValidationException(
+                    innerException: nullOptOutConsentedItemsListProcessingException);
 
             // when
             ValueTask<List<OptOut>> ConsolidateChangesOptOutTask =
                 this.optOutProcessingService.ConsolidateOptOutChangesAndReturnChangesOnly(
                     randomOptOutsList,
                     nullStringList);
+
+            OptOutProcessingValidationException actualOptOutProcessingValidationException =
+                await Assert.ThrowsAsync<OptOutProcessingValidationException>(ConsolidateChangesOptOutTask.AsTask);
+
+            //then
+            actualOptOutProcessingValidationException.Should()
+                .BeEquivalentTo(expectedOptOutProcessingValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOptOutProcessingValidationException))),
+                        Times.Once);
+
+            this.optOutServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public async Task
+            ShouldThrowValidationExceptionsOnConsolidateChangesIfConsentedItemInProcessingListIsNullAndLogItAsync(
+            string invalidInput)
+        {
+            // given
+            string invalidString = invalidInput;
+            string randomString = GetRandomString();
+            List<OptOut> randomOptOutsList = CreateRandomOptOutList(randomString);
+            List<string> invalidInputStringList = new List<string> { invalidInput };
+
+            var invalidArgumentOptOutProcessingException =
+                new InvalidArgumentOptOutProcessingException();
+
+            invalidArgumentOptOutProcessingException.AddData(
+                key: "item",
+                values: "Text is required");
+
+            var expectedOptOutProcessingValidationException =
+                new OptOutProcessingValidationException(
+                    innerException: invalidArgumentOptOutProcessingException);
+
+            // when
+            ValueTask<List<OptOut>> ConsolidateChangesOptOutTask =
+                this.optOutProcessingService.ConsolidateOptOutChangesAndReturnChangesOnly(
+                    randomOptOutsList,
+                    invalidInputStringList);
 
             OptOutProcessingValidationException actualOptOutProcessingValidationException =
                 await Assert.ThrowsAsync<OptOutProcessingValidationException>(ConsolidateChangesOptOutTask.AsTask);

@@ -29,9 +29,14 @@ namespace LHDS.Core.Services.Processings.OptOuts
             }
         }
 
-        private static void ValidateOptOutProcessingOnConsolidate(List<OptOut> optOutList)
+        private static void ValidateCurrentOptOutListProcessingOnConsolidate(List<OptOut> optOutList)
         {
             ValidateOptOutListProcessingIsNotNull(optOutList);
+
+            foreach (var item in optOutList)
+            {
+                ValidateOptOutProcessingIsNotNull(item);
+            }
         }
 
         private static void ValidateOptOutListProcessingIsNotNull(List<OptOut> optOutList)

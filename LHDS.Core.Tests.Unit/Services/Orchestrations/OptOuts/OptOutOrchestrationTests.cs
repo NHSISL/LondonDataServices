@@ -327,6 +327,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             return messageList;
         }
 
+        private Expression<Func<List<string>, bool>> SameStringListAs(List<string> expectedStrings)
+        {
+            return actualStrings =>
+                this.compareLogic.Compare(expectedStrings, actualStrings)
+                    .AreEqual;
+        }
 
         private Expression<Func<List<OptOut>, bool>> SameOptOutListAs(List<OptOut> expectedOptOuts)
         {

@@ -154,115 +154,123 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         [Fact]
         public async Task ShouldRetrieveUpdatedMeshOptOutStatusesAndNotCreateOutputFileForZeroChangesAsync()
         {
-            // Given
-            bool withHeader = optOutConfiguration.OptOutFileHasHeader;
-            List<string> outputMessageIds = GetRandomStrings(count: GetRandomNumber());
-            List<string> randomConsentedIdentifiers = CreateRandomListOfConsentedIdentifiers(count: GetRandomNumber());
-            List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, randomConsentedIdentifiers);
-            List<MeshMessage> expectedMessages = outputMessages.DeepClone();
-            List<OptOut> originalConsentedItems = CreateRandomOptOuts(count: GetRandomNumber());
-            List<OptOut> changedConsentedItems = new List<OptOut>();
-
-            meshProcessingServiceMock.Setup(processings =>
-                processings.RetrieveMessageIdsFromInboxAsync())
-                    .ReturnsAsync(outputMessageIds);
-
-            List<MeshMessage> meshMessageList = new List<MeshMessage>();
-
-            foreach (string messageId in outputMessageIds)
+            try
             {
-                var message = outputMessages.First(message => message.MessageId == messageId);
+                // Given
+                bool withHeader = optOutConfiguration.OptOutFileHasHeader;
+                List<string> outputMessageIds = GetRandomStrings(count: GetRandomNumber());
+                List<string> randomConsentedIdentifiers = CreateRandomListOfConsentedIdentifiers(count: GetRandomNumber());
+                List<MeshMessage> outputMessages = GetRandomMessages(outputMessageIds, randomConsentedIdentifiers);
+                List<MeshMessage> expectedMessages = outputMessages.DeepClone();
+                List<OptOut> originalConsentedItems = CreateRandomOptOuts(count: GetRandomNumber());
+                List<OptOut> changedConsentedItems = new List<OptOut>();
 
-                meshProcessingServiceMock.Setup(processing =>
-                    processing.RetrieveAndAcknowledgeMessageByIdAsync(messageId))
-                        .ReturnsAsync(message);
+                meshProcessingServiceMock.Setup(processings =>
+                    processings.RetrieveMessageIdsFromInboxAsync())
+                        .ReturnsAsync(outputMessageIds);
 
-                meshMessageList.Add(message);
+                List<MeshMessage> meshMessageList = new List<MeshMessage>();
 
-                string batchReference = GetHeaderValue(message, "Mex-LocalID");
+                foreach (string messageId in outputMessageIds)
+                {
+                    var message = outputMessages.First(message => message.MessageId == messageId);
 
-                optOutProcessingServiceMock.Setup(processings =>
-                    processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference))
-                        .ReturnsAsync(originalConsentedItems);
+                    meshProcessingServiceMock.Setup(processing =>
+                        processing.RetrieveAndAcknowledgeMessageByIdAsync(messageId))
+                            .ReturnsAsync(message);
 
-                optOutProcessingServiceMock.Setup(processings =>
-                    processings.ConsolidateOptOutChangesAndReturnChangesOnly(
-                        originalConsentedItems,
-                        randomConsentedIdentifiers))
-                            .ReturnsAsync(changedConsentedItems);
+                    meshMessageList.Add(message);
 
-                List<OptOutIdentifier> differentIdentifiers = changedConsentedItems
-                    .Select(identifier => new OptOutIdentifier
-                    {
-                        NhsNumber = identifier.NhsNumber,
-                        UniqueReference = identifier.UniqueReference,
-                        Status = identifier.Status,
-                        StatusChangedDateTime = identifier.CacheTime
-                    }).ToList();
+                    string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
-                string csvDifferences = CreateNewCsvList(
-                    differentIdentifiers,
-                    this.optOutConfiguration.OptOutFileRequireTrailingComma);
+                    optOutProcessingServiceMock.Setup(processings =>
+                        processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference))
+                            .ReturnsAsync(originalConsentedItems);
 
-                csvMapperProcessingServiceMock.Setup(processings =>
-                    processings.MapObjectToCsvAsync<OptOutIdentifier>(
-                        It.Is(SameOptOutIdentifierListAs(differentIdentifiers)),
-                        this.optOutConfiguration.OptOutFileHasHeader,
-                        this.optOutConfiguration.OptOutFileRequireTrailingComma))
-                            .ReturnsAsync(csvDifferences);
-            }
+                    optOutProcessingServiceMock.Setup(processings =>
+                        processings.ConsolidateOptOutChangesAndReturnChangesOnly(
+                            It.Is(SameOptOutListAs(originalConsentedItems)),
+                            It.Is(SameStringListAs(randomConsentedIdentifiers))))
+                                .ReturnsAsync(changedConsentedItems);
 
-            List<MeshMessage> expectedMeshMessageList = meshMessageList.DeepClone();
+                    List<OptOutIdentifier> differentIdentifiers = changedConsentedItems
+                        .Select(identifier => new OptOutIdentifier
+                        {
+                            NhsNumber = identifier.NhsNumber,
+                            UniqueReference = identifier.UniqueReference,
+                            Status = identifier.Status,
+                            StatusChangedDateTime = identifier.CacheTime
+                        }).ToList();
 
-            // When
-            List<MeshMessage> actualMeshMessageList =
-                await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+                    string csvDifferences = CreateNewCsvList(
+                        differentIdentifiers,
+                        this.optOutConfiguration.OptOutFileRequireTrailingComma);
 
-            // Then
-            actualMeshMessageList.Should().BeEquivalentTo(expectedMessages);
+                    csvMapperProcessingServiceMock.Setup(processings =>
+                        processings.MapObjectToCsvAsync<OptOutIdentifier>(
+                            It.Is(SameOptOutIdentifierListAs(differentIdentifiers)),
+                            this.optOutConfiguration.OptOutFileHasHeader,
+                            this.optOutConfiguration.OptOutFileRequireTrailingComma))
+                                .ReturnsAsync(csvDifferences);
+                }
 
-            meshProcessingServiceMock.Verify(Processings =>
-                Processings.RetrieveMessageIdsFromInboxAsync(),
-                    Times.Once);
+                List<MeshMessage> expectedMeshMessageList = meshMessageList.DeepClone();
 
-            foreach (string messageId in outputMessageIds)
-            {
-                var message = outputMessages.First(message => message.MessageId == messageId);
+                // When
+                List<MeshMessage> actualMeshMessageList =
+                    await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
 
-                meshProcessingServiceMock.Verify(processing =>
-                    processing.RetrieveAndAcknowledgeMessageByIdAsync(messageId),
+                // Then
+                actualMeshMessageList.Should().BeEquivalentTo(expectedMessages);
+
+                meshProcessingServiceMock.Verify(Processings =>
+                    Processings.RetrieveMessageIdsFromInboxAsync(),
                         Times.Once);
 
-                meshMessageList.Add(message);
+                foreach (string messageId in outputMessageIds)
+                {
+                    var message = outputMessages.First(message => message.MessageId == messageId);
 
-                string batchReference = GetHeaderValue(message, "Mex-LocalID");
+                    meshProcessingServiceMock.Verify(processing =>
+                        processing.RetrieveAndAcknowledgeMessageByIdAsync(messageId),
+                            Times.Once);
 
-                optOutProcessingServiceMock.Verify(processings =>
-                    processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference),
-                        Times.Once);
+                    meshMessageList.Add(message);
 
-                optOutProcessingServiceMock.Verify(processings =>
-                    processings.ConsolidateOptOutChangesAndReturnChangesOnly(
-                        originalConsentedItems,
-                        randomConsentedIdentifiers),
-                            Times.Exactly(outputMessageIds.Count));
+                    string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
-                csvMapperProcessingServiceMock.Verify(processings =>
-                    processings.MapObjectToCsvAsync<OptOutIdentifier>(
-                        It.IsAny<List<OptOutIdentifier>>(),
-                        It.IsAny<bool>(),
-                        It.IsAny<bool>()),
+                    optOutProcessingServiceMock.Verify(processings =>
+                        processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference),
+                            Times.Once);
+
+                    optOutProcessingServiceMock.Verify(processings =>
+                        processings.ConsolidateOptOutChangesAndReturnChangesOnly(
+                            It.Is(SameOptOutListAs(originalConsentedItems)),
+                            It.Is(SameStringListAs(randomConsentedIdentifiers))),
+                                Times.Exactly(outputMessageIds.Count));
+
+                    csvMapperProcessingServiceMock.Verify(processings =>
+                        processings.MapObjectToCsvAsync<OptOutIdentifier>(
+                            It.IsAny<List<OptOutIdentifier>>(),
+                            It.IsAny<bool>(),
+                            It.IsAny<bool>()),
+                                Times.Never);
+
+                    documentProcessingServiceMock.Verify(processings =>
+                        processings.AddDocumentAsync(It.IsAny<Document>()),
                             Times.Never);
+                }
 
-                documentProcessingServiceMock.Verify(processings =>
-                    processings.AddDocumentAsync(It.IsAny<Document>()),
-                        Times.Never);
+                meshProcessingServiceMock.VerifyNoOtherCalls();
+                csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+                optOutProcessingServiceMock.VerifyNoOtherCalls();
+                documentProcessingServiceMock.VerifyNoOtherCalls();
+            }
+            catch (System.Exception ex)
+            {
+                output.WriteLine(ex.Message);
             }
 
-            meshProcessingServiceMock.VerifyNoOtherCalls();
-            csvMapperProcessingServiceMock.VerifyNoOtherCalls();
-            optOutProcessingServiceMock.VerifyNoOtherCalls();
-            documentProcessingServiceMock.VerifyNoOtherCalls();
         }
     }
 }

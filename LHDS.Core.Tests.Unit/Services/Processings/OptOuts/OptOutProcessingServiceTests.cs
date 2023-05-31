@@ -179,6 +179,20 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             return optOuts;
         }
 
+        private static List<OptOut> CreateRandomOptOutListWithNullOptOut()
+        {
+            List<OptOut> optOuts = new List<OptOut>();
+            int count = GetRandomNumber();
+
+            for (int i = 0; i < count; i++)
+            {
+                OptOut optOut = null;
+                optOuts.Add(optOut);
+            }
+
+            return optOuts;
+        }
+
         private OptOut SelectRandomOptOut(IQueryable<OptOut> optOuts)
         {
             Random random = new Random();

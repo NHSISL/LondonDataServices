@@ -29,7 +29,9 @@ namespace LHDS.Core.Services.Processings.OptOuts
             }
         }
 
-        private static void ValidateCurrentOptOutListProcessingOnConsolidate(List<OptOut> optOutList)
+        private static void ValidateCurrentOptOutListProcessingOnConsolidate(
+            List<OptOut> optOutList, 
+            List<string> consentedItemsList)
         {
             ValidateOptOutListProcessingIsNotNull(optOutList);
 
@@ -37,6 +39,8 @@ namespace LHDS.Core.Services.Processings.OptOuts
             {
                 ValidateOptOutProcessingIsNotNull(item);
             }
+
+            ValidateOptOutProcessingConsentedItemsListIsNotNull(consentedItemsList);
         }
 
         private static void ValidateOptOutListProcessingIsNotNull(List<OptOut> optOutList)
@@ -44,6 +48,14 @@ namespace LHDS.Core.Services.Processings.OptOuts
             if (optOutList is null)
             {
                 throw new NullOptOutListProcessingException();
+            }
+        }
+
+        private static void ValidateOptOutProcessingConsentedItemsListIsNotNull(List<string> consentedItemsList)
+        {
+            if (consentedItemsList is null)
+            {
+                throw new NullOptOutConsentedItemsListProcessingException();
             }
         }
 

@@ -147,6 +147,11 @@ namespace LHDS.Core.Services.Processings.OptOuts
 
             foreach (var item in consentedList)
             {
+                if (item == null)
+                {
+                    continue;
+                }
+
                 if (item.Status != "Opt-In")
                 {
                     delta.Add(item);

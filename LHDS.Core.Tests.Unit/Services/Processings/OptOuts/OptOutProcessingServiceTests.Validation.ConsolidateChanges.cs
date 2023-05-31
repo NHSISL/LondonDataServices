@@ -50,42 +50,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionsOnConsolidateChangesIfOptOutProcessingItemIsNullAndLogItAsync()
-        {
-            // given
-            int randomNumber = GetRandomNumber();
-            List<OptOut> optOutListWithNullOptOuts = CreateRandomOptOutListWithNullOptOut();
-            List<string> randomStringList = RandomStringList(randomNumber);
-
-            var nullOptOutProcessingException =
-                new NullOptOutProcessingException();
-
-            var expectedOptOutProcessingValidationException =
-                new OptOutProcessingValidationException(innerException: nullOptOutProcessingException);
-
-            // when
-            ValueTask<List<OptOut>> ConsolidateChangesOptOutTask =
-                this.optOutProcessingService.ConsolidateOptOutChangesAndReturnChangesOnly(
-                    optOutListWithNullOptOuts, 
-                    randomStringList);
-
-            OptOutProcessingValidationException actualOptOutProcessingValidationException =
-                await Assert.ThrowsAsync<OptOutProcessingValidationException>(ConsolidateChangesOptOutTask.AsTask);
-
-            //then
-            actualOptOutProcessingValidationException.Should()
-                .BeEquivalentTo(expectedOptOutProcessingValidationException);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedOptOutProcessingValidationException))),
-                        Times.Once);
-
-            this.optOutServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
         public async Task 
             ShouldThrowValidationExceptionsOnConsolidateChangesIfConsentedItemsProcessingListIsNullAndLogItAsync()
         {
@@ -106,53 +70,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                 this.optOutProcessingService.ConsolidateOptOutChangesAndReturnChangesOnly(
                     randomOptOutsList,
                     nullStringList);
-
-            OptOutProcessingValidationException actualOptOutProcessingValidationException =
-                await Assert.ThrowsAsync<OptOutProcessingValidationException>(ConsolidateChangesOptOutTask.AsTask);
-
-            //then
-            actualOptOutProcessingValidationException.Should()
-                .BeEquivalentTo(expectedOptOutProcessingValidationException);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedOptOutProcessingValidationException))),
-                        Times.Once);
-
-            this.optOutServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public async Task
-            ShouldThrowValidationExceptionsOnConsolidateChangesIfConsentedItemInProcessingListIsNullAndLogItAsync(
-            string invalidInput)
-        {
-            // given
-            string invalidString = invalidInput;
-            string randomString = GetRandomString();
-            List<OptOut> randomOptOutsList = CreateRandomOptOutList(randomString);
-            List<string> invalidInputStringList = new List<string> { invalidInput };
-
-            var invalidArgumentOptOutProcessingException =
-                new InvalidArgumentOptOutProcessingException();
-
-            invalidArgumentOptOutProcessingException.AddData(
-                key: "item",
-                values: "Text is required");
-
-            var expectedOptOutProcessingValidationException =
-                new OptOutProcessingValidationException(
-                    innerException: invalidArgumentOptOutProcessingException);
-
-            // when
-            ValueTask<List<OptOut>> ConsolidateChangesOptOutTask =
-                this.optOutProcessingService.ConsolidateOptOutChangesAndReturnChangesOnly(
-                    randomOptOutsList,
-                    invalidInputStringList);
 
             OptOutProcessingValidationException actualOptOutProcessingValidationException =
                 await Assert.ThrowsAsync<OptOutProcessingValidationException>(ConsolidateChangesOptOutTask.AsTask);

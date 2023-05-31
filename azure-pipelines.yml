@@ -79,46 +79,46 @@ steps:
   #    workingDir: $(webProjectName)/ClientApp
   #    customCommand: 'run test:ci'    
 
-  - task: DotNetCoreCLI@2
-    displayName: "Dotnet Publish (Debug)"
-    condition: ne(variables['Build.Reason'], 'PullRequest')
-    inputs:
-      command: "publish"
-      publishWebProjects: true
-      projects: "**/*.csproj"
-      arguments: "-o $(Build.ArtifactStagingDirectory)/debug --configuration Debug"
-      zipAfterPublish: true
-      modifyOutputPath: true
+  #- task: DotNetCoreCLI@2
+  #  displayName: "Dotnet Publish (Debug)"
+  #  condition: ne(variables['Build.Reason'], 'PullRequest')
+  #  inputs:
+  #    command: "publish"
+  #    publishWebProjects: true
+  #    projects: "**/*.csproj"
+  #    arguments: "-o $(Build.ArtifactStagingDirectory)/debug --configuration Debug"
+  #    zipAfterPublish: true
+  #    modifyOutputPath: true
  
-  - task: DotNetCoreCLI@2
-    displayName: "Dotnet Publish (Acceptance)"
-    condition: ne(variables['Build.Reason'], 'PullRequest')
-    inputs:
-      command: "publish"
-      publishWebProjects: true
-      projects: "**/*.csproj"
-      arguments: "-o $(Build.ArtifactStagingDirectory)/acceptance --configuration Acceptance"
-      zipAfterPublish: true
-      modifyOutputPath: true
+  #- task: DotNetCoreCLI@2
+  #  displayName: "Dotnet Publish (Acceptance)"
+  #  condition: ne(variables['Build.Reason'], 'PullRequest')
+  #  inputs:
+  #    command: "publish"
+  #    publishWebProjects: true
+  #    projects: "**/*.csproj"
+  #    arguments: "-o $(Build.ArtifactStagingDirectory)/acceptance --configuration Acceptance"
+  #    zipAfterPublish: true
+  #    modifyOutputPath: true
 
-  - task: DotNetCoreCLI@2
-    displayName: "Dotnet Publish (Release)"
-    condition: ne(variables['Build.Reason'], 'PullRequest')
-    inputs:
-      command: "publish"
-      publishWebProjects: true
-      projects: "**/*.csproj"
-      arguments: "-o $(Build.ArtifactStagingDirectory)/release --configuration Release"
-      zipAfterPublish: true
-      modifyOutputPath: true
+  #- task: DotNetCoreCLI@2
+  #  displayName: "Dotnet Publish (Release)"
+  #  condition: ne(variables['Build.Reason'], 'PullRequest')
+  #  inputs:
+  #    command: "publish"
+  #    publishWebProjects: true
+  #    projects: "**/*.csproj"
+  #    arguments: "-o $(Build.ArtifactStagingDirectory)/release --configuration Release"
+  #    zipAfterPublish: true
+  #    modifyOutputPath: true
 
-  - task: PublishBuildArtifacts@1
-    displayName: "Publish Build Artifacts"
-    condition: ne(variables['Build.Reason'], 'PullRequest')
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      ArtifactName: 'drop'
-      publishLocation: 'Container'
+  #- task: PublishBuildArtifacts@1
+  #  displayName: "Publish Build Artifacts"
+  #  condition: ne(variables['Build.Reason'], 'PullRequest')
+  #  inputs:
+  #    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+  #    ArtifactName: 'drop'
+  #    publishLocation: 'Container'
 
   - task: ArchiveFiles@2
     displayName: 'Archive files'

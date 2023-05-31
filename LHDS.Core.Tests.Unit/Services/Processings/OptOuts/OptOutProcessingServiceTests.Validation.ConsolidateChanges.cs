@@ -83,5 +83,42 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             this.optOutServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task 
+            ShouldThrowValidationExceptionsOnConsolidateChangesIfConsentedItemsProcessingListIsNullAndLogItAsync()
+        {
+            // given
+            string randomString = GetRandomString();
+            List<OptOut> randomOptOutsList = CreateRandomOptOutList(randomString);
+            List<string> nullStringList = null;
+
+            var nullOptOutConsentedItemsListProcessingException =
+                new NullOptOutConsentedItemsListProcessingException();
+
+            var expectedOptOutProcessingValidationException =
+                new OptOutProcessingValidationException(innerException: nullOptOutConsentedItemsListProcessingException);
+
+            // when
+            ValueTask<List<OptOut>> ConsolidateChangesOptOutTask =
+                this.optOutProcessingService.ConsolidateOptOutChangesAndReturnChangesOnly(
+                    randomOptOutsList,
+                    nullStringList);
+
+            OptOutProcessingValidationException actualOptOutProcessingValidationException =
+                await Assert.ThrowsAsync<OptOutProcessingValidationException>(ConsolidateChangesOptOutTask.AsTask);
+
+            //then
+            actualOptOutProcessingValidationException.Should()
+                .BeEquivalentTo(expectedOptOutProcessingValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOptOutProcessingValidationException))),
+                        Times.Once);
+
+            this.optOutServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

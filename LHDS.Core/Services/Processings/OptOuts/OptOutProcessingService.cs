@@ -129,10 +129,13 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 return await ValueTask.FromResult(foundOptOuts);
             });
 
-        public async ValueTask<List<OptOut>> ConsolidateOptOutChangesAndReturnChangesOnly(
+        public ValueTask<List<OptOut>> ConsolidateOptOutChangesAndReturnChangesOnly(
             List<OptOut> currentOptOutList,
-            List<string> consentedItems)
+            List<string> consentedItems) =>
+            TryCatch(async () =>
         {
+            ValidateOptOutProcessingOnConsolidate(currentOptOutList);
+
             List<OptOut> consentedList = currentOptOutList
                 .Where(optOut => consentedItems.Contains(optOut.NhsNumber))
                     .ToList();
@@ -175,7 +178,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
             }
 
             return delta;
-        }
+        });
     }
 }
 

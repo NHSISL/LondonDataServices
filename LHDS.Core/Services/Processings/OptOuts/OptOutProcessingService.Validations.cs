@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Processings.OptOuts.Exceptions;
 
@@ -27,6 +28,20 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 throw new NullOptOutProcessingException();
             }
         }
+
+        private static void ValidateOptOutProcessingOnConsolidate(List<OptOut> optOutList)
+        {
+            ValidateOptOutListProcessingIsNotNull(optOutList);
+        }
+
+        private static void ValidateOptOutListProcessingIsNotNull(List<OptOut> optOutList)
+        {
+            if (optOutList is null)
+            {
+                throw new NullOptOutListProcessingException();
+            }
+        }
+
         public void ValidateOptOutId(Guid optOutId) =>
             Validate((Rule: IsInvalid(optOutId), Parameter: nameof(OptOut.Id)));
 

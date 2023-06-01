@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
-using LHDS.Core.Models.Foundations.Mesh.Exceptions;
-using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using Moq;
 using Xunit;
@@ -36,20 +34,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             retrievedMessage.Headers.Remove("Mex-LocalID");
 
-            var invalidMeshMessageException =
-                new InvalidMeshMessageException();
+            var invalidMeshMessageOrchestrationException =
+                new InvalidMeshMessageOrchestrationException();
 
             this.meshProcessingServiceMock.Setup(service =>
                 service.RetrieveAndAcknowledgeMessageByIdAsync(It.IsAny<string>()))
                     .ReturnsAsync(retrievedMessage);
 
-            invalidMeshMessageException.AddData(
+            invalidMeshMessageOrchestrationException.AddData(
                 key: "Mex-LocalID",
                 values: "Header value is required");
 
             var expectedOptOutOrchestrationValidationException =
             new OptOutOrchestrationValidationException(
-                innerException: invalidMeshMessageException);
+                innerException: invalidMeshMessageOrchestrationException);
 
             // when
             ValueTask<List<MeshMessage>> retrieveUpdatedOptOutStatusTask =
@@ -62,10 +60,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             //then
             actualOptOutOrchestrationValidationException.Should()
                 .BeEquivalentTo(expectedOptOutOrchestrationValidationException);
-
-            this.csvMapperProcessingServiceMock.Verify(processings =>
-                    processings.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<string>(), It.IsAny<bool>()),
-                        Times.Once());
 
             this.meshProcessingServiceMock.Verify(service =>
                 service.RetrieveMessageIdsFromInboxAsync(),
@@ -81,7 +75,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
             this.meshProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

@@ -6,9 +6,9 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Orchestrations.OptOuts.Exceptions
 {
-    public class InvalidConfigOptOutOrchestrationException : Xeption
+    public class InvalidMeshMessageOrchestrationException : Xeption
     {
-        public InvalidConfigOptOutOrchestrationException()
-            : base(message: "Invalid Configuration orchestration error, please correct the errors and try again.") { }
+        public InvalidMeshMessageOrchestrationException()
+            : base(message: "Invalid mesh message orchestration error, please correct the errors and try again.") { }
     }
 }

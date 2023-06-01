@@ -16,6 +16,7 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.21.0" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
 		<PackageReference Include="Microsoft.VisualStudio.TestPlatform" Version="14.0.0" />
+		<PackageReference Include="Tynamix.ObjectFiller" Version="1.5.8" />
 		<PackageReference Include="xunit" Version="2.4.2" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -36,6 +37,9 @@
 		</None>
 		<None Update="local.appsettings.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Resources\EmisNDOOExtract_2D2DB402-CD53-4523-9D84-BDC23A562C3D_20230516T144214.csv">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="Resources\testfile.csv">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>

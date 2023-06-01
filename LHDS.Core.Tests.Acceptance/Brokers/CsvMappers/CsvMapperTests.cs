@@ -67,7 +67,6 @@ namespace LHDS.Core.Tests.Acceptance.Brokers.CsvMappers
             return $"{formattedNhsNumber}{checkNumber}";
         }
 
-
         private static Filler<OptOutCsv> CreateOptOutFiller()
         {
             string user = Guid.NewGuid().ToString();

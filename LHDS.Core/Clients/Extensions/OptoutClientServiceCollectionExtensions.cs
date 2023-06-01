@@ -77,6 +77,9 @@ namespace LHDS.Core.Clients.Extensions
                     configuration, "MeshConfiguration:IntermediateCertificates", false),
 
                 ClientCertificate = GetCertificate(configuration, "MeshConfiguration:ClientCertificate", true),
+
+                MaxChunkSizeInMegabytes = int.Parse(
+                    GetSettings(configuration, "MeshConfiguration:MaxChunkSizeInMegabytes", true)),
             };
 
             services.AddSingleton(meshConfig);

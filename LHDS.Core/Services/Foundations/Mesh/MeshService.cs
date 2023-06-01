@@ -30,23 +30,34 @@ namespace LHDS.Core.Services.Foundations.Mesh
                 return await this.meshBroker.HandshakeAsync();
             });
 
-        public ValueTask<MeshMessage> SendMessageAsync(MeshMessage message) =>
+        public ValueTask<MeshMessage> SendMessageAsync(
+            string mexTo,
+            string mexWorkflowId,
+            byte[] fileContent,
+            string mexSubject = "",
+            string mexLocalId = "",
+            string mexFileName = "",
+            string mexContentChecksum = "",
+            string contentType = "application/octet-stream",
+            string contentEncoding = "",
+            string accept = "application/json") =>
             TryCatch(async () =>
             {
-                ValidateMeshMessageOnSendMessage(message);
-                Message convertedMessage = MeshMessageToMessage(message);
-                Message brokerSendMessage = await this.meshBroker.SendMessageAsync(convertedMessage);
-                MeshMessage resultMeshMessage = MessageToMeshMessage(brokerSendMessage);
+                ValidateMeshMessageOnSendMessage(mexTo, mexWorkflowId, fileContent);
 
-                return resultMeshMessage;
-            });
+                Message brokerSendMessage = await this.meshBroker
+                    .SendMessageAsync(
+                        mexTo,
+                        mexWorkflowId,
+                        fileContent,
+                        mexSubject,
+                        mexLocalId,
+                        mexFileName,
+                        mexContentChecksum,
+                        contentType,
+                        contentEncoding,
+                        accept);
 
-        public ValueTask<MeshMessage> SendFileAsync(MeshMessage message) =>
-            TryCatch(async () =>
-            {
-                ValidateMeshMessageOnSendFile(message);
-                Message convertedMessage = MeshMessageToMessage(message);
-                Message brokerSendMessage = await this.meshBroker.SendFileAsync(convertedMessage);
                 MeshMessage resultMeshMessage = MessageToMeshMessage(brokerSendMessage);
 
                 return resultMeshMessage;
@@ -89,25 +100,12 @@ namespace LHDS.Core.Services.Foundations.Mesh
                 return acknowledgedResult;
             });
 
-        private static Message MeshMessageToMessage(MeshMessage meshMessage)
-        {
-            return new Message
-            {
-                MessageId = meshMessage.MessageId,
-                Headers = meshMessage.Headers,
-                StringContent = meshMessage.StringContent,
-                FileContent = meshMessage.FileContent,
-                TrackingInfo = ConvertToMessageTrackingInfo(meshMessage.TrackingInfo)
-            };
-        }
-
         public static MeshMessage MessageToMeshMessage(Message message)
         {
             return new MeshMessage
             {
                 MessageId = message.MessageId,
                 Headers = message.Headers,
-                StringContent = message.StringContent,
                 FileContent = message.FileContent,
                 TrackingInfo = ConvertToMeshMessageTrackingInfo(message.TrackingInfo)
             };

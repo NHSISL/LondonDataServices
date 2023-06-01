@@ -46,7 +46,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 {
                     Id = identifier,
                     NhsNumber = optOut.NhsNumber,
-                    OptOutStatus = "Unknown",
+                    Status = string.IsNullOrWhiteSpace(optOut.Status) ? "Unknown" : optOut.Status,
+                    UniqueReference = optOut.UniqueReference,
                     CreatedDate = randomDateTimeOffset,
                     UpdatedDate = randomDateTimeOffset,
                     CreatedBy = "System",
@@ -101,7 +102,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 {
                     Id = identifier,
                     NhsNumber = optOut.NhsNumber,
-                    OptOutStatus = "Unknown",
+                    Status = string.IsNullOrWhiteSpace(optOut.Status) ? "Unknown" : optOut.Status,
+                    UniqueReference = optOut.UniqueReference,
                     CreatedDate = randomDateTimeOffset,
                     UpdatedDate = randomDateTimeOffset,
                     CreatedBy = "System",

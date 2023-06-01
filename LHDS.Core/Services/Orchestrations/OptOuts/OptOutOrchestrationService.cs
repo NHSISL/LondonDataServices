@@ -72,7 +72,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 var inputString = Encoding.ASCII.GetString(optOutFile);
 
                 List<OptOutIdentifier> mappedOptOuts =
-                await this.csvMapperProcessingService.MapCsvToObjectAsync<OptOutIdentifier>(inputString, false);
+                    await this.csvMapperProcessingService
+                        .MapCsvToObjectAsync<OptOutIdentifier>(inputString, withHeader);
 
                 List<OptOut> processedOptOuts = new List<OptOut>();
 
@@ -86,7 +87,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                             {
                                 Id = this.identifierBroker.GetIdentifier(),
                                 NhsNumber = optOut.NhsNumber,
-                                OptOutStatus = "Unknown",
+                                Status = string.IsNullOrWhiteSpace(optOut.Status) ? "Unknown" : optOut.Status,
+                                UniqueReference = optOut.UniqueReference,
                                 CreatedDate = timeStamp,
                                 UpdatedDate = timeStamp,
                                 CreatedBy = "System",
@@ -116,7 +118,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             TryCatch(async () =>
             {
                 ValidateConfigurationSettings();
-                bool withHeader = this.optOutConfiguration.OptOutFileHasHeader;
+                bool withHeader = false;
                 bool shouldAddTrailingComma = this.optOutConfiguration.OptOutFileRequireTrailingComma;
 
                 List<OptOut> mappedOptOuts = await
@@ -124,26 +126,29 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         .RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays);
 
                 List<OptOutIdentifier> mappedOptOutIdentifiers =
-                    mappedOptOuts.Select(optout => new OptOutIdentifier { NhsNumber = optout.NhsNumber }).ToList();
+                    mappedOptOuts.Select(optout => new OptOutIdentifier
+                    {
+                        NhsNumber = optout.NhsNumber,
+                        UniqueReference = optout.UniqueReference,
+                        Status = optout.Status
+                    }).ToList();
 
-                var processedOutputString = await this.csvMapperProcessingService
-                       .MapObjectToCsvAsync(mappedOptOutIdentifiers, withHeader, shouldAddTrailingComma);
+                var processedString = await this.csvMapperProcessingService
+                       .MapObjectToCsvAsync(mappedOptOutIdentifiers, false, shouldAddTrailingComma);
 
                 string batchReference = this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss");
 
-                MeshMessage message = new MeshMessage
-                {
-                    StringContent = processedOutputString,
-                    Headers = new Dictionary<string, List<string>>()
-                };
-
-                message.Headers.Add("Content-Type", new List<string> { "text/plain" });
-                message.Headers.Add("Mex-FileName", new List<string> { batchReference });
-                message.Headers.Add("Mex-From", new List<string> { this.meshConfiguration.MailboxId });
-                message.Headers.Add("Mex-To", new List<string> { this.optOutConfiguration.To });
-                message.Headers.Add("Mex-WorkflowID", new List<string> { this.optOutConfiguration.WorkflowId });
-
-                message = await this.meshProcessingService.SendMessageAsync(message);
+                MeshMessage message = await this.meshProcessingService.SendMessageAsync(
+                    mexTo: this.optOutConfiguration.To,
+                    mexWorkflowId: this.optOutConfiguration.WorkflowId,
+                    fileContent: Encoding.UTF8.GetBytes(processedString),
+                    mexSubject: string.Empty,
+                    mexLocalId: batchReference,
+                    mexFileName: $"{batchReference}.txt",
+                    mexContentChecksum: string.Empty,
+                    contentType: "text/plain",
+                    contentEncoding: string.Empty,
+                    accept: "application/json");
 
                 foreach (var optOut in mappedOptOuts)
                 {
@@ -175,76 +180,57 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         .RetrieveAndAcknowledgeMessageByIdAsync(messageId);
 
                     meshMessageList.Add(message);
+                    string[] delimiters = { "\r\n", "\n" };
 
-                    List<OptOutIdentifier> consentedIdentifierList =
-                        await csvMapperProcessingService.MapCsvToObjectAsync<OptOutIdentifier>(
-                            message.StringContent,
-                            withHeader);
+                    List<string> consentedIdentifiers = Encoding.UTF8
+                        .GetString(message.FileContent)
+                            .Replace(",", string.Empty)
+                                .Split(delimiters, StringSplitOptions.RemoveEmptyEntries).ToList();
 
                     ValidateLocalIdHeaderExists(message);
 
                     string batchReference = GetHeaderValue(message, "Mex-LocalID");
 
+                    ValidateBacthReferenceExists(batchReference);
+
                     List<OptOut> originalBatch = await this.optOutProcessingService
                         .RetrieveAllOptOutsByBatchReferenceAsync(batchReference);
 
-                    List<string> consentedIdentifiers = consentedIdentifierList
-                        .Select(optOut => optOut.NhsNumber).ToList();
-
-                    List<OptOut> consentedList = originalBatch
+                    List<OptOut> consentedItems = originalBatch
                         .Where(optOut => consentedIdentifiers.Contains(optOut.NhsNumber)).ToList();
 
-                    List<OptOut> nonConsentedList = originalBatch.Except(consentedList).ToList();
-                    List<OptOut> delta = new List<OptOut>();
+                    List<OptOut> delta = await this.optOutProcessingService
+                        .ConsolidateOptOutChangesAndReturnChangesOnly(originalBatch, consentedIdentifiers);
 
-                    foreach (var item in consentedList)
+                    if (delta?.Count > 0)
                     {
-                        if (item.OptOutStatus != "Opt-In")
+                        List<OptOutIdentifier> differentIdentifiers = delta
+                            .Select(identifier => new OptOutIdentifier
+                            {
+                                NhsNumber = identifier.NhsNumber,
+                                UniqueReference = identifier.UniqueReference,
+                                Status = identifier.Status,
+                                StatusChangedDateTime = identifier.CacheTime
+                            }).ToList();
+
+                        string csvDifferences = await this.csvMapperProcessingService
+                            .MapObjectToCsvAsync(
+                                @object: differentIdentifiers,
+                                addHeaderRecord: this.optOutConfiguration.OptOutFileHasHeader,
+                                shouldAddTrailingComma: this.optOutConfiguration.OptOutFileRequireTrailingComma);
+
+                        string fileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv";
+
+                        ValidateDocumentRequirements(csvDifferences, fileName);
+
+                        Document document = new Document
                         {
-                            delta.Add(item);
-                        }
+                            DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
+                            FileName = fileName
+                        };
 
-                        var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                        item.UpdatedDate = dateTime;
-                        item.CacheTime = dateTime;
-                        item.LastSentToMesh = dateTime;
-                        item.OptOutStatus = "Opt-In";
-
-                        await this.optOutProcessingService.AddOrModifyOptOutAsync(item);
+                        await this.documentProcessingService.AddDocumentAsync(document);
                     }
-
-                    foreach (var nonConsentedListItem in nonConsentedList)
-                    {
-                        if (nonConsentedListItem.OptOutStatus != "Opt-Out")
-                        {
-                            delta.Add(nonConsentedListItem);
-                        }
-
-                        var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                        nonConsentedListItem.UpdatedDate = dateTime;
-                        nonConsentedListItem.CacheTime = dateTime;
-                        nonConsentedListItem.LastSentToMesh = dateTime;
-                        nonConsentedListItem.OptOutStatus = "Opt-Out";
-
-                        await this.optOutProcessingService.AddOrModifyOptOutAsync(nonConsentedListItem);
-                    }
-
-                    List<OptOutIdentifier> differentIdentifiers = delta
-                        .Select(identifier => new OptOutIdentifier { NhsNumber = identifier.NhsNumber }).ToList();
-
-                    string csvDifferences = await this.csvMapperProcessingService
-                        .MapObjectToCsvAsync(
-                            @object: differentIdentifiers,
-                            addHeaderRecord: this.optOutConfiguration.OptOutFileHasHeader,
-                            shouldAddTrailingComma: this.optOutConfiguration.OptOutFileRequireTrailingComma);
-
-                    Document document = new Document
-                    {
-                        DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
-                        FileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv"
-                    };
-
-                    await this.documentProcessingService.AddDocumentAsync(document);
                 }
 
                 return meshMessageList;

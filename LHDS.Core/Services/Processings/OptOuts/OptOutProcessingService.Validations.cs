@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Processings.OptOuts.Exceptions;
 
@@ -27,6 +28,16 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 throw new NullOptOutProcessingException();
             }
         }
+
+        private static void ValidateCurrentOptOutListProcessingOnConsolidate(
+            List<OptOut> optOutList, 
+            List<string> consentedItemsList)
+        {
+            Validate(
+                (Rule: IsInvalid(optOutList), Parameter: "OptOutList"),
+                (Rule: IsInvalid(consentedItemsList), Parameter: "ConsentedItemsList"));
+        }
+
         public void ValidateOptOutId(Guid optOutId) =>
             Validate((Rule: IsInvalid(optOutId), Parameter: nameof(OptOut.Id)));
 
@@ -57,6 +68,18 @@ namespace LHDS.Core.Services.Processings.OptOuts
             Message = "Value is required"
         };
 
+        private static dynamic IsInvalid(List<OptOut> optOutList) => new
+        {
+            Condition = optOutList == null,
+            Message = "Opt out list is required"
+        };
+
+        private static dynamic IsInvalid(List<string> stringList) => new
+        {
+            Condition = stringList == null,
+            Message = "String list is required"
+        };
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidArgumentOptOutProcessingException = new InvalidArgumentOptOutProcessingException();
@@ -75,4 +98,3 @@ namespace LHDS.Core.Services.Processings.OptOuts
         }
     }
 }
-

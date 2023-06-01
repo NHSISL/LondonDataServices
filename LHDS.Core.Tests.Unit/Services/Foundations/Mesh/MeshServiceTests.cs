@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
@@ -152,18 +151,63 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             };
         }
 
-        public static Dictionary<string, List<string>> CreateMandatoryHeaders()
+        public static Dictionary<string, List<string>> CreateHeaders(
+            string mexTo,
+            string mexWorkflowId,
+            string mexSubject = null,
+            string mexLocalId = null,
+            string mexFileName = null,
+            string mexContentChecksum = null,
+            string contentType = null,
+            string contentEncoding = null,
+            string accept = null)
         {
-            var dictionary = new Dictionary<string, List<string>>
+            var dictionary = new Dictionary<string, List<string>>();
+
+            if (!string.IsNullOrEmpty(mexTo))
             {
-                { "Content-Type", new List<string> { GetRandomString() } },
-                { "Mex-FileName", new List<string> { GetRandomString() } },
-                { "Mex-From", new List<string> { GetRandomString() } },
-                { "Mex-To", new List<string> { GetRandomString() } },
-                { "Mex-WorkflowID", new List<string> { GetRandomString() } },
-                { "Mex-Content-Checksum", new List<string> { GetRandomString() } },
-                { "Mex-Content-Encrypted", new List<string> { GetRandomString() } }
-            };
+                dictionary.Add("Mex-To", new List<string> { mexTo });
+            }
+
+            if (!string.IsNullOrEmpty(mexWorkflowId))
+            {
+                dictionary.Add("Mex-WorkflowID", new List<string> { mexWorkflowId });
+            }
+
+            if (!string.IsNullOrEmpty(mexSubject))
+            {
+                dictionary.Add("Mex-Subject", new List<string> { mexSubject });
+            }
+
+            if (!string.IsNullOrEmpty(mexLocalId))
+            {
+                dictionary.Add("Mex-LocalID", new List<string> { mexLocalId });
+            }
+
+            if (!string.IsNullOrEmpty(mexFileName))
+            {
+                dictionary.Add("Mex-FileName", new List<string> { mexFileName });
+            }
+
+            if (!string.IsNullOrEmpty(mexContentChecksum))
+            {
+                dictionary.Add("Mex-Content-Checksum", new List<string> { mexContentChecksum });
+            }
+
+            if (!string.IsNullOrEmpty(contentType))
+            {
+                dictionary.Add("Content-Type", new List<string> { contentType });
+            }
+
+            if (!string.IsNullOrEmpty(contentEncoding))
+            {
+                dictionary.Add("Content-Encoding", new List<string> { contentEncoding });
+            }
+
+            if (!string.IsNullOrEmpty(accept))
+            {
+                dictionary.Add("Accept", new List<string> { accept });
+            }
 
             return dictionary;
         }
@@ -180,14 +224,35 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             return list;
         }
 
-        public static dynamic CreateRandomMeshMessageProperties()
+        public static dynamic CreateRandomDynamicMeshMessageProperties(
+            string mexTo,
+            string mexWorkflowId,
+            byte[] fileContent,
+            string mexSubject,
+            string mexLocalId,
+            string mexFileName,
+            string mexContentChecksum,
+            string contentType,
+            string contentEncoding,
+            string accept)
         {
             return new
             {
                 MessageId = GetRandomString(),
-                Headers = CreateMandatoryHeaders(),
+
+                Headers = CreateHeaders(
+                    mexTo,
+                    mexWorkflowId,
+                    mexSubject,
+                    mexLocalId,
+                    mexFileName,
+                    mexContentChecksum,
+                    contentType,
+                    contentEncoding,
+                    accept),
+
                 StringContent = GetRandomString(),
-                FileContent = Encoding.ASCII.GetBytes(GetRandomString()),
+                FileContent = fileContent,
                 TrackingInfo = GetRandomTrackingInfo()
             };
         }
@@ -212,6 +277,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 messages.Add(message);
             }
             return messages;
+        }
+
+        private static MeshMessage CreateRandomMeshMessage() =>
+            CreateMeshMessageFiller().Create();
+
+        private static Filler<MeshMessage> CreateMeshMessageFiller()
+        {
+            var filler = new Filler<MeshMessage>();
+            filler.Setup().OnProperty(message => message.Headers)
+                .Use(new Dictionary<string, List<string>>());
+
+            return filler;
         }
 
         private static Message CreateRandomMessage() =>

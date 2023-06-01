@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CsvHelper;
 using CsvHelper.Configuration;
+using LHDS.Core.Models.Foundations.OptOuts;
 
 namespace LHDS.Core.Brokers.CsvMappers
 {
@@ -19,6 +20,7 @@ namespace LHDS.Core.Brokers.CsvMappers
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = hasHeaderRecord,
+                MissingFieldFound = null
             };
 
             using (var reader = new StringReader(data))
@@ -42,6 +44,12 @@ namespace LHDS.Core.Brokers.CsvMappers
             using (var stringWriter = new StringWriter())
             using (var csvWriter = new CsvWriter(stringWriter, csvWriterConfig))
             {
+                if (addHeaderRecord)
+                {
+                    csvWriter.WriteHeader<OptOutIdentifier>();
+                    csvWriter.NextRecord();
+                }
+
                 foreach (var item in @object)
                 {
                     csvWriter.WriteRecord(item);

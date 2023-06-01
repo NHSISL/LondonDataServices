@@ -121,8 +121,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 optOutProcessingServiceMock.Verify(processings =>
                     processings.ConsolidateOptOutChangesAndReturnChangesOnly(
-                        It.IsAny<List<OptOut>>(), //originalConsentedItems,
-                        It.IsAny<List<string>>()), //randomConsentedIdentifiers),
+                        originalConsentedItems,
+                        It.Is(SameStringListAs(randomConsentedIdentifiers))),
                             Times.Exactly(outputMessageIds.Count));
 
                 List<OptOutIdentifier> differentIdentifiers = changedConsentedItems
@@ -140,9 +140,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 csvMapperProcessingServiceMock.Verify(processings =>
                     processings.MapObjectToCsvAsync<OptOutIdentifier>(
-                        It.IsAny<List<OptOutIdentifier>>(), //It.Is(SameOptOutIdentifierListAs(differentIdentifiers)),
-                        It.IsAny<bool>(),
-                        It.IsAny<bool>()),
+                        It.Is(SameOptOutIdentifierListAs(differentIdentifiers)),
+                        this.optOutConfiguration.OptOutFileHasHeader,
+                        this.optOutConfiguration.OptOutFileRequireTrailingComma),
                             Times.Exactly(outputMessageIds.Count));
 
                 Document document = new Document
@@ -200,7 +200,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                     optOutProcessingServiceMock.Setup(processings =>
                         processings.ConsolidateOptOutChangesAndReturnChangesOnly(
-                            It.Is(SameOptOutListAs(originalConsentedItems)),
+                            originalConsentedItems,
                             It.Is(SameStringListAs(randomConsentedIdentifiers))))
                                 .ReturnsAsync(changedConsentedItems);
 
@@ -256,7 +256,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                     optOutProcessingServiceMock.Verify(processings =>
                         processings.ConsolidateOptOutChangesAndReturnChangesOnly(
-                            It.Is(SameOptOutListAs(originalConsentedItems)),
+                            originalConsentedItems,
                             It.Is(SameStringListAs(randomConsentedIdentifiers))),
                                 Times.Exactly(outputMessageIds.Count));
 

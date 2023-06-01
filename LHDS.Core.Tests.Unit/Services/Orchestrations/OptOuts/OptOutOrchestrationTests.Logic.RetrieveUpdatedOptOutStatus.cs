@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<string> consentedIdentifiers = Encoding.UTF8
                 .GetString(outputMessages[0].FileContent)
                     .Replace(",", string.Empty)
-                        .Split("\r\n", StringSplitOptions.RemoveEmptyEntries).ToList();
+                        .Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries).ToList();
 
             randomConsentedIdentifiers.Should().BeEquivalentTo(consentedIdentifiers);
 

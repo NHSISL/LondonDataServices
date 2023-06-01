@@ -53,7 +53,9 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                     .RetrieveDocumentByFileNameAsync(ingestionTracking.EncryptedFileName);
 
                 byte[] decryptedData = await this.decryptionService.DecryptAsync(document.DocumentData);
-                string[] lines = System.Text.Encoding.UTF8.GetString(decryptedData).Split('\n');
+
+                string[] lines = System.Text.Encoding.UTF8.GetString(decryptedData)
+                    .Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 
                 Document newDecryptedDocument = new Document
                 {

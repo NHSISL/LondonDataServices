@@ -17,13 +17,13 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             Validate(
                 (Rule: IsInvalid(optOut.Id), Parameter: nameof(OptOut.Id)),
                 (Rule: IsInvalid(optOut.NhsNumber), Parameter: nameof(OptOut.NhsNumber)),
-                (Rule: IsInvalid(optOut.OptOutStatus), Parameter: nameof(OptOut.OptOutStatus)),
+                (Rule: IsInvalid(optOut.Status), Parameter: nameof(OptOut.Status)),
                 (Rule: IsInvalid(optOut.CreatedDate), Parameter: nameof(OptOut.CreatedDate)),
                 (Rule: IsInvalid(optOut.CreatedBy), Parameter: nameof(OptOut.CreatedBy)),
                 (Rule: IsInvalid(optOut.UpdatedDate), Parameter: nameof(OptOut.UpdatedDate)),
                 (Rule: IsInvalid(optOut.UpdatedBy), Parameter: nameof(OptOut.UpdatedBy)),
                 (Rule: IsInvalidLength(optOut.NhsNumber, 10), Parameter: nameof(OptOut.NhsNumber)),
-                (Rule: IsInvalidLength(optOut.OptOutStatus, 50), Parameter: nameof(OptOut.OptOutStatus)),
+                (Rule: IsInvalidLength(optOut.Status, 50), Parameter: nameof(OptOut.Status)),
                 (Rule: IsInvalidNhsNumber(optOut.NhsNumber), Parameter: nameof(OptOut.NhsNumber)),
 
                 (Rule: IsNotSame(
@@ -48,13 +48,13 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             Validate(
                 (Rule: IsInvalid(optOut.Id), Parameter: nameof(OptOut.Id)),
                 (Rule: IsInvalid(optOut.NhsNumber), Parameter: nameof(OptOut.NhsNumber)),
-                (Rule: IsInvalid(optOut.OptOutStatus), Parameter: nameof(OptOut.OptOutStatus)),
+                (Rule: IsInvalid(optOut.Status), Parameter: nameof(OptOut.Status)),
                 (Rule: IsInvalid(optOut.CreatedDate), Parameter: nameof(OptOut.CreatedDate)),
                 (Rule: IsInvalid(optOut.CreatedBy), Parameter: nameof(OptOut.CreatedBy)),
                 (Rule: IsInvalid(optOut.UpdatedDate), Parameter: nameof(OptOut.UpdatedDate)),
                 (Rule: IsInvalid(optOut.UpdatedBy), Parameter: nameof(OptOut.UpdatedBy)),
                 (Rule: IsInvalidLength(optOut.NhsNumber, 10), Parameter: nameof(OptOut.NhsNumber)),
-                (Rule: IsInvalidLength(optOut.OptOutStatus, 50), Parameter: nameof(OptOut.OptOutStatus)),
+                (Rule: IsInvalidLength(optOut.Status, 50), Parameter: nameof(OptOut.Status)),
                 (Rule: IsInvalidNhsNumber(optOut.NhsNumber), Parameter: nameof(OptOut.NhsNumber)),
 
                 (Rule: IsSame(

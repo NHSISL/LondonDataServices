@@ -3,13 +3,13 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using Moq;
 using NEL.MESH.Models.Clients.Mesh.Exceptions;
-using NEL.MESH.Models.Foundations.Mesh;
 using Xeptions;
 using Xunit;
 
@@ -18,39 +18,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
     public partial class MeshServiceTests
     {
         [Fact]
-        public async Task ShouldThrowMeshClientValidationExceptionOnSendMessageIfValidationFailsAndLogItAsync()
+        public async Task ShouldThrowMeshClientValidationExceptionOnSendFileIfValidationFailsAndLogItAsync()
         {
             // given
-            dynamic dynamicMeshMessageProperties = CreateRandomMeshMessageProperties();
+            string mexTo = GetRandomString();
+            string mexWorkflowId = GetRandomString();
+            byte[] fileContent = Encoding.UTF8.GetBytes(GetRandomString());
+            string mexSubject = GetRandomString();
+            string mexLocalId = GetRandomString();
+            string mexFileName = GetRandomString();
+            string mexContentChecksum = GetRandomString();
+            string contentType = GetRandomString();
+            string contentEncoding = GetRandomString();
+            string accept = "text/plain";
             var randomMessage = GetRandomString();
-
-            MeshMessage randomMeshMessage = new MeshMessage
-            {
-                MessageId = dynamicMeshMessageProperties.MessageId,
-                Headers = dynamicMeshMessageProperties.Headers,
-                StringContent = dynamicMeshMessageProperties.StringContent,
-                FileContent = dynamicMeshMessageProperties.FileContent,
-                TrackingInfo = MaptToMeshMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
-            };
-
-            var inputMeshMessage = randomMeshMessage;
             var validationException = new Exception(randomMessage);
 
-            var meshClientValidationException = 
+            var meshClientValidationException =
                 new MeshClientValidationException(validationException as Xeption);
 
-            var expectedDependencyValidationException = 
+            var expectedDependencyValidationException =
                 new MeshServiceDependencyValidationException(meshClientValidationException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.SendMessageAsync(It.IsAny<Message>()))
-                    .ThrowsAsync(meshClientValidationException);
+                broker.SendMessageAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<byte[]>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                        .ThrowsAsync(meshClientValidationException);
 
             // when
-            ValueTask<MeshMessage> sendMessageTask = 
-                this.meshService.SendMessageAsync(inputMeshMessage);
+            ValueTask<MeshMessage> sendMessageTask =
+                this.meshService.SendMessageAsync(
+                    mexTo,
+                    mexWorkflowId,
+                    fileContent,
+                    mexSubject,
+                    mexLocalId,
+                    mexFileName,
+                    mexContentChecksum,
+                    contentType,
+                    contentEncoding,
+                    accept);
 
-            MeshServiceDependencyValidationException actualValidationException = 
+            MeshServiceDependencyValidationException actualValidationException =
                 await Assert.ThrowsAsync<MeshServiceDependencyValidationException>(sendMessageTask.AsTask);
 
             // then
@@ -61,7 +79,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             actualValidationException.Should().BeEquivalentTo(expectedDependencyValidationException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(It.IsAny<Message>()),
+                broker.SendMessageAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<byte[]>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -73,46 +101,74 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         }
 
         [Fact]
-        public async Task ShouldThrowMeshClientDependencyExceptionOnSendMessageIfDependencyFailsAndLogItAsync()
+        public async Task ShouldThrowMeshClientDependencyExceptionOnSendFileIfDependencyFailsAndLogItAsync()
         {
             // given
-            dynamic dynamicMeshMessageProperties = CreateRandomMeshMessageProperties();
+            string mexTo = GetRandomString();
+            string mexWorkflowId = GetRandomString();
+            byte[] fileContent = Encoding.UTF8.GetBytes(GetRandomString());
+            string mexSubject = GetRandomString();
+            string mexLocalId = GetRandomString();
+            string mexFileName = GetRandomString();
+            string mexContentChecksum = GetRandomString();
+            string contentType = GetRandomString();
+            string contentEncoding = GetRandomString();
+            string accept = "text/plain";
             var randomMessage = GetRandomString();
-
-            MeshMessage randomMeshMessage = new MeshMessage
-            {
-                MessageId = dynamicMeshMessageProperties.MessageId,
-                Headers = dynamicMeshMessageProperties.Headers,
-                StringContent = dynamicMeshMessageProperties.StringContent,
-                FileContent = dynamicMeshMessageProperties.FileContent,
-                TrackingInfo = MaptToMeshMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
-            };
-
-            var inputMeshMessage = randomMeshMessage;
             var dependencyException = new Exception(randomMessage);
 
-            var meshClientDependencyException = 
+            var meshClientDependencyException =
                 new MeshClientDependencyException(dependencyException as Xeption);
 
-            var expectedDependencyException = 
+            var expectedDependencyException =
                 new MeshServiceDependencyException(meshClientDependencyException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.SendMessageAsync(It.IsAny<Message>()))
+                broker.SendMessageAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<byte[]>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
                     .ThrowsAsync(meshClientDependencyException);
 
             // when
-            ValueTask<MeshMessage> sendMessageTask = 
-                this.meshService.SendMessageAsync(inputMeshMessage);
+            ValueTask<MeshMessage> sendMessageTask =
+                this.meshService.SendMessageAsync(
+                    mexTo,
+                    mexWorkflowId,
+                    fileContent,
+                    mexSubject,
+                    mexLocalId,
+                    mexFileName,
+                    mexContentChecksum,
+                    contentType,
+                    contentEncoding,
+                    accept);
 
-            MeshServiceDependencyException actualDependencyException = 
+            MeshServiceDependencyException actualDependencyException =
                 await Assert.ThrowsAsync<MeshServiceDependencyException>(sendMessageTask.AsTask);
 
             // then
             actualDependencyException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(It.IsAny<Message>()),
+                broker.SendMessageAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<byte[]>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -124,46 +180,74 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
         }
 
         [Fact]
-        public async Task ShouldThrowMeshClientServiceExceptionOnSendMessageIfClientServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowMeshClientServiceExceptionOnSendFileIfClientServiceErrorOccursAndLogItAsync()
         {
             // given
-            dynamic dynamicMeshMessageProperties = CreateRandomMeshMessageProperties();
+            string mexTo = GetRandomString();
+            string mexWorkflowId = GetRandomString();
+            byte[] fileContent = Encoding.UTF8.GetBytes(GetRandomString());
+            string mexSubject = GetRandomString();
+            string mexLocalId = GetRandomString();
+            string mexFileName = GetRandomString();
+            string mexContentChecksum = GetRandomString();
+            string contentType = GetRandomString();
+            string contentEncoding = GetRandomString();
+            string accept = "text/plain";
             var randomMessage = GetRandomString();
-
-            MeshMessage randomMeshMessage = new MeshMessage
-            {
-                MessageId = dynamicMeshMessageProperties.MessageId,
-                Headers = dynamicMeshMessageProperties.Headers,
-                StringContent = dynamicMeshMessageProperties.StringContent,
-                FileContent = dynamicMeshMessageProperties.FileContent,
-                TrackingInfo = MaptToMeshMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
-            };
-
-            var inputMeshMessage = randomMeshMessage;
             var clientServiceException = new Exception(randomMessage);
 
-            var meshClientServiceException = 
+            var meshClientServiceException =
                 new MeshClientServiceException(clientServiceException as Xeption);
 
-            var expectedClientServiceException = 
+            var expectedClientServiceException =
                 new MeshServiceDependencyException(meshClientServiceException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.SendMessageAsync(It.IsAny<Message>()))
+                broker.SendMessageAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<byte[]>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
                     .ThrowsAsync(meshClientServiceException);
 
             // when
-            ValueTask<MeshMessage> sendMessageTask = 
-                this.meshService.SendMessageAsync(inputMeshMessage);
+            ValueTask<MeshMessage> sendMessageTask =
+                this.meshService.SendMessageAsync(
+                    mexTo,
+                    mexWorkflowId,
+                    fileContent,
+                    mexSubject,
+                    mexLocalId,
+                    mexFileName,
+                    mexContentChecksum,
+                    contentType,
+                    contentEncoding,
+                    accept);
 
-            MeshServiceDependencyException actualDependencyException = 
+            MeshServiceDependencyException actualDependencyException =
                 await Assert.ThrowsAsync<MeshServiceDependencyException>(sendMessageTask.AsTask);
 
             // then
             actualDependencyException.Should().BeEquivalentTo(expectedClientServiceException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(It.IsAny<Message>()),
+                broker.SendMessageAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<byte[]>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
@@ -176,22 +260,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnSendMessageIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnSendFileIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            dynamic dynamicMeshMessageProperties =
-                CreateRandomMeshMessageProperties();
-
-            MeshMessage randomMeshMessage = new MeshMessage
-            {
-                MessageId = dynamicMeshMessageProperties.MessageId,
-                Headers = dynamicMeshMessageProperties.Headers,
-                StringContent = dynamicMeshMessageProperties.StringContent,
-                FileContent = dynamicMeshMessageProperties.FileContent,
-                TrackingInfo = MaptToMeshMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
-            };
-
-            var inputMeshMessage = randomMeshMessage;
+            string mexTo = GetRandomString();
+            string mexWorkflowId = GetRandomString();
+            byte[] fileContent = Encoding.UTF8.GetBytes(GetRandomString());
+            string mexSubject = GetRandomString();
+            string mexLocalId = GetRandomString();
+            string mexFileName = GetRandomString();
+            string mexContentChecksum = GetRandomString();
+            string contentType = GetRandomString();
+            string contentEncoding = GetRandomString();
+            string accept = "text/plain";
             var serviceException = new Exception();
 
             var failedMeshServiceException =
@@ -201,12 +282,32 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                new MeshServiceException(failedMeshServiceException);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.SendMessageAsync(It.IsAny<Message>()))
+                broker.SendMessageAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<byte[]>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
                     .ThrowsAsync(serviceException);
 
             // when
             ValueTask<MeshMessage> sendMessageTask =
-                this.meshService.SendMessageAsync(inputMeshMessage);
+                this.meshService.SendMessageAsync(
+                    mexTo,
+                    mexWorkflowId,
+                    fileContent,
+                    mexSubject,
+                    mexLocalId,
+                    mexFileName,
+                    mexContentChecksum,
+                    contentType,
+                    contentEncoding,
+                    accept);
 
             MeshServiceException actualMeshServiceException =
                 await Assert.ThrowsAsync<MeshServiceException>
@@ -217,7 +318,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 .BeEquivalentTo(expectedMeshServiceException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(It.IsAny<Message>()),
+                broker.SendMessageAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<byte[]>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>

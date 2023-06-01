@@ -11,8 +11,19 @@ namespace LHDS.Core.Brokers.Mesh
     public interface IMeshBroker
     {
         ValueTask<bool> HandshakeAsync();
-        ValueTask<Message> SendMessageAsync(Message message);
-        ValueTask<Message> SendFileAsync(Message message);
+
+        ValueTask<Message> SendMessageAsync(
+            string mexTo,
+            string mexWorkflowId,
+            byte[] fileContent,
+            string mexSubject = "",
+            string mexLocalId = "",
+            string mexFileName = "",
+            string mexContentChecksum = "",
+            string contentType = "application/octet-stream",
+            string contentEncoding = "",
+            string accept = "application/json");
+
         ValueTask<Message> TrackMessageAsync(string messageId);
         ValueTask<List<string>> RetrieveMessageIdsAsync();
         ValueTask<Message> RetrieveMessageAsync(string messageId);

@@ -175,7 +175,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
-                .OnProperty(optOut => optOut.OptOutStatus).Use(GetRandomString(length: 20))
+                .OnProperty(optOut => optOut.Status).Use(GetRandomString(length: 20))
                 .OnProperty(optOut => optOut.CreatedBy).Use(user)
                 .OnProperty(optOut => optOut.UpdatedBy).Use(user);
 

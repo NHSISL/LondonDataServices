@@ -9,7 +9,7 @@ trigger:
 variables:
   solution: '**/*.sln'
   # Agent VM image name
-  vmImage: ubuntu-latest
+  vmImage: windows-latest
   webProjectName: 'LHDS.AdminPortal.Web'
 
 steps:

@@ -79,12 +79,12 @@ steps:
       workingDir: $(webProjectName)/ClientApp
       customCommand: 'run lint'
 
-  #- task: Npm@1
-  #  displayName: Client Tests
-  #  inputs:
-  #    command: 'custom'
-  #    workingDir: $(webProjectName)/ClientApp
-  #    customCommand: 'run test:ci'    
+  - task: Npm@1
+    displayName: Client Tests
+    inputs:
+      command: 'custom'
+      workingDir: $(webProjectName)/ClientApp
+      customCommand: 'run test:ci'    
 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Publish (Debug)"

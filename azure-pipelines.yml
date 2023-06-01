@@ -41,14 +41,14 @@ steps:
       projects: '**/*.csproj'
 
   - task: DotNetCoreCLI@2
-    displayName: "Dotnet Build (EMIS Download)"
+    displayName: "Dotnet Build (EMIS Landing Function)"
     inputs:
       command: 'build'
       projects: '**/LHDS.Functions.Landings.Emis.csproj'
       arguments: --output $(System.DefaultWorkingDirectory)/publish_output_emis_func --configuration Release
 
   - task: DotNetCoreCLI@2
-    displayName: "Dotnet Build (Opt-Out)"
+    displayName: "Dotnet Build (Opt-Out Function)"
     inputs:
       command: 'build'
       projects: '**/LHDS.Functions.OptOut.csproj'

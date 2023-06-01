@@ -120,6 +120,7 @@ steps:
       modifyOutputPath: true
 
   - task: PublishBuildArtifacts@1
+    condition: ne(variables['Build.Reason'], 'PullRequest')
     displayName: "Publish Build Artifacts"
     condition: ne(variables['Build.Reason'], 'PullRequest')
     inputs:
@@ -128,6 +129,7 @@ steps:
       publishLocation: 'Container'
 
   - task: ArchiveFiles@2
+    condition: ne(variables['Build.Reason'], 'PullRequest')  
     displayName: 'Archive files - Emis Function'
     inputs:
       rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_emis_func'
@@ -137,6 +139,7 @@ steps:
       replaceExistingArchive: true
 
   - task: ArchiveFiles@2
+    condition: ne(variables['Build.Reason'], 'PullRequest')
     displayName: 'Archive files - OptOut Function'
     inputs:
       rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_optout_func'
@@ -146,9 +149,11 @@ steps:
       replaceExistingArchive: true
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_emis_func.zip
+    condition: ne(variables['Build.Reason'], 'PullRequest')  
     displayName: 'Publish Artifact - Emis Function'
     artifact: drop-emis-func
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_optout_func.zip
+    condition: ne(variables['Build.Reason'], 'PullRequest')
     displayName: 'Publish Artifact - Opt-Out Function'
     artifact: drop-optout-func

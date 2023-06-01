@@ -52,7 +52,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 service.DecryptAsync(encryptedDocument.DocumentData))
                     .ReturnsAsync(randomDecryptedBytes);
 
-            string[] lines = Encoding.UTF8.GetString(randomDecryptedBytes).Split('\n');
+            string[] lines = Encoding.UTF8.GetString(randomDecryptedBytes)
+                .Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())

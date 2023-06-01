@@ -55,8 +55,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 optOutProcessingServiceMock.Setup(processings =>
                     processings.ConsolidateOptOutChangesAndReturnChangesOnly(
-                        originalConsentedItems,
-                        randomConsentedIdentifiers))
+                        It.Is(SameOptOutListAs(originalConsentedItems)),
+                        It.Is(SameStringListAs(randomConsentedIdentifiers))))
                             .ReturnsAsync(changedConsentedItems);
 
                 List<OptOutIdentifier> differentIdentifiers = changedConsentedItems
@@ -111,8 +111,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 optOutProcessingServiceMock.Verify(processings =>
                     processings.ConsolidateOptOutChangesAndReturnChangesOnly(
-                        originalConsentedItems,
-                        randomConsentedIdentifiers),
+                        It.Is(SameOptOutListAs(originalConsentedItems)),
+                        It.Is(SameStringListAs(randomConsentedIdentifiers))),
                             Times.Exactly(outputMessageIds.Count));
 
                 List<OptOutIdentifier> differentIdentifiers = changedConsentedItems

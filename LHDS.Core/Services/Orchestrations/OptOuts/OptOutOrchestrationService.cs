@@ -201,7 +201,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     List<OptOut> delta = await this.optOutProcessingService
                         .ConsolidateOptOutChangesAndReturnChangesOnly(originalBatch, consentedIdentifiers);
 
-                    if (delta.Count > 0)
+                    if (delta?.Count > 0)
                     {
                         List<OptOutIdentifier> differentIdentifiers = delta
                             .Select(identifier => new OptOutIdentifier

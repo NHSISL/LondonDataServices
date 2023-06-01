@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -30,6 +31,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<MeshMessage> expectedMessages = outputMessages.DeepClone();
             List<OptOut> originalConsentedItems = CreateRandomOptOuts(count: GetRandomNumber());
             List<OptOut> changedConsentedItems = CreateRandomOptOuts(count: GetRandomNumber());
+
+            List<string> consentedIdentifiers = Encoding.UTF8
+                .GetString(outputMessages[0].FileContent)
+                    .Replace(",", string.Empty)
+                        .Split("\r\n", StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            randomConsentedIdentifiers.Should().BeEquivalentTo(consentedIdentifiers);
 
             meshProcessingServiceMock.Setup(processings =>
                 processings.RetrieveMessageIdsFromInboxAsync())

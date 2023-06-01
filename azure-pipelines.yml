@@ -122,7 +122,6 @@ steps:
   - task: PublishBuildArtifacts@1
     condition: ne(variables['Build.Reason'], 'PullRequest')
     displayName: "Publish Build Artifacts"
-    condition: ne(variables['Build.Reason'], 'PullRequest')
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
       ArtifactName: 'drop'

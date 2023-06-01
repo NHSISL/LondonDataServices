@@ -32,6 +32,7 @@ using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 {
@@ -49,15 +50,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private readonly OptOutConfiguration optOutConfiguration;
         private readonly IConfiguration inMemoryConfiguration;
         private readonly MeshConfiguration meshConfiguration;
+        private readonly ITestOutputHelper output;
 
-        public OptOutOrchestrationTests()
+        public OptOutOrchestrationTests(ITestOutputHelper output)
         {
+            this.output = output;
+
             var appSettingsStub = new Dictionary<string, string> {
                 { "OptOutSettings:ExpiredAfterDays", "7" },
                 { "OptOutSettings:InputFolder", GetRandomString() },
                 { "OptOutSettings:OptOutFileHasHeader", "false" },
                 { "OptOutSettings:OutputFolder", GetRandomString() },
                 { "OptOutSettings:OptOutFileRequireTrailingComma", "true" },
+                { "OptOutSettings:To", GetRandomString() },
+                { "OptOutSettings:WorkflowId", GetRandomString() },
                 { "MeshConfiguration:MailboxId", GetRandomString() },
                 { "MeshConfiguration:Password", GetRandomString() },
                 { "MeshConfiguration:Key", GetRandomString() },
@@ -84,6 +90,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 OptOutFileRequireTrailingComma =
                     bool.Parse(inMemoryConfiguration["OptOutSettings:OptOutFileRequireTrailingComma"]),
+
+                To = inMemoryConfiguration["OptOutSettings:InputFolder"],
+                WorkflowId = inMemoryConfiguration["OptOutSettings:WorkflowId"],
             };
 
             this.meshConfiguration = new MeshConfiguration
@@ -270,7 +279,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             {
                 var optOut = CreateOptOutFiller(GetRandomDateTimeOffset()).Create();
                 optOut.NhsNumber = item.NhsNumber;
-                optOut.OptOutStatus = status;
+                optOut.Status = status;
                 optOut.BatchReference = batchReference;
                 identifiers.Add(optOut);
             }
@@ -278,13 +287,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             return identifiers;
         }
 
-        private static List<OptOutIdentifier> CreateRandomListOfOptOutIdentifiers(int count)
+        private static List<string> CreateRandomListOfConsentedIdentifiers(int count)
         {
-            var identifiers = new List<OptOutIdentifier>();
+            var identifiers = new List<string>();
 
             for (int i = 0; i < count; i++)
             {
-                identifiers.Add(CreateOptOutIdentifierFiller().Create());
+                var item = CreateOptOutIdentifierFiller().Create();
+                identifiers.Add(GetRandomString());
             }
 
             return identifiers;
@@ -303,36 +313,38 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             return messages;
         }
 
-        private static List<MeshMessage> GetRandomMessages(List<string> items)
+        private static List<MeshMessage> GetRandomMessages(List<string> items, List<string> randomConsentedIdentifiers)
         {
             List<MeshMessage> messageList = new List<MeshMessage>();
 
             foreach (var item in items)
             {
+                StringBuilder sb = new StringBuilder();
+                randomConsentedIdentifiers.ForEach(item => sb.AppendLine($"{item},"));
+
                 var message = CreateRandomMessage();
                 message.MessageId = item;
-                message.Headers["Mex-LocalID"] = new List<string> { GetRandomString() }; // BatchReference
+                message.Headers["Mex-LocalID"] = new List<string> { GetRandomString() };
+                message.FileContent = Encoding.UTF8.GetBytes(sb.ToString());
+
                 messageList.Add(message);
             }
 
             return messageList;
         }
 
-        private static OptOut CreateRandomOptOut(DateTimeOffset dateTimeOffset) =>
-           CreateOptOutFiller(dateTimeOffset).Create();
+        private Expression<Func<List<string>, bool>> SameStringListAs(List<string> expectedStrings)
+        {
+            return actualStrings =>
+                this.compareLogic.Compare(expectedStrings, actualStrings)
+                    .AreEqual;
+        }
 
         private Expression<Func<List<OptOut>, bool>> SameOptOutListAs(List<OptOut> expectedOptOuts)
         {
             return actualOptOuts =>
                 this.compareLogic.Compare(expectedOptOuts, actualOptOuts)
                     .AreEqual;
-        }
-
-        private static IQueryable<OptOut> CreateRandomOptOuts()
-        {
-            return CreateOptOutFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber())
-                    .AsQueryable();
         }
 
         private Expression<Func<Document, bool>> SameDocumentAs(
@@ -354,10 +366,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private Expression<Func<List<OptOutIdentifier>, bool>> SameOptOutIdentifierListAs(
            List<OptOutIdentifier> expectedOptOutIdentifierList)
         {
+
             return actualOptOutIdentifierList =>
-                this.compareLogic.Compare(expectedOptOutIdentifierList, actualOptOutIdentifierList)
-                    .AreEqual;
+                CompareList(expectedOptOutIdentifierList, actualOptOutIdentifierList);
         }
+
+        private bool CompareList(List<OptOutIdentifier> expected, List<OptOutIdentifier> actual)
+        {
+            var result = compareLogic.Compare(expected, actual).AreEqual;
+
+            return result;
+        }
+
 
         private Expression<Func<MeshMessage, bool>> SameMessageAs(
             MeshMessage expectedMessage)
@@ -378,6 +398,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
+        private static OptOut CreateRandomOptOut(DateTimeOffset dateTimeOffset) =>
+           CreateOptOutFiller(dateTimeOffset).Create();
+
+        private static List<OptOut> CreateRandomOptOuts(int count)
+        {
+            return CreateOptOutFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count)
+                    .ToList();
+        }
+
         private static Filler<OptOut> CreateOptOutFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();
@@ -386,7 +416,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
-                .OnProperty(optOut => optOut.OptOutStatus).Use("Unknown")
+                .OnProperty(optOut => optOut.Status).Use("Unknown")
                 .OnProperty(optOut => optOut.CreatedBy).Use(user)
                 .OnProperty(optOut => optOut.UpdatedBy).Use(user);
 
@@ -398,8 +428,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             var filler = new Filler<OptOutIdentifier>();
 
             filler.Setup()
-                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber());
-
+                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
+                .OnProperty(optOut => optOut.UniqueReference).Use(GetRandomString())
+                .OnProperty(optOut => optOut.Status).Use(GetRandomString())
+                .OnProperty(optOut => optOut.StatusChangedDateTime).Use(GetRandomDateTimeOffset());
             return filler;
         }
 
@@ -408,7 +440,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             var filler = new Filler<OptOutIdentifier>();
 
             filler.Setup()
-                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber());
+                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
+                .OnProperty(optOut => optOut.UniqueReference).Use(GetRandomString())
+                .OnProperty(optOut => optOut.Status).Use(GetRandomString())
+                .OnProperty(optOut => optOut.StatusChangedDateTime).Use(GetRandomDateTimeOffset());
 
             return filler;
         }

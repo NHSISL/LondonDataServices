@@ -11,7 +11,18 @@ namespace LHDS.Core.Services.Processings.Mesh
     public interface IMeshProcessingService
     {
         ValueTask<bool> ValidateMailboxAccessAsync();
-        ValueTask<MeshMessage> SendMessageAsync(MeshMessage message);
+
+        ValueTask<MeshMessage> SendMessageAsync(string mexTo,
+            string mexWorkflowId,
+            byte[] fileContent,
+            string mexSubject = "",
+            string mexLocalId = "",
+            string mexFileName = "",
+            string mexContentChecksum = "",
+            string contentType = "application/octet-stream",
+            string contentEncoding = "",
+            string accept = "application/json");
+
         ValueTask<List<string>> RetrieveMessageIdsFromInboxAsync();
         ValueTask<MeshMessage> RetrieveAndAcknowledgeMessageByIdAsync(string messageId);
         ValueTask<MeshMessage> RetrieveMessageByIdAsync(string messageId);

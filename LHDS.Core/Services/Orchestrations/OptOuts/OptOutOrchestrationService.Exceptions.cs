@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Mesh;
-using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using LHDS.Core.Models.Processings.CsvMappers.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
@@ -351,9 +350,9 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             {
                 throw CreateAndLogValidationException(invalidArgumentRetieveOptOutStatusOrchestrationException);
             }
-            catch (InvalidMeshMessageException invalidMeshException)
+            catch (InvalidMeshMessageOrchestrationException invalidMeshMessageOrchestrationException)
             {
-                throw CreateAndLogValidationException(invalidMeshException);
+                throw CreateAndLogValidationException(invalidMeshMessageOrchestrationException);
             }
             catch (OptOutOrchestrationDependencyValidationException optOutOrchestrationDependencyValidationException)
             {

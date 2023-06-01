@@ -4,12 +4,12 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Processings.Mesh.Exceptions
+namespace LHDS.Core.Models.Processings.OptOuts.Exceptions
 {
-    public class NullMeshProcessingException : Xeption
+    public class NullOptOutListProcessingException : Xeption
     {
-        public NullMeshProcessingException()
-            : base(message: $"Mesh processing service exception. Message is Null.")
+        public NullOptOutListProcessingException()
+            : base(message: $"Opt out list processing is Null")
         { }
     }
 }

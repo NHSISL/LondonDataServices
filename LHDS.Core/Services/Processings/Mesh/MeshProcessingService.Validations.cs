@@ -22,15 +22,23 @@ namespace LHDS.Core.Services.Processings.Mesh
         {
             if (meshMessage is null)
             {
-                throw new NullMeshProcessingException();
+                throw new NullMeshMessageProcessingException();
             }
+        }
+
+        public void ValidateMeshMessageOnSendMessage(string mexTo, string workflowId, byte[] fileContent)
+        {
+            Validate<InvalidMeshProcessingArgumentException>(
+                (Rule: IsInvalid(mexTo), Parameter: "MexTo"),
+                (Rule: IsInvalid(workflowId), Parameter: "MexWorkflowId"),
+                (Rule: IsInvalid(fileContent), Parameter: "FileContent"));
         }
 
         private static void ValidateSendMessage(MeshMessage message)
         {
             ValidateMeshMessageIsNotNull(message);
 
-            Validate<InvalidMeshMessageException>(
+            Validate<InvalidMeshMessageProcessingException>(
                (Rule: IsInvalid(message.MessageId), Parameter: nameof(message.MessageId)));
         }
 
@@ -43,6 +51,12 @@ namespace LHDS.Core.Services.Processings.Mesh
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
+        };
+
+        private static dynamic IsInvalid(byte[] data) => new
+        {
+            Condition = (data == null || data.Length == 0),
+            Message = "Content is required"
         };
 
         private static void Validate<T>(params (dynamic Rule, string Parameter)[] validations)

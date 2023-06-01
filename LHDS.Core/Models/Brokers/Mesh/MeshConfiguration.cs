@@ -2,10 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-using LHDS.Core.Brokers.Mesh;
 
 namespace LHDS.Core.Models.Brokers.Mesh
 {
@@ -21,6 +18,7 @@ namespace LHDS.Core.Models.Brokers.Mesh
         public string MexClientVersion { get; set; }
         public string MexOSName { get; set; }
         public string MexOSVersion { get; set; }
+        public int MaxChunkSizeInMegabytes { get; set; }
         public string WorkflowId { get; set; }
     }
 }

@@ -195,8 +195,12 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     List<OptOut> originalBatch = await this.optOutProcessingService
                         .RetrieveAllOptOutsByBatchReferenceAsync(batchReference);
 
+                    Console.WriteLine("Original batch count: " + originalBatch?.Count);
+
                     List<OptOut> consentedItems = originalBatch
                         .Where(optOut => consentedIdentifiers.Contains(optOut.NhsNumber)).ToList();
+
+                    Console.WriteLine("consentedItems count: " + originalBatch?.Count);
 
                     List<OptOut> delta = await this.optOutProcessingService
                         .ConsolidateOptOutChangesAndReturnChangesOnly(originalBatch, consentedIdentifiers);

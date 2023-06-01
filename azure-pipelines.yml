@@ -39,14 +39,14 @@ steps:
     inputs:
       command: 'build'
       projects: '**/LHDS.AdminPortal.Api.csproj'
-      arguments: --output $(System.DefaultWorkingDirectory)/publish_output_api --configuration Release
+      arguments: --output $(System.DefaultWorkingDirectory)/publish_output_website_api --configuration Release
 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Build (Frontend)"
     inputs:
       command: 'build'
       projects: '**/LHDS.AdminPortal.Web.csproj'
-      arguments: --output $(System.DefaultWorkingDirectory)/publish_output_frontend --configuration Release
+      arguments: --output $(System.DefaultWorkingDirectory)/publish_output_website_frontend --configuration Release
 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Build (EMIS Landing Function)"
@@ -139,20 +139,20 @@ steps:
     condition: ne(variables['Build.Reason'], 'PullRequest')  
     displayName: 'Archive files - API'
     inputs:
-      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_api'
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_website_api'
       includeRootFolder: false
       archiveType: zip
-      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_api.zip
+      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_website_api.zip
       replaceExistingArchive: true
 
   - task: ArchiveFiles@2
     condition: ne(variables['Build.Reason'], 'PullRequest')  
     displayName: 'Archive files - Frontend'
     inputs:
-      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_frontend'
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_website_frontend'
       includeRootFolder: false
       archiveType: zip
-      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_frontend.zip
+      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_wensite_frontend.zip
       replaceExistingArchive: true
 
   - task: ArchiveFiles@2
@@ -175,12 +175,12 @@ steps:
       archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_optout_func.zip
       replaceExistingArchive: true
 
-  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_api.zip
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_website_api.zip
     condition: ne(variables['Build.Reason'], 'PullRequest')  
     displayName: 'Publish Artifact - API'
     artifact: drop-api
 
-  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_frontend.zip
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_website_frontend.zip
     condition: ne(variables['Build.Reason'], 'PullRequest')  
     displayName: 'Publish Artifact - Frontend'
     artifact: drop-frontend

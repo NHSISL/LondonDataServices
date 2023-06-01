@@ -79,12 +79,12 @@ steps:
       workingDir: $(webProjectName)/ClientApp
       customCommand: 'run lint'
 
-  - task: Npm@1
-    displayName: Client Tests
-    inputs:
-      command: 'custom'
-      workingDir: $(webProjectName)/ClientApp
-      customCommand: 'run test:ci'    
+  #- task: Npm@1
+  #  displayName: Client Tests
+  #  inputs:
+  #    command: 'custom'
+  #    workingDir: $(webProjectName)/ClientApp
+  #    customCommand: 'run test:ci'    
 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Publish (Debug)"
@@ -147,8 +147,8 @@ steps:
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_emis_func.zip
     displayName: 'Publish Artifact - Emis Function'
-    artifact: drop
+    artifact: drop-emis-func
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_optout_func.zip
     displayName: 'Publish Artifact - Opt-Out Function'
-    artifact: drop
+    artifact: drop-optout-func

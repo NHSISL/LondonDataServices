@@ -72,7 +72,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
         {
             List<OptOutIdentifier> optOutIdentifiers = new List<OptOutIdentifier>();
 
-            string[] lines = content.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            string[] lines = content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string line in lines)
             {
@@ -110,7 +110,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
         private static List<OptOutIdentifier> ConvertNhsListToOptOutIdentifierList(string content, List<OptOut> dbItems)
         {
             List<string> optInIdentifiers = content.Replace(",", string.Empty)
-                .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                .Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
 
             List<OptOutIdentifier> consentItems = new List<OptOutIdentifier>();

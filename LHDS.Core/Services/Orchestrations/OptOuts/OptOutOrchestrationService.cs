@@ -180,11 +180,12 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         .RetrieveAndAcknowledgeMessageByIdAsync(messageId);
 
                     meshMessageList.Add(message);
+                    string[] delimiters = { "\r\n", "\n" };
 
                     List<string> consentedIdentifiers = Encoding.UTF8
                         .GetString(message.FileContent)
                             .Replace(",", string.Empty)
-                                .Split("\r\n", StringSplitOptions.RemoveEmptyEntries).ToList();
+                                .Split(delimiters, StringSplitOptions.RemoveEmptyEntries).ToList();
 
                     ValidateLocalIdHeaderExists(message);
 

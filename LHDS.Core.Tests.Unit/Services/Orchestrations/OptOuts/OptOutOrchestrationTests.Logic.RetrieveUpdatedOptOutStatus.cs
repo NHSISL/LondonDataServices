@@ -31,11 +31,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<MeshMessage> expectedMessages = outputMessages.DeepClone();
             List<OptOut> originalConsentedItems = CreateRandomOptOuts(count: GetRandomNumber());
             List<OptOut> changedConsentedItems = CreateRandomOptOuts(count: GetRandomNumber());
+            string[] delimiters = { "\r\n", "\n" };
 
             List<string> consentedIdentifiers = Encoding.UTF8
                 .GetString(outputMessages[0].FileContent)
                     .Replace(",", string.Empty)
-                        .Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries).ToList();
+                        .Split(delimiters, StringSplitOptions.RemoveEmptyEntries)
+                        .ToList();
 
             randomConsentedIdentifiers.Should().BeEquivalentTo(consentedIdentifiers);
 

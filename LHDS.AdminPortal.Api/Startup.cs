@@ -32,8 +32,7 @@ using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
 
 namespace LHDS.AdminPortal.Api
-{ 
-
+{
     public class Startup
     {
         public Startup(IConfiguration configuration) =>

@@ -68,11 +68,11 @@ steps:
       command: 'test'
       projects: '**/*.Tests.Unit.csproj'
 
-  #- task: DotNetCoreCLI@2
-  #  displayName: C# Acceptance Tests
-  #  inputs:
-  #    command: 'test'
-  #    projects: '**/*.Tests.Acceptance.csproj'
+  - task: DotNetCoreCLI@2
+    displayName: C# Acceptance Tests
+    inputs:
+      command: 'test'
+      projects: '**/*.Tests.Acceptance.csproj'
   
   #- task: DotNetCoreCLI@2
   #  displayName: C# Integration Tests

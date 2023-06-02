@@ -73,7 +73,7 @@ steps:
     inputs:
       command: 'test'
       projects: '**/*.Tests.Acceptance.csproj'
-      arguments: '--enviroment ASPNETCORE_ENVIRONMENT=ContinuousIntegration''
+      arguments: '--enviroment ASPNETCORE_ENVIRONMENT=ContinuousIntegration'
   
   #- task: DotNetCoreCLI@2
   #  displayName: C# Integration Tests

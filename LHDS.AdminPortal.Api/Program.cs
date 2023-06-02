@@ -13,6 +13,13 @@ namespace LHDS.AdminPortal.Api
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration(config =>
+            {
+                config.AddJsonFile(path: "appsettings.json")
+                .AddJsonFile(path: $"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true)
+                .AddJsonFile(path: "appsettings.local.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
+            })
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseStartup<Startup>();

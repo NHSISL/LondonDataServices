@@ -34,8 +34,6 @@ steps:
       command: 'test'
       projects: '**/*.Tests.Unit.csproj'
 
-
-
   - task: Bash@3
     enabled: true
     displayName: Install Docker

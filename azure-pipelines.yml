@@ -152,7 +152,7 @@ steps:
       rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_website_frontend'
       includeRootFolder: false
       archiveType: zip
-      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_wensite_frontend.zip
+      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_website_frontend.zip
       replaceExistingArchive: true
 
   - task: ArchiveFiles@2

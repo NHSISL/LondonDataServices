@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -39,6 +40,7 @@ namespace LHDS.Core.Brokers.CsvMappers
             var csvWriterConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = addHeaderRecord,
+                NewLine = Environment.NewLine
             };
 
             using (var stringWriter = new StringWriter())

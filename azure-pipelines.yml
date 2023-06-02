@@ -64,7 +64,7 @@ steps:
 
   - task: Bash@3
     enabled: true
-    displayName: Pulling Required Docker Images for TFSEC and TFLINT
+    displayName: Pulling Required Docker Images for SQL Server
     inputs:
       targetType: inline
       script: |-

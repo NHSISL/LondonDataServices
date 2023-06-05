@@ -5,11 +5,7 @@
 		<OutputType>Exe</OutputType>
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
-		<UserSecretsId>aefb00d8-4a27-4635-bca4-a67908131c35</UserSecretsId>
 	</PropertyGroup>
-	<ItemGroup>
-	  <Compile Remove="DecryptionBlobEventFunction.cs" />
-	</ItemGroup>
 	
 	<ItemGroup>
 		<PackageReference Include="EFxceptions" Version="0.4.5" />

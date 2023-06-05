@@ -11,7 +11,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
 {
     public partial class PdsOrchestrationService : IPdsOrchestrationService
     {
-        public ValueTask<PdsAudit> PickupFileAndSendToMesh(byte[] pdsFile) =>
+        public ValueTask<PdsAudit> PickupFileAndSendToMesh(byte[] pdsFile, string fileName) =>
             throw new NotImplementedException();
 
         public ValueTask<List<PdsAudit>> RetreiveMessagesFromMeshAndUpdateStorage() =>

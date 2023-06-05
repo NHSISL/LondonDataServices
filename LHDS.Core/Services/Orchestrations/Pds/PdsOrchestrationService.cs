@@ -9,6 +9,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.PdsAudits;
+using LHDS.Core.Models.Orchestrations.Pds;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Mesh;
 using LHDS.Core.Services.Foundations.PdsAudits;
@@ -23,6 +24,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
+        private readonly PdsConfiguration pdsConfiguration;
 
         public PdsOrchestrationService(
             IPdsAuditService pdsAuditService,
@@ -30,7 +32,9 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             IMeshService meshService,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
-            IIdentifierBroker identifierBroker)
+            IIdentifierBroker identifierBroker,
+            PdsConfiguration pdsConfiguration
+            )
         {
             this.pdsAuditService = pdsAuditService;
             this.documentService = documentService;
@@ -38,6 +42,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
+            this.pdsConfiguration = pdsConfiguration;
         }
 
         public ValueTask<PdsAudit> PickupFileAndSendToMesh(byte[] pdsFile, string fileName) =>

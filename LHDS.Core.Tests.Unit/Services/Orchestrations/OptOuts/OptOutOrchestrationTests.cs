@@ -73,7 +73,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 { "MeshConfiguration:MexOSVersion", GetRandomString() },
                 { "MeshConfiguration:RootCertificate", null },
                 { "MeshConfiguration:IntermediateCertificates", null },
-                { "MeshConfiguration:ClientCertificate", null }
+                { "MeshConfiguration:ClientCertificate", null },
+                { "MeshConfiguration:WorkflowId", GetRandomString() }
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()
@@ -103,6 +104,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 MexClientVersion = inMemoryConfiguration["MeshConfiguration:MexClientVersion"],
                 MexOSName = inMemoryConfiguration["MeshConfiguration:MexOSName"],
                 MexOSVersion = inMemoryConfiguration["MeshConfiguration:MexOSVersion"],
+                WorkflowId = inMemoryConfiguration["MeshConfiguration:WorkflowId"],
 
                 RootCertificate = GetCertificate(inMemoryConfiguration["MeshConfiguration:RootCertificate"]),
 
@@ -311,8 +313,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             return messages;
         }
 
-        private static List<MeshMessage> GetRandomMessages(List<string> items, List<string> randomConsentedIdentifiers)
+        private static List<MeshMessage> GetRandomMessages(
+            List<string> items, 
+            List<string> randomConsentedIdentifiers,
+            string workflowId = "")
         {
+            if (string.IsNullOrWhiteSpace(workflowId))
+            {
+                workflowId = GetRandomString();
+            }
+
             List<MeshMessage> messageList = new List<MeshMessage>();
 
             foreach (var item in items)
@@ -324,6 +334,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 message.MessageId = item;
                 message.Headers["Mex-LocalID"] = new List<string> { GetRandomString() };
                 message.FileContent = Encoding.UTF8.GetBytes(sb.ToString());
+                message.Headers["Mex-WorkflowID"] = new List<string> { workflowId };
 
                 messageList.Add(message);
             }

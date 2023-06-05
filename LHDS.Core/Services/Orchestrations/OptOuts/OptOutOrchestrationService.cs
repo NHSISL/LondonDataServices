@@ -176,8 +176,12 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                 foreach (string messageId in messageIds)
                 {
-                    MeshMessage message = await meshProcessingService
-                        .RetrieveAndAcknowledgeMessageByIdAsync(messageId);
+                    MeshMessage message = await meshProcessingService.RetrieveMessageByIdAsync(messageId);
+
+                    if (GetKeyStringValue("Mex-WorkflowID", message.Headers) != this.meshConfiguration.WorkflowId)
+                    {
+                        continue;
+                    }
 
                     meshMessageList.Add(message);
                     string[] delimiters = { "\r\n", "\n" };
@@ -230,6 +234,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         };
 
                         await this.documentProcessingService.AddDocumentAsync(document);
+                        await this.meshProcessingService.AcknowledgeMessageByIdAsync(messageId);
                     }
                 }
 
@@ -251,6 +256,15 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             }
 
             return value.FirstOrDefault();
+        }
+
+        private static string GetKeyStringValue(string key, Dictionary<string, List<string>> dictionary)
+        {
+            string value = dictionary.ContainsKey(key)
+                ? dictionary[key]?.First()
+                : string.Empty;
+
+            return value;
         }
     }
 }

@@ -233,8 +233,9 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                             FileName = fileName
                         };
 
-                    await this.documentProcessingService.AddDocumentAsync(document);
-                    await this.meshProcessingService.AcknowledgeMessageByIdAsync(messageId);
+                        await this.documentProcessingService.AddDocumentAsync(document);
+                        await this.meshProcessingService.AcknowledgeMessageByIdAsync(messageId);
+                    }
                 }
 
                 return meshMessageList;

@@ -2,49 +2,48 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.LandingClient.Exceptions;
-using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
-using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
-using LHDS.Core.Services.Orchestrations.Downloads;
+using LHDS.Core.Models.Foundations.PdsAudits;
+using LHDS.Core.Services.Orchestrations.Pds;
 using Xeptions;
 
 namespace LHDS.Core.Clients
 {
-    public class LandingClient : ILandingClient
+    public class PdsClient : IPdsClient
     {
-        private readonly IDownloadOrchestrationService downloadOrchestrationService;
+        private readonly IPdsOrchestrationService pdsOrchestrationService;
 
-        public LandingClient(
-            IDownloadOrchestrationService downloadOrchestrationService)
+        public PdsClient(IPdsOrchestrationService pdsOrchestrationService)
         {
-            this.downloadOrchestrationService = downloadOrchestrationService;
+            this.pdsOrchestrationService = pdsOrchestrationService;
         }
 
-        public async ValueTask ProcessAsync()
+        public async ValueTask<PdsAudit> PickupFileAndSendToMesh(byte[] pdsFile)
         {
             try
             {
-                await this.downloadOrchestrationService.ProcessAsync();
+                return await this.pdsOrchestrationService.PickupFileAndSendToMesh(pdsFile);
             }
-            catch (DownloadOrchestrationValidationException downloadOrchestrationValidationException)
+            catch (PdsOrchestrationValidationException downloadOrchestrationValidationException)
             {
                 throw new LandingClientValidationException(
                     downloadOrchestrationValidationException.InnerException as Xeption);
             }
-            catch (DownloadOrchestrationDependencyValidationException
+            catch (PdsOrchestrationDependencyValidationException
                 downloadOrchestrationDependencyValidationException)
             {
                 throw new LandingClientValidationException(
                     downloadOrchestrationDependencyValidationException.InnerException as Xeption);
             }
-            catch (DownloadOrchestrationDependencyException
+            catch (PdsOrchestrationDependencyException
                 downloadOrchestrationDependencyException)
             {
                 throw new LandingClientDependencyException(
                     downloadOrchestrationDependencyException.InnerException as Xeption);
             }
-            catch (DownloadOrchestrationServiceException
+            catch (PdsOrchestrationServiceException
                 downloadOrchestrationServiceException)
             {
                 throw new LandingClientServiceException(
@@ -52,29 +51,31 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask ProcessAsync(string fileName)
+        public async ValueTask<List<PdsAudit>> RetreiveMessagesFromMeshAndUpdateStorage()
         {
             try
             {
-                await this.downloadOrchestrationService.ProcessAsync(fileName);
+                return await this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
             }
-            catch (DecryptionOrchestrationValidationException downloadOrchestrationValidationException)
+            catch (PdsOrchestrationValidationException downloadOrchestrationValidationException)
             {
                 throw new LandingClientValidationException(
                     downloadOrchestrationValidationException.InnerException as Xeption);
             }
-            catch (DownloadOrchestrationDependencyValidationException
+            catch (PdsOrchestrationDependencyValidationException
                 downloadOrchestrationDependencyValidationException)
             {
                 throw new LandingClientValidationException(
                     downloadOrchestrationDependencyValidationException.InnerException as Xeption);
             }
-            catch (DownloadOrchestrationDependencyException downloadOrchestrationDependencyException)
+            catch (PdsOrchestrationDependencyException
+                downloadOrchestrationDependencyException)
             {
                 throw new LandingClientDependencyException(
                     downloadOrchestrationDependencyException.InnerException as Xeption);
             }
-            catch (DownloadOrchestrationServiceException downloadOrchestrationServiceException)
+            catch (PdsOrchestrationServiceException
+                downloadOrchestrationServiceException)
             {
                 throw new LandingClientServiceException(
                     downloadOrchestrationServiceException.InnerException as Xeption);

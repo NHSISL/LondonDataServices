@@ -6,11 +6,11 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Orchestrations.Downloads.Exceptions
 {
-    public class DownloadOrchestrationValidationException : Xeption
+    public class DownloadOrchestrationDependencyException : Xeption
     {
-        public DownloadOrchestrationValidationException(Xeption innerException)
-            : base(
-                message: "Download orchestration validation errors occurred, please try again.",
+        public DownloadOrchestrationDependencyException(Xeption innerException)
+         : base(
+                message: "PDS orchestration dependency error occurred, fix the errors and try again.",
                 innerException)
         { }
     }

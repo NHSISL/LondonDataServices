@@ -5,11 +5,11 @@
 using System;
 using Xeptions;
 
-namespace LHDS.Core.Models.Orchestrations.Downloads.Exceptions
+namespace LHDS.Core.Models.Orchestrations.Pds.Exceptions
 {
-    public class DownloadOrchestrationServiceException : Xeption
+    public class PdsOrchestrationServiceException : Xeption
     {
-        public DownloadOrchestrationServiceException(Exception innerException)
-            : base(message: "Download orchestration service error occurred, contact support.", innerException) { }
+        public PdsOrchestrationServiceException(Exception innerException)
+            : base(message: "PDS orchestration service error occurred, contact support.", innerException) { }
     }
 }

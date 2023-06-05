@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Orchestrations.Pdss.Exceptions
+namespace LHDS.Core.Models.Orchestrations.Pds.Exceptions
 {
     public class PdsOrchestrationDependencyValidationException : Xeption
     {

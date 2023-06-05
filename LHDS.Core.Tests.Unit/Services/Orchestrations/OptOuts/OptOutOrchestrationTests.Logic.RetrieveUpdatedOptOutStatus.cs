@@ -114,7 +114,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             {
                 var message = outputMessages.First(message => message.MessageId == messageId);
 
-                // Get message
                 this.meshProcessingServiceMock.Verify(processings =>
                     processings.RetrieveMessageByIdAsync(messageId),
                         Times.Once());

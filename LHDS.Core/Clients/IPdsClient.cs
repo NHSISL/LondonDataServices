@@ -10,7 +10,7 @@ namespace LHDS.Core.Clients
 {
     public interface IPdsClient
     {
-        ValueTask<PdsAudit> PickupFileAndSendToMesh(byte[] pdsFile);
+        ValueTask<PdsAudit> PickupFileAndSendToMesh(byte[] pdsFile, string fileName);
         ValueTask<List<PdsAudit>> RetreiveMessagesFromMeshAndUpdateStorage();
     }
 }

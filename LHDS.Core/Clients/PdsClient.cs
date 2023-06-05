@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.LandingClient.Exceptions;
 using LHDS.Core.Models.Foundations.PdsAudits;
+using LHDS.Core.Models.Orchestrations.Pds.Exceptions;
 using LHDS.Core.Services.Orchestrations.Pds;
 using Xeptions;
 
@@ -20,11 +21,11 @@ namespace LHDS.Core.Clients
             this.pdsOrchestrationService = pdsOrchestrationService;
         }
 
-        public async ValueTask<PdsAudit> PickupFileAndSendToMesh(byte[] pdsFile)
+        public async ValueTask<PdsAudit> PickupFileAndSendToMesh(byte[] pdsFile, string fileName)
         {
             try
             {
-                return await this.pdsOrchestrationService.PickupFileAndSendToMesh(pdsFile);
+                return await this.pdsOrchestrationService.PickupFileAndSendToMesh(pdsFile, fileName);
             }
             catch (PdsOrchestrationValidationException downloadOrchestrationValidationException)
             {

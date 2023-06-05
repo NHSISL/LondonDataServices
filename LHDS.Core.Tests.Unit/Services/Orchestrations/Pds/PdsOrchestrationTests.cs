@@ -3,13 +3,19 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.PdsAudits;
+using LHDS.Core.Models.Orchestrations.Pds;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Mesh;
 using LHDS.Core.Services.Foundations.PdsAudits;
 using LHDS.Core.Services.Orchestrations.Pds;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using Tynamix.ObjectFiller;
 
@@ -23,16 +29,51 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
+        private readonly PdsConfiguration pdsConfiguration;
+        private readonly ICompareLogic compareLogic;
         private readonly IPdsOrchestrationService pdsOrchestrationService;
+        private readonly IConfiguration inMemoryConfiguration;
 
         public PdsOrchestrationTests()
         {
-            pdsAuditServiceMock = new Mock<IPdsAuditService>();
-            documentServiceMock = new Mock<IDocumentService>();
-            meshServiceMock = new Mock<IMeshService>();
-            loggingBrokerMock = new Mock<ILoggingBroker>();
-            dateTimeBrokerMock = new Mock<IDateTimeBroker>();
-            identifierBrokerMock = new Mock<IIdentifierBroker>();
+            var appSettingsStub = new Dictionary<string, string> {
+                { "OptOutSettings:ExpiredAfterDays", "7" },
+                { "OptOutSettings:InputFolder", GetRandomString() },
+                { "OptOutSettings:OptOutFileHasHeader", "false" },
+                { "OptOutSettings:OutputFolder", GetRandomString() },
+                { "OptOutSettings:OptOutFileRequireTrailingComma", "true" },
+                { "OptOutSettings:To", GetRandomString() },
+                { "OptOutSettings:WorkflowId", GetRandomString() },
+                { "MeshConfiguration:MailboxId", GetRandomString() },
+                { "MeshConfiguration:Password", GetRandomString() },
+                { "MeshConfiguration:Key", GetRandomString() },
+                { "MeshConfiguration:Url", GetRandomString() },
+                { "MeshConfiguration:MexClientVersion", GetRandomString() },
+                { "MeshConfiguration:MexOSName", GetRandomString() },
+                { "MeshConfiguration:MexOSVersion", GetRandomString() },
+                { "MeshConfiguration:RootCertificate", null },
+                { "MeshConfiguration:IntermediateCertificates", null },
+                { "MeshConfiguration:ClientCertificate", null },
+                { "MeshConfiguration:WorkflowId", GetRandomString() }
+            };
+
+            this.inMemoryConfiguration = new ConfigurationBuilder()
+             .AddInMemoryCollection(appSettingsStub)
+             .Build();
+
+            this.pdsConfiguration = new PdsConfiguration
+            {
+                To = inMemoryConfiguration["OptOutSettings:InputFolder"],
+                WorkflowId = inMemoryConfiguration["OptOutSettings:WorkflowId"],
+            };
+
+            this.pdsAuditServiceMock = new Mock<IPdsAuditService>();
+            this.documentServiceMock = new Mock<IDocumentService>();
+            this.meshServiceMock = new Mock<IMeshService>();
+            this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
+            this.compareLogic = new CompareLogic();
 
             this.pdsOrchestrationService = new PdsOrchestrationService(
                 pdsAuditService: pdsAuditServiceMock.Object,
@@ -40,7 +81,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 meshService: meshServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
-                identifierBroker: identifierBrokerMock.Object
+                identifierBroker: identifierBrokerMock.Object,
+                pdsConfiguration: pdsConfiguration
                 );
         }
         private static int GetRandomNumber() =>
@@ -51,5 +93,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private Expression<Func<PdsAudit, bool>> SamePdsAuditAs(
+           PdsAudit expectedPdsAudit)
+        {
+            return actualPdsAudit =>
+                this.compareLogic.Compare(expectedPdsAudit, actualPdsAudit)
+                    .AreEqual;
+        }
     }
 }

@@ -10,7 +10,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
 {
     public interface IPdsOrchestrationService
     {
-        ValueTask<PdsAudit> PickupFileAndSendToMesh(byte[] pdsFile);
+        ValueTask<PdsAudit> PickupFileAndSendToMesh(byte[] pdsFile, string fileName);
         ValueTask<List<PdsAudit>> RetreiveMessagesFromMeshAndUpdateStorage();
     }
 }

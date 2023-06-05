@@ -4,11 +4,11 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Orchestrations.Downloads.Exceptions
+namespace LHDS.Core.Models.Orchestrations.Pds.Exceptions
 {
-    public class DownloadOrchestrationDependencyException : Xeption
+    public class PdsOrchestrationDependencyException : Xeption
     {
-        public DownloadOrchestrationDependencyException(Xeption innerException)
+        public PdsOrchestrationDependencyException(Xeption innerException)
          : base(
                 message: "PDS orchestration dependency error occurred, fix the errors and try again.",
                 innerException)

@@ -10,39 +10,39 @@ using LHDS.Core.Clients;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace LHDS.Functions.OptOut
+namespace LHDS.Functions.Pds
 {
-    public class RetrieveOptOutStatusFunction
+    public class PickupFileAndSendToMeshFunction
     {
         private readonly ILoggingBroker loggingBroker;
-        private readonly IOptOutClient optOutClient;
+        private readonly IPdsClient pdsClient;
         private readonly ILogger logger;
 
-        public RetrieveOptOutStatusFunction(
+        public PickupFileAndSendToMeshFunction(
             ILoggingBroker loggingBroker,
-            IOptOutClient optOutClient,
+            IPdsClient pdsClient,
             ILoggerFactory loggerFactory)
         {
             this.loggingBroker = loggingBroker;
-            this.optOutClient = optOutClient;
-            this.logger = loggerFactory.CreateLogger<RetrieveOptOutStatusFunction>();
+            this.pdsClient = pdsClient;
+            this.logger = loggerFactory.CreateLogger<PickupFileAndSendToMeshFunction>();
         }
 
-        [Function("RetrieveOptOutStatusFunction")]
+        [Function("PickupFileAndSendToMeshFunction")]
         public void Run(
-            [BlobTrigger("optout/in/{name}", Connection = "BlobStorage")] string myBlob, string name)
+            [BlobTrigger("pds/in/{name}", Connection = "BlobStorage")] string myBlob, string name)
         {
             this.loggingBroker
                 .LogInformation(
                     $"C# Blob trigger function Processing blob\n " +
-                    $"Name: optout/in/{{name}} \n Data: {myBlob}");
+                    $"Name: pds/in/{{name}} \n Data: {myBlob}");
 
             try
             {
                 Task.Run(async () =>
                 {
-                    byte[] optOutFile = Encoding.ASCII.GetBytes(myBlob);
-                    await optOutClient.RetrieveOptOutStatusAsync(optOutFile, fileName: name);
+                    byte[] pdsFile = Encoding.ASCII.GetBytes(myBlob);
+                    await pdsClient.PickupFileAndSendToMesh(pdsFile, fileName: name);
                 }).Wait();
             }
             catch (Exception ex)

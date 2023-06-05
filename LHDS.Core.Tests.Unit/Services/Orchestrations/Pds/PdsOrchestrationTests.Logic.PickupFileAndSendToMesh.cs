@@ -5,6 +5,7 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using Moq;
@@ -23,7 +24,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             var inputString = randomString;
             var inputBytes = Encoding.ASCII.GetBytes(inputString);
             var fileName = GetRandomString();
-            string batchReference = randomDate.ToString("yyyyMMddHHmmss");
 
             PdsAudit pdsAudit = new PdsAudit
             {
@@ -44,8 +44,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             string mexWorkflowId = this.pdsConfiguration.WorkflowId;
             byte[] fileContent = inputBytes;
             string mexSubject = string.Empty;
-            string mexLocalId = batchReference;
-            string mexFileName = $"{batchReference}.txt";
+            string mexLocalId = pdsAudit.CorrelationId.ToString();
+            string mexFileName = fileName;
             string mexContentChecksum = string.Empty;
             string contentType = "text/plain";
             string contentEncoding = string.Empty;
@@ -77,10 +77,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     accept))
                         .ReturnsAsync(outputMessage);
 
+            PdsAudit expectedPdsAudit = pdsAudit;
+
             //when
-            await this.pdsOrchestrationService.PickupFileAndSendToMesh(inputBytes, fileName);
+            PdsAudit actualPdsAudit =
+                await this.pdsOrchestrationService.PickupFileAndSendToMesh(inputBytes, fileName);
 
             //then
+            actualPdsAudit.Should().BeEquivalentTo(expectedPdsAudit);
 
             this.pdsAuditServiceMock.Verify(service =>
                service.AddPdsAuditAsync(It.Is(SamePdsAuditAs(pdsAudit))),
@@ -102,8 +106,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.pdsAuditServiceMock.VerifyNoOtherCalls();
             this.meshServiceMock.VerifyNoOtherCalls();
-
-
         }
     }
 }

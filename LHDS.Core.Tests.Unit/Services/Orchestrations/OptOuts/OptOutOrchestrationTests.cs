@@ -313,8 +313,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             return messages;
         }
 
-        private static List<MeshMessage> GetRandomMessages(List<string> items, List<string> randomConsentedIdentifiers)
+        private static List<MeshMessage> GetRandomMessages(
+            List<string> items, 
+            List<string> randomConsentedIdentifiers,
+            string workflowId = "")
         {
+            if (string.IsNullOrWhiteSpace(workflowId))
+            {
+                workflowId = GetRandomString();
+            }
+
             List<MeshMessage> messageList = new List<MeshMessage>();
 
             foreach (var item in items)
@@ -326,6 +334,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 message.MessageId = item;
                 message.Headers["Mex-LocalID"] = new List<string> { GetRandomString() };
                 message.FileContent = Encoding.UTF8.GetBytes(sb.ToString());
+                message.Headers["Mex-WorkflowID"] = new List<string> { workflowId };
 
                 messageList.Add(message);
             }
@@ -513,13 +522,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 new CsvMapperProcessingDependencyException(innerException),
                 new CsvMapperProcessingServiceException(innerException)
             };
-        }
-
-        public string GetRandomWorkflowId()
-        {
-            var random = new Random();
-            var workflowId = random.Next(1000, 9999).ToString();
-            return workflowId;
         }
 
         private string GetValidationSummary(IDictionary data)

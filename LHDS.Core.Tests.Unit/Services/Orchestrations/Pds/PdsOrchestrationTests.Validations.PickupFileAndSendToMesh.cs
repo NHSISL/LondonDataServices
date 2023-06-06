@@ -35,15 +35,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 values: "Text is required");
 
             var expectedPdsValidationException =
-                new PdsValidationException(innerException: invalidArgumentPdsException);
+                new PdsValidationException(
+                    innerException: invalidArgumentPdsException);
 
             // when
             ValueTask<PdsAudit> retrievePdsAuditTask =
                 this.pdsOrchestrationService.PickupFileAndSendToMesh(pdsFile, fileName);
 
             PdsValidationException actualPdsValidationException =
-                await Assert.ThrowsAsync<PdsValidationException>(
-                    retrievePdsAuditTask.AsTask);
+                await Assert.ThrowsAsync<PdsValidationException>(retrievePdsAuditTask.AsTask);
 
             // then
             actualPdsValidationException.Should()

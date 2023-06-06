@@ -6,6 +6,7 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using Moq;
@@ -19,23 +20,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         public async Task ShouldPickupFileAndSendToMeshAsync()
         {
             // given
+            Guid identifier = Guid.NewGuid();
             DateTimeOffset randomDate = GetRandomDateTimeOffset();
             var randomString = GetRandomString();
             var inputString = randomString;
             var inputBytes = Encoding.ASCII.GetBytes(inputString);
             var fileName = GetRandomString();
+            PdsAudit pdsAudit = GetRandomPdsAudit(identifier, fileName, randomDate);
 
-            PdsAudit pdsAudit = new PdsAudit
-            {
-                Id = Guid.NewGuid(),
-                CorrelationId = Guid.NewGuid(),
-                FileName = fileName,
-                Message = "Sent",
-                CreatedDate = randomDate,
-                UpdatedDate = randomDate,
-                CreatedBy = "System",
-                UpdatedBy = "System"
-            };
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDate);
+
+            this.identifierBrokerMock.Setup(processing =>
+               processing.GetIdentifier())
+                   .Returns(identifier);
 
             this.pdsAuditServiceMock.Setup(service =>
                 service.AddPdsAuditAsync(pdsAudit));
@@ -77,7 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     accept))
                         .ReturnsAsync(outputMessage);
 
-            PdsAudit expectedPdsAudit = pdsAudit;
+            PdsAudit expectedPdsAudit = pdsAudit.DeepClone();
 
             //when
             PdsAudit actualPdsAudit =
@@ -105,7 +105,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                         Times.Once);
 
             this.pdsAuditServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
             this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

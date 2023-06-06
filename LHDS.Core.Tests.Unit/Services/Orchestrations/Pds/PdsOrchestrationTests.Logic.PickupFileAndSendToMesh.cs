@@ -93,6 +93,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             //then
             actualPdsAudit.Should().BeEquivalentTo(expectedPdsAudit);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+              broker.GetCurrentDateTimeOffset(),
+                  Times.Once);
+
             this.meshServiceMock.Verify(service =>
               service.SendMessageAsync(
                     mexTo,

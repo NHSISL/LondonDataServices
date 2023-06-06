@@ -18,6 +18,7 @@ using LHDS.Core.Services.Orchestrations.Pds;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 {
@@ -93,6 +94,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+          actualException => actualException.SameExceptionAs(expectedException);
 
         private static PdsAudit GetRandomPdsAudit(
             Guid identifier,

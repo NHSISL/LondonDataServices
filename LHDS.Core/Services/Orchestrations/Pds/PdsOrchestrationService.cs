@@ -48,7 +48,42 @@ namespace LHDS.Core.Services.Orchestrations.Pds
         }
 
         public ValueTask<PdsAudit> PickupFileAndSendToMesh(byte[] pdsFile, string fileName) =>
-            throw new NotImplementedException();
+        TryCatch(async () =>
+        {
+            ValidatePdsArgs(pdsFile, fileName);
+
+            DateTimeOffset timeStamp = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            Guid id = this.identifierBroker.GetIdentifier();
+            Guid correlationId = this.identifierBroker.GetIdentifier();
+
+            var meshMessage = await this.meshService.SendMessageAsync(
+                   mexTo: this.pdsConfiguration.To,
+                   mexWorkflowId: this.pdsConfiguration.WorkflowId,
+                   fileContent: pdsFile,
+                   mexSubject: string.Empty,
+                   mexLocalId: this.identifierBroker.GetIdentifier().ToString(),
+                   mexFileName: fileName,
+                   mexContentChecksum: string.Empty,
+                   contentType: "text/plain",
+                   contentEncoding: string.Empty,
+                   accept: "application/json");
+
+            PdsAudit pdsAuditItem = await this.pdsAuditService
+                .AddPdsAuditAsync(
+                    new PdsAudit
+                    {
+                        Id = id,
+                        CorrelationId = correlationId,
+                        FileName = fileName,
+                        Message = $"Sent message to mesh with id {meshMessage.MessageId}",
+                        CreatedDate = timeStamp,
+                        UpdatedDate = timeStamp,
+                        CreatedBy = "System",
+                        UpdatedBy = "System"
+                    });
+
+            return pdsAuditItem;
+        });
 
         public async ValueTask<List<PdsAudit>> RetreiveMessagesFromMeshAndUpdateStorage()
         {

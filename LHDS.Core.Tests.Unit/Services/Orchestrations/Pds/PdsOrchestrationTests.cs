@@ -9,13 +9,16 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Orchestrations.Pds;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Mesh;
 using LHDS.Core.Services.Foundations.PdsAudits;
 using LHDS.Core.Services.Orchestrations.Pds;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Moq;
 using Tynamix.ObjectFiller;
 
@@ -90,6 +93,39 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
         private static string GetRandomString() =>
          new MnemonicString().GetValue();
+
+        private static List<Message> GetRandomMessageList()
+        {
+            for 
+        }
+
+        private static Message GetRandomMessage()
+        {
+            string mexTo = this.pdsConfiguration.To;
+            string mexWorkflowId = this.pdsConfiguration.WorkflowId;
+            byte[] fileContent = inputBytes;
+            string mexSubject = string.Empty;
+            string mexLocalId = batchReference;
+            string mexFileName = $"{batchReference}.txt";
+            string mexContentChecksum = string.Empty;
+            string contentType = "text/plain";
+            string contentEncoding = string.Empty;
+            string accept = "application/json";
+
+            MeshMessage outputMessage = ComposeMessage.CreateMeshMessage(
+                mexTo,
+                mexWorkflowId,
+                fileContent,
+                mexSubject,
+                mexLocalId,
+                mexFileName,
+                mexContentChecksum,
+                contentType,
+                contentEncoding,
+                accept);
+
+            return outputMessage
+        }
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();

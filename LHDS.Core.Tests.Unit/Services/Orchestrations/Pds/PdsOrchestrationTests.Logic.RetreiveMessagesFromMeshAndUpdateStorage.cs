@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
     public partial class PdsOrchestrationTests
     {
         [Fact]
-        public async Task ShouldRetreiveMessagesFromMeshAsync()
+        public async Task ShouldRetreiveMessagesForMatchingPdsWorkflowIdFromMeshAsync()
         {
             // given
             DateTimeOffset randomDate = GetRandomDateTimeOffset();

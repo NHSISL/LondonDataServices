@@ -45,9 +45,10 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             this.pdsConfiguration = pdsConfiguration;
         }
 
-        public async ValueTask<PdsAudit> PickupFileAndSendToMesh(byte[] pdsFile, string fileName)
+        public ValueTask<PdsAudit> PickupFileAndSendToMesh(byte[] pdsFile, string fileName) =>
+        TryCatch(async () =>
         {
-            //ValidateAgs
+            ValidatePdsArgs(pdsFile, fileName);
 
             DateTimeOffset timeStamp = this.dateTimeBroker.GetCurrentDateTimeOffset();
             Guid id = this.identifierBroker.GetIdentifier();
@@ -80,7 +81,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                     });
 
             return pdsAuditItem;
-        }
+        });
 
         public ValueTask<List<PdsAudit>> RetreiveMessagesFromMeshAndUpdateStorage() =>
             throw new NotImplementedException();

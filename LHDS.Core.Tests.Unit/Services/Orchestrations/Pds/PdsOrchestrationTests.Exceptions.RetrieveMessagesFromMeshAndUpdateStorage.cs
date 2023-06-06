@@ -58,5 +58,47 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(PdsDependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnRetrieveAndUpdateIfDependencyExceptionOccursAndLogItAsync(
+         Xeption dependancyException)
+        {
+            // given
+            var expectedDependencyException =
+                new PdsOrchestrationDependencyException(
+                    dependancyException.InnerException as Xeption);
+
+            this.meshServiceMock.Setup(service =>
+              service.RetrieveMessageIdsFromInboxAsync())
+                    .Throws(dependancyException);
+
+            // when
+            ValueTask<List<PdsAudit>> retrievePdsAudits =
+              this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+
+            PdsOrchestrationDependencyException actualException =
+                await Assert.ThrowsAsync<PdsOrchestrationDependencyException>(retrievePdsAudits.AsTask);
+
+            // then
+            actualException.Should()
+                .BeEquivalentTo(expectedDependencyException);
+
+            this.meshServiceMock.Verify(service =>
+                service.RetrieveMessageIdsFromInboxAsync(),
+                   Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDependencyException))),
+                        Times.Once);
+
+            this.pdsAuditServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

@@ -10,6 +10,7 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Orchestrations.Pds;
@@ -131,7 +132,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     mexWorkflowId,
                     fileContent: Encoding.ASCII.GetBytes(GetRandomString()),
                     mexSubject: GetRandomString(),
-                    mexLocalId: GetRandomString(),
+                    mexLocalId: Guid.NewGuid().ToString(),
                     mexFileName: GetRandomString());
 
                 message.MessageId = id;
@@ -142,6 +143,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             return messages;
         }
 
+        private Expression<Func<Document, bool>> SameDocumentAs(
+          Document expectedDocument)
+        {
+            return actualDocument =>
+                this.compareLogic.Compare(expectedDocument, actualDocument)
+                    .AreEqual;
+        }
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();

@@ -6,18 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.PdsAudits;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Moq;
-using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 {
@@ -32,6 +28,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             List<string> randomMessageIds = GetRandomStrings(randomNumber);
             string mexWorkflowId = this.pdsConfiguration.WorkflowId;
             List<MeshMessage> retrievedMessages = GetRandomMessages(randomMessageIds, mexWorkflowId);
+            Guid identifier = Guid.NewGuid();
+
+            this.dateTimeBrokerMock.Setup(service =>
+                service.GetCurrentDateTimeOffset())
+                    .Returns(randomDate);
+
+            this.identifierBrokerMock.Setup(service =>
+                service.GetIdentifier())
+                    .Returns(identifier);
 
             this.meshServiceMock.Setup(service =>
                 service.RetrieveMessageIdsFromInboxAsync())
@@ -60,7 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
                 PdsAudit pdsAudit = new PdsAudit
                 {
-                    Id = Guid.NewGuid(),
+                    Id = identifier,
                     CorrelationId = correlationId,
                     FileName = fileName,
                     Message =  $"Received message from mesh with id {message.MessageId}",
@@ -86,6 +91,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             //then
             actualPdsAudits.Should().BeEquivalentTo(expectedPdsAudits);
 
+            this.dateTimeBrokerMock.Verify(service =>
+                service.GetCurrentDateTimeOffset(),
+                    Times.Exactly(retrievedMessages.Count));
+
+            this.identifierBrokerMock.Verify(service =>
+                service.GetIdentifier(),
+                    Times.Exactly(retrievedMessages.Count));
+
             this.meshServiceMock.Verify(service =>
               service.RetrieveMessageIdsFromInboxAsync(),
                         Times.Once);
@@ -93,9 +106,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             foreach (var message in retrievedMessages)
             {
 
-                this.meshServiceMock.Setup(service =>
-                    service.RetrieveMessageByIdAsync(message.MessageId))
-                        .ReturnsAsync(message);
+                this.meshServiceMock.Verify(service =>
+                    service.RetrieveMessageByIdAsync(message.MessageId),
+                        Times.Once);
 
                 Document document = new Document
                 {
@@ -104,7 +117,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 };
 
                 this.documentServiceMock.Verify(service =>
-                    service.AddDocumentAsync(document),
+                    service.AddDocumentAsync(It.Is(SameDocumentAs(document))),
                         Times.Once);
 
                 Guid correlationId = Guid.Parse(message.Headers["Mex-LocalID"].FirstOrDefault());
@@ -112,7 +125,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
                 PdsAudit pdsAudit = new PdsAudit
                 {
-                    Id = Guid.NewGuid(),
+                    Id = identifier,
                     CorrelationId = correlationId,
                     FileName = fileName,
                     Message = $"Received message from mesh with id {message.MessageId}",
@@ -123,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 };
 
                 this.pdsAuditServiceMock.Verify(service =>
-                    service.AddPdsAuditAsync(pdsAudit),
+                    service.AddPdsAuditAsync(It.Is(SamePdsAuditAs(pdsAudit))),
                         Times.Once);
 
                 pdsAuditsList.Add(pdsAudit);

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
@@ -15,6 +16,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
     public partial class PdsOrchestrationService
     {
         private delegate ValueTask<PdsAudit> ReturningPdsAuditFunction();
+        private delegate ValueTask<List<PdsAudit>> ReturningPdsAuditListFunciton();
 
         private async ValueTask<PdsAudit> TryCatch(ReturningPdsAuditFunction returningPdsAuditFunction)
         {
@@ -81,10 +83,41 @@ namespace LHDS.Core.Services.Orchestrations.Pds
 
                 throw CreateAndLogServiceException(failedPdsServiceException);
             }
-
         }
 
-        private PdsOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
+        private async ValueTask<List<PdsAudit>> TryCatch(ReturningPdsAuditListFunciton returningPdsAuditListFunciton)
+        {
+            try
+            {
+                return await returningPdsAuditListFunciton();
+            }
+            catch (PdsOrchestrationValidationException pdsOrchestrationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(pdsOrchestrationValidationException);
+            }
+            catch (PdsOrchestrationDependencyValidationException pdsOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(pdsOrchestrationDependencyValidationException);
+            }
+            catch (DocumentValidationException meshValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshValidationException);
+            }
+            catch (DocumentDependencyValidationException meshDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
+            }
+            catch (MeshValidationException meshValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshValidationException);
+            }
+            catch (MeshDependencyValidationException meshDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
+            }
+        }
+
+            private PdsOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
             var pdsValidationException =
                 new PdsOrchestrationValidationException(exception);

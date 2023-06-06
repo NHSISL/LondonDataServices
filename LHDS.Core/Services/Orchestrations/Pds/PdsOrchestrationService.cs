@@ -85,7 +85,8 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             return pdsAuditItem;
         });
 
-        public async ValueTask<List<PdsAudit>> RetreiveMessagesFromMeshAndUpdateStorage()
+        public ValueTask<List<PdsAudit>> RetreiveMessagesFromMeshAndUpdateStorage() =>
+        TryCatch(async () =>
         {
             var messageIds = await this.meshService.RetrieveMessageIdsFromInboxAsync();
             var pdsAudits = new List<PdsAudit>();
@@ -128,6 +129,6 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             }
 
             return pdsAudits;
-        }
+        });
     }
 }

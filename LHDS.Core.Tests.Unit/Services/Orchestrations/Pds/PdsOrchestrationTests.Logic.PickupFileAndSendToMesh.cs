@@ -5,6 +5,8 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using Moq;
@@ -18,34 +20,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         public async Task ShouldPickupFileAndSendToMeshAsync()
         {
             // given
+            Guid identifier = Guid.NewGuid();
             DateTimeOffset randomDate = GetRandomDateTimeOffset();
             var randomString = GetRandomString();
             var inputString = randomString;
             var inputBytes = Encoding.ASCII.GetBytes(inputString);
             var fileName = GetRandomString();
-            string batchReference = randomDate.ToString("yyyyMMddHHmmss");
-
-            PdsAudit pdsAudit = new PdsAudit
-            {
-                Id = Guid.NewGuid(),
-                CorrelationId = Guid.NewGuid(),
-                FileName = fileName,
-                Message = "Sent",
-                CreatedDate = randomDate,
-                UpdatedDate = randomDate,
-                CreatedBy = "System",
-                UpdatedBy = "System"
-            };
-
-            this.pdsAuditServiceMock.Setup(service =>
-                service.AddPdsAuditAsync(pdsAudit));
 
             string mexTo = this.pdsConfiguration.To;
             string mexWorkflowId = this.pdsConfiguration.WorkflowId;
             byte[] fileContent = inputBytes;
             string mexSubject = string.Empty;
-            string mexLocalId = batchReference;
-            string mexFileName = $"{batchReference}.txt";
+            string mexLocalId = identifier.ToString();
+            string mexFileName = fileName;
             string mexContentChecksum = string.Empty;
             string contentType = "text/plain";
             string contentEncoding = string.Empty;
@@ -63,6 +50,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 contentEncoding,
                 accept);
 
+            outputMessage.MessageId = Guid.NewGuid().ToString();
+
+            PdsAudit randomPdsAudit = GetRandomPdsAudit(identifier, identifier, fileName, randomDate, outputMessage.MessageId);
+            PdsAudit inputPdsAudit = randomPdsAudit;
+            PdsAudit outputPdsAudit = inputPdsAudit.DeepClone();
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDate);
+
+            this.identifierBrokerMock.Setup(processing =>
+               processing.GetIdentifier())
+                   .Returns(identifier);
+
             this.meshServiceMock.Setup(service =>
                 service.SendMessageAsync(
                     mexTo,
@@ -77,14 +78,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     accept))
                         .ReturnsAsync(outputMessage);
 
+            this.pdsAuditServiceMock.Setup(service =>
+               service.AddPdsAuditAsync(It.Is(SamePdsAuditAs(inputPdsAudit))))
+                    .ReturnsAsync(outputPdsAudit);
+
+            PdsAudit expectedPdsAudit = outputPdsAudit.DeepClone();
+
             //when
-            await this.pdsOrchestrationService.PickupFileAndSendToMesh(inputBytes, fileName);
+            PdsAudit actualPdsAudit =
+                await this.pdsOrchestrationService.PickupFileAndSendToMesh(inputBytes, fileName);
 
             //then
-
-            this.pdsAuditServiceMock.Verify(service =>
-               service.AddPdsAuditAsync(It.Is(SamePdsAuditAs(pdsAudit))),
-                   Times.Once);
+            actualPdsAudit.Should().BeEquivalentTo(expectedPdsAudit);
 
             this.meshServiceMock.Verify(service =>
               service.SendMessageAsync(
@@ -100,10 +105,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     accept),
                         Times.Once);
 
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
+                    Times.Exactly(3));
+
+            this.pdsAuditServiceMock.Verify(service =>
+              service.AddPdsAuditAsync(It.Is(SamePdsAuditAs(outputPdsAudit))),
+                  Times.Once);
+
             this.pdsAuditServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
             this.meshServiceMock.VerifyNoOtherCalls();
-
-
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

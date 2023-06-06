@@ -12,8 +12,11 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Orchestrations.Pds;
+using LHDS.Core.Models.Orchestrations.Pds.Exceptions;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Mesh;
 using LHDS.Core.Services.Foundations.PdsAudits;
@@ -23,6 +26,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 {
@@ -153,6 +158,64 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+          actualException => actualException.SameExceptionAs(expectedException);
+
+        private static PdsAudit GetRandomPdsAudit(
+            Guid identifier,
+            Guid correlationIdentifier,
+            string fileName,
+            DateTimeOffset randomDate,
+            string messageId)
+        {
+            PdsAudit pdsAudit = new PdsAudit
+            {
+                Id = identifier,
+                CorrelationId = correlationIdentifier,
+                FileName = fileName,
+                Message = $"Sent message to mesh with id {messageId}",
+                CreatedDate = randomDate,
+                UpdatedDate = randomDate,
+                CreatedBy = "System",
+                UpdatedBy = "System"
+            };
+
+            return pdsAudit;
+        }
+
+        public static TheoryData PdsDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new PdsOrchestrationValidationException(innerException),
+                new PdsOrchestrationDependencyValidationException(innerException),
+                new DocumentValidationException(innerException),
+                new DocumentDependencyValidationException(innerException),
+                new MeshValidationException(innerException),
+                new MeshDependencyValidationException(innerException),
+            };
+        }
+
+        public static TheoryData PdsDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new PdsOrchestrationDependencyException(innerException),
+                new PdsOrchestrationServiceException(innerException),
+                new DocumentDependencyException(innerException),
+                new DocumentServiceException(innerException),
+                new MeshDependencyException(innerException),
+                new MeshServiceException(innerException),
+            };
+        }
 
         private Expression<Func<PdsAudit, bool>> SamePdsAuditAs(
            PdsAudit expectedPdsAudit)

@@ -115,10 +115,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
               service.AddPdsAuditAsync(It.Is(SamePdsAuditAs(outputPdsAudit))),
                   Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.meshServiceMock.VerifyNoOtherCalls();
-            this.pdsAuditServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
+            this.pdsAuditServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

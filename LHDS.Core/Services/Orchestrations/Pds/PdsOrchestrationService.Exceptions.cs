@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
@@ -73,6 +74,13 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             {
                 throw CreateAndLogDependencyException(meshServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedPdsServiceException =
+                    new FailedPdsOrchestrationServiceException(exception);
+
+                throw CreateAndLogServiceException(failedPdsServiceException);
+            }
 
         }
 
@@ -108,6 +116,15 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             throw pdsOrchestrationDependencyException;
         }
 
+        private PdsOrchestrationServiceException
+            CreateAndLogServiceException(Xeption exception)
+        {
+            var pdsOrchestrationServiceException =
+                new PdsOrchestrationServiceException(exception);
 
+            this.loggingBroker.LogError(pdsOrchestrationServiceException);
+
+            throw pdsOrchestrationServiceException;
+        }
     }
 }

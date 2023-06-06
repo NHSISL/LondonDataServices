@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
     public partial class PdsOrchestrationTests
     {
         [Theory]
-        [MemberData(nameof(PdsOrchestrationDependencyValidationExceptions))]
+        [MemberData(nameof(PdsDependencyValidationExceptions))]
         public async Task ShouldThrowDependencyValidationOnPickupFileAndSendIfDependencyValidationOccursAndLogItAsync(
            Xeption dependancyValidationException)
         {
@@ -58,6 +58,53 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             this.meshServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(PdsDependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnPickupFileAndSendIfDependencyExceptionOccursAndLogItAsync(
+         Xeption dependancyException)
+        {
+            // given
+            var randomString = GetRandomString();
+            var randomBytes = Encoding.ASCII.GetBytes(randomString);
+            var randomRecieveFileName = GetRandomString();
+
+            var expectedDependencyException =
+                new PdsOrchestrationDependencyException(
+                    dependancyException.InnerException as Xeption);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+             broker.GetCurrentDateTimeOffset())
+                   .Throws(dependancyException);
+
+            // when
+            ValueTask<PdsAudit> retrievePdsAudit =
+              this.pdsOrchestrationService.PickupFileAndSendToMesh(randomBytes, randomRecieveFileName);
+
+            PdsOrchestrationDependencyException actualException =
+                await Assert.ThrowsAsync<PdsOrchestrationDependencyException>(retrievePdsAudit.AsTask);
+
+            // then
+            actualException.Should()
+                .BeEquivalentTo(expectedDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                 broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDependencyException))),
+                        Times.Once);
+
+            this.pdsAuditServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

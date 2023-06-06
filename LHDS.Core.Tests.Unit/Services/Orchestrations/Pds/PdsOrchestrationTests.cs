@@ -9,8 +9,11 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Orchestrations.Pds;
+using LHDS.Core.Models.Orchestrations.Pds.Exceptions;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Mesh;
 using LHDS.Core.Services.Foundations.PdsAudits;
@@ -19,6 +22,7 @@ using Microsoft.Extensions.Configuration;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 {
@@ -117,6 +121,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             };
 
             return pdsAudit;
+        }
+
+        public static TheoryData PdsOrchestrationDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new PdsOrchestrationValidationException(innerException),
+                new PdsOrchestrationDependencyValidationException(innerException),
+                new DocumentValidationException(innerException),
+                new DocumentDependencyValidationException(innerException),
+                new MeshValidationException(innerException),
+                new MeshDependencyValidationException(innerException),
+            };
         }
 
         private Expression<Func<PdsAudit, bool>> SamePdsAuditAs(

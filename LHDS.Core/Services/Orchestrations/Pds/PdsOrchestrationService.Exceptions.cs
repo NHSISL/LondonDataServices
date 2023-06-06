@@ -3,6 +3,8 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Orchestrations.Pds.Exceptions;
 using Xeptions;
@@ -23,16 +25,52 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             {
                 throw CreateAndLogValidationException(invalidArgumentPdsException);
             }
+            catch (PdsOrchestrationValidationException pdsOrchestrationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(pdsOrchestrationValidationException);
+            }
+            catch (PdsOrchestrationDependencyValidationException pdsOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(pdsOrchestrationDependencyValidationException);
+            }
+            catch (DocumentValidationException meshValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshValidationException);
+            }
+            catch (DocumentDependencyValidationException meshDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
+            }
+            catch (MeshValidationException meshValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshValidationException);
+            }
+            catch (MeshDependencyValidationException meshDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
+            }
         }
 
-        private PdsValidationException CreateAndLogValidationException(Xeption exception)
+        private PdsOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
             var pdsValidationException =
-                new PdsValidationException(exception);
+                new PdsOrchestrationValidationException(exception);
 
             this.loggingBroker.LogError(pdsValidationException);
 
             return pdsValidationException;
+        }
+
+
+        private PdsOrchestrationDependencyValidationException
+           CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var pdsOrchestrationDependencyValidationException =
+                new PdsOrchestrationDependencyValidationException(exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(pdsOrchestrationDependencyValidationException);
+
+            return pdsOrchestrationDependencyValidationException;
         }
     }
 }

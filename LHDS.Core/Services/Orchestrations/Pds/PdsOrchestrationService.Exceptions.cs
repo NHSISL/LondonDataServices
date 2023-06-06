@@ -139,6 +139,13 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             {
                 throw CreateAndLogDependencyException(meshServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedPdsServiceException =
+                    new FailedPdsOrchestrationServiceException(exception);
+
+                throw CreateAndLogServiceException(failedPdsServiceException);
+            }
         }
 
             private PdsOrchestrationValidationException CreateAndLogValidationException(Xeption exception)

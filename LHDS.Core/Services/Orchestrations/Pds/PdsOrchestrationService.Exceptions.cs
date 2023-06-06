@@ -49,6 +49,31 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             {
                 throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
             }
+            catch (PdsOrchestrationDependencyException pdsOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(pdsOrchestrationDependencyException);
+            }
+            catch (PdsOrchestrationServiceException pdsOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(pdsOrchestrationServiceException);
+            }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                throw CreateAndLogDependencyException(documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                throw CreateAndLogDependencyException(documentServiceException);
+            }
+            catch (MeshDependencyException meshDependencyException)
+            {
+                throw CreateAndLogDependencyException(meshDependencyException);
+            }
+            catch (MeshServiceException meshServiceException)
+            {
+                throw CreateAndLogDependencyException(meshServiceException);
+            }
+
         }
 
         private PdsOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
@@ -72,5 +97,17 @@ namespace LHDS.Core.Services.Orchestrations.Pds
 
             return pdsOrchestrationDependencyValidationException;
         }
+        private PdsOrchestrationDependencyException
+           CreateAndLogDependencyException(Xeption exception)
+        {
+            var pdsOrchestrationDependencyException =
+                new PdsOrchestrationDependencyException(exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(pdsOrchestrationDependencyException);
+
+            throw pdsOrchestrationDependencyException;
+        }
+
+
     }
 }

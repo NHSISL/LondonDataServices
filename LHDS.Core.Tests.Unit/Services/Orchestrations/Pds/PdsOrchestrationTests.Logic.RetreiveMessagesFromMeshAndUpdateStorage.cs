@@ -153,20 +153,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         public async Task ShouldRetreiveMessagesForNonMatchingPdsWorkflowIdFromMeshAsync()
         {
             // given
-            DateTimeOffset randomDate = GetRandomDateTimeOffset();
             int randomNumber = GetRandomNumber();
             List<string> randomMessageIds = GetRandomStrings(randomNumber);
             string mexWorkflowId = GetRandomString();
             List<MeshMessage> retrievedMessages = GetRandomMessages(randomMessageIds, mexWorkflowId);
-            Guid identifier = Guid.NewGuid();
-
-            this.dateTimeBrokerMock.Setup(service =>
-                service.GetCurrentDateTimeOffset())
-                    .Returns(randomDate);
-
-            this.identifierBrokerMock.Setup(service =>
-                service.GetIdentifier())
-                    .Returns(identifier);
 
             this.meshServiceMock.Setup(service =>
                 service.RetrieveMessageIdsFromInboxAsync())
@@ -180,40 +170,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.RetrieveMessageByIdAsync(message.MessageId))
                         .ReturnsAsync(message);
 
-                if (message.Headers["Mex-WorkflowId"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
+                if (message.Headers["Mex-WorkflowID"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
                 {
                     continue;
                 }
-
-                Document document = new Document
-                {
-                    FileName = message.Headers["Mex-FileName"].FirstOrDefault().ToString(),
-                    DocumentData = message.FileContent,
-                };
-
-                this.documentServiceMock.Setup(service =>
-                    service.AddDocumentAsync(document));
-
-                Guid correlationId = Guid.Parse(message.Headers["Mex-LocalID"].FirstOrDefault());
-                string fileName = message.Headers["Mex-FileName"].FirstOrDefault();
-
-                PdsAudit pdsAudit = new PdsAudit
-                {
-                    Id = identifier,
-                    CorrelationId = correlationId,
-                    FileName = fileName,
-                    Message = $"Received message from mesh with id {message.MessageId}",
-                    CreatedDate = randomDate,
-                    UpdatedDate = randomDate,
-                    CreatedBy = "System",
-                    UpdatedBy = "System"
-                };
-
-                this.pdsAuditServiceMock.Setup(service =>
-                    service.AddPdsAuditAsync(pdsAudit))
-                        .ReturnsAsync(pdsAudit);
-
-                pdsAuditsList.Add(pdsAudit);
             };
 
             List<PdsAudit> expectedPdsAudits = pdsAuditsList.DeepClone();
@@ -225,60 +185,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             //then
             actualPdsAudits.Should().BeEquivalentTo(expectedPdsAudits);
 
-            this.dateTimeBrokerMock.Verify(service =>
-                service.GetCurrentDateTimeOffset(),
-                    Times.Exactly(retrievedMessages.Count));
-
-            this.identifierBrokerMock.Verify(service =>
-                service.GetIdentifier(),
-                    Times.Exactly(retrievedMessages.Count));
-
             this.meshServiceMock.Verify(service =>
               service.RetrieveMessageIdsFromInboxAsync(),
                         Times.Once);
 
             foreach (var message in retrievedMessages)
             {
-
                 this.meshServiceMock.Verify(service =>
                     service.RetrieveMessageByIdAsync(message.MessageId),
                         Times.Once);
 
-                if (message.Headers["Mex-WorkflowId"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
+                if (message.Headers["Mex-WorkflowID"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
                 {
                     continue;
                 }
-
-                Document document = new Document
-                {
-                    FileName = message.Headers["Mex-FileName"].FirstOrDefault().ToString(),
-                    DocumentData = message.FileContent,
-                };
-
-                this.documentServiceMock.Verify(service =>
-                    service.AddDocumentAsync(It.Is(SameDocumentAs(document))),
-                        Times.Once);
-
-                Guid correlationId = Guid.Parse(message.Headers["Mex-LocalID"].FirstOrDefault());
-                string fileName = message.Headers["Mex-FileName"].FirstOrDefault();
-
-                PdsAudit pdsAudit = new PdsAudit
-                {
-                    Id = identifier,
-                    CorrelationId = correlationId,
-                    FileName = fileName,
-                    Message = $"Received message from mesh with id {message.MessageId}",
-                    CreatedDate = randomDate,
-                    UpdatedDate = randomDate,
-                    CreatedBy = "System",
-                    UpdatedBy = "System"
-                };
-
-                this.pdsAuditServiceMock.Verify(service =>
-                    service.AddPdsAuditAsync(It.Is(SamePdsAuditAs(pdsAudit))),
-                        Times.Once);
-
-                pdsAuditsList.Add(pdsAudit);
             };
 
             this.meshServiceMock.VerifyNoOtherCalls();

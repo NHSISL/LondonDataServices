@@ -94,14 +94,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static PdsAudit GetRandomPdsAudit(Guid identifier, string fileName, DateTimeOffset randomDate)
+        private static PdsAudit GetRandomPdsAudit(
+            Guid identifier,
+            Guid correlationIdentifier,
+            string fileName,
+            DateTimeOffset randomDate,
+            string messageId)
         {
             PdsAudit pdsAudit = new PdsAudit
             {
-                Id = Guid.NewGuid(),
-                CorrelationId = identifier,
+                Id = identifier,
+                CorrelationId = correlationIdentifier,
                 FileName = fileName,
-                Message = "Sent",
+                Message = $"Sent message to mesh with id {messageId}",
                 CreatedDate = randomDate,
                 UpdatedDate = randomDate,
                 CreatedBy = "System",

@@ -123,7 +123,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             return pdsAudit;
         }
 
-        public static TheoryData PdsOrchestrationDependencyValidationExceptions()
+        public static TheoryData PdsDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -137,6 +137,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 new DocumentDependencyValidationException(innerException),
                 new MeshValidationException(innerException),
                 new MeshDependencyValidationException(innerException),
+            };
+        }
+
+        public static TheoryData PdsDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new PdsOrchestrationDependencyException(innerException),
+                new PdsOrchestrationServiceException(innerException),
+                new DocumentDependencyException(innerException),
+                new DocumentServiceException(innerException),
+                new MeshDependencyException(innerException),
+                new MeshServiceException(innerException),
             };
         }
 

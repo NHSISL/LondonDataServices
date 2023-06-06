@@ -47,13 +47,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         public PdsOrchestrationTests()
         {
             var appSettingsStub = new Dictionary<string, string> {
-                { "OptOutSettings:ExpiredAfterDays", "7" },
-                { "OptOutSettings:InputFolder", GetRandomString() },
-                { "OptOutSettings:OptOutFileHasHeader", "false" },
-                { "OptOutSettings:OutputFolder", GetRandomString() },
-                { "OptOutSettings:OptOutFileRequireTrailingComma", "true" },
-                { "OptOutSettings:To", GetRandomString() },
-                { "OptOutSettings:WorkflowId", GetRandomString() },
+                { "PdsSettings:InputFolder", GetRandomString() },
+                { "PdsSettings:PdsFileHasHeader", "false" },
+                { "PdsSettings:OutputFolder", GetRandomString() },
+                { "PdsSettings:PdsFileRequireTrailingComma", "true" },
+                { "PdsSettings:To", GetRandomString() },
+                { "PdsSettings:WorkflowId", GetRandomString() },
                 { "MeshConfiguration:MailboxId", GetRandomString() },
                 { "MeshConfiguration:Password", GetRandomString() },
                 { "MeshConfiguration:Key", GetRandomString() },
@@ -73,8 +72,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.pdsConfiguration = new PdsConfiguration
             {
-                To = inMemoryConfiguration["OptOutSettings:InputFolder"],
-                WorkflowId = inMemoryConfiguration["OptOutSettings:WorkflowId"],
+                InputFolder = inMemoryConfiguration["PdsSettings:InputFolder"],
+                PdsFileHasHeader = bool.Parse(inMemoryConfiguration["PdsSettings:PdsFileHasHeader"]),
+                OutputFolder = inMemoryConfiguration["PdsSettings:OutputFolder"],
+
+                PdsFileRequireTrailingComma =
+                    bool.Parse(inMemoryConfiguration["PdsSettings:PdsFileRequireTrailingComma"]),
+
+                To = inMemoryConfiguration["PdsSettings:InputFolder"],
+                WorkflowId = inMemoryConfiguration["PdsSettings:WorkflowId"],
+
             };
 
             this.pdsAuditServiceMock = new Mock<IPdsAuditService>();
@@ -158,6 +165,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
 

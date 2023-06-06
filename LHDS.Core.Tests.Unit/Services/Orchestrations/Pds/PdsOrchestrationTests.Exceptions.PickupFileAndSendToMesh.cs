@@ -54,12 +54,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                    expectedDependencyException))),
                        Times.Once);
 
-            this.pdsAuditServiceMock.VerifyNoOtherCalls();
-            this.documentServiceMock.VerifyNoOtherCalls();
-            this.meshServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.pdsAuditServiceMock.VerifyNoOtherCalls();
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -100,12 +100,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     expectedDependencyException))),
                         Times.Once);
 
-            this.pdsAuditServiceMock.VerifyNoOtherCalls();
-            this.documentServiceMock.VerifyNoOtherCalls();
-            this.meshServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.pdsAuditServiceMock.VerifyNoOtherCalls();
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -149,12 +149,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     expectedPdsOrchestrationServiceException))),
                         Times.Once);
 
-            this.pdsAuditServiceMock.VerifyNoOtherCalls();
-            this.documentServiceMock.VerifyNoOtherCalls();
-            this.meshServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.pdsAuditServiceMock.VerifyNoOtherCalls();
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

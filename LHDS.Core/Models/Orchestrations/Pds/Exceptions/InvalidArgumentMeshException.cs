@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Orchestrations.Pds.Exceptions
     public class InvalidArgumentPdsException : Xeption
     {
         public InvalidArgumentPdsException()
-            : base(message: "Invalid Pds argument(s), please correct the errors and try again.")
+            : base(message: "Invalid PDS argument(s), please correct the errors and try again.")
         { }
     }
 }

@@ -314,7 +314,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         }
 
         private static List<MeshMessage> GetRandomMessages(
-            List<string> items, 
+            List<string> items,
             List<string> randomConsentedIdentifiers,
             string workflowId = "")
         {

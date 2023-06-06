@@ -54,10 +54,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     expectedPdsValidationException))),
                         Times.Once);
 
-            this.pdsAuditServiceMock.VerifyNoOtherCalls();
-            this.documentServiceMock.VerifyNoOtherCalls();
-            this.meshServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.pdsAuditServiceMock.VerifyNoOtherCalls();
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }

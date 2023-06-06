@@ -52,7 +52,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             outputMessage.MessageId = Guid.NewGuid().ToString();
 
-            PdsAudit randomPdsAudit = GetRandomPdsAudit(identifier, identifier, fileName, randomDate, outputMessage.MessageId);
+            PdsAudit randomPdsAudit =
+                GetRandomPdsAudit(identifier, identifier, fileName, randomDate, outputMessage.MessageId);
+
             PdsAudit inputPdsAudit = randomPdsAudit;
             PdsAudit outputPdsAudit = inputPdsAudit.DeepClone();
 
@@ -60,8 +62,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 broker.GetCurrentDateTimeOffset())
                     .Returns(randomDate);
 
-            this.identifierBrokerMock.Setup(processing =>
-               processing.GetIdentifier())
+            this.identifierBrokerMock.Setup(broker =>
+               broker.GetIdentifier())
                    .Returns(identifier);
 
             this.meshServiceMock.Setup(service =>
@@ -113,11 +115,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
               service.AddPdsAuditAsync(It.Is(SamePdsAuditAs(outputPdsAudit))),
                   Times.Once);
 
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.meshServiceMock.VerifyNoOtherCalls();
             this.pdsAuditServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
-            this.meshServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

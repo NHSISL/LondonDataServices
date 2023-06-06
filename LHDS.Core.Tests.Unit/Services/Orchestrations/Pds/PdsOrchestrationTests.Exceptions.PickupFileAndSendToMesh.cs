@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.PdsAudits;
-using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using LHDS.Core.Models.Orchestrations.Pds.Exceptions;
 using Moq;
 using Xeptions;
@@ -120,7 +119,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             var serviceException = new Exception();
 
             var failedPdsOrchestrationServiceException =
-                new FailedOptOutOrchestrationServiceException(serviceException);
+                new FailedPdsOrchestrationServiceException(serviceException);
 
             var expectedPdsOrchestrationServiceException =
                 new PdsOrchestrationServiceException(failedPdsOrchestrationServiceException);

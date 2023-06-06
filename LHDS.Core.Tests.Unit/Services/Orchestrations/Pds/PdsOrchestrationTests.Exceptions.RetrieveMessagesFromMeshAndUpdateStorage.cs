@@ -100,5 +100,49 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveAndUpdateIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            var serviceException = new Exception();
+
+            var failedPdsOrchestrationServiceException =
+                new FailedPdsOrchestrationServiceException(serviceException);
+
+            var expectedPdsOrchestrationServiceException =
+                new PdsOrchestrationServiceException(failedPdsOrchestrationServiceException);
+
+            this.meshServiceMock.Setup(service =>
+              service.RetrieveMessageIdsFromInboxAsync())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<List<PdsAudit>> retrievePdsAudits =
+                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+
+            PdsOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(retrievePdsAudits.AsTask);
+
+            // then
+            actualException.Should()
+                .BeEquivalentTo(expectedPdsOrchestrationServiceException);
+
+            this.meshServiceMock.Verify(service =>
+               service.RetrieveMessageIdsFromInboxAsync(),
+                  Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedPdsOrchestrationServiceException))),
+                        Times.Once);
+
+            this.pdsAuditServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

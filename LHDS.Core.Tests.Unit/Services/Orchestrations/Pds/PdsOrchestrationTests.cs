@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Text;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
@@ -57,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 { "MeshConfiguration:RootCertificate", null },
                 { "MeshConfiguration:IntermediateCertificates", null },
                 { "MeshConfiguration:ClientCertificate", null },
-                { "MeshConfiguration:WorkflowId", GetRandomString() }
+                { "MeshConfiguration:WorkflowId", GetRandomString() },
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()
@@ -94,38 +95,53 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         private static string GetRandomString() =>
          new MnemonicString().GetValue();
 
-        private static List<Message> GetRandomMessageList()
+        private static List<string> GetRandomStrings(int count)
         {
-            for 
+            var stringList = new List<string>();
+
+            for (int i = 0; i < count; i++)
+            {
+                string messageId = GetRandomString();
+                stringList.Add(messageId);
+            }
+
+            return stringList;
         }
 
-        private static Message GetRandomMessage()
+        private static MeshMessage CreateRandomMeshMessage() =>
+            CreateMeshMessageFiller().Create();
+
+        private static Filler<MeshMessage> CreateMeshMessageFiller()
         {
-            string mexTo = this.pdsConfiguration.To;
-            string mexWorkflowId = this.pdsConfiguration.WorkflowId;
-            byte[] fileContent = inputBytes;
-            string mexSubject = string.Empty;
-            string mexLocalId = batchReference;
-            string mexFileName = $"{batchReference}.txt";
-            string mexContentChecksum = string.Empty;
-            string contentType = "text/plain";
-            string contentEncoding = string.Empty;
-            string accept = "application/json";
+            var filler = new Filler<MeshMessage>();
+            filler.Setup().OnProperty(message => message.Headers)
+                .Use(new Dictionary<string, List<string>>());
 
-            MeshMessage outputMessage = ComposeMessage.CreateMeshMessage(
-                mexTo,
-                mexWorkflowId,
-                fileContent,
-                mexSubject,
-                mexLocalId,
-                mexFileName,
-                mexContentChecksum,
-                contentType,
-                contentEncoding,
-                accept);
-
-            return outputMessage
+            return filler;
         }
+
+        private static List<MeshMessage> GetRandomMessages(List<string> randomMessageIds, string mexWorkflowId)
+        {
+            var messages = new List<MeshMessage>();
+
+            randomMessageIds.ForEach(id =>
+            {
+                MeshMessage message = ComposeMessage.CreateMeshMessage(
+                    mexTo: GetRandomString(),
+                    mexWorkflowId,
+                    fileContent: Encoding.ASCII.GetBytes(GetRandomString()),
+                    mexSubject: GetRandomString(),
+                    mexLocalId: GetRandomString(),
+                    mexFileName: GetRandomString());
+
+                message.MessageId = id;
+
+                messages.Add(message);
+            });
+
+            return messages;
+        }
+
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();

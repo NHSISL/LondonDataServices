@@ -4,12 +4,20 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.PdsAudits;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Moq;
+using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 {
@@ -20,63 +28,109 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         {
             // given
             DateTimeOffset randomDate = GetRandomDateTimeOffset();
-            var randomString = GetRandomString();
-            var inputString = randomString;
-            var inputBytes = Encoding.ASCII.GetBytes(inputString);
-            var fileName = GetRandomString();
-            string batchReference = randomDate.ToString("yyyyMMddHHmmss");
-            getrandommessage
+            int randomNumber = GetRandomNumber();
+            List<string> randomMessageIds = GetRandomStrings(randomNumber);
+            string mexWorkflowId = this.pdsConfiguration.WorkflowId;
+            List<MeshMessage> retrievedMessages = GetRandomMessages(randomMessageIds, mexWorkflowId);
+
+            this.meshServiceMock.Setup(service =>
+                service.RetrieveMessageIdsFromInboxAsync())
+                    .ReturnsAsync(randomMessageIds);
 
             List<PdsAudit> pdsAuditsList= new List<PdsAudit>();
 
-            this.meshServiceMock.Setup(service =>
-                service.RetrieveMessageIdsFromInboxAsync()
-                    .
-
-            PdsAudit pdsAudit = new PdsAudit
+            foreach (var message in retrievedMessages)
             {
-                Id = Guid.NewGuid(),
-                CorrelationId = Guid.NewGuid(),
-                FileName = fileName,
-                Message = "Sent",
-                CreatedDate = randomDate,
-                UpdatedDate = randomDate,
-                CreatedBy = "System",
-                UpdatedBy = "System"
+
+                this.meshServiceMock.Setup(service =>
+                    service.RetrieveMessageByIdAsync(message.MessageId))
+                        .ReturnsAsync(message);
+
+                Document document = new Document
+                {
+                    FileName = message.Headers["Mex-FileName"].FirstOrDefault().ToString(),
+                    DocumentData = message.FileContent,
+                };
+
+                this.documentServiceMock.Setup(service =>
+                    service.AddDocumentAsync(document));
+
+                Guid correlationId = Guid.Parse(message.Headers["Mex-LocalID"].FirstOrDefault());
+                string fileName = message.Headers["Mex-FileName"].FirstOrDefault();
+
+                PdsAudit pdsAudit = new PdsAudit
+                {
+                    Id = Guid.NewGuid(),
+                    CorrelationId = correlationId,
+                    FileName = fileName,
+                    Message =  $"Received message from mesh with id {message.MessageId}",
+                    CreatedDate = randomDate,
+                    UpdatedDate = randomDate,
+                    CreatedBy = "System",
+                    UpdatedBy = "System"
+                };
+
+                this.pdsAuditServiceMock.Setup(service =>
+                    service.AddPdsAuditAsync(pdsAudit))
+                        .ReturnsAsync(pdsAudit);
+
+                pdsAuditsList.Add(pdsAudit);
             };
 
-            this.pdsAuditServiceMock.Setup(service =>
-                service.AddPdsAuditAsync(pdsAudit));
-
-
-
-            this.meshServiceMock.Setup(service =>
-                service.SendMessageAsync(
-                    mexTo,
-                    mexWorkflowId,
-                    fileContent,
-                    mexSubject,
-                    mexLocalId,
-                    mexFileName,
-                    mexContentChecksum,
-                    contentType,
-                    contentEncoding,
-                    accept))
-                        .ReturnsAsync(outputMessage);
+            List<PdsAudit> expectedPdsAudits = pdsAuditsList.DeepClone();
 
             //when
-            await this.pdsOrchestrationService.PickupFileAndSendToMesh(inputBytes, fileName);
+            List<PdsAudit> actualPdsAudits =
+                await this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
 
             //then
+            actualPdsAudits.Should().BeEquivalentTo(expectedPdsAudits);
 
             this.meshServiceMock.Verify(service =>
               service.RetrieveMessageIdsFromInboxAsync(),
                         Times.Once);
 
+            foreach (var message in retrievedMessages)
+            {
+
+                this.meshServiceMock.Setup(service =>
+                    service.RetrieveMessageByIdAsync(message.MessageId))
+                        .ReturnsAsync(message);
+
+                Document document = new Document
+                {
+                    FileName = message.Headers["Mex-FileName"].FirstOrDefault().ToString(),
+                    DocumentData = message.FileContent,
+                };
+
+                this.documentServiceMock.Verify(service =>
+                    service.AddDocumentAsync(document),
+                        Times.Once);
+
+                Guid correlationId = Guid.Parse(message.Headers["Mex-LocalID"].FirstOrDefault());
+                string fileName = message.Headers["Mex-FileName"].FirstOrDefault();
+
+                PdsAudit pdsAudit = new PdsAudit
+                {
+                    Id = Guid.NewGuid(),
+                    CorrelationId = correlationId,
+                    FileName = fileName,
+                    Message = $"Received message from mesh with id {message.MessageId}",
+                    CreatedDate = randomDate,
+                    UpdatedDate = randomDate,
+                    CreatedBy = "System",
+                    UpdatedBy = "System"
+                };
+
+                this.pdsAuditServiceMock.Verify(service =>
+                    service.AddPdsAuditAsync(pdsAudit),
+                        Times.Once);
+
+                pdsAuditsList.Add(pdsAudit);
+            };
+
             this.pdsAuditServiceMock.VerifyNoOtherCalls();
             this.meshServiceMock.VerifyNoOtherCalls();
-
-
         }
     }
 }

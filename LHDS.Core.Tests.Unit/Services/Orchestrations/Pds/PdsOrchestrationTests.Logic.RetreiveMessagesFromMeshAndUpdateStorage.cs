@@ -30,12 +30,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             List<MeshMessage> retrievedMessages = GetRandomMessages(randomMessageIds, mexWorkflowId);
             Guid identifier = Guid.NewGuid();
 
-            this.dateTimeBrokerMock.Setup(service =>
-                service.GetCurrentDateTimeOffset())
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
                     .Returns(randomDate);
 
-            this.identifierBrokerMock.Setup(service =>
-                service.GetIdentifier())
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifier())
                     .Returns(identifier);
 
             this.meshServiceMock.Setup(service =>
@@ -46,7 +46,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             foreach (var message in retrievedMessages)
             {
-
                 this.meshServiceMock.Setup(service =>
                     service.RetrieveMessageByIdAsync(message.MessageId))
                         .ReturnsAsync(message);
@@ -57,8 +56,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     DocumentData = message.FileContent,
                 };
 
-                this.documentServiceMock.Setup(service =>
-                    service.AddDocumentAsync(document));
+                this.documentServiceMock.Setup(broker =>
+                    broker.AddDocumentAsync(document));
 
                 Guid correlationId = Guid.Parse(message.Headers["Mex-LocalID"].FirstOrDefault());
                 string fileName = message.Headers["Mex-FileName"].FirstOrDefault();
@@ -91,21 +90,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             //then
             actualPdsAudits.Should().BeEquivalentTo(expectedPdsAudits);
 
-            this.dateTimeBrokerMock.Verify(service =>
-                service.GetCurrentDateTimeOffset(),
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
                     Times.Exactly(retrievedMessages.Count));
 
-            this.identifierBrokerMock.Verify(service =>
-                service.GetIdentifier(),
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
                     Times.Exactly(retrievedMessages.Count));
 
             this.meshServiceMock.Verify(service =>
-              service.RetrieveMessageIdsFromInboxAsync(),
-                        Times.Once);
+                service.RetrieveMessageIdsFromInboxAsync(),
+                    Times.Once);
 
             foreach (var message in retrievedMessages)
             {
-
                 this.meshServiceMock.Verify(service =>
                     service.RetrieveMessageByIdAsync(message.MessageId),
                         Times.Once);
@@ -186,8 +184,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             actualPdsAudits.Should().BeEquivalentTo(expectedPdsAudits);
 
             this.meshServiceMock.Verify(service =>
-              service.RetrieveMessageIdsFromInboxAsync(),
-                        Times.Once);
+                service.RetrieveMessageIdsFromInboxAsync(),
+                    Times.Once);
 
             foreach (var message in retrievedMessages)
             {

@@ -148,7 +148,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             }
         }
 
-            private PdsOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
+        private PdsOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
             var pdsValidationException =
                 new PdsOrchestrationValidationException(exception);
@@ -157,7 +157,6 @@ namespace LHDS.Core.Services.Orchestrations.Pds
 
             return pdsValidationException;
         }
-
 
         private PdsOrchestrationDependencyValidationException
            CreateAndLogDependencyValidationException(Xeption exception)
@@ -169,6 +168,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
 
             return pdsOrchestrationDependencyValidationException;
         }
+
         private PdsOrchestrationDependencyException
            CreateAndLogDependencyException(Xeption exception)
         {

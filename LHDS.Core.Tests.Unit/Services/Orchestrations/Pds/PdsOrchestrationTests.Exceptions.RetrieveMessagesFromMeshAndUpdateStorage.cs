@@ -28,15 +28,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.meshServiceMock.Setup(service =>
               service.RetrieveMessageIdsFromInboxAsync())
-                    .Throws(dependancyValidationException);
+                .Throws(dependancyValidationException);
 
             //when
             ValueTask<List<PdsAudit>> actualPdsAudits =
                 this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
 
             PdsOrchestrationDependencyValidationException actualException =
-              await Assert.ThrowsAsync<PdsOrchestrationDependencyValidationException>(
-                  actualPdsAudits.AsTask);
+                await Assert.ThrowsAsync<PdsOrchestrationDependencyValidationException>(
+                    actualPdsAudits.AsTask);
 
             // then
             actualException.Should()
@@ -47,13 +47,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
-                   expectedDependencyException))),
-                       Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDependencyException))),
+                        Times.Once);
 
+            this.meshServiceMock.VerifyNoOtherCalls();
             this.pdsAuditServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
-            this.meshServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -70,12 +70,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     dependancyException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>
-              service.RetrieveMessageIdsFromInboxAsync())
+                service.RetrieveMessageIdsFromInboxAsync())
                     .Throws(dependancyException);
 
             // when
             ValueTask<List<PdsAudit>> retrievePdsAudits =
-              this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
+                this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
 
             PdsOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<PdsOrchestrationDependencyException>(retrievePdsAudits.AsTask);
@@ -93,9 +93,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     expectedDependencyException))),
                         Times.Once);
 
+            this.meshServiceMock.VerifyNoOtherCalls();
             this.pdsAuditServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
-            this.meshServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
@@ -114,7 +114,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 new PdsOrchestrationServiceException(failedPdsOrchestrationServiceException);
 
             this.meshServiceMock.Setup(service =>
-              service.RetrieveMessageIdsFromInboxAsync())
+                service.RetrieveMessageIdsFromInboxAsync())
                     .Throws(serviceException);
 
             // when
@@ -129,17 +129,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 .BeEquivalentTo(expectedPdsOrchestrationServiceException);
 
             this.meshServiceMock.Verify(service =>
-               service.RetrieveMessageIdsFromInboxAsync(),
-                  Times.Once);
+                service.RetrieveMessageIdsFromInboxAsync(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedPdsOrchestrationServiceException))),
                         Times.Once);
 
+            this.meshServiceMock.VerifyNoOtherCalls();
             this.pdsAuditServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
-            this.meshServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

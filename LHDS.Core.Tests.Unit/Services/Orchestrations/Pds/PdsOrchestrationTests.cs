@@ -63,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 { "MeshConfiguration:RootCertificate", null },
                 { "MeshConfiguration:IntermediateCertificates", null },
                 { "MeshConfiguration:ClientCertificate", null },
-                { "MeshConfiguration:WorkflowId", GetRandomString() },
+                { "MeshConfiguration:WorkflowId", GetRandomString() }
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()
@@ -127,6 +127,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         private static Filler<MeshMessage> CreateMeshMessageFiller()
         {
             var filler = new Filler<MeshMessage>();
+
             filler.Setup().OnProperty(message => message.Headers)
                 .Use(new Dictionary<string, List<string>>());
 
@@ -148,7 +149,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     mexFileName: GetRandomString());
 
                 message.MessageId = id;
-
                 messages.Add(message);
             });
 

@@ -107,7 +107,6 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                 };
 
                 await this.documentService.AddDocumentAsync(document);
-
                 var correlationId = Guid.Parse(message.Headers["Mex-LocalID"].FirstOrDefault());
                 var fileName = message.Headers["Mex-FileName"].FirstOrDefault();
                 DateTimeOffset currentDate = this.dateTimeBroker.GetCurrentDateTimeOffset();

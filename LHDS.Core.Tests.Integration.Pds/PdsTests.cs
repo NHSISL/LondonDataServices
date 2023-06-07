@@ -25,8 +25,8 @@ namespace LHDS.Core.Tests.Integration.Pds
         private readonly IPdsAuditService pdsAuditService;
         private readonly IDocumentService documentService;
         private readonly IMeshService meshService;
-        private readonly MeshConfiguration meshConfiguration;
         private readonly PdsConfiguration pdsConfiguration;
+        private readonly MeshConfiguration meshConfiguration;
         private readonly ITestOutputHelper output;
 
         public PdsTests(ITestOutputHelper output)
@@ -55,9 +55,9 @@ namespace LHDS.Core.Tests.Integration.Pds
             this.pdsClient = serviceProvider.GetService<IPdsClient>();
             this.documentService = serviceProvider.GetService<IDocumentService>();
             this.meshService = serviceProvider.GetService<IMeshService>();
+            this.pdsConfiguration = serviceProvider.GetService<PdsConfiguration>();
             this.meshConfiguration = serviceProvider.GetService<MeshConfiguration>();
             this.pdsAuditService = serviceProvider.GetService<IPdsAuditService>();
-            this.pdsConfiguration = serviceProvider.GetService<PdsConfiguration>();
         }
 
         private static string GetHeaderValue(MeshMessage message, string keyToFind)

@@ -52,9 +52,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                         Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.pdsAuditServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
@@ -94,9 +94,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                         Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.pdsAuditServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
@@ -138,9 +138,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                         Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.pdsAuditServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }

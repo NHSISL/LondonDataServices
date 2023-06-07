@@ -140,10 +140,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 pdsAuditsList.Add(pdsAudit);
             };
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.meshServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.pdsAuditServiceMock.VerifyNoOtherCalls();
         }
 
@@ -199,10 +199,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 }
             };
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.meshServiceMock.VerifyNoOtherCalls();
             this.documentServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.pdsAuditServiceMock.VerifyNoOtherCalls();
         }
     }

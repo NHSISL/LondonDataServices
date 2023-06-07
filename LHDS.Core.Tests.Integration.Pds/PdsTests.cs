@@ -12,7 +12,6 @@ using LHDS.Core.Models.Orchestrations.Pds;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Mesh;
 using LHDS.Core.Services.Foundations.PdsAudits;
-using LHDS.Core.Services.Orchestrations.Pds;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -24,12 +23,10 @@ namespace LHDS.Core.Tests.Integration.Pds
     {
         private readonly IPdsClient pdsClient;
         private readonly IPdsAuditService pdsAuditService;
-        private readonly IPdsOrchestrationService pdsOrchestrationService;
         private readonly IDocumentService documentService;
         private readonly IMeshService meshService;
         private readonly MeshConfiguration meshConfiguration;
         private readonly PdsConfiguration pdsConfiguration;
-        private readonly IConfiguration inMemoryConfiguration;
         private readonly ITestOutputHelper output;
 
         public PdsTests(ITestOutputHelper output)
@@ -80,3 +77,4 @@ namespace LHDS.Core.Tests.Integration.Pds
             return value.FirstOrDefault();
         }
     }
+}

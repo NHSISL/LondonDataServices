@@ -5,10 +5,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Text;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using LHDS.Core.Models.Foundations.PdsAudits;
@@ -18,7 +21,9 @@ using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Mesh;
 using LHDS.Core.Services.Foundations.PdsAudits;
 using LHDS.Core.Services.Orchestrations.Pds;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -102,6 +107,61 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
         private static string GetRandomString() =>
          new MnemonicString().GetValue();
+
+        private static List<string> GetRandomStrings(int count)
+        {
+            var stringList = new List<string>();
+
+            for (int i = 0; i < count; i++)
+            {
+                string messageId = GetRandomString();
+                stringList.Add(messageId);
+            }
+
+            return stringList;
+        }
+
+        private static MeshMessage CreateRandomMeshMessage() =>
+            CreateMeshMessageFiller().Create();
+
+        private static Filler<MeshMessage> CreateMeshMessageFiller()
+        {
+            var filler = new Filler<MeshMessage>();
+
+            filler.Setup().OnProperty(message => message.Headers)
+                .Use(new Dictionary<string, List<string>>());
+
+            return filler;
+        }
+
+        private static List<MeshMessage> GetRandomMessages(List<string> randomMessageIds, string mexWorkflowId)
+        {
+            var messages = new List<MeshMessage>();
+
+            randomMessageIds.ForEach(id =>
+            {
+                MeshMessage message = ComposeMessage.CreateMeshMessage(
+                    mexTo: GetRandomString(),
+                    mexWorkflowId,
+                    fileContent: Encoding.ASCII.GetBytes(GetRandomString()),
+                    mexSubject: GetRandomString(),
+                    mexLocalId: Guid.NewGuid().ToString(),
+                    mexFileName: GetRandomString());
+
+                message.MessageId = id;
+                messages.Add(message);
+            });
+
+            return messages;
+        }
+
+        private Expression<Func<Document, bool>> SameDocumentAs(
+          Document expectedDocument)
+        {
+            return actualDocument =>
+                this.compareLogic.Compare(expectedDocument, actualDocument)
+                    .AreEqual;
+        }
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();

@@ -1,29 +1,36 @@
 ﻿// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
-using System.Linq;
-using System.Threading.Tasks;
+
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
-using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Providers.Cryptography.Extensions;
+using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Integration.Decryptions
 {
-    internal class Program
+    public partial class DecryptionTests
     {
-        static async Task Main(string[] args)
+        private readonly ITestOutputHelper output;
+        private readonly IDecryptionClient decryptionClient;
+        private readonly IDocumentService documentService;
+        private readonly IIngestionTrackingService ingestionTrackingService;
+
+        public DecryptionTests(ITestOutputHelper output)
         {
-            var environmentName = args.FirstOrDefault() ?? "Development";
+            this.output = output;
+
+            var environmentName = "Development";
 
             var configurationBuilder = new ConfigurationBuilder()
-                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
@@ -39,18 +46,9 @@ namespace LHDS.Core.Tests.Integration.Decryptions
                 .UseGpgCryptographyProvider(configuration, builder => builder.AddGpgCryptographyProvider())
                 .BuildServiceProvider();
 
-            var decryptionClient = serviceProvider.GetService<IDecryptionClient>();
-
-            IIngestionTrackingService ingestionTrackingService =
-                serviceProvider.GetService<IIngestionTrackingService>();
-
-            var items = ingestionTrackingService.RetrieveAllIngestionTrackings()
-                .Where(ingestionTrackingService => ingestionTrackingService.Decrypted == false);
-
-            foreach (IngestionTracking item in items)
-            {
-                await decryptionClient.DecryptAsync(item.FileName);
-            }
+            decryptionClient = serviceProvider.GetService<IDecryptionClient>();
+            ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
+            documentService = serviceProvider.GetService<IDocumentService>();
         }
     }
 }

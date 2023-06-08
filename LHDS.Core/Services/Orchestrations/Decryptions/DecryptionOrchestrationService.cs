@@ -41,7 +41,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public ValueTask DecryptAsync(string fileName) =>
+        public ValueTask<string> DecryptAsync(string fileName) =>
             TryCatch(async () =>
             {
                 ValidateFileNameIsNotNull(fileName);
@@ -75,6 +75,8 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                     .ModifyIngestionTrackingAsync(ingestionTracking);
 
                 LogAudit(ingestionTracking, document: newDecryptedDocument, currentDateTime);
+
+                return ingestionTracking.DecryptedFileName;
             });
 
         private void LogAudit(IngestionTracking ingestionTracking, Document document, DateTimeOffset currentDateTime)

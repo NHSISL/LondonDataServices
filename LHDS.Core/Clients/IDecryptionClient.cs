@@ -8,6 +8,6 @@ namespace LHDS.Core.Clients
 {
     public interface IDecryptionClient
     {
-        ValueTask DecryptAsync(string fileName);
+        ValueTask<string> DecryptAsync(string fileName);
     }
 }

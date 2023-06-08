@@ -15,13 +15,13 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 {
     public partial class DecryptionOrchestrationService
     {
-        private delegate ValueTask ReturningDecryptFunction();
+        private delegate ValueTask<string> ReturningDecryptFunction();
 
-        private async ValueTask TryCatch(ReturningDecryptFunction returningDecryptFunction)
+        private async ValueTask<string> TryCatch(ReturningDecryptFunction returningDecryptFunction)
         {
             try
             {
-                await returningDecryptFunction();
+                return await returningDecryptFunction();
             }
             catch (InvalidArgumentDecryptionOrchestrationException invalidArgumentDecryptionOrchestrationException)
             {

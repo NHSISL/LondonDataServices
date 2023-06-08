@@ -12,7 +12,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
 {
     public partial class OptOutTests
     {
-        [Fact(Skip = "Will fix.")]
+        [Fact]
         public async Task ShouldRetreiveOptOutStatusAsync()
         {
             // GIVEN

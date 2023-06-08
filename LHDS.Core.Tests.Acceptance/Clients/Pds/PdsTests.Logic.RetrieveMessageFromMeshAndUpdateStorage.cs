@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Clients;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Services.Orchestrations.Pds;
 using Moq;
@@ -19,9 +20,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         public async Task ShouldRetreiveMessagesFromMeshAndUpdateStorageAsync()
         {
             //Given
+            List<MeshMessage> messages = GetRandomMessages();
+
             var expectedList = new List<PdsAudit>();
 
-            this.pdsOrchestrationServiceMock.Setup(service => 
+            this.pdsOrchestrationService.Setup(service => 
                 service.RetreiveMessagesFromMeshAndUpdateStorage())
                     .ReturnsAsync(expectedList);
 

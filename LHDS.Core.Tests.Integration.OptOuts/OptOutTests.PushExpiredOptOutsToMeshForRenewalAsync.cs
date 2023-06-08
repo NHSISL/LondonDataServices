@@ -12,7 +12,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
 {
     public partial class OptOutTests
     {
-        [Fact(Skip = "Reason for skipping the test")]
+        [Fact]
         public async Task ShouldPushExpiredOptOutsToMeshForRenewalAsyncsAsync()
         {
             try

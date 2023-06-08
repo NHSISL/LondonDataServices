@@ -2,11 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
-namespace LHDS.Core.Tests.Integration.Landings
+namespace LHDS.Core.Tests.Integration.Pds
 {
     public class ReleaseCandidateTestCaseDiscoverer : IXunitTestCaseDiscoverer
     {

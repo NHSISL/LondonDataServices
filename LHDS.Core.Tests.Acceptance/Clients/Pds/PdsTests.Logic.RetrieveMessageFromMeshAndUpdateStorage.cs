@@ -5,8 +5,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Clients;
 using LHDS.Core.Models.Foundations.PdsAudits;
-using LHDS.Core.Tests.Acceptance.Brokers.CsvMappers.Models;
+using LHDS.Core.Services.Orchestrations.Pds;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Pds
@@ -14,15 +16,19 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
     public partial class PdsTests
     {
         [Fact]
-        public async Task ShouldMapCsvWithTrailingCommaToObjectAsync()
+        public async Task ShouldRetreiveMessagesFromMeshAndUpdateStorageAsync()
         {
-            // given
-            List<PdsAudit> expectedList = new List<PdsAudit>();
+            //Given
+            var expectedList = new List<PdsAudit>();
 
-            // when
-            List<PdsAudit> actualList = await this.pdsClient.;
+            this.pdsOrchestrationServiceMock.Setup(service => 
+                service.RetreiveMessagesFromMeshAndUpdateStorage())
+                    .ReturnsAsync(expectedList);
 
-            // then
+            //When
+            var actualList = await pdsClient.RetreiveMessagesFromMeshAndUpdateStorage();
+
+            //Then
             actualList.Should().BeEquivalentTo(expectedList);
         }
     }

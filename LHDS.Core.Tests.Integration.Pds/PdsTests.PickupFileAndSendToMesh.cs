@@ -24,15 +24,18 @@ namespace LHDS.Core.Tests.Integration.Pds
             var fileName = fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length);
 
             // When
-            PdsAudit pdsAudit = await pdsClient.PickupFileAndSendToMesh(pdsFile: fileBytes, fileName: fileName);
+            PdsAudit pdsAudit =
+                await pdsClient.PickupFileAndSendToMesh(pdsFile: fileBytes, fileName: fileName);
 
             // Then
             pdsAudit.Should().NotBeNull();
+            await pdsAuditService.RemovePdsAuditByIdAsync(pdsAudit.Id);
 
-            //Ack Message
+            var messageId = pdsAudit.MessageId;
+            bool messageAcked =
+                await meshService.AcknowledgeMessageByIdAsync(messageId);
 
-            //Delete from Audit Cleanup
-
+            messageAcked.Should().BeTrue();
         }
     }
 }

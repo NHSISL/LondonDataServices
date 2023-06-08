@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -42,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 service.RetrieveMessageIdsFromInboxAsync())
                     .ReturnsAsync(randomMessageIds);
 
-            List<PdsAudit> pdsAuditsList= new List<PdsAudit>();
+            List<PdsAudit> pdsAuditsList = new List<PdsAudit>();
 
             foreach (var message in retrievedMessages)
             {
@@ -50,9 +49,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.RetrieveMessageByIdAsync(message.MessageId))
                         .ReturnsAsync(message);
 
+                string[] fileNameParts = message.Headers["Mex-FileName"].FirstOrDefault().Split('_');
+
+                string fileNameOutput =
+                    $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}.csv";
+
                 Document document = new Document
                 {
-                    FileName = message.Headers["Mex-FileName"].FirstOrDefault().ToString(),
+                    FileName = fileNameOutput,
                     DocumentData = message.FileContent,
                 };
 
@@ -67,7 +71,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     Id = identifier,
                     CorrelationId = correlationId,
                     FileName = fileName,
-                    Message =  $"Received message from mesh with id {message.MessageId}",
+                    Message = $"Received message from mesh with id {message.MessageId}",
+                    MessageId = message.MessageId,
                     CreatedDate = randomDate,
                     UpdatedDate = randomDate,
                     CreatedBy = "System",
@@ -108,9 +113,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.RetrieveMessageByIdAsync(message.MessageId),
                         Times.Once);
 
+                string[] fileNameParts = message.Headers["Mex-FileName"].FirstOrDefault().Split('_');
+
+                string fileNameOutput =
+                    $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}.csv";
+
                 Document document = new Document
                 {
-                    FileName = message.Headers["Mex-FileName"].FirstOrDefault().ToString(),
+                    FileName = fileNameOutput,
                     DocumentData = message.FileContent,
                 };
 
@@ -127,6 +137,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     CorrelationId = correlationId,
                     FileName = fileName,
                     Message = $"Received message from mesh with id {message.MessageId}",
+                    MessageId = message.MessageId,
                     CreatedDate = randomDate,
                     UpdatedDate = randomDate,
                     CreatedBy = "System",
@@ -163,7 +174,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             List<PdsAudit> pdsAuditsList = new List<PdsAudit>();
 
             foreach (var message in retrievedMessages)
-            { 
+            {
                 this.meshServiceMock.Setup(service =>
                     service.RetrieveMessageByIdAsync(message.MessageId))
                         .ReturnsAsync(message);

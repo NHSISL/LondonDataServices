@@ -101,9 +101,14 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                     continue;
                 }
 
+                string[] fileNameParts = message.Headers["Mex-FileName"].FirstOrDefault().Split('_');
+
+                string fileNameOutput =
+                    $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}.csv";
+
                 var document = new Document
                 {
-                    FileName = message.Headers["Mex-FileName"].FirstOrDefault(),
+                    FileName = fileNameOutput,
                     DocumentData = message.FileContent,
                 };
 

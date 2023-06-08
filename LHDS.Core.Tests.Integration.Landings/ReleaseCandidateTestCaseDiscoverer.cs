@@ -19,7 +19,7 @@ namespace LHDS.Core.Tests.Integration.Landings
 
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables("LHDS_INTEGRATION_");
+                .AddEnvironmentVariables("LHDS_");
 
             configuration = configurationBuilder.Build();
         }

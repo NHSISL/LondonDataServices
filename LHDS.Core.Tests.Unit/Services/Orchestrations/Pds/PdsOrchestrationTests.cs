@@ -182,6 +182,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 CorrelationId = correlationIdentifier,
                 FileName = fileName,
                 Message = $"Sent message to mesh with id {messageId}",
+                MessageId = messageId,
                 CreatedDate = randomDate,
                 UpdatedDate = randomDate,
                 CreatedBy = "System",

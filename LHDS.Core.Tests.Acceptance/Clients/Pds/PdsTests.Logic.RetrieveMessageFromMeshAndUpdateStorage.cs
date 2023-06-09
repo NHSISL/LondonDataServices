@@ -40,7 +40,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             var actualList = await pdsClient.RetreiveMessagesFromMeshAndUpdateStorage();
 
             //Then
-            actualList.Should().NotBeNull() ;
+            actualList.Should().NotBeNull();
         }
     }
 }

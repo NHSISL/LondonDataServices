@@ -46,17 +46,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
 
             IConfiguration configuration = configurationBuilder.Build();
 
-            var serviceProvider = new ServiceCollection()
-                .AddLogging(builder =>
-                {
-                    builder.AddConsole();
-                    builder.AddApplicationInsights();
-                })
-                .AddOptOutClientForAcceptance(configuration)
+            var serviceCollection = new ServiceCollection();
+
+            serviceCollection.AddPdsClient(configuration);
+
+            serviceCollection
                 .AddTransient<IMeshBroker>(serviceProvider => meshBrokerMock.Object)
-                .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object)
-                .AddTransient<PdsConfiguration>(serviceProvider => pdsConfiguration) 
-                .BuildServiceProvider();
+                .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
+
+            var serviceProvider = serviceCollection.BuildServiceProvider();
 
             this.pdsClient = serviceProvider.GetService<IPdsClient>();
         }
@@ -77,28 +75,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
                 .Use(new Dictionary<string, List<string>>());
 
             return filler;
-        }
-
-        private static PdsAudit GetRandomPdsAudit(
-            Guid identifier,
-            Guid correlationIdentifier,
-            string fileName,
-            DateTimeOffset randomDate,
-            string messageId)
-        {
-            PdsAudit pdsAudit = new PdsAudit
-            {
-                Id = identifier,
-                CorrelationId = correlationIdentifier,
-                FileName = fileName,
-                Message = $"Sent message to mesh with id {messageId}",
-                CreatedDate = randomDate,
-                UpdatedDate = randomDate,
-                CreatedBy = "System",
-                UpdatedBy = "System"
-            };
-
-            return pdsAudit;
         }
     }
 }

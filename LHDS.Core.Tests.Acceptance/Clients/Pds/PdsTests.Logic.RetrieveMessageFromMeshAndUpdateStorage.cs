@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.IO.Enumeration;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Clients;
@@ -20,11 +21,18 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         public async Task ShouldRetreiveMessagesFromMeshAndUpdateStorageAsync()
         {
             //Given
-            List<MeshMessage> messages = GetRandomMessages();
+            string fileName = GetRandomString();
+            List<MeshMessage> messages = GetRandomMessages(fileName);
+
 
             var expectedList = new List<PdsAudit>();
 
-            this.pdsOrchestrationService.Setup(service => 
+            foreach(var message in messages)
+            {
+                pdsAudit
+            }
+
+            this.pdsOrchestration.Setup(service => 
                 service.RetreiveMessagesFromMeshAndUpdateStorage())
                     .ReturnsAsync(expectedList);
 

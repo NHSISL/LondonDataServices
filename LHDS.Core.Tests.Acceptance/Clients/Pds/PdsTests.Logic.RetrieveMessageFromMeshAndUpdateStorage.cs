@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             string mexWorkflowId = this.pdsConfiguration.WorkflowId;
             Message message = CreateRandomMessage();
             message.MessageId = messageId;
-            message.Headers["Mex-WorkflowId"] = new List<string> { mexWorkflowId };
+            message.Headers["Mex-WorkflowID"] = new List<string> { mexWorkflowId };
             message.Headers["Mex-FileName"] = new List<string> { GetRandomString() };
             message.Headers["Mex-LocalID"] = new List<string> { Guid.NewGuid().ToString() };
             List<Message> messages = new List<Message> { message };
@@ -78,7 +78,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             {
                 Message message = CreateRandomMessage();
                 message.MessageId = id;
-                message.Headers["Mex-WorkflowId"] = new List<string> { mexWorkflowId };
+                message.Headers["Mex-WorkflowID"] = new List<string> { mexWorkflowId };
                 message.Headers["Mex-FileName"] = new List<string> { GetRandomString() };
                 message.Headers["Mex-LocalID"] = new List<string> { Guid.NewGuid().ToString() };
 

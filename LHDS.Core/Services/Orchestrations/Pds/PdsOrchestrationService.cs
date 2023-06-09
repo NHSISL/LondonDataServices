@@ -96,7 +96,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             {
                 var message = await this.meshService.RetrieveMessageByIdAsync(id);
 
-                if (message.Headers["Mex-WorkflowId"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
+                if (message.Headers["Mex-WorkflowID"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
                 {
                     continue;
                 }

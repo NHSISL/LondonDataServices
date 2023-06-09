@@ -61,7 +61,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
-        private static List<MeshMessage> GetRandomMessages()
+        private static List<MeshMessage> GetRandomMessages(string filename)
         {
             int count = GetRandomNumber();
             var messages = new List<MeshMessage>();
@@ -74,11 +74,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
                     fileContent: Encoding.ASCII.GetBytes(GetRandomString()),
                     mexSubject: GetRandomString(),
                     mexLocalId: Guid.NewGuid().ToString(),
-                    mexFileName: GetRandomString());
+                    mexFileName: filename);
 
-                message.MessageId = id;
                 messages.Add(message);
-            });
+            };
 
             return messages;
         }

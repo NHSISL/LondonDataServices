@@ -30,44 +30,94 @@ namespace LHDS.Core.Clients.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            var blobServiceUri = GetSettings(configuration, "BlobStorage:azureBlobServiceUri", true);
-            var azureTenantId = GetSettings(configuration, "BlobStorage:azureTenantId", true);
+            return AddLandingClient(services, configuration, acceptanceTest: false);
+        }
 
-            var blobServiceClientOptions = new BlobClientOptions()
-            {
-                Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
-                Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
-                EnableTenantDiscovery = true
-            };
+        internal static IServiceCollection AddLandingClientForAcceptance(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            return AddLandingClient(services, configuration, acceptanceTest: true);
+        }
 
-            services.AddSingleton(
-                new BlobServiceClient(
-                    serviceUri: new Uri(blobServiceUri),
-                    credential: new DefaultAzureCredential(
-                        new DefaultAzureCredentialOptions
-                        {
-                            VisualStudioTenantId = azureTenantId,
-                        }),
-                    options: blobServiceClientOptions));
-
+        private static IServiceCollection AddLandingClient(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            bool acceptanceTest)
+        {
             services.AddSingleton<IConfiguration>(_ => configuration);
-            services.AddTransient<ILandingClient, LandingClient>();
-            services.AddTransient<IDownloadOrchestrationService, DownloadOrchestrationService>();
-            services.AddSingleton<ILoggingBroker, LoggingBroker>();
+
+            AddProviders(services);
+            AddBrokers(services, configuration, acceptanceTest);
+            AddServices(services);
+            AddProcessingServices(services);
+            AddOrchestrations(services);
+            AddClients(services);
+
+            return services;
+        }
+
+        private static void AddProviders(IServiceCollection services)
+        {
+            services.AddTransient<IDownloadAbstractProvider, DownloadAbstractProvider>();
+        }
+
+        private static void AddBrokers(IServiceCollection services, IConfiguration configuration, bool acceptanceTest)
+        {
+            services.AddTransient<ILoggingBroker, LoggingBroker>();
+            services.AddTransient<IDateTimeBroker, DateTimeBroker>();
+            services.AddTransient<IIdentifierBroker, IdentifierBroker>();
+            services.AddTransient<IStorageBroker, StorageBroker>();
+
+            if (!acceptanceTest)
+            {
+                services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
+                services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
+                services.AddTransient<IDownloadBroker, DownloadBroker>();
+
+                var blobServiceUri = GetSettings(configuration, "BlobStorage:azureBlobServiceUri", true);
+                var azureTenantId = GetSettings(configuration, "BlobStorage:azureTenantId", true);
+
+                var blobServiceClientOptions = new BlobClientOptions()
+                {
+                    Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
+                    Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
+                    EnableTenantDiscovery = true
+                };
+
+                services.AddSingleton(
+                    new BlobServiceClient(
+                        serviceUri: new Uri(blobServiceUri),
+                        credential: new DefaultAzureCredential(
+                            new DefaultAzureCredentialOptions
+                            {
+                                VisualStudioTenantId = azureTenantId,
+                            }),
+                        options: blobServiceClientOptions));
+
+                services.AddTransient<IAzureBlobClient, AzureBlobClient>();
+            }
+        }
+
+        private static void AddServices(IServiceCollection services)
+        {
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IDownloadService, DownloadService>();
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddSingleton<IAuditService, AuditService>();
-            services.AddTransient<IDateTimeBroker, DateTimeBroker>();
-            services.AddTransient<IIdentifierBroker, IdentifierBroker>();
-            services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
-            services.AddTransient<IDownloadBroker, DownloadBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
-            services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
-            services.AddTransient<IDownloadAbstractProvider, DownloadAbstractProvider>();
-            services.AddTransient<IAzureBlobClient, AzureBlobClient>();
+        }
 
-            return services;
+        private static void AddProcessingServices(IServiceCollection services)
+        { }
+
+        private static void AddOrchestrations(IServiceCollection services)
+        {
+            services.AddTransient<IDownloadOrchestrationService, DownloadOrchestrationService>();
+        }
+
+        private static void AddClients(IServiceCollection services)
+        {
+            services.AddTransient<ILandingClient, LandingClient>();
         }
 
         private static string GetSettings(IConfiguration configuration, string configurationKey, bool mandatory = true)

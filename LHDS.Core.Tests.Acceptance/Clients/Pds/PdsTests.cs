@@ -73,8 +73,23 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
+        private static List<string> GetRandomStrings(int count)
+        {
+            var messages = new List<string>();
+
+            for (int i = 0; i < count; i++)
+            {
+                var message = GetRandomString();
+                messages.Add(message);
+            }
+
+            return messages;
+        }
+
         private static Message CreateRandomMessage() =>
             CreateMessageFiller().Create();
+
+
 
         private static Filler<Message> CreateMessageFiller()
         {

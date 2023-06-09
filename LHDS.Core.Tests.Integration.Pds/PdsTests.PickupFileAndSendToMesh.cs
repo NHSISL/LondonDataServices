@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Integration.Pds
         {
             // Given
             byte[] fileBytes =
-                 File.ReadAllBytes(@"Resources\EmisPDSPatientExtract_247BB600-213A-494E-8E90-A4F9190F07DF_20230601T130544.csv");
+                File.ReadAllBytes(@"Resources\EmisPDSPatientExtract_247BB600-213A-494E-8E90-A4F9190F07DF_20230601T130544.csv");
 
             FileInfo fi =
                 new FileInfo(@"Resources\EmisPDSPatientExtract_247BB600-213A-494E-8E90-A4F9190F07DF_20230601T130544.csv");

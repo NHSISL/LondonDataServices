@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
+using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
@@ -45,9 +46,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
-
             var serviceCollection = new ServiceCollection();
 
+            var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+            });
+
+            var logger = loggerFactory.CreateLogger<LoggingBroker>();
+            serviceCollection.AddTransient(serviceProvider => logger);
             serviceCollection.AddPdsClient(configuration);
 
             serviceCollection
@@ -56,6 +63,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
+            this.pdsConfiguration = serviceProvider.GetService<PdsConfiguration>();
             this.pdsClient = serviceProvider.GetService<IPdsClient>();
         }
 

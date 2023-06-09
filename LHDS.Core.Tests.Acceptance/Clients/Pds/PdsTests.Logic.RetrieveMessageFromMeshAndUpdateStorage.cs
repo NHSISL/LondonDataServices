@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -16,6 +17,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         [Fact]
         public async Task ShouldRetreiveMessagesFromMeshAndUpdateStorageAsync()
         {
+
             //Given
             string messageId = GetRandomString();
             List<string> messageIds = new List<string> { messageId };
@@ -23,13 +25,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             Message message = CreateRandomMessage();
             message.MessageId = messageId;
             message.Headers["Mex-WorkflowId"] = new List<string> { mexWorkflowId };
+            message.Headers["Mex-FileName"] = new List<string> { GetRandomString() };
+            message.Headers["Mex-LocalID"] = new List<string> { Guid.NewGuid().ToString() };
             List<Message> messages = new List<Message> { message };
 
-            this.meshBrokerMock.Setup(broker => 
+            this.meshBrokerMock.Setup(broker =>
                 broker.RetrieveMessageIdsAsync())
                     .ReturnsAsync(messageIds);
 
-            foreach(var id in messageIds)
+            foreach (var id in messageIds)
             {
                 this.meshBrokerMock.Setup(broker =>
                     broker.RetrieveMessageAsync(id))
@@ -41,6 +45,19 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
 
             //Then
             actualList.Should().NotBeNull();
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.RetrieveMessageIdsAsync(),
+                    Times.Once);
+
+            foreach (var id in messageIds)
+            {
+                this.meshBrokerMock.Verify(broker =>
+                    broker.RetrieveMessageAsync(id),
+                        Times.Once);
+            }
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

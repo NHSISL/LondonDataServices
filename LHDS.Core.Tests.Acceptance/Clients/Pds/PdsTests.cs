@@ -5,17 +5,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Text;
 using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.PdsAudits;
+using LHDS.Core.Models.Orchestrations.Pds;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using NEL.MESH.Models.Foundations.Mesh;
 using Tynamix.ObjectFiller;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Pds
@@ -25,6 +29,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         private readonly Mock<IMeshBroker> meshBrokerMock;
         private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
         private readonly IPdsClient pdsClient;
+        private readonly PdsConfiguration pdsConfiguration;
 
         public PdsTests()
         {
@@ -50,6 +55,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
                 .AddOptOutClientForAcceptance(configuration)
                 .AddTransient<IMeshBroker>(serviceProvider => meshBrokerMock.Object)
                 .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object)
+                .AddTransient<PdsConfiguration>(serviceProvider => pdsConfiguration) 
                 .BuildServiceProvider();
 
             this.pdsClient = serviceProvider.GetService<IPdsClient>();
@@ -61,25 +67,16 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
-        private static List<MeshMessage> GetRandomMessages(string filename)
+        private static Message CreateRandomMessage() =>
+            CreateMessageFiller().Create();
+
+        private static Filler<Message> CreateMessageFiller()
         {
-            int count = GetRandomNumber();
-            var messages = new List<MeshMessage>();
+            var filler = new Filler<Message>();
+            filler.Setup().OnProperty(message => message.Headers)
+                .Use(new Dictionary<string, List<string>>());
 
-            for (int i = 0; i < count;)
-            {
-                MeshMessage message = ComposeMessage.CreateMeshMessage(
-                    mexTo: GetRandomString(),
-                    mexWorkflowId: GetRandomString(),
-                    fileContent: Encoding.ASCII.GetBytes(GetRandomString()),
-                    mexSubject: GetRandomString(),
-                    mexLocalId: Guid.NewGuid().ToString(),
-                    mexFileName: filename);
-
-                messages.Add(message);
-            };
-
-            return messages;
+            return filler;
         }
 
         private static PdsAudit GetRandomPdsAudit(

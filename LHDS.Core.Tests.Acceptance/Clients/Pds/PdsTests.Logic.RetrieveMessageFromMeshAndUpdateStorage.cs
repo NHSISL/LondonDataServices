@@ -3,14 +3,10 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.IO.Enumeration;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Clients;
-using LHDS.Core.Models.Foundations.Mesh;
-using LHDS.Core.Models.Foundations.PdsAudits;
-using LHDS.Core.Services.Orchestrations.Pds;
 using Moq;
+using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Pds
@@ -21,26 +17,30 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         public async Task ShouldRetreiveMessagesFromMeshAndUpdateStorageAsync()
         {
             //Given
-            string fileName = GetRandomString();
-            List<MeshMessage> messages = GetRandomMessages(fileName);
+            string messageId = GetRandomString();
+            List<string> messageIds = new List<string> { messageId };
+            string mexWorkflowId = this.pdsConfiguration.WorkflowId;
+            Message message = CreateRandomMessage();
+            message.MessageId = messageId;
+            message.Headers["Mex-WorkflowId"] = new List<string> { mexWorkflowId };
+            List<Message> messages = new List<Message> { message };
 
+            this.meshBrokerMock.Setup(broker => 
+                broker.RetrieveMessageIdsAsync())
+                    .ReturnsAsync(messageIds);
 
-            var expectedList = new List<PdsAudit>();
-
-            foreach(var message in messages)
+            foreach(var id in messageIds)
             {
-                pdsAudit
+                this.meshBrokerMock.Setup(broker =>
+                    broker.RetrieveMessageAsync(id))
+                        .ReturnsAsync(message);
             }
-
-            this.pdsOrchestration.Setup(service => 
-                service.RetreiveMessagesFromMeshAndUpdateStorage())
-                    .ReturnsAsync(expectedList);
 
             //When
             var actualList = await pdsClient.RetreiveMessagesFromMeshAndUpdateStorage();
 
             //Then
-            actualList.Should().BeEquivalentTo(expectedList);
+            actualList.Should().NotBeNull() ;
         }
     }
 }

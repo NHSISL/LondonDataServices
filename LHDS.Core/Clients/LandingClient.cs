@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.LandingClient.Exceptions;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
@@ -21,11 +22,11 @@ namespace LHDS.Core.Clients
             this.downloadOrchestrationService = downloadOrchestrationService;
         }
 
-        public async ValueTask ProcessAsync()
+        public async ValueTask<List<string>> ProcessAsync()
         {
             try
             {
-                await this.downloadOrchestrationService.ProcessAsync();
+                return await this.downloadOrchestrationService.ProcessAsync();
             }
             catch (DownloadOrchestrationValidationException downloadOrchestrationValidationException)
             {
@@ -52,11 +53,11 @@ namespace LHDS.Core.Clients
             }
         }
 
-        public async ValueTask ProcessAsync(string fileName)
+        public async ValueTask<string> ProcessAsync(string fileName)
         {
             try
             {
-                await this.downloadOrchestrationService.ProcessAsync(fileName);
+                return await this.downloadOrchestrationService.ProcessAsync(fileName);
             }
             catch (DecryptionOrchestrationValidationException downloadOrchestrationValidationException)
             {

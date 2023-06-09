@@ -40,4 +40,10 @@
 	  <Folder Include="Migrations\" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<InternalsVisibleTo Include="LHDS.Core.Tests.Unit" />
+		<InternalsVisibleTo Include="LHDS.Core.Tests.Acceptance" />
+		<InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+	</ItemGroup>
+
 </Project>

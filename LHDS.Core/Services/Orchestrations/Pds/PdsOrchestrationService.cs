@@ -98,6 +98,12 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                 {
                     var message = await this.meshService.RetrieveMessageByIdAsync(id);
 
+                    if (message.Headers["Mex-WorkflowID"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
+                    {
+                        continue;
+                    }
+
+
                     string[] fileNameParts = message.Headers["Mex-FileName"].FirstOrDefault().Split('_');
 
                     string fileNameOutput =

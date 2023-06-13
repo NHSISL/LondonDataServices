@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                    .ThrowsAsync(dependancyValidationException);
 
             // when
-            ValueTask decryptTask = this.decryptionOrchestrationService.DecryptAsync(randomFileName);
+            ValueTask<string> decryptTask = this.decryptionOrchestrationService.DecryptAsync(randomFileName);
 
             DecryptionOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<DecryptionOrchestrationDependencyValidationException>(decryptTask.AsTask);
@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                   .ThrowsAsync(dependancyException);
 
             // when
-            ValueTask decryptTask = this.decryptionOrchestrationService.DecryptAsync(randomFileName);
+            ValueTask<string> decryptTask = this.decryptionOrchestrationService.DecryptAsync(randomFileName);
 
             DecryptionOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<DecryptionOrchestrationDependencyException>(decryptTask.AsTask);
@@ -114,7 +114,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask processTask = this.decryptionOrchestrationService.DecryptAsync(randomFileName);
+            ValueTask<string> processTask = this.decryptionOrchestrationService.DecryptAsync(randomFileName);
 
             DecryptionOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<DecryptionOrchestrationServiceException>(processTask.AsTask);

@@ -52,7 +52,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 string[] fileNameParts = message.Headers["Mex-FileName"].FirstOrDefault().Split('_');
 
                 string fileNameOutput =
-                    $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}.csv";
+                    $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
+
+                fileNameOutput += ".csv";
 
                 Document document = new Document
                 {
@@ -94,6 +96,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             //then
             actualPdsAudits.Should().BeEquivalentTo(expectedPdsAudits);
+            pdsAuditsList.Count.Should().Be(retrievedMessages.Count);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),

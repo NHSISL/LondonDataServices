@@ -83,7 +83,6 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                     });
 
             return pdsAuditItem;
-            return pdsAuditItem;
         });
 
         public ValueTask<List<PdsAudit>> RetreiveMessagesFromMeshAndUpdateStorage() =>

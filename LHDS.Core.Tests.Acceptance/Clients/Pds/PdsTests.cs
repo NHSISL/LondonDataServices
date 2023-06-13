@@ -2,22 +2,16 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
-using System.Text;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
-using LHDS.Core.Models.Brokers.Mesh;
-using LHDS.Core.Models.Foundations.Mesh;
-using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Orchestrations.Pds;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -31,13 +25,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
         private readonly IPdsClient pdsClient;
         private readonly PdsConfiguration pdsConfiguration;
+        private readonly IHostingEnvironment environment;
 
-        public PdsTests()
+        public PdsTests(IHostingEnvironment environment)
         {
+            this.environment = environment;
             this.meshBrokerMock = new Mock<IMeshBroker>();
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
 
-        var environmentName = "Development";
+            var environmentName = environment?.EnvironmentName ?? "Development";
 
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)

@@ -45,6 +45,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
 
             //Then
             actualList.Should().NotBeNull();
+            actualList.Should().HaveCount(1);
 
             this.meshBrokerMock.Verify(broker =>
                 broker.RetrieveMessageIdsAsync(),
@@ -55,59 +56,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
                 this.meshBrokerMock.Verify(broker =>
                     broker.RetrieveMessageAsync(id),
                         Times.Once);
-            }
-
-            this.meshBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldRetreiveCorrectNumberOfMessagesFromMeshAndUpdateStorageAsync()
-        {
-            //Given
-            int randomNumber = GetRandomNumber();
-            List<string> messageIds = GetRandomStrings(randomNumber);
-            string mexWorkflowId = this.pdsConfiguration.WorkflowId;
-
-            this.meshBrokerMock.Setup(broker =>
-                broker.RetrieveMessageIdsAsync())
-                    .ReturnsAsync(messageIds);
-
-            List<Message> messages = new List<Message>();
-
-            foreach (var id in messageIds)
-            {
-                Message message = CreateRandomMessage();
-                message.MessageId = id;
-                message.Headers["Mex-WorkflowID"] = new List<string> { mexWorkflowId };
-                message.Headers["Mex-FileName"] = new List<string> { GetRandomString() };
-                message.Headers["Mex-LocalID"] = new List<string> { Guid.NewGuid().ToString() };
-
-                this.meshBrokerMock.Setup(broker =>
-                    broker.RetrieveMessageAsync(id))
-                        .ReturnsAsync(message);
-            }
-
-            //When
-            var actualList = await pdsClient.RetreiveMessagesFromMeshAndUpdateStorage();
-
-            //Then
-            actualList.Should().HaveCount(randomNumber);
-
-            this.meshBrokerMock.Verify(broker =>
-                broker.RetrieveMessageIdsAsync(),
-                    Times.Once);
-
-            foreach (var id in messageIds)
-            {
-                Message message = CreateRandomMessage();
-                message.MessageId = id;
-                message.Headers["Mex-WorkflowId"] = new List<string> { mexWorkflowId };
-                message.Headers["Mex-FileName"] = new List<string> { GetRandomString() };
-                message.Headers["Mex-LocalID"] = new List<string> { Guid.NewGuid().ToString() };
-
-                this.meshBrokerMock.Verify(broker =>
-                    broker.RetrieveMessageAsync(id),
-                       Times.Once);
             }
 
             this.meshBrokerMock.VerifyNoOtherCalls();

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -49,12 +50,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.RetrieveMessageByIdAsync(message.MessageId))
                         .ReturnsAsync(message);
 
-                string[] fileNameParts = message.Headers["Mex-FileName"].FirstOrDefault().Split('_');
+                string filename = message.Headers["Mex-FileName"].FirstOrDefault();
+                FileInfo fileInfo = new FileInfo(filename);
+                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
+                string[] fileNameParts = fileNameWithoutExtension.Split('_');
 
                 string fileNameOutput =
                     $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
 
-                fileNameOutput += ".csv";
+                fileNameOutput += fileInfo;
 
                 Document document = new Document
                 {
@@ -116,10 +120,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.RetrieveMessageByIdAsync(message.MessageId),
                         Times.Once);
 
-                string[] fileNameParts = message.Headers["Mex-FileName"].FirstOrDefault().Split('_');
+                string filename = message.Headers["Mex-FileName"].FirstOrDefault();
+                FileInfo fileInfo = new FileInfo(filename);
+                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
+                string[] fileNameParts = fileNameWithoutExtension.Split('_');
 
                 string fileNameOutput =
-                    $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}.csv";
+                    $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
+
+                fileNameOutput += fileInfo;
 
                 Document document = new Document
                 {

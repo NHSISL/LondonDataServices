@@ -177,28 +177,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 this.ingestionTrackingServiceMock.Setup(service =>
                     service.RetrieveAllIngestionTrackings())
                         .Returns(externalIngestionTrackingsFound.AsQueryable());
-
-                this.downloadServiceMock.Setup(service =>
-                   service.RetrieveDownloadByFileNameAsync(document.FileName))
-                       .ReturnsAsync(document);
-
-                this.dateTimeBrokerMock.Setup(broker =>
-                    broker.GetCurrentDateTimeOffset())
-                        .Returns(randomDateTime);
-
-                var filename = document.FileName.StartsWith('/')
-                    ? document.FileName
-                    : "/" + document.FileName;
-
-                IngestionTracking storageIngestionTracking = externalIngestionTrackingsFound
-                    .First(ingestionTracking => ingestionTracking.FileName == document.FileName).DeepClone();
-
-                IngestionTracking modifiedIngestionTracking = storageIngestionTracking.DeepClone();
-                modifiedIngestionTracking.LastSeen = randomDateTime;
-
-                this.ingestionTrackingServiceMock.Setup(service =>
-                    service.ModifyIngestionTrackingAsync(modifiedIngestionTracking))
-                        .ReturnsAsync(storageIngestionTracking);
             }
 
             // when
@@ -211,28 +189,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
             foreach (var document in externalDocuments)
             {
-                IngestionTracking storageIngestionTracking = externalIngestionTrackingsFound
-                    .First(ingestionTracking => ingestionTracking.FileName == document.FileName).DeepClone();
-
-                IngestionTracking modifiedIngestionTracking = storageIngestionTracking.DeepClone();
-                modifiedIngestionTracking.LastSeen = randomDateTime;
-
                 this.ingestionTrackingServiceMock.Verify(service =>
                     service.RetrieveAllIngestionTrackings(),
                         Times.Once);
-
-                this.dateTimeBrokerMock.Verify(broker =>
-                    broker.GetCurrentDateTimeOffset(),
-                        Times.Once);
-
-                this.ingestionTrackingServiceMock.Verify(service =>
-                    service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(
-                        modifiedIngestionTracking))),
-                            Times.Once);
-
-                this.downloadServiceMock.Verify(service =>
-                   service.RetrieveDownloadByFileNameAsync(document.FileName),
-                       Times.Never);
             }
 
             this.documentServiceMock.VerifyNoOtherCalls();

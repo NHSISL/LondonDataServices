@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     innerException: invalidArgumentDownloadOrchestrationException);
 
             // when
-            ValueTask DownloadTask =
+            ValueTask<string> DownloadTask =
                 this.downloadOrchestrationService.ProcessAsync(invalidText);
 
             DownloadOrchestrationValidationException actualException =

@@ -51,18 +51,20 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.supplierId = Guid.Parse(configuration["LandingSupplierId"]);
         }
 
-        public ValueTask ProcessAsync() =>
+        public ValueTask<List<string>> ProcessAsync() =>
             TryCatch(async () =>
             {
                 var exceptions = new List<Exception>();
                 List<Document> retrievedDocuments =
                 await this.downloadService.RetrieveListOfDocumentsToProcessAsync();
 
+                List<string> files = new List<string>();
+
                 foreach (var document in retrievedDocuments)
                 {
                     try
                     {
-                        await TryCatch(async () =>
+                        string decryptedFile = await TryCatch(async () =>
                         {
                             IngestionTracking maybeIngestionTracking =
                                 this.ingestionTrackingService.RetrieveAllIngestionTrackings()
@@ -109,15 +111,14 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                 await this.documentService.AddDocumentAsync(newBlobDocument);
                                 await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
                                 LogAudit(newIngestionTracking, document, currentDateTime, "Landed");
+
+                                return newIngestionTracking.DecryptedFileName;
                             }
-                            else
-                            {
-                                var currentDateTime = dateTimeBroker.GetCurrentDateTimeOffset();
-                                maybeIngestionTracking.LastSeen = currentDateTime;
-                                maybeIngestionTracking.UpdatedDate = currentDateTime;
-                                await ingestionTrackingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);
-                            }
+
+                            return null;
                         });
+
+                        files.Add(decryptedFile);
                     }
                     catch (Exception ex)
                     {
@@ -131,9 +132,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 {
                     throw new AggregateException($"Unable to land {exceptions.Count} document(s)", exceptions);
                 }
+
+                return files;
             });
 
-        public async ValueTask ProcessAsync(string fileName) =>
+        public async ValueTask<string> ProcessAsync(string fileName) =>
             await TryCatch(async () =>
             {
                 ValidateFileName(fileName);
@@ -166,7 +169,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         document: externalDocument,
                         currentDateTime,
                         message: "Refreshed");
+
+                    return maybeIngestionTracking.DecryptedFileName;
                 }
+
+                return null;
             });
 
         private void LogAudit(

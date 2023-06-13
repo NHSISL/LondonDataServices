@@ -30,11 +30,8 @@ namespace LHDS.Core.Tests.Integration.Pds
             // Then
             pdsAudit.Should().NotBeNull();
             await pdsAuditService.RemovePdsAuditByIdAsync(pdsAudit.Id);
-
             var messageId = pdsAudit.MessageId;
-            bool messageAcked =
-                await meshService.AcknowledgeMessageByIdAsync(messageId);
-
+            bool messageAcked = await meshService.AcknowledgeMessageByIdAsync(messageId);
             messageAcked.Should().BeTrue();
         }
     }

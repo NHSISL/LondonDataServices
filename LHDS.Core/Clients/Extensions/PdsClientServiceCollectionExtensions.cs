@@ -65,7 +65,6 @@ namespace LHDS.Core.Clients.Extensions
                 MexClientVersion = GetSettings(configuration, "MeshConfiguration:MexClientVersion", true),
                 MexOSName = GetSettings(configuration, "MeshConfiguration:MexOSName", true),
                 MexOSVersion = GetSettings(configuration, "MeshConfiguration:MexOSVersion", true),
-
                 RootCertificate = GetCertificate(configuration, "MeshConfiguration:RootCertificate", true),
 
                 IntermediateCertificates = GetCertificates(
@@ -78,7 +77,6 @@ namespace LHDS.Core.Clients.Extensions
             };
 
             services.AddSingleton(meshConfig);
-
             AddClients(services, blobServiceUri, azureTenantId, pdsConfiguration);
             AddBrokers(services);
             AddOrchestrations(services);

@@ -89,8 +89,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         private static Message CreateRandomMessage() =>
             CreateMessageFiller().Create();
 
-
-
         private static Filler<Message> CreateMessageFiller()
         {
             var filler = new Filler<Message>();

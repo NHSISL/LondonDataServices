@@ -87,7 +87,11 @@ namespace LHDS.Core.Clients.Extensions
             return services;
         }
 
-        private static void AddClients(IServiceCollection services, string blobServiceUri, string azureTenantId, PdsConfiguration pdsConfiguration)
+        private static void AddClients(
+            IServiceCollection services, 
+            string blobServiceUri, 
+            string azureTenantId, 
+            PdsConfiguration pdsConfiguration)
         {
             var blobServiceClientOptions = new BlobClientOptions()
             {

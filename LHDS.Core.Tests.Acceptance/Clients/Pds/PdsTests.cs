@@ -25,11 +25,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
         private readonly IPdsClient pdsClient;
         private readonly PdsConfiguration pdsConfiguration;
-        private readonly IHostingEnvironment environment;
 
-        public PdsTests(IHostingEnvironment environment)
+        public PdsTests(IHostEnvironment environment)
         {
-            this.environment = environment;
             this.meshBrokerMock = new Mock<IMeshBroker>();
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
 

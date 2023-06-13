@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -103,13 +104,15 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                         continue;
                     }
 
-
-                    string[] fileNameParts = message.Headers["Mex-FileName"].FirstOrDefault().Split('_');
+                    string filename = message.Headers["Mex-FileName"].FirstOrDefault();
+                    FileInfo fileInfo = new FileInfo(filename);
+                    string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
+                    string[] fileNameParts = fileNameWithoutExtension.Split('_');
 
                     string fileNameOutput =
                         $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
 
-                    fileNameOutput += ".csv";
+                    fileNameOutput += fileInfo;
 
                     var document = new Models.Foundations.Documents.Document
                     {

@@ -103,7 +103,6 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                         continue;
                     }
 
-
                     string[] fileNameParts = message.Headers["Mex-FileName"].FirstOrDefault().Split('_');
 
                     string fileNameOutput =

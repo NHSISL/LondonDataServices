@@ -40,7 +40,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
 
-        var environmentName = "Development";
+            var environmentName = "Development";
 
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)

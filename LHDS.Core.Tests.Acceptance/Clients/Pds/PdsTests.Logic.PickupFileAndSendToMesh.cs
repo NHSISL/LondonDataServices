@@ -63,6 +63,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             actualPdsAudit.Should().NotBeNull();
             actualPdsAudit.FileName.Should().Be(fileName);
 
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
+                    Times.Exactly(3));
+
             this.meshBrokerMock.Verify(broker =>
                 broker.SendMessageAsync(
                     mexTo,

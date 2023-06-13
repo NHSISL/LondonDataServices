@@ -17,7 +17,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         [Fact]
         public async Task ShouldRetreiveMessagesFromMeshAndUpdateStorageAsync()
         {
-
             //Given
             string messageId = GetRandomString();
             List<string> messageIds = new List<string> { messageId };
@@ -28,6 +27,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             message.Headers["Mex-FileName"] = new List<string> { GetRandomString() };
             message.Headers["Mex-LocalID"] = new List<string> { Guid.NewGuid().ToString() };
             List<Message> messages = new List<Message> { message };
+            Guid identifier = Guid.NewGuid();
 
             this.meshBrokerMock.Setup(broker =>
                 broker.RetrieveMessageIdsAsync())
@@ -39,6 +39,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
                     broker.RetrieveMessageAsync(id))
                         .ReturnsAsync(message);
             }
+
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifier())
+                    .Returns(identifier);
 
             //When
             var actualList = await pdsClient.RetreiveMessagesFromMeshAndUpdateStorage();
@@ -57,6 +61,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
                     broker.RetrieveMessageAsync(id),
                         Times.Once);
             }
+
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
+                    Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
         }

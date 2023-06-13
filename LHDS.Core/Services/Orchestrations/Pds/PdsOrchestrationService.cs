@@ -105,14 +105,13 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                     }
 
                     string filename = message.Headers["Mex-FileName"].FirstOrDefault();
-                    FileInfo fileInfo = new FileInfo(filename);
                     string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
                     string[] fileNameParts = fileNameWithoutExtension.Split('_');
 
                     string fileNameOutput =
                         $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
 
-                    fileNameOutput += fileInfo;
+                    fileNameOutput += Path.GetExtension(filename);
 
                     var document = new Models.Foundations.Documents.Document
                     {

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Storages.Blobs;
@@ -29,6 +30,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
     {
         private readonly Mock<IMeshBroker> meshBrokerMock;
         private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
+        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly IPdsClient pdsClient;
         private readonly PdsConfiguration pdsConfiguration;
 
@@ -36,6 +38,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         {
             this.meshBrokerMock = new Mock<IMeshBroker>();
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
+            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
 
         var environmentName = "Development";
 
@@ -59,7 +62,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
 
             serviceCollection
                 .AddTransient<IMeshBroker>(serviceProvider => meshBrokerMock.Object)
-                .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
+                .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object)
+                .AddTransient<IIdentifierBroker>(serviceProvider => identifierBrokerMock.Object);
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 

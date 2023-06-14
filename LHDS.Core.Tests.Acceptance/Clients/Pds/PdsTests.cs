@@ -33,14 +33,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
 
             string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            string env = Environment.GetEnvironmentVariable("environmentName");
             var args = Environment.GetCommandLineArgs();
             var environmentNameArg = args.FirstOrDefault(arg => arg.StartsWith("--environmentName="));
 
             var environmentName = !string.IsNullOrEmpty(aspNetCoreEnvironment)
                 ? aspNetCoreEnvironment
-                : !string.IsNullOrEmpty(env)
-                    ? env
+                : !string.IsNullOrEmpty(environmentNameArg)
+                    ? environmentNameArg
                     : "Development";
 
             var configurationBuilder = new ConfigurationBuilder()

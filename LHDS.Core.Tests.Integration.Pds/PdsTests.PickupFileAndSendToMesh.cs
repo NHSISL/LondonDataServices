@@ -23,6 +23,7 @@ namespace LHDS.Core.Tests.Integration.Pds
 
             var fileName = fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length);
 
+
             // When
             PdsAudit pdsAudit =
                 await pdsClient.PickupFileAndSendToMesh(pdsFile: fileBytes, fileName: fileName);

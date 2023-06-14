@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
-namespace LHDS.Core.Tests.Integration.OptOuts
+namespace LHDS.Core.Tests.Integration.Pds
 {
     public class ReleaseCandidateTestCaseDiscoverer : IXunitTestCaseDiscoverer
     {

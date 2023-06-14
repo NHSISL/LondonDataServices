@@ -34,12 +34,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
 
             string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             var args = Environment.GetCommandLineArgs();
-            var environmentNameArg = args.FirstOrDefault(arg => arg.StartsWith("--environmentName="));
+            var environmentArg = args.FirstOrDefault(arg => arg.StartsWith("--environment="));
 
             var environmentName = !string.IsNullOrEmpty(aspNetCoreEnvironment)
                 ? aspNetCoreEnvironment
-                : !string.IsNullOrEmpty(environmentNameArg)
-                    ? environmentNameArg
+                : !string.IsNullOrEmpty(environmentArg)
+                    ? environmentArg
                     : "Development";
 
             var configurationBuilder = new ConfigurationBuilder()

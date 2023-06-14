@@ -24,15 +24,17 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             string messageId = GetRandomString();
             List<string> messageIds = new List<string> { messageId };
             string mexWorkflowId = this.pdsConfiguration.WorkflowId;
-            string fileName = GetRandomString();
+            string fileName = $"{GetRandomString()}_{GetRandomString()}_{GetRandomString()}_{GetRandomString()}.csv";
             string mexLocalId = Guid.NewGuid().ToString();
             byte[] fileContent = Encoding.ASCII.GetBytes(GetRandomString());
 
             Message message = ComposeMessage.CreateFileMessage(
-                mexWorkflowId, 
-                fileName, 
-                fileContent, 
-                mexLocalId);
+                mexTo: this.pdsConfiguration.To,
+                mexWorkflowId,
+                fileContent,
+                mexSubject: GetRandomString(),
+                mexLocalId,
+                mexFileName: fileName);
 
             message.MessageId = messageId;
             List<Message> messages = new List<Message> { message };
@@ -55,9 +57,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             actualList.Should().NotBeNull();
             actualList.Should().HaveCount(1);
 
-            actualList.All(a => 
-                messages.Any(m => 
-                    m.Headers["Mex-FileName"].Any(h => 
+            actualList.All(a =>
+                messages.Any(m =>
+                    m.Headers["Mex-FileName"].Any(h =>
                         h == a.FileName))).Should().BeTrue();
 
             this.meshBrokerMock.Verify(broker =>

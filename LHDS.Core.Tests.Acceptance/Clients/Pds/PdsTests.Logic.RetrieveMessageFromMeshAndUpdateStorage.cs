@@ -4,9 +4,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
+using NEL.MESH.Clients.Mailboxes;
 using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
 
@@ -17,16 +20,21 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         [Fact]
         public async Task ShouldRetreiveMessagesFromMeshAndUpdateStorageAsync()
         {
-
             //Given
             string messageId = GetRandomString();
             List<string> messageIds = new List<string> { messageId };
             string mexWorkflowId = this.pdsConfiguration.WorkflowId;
-            Message message = CreateRandomMessage();
+            string fileName = GetRandomString();
+            string mexLocalId = Guid.NewGuid().ToString();
+            byte[] fileContent = Encoding.ASCII.GetBytes(GetRandomString());
+
+            Message message = ComposeMessage.CreateFileMessage(
+                mexWorkflowId, 
+                fileName, 
+                fileContent, 
+                mexLocalId);
+
             message.MessageId = messageId;
-            message.Headers["Mex-WorkflowID"] = new List<string> { mexWorkflowId };
-            message.Headers["Mex-FileName"] = new List<string> { GetRandomString() };
-            message.Headers["Mex-LocalID"] = new List<string> { Guid.NewGuid().ToString() };
             List<Message> messages = new List<Message> { message };
 
             this.meshBrokerMock.Setup(broker =>
@@ -46,6 +54,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             //Then
             actualList.Should().NotBeNull();
             actualList.Should().HaveCount(1);
+            //actualList.All(a => messages.Contains(a.FileName)).Should().BeTrue();
 
             this.meshBrokerMock.Verify(broker =>
                 broker.RetrieveMessageIdsAsync(),

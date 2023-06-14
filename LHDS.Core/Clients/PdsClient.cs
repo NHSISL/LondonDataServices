@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Clients.LandingClient.Exceptions;
+using LHDS.Core.Models.Clients.Pds.Exceptions;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Orchestrations.Pds.Exceptions;
 using LHDS.Core.Services.Orchestrations.Pds;
@@ -27,28 +27,28 @@ namespace LHDS.Core.Clients
             {
                 return await this.pdsOrchestrationService.PickupFileAndSendToMesh(pdsFile, fileName);
             }
-            catch (PdsOrchestrationValidationException downloadOrchestrationValidationException)
+            catch (PdsOrchestrationValidationException pdsOrchestrationValidationException)
             {
-                throw new LandingClientValidationException(
-                    downloadOrchestrationValidationException.InnerException as Xeption);
+                throw new PdsClientValidationException(
+                    pdsOrchestrationValidationException.InnerException as Xeption);
             }
             catch (PdsOrchestrationDependencyValidationException
-                downloadOrchestrationDependencyValidationException)
+                pdsOrchestrationDependencyValidationException)
             {
-                throw new LandingClientValidationException(
-                    downloadOrchestrationDependencyValidationException.InnerException as Xeption);
+                throw new PdsClientValidationException(
+                    pdsOrchestrationDependencyValidationException.InnerException as Xeption);
             }
             catch (PdsOrchestrationDependencyException
-                downloadOrchestrationDependencyException)
+                pdsOrchestrationDependencyException)
             {
-                throw new LandingClientDependencyException(
-                    downloadOrchestrationDependencyException.InnerException as Xeption);
+                throw new PdsClientDependencyException(
+                    pdsOrchestrationDependencyException.InnerException as Xeption);
             }
             catch (PdsOrchestrationServiceException
-                downloadOrchestrationServiceException)
+                pdsOrchestrationServiceException)
             {
-                throw new LandingClientServiceException(
-                    downloadOrchestrationServiceException.InnerException as Xeption);
+                throw new PdsClientServiceException(
+                    pdsOrchestrationServiceException.InnerException as Xeption);
             }
         }
 
@@ -58,28 +58,28 @@ namespace LHDS.Core.Clients
             {
                 return await this.pdsOrchestrationService.RetreiveMessagesFromMeshAndUpdateStorage();
             }
-            catch (PdsOrchestrationValidationException downloadOrchestrationValidationException)
+            catch (PdsOrchestrationValidationException pdsOrchestrationValidationException)
             {
-                throw new LandingClientValidationException(
-                    downloadOrchestrationValidationException.InnerException as Xeption);
+                throw new PdsClientValidationException(
+                    pdsOrchestrationValidationException.InnerException as Xeption);
             }
             catch (PdsOrchestrationDependencyValidationException
-                downloadOrchestrationDependencyValidationException)
+                pdsOrchestrationDependencyValidationException)
             {
-                throw new LandingClientValidationException(
-                    downloadOrchestrationDependencyValidationException.InnerException as Xeption);
+                throw new PdsClientValidationException(
+                    pdsOrchestrationDependencyValidationException.InnerException as Xeption);
             }
             catch (PdsOrchestrationDependencyException
-                downloadOrchestrationDependencyException)
+                pdsOrchestrationDependencyException)
             {
-                throw new LandingClientDependencyException(
-                    downloadOrchestrationDependencyException.InnerException as Xeption);
+                throw new PdsClientDependencyException(
+                    pdsOrchestrationDependencyException.InnerException as Xeption);
             }
             catch (PdsOrchestrationServiceException
-                downloadOrchestrationServiceException)
+                pdsOrchestrationServiceException)
             {
-                throw new LandingClientServiceException(
-                    downloadOrchestrationServiceException.InnerException as Xeption);
+                throw new PdsClientServiceException(
+                    pdsOrchestrationServiceException.InnerException as Xeption);
             }
         }
     }

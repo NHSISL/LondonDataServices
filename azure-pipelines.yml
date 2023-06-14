@@ -78,7 +78,7 @@ steps:
     inputs:
       command: 'test'
       projects: '**/*.Tests.Acceptance.csproj'
-      arguments: '--environment ASPNETCORE_ENVIRONMENT=ContinuousIntegration'
+      arguments: '--environment ASPNETCORE_ENVIRONMENT=ContinuousIntegration --environmentName=ContinuousIntegration'
 
   - task: Npm@1
     displayName: NPM Install

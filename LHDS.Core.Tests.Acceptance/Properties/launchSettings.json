@@ -2,6 +2,7 @@
   "profiles": {
     "LHDS.Core.Tests.Acceptance": {
       "commandName": "Project",
+      "commandLineArgs": "--environmentName=ContinuousIntegration",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

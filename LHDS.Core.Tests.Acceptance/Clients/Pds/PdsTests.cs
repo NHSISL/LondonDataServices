@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Storages.Blobs;
@@ -32,10 +33,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
 
             string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var args = Environment.GetCommandLineArgs();
+            var environmentNameArg = args.FirstOrDefault(arg => arg.StartsWith("--environmentName="));
 
-            var environmentName = string.IsNullOrEmpty(aspNetCoreEnvironment)
-                ? "Development"
-                : aspNetCoreEnvironment;
+            var environmentName = !string.IsNullOrEmpty(aspNetCoreEnvironment)
+                ? aspNetCoreEnvironment
+                : !string.IsNullOrEmpty(environmentNameArg)
+                    ? environmentNameArg
+                    : "Development";
 
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)

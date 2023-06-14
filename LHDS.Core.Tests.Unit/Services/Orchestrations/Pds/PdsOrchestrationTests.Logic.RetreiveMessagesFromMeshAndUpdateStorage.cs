@@ -50,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.RetrieveMessageByIdAsync(message.MessageId))
                         .ReturnsAsync(message);
 
-                string filename = message.Headers["Mex-FileName"].FirstOrDefault();
+                string filename = message.Headers["Mex-Filename"].FirstOrDefault();
                 string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
                 string[] fileNameParts = fileNameWithoutExtension.Split('_');
 
@@ -68,8 +68,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 this.documentServiceMock.Setup(broker =>
                     broker.AddDocumentAsync(document));
 
-                Guid correlationId = Guid.Parse(message.Headers["Mex-LocalID"].FirstOrDefault());
-                string fileName = message.Headers["Mex-FileName"].FirstOrDefault();
+                Guid correlationId = Guid.Parse(message.Headers["Mex-Localid"].FirstOrDefault());
+                string fileName = message.Headers["Mex-Filename"].FirstOrDefault();
 
                 PdsAudit pdsAudit = new PdsAudit
                 {
@@ -119,7 +119,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.RetrieveMessageByIdAsync(message.MessageId),
                         Times.Once);
 
-                string filename = message.Headers["Mex-FileName"].FirstOrDefault();
+                string filename = message.Headers["Mex-Filename"].FirstOrDefault();
                 string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
                 string[] fileNameParts = fileNameWithoutExtension.Split('_');
 
@@ -138,8 +138,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.AddDocumentAsync(It.Is(SameDocumentAs(document))),
                         Times.Once);
 
-                Guid correlationId = Guid.Parse(message.Headers["Mex-LocalID"].FirstOrDefault());
-                string fileName = message.Headers["Mex-FileName"].FirstOrDefault();
+                Guid correlationId = Guid.Parse(message.Headers["Mex-Localid"].FirstOrDefault());
+                string fileName = message.Headers["Mex-Filename"].FirstOrDefault();
 
                 PdsAudit pdsAudit = new PdsAudit
                 {
@@ -189,7 +189,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.RetrieveMessageByIdAsync(message.MessageId))
                         .ReturnsAsync(message);
 
-                if (message.Headers["Mex-WorkflowID"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
+                if (message.Headers["Mex-Workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
                 {
                     continue;
                 }
@@ -214,7 +214,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.RetrieveMessageByIdAsync(message.MessageId),
                         Times.Once);
 
-                if (message.Headers["Mex-WorkflowID"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
+                if (message.Headers["Mex-Workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
                 {
                     continue;
                 }

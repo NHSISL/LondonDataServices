@@ -22,7 +22,7 @@ namespace LHDS.Core.Models.Foundations.Mesh
         {
             MeshMessage message = new MeshMessage();
             message.Headers.Add("Mex-To", new List<string> { mexTo });
-            message.Headers.Add("Mex-WorkflowID", new List<string> { mexWorkflowId });
+            message.Headers.Add("Mex-Workflowid", new List<string> { mexWorkflowId });
             message.FileContent = fileContent;
 
             if (!string.IsNullOrWhiteSpace(mexSubject))
@@ -32,12 +32,12 @@ namespace LHDS.Core.Models.Foundations.Mesh
 
             if (!string.IsNullOrWhiteSpace(mexLocalId))
             {
-                message.Headers.Add("Mex-LocalID", new List<string> { mexLocalId });
+                message.Headers.Add("Mex-Localid", new List<string> { mexLocalId });
             }
 
             if (!string.IsNullOrWhiteSpace(mexFileName))
             {
-                message.Headers.Add("Mex-FileName", new List<string> { mexFileName });
+                message.Headers.Add("Mex-Filename", new List<string> { mexFileName });
             }
 
             if (!string.IsNullOrWhiteSpace(mexContentChecksum))

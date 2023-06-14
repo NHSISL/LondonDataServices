@@ -11,8 +11,8 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Documents;
-using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Orchestrations.Pds;
@@ -21,9 +21,7 @@ using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Mesh;
 using LHDS.Core.Services.Foundations.PdsAudits;
 using LHDS.Core.Services.Orchestrations.Pds;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -137,6 +135,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         private static List<MeshMessage> GetRandomMessages(List<string> randomMessageIds, string mexWorkflowId)
         {
             var messages = new List<MeshMessage>();
+            var fileName =
+                    GetRandomString() + "_" + GetRandomString() + "_" + GetRandomString() + "_" + GetRandomString() + ".csv";
 
             randomMessageIds.ForEach(id =>
             {
@@ -146,7 +146,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     fileContent: Encoding.ASCII.GetBytes(GetRandomString()),
                     mexSubject: GetRandomString(),
                     mexLocalId: Guid.NewGuid().ToString(),
-                    mexFileName: GetRandomString());
+                    mexFileName: fileName);
 
                 message.MessageId = id;
                 messages.Add(message);
@@ -182,6 +182,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 CorrelationId = correlationIdentifier,
                 FileName = fileName,
                 Message = $"Sent message to mesh with id {messageId}",
+                MessageId = messageId,
                 CreatedDate = randomDate,
                 UpdatedDate = randomDate,
                 CreatedBy = "System",

@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 service.RetrieveMessageIdsFromInboxAsync())
                     .ReturnsAsync(randomMessageIds);
 
-            List<PdsAudit> pdsAuditsList= new List<PdsAudit>();
+            List<PdsAudit> pdsAuditsList = new List<PdsAudit>();
 
             foreach (var message in retrievedMessages)
             {
@@ -50,9 +50,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.RetrieveMessageByIdAsync(message.MessageId))
                         .ReturnsAsync(message);
 
+                string filename = message.Headers["Mex-FileName"].FirstOrDefault();
+                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
+                string[] fileNameParts = fileNameWithoutExtension.Split('_');
+
+                string fileNameOutput =
+                    $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
+
+                fileNameOutput += Path.GetExtension(filename);
+
                 Document document = new Document
                 {
-                    FileName = message.Headers["Mex-FileName"].FirstOrDefault().ToString(),
+                    FileName = fileNameOutput,
                     DocumentData = message.FileContent,
                 };
 
@@ -67,7 +76,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     Id = identifier,
                     CorrelationId = correlationId,
                     FileName = fileName,
-                    Message =  $"Received message from mesh with id {message.MessageId}",
+                    Message = $"Received message from mesh with id {message.MessageId}",
+                    MessageId = message.MessageId,
                     CreatedDate = randomDate,
                     UpdatedDate = randomDate,
                     CreatedBy = "System",
@@ -89,6 +99,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             //then
             actualPdsAudits.Should().BeEquivalentTo(expectedPdsAudits);
+            pdsAuditsList.Count.Should().Be(retrievedMessages.Count);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -108,9 +119,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.RetrieveMessageByIdAsync(message.MessageId),
                         Times.Once);
 
+                string filename = message.Headers["Mex-FileName"].FirstOrDefault();
+                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
+                string[] fileNameParts = fileNameWithoutExtension.Split('_');
+
+                string fileNameOutput =
+                    $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
+
+                fileNameOutput += Path.GetExtension(filename);
+
                 Document document = new Document
                 {
-                    FileName = message.Headers["Mex-FileName"].FirstOrDefault().ToString(),
+                    FileName = fileNameOutput,
                     DocumentData = message.FileContent,
                 };
 
@@ -127,6 +147,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     CorrelationId = correlationId,
                     FileName = fileName,
                     Message = $"Received message from mesh with id {message.MessageId}",
+                    MessageId = message.MessageId,
                     CreatedDate = randomDate,
                     UpdatedDate = randomDate,
                     CreatedBy = "System",
@@ -163,7 +184,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             List<PdsAudit> pdsAuditsList = new List<PdsAudit>();
 
             foreach (var message in retrievedMessages)
-            { 
+            {
                 this.meshServiceMock.Setup(service =>
                     service.RetrieveMessageByIdAsync(message.MessageId))
                         .ReturnsAsync(message);

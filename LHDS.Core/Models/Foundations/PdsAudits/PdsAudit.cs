@@ -13,6 +13,7 @@ namespace LHDS.Core.Models.Foundations.PdsAudits
         public Guid CorrelationId { get; set; }
         public string FileName { get; set; }
         public string Message { get; set; }
+        public string MessageId { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }

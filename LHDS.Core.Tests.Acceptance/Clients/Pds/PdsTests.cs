@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
 
             var logger = loggerFactory.CreateLogger<LoggingBroker>();
             serviceCollection.AddTransient(serviceProvider => logger);
-            serviceCollection.AddPdsClient(configuration);
+            serviceCollection.AddPdsClientForAcceptance(configuration);
 
             serviceCollection
                 .AddTransient<IMeshBroker>(serviceProvider => meshBrokerMock.Object)

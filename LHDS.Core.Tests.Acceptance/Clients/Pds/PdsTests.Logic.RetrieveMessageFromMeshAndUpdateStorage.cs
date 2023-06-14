@@ -54,7 +54,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             //Then
             actualList.Should().NotBeNull();
             actualList.Should().HaveCount(1);
-            //actualList.All(a => messages.Contains(a.FileName)).Should().BeTrue();
+
+            actualList.All(a => 
+                messages.Any(m => 
+                    m.Headers["Mex-FileName"].Any(h => 
+                        h == a.FileName))).Should().BeTrue();
 
             this.meshBrokerMock.Verify(broker =>
                 broker.RetrieveMessageIdsAsync(),

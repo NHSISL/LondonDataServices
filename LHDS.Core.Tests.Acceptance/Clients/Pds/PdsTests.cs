@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
@@ -11,7 +12,6 @@ using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Orchestrations.Pds;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -26,12 +26,16 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         private readonly IPdsClient pdsClient;
         private readonly PdsConfiguration pdsConfiguration;
 
-        public PdsTests(IHostEnvironment environment)
+        public PdsTests()
         {
             this.meshBrokerMock = new Mock<IMeshBroker>();
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
 
-            var environmentName = environment?.EnvironmentName ?? "Development";
+            string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+            var environmentName = string.IsNullOrEmpty(aspNetCoreEnvironment)
+                ? "Development"
+                : aspNetCoreEnvironment;
 
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)

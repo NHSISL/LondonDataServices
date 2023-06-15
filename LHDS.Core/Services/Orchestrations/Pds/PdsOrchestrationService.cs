@@ -99,12 +99,12 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                 {
                     var message = await this.meshService.RetrieveMessageByIdAsync(id);
 
-                    if (message.Headers["Mex-Workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
+                    if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
                     {
                         continue;
                     }
 
-                    string filename = message.Headers["Mex-Filename"].FirstOrDefault();
+                    string filename = message.Headers["mex-filename"].FirstOrDefault();
                     string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
                     string[] fileNameParts = fileNameWithoutExtension.Split('_');
 
@@ -120,8 +120,8 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                     };
 
                     await this.documentService.AddDocumentAsync(document);
-                    var correlationId = Guid.Parse(message.Headers["Mex-Localid"].FirstOrDefault());
-                    var fileName = message.Headers["Mex-Filename"].FirstOrDefault();
+                    var correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
+                    var fileName = message.Headers["mex-filename"].FirstOrDefault();
                     DateTimeOffset currentDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
                     var pdsAudit = new PdsAudit

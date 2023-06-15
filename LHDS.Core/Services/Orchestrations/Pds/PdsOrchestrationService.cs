@@ -115,7 +115,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
 
                     var document = new Models.Foundations.Documents.Document
                     {
-                        FileName = fileNameOutput,
+                        FileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}",
                         DocumentData = message.FileContent,
                     };
 
@@ -128,7 +128,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                     {
                         Id = this.identifierBroker.GetIdentifier(),
                         CorrelationId = correlationId,
-                        FileName = fileName,
+                        FileName = document.FileName,
                         Message = $"Received message from mesh with id {message.MessageId}",
                         MessageId = message.MessageId,
                         CreatedDate = currentDate,

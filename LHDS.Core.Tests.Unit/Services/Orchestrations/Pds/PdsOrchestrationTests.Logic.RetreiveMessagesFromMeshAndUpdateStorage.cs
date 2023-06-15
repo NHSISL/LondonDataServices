@@ -61,7 +61,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
                 Document document = new Document
                 {
-                    FileName = fileNameOutput,
+                    FileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}",
                     DocumentData = message.FileContent,
                 };
 
@@ -69,13 +69,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     broker.AddDocumentAsync(document));
 
                 Guid correlationId = Guid.Parse(message.Headers["Mex-Localid"].FirstOrDefault());
-                string fileName = message.Headers["Mex-Filename"].FirstOrDefault();
 
                 PdsAudit pdsAudit = new PdsAudit
                 {
                     Id = identifier,
                     CorrelationId = correlationId,
-                    FileName = fileName,
+                    FileName = document.FileName,
                     Message = $"Received message from mesh with id {message.MessageId}",
                     MessageId = message.MessageId,
                     CreatedDate = randomDate,
@@ -130,7 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
                 Document document = new Document
                 {
-                    FileName = fileNameOutput,
+                    FileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}",
                     DocumentData = message.FileContent,
                 };
 
@@ -139,13 +138,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                         Times.Once);
 
                 Guid correlationId = Guid.Parse(message.Headers["Mex-Localid"].FirstOrDefault());
-                string fileName = message.Headers["Mex-Filename"].FirstOrDefault();
 
                 PdsAudit pdsAudit = new PdsAudit
                 {
                     Id = identifier,
                     CorrelationId = correlationId,
-                    FileName = fileName,
+                    FileName = document.FileName,
                     Message = $"Received message from mesh with id {message.MessageId}",
                     MessageId = message.MessageId,
                     CreatedDate = randomDate,

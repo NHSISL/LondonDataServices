@@ -4,10 +4,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.PdsAudits;
 using Moq;
 using NEL.MESH.Clients.Mailboxes;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -24,7 +25,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             string messageId = GetRandomString();
             List<string> messageIds = new List<string> { messageId };
             string mexWorkflowId = this.pdsConfiguration.WorkflowId;
-            string fileName = $"{GetRandomString()}_{GetRandomString()}_{GetRandomString()}_{GetRandomString()}.csv";
+            string fileName = "RESP_MPTREQ_CCYYMMDDHHMISS_CCYYMMDDHHMISS.csv";
             string mexLocalId = Guid.NewGuid().ToString();
             byte[] fileContent = Encoding.ASCII.GetBytes(GetRandomString());
 
@@ -36,12 +37,16 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
                 mexLocalId,
                 mexFileName: fileName);
 
+            string fileNameReturn =
+                $"{this.pdsConfiguration.OutputFolder}/MPTREQ_CCYYMMDDHHMISS_RESP_CCYYMMDDHHMISS.csv";
+
             message.MessageId = messageId;
             List<Message> messages = new List<Message> { message };
 
             this.meshBrokerMock.Setup(broker =>
                 broker.RetrieveMessageIdsAsync())
                     .ReturnsAsync(messageIds);
+
 
             foreach (var id in messageIds)
             {
@@ -51,29 +56,30 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             }
 
             //When
-            var actualList = await pdsClient.RetreiveMessagesFromMeshAndUpdateStorage();
+            List<PdsAudit> actualList = await pdsClient.RetreiveMessagesFromMeshAndUpdateStorage();
 
             //Then
-            actualList.Should().NotBeNull();
             actualList.Should().HaveCount(1);
-
-            actualList.All(a =>
-                messages.Any(m =>
-                    m.Headers["Mex-FileName"].Any(h =>
-                        h == a.FileName))).Should().BeTrue();
 
             this.meshBrokerMock.Verify(broker =>
                 broker.RetrieveMessageIdsAsync(),
                     Times.Once);
 
-            foreach (var id in messageIds)
+            foreach (var item in actualList)
             {
                 this.meshBrokerMock.Verify(broker =>
-                    broker.RetrieveMessageAsync(id),
+                    broker.RetrieveMessageAsync(item.MessageId),
                         Times.Once);
+
+                this.blobStorageBrokerMock.Verify(broker =>
+                    broker.InsertFileAsync(fileNameReturn, It.IsAny<Stream>()),
+                        Times.Once());
+
+                await this.pdsAuditService.RemovePdsAuditByIdAsync(item.Id);
             }
 
             this.meshBrokerMock.VerifyNoOtherCalls();
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

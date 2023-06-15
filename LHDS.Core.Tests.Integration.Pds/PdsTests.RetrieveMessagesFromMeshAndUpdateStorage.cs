@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -18,8 +17,10 @@ namespace LHDS.Core.Tests.Integration.Pds
         {
             // Given 
             byte[] fileBytes =
-                File.ReadAllBytes(@"Resources\EmisPDSPatientExtract_247BB600-213A-494E-8E90-A4F9190F07DF_20230601T130544.csv");
+                File.ReadAllBytes(
+                    @"Resources\EmisPDSPatientExtract_247BB600-213A-494E-8E90-A4F9190F07DF_20230601T130544.csv");
 
+            //Add File to blob
             string fileName = "RESP_MPTREQ_CCYYMMDDHHMISS_CCYYMMDDHHMISS.csv";
 
             var meshMessage = await this.meshService.SendMessageAsync(
@@ -34,28 +35,29 @@ namespace LHDS.Core.Tests.Integration.Pds
                    contentEncoding: string.Empty,
                    accept: "application/json");
 
+            string fileNameReturn =
+                $"{this.pdsConfiguration.OutputFolder}/MPTREQ_CCYYMMDDHHMISS_RESP_CCYYMMDDHHMISS.csv";
+
             // When
             List<PdsAudit> actualPdsAudits =
-              await this.pdsClient.RetreiveMessagesFromMeshAndUpdateStorage();
+                await this.pdsClient.RetreiveMessagesFromMeshAndUpdateStorage();
 
             // Then
             actualPdsAudits.Should().NotBeNull();
-            bool fileNameExists = false;
-            Guid messageId = Guid.Empty;
 
             foreach (var audit in actualPdsAudits)
             {
-                if (audit.FileName == fileName)
-                {
-                    messageId = audit.Id;
-                    fileNameExists = true;
-                    break;
-                }
+                audit.FileName.Should().BeEquivalentTo(fileNameReturn);
+
+                byte[] checkDocument =
+                        await this.blobStorageBroker.SelectByFileNameAsync(fileNameReturn);
+
+                checkDocument.Should().NotBeNull();
+                await this.blobStorageBroker.DeleteFileAsync(fileNameReturn);
+                await this.pdsAuditService.RemovePdsAuditByIdAsync(audit.Id);
             }
 
-            fileNameExists.Should().BeTrue();
             await this.meshService.AcknowledgeMessageByIdAsync(meshMessage.MessageId);
-            await this.pdsAuditService.RemovePdsAuditByIdAsync(messageId);
         }
     }
 }

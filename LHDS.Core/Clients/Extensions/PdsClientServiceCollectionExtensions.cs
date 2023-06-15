@@ -36,6 +36,21 @@ namespace LHDS.Core.Clients.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
+            return AddPdsClient(services, configuration, acceptanceTest: false);
+        }
+
+        internal static IServiceCollection AddPdsClientForAcceptance(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            return AddPdsClient(services, configuration, acceptanceTest: true);
+        }
+
+        private static IServiceCollection AddPdsClient(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            bool acceptanceTest)
+        {
             var blobServiceUri = GetSettings(configuration, "BlobStorage:azureBlobServiceUri", true);
             var azureTenantId = GetSettings(configuration, "BlobStorage:azureTenantId", true);
 
@@ -65,27 +80,38 @@ namespace LHDS.Core.Clients.Extensions
                 MexClientVersion = GetSettings(configuration, "MeshConfiguration:MexClientVersion", true),
                 MexOSName = GetSettings(configuration, "MeshConfiguration:MexOSName", true),
                 MexOSVersion = GetSettings(configuration, "MeshConfiguration:MexOSVersion", true),
-                RootCertificate = GetCertificate(configuration, "MeshConfiguration:RootCertificate", true),
 
-                IntermediateCertificates = GetCertificates(
-                    configuration, "MeshConfiguration:IntermediateCertificates", false),
-
-                ClientCertificate = GetCertificate(configuration, "MeshConfiguration:ClientCertificate", true),
 
                 MaxChunkSizeInMegabytes = int.Parse(
                     GetSettings(configuration, "MeshConfiguration:MaxChunkSizeInMegabytes", true)),
             };
 
+            if (!acceptanceTest)
+            {
+                meshConfig.RootCertificate =
+                    GetCertificate(configuration, "MeshConfiguration:RootCertificate", true);
+
+                meshConfig.IntermediateCertificates =
+                    GetCertificates(configuration, "MeshConfiguration:IntermediateCertificates", false);
+
+                meshConfig.ClientCertificate =
+                    GetCertificate(configuration, "MeshConfiguration:ClientCertificate", true);
+            }
+
             services.AddSingleton(meshConfig);
             AddClients(services, blobServiceUri, azureTenantId, pdsConfiguration);
-            AddBrokers(services);
+            AddBrokers(services, acceptanceTest);
             AddOrchestrations(services);
             AddServices(services);
 
             return services;
         }
 
-        private static void AddClients(IServiceCollection services, string blobServiceUri, string azureTenantId, PdsConfiguration pdsConfiguration)
+        private static void AddClients(
+            IServiceCollection services,
+            string blobServiceUri,
+            string azureTenantId,
+            PdsConfiguration pdsConfiguration)
         {
             var blobServiceClientOptions = new BlobClientOptions()
             {
@@ -109,16 +135,20 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
         }
 
-        private static void AddBrokers(IServiceCollection services)
+        private static void AddBrokers(IServiceCollection services, bool acceptanceTest)
         {
             services.AddTransient<ILoggingBroker, LoggingBroker>();
-            services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
-            services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
             services.AddTransient<ICsvMapperBroker, CsvMapperBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
-            services.AddTransient<IMeshBroker, MeshBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
+
+            if (!acceptanceTest)
+            {
+                services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
+                services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
+                services.AddTransient<IMeshBroker, MeshBroker>();
+            }
         }
 
         private static void AddOrchestrations(IServiceCollection services)

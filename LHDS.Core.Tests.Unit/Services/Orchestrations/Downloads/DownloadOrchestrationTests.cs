@@ -26,11 +26,13 @@ using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 {
     public partial class DownloadOrchestrationTests
     {
+        private readonly ITestOutputHelper output;
         private readonly Mock<IDocumentService> documentServiceMock;
         private readonly Mock<IDownloadService> downloadServiceMock;
         private readonly Mock<IIngestionTrackingService> ingestionTrackingServiceMock;
@@ -42,8 +44,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         private readonly IDownloadOrchestrationService downloadOrchestrationService;
         private readonly ICompareLogic compareLogic;
 
-        public DownloadOrchestrationTests()
+        public DownloadOrchestrationTests(ITestOutputHelper output)
         {
+            this.output = output;
             documentServiceMock = new Mock<IDocumentService>();
             downloadServiceMock = new Mock<IDownloadService>();
             ingestionTrackingServiceMock = new Mock<IIngestionTrackingService>();

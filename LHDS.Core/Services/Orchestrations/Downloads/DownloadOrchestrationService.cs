@@ -117,10 +117,13 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                 return newIngestionTracking.DecryptedFileName;
                             }
 
-                            return maybeIngestionTracking.DecryptedFileName;
+                            return null;
                         });
 
-                        files.Add(decryptedFile);
+                        if (decryptedFile != null)
+                        {
+                            files.Add(decryptedFile);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -175,7 +178,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     return maybeIngestionTracking.DecryptedFileName;
                 }
 
-                return maybeIngestionTracking.DecryptedFileName;
+                return null;
             });
 
         private void LogAudit(

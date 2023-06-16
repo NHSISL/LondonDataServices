@@ -13,10 +13,8 @@ using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
-using LHDS.Core.Models.Brokers.Mesh;
-using LHDS.Core.Models.Foundations.Mesh;
-using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Orchestrations.Pds;
+using LHDS.Core.Services.Foundations.PdsAudits;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -33,6 +31,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly IPdsClient pdsClient;
         private readonly PdsConfiguration pdsConfiguration;
+        private readonly IPdsAuditService pdsAuditService;
 
         public PdsTests()
         {
@@ -40,7 +39,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
 
-            var environmentName = "Development";
+            string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var args = Environment.GetCommandLineArgs();
+            var environmentArg = args.FirstOrDefault(arg => arg.StartsWith("--environment="));
+
+            var environmentName = !string.IsNullOrEmpty(aspNetCoreEnvironment)
+                ? aspNetCoreEnvironment
+                : !string.IsNullOrEmpty(environmentArg)
+                    ? environmentArg
+                    : "Development";
 
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -58,7 +65,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
 
             var logger = loggerFactory.CreateLogger<LoggingBroker>();
             serviceCollection.AddTransient(serviceProvider => logger);
-            serviceCollection.AddPdsClient(configuration);
+            serviceCollection.AddPdsClientForAcceptance(configuration);
 
             serviceCollection
                 .AddTransient<IMeshBroker>(serviceProvider => meshBrokerMock.Object)
@@ -69,6 +76,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
 
             this.pdsConfiguration = serviceProvider.GetService<PdsConfiguration>();
             this.pdsClient = serviceProvider.GetService<IPdsClient>();
+            this.pdsAuditService = serviceProvider.GetService<IPdsAuditService>();
         }
 
         private static int GetRandomNumber() =>

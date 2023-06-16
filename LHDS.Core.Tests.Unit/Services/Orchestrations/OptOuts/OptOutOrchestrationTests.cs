@@ -332,9 +332,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 var message = CreateRandomMessage();
                 message.MessageId = item;
-                message.Headers["Mex-LocalID"] = new List<string> { GetRandomString() };
+                message.Headers["mex-localid"] = new List<string> { GetRandomString() };
                 message.FileContent = Encoding.UTF8.GetBytes(sb.ToString());
-                message.Headers["Mex-WorkflowID"] = new List<string> { workflowId };
+                message.Headers["mex-workflowid"] = new List<string> { workflowId };
 
                 messageList.Add(message);
             }
@@ -480,14 +480,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         {
             var dictionary = new Dictionary<string, List<string>>
             {
-                { "Content-Type", new List<string> { GetRandomString() } },
-                { "Mex-FileName", new List<string> { GetRandomString() } },
+                { "content-type", new List<string> { GetRandomString() } },
+                { "mex-filename", new List<string> { GetRandomString() } },
                 { "Mex-From", new List<string> { GetRandomString() } },
-                { "Mex-To", new List<string> { GetRandomString() } },
-                { "Mex-WorkflowID", new List<string> { GetRandomString() } },
-                { "Mex-Content-Checksum", new List<string> { GetRandomString() } },
+                { "mex-to", new List<string> { GetRandomString() } },
+                { "mex-workflowid", new List<string> { GetRandomString() } },
+                { "mex-content-checksum", new List<string> { GetRandomString() } },
                 { "Mex-Content-Encrypted", new List<string> { GetRandomString() } },
-                { "Mex-LocalID", new List<string> { GetRandomString() } }
+                { "mex-localid", new List<string> { GetRandomString() } }
             };
 
             return dictionary;

@@ -21,6 +21,7 @@ using LHDS.Core.Services.Foundations.Decryptions;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.Decryptions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -109,6 +110,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IDownloadService, DownloadService>();
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
+            services.AddTransient<ISupplierService, SupplierService>();
             services.AddTransient<IAuditService, AuditService>();
             services.AddTransient<IDecryptionOrchestrationService, DecryptionOrchestrationService>();
             services.AddTransient<IDecryptionService, DecryptionService>();

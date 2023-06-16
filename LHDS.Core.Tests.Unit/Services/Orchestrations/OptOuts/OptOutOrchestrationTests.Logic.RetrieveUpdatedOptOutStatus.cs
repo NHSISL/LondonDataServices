@@ -64,7 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 meshMessageList.Add(testMessage);
 
-                string batchReference = GetHeaderValue(testMessage, "Mex-LocalID");
+                string batchReference = GetHeaderValue(testMessage, "mex-localid");
 
                 optOutProcessingServiceMock.Setup(processings =>
                     processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference))
@@ -120,7 +120,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 meshMessageList.Add(message);
 
-                string batchReference = GetHeaderValue(message, "Mex-LocalID");
+                string batchReference = GetHeaderValue(message, "mex-localid");
 
                 optOutProcessingServiceMock.Verify(processings =>
                     processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference),
@@ -190,7 +190,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (var message in outputMessages)
                 {
-                    message.Headers["Mex-WorkflowID"] = new List<string> { this.meshConfiguration.WorkflowId };
+                    message.Headers["mex-workflowid"] = new List<string> { this.meshConfiguration.WorkflowId };
                 }
 
                 meshProcessingServiceMock.Setup(processings =>
@@ -210,7 +210,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                     meshMessageList.Add(message);
 
-                    string batchReference = GetHeaderValue(message, "Mex-LocalID");
+                    string batchReference = GetHeaderValue(message, "mex-localid");
 
                     optOutProcessingServiceMock.Setup(processings =>
                         processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference))
@@ -276,7 +276,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                     meshMessageList.Add(message);
 
-                    string batchReference = GetHeaderValue(message, "Mex-LocalID");
+                    string batchReference = GetHeaderValue(message, "mex-localid");
 
                     optOutProcessingServiceMock.Verify(processings =>
                         processings.RetrieveAllOptOutsByBatchReferenceAsync(batchReference),

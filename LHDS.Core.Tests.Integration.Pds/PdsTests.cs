@@ -4,6 +4,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using LHDS.Core.Brokers.Identifiers;
+using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Mesh;
@@ -25,6 +27,8 @@ namespace LHDS.Core.Tests.Integration.Pds
         private readonly IPdsAuditService pdsAuditService;
         private readonly IDocumentService documentService;
         private readonly IMeshService meshService;
+        private readonly IIdentifierBroker identifierBroker;
+        private readonly IBlobStorageBroker blobStorageBroker;
         private readonly PdsConfiguration pdsConfiguration;
         private readonly MeshConfiguration meshConfiguration;
         private readonly ITestOutputHelper output;
@@ -55,6 +59,8 @@ namespace LHDS.Core.Tests.Integration.Pds
             this.pdsClient = serviceProvider.GetService<IPdsClient>();
             this.documentService = serviceProvider.GetService<IDocumentService>();
             this.meshService = serviceProvider.GetService<IMeshService>();
+            this.identifierBroker = serviceProvider.GetService<IIdentifierBroker>();
+            this.blobStorageBroker = serviceProvider.GetService<IBlobStorageBroker>();
             this.pdsConfiguration = serviceProvider.GetService<PdsConfiguration>();
             this.meshConfiguration = serviceProvider.GetService<MeshConfiguration>();
             this.pdsAuditService = serviceProvider.GetService<IPdsAuditService>();

@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
                 foreach (MeshMessage message in messages)
                 {
                     string filepath =
-                        $"{optOutConfiguration.OutputFolder}/{GetHeaderValue(message, "Mex-LocalID")}"
+                        $"{optOutConfiguration.OutputFolder}/{GetHeaderValue(message, "mex-localid")}"
                         + "_deltaresponse.csv";
 
                     Document document = await this.documentService.RetrieveDocumentByFileNameAsync(filepath);

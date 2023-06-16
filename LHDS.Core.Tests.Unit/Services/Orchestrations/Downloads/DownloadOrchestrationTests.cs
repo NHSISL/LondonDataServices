@@ -16,12 +16,12 @@ using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
+using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Orchestrations.Downloads;
-using Microsoft.Extensions.Configuration;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
-        private readonly IConfiguration inMemoryConfiguration;
+        private readonly LandingConfiguration landingConfiguration;
         private readonly IDownloadOrchestrationService downloadOrchestrationService;
         private readonly ICompareLogic compareLogic;
 
@@ -51,17 +51,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             identifierBrokerMock = new Mock<IIdentifierBroker>();
-            this.compareLogic = new CompareLogic();
+            compareLogic = new CompareLogic();
 
-            var appSettingsStub = new Dictionary<string, string> {
-                { "LandingSupplierId", Guid.NewGuid().ToString() }
+            landingConfiguration = new LandingConfiguration
+            {
+                LandingSupplierId = Guid.NewGuid(),
+                EncryptedFolder = "encrypted",
+                DecryptedFolder = "decrypted"
             };
 
-            this.inMemoryConfiguration = new ConfigurationBuilder()
-                .AddInMemoryCollection(appSettingsStub)
-                .Build();
-
-            this.downloadOrchestrationService = new DownloadOrchestrationService(
+            downloadOrchestrationService = new DownloadOrchestrationService(
                 documentService: documentServiceMock.Object,
                 downloadService: downloadServiceMock.Object,
                 ingestionTrackingService: ingestionTrackingServiceMock.Object,
@@ -69,7 +68,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object,
-                configuration: this.inMemoryConfiguration);
+                landingConfiguration: landingConfiguration);
         }
 
         private static int GetRandomNumber() =>

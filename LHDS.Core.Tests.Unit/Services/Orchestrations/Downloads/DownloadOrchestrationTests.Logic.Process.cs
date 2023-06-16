@@ -59,10 +59,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                   {
                       Id = randomGuid,
                       FileName = document.FileName,
-                      SupplierId = Guid.Parse(this.inMemoryConfiguration["LandingSupplierId"]),
-                      EncryptedFileName = $"/encrypted{filename}",
+                      SupplierId = landingConfiguration.LandingSupplierId,
+                      EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
+
                       DecryptedFileName =
-                        $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                        $"/{landingConfiguration.DecryptedFolder}"
+                            + $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+
                       Decrypted = false,
                       LastSeen = randomDateTime,
                       FileDeleted = false,
@@ -109,10 +112,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                   {
                       Id = randomGuid,
                       FileName = document.FileName,
-                      SupplierId = Guid.Parse(this.inMemoryConfiguration["LandingSupplierId"]),
-                      EncryptedFileName = $"/encrypted{filename}",
+                      SupplierId = landingConfiguration.LandingSupplierId,
+                      EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
+
                       DecryptedFileName =
-                        $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                        $"/{landingConfiguration.DecryptedFolder}"
+                            + $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+
                       Decrypted = false,
                       LastSeen = randomDateTime,
                       FileDeleted = false,

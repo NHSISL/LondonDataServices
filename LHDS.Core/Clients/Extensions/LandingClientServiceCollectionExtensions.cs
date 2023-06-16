@@ -19,6 +19,7 @@ using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -114,6 +115,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IDownloadService, DownloadService>();
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
+            services.AddTransient<ISupplierService, SupplierService>();
             services.AddSingleton<IAuditService, AuditService>();
         }
 

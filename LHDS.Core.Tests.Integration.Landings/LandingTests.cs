@@ -3,17 +3,21 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Providers.Downloads.Extensions;
+using LHDS.Core.Services.Foundations.Audits;
+using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.Suppliers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Tynamix.ObjectFiller;
 using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Integration.Landings
@@ -25,7 +29,9 @@ namespace LHDS.Core.Tests.Integration.Landings
         private readonly ILoggingBroker loggingBroker;
         private readonly IBlobStorageBroker blobStorageBroker;
         private readonly LandingConfiguration landingConfiguration;
-
+        private readonly IIngestionTrackingService ingestionTrackingService;
+        private readonly ISupplierService supplierService;
+        private readonly IAuditService auditService;
 
         public LandingTests(ITestOutputHelper output)
         {
@@ -51,69 +57,42 @@ namespace LHDS.Core.Tests.Integration.Landings
                 .UseFtpDownloadProvider(configuration, builder => builder.AddFtpDownloadProvider())
                 .BuildServiceProvider();
 
-            landingClient = serviceProvider.GetService<ILandingClient>();
+            landingConfiguration = serviceProvider.GetService<LandingConfiguration>();
             loggingBroker = serviceProvider.GetService<ILoggingBroker>();
             blobStorageBroker = serviceProvider.GetService<IBlobStorageBroker>();
-            landingConfiguration = serviceProvider.GetService<LandingConfiguration>();
+            ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
+            auditService = serviceProvider.GetService<IAuditService>();
+            supplierService = serviceProvider.GetService<ISupplierService>();
+            landingClient = serviceProvider.GetService<ILandingClient>();
         }
 
-        private static int GetRandomNumber(int min = 2, int max = 10) =>
-            new IntRange(min, max).GetValue();
-
-        private static string GenerateValidNhsNumber()
+        private async ValueTask<Supplier> SetupSupplier()
         {
-            int total = 10;
-            string formattedNhsNumber = string.Empty;
+            DateTimeOffset now = DateTimeOffset.UtcNow;
 
-            while (total == 10)
+            Supplier supplier = new Supplier
             {
-                var randomNumber = new LongRange(100000000, 999999999);
-                formattedNhsNumber = randomNumber.GetValue().ToString();
-                int[] multiplers = new int[] { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
-                int currentNumber;
-                int currentSum = 0;
-                int currentMultipler;
-                string currentString;
-                int remainder;
+                Id = this.landingConfiguration.LandingSupplierId,
+                Name = "Test Supplier",
+                Description = "Test Supplier Description",
+                CreatedDate = now,
+                CreatedBy = "Test User",
+                UpdatedDate = now,
+                UpdatedBy = "Test User",
+                FriendlyName = "Test Supplier Friendly Name",
+                LandingManualTriggerUrl = "hjkhsd",
+                DecryptionManualTriggerUrl = "hjkhsd",
+            };
 
-                for (int i = 0; i <= 8; i++)
-                {
-                    currentString = formattedNhsNumber.Substring(i, 1);
+            Supplier maybeSupplier = supplierService.RetrieveAllSuppliers()
+                .FirstOrDefault(s => s.Id == supplier.Id);
 
-                    currentNumber = Convert.ToInt16(currentString);
-                    currentMultipler = multiplers[i];
-                    currentSum = currentSum + (currentNumber * currentMultipler);
-                }
-
-                remainder = currentSum % 11;
-                total = 11 - remainder;
-
-                if (total.Equals(11))
-                {
-                    total = 0;
-                }
-
-                if (total != 10)
-                {
-                    break;
-                }
+            if (maybeSupplier == null)
+            {
+                return await supplierService.AddSupplierAsync(supplier);
             }
 
-            string checkNumber = total.ToString();
-
-            return $"{formattedNhsNumber}{checkNumber}";
-        }
-
-        private static string CreateRandomListNhsNumbers(int count)
-        {
-            StringBuilder list = new StringBuilder();
-
-            for (int i = 0; i < count; i++)
-            {
-                list.AppendLine($"{GenerateValidNhsNumber()},");
-            }
-
-            return list.ToString();
+            return maybeSupplier;
         }
     }
 }

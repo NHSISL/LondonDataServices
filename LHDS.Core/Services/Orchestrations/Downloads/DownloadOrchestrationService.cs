@@ -117,7 +117,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                 return newIngestionTracking.DecryptedFileName;
                             }
 
-                            return null;
+                            return maybeIngestionTracking.DecryptedFileName;
                         });
 
                         files.Add(decryptedFile);
@@ -175,7 +175,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     return maybeIngestionTracking.DecryptedFileName;
                 }
 
-                return null;
+                return maybeIngestionTracking.DecryptedFileName;
             });
 
         private void LogAudit(

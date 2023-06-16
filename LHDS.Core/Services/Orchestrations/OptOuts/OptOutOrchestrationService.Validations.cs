@@ -47,7 +47,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         private static void ValidateLocalIdHeaderExists(MeshMessage message)
         {
             Validate<InvalidMeshMessageOrchestrationException>(
-                (Rule: IsInvalidHeader(message, "Mex-LocalID"), Parameter: "Mex-LocalID"));
+                (Rule: IsInvalidHeader(message, "mex-localid"), Parameter: "mex-localid"));
         }
 
         private static void ValidateBacthReferenceExists(string batchReference)

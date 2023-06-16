@@ -99,12 +99,12 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                 {
                     var message = await this.meshService.RetrieveMessageByIdAsync(id);
 
-                    if (message.Headers["Mex-WorkflowID"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
+                    if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
                     {
                         continue;
                     }
 
-                    string filename = message.Headers["Mex-FileName"].FirstOrDefault();
+                    string filename = message.Headers["mex-filename"].FirstOrDefault();
                     string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
                     string[] fileNameParts = fileNameWithoutExtension.Split('_');
 
@@ -115,20 +115,20 @@ namespace LHDS.Core.Services.Orchestrations.Pds
 
                     var document = new Models.Foundations.Documents.Document
                     {
-                        FileName = fileNameOutput,
+                        FileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}",
                         DocumentData = message.FileContent,
                     };
 
                     await this.documentService.AddDocumentAsync(document);
-                    var correlationId = Guid.Parse(message.Headers["Mex-LocalID"].FirstOrDefault());
-                    var fileName = message.Headers["Mex-FileName"].FirstOrDefault();
+                    var correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
+                    var fileName = message.Headers["mex-filename"].FirstOrDefault();
                     DateTimeOffset currentDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
                     var pdsAudit = new PdsAudit
                     {
                         Id = this.identifierBroker.GetIdentifier(),
                         CorrelationId = correlationId,
-                        FileName = fileName,
+                        FileName = document.FileName,
                         Message = $"Received message from mesh with id {message.MessageId}",
                         MessageId = message.MessageId,
                         CreatedDate = currentDate,

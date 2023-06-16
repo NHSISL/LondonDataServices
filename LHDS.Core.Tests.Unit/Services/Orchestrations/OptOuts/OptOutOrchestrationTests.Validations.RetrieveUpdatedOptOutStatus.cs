@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             string randomString = GetRandomString();
             MeshMessage randomMessage = CreateRandomMessage();
             randomMessage.MessageId = randomString;
-            randomMessage.Headers["Mex-WorkflowID"] = new List<string> { this.meshConfiguration.WorkflowId };
+            randomMessage.Headers["mex-workflowid"] = new List<string> { this.meshConfiguration.WorkflowId };
             MeshMessage retrievedMessage = randomMessage;
             List<string> retrievedMessageIds = new List<string> { retrievedMessage.MessageId };
 
@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 service.RetrieveMessageIdsFromInboxAsync())
                     .ReturnsAsync(retrievedMessageIds);
 
-            retrievedMessage.Headers.Remove("Mex-LocalID");
+            retrievedMessage.Headers.Remove("mex-localid");
 
             var invalidMeshMessageOrchestrationException =
                 new InvalidMeshMessageOrchestrationException();
@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .ReturnsAsync(retrievedMessage);
 
             invalidMeshMessageOrchestrationException.AddData(
-                key: "Mex-LocalID",
+                key: "mex-localid",
                 values: "Header value is required");
 
             var expectedOptOutOrchestrationValidationException =

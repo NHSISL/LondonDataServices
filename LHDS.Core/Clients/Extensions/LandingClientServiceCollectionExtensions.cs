@@ -13,6 +13,7 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
@@ -84,6 +85,15 @@ namespace LHDS.Core.Clients.Extensions
                     Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
                     EnableTenantDiscovery = true
                 };
+
+                var landingConfiguration = new LandingConfiguration
+                {
+                    LandingSupplierId = Guid.Parse(GetSettings(configuration, "LandingSettings:LandingSupplierId", true)),
+                    EncryptedFolder = GetSettings(configuration, "LandingSettings:EncryptedFolder", true),
+                    DecryptedFolder = GetSettings(configuration, "LandingSettings:DecryptedFolder", true),
+                };
+
+                services.AddSingleton(landingConfiguration);
 
                 services.AddSingleton(
                     new BlobServiceClient(

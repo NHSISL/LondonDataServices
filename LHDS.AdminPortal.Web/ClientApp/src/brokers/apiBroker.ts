@@ -64,7 +64,7 @@ class ApiBroker {
 
         const headers = {
             'Authorization': 'Bearer ' + await this.acquireAccessToken(),
-            "content-type" : 'multipart/form-data'
+            "Content-Type" : 'multipart/form-data'
         }
 
         return axios.post(url,

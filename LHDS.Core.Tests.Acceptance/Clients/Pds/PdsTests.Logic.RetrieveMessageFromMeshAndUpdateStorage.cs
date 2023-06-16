@@ -47,7 +47,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
                 broker.RetrieveMessageIdsAsync())
                     .ReturnsAsync(messageIds);
 
-
             foreach (var id in messageIds)
             {
                 this.meshBrokerMock.Setup(broker =>

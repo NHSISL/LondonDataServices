@@ -151,79 +151,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             };
         }
 
-        public static Dictionary<string, List<string>> CreateHeaders(
-            string mexTo,
-            string mexWorkflowId,
-            string mexSubject = null,
-            string mexLocalId = null,
-            string mexFileName = null,
-            string mexContentChecksum = null,
-            string contentType = null,
-            string contentEncoding = null,
-            string accept = null)
-        {
-            var dictionary = new Dictionary<string, List<string>>();
-
-            if (!string.IsNullOrEmpty(mexTo))
-            {
-                dictionary.Add("mex-to", new List<string> { mexTo });
-            }
-
-            if (!string.IsNullOrEmpty(mexWorkflowId))
-            {
-                dictionary.Add("mex-workflowid", new List<string> { mexWorkflowId });
-            }
-
-            if (!string.IsNullOrEmpty(mexSubject))
-            {
-                dictionary.Add("mex-subject", new List<string> { mexSubject });
-            }
-
-            if (!string.IsNullOrEmpty(mexLocalId))
-            {
-                dictionary.Add("mex-localid", new List<string> { mexLocalId });
-            }
-
-            if (!string.IsNullOrEmpty(mexFileName))
-            {
-                dictionary.Add("mex-filename", new List<string> { mexFileName });
-            }
-
-            if (!string.IsNullOrEmpty(mexContentChecksum))
-            {
-                dictionary.Add("mex-content-checksum", new List<string> { mexContentChecksum });
-            }
-
-            if (!string.IsNullOrEmpty(contentType))
-            {
-                dictionary.Add("content-type", new List<string> { contentType });
-            }
-
-            if (!string.IsNullOrEmpty(contentEncoding))
-            {
-                dictionary.Add("content-encoding", new List<string> { contentEncoding });
-            }
-
-            if (!string.IsNullOrEmpty(accept))
-            {
-                dictionary.Add("accept", new List<string> { accept });
-            }
-
-            return dictionary;
-        }
-
-        private static List<string> RandomStringList(int count)
-        {
-            var list = new List<string>();
-
-            for (int i = 0; i < count; i++)
-            {
-                list.Add(GetRandomString());
-            }
-
-            return list;
-        }
-
         public static dynamic CreateRandomDynamicMeshMessageProperties(
             string mexTo,
             string mexWorkflowId,
@@ -240,9 +167,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             {
                 MessageId = GetRandomString(),
 
-                Headers = CreateHeaders(
+                Headers = ComposeMessage.CreateMeshMessage(
                     mexTo,
                     mexWorkflowId,
+                    fileContent,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -251,18 +179,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                     contentEncoding,
                     accept),
 
-                StringContent = GetRandomString(),
-                FileContent = fileContent,
                 TrackingInfo = GetRandomTrackingInfo()
             };
-        }
-
-        private Expression<Func<Message, bool>> SameMessageAs(Message expectedMessage)
-        {
-            return actualMessage =>
-                this.compareLogic.Compare(expectedMessage, actualMessage)
-                    .AreEqual;
-
         }
 
         private static string GetRandomString() =>
@@ -278,9 +196,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             }
             return messages;
         }
-
-        private static MeshMessage CreateRandomMeshMessage() =>
-            CreateMeshMessageFiller().Create();
 
         private static Filler<MeshMessage> CreateMeshMessageFiller()
         {

@@ -45,8 +45,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             Message randomMessage = new Message
             {
                 MessageId = dynamicMeshMessageProperties.MessageId,
-                Headers = dynamicMeshMessageProperties.Headers,
-                FileContent = dynamicMeshMessageProperties.FileContent,
+                Headers = dynamicMeshMessageProperties.Headers.Headers,
+                FileContent = dynamicMeshMessageProperties.Headers.FileContent,
                 TrackingInfo = MaptToMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
             };
 
@@ -55,8 +55,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             MeshMessage randomMeshMessage = new MeshMessage
             {
                 MessageId = dynamicMeshMessageProperties.MessageId,
-                Headers = dynamicMeshMessageProperties.Headers,
-                FileContent = dynamicMeshMessageProperties.FileContent,
+                Headers = dynamicMeshMessageProperties.Headers.Headers,
+                FileContent = dynamicMeshMessageProperties.Headers.FileContent,
                 TrackingInfo = MaptToMeshMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
             };
 
@@ -141,8 +141,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             var randomMessage = new Message
             {
                 MessageId = dynamicMeshMessageProperties.MessageId,
-                Headers = dynamicMeshMessageProperties.Headers,
-                FileContent = dynamicMeshMessageProperties.FileContent,
+                Headers = dynamicMeshMessageProperties.Headers.Headers,
+                FileContent = dynamicMeshMessageProperties.Headers.FileContent,
                 TrackingInfo = MaptToMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
             };
 
@@ -152,8 +152,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             MeshMessage randomMeshMessage = new MeshMessage
             {
                 MessageId = dynamicMeshMessageProperties.MessageId,
-                Headers = dynamicMeshMessageProperties.Headers,
-                FileContent = dynamicMeshMessageProperties.FileContent,
+                Headers = dynamicMeshMessageProperties.Headers.Headers,
+                FileContent = dynamicMeshMessageProperties.Headers.FileContent,
                 TrackingInfo = MaptToMeshMessageTrackingInfo(dynamicMeshMessageProperties.TrackingInfo)
             };
 

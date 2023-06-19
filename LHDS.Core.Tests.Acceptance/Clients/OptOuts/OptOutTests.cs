@@ -36,7 +36,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             this.meshBrokerMock = new Mock<IMeshBroker>();
             this.csvMapperBroker = new CsvMapperBroker();
 
-            var environmentName = "Development";
+            string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var args = Environment.GetCommandLineArgs();
+            var environmentArg = args.FirstOrDefault(arg => arg.StartsWith("--environment="));
+
+            var environmentName = !string.IsNullOrEmpty(aspNetCoreEnvironment)
+                ? aspNetCoreEnvironment
+                : !string.IsNullOrEmpty(environmentArg)
+                    ? environmentArg
+                    : "Development";
 
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)

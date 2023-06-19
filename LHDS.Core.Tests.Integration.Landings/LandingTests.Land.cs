@@ -55,7 +55,8 @@ namespace LHDS.Core.Tests.Integration.Landings
             {
                 loggingBroker.LogError(ex);
                 Console.WriteLine(ex.Message);
-                Assert.Fail($"{ex.Message}, {ex.InnerException.Message}");
+                
+                 Assert.Fail($"{ex.Message}, {ex.InnerException.Message}");
             }
         }
     }

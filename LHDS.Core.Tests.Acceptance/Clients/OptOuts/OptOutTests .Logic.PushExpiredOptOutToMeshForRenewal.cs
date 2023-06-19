@@ -23,7 +23,6 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 {
-
     public partial class OptOutTests
     {
         [Fact]

@@ -10,7 +10,7 @@ namespace LHDS.Core.Models.Orchestrations.Downloads.Exceptions
     {
         public DownloadOrchestrationValidationException(Xeption innerException)
             : base(
-                message: "Audit validation errors occurred, please try again.",
+                message: "Download orchestration validation errors occurred, please try again.",
                 innerException)
         { }
     }

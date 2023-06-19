@@ -19,11 +19,11 @@ namespace LHDS.Core.Clients
             this.decryptionOrchestrationService = decryptionOrchestrationService;
         }
 
-        public async ValueTask DecryptAsync(string fileName)
+        public async ValueTask<string> DecryptAsync(string fileName)
         {
             try
             {
-                await decryptionOrchestrationService.DecryptAsync(fileName);
+                return await decryptionOrchestrationService.DecryptAsync(fileName);
             }
             catch (DecryptionOrchestrationValidationException decryptionOrchestrationValidationException)
             {

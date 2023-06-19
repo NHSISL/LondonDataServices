@@ -59,10 +59,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                   {
                       Id = randomGuid,
                       FileName = document.FileName,
-                      SupplierId = Guid.Parse(this.inMemoryConfiguration["LandingSupplierId"]),
-                      EncryptedFileName = $"/encrypted{filename}",
+                      SupplierId = landingConfiguration.LandingSupplierId,
+                      EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
+
                       DecryptedFileName =
-                        $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                        $"/{landingConfiguration.DecryptedFolder}"
+                            + $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+
                       Decrypted = false,
                       LastSeen = randomDateTime,
                       FileDeleted = false,
@@ -109,10 +112,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                   {
                       Id = randomGuid,
                       FileName = document.FileName,
-                      SupplierId = Guid.Parse(this.inMemoryConfiguration["LandingSupplierId"]),
-                      EncryptedFileName = $"/encrypted{filename}",
+                      SupplierId = landingConfiguration.LandingSupplierId,
+                      EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
+
                       DecryptedFileName =
-                        $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                        $"/{landingConfiguration.DecryptedFolder}"
+                            + $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+
                       Decrypted = false,
                       LastSeen = randomDateTime,
                       FileDeleted = false,
@@ -177,28 +183,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 this.ingestionTrackingServiceMock.Setup(service =>
                     service.RetrieveAllIngestionTrackings())
                         .Returns(externalIngestionTrackingsFound.AsQueryable());
-
-                this.downloadServiceMock.Setup(service =>
-                   service.RetrieveDownloadByFileNameAsync(document.FileName))
-                       .ReturnsAsync(document);
-
-                this.dateTimeBrokerMock.Setup(broker =>
-                    broker.GetCurrentDateTimeOffset())
-                        .Returns(randomDateTime);
-
-                var filename = document.FileName.StartsWith('/')
-                    ? document.FileName
-                    : "/" + document.FileName;
-
-                IngestionTracking storageIngestionTracking = externalIngestionTrackingsFound
-                    .First(ingestionTracking => ingestionTracking.FileName == document.FileName).DeepClone();
-
-                IngestionTracking modifiedIngestionTracking = storageIngestionTracking.DeepClone();
-                modifiedIngestionTracking.LastSeen = randomDateTime;
-
-                this.ingestionTrackingServiceMock.Setup(service =>
-                    service.ModifyIngestionTrackingAsync(modifiedIngestionTracking))
-                        .ReturnsAsync(storageIngestionTracking);
             }
 
             // when
@@ -211,28 +195,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
             foreach (var document in externalDocuments)
             {
-                IngestionTracking storageIngestionTracking = externalIngestionTrackingsFound
-                    .First(ingestionTracking => ingestionTracking.FileName == document.FileName).DeepClone();
-
-                IngestionTracking modifiedIngestionTracking = storageIngestionTracking.DeepClone();
-                modifiedIngestionTracking.LastSeen = randomDateTime;
-
                 this.ingestionTrackingServiceMock.Verify(service =>
                     service.RetrieveAllIngestionTrackings(),
                         Times.Once);
-
-                this.dateTimeBrokerMock.Verify(broker =>
-                    broker.GetCurrentDateTimeOffset(),
-                        Times.Once);
-
-                this.ingestionTrackingServiceMock.Verify(service =>
-                    service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(
-                        modifiedIngestionTracking))),
-                            Times.Once);
-
-                this.downloadServiceMock.Verify(service =>
-                   service.RetrieveDownloadByFileNameAsync(document.FileName),
-                       Times.Never);
             }
 
             this.documentServiceMock.VerifyNoOtherCalls();
@@ -320,50 +285,58 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         [Fact]
         public async Task ShouldNotProcessNamedDocumentsIfFileNameNotExistsAsync()
         {
-            // given
-            string nonExistentFileName = GetRandomMessage();
-            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            Document randomDocument = CreateRandomDocument();
-            Document externalDocument = randomDocument;
-            IngestionTracking externalIngestionTracking = CreateRandomIngestionTracking(randomDateTime);
-            List<IngestionTracking> externalIngestionTrackingsFound = new List<IngestionTracking> { externalIngestionTracking };
+            try
+            {
+                // given
+                string nonExistentFileName = GetRandomMessage();
+                DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+                Document randomDocument = CreateRandomDocument();
+                Document externalDocument = randomDocument;
+                IngestionTracking externalIngestionTracking = CreateRandomIngestionTracking(randomDateTime);
+                List<IngestionTracking> externalIngestionTrackingsFound = new List<IngestionTracking> { externalIngestionTracking };
 
-            this.ingestionTrackingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
-                    .Returns(externalIngestionTrackingsFound.AsQueryable());
+                this.ingestionTrackingServiceMock.Setup(service =>
+                    service.RetrieveAllIngestionTrackings())
+                        .Returns(externalIngestionTrackingsFound.AsQueryable());
 
-            // when
-            await this.downloadOrchestrationService.ProcessAsync(nonExistentFileName);
+                // when
+                await this.downloadOrchestrationService.ProcessAsync(nonExistentFileName);
 
-            // then
-            this.ingestionTrackingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
-                    Times.Once);
+                // then
+                this.ingestionTrackingServiceMock.Verify(service =>
+                    service.RetrieveAllIngestionTrackings(),
+                        Times.Once);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Never);
+                this.dateTimeBrokerMock.Verify(broker =>
+                    broker.GetCurrentDateTimeOffset(),
+                        Times.Never);
 
-            this.documentServiceMock.Verify(service =>
-                service.RemoveDocumentByFileNameAsync(nonExistentFileName),
-                    Times.Never);
+                this.documentServiceMock.Verify(service =>
+                    service.RemoveDocumentByFileNameAsync(nonExistentFileName),
+                        Times.Never);
 
-            this.documentServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.IsAny<Document>()),
-                    Times.Never);
+                this.documentServiceMock.Verify(service =>
+                    service.AddDocumentAsync(It.IsAny<Document>()),
+                        Times.Never);
 
-            this.ingestionTrackingServiceMock.Verify(service =>
-                service.ModifyIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
-                    Times.Never);
+                this.ingestionTrackingServiceMock.Verify(service =>
+                    service.ModifyIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
+                        Times.Never);
 
-            this.auditServiceMock.Verify(service =>
-                service.AddAuditAsync(It.IsAny<Audit>()),
-                    Times.Never);
+                this.auditServiceMock.Verify(service =>
+                    service.AddAuditAsync(It.IsAny<Audit>()),
+                        Times.Never);
 
-            this.documentServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
+                this.documentServiceMock.VerifyNoOtherCalls();
+                this.dateTimeBrokerMock.VerifyNoOtherCalls();
+                this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+                this.loggingBrokerMock.VerifyNoOtherCalls();
+            }
+            catch (Exception ex)
+            {
+                output.WriteLine($"{ex.Message}, {ex.InnerException.Message}, ");
+                throw ex;
+            }
         }
 
         [Fact]

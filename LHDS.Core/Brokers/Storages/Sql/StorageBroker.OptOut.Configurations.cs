@@ -17,7 +17,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<OptOut>()
-                .Property(optOut => optOut.OptOutStatus)
+                .Property(optOut => optOut.Status)
                 .HasMaxLength(50)
                 .IsRequired();
 

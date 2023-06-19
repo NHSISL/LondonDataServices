@@ -28,6 +28,59 @@ steps:
       projects: "**/*.csproj"
       includeNuGetOrg: true
 
+  - task: DotNetCoreCLI@2
+    displayName: C# Unit Tests
+    inputs:
+      command: 'test'
+      projects: '**/*.Tests.Unit.csproj'
+
+  - task: Bash@3
+    enabled: true
+    displayName: Install Docker
+    inputs:
+      targetType: inline
+      script: >-
+        sudo apt update
+          
+        sudo apt install apt-transport-https ca-certificates curl
+        software-properties-common -y
+        
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo
+        apt-key add -
+        
+        sudo add-apt-repository "deb [arch=amd64]
+        https://download.docker.com/linux/ubuntu bionic stable"
+        
+        sudo add-apt-repository "deb [arch=amd64]
+        https://download.docker.com/linux/ubuntu bionic stable"
+        
+        sudo apt update
+        
+        apt-cache policy docker-ce
+        
+        sudo apt install docker-ce -y
+        
+        sudo systemctl start docker
+
+  - task: Bash@3
+    enabled: true
+    displayName: Pulling Required Docker Images for SQL Server
+    inputs:
+      targetType: inline
+      script: |-
+        sudo docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=1Password" \
+            -p 1433:1433 --name sql1 --hostname sql1 \
+            -d \
+            mcr.microsoft.com/mssql/server:2022-latest
+
+  - task: DotNetCoreCLI@2
+    displayName: C# Acceptance Tests
+    inputs:
+      command: 'test'
+      projects: '**/*.Tests.Acceptance.csproj'
+      arguments: '--environment ASPNETCORE_ENVIRONMENT=ContinuousIntegration'
+      envVars: 'ASPNETCORE_ENVIRONMENT=ContinuousIntegration'
+
   - task: Npm@1
     displayName: NPM Install
     inputs:
@@ -35,23 +88,38 @@ steps:
       command: 'install'
 
   - task: DotNetCoreCLI@2
-    displayName: "Dotnet Build"
+    displayName: "Dotnet Build (API)"
     inputs:
       command: 'build'
-      projects: '**/*.csproj'
+      projects: '**/LHDS.AdminPortal.Api.csproj'
+      arguments: --output $(System.DefaultWorkingDirectory)/publish_output_website_api --configuration Release
 
   - task: DotNetCoreCLI@2
-    displayName: "Dotnet Build (EMIS Download)"
+    displayName: "Dotnet Build (Frontend)"
+    inputs:
+      command: 'build'
+      projects: '**/LHDS.AdminPortal.Web.csproj'
+      arguments: --output $(System.DefaultWorkingDirectory)/publish_output_website_frontend --configuration Release
+
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Build (EMIS Landing Function)"
     inputs:
       command: 'build'
       projects: '**/LHDS.Functions.Landings.Emis.csproj'
       arguments: --output $(System.DefaultWorkingDirectory)/publish_output_emis_func --configuration Release
 
   - task: DotNetCoreCLI@2
-    displayName: C# Unit Tests
+    displayName: "Dotnet Build (Opt-Out Function)"
     inputs:
-      command: 'test'
-      projects: '**/*.Tests.Unit.csproj'
+      command: 'build'
+      projects: '**/LHDS.Functions.OptOut.csproj'
+      arguments: --output $(System.DefaultWorkingDirectory)/publish_output_optout_func --configuration Release
+  
+  #- task: DotNetCoreCLI@2
+  #  displayName: C# Integration Tests
+  #  inputs:
+  #    command: 'test'
+  #    projects: '**/*.Tests.Integration.*.csproj'
       
   - task: Npm@1 
     displayName: Run Code linting
@@ -60,8 +128,77 @@ steps:
       workingDir: $(webProjectName)/ClientApp
       customCommand: 'run lint'
 
+  #- task: Npm@1
+  #  displayName: Client Tests
+  #  inputs:
+  #    command: 'custom'
+  #    workingDir: $(webProjectName)/ClientApp
+  #    customCommand: 'run test:ci'    
+
+  #- task: DotNetCoreCLI@2
+  #  displayName: "Dotnet Publish (Debug)"
+  #  condition: ne(variables['Build.Reason'], 'PullRequest')
+  #  inputs:
+  #    command: "publish"
+  #    publishWebProjects: true
+  #    projects: "**/*.csproj"
+  #    arguments: "-o $(Build.ArtifactStagingDirectory)/debug --configuration Debug"
+  #    zipAfterPublish: true
+  #    modifyOutputPath: true
+ 
+  #- task: DotNetCoreCLI@2
+  #  displayName: "Dotnet Publish (Acceptance)"
+  #  condition: ne(variables['Build.Reason'], 'PullRequest')
+  #  inputs:
+  #    command: "publish"
+  #    publishWebProjects: true
+  #    projects: "**/*.csproj"
+  #    arguments: "-o $(Build.ArtifactStagingDirectory)/acceptance --configuration Acceptance"
+  #    zipAfterPublish: true
+  #    modifyOutputPath: true
+
+  #- task: DotNetCoreCLI@2
+  #  displayName: "Dotnet Publish (Release)"
+  #  condition: ne(variables['Build.Reason'], 'PullRequest')
+  #  inputs:
+  #    command: "publish"
+  #    publishWebProjects: true
+  #    projects: "**/*.csproj"
+  #    arguments: "-o $(Build.ArtifactStagingDirectory)/release --configuration Release"
+  #    zipAfterPublish: true
+  #    modifyOutputPath: true
+
+  #- task: PublishBuildArtifacts@1
+  #  condition: ne(variables['Build.Reason'], 'PullRequest')
+  #  displayName: "Publish Build Artifacts"
+  #  inputs:
+  #    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+  #    ArtifactName: 'drop'
+  #    publishLocation: 'Container'
+
   - task: ArchiveFiles@2
-    displayName: 'Archive files'
+    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    displayName: 'Archive files - API'
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_website_api'
+      includeRootFolder: false
+      archiveType: zip
+      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_website_api.zip
+      replaceExistingArchive: true
+
+  - task: ArchiveFiles@2
+    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    displayName: 'Archive files - Frontend'
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_website_frontend'
+      includeRootFolder: false
+      archiveType: zip
+      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_website_frontend.zip
+      replaceExistingArchive: true
+
+  - task: ArchiveFiles@2
+    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    displayName: 'Archive files - Emis Function'
     inputs:
       rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_emis_func'
       includeRootFolder: false
@@ -69,5 +206,32 @@ steps:
       archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_emis_func.zip
       replaceExistingArchive: true
 
+  - task: ArchiveFiles@2
+    condition: ne(variables['Build.Reason'], 'PullRequest')
+    displayName: 'Archive files - OptOut Function'
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_optout_func'
+      includeRootFolder: false
+      archiveType: zip
+      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_optout_func.zip
+      replaceExistingArchive: true
+
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_website_api.zip
+    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    displayName: 'Publish Artifact - API'
+    artifact: drop-api
+
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_website_frontend.zip
+    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    displayName: 'Publish Artifact - Frontend'
+    artifact: drop-frontend
+
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_emis_func.zip
-    artifact: drop
+    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    displayName: 'Publish Artifact - Emis Function'
+    artifact: drop-emis-func
+
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_optout_func.zip
+    condition: ne(variables['Build.Reason'], 'PullRequest')
+    displayName: 'Publish Artifact - Opt-Out Function'
+    artifact: drop-optout-func

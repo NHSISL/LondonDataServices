@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
-using LHDS.Core.Models.Foundations.Mesh.Exceptions;
-using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using Moq;
 using Xunit;
@@ -21,12 +19,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         [InlineData("")]
         [InlineData(" ")]
         public async Task ShouldThrowValidationExceptionOnRetrieveUpdatedOptOutStatusIfRequiredRetreivedMessageHeaderIsInvalidAndLogItAsync(
-            string invalidInput)
+                string invalidInput)
         {
             // given
             string randomString = GetRandomString();
             MeshMessage randomMessage = CreateRandomMessage();
             randomMessage.MessageId = randomString;
+            randomMessage.Headers["mex-workflowid"] = new List<string> { this.meshConfiguration.WorkflowId };
             MeshMessage retrievedMessage = randomMessage;
             List<string> retrievedMessageIds = new List<string> { retrievedMessage.MessageId };
 
@@ -34,22 +33,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 service.RetrieveMessageIdsFromInboxAsync())
                     .ReturnsAsync(retrievedMessageIds);
 
-            retrievedMessage.Headers.Remove("Mex-LocalID");
+            retrievedMessage.Headers.Remove("mex-localid");
 
-            var invalidMeshMessageException =
-                new InvalidMeshMessageException();
+            var invalidMeshMessageOrchestrationException =
+                new InvalidMeshMessageOrchestrationException();
 
             this.meshProcessingServiceMock.Setup(service =>
-                service.RetrieveAndAcknowledgeMessageByIdAsync(It.IsAny<string>()))
+                service.RetrieveMessageByIdAsync(It.IsAny<string>()))
                     .ReturnsAsync(retrievedMessage);
 
-            invalidMeshMessageException.AddData(
-                key: "Mex-LocalID",
+            invalidMeshMessageOrchestrationException.AddData(
+                key: "mex-localid",
                 values: "Header value is required");
 
             var expectedOptOutOrchestrationValidationException =
             new OptOutOrchestrationValidationException(
-                innerException: invalidMeshMessageException);
+                innerException: invalidMeshMessageOrchestrationException);
 
             // when
             ValueTask<List<MeshMessage>> retrieveUpdatedOptOutStatusTask =
@@ -63,16 +62,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             actualOptOutOrchestrationValidationException.Should()
                 .BeEquivalentTo(expectedOptOutOrchestrationValidationException);
 
-            this.csvMapperProcessingServiceMock.Verify(processings =>
-                    processings.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<string>(), It.IsAny<bool>()),
-                        Times.Once());
-
             this.meshProcessingServiceMock.Verify(service =>
                 service.RetrieveMessageIdsFromInboxAsync(),
                     Times.Once);
 
             this.meshProcessingServiceMock.Verify(service =>
-                service.RetrieveAndAcknowledgeMessageByIdAsync(It.IsAny<string>()),
+                service.RetrieveMessageByIdAsync(It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -81,7 +76,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                         Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
-            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
             this.meshProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

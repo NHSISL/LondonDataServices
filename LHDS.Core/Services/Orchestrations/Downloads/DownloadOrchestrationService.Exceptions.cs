@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
@@ -15,13 +16,97 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 {
     public partial class DownloadOrchestrationService
     {
-        private delegate ValueTask ReturningProcesssFunction();
+        private delegate ValueTask<string> ReturningStringFunction();
+        private delegate ValueTask<List<string>> ReturningStringListFunction();
 
-        private async ValueTask TryCatch(ReturningProcesssFunction returningProcessFunction)
+        private async ValueTask<List<string>> TryCatch(ReturningStringListFunction returningStringListFunction)
         {
             try
             {
-                await returningProcessFunction();
+                return await returningStringListFunction();
+            }
+            catch (InvalidArgumentDownloadOrchestrationException invalidArgumentDownloadOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentDownloadOrchestrationException);
+            }
+            catch (DocumentValidationException documentValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(documentValidationException);
+            }
+            catch (DocumentDependencyValidationException documentDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(documentDependencyValidationException);
+            }
+            catch (DownloadValidationException downloadValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(downloadValidationException);
+            }
+            catch (DownloadDependencyValidationException downloadDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(downloadDependencyValidationException);
+            }
+            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(ingestionTrackingValidationException);
+            }
+            catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(ingestionTrackingDependencyValidationException);
+            }
+            catch (AuditValidationException auditValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(auditValidationException);
+            }
+            catch (AuditDependencyValidationException auditDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(auditDependencyValidationException);
+            }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                throw CreateAndLogDependencyException(documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                throw CreateAndLogDependencyException(documentServiceException);
+            }
+            catch (DownloadDependencyException downloadDependencyException)
+            {
+                throw CreateAndLogDependencyException(downloadDependencyException);
+            }
+            catch (DownloadServiceException downloadServiceException)
+            {
+                throw CreateAndLogDependencyException(downloadServiceException);
+            }
+            catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
+            {
+                throw CreateAndLogDependencyException(ingestionTrackingDependencyException);
+            }
+            catch (IngestionTrackingServiceException ingestionTrackingServiceException)
+            {
+                throw CreateAndLogDependencyException(ingestionTrackingServiceException);
+            }
+            catch (AuditDependencyException auditDependencyException)
+            {
+                throw CreateAndLogDependencyException(auditDependencyException);
+            }
+            catch (AuditServiceException auditServiceException)
+            {
+                throw CreateAndLogDependencyException(auditServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedDownloadServiceException =
+                    new FailedDownloadOrchestrationServiceException(exception);
+
+                throw CreateAndLogServiceException(failedDownloadServiceException);
+            }
+        }
+
+        private async ValueTask<string> TryCatch(ReturningStringFunction returningStringFunction)
+        {
+            try
+            {
+                return await returningStringFunction();
             }
             catch (InvalidArgumentDownloadOrchestrationException invalidArgumentDownloadOrchestrationException)
             {

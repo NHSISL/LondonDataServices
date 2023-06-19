@@ -2,21 +2,30 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
-using LHDS.Core.Providers.Downloads.Extensions;
+using LHDS.Core.Providers.Cryptography.Extensions;
+using LHDS.Core.Services.Foundations.Documents;
+using LHDS.Core.Services.Foundations.IngestionTrackings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Xunit.Abstractions;
 
-namespace LHDS.Core.Tests.Integration.Landings
+namespace LHDS.Core.Tests.Integration.Decryptions
 {
-    internal class Program
+    public partial class DecryptionTests
     {
-        static async Task Main(string[] args)
+        private readonly ITestOutputHelper output;
+        private readonly IDecryptionClient decryptionClient;
+        private readonly IDocumentService documentService;
+        private readonly IIngestionTrackingService ingestionTrackingService;
+
+        public DecryptionTests(ITestOutputHelper output)
         {
-            var environmentName = args.FirstOrDefault() ?? "Development";
+            this.output = output;
+
+            var environmentName = "Development";
 
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -33,25 +42,13 @@ namespace LHDS.Core.Tests.Integration.Landings
                     builder.AddConsole();
                     builder.AddApplicationInsights();
                 })
-                .AddLandingClient(configuration)
-                .UseFtpDownloadProvider(configuration, builder => builder.AddFtpDownloadProvider())
+                .AddDecryptionClient(configuration)
+                .UseGpgCryptographyProvider(configuration, builder => builder.AddGpgCryptographyProvider())
                 .BuildServiceProvider();
 
-            var landingClient = serviceProvider.GetService<ILandingClient>();
-
-            try
-            {
-                if (landingClient != null)
-                {
-                    await landingClient.ProcessAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                ILoggingBroker logger = (ILoggingBroker)serviceProvider.GetService(typeof(ILoggingBroker));
-                logger.LogError(ex);
-                Console.WriteLine(ex.Message);
-            }
+            decryptionClient = serviceProvider.GetService<IDecryptionClient>();
+            ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
+            documentService = serviceProvider.GetService<IDocumentService>();
         }
     }
 }

@@ -63,17 +63,17 @@ namespace LHDS.Core.Services.Processings.Mesh
             {
                 throw CreateAndLogValidationException(exception);
             }
+            catch (InvalidMeshMessageProcessingException invalidMeshMessageProcessingException)
+            {
+                throw CreateAndLogValidationException(invalidMeshMessageProcessingException);
+            }
             catch (MeshValidationException meshValidationException)
             {
                 throw CreateAndLogDependencyValidationException(meshValidationException);
             }
-            catch (NullMeshProcessingException exception)
+            catch (NullMeshMessageProcessingException exception)
             {
                 throw CreateAndLogValidationException(exception);
-            }
-            catch (InvalidMeshMessageException invalidMeshException)
-            {
-                throw CreateAndLogValidationException(invalidMeshException);
             }
             catch (MeshDependencyValidationException meshDependencyValidationException)
             {

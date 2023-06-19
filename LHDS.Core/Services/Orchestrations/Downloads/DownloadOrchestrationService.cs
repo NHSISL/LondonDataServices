@@ -17,6 +17,7 @@ using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.Suppliers;
 
 namespace LHDS.Core.Services.Orchestrations.Downloads
 {
@@ -26,6 +27,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         private readonly IDownloadService downloadService;
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly IAuditService auditService;
+        private readonly ISupplierService supplierService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
@@ -90,8 +92,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                       FileName = document.FileName,
                                       SupplierId = supplierId,
                                       EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
+
                                       DecryptedFileName =
-                                        $"/{landingConfiguration.DecryptedFolder}{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                                        $"/{landingConfiguration.DecryptedFolder}" +
+                                        $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+
                                       Decrypted = false,
                                       LastSeen = currentDateTime,
                                       FileDeleted = false,
@@ -110,8 +115,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                     FileName = newIngestionTracking.EncryptedFileName
                                 };
 
-                                await this.documentService.AddDocumentAsync(newBlobDocument);
                                 await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
+                                await this.documentService.AddDocumentAsync(newBlobDocument);
                                 LogAudit(newIngestionTracking, document, currentDateTime, "Landed");
 
                                 return newIngestionTracking.DecryptedFileName;

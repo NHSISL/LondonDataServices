@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Logging;
 
 namespace LHDS.Functions.Landings.Emis
 {
@@ -16,16 +15,13 @@ namespace LHDS.Functions.Landings.Emis
     {
         private readonly ILoggingBroker loggingBroker;
         private readonly IDecryptionClient decryptionClient;
-        private readonly ILogger logger;
 
         public DecryptionEventFunction(
             ILoggingBroker loggingBroker,
-            IDecryptionClient decryptionClient,
-            ILoggerFactory loggerFactory)
+            IDecryptionClient decryptionClient)
         {
             this.loggingBroker = loggingBroker;
             this.decryptionClient = decryptionClient;
-            this.logger = loggerFactory.CreateLogger<EmisLandingTimerFunction>();
         }
 
         [Function("DecryptionEventFunction")]
@@ -55,7 +51,6 @@ namespace LHDS.Functions.Landings.Emis
             catch (Exception ex)
             {
                 this.loggingBroker.LogError(ex);
-                this.logger.LogError(ex, ex.Message);
                 throw;
             }
         }

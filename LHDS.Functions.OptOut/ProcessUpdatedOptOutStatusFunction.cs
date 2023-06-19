@@ -3,12 +3,10 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Logging;
 
 namespace LHDS.Functions.OptOut
 {
@@ -16,16 +14,13 @@ namespace LHDS.Functions.OptOut
     {
         private readonly ILoggingBroker loggingBroker;
         private readonly IOptOutClient optOutClient;
-        private readonly ILogger logger;
 
         public ProcessUpdatedOptOutStatusFunction(
             ILoggingBroker loggingBroker,
-            IOptOutClient optOutClient,
-            ILoggerFactory loggerFactory)
+            IOptOutClient optOutClient)
         {
             this.loggingBroker = loggingBroker;
             this.optOutClient = optOutClient;
-            this.logger = loggerFactory.CreateLogger<ProcessUpdatedOptOutStatusFunction>();
         }
 
         [Function("ProcessUpdatedOptOutStatusFunction")]
@@ -43,12 +38,10 @@ namespace LHDS.Functions.OptOut
             catch (Exception ex)
             {
                 this.loggingBroker.LogError(ex);
-                this.logger.LogError(ex, ex.Message);
                 throw;
             }
 
             this.loggingBroker.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
-            this.logger.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
         }
     }
 

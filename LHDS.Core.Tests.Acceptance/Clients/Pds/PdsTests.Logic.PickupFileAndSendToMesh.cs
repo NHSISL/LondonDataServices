@@ -81,7 +81,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
                     "application/json"),
                         Times.Once);
 
+            await this.pdsAuditService.RemovePdsAuditByIdAsync(actualPdsAudit.Id);
+
             this.meshBrokerMock.VerifyNoOtherCalls();
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

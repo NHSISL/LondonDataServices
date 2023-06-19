@@ -8,6 +8,6 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 {
     public interface IDecryptionOrchestrationService
     {
-        ValueTask DecryptAsync(string fileName);
+        ValueTask<string> DecryptAsync(string fileName);
     }
 }

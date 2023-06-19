@@ -12,11 +12,12 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
-using Microsoft.Extensions.Configuration;
+using LHDS.Core.Services.Foundations.Suppliers;
 
 namespace LHDS.Core.Services.Orchestrations.Downloads
 {
@@ -26,10 +27,12 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         private readonly IDownloadService downloadService;
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly IAuditService auditService;
+        private readonly ISupplierService supplierService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
         private readonly Guid supplierId;
+        private readonly LandingConfiguration landingConfiguration;
 
         public DownloadOrchestrationService(
             IDocumentService documentService,
@@ -39,7 +42,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker,
-            IConfiguration configuration)
+            LandingConfiguration landingConfiguration)
         {
             this.documentService = documentService;
             this.downloadService = downloadService;
@@ -48,21 +51,24 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
-            this.supplierId = Guid.Parse(configuration["LandingSupplierId"]);
+            this.supplierId = landingConfiguration.LandingSupplierId;
+            this.landingConfiguration = landingConfiguration;
         }
 
-        public ValueTask ProcessAsync() =>
+        public ValueTask<List<string>> ProcessAsync() =>
             TryCatch(async () =>
             {
                 var exceptions = new List<Exception>();
                 List<Document> retrievedDocuments =
                 await this.downloadService.RetrieveListOfDocumentsToProcessAsync();
 
+                List<string> files = new List<string>();
+
                 foreach (var document in retrievedDocuments)
                 {
                     try
                     {
-                        await TryCatch(async () =>
+                        string decryptedFile = await TryCatch(async () =>
                         {
                             IngestionTracking maybeIngestionTracking =
                                 this.ingestionTrackingService.RetrieveAllIngestionTrackings()
@@ -85,9 +91,12 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                       Id = this.identifierBroker.GetIdentifier(),
                                       FileName = document.FileName,
                                       SupplierId = supplierId,
-                                      EncryptedFileName = $"/encrypted{filename}",
+                                      EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
+
                                       DecryptedFileName =
-                                        $"/decrypted{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                                        $"/{landingConfiguration.DecryptedFolder}" +
+                                        $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+
                                       Decrypted = false,
                                       LastSeen = currentDateTime,
                                       FileDeleted = false,
@@ -106,18 +115,20 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                     FileName = newIngestionTracking.EncryptedFileName
                                 };
 
-                                await this.documentService.AddDocumentAsync(newBlobDocument);
                                 await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
+                                await this.documentService.AddDocumentAsync(newBlobDocument);
                                 LogAudit(newIngestionTracking, document, currentDateTime, "Landed");
+
+                                return newIngestionTracking.DecryptedFileName;
                             }
-                            else
-                            {
-                                var currentDateTime = dateTimeBroker.GetCurrentDateTimeOffset();
-                                maybeIngestionTracking.LastSeen = currentDateTime;
-                                maybeIngestionTracking.UpdatedDate = currentDateTime;
-                                await ingestionTrackingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);
-                            }
+
+                            return null;
                         });
+
+                        if (decryptedFile != null)
+                        {
+                            files.Add(decryptedFile);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -131,9 +142,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 {
                     throw new AggregateException($"Unable to land {exceptions.Count} document(s)", exceptions);
                 }
+
+                return files;
             });
 
-        public async ValueTask ProcessAsync(string fileName) =>
+        public async ValueTask<string> ProcessAsync(string fileName) =>
             await TryCatch(async () =>
             {
                 ValidateFileName(fileName);
@@ -166,7 +179,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         document: externalDocument,
                         currentDateTime,
                         message: "Refreshed");
+
+                    return maybeIngestionTracking.DecryptedFileName;
                 }
+
+                return null;
             });
 
         private void LogAudit(

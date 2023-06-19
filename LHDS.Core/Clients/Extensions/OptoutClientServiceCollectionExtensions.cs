@@ -40,6 +40,21 @@ namespace LHDS.Core.Clients.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
+            return AddOptOutClient(services, configuration, acceptanceTest: false);
+        }
+
+        internal static IServiceCollection AddOptOutClientForAcceptance(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            return AddOptOutClient(services, configuration, acceptanceTest: true);
+        }
+
+        private static IServiceCollection AddOptOutClient(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            bool acceptanceTest)
+        {
             var blobServiceUri = GetSettings(configuration, "BlobStorage:azureBlobServiceUri", true);
             var azureTenantId = GetSettings(configuration, "BlobStorage:azureTenantId", true);
 
@@ -77,17 +92,59 @@ namespace LHDS.Core.Clients.Extensions
                     configuration, "MeshConfiguration:IntermediateCertificates", false),
 
                 ClientCertificate = GetCertificate(configuration, "MeshConfiguration:ClientCertificate", true),
+
+                MaxChunkSizeInMegabytes = int.Parse(
+                    GetSettings(configuration, "MeshConfiguration:MaxChunkSizeInMegabytes", true)),
             };
 
             services.AddSingleton(meshConfig);
 
-            AddClients(services, blobServiceUri, azureTenantId, optOptOutConfiguration);
-            AddBrokers(services);
-            AddOrchestrations(services);
-            AddProcessingServices(services);
+            AddBrokers(services, acceptanceTest);
             AddServices(services);
+            AddProcessingServices(services);
+            AddOrchestrations(services);
+            AddClients(services, blobServiceUri, azureTenantId, optOptOutConfiguration);
 
             return services;
+        }
+
+        private static void AddBrokers(IServiceCollection services, bool acceptanceTest)
+        {
+            services.AddTransient<ILoggingBroker, LoggingBroker>();
+            services.AddTransient<ICsvMapperBroker, CsvMapperBroker>();
+            services.AddTransient<IDateTimeBroker, DateTimeBroker>();
+            services.AddTransient<IIdentifierBroker, IdentifierBroker>();
+            services.AddTransient<IStorageBroker, StorageBroker>();
+
+            if (!acceptanceTest)
+            {
+                services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
+                services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
+                services.AddTransient<IMeshBroker, MeshBroker>();
+            }
+        }
+
+        private static void AddServices(IServiceCollection services)
+        {
+            services.AddTransient<IAuditService, AuditService>();
+            services.AddTransient<ICsvMapperService, CsvMapperService>();
+            services.AddTransient<IDocumentService, DocumentService>();
+            services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
+            services.AddTransient<IMeshService, MeshService>();
+            services.AddTransient<IOptOutService, OptOutService>();
+        }
+
+        private static void AddProcessingServices(IServiceCollection services)
+        {
+            services.AddTransient<ICsvMapperProcessingService, CsvMapperProcessingService>();
+            services.AddTransient<IDocumentProcessingService, DocumentProcessingService>();
+            services.AddTransient<IMeshProcessingService, MeshProcessingService>();
+            services.AddTransient<IOptOutProcessingService, OptOutProcessingService>();
+        }
+
+        private static void AddOrchestrations(IServiceCollection services)
+        {
+            services.AddTransient<IOptOutOrchestrationService, OptOutOrchestrationService>();
         }
 
         private static void AddClients(IServiceCollection services, string blobServiceUri, string azureTenantId, OptOutConfiguration optOptOutConfiguration)
@@ -112,41 +169,6 @@ namespace LHDS.Core.Clients.Extensions
             services.AddSingleton(optOptOutConfiguration);
             services.AddTransient<IOptOutClient, OptOutClient>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
-        }
-
-        private static void AddBrokers(IServiceCollection services)
-        {
-            services.AddTransient<ILoggingBroker, LoggingBroker>();
-            services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
-            services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
-            services.AddTransient<ICsvMapperBroker, CsvMapperBroker>();
-            services.AddTransient<IDateTimeBroker, DateTimeBroker>();
-            services.AddTransient<IIdentifierBroker, IdentifierBroker>();
-            services.AddTransient<IMeshBroker, MeshBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
-        }
-
-        private static void AddOrchestrations(IServiceCollection services)
-        {
-            services.AddTransient<IOptOutOrchestrationService, OptOutOrchestrationService>();
-        }
-
-        private static void AddProcessingServices(IServiceCollection services)
-        {
-            services.AddTransient<ICsvMapperProcessingService, CsvMapperProcessingService>();
-            services.AddTransient<IDocumentProcessingService, DocumentProcessingService>();
-            services.AddTransient<IMeshProcessingService, MeshProcessingService>();
-            services.AddTransient<IOptOutProcessingService, OptOutProcessingService>();
-        }
-
-        private static void AddServices(IServiceCollection services)
-        {
-            services.AddTransient<IAuditService, AuditService>();
-            services.AddTransient<ICsvMapperService, CsvMapperService>();
-            services.AddTransient<IDocumentService, DocumentService>();
-            services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
-            services.AddTransient<IMeshService, MeshService>();
-            services.AddTransient<IOptOutService, OptOutService>();
         }
 
         private static string GetSettings(IConfiguration configuration, string configurationKey, bool mandatory = true)

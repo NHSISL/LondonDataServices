@@ -10,7 +10,7 @@ namespace LHDS.Core.Models.Orchestrations.OptOuts.Exceptions
     {
         public OptOutOrchestrationValidationException(Xeption innerException)
             : base(
-                message: "Retrieve OptOut Status orchestration validation errors occurred, please try again.",
+                message: "Opt Out orchestration validation errors occurred, please try again.",
                 innerException)
         { }
     }

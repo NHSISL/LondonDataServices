@@ -17,37 +17,48 @@ namespace LHDS.Core.Tests.Integration.OptOuts
 {
     public partial class OptOutTests
     {
-        [Fact(Skip = "Integration Tests")]
+        [ReleaseCandidateFact]
         public async Task RetrieveUpdatedMeshConsentStatusesChanges()
         {
             try
             {
                 // given
                 string batchReference = Guid.NewGuid().ToString();
-                await SetupTestNhsNumbersForRetrieveUpdatedMesh(batchReference);
-                string content = await SetupSimulatedMeshMessage(batchReference);
-                List<OptOutIdentifier> expectedContent = ConvertToOptOutIdentifierList(content)
+                var dbItems = await SetupTestNhsNumbersForRetrieveUpdatedMesh(batchReference);
+                List<string> idsFromMesh = dbItems.AsQueryable().Take(2).Select(x => x.NhsNumber).ToList();
+                string content = await SetupSimulatedMeshMessage(batchReference, idsFromMesh);
+
+                List<OptOutIdentifier> expectedContent = ConvertNhsListToOptOutIdentifierList(content, dbItems)
                     .OrderBy(item => item.NhsNumber).ToList();
 
                 // when
                 List<MeshMessage> messages = await this.optOutClient.RetrieveUpdatedMeshConsentStatusesChangesAsync();
 
                 // then
-
                 foreach (MeshMessage message in messages)
                 {
                     string filepath =
-                        $"{optOutConfiguration.OutputFolder}/{GetHeaderValue(message, "Mex-LocalID")}"
+                        $"{optOutConfiguration.OutputFolder}/{GetHeaderValue(message, "mex-localid")}"
                         + "_deltaresponse.csv";
 
                     Document document = await this.documentService.RetrieveDocumentByFileNameAsync(filepath);
                     document.Should().NotBeNull();
 
                     List<OptOutIdentifier> actualContent =
-                        ConvertToOptOutIdentifierList(Encoding.ASCII.GetString(document.DocumentData))
+                        ConvertToOptOutIdentifierList(Encoding.ASCII.GetString(document.DocumentData), true)
                             .OrderBy(item => item.NhsNumber).ToList();
 
-                    actualContent.Should().BeEquivalentTo(expectedContent);
+
+                    foreach (var actualItem in actualContent)
+                    {
+                        var expectedItem = expectedContent
+                            .FirstOrDefault(item => item.NhsNumber == actualItem.NhsNumber);
+
+
+                        actualItem.UniqueReference.Should().BeEquivalentTo(expectedItem.UniqueReference);
+                        actualItem.Status.Should().BeEquivalentTo(expectedItem.Status);
+                    }
+
                     await this.documentService.RemoveDocumentByFileNameAsync(filepath);
                 }
             }
@@ -57,15 +68,76 @@ namespace LHDS.Core.Tests.Integration.OptOuts
             }
         }
 
-        private static List<OptOutIdentifier> ConvertToOptOutIdentifierList(string content)
+        private static List<OptOutIdentifier> ConvertToOptOutIdentifierList(string content, bool hasHeader = false)
         {
-            List<string> stringList = content.Replace("\r\n", string.Empty)
-                .Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+            List<OptOutIdentifier> optOutIdentifiers = new List<OptOutIdentifier>();
 
-            List<OptOutIdentifier> optOutIdentifierList = stringList
-                .Select(item => new OptOutIdentifier { NhsNumber = item }).ToList();
+            string[] lines = content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
-            return optOutIdentifierList;
+            foreach (string line in lines)
+            {
+                if (hasHeader && line == lines.FirstOrDefault())
+                {
+                    continue;
+                }
+
+                string[] parts = line.Split(',');
+                DateTimeOffset? statusChangedDateTime;
+
+                if (!DateTimeOffset.TryParse(GetArrayValue(3, parts), out var parsedDateTime))
+                {
+                    statusChangedDateTime = null;
+                }
+                else
+                {
+                    statusChangedDateTime = parsedDateTime;
+                }
+
+                OptOutIdentifier identifier = new OptOutIdentifier
+                {
+                    UniqueReference = GetArrayValue(0, parts),
+                    NhsNumber = GetArrayValue(1, parts),
+                    Status = GetArrayValue(2, parts),
+                    StatusChangedDateTime = statusChangedDateTime
+                };
+
+                optOutIdentifiers.Add(identifier);
+            }
+
+            return optOutIdentifiers;
+        }
+
+        private static List<OptOutIdentifier> ConvertNhsListToOptOutIdentifierList(string content, List<OptOut> dbItems)
+        {
+            List<string> optInIdentifiers = content.Replace(",", string.Empty)
+                .Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+
+            List<OptOutIdentifier> consentItems = new List<OptOutIdentifier>();
+
+            foreach (OptOut item in dbItems)
+            {
+                var consent = new OptOutIdentifier
+                {
+                    NhsNumber = item.NhsNumber,
+                    UniqueReference = item.UniqueReference,
+                    Status = optInIdentifiers.Contains(item.NhsNumber) ? "Opt-In" : "Opt-Out"
+                };
+
+                consentItems.Add(consent);
+            }
+
+            return consentItems;
+        }
+
+        private static string GetArrayValue(int position, string[] array)
+        {
+            if (position > array.Length - 1)
+            {
+                return string.Empty;
+            }
+
+            return array[position];
         }
     }
 }

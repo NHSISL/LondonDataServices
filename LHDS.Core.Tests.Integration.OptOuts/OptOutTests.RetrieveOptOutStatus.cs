@@ -6,18 +6,21 @@ using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Documents;
-using Xunit;
 
 namespace LHDS.Core.Tests.Integration.OptOuts
 {
     public partial class OptOutTests
     {
-        [Fact(Skip = "Integration Tests")]
+        [ReleaseCandidateFact]
         public async Task ShouldRetreiveOptOutStatusAsync()
         {
             // GIVEN
-            byte[] fileBytes = File.ReadAllBytes(@"Resources\testfile.csv");
-            FileInfo fi = new FileInfo(@"Resources\testfile.csv");
+            byte[] fileBytes =
+                File.ReadAllBytes(@"Resources\EmisNDOOExtract_2D2DB402-CD53-4523-9D84-BDC23A562C3D_20230516T144214.csv");
+
+            FileInfo fi =
+                new FileInfo(@"Resources\EmisNDOOExtract_2D2DB402-CD53-4523-9D84-BDC23A562C3D_20230516T144214.csv");
+
             var fileName = fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length);
 
             // WHEN

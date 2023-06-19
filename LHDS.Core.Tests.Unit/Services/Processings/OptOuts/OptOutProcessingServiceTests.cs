@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -24,6 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
         private readonly Mock<IOptOutService> optOutServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly ICompareLogic compareLogic;
         private readonly OptOutProcessingService optOutProcessingService;
 
         public OptOutProcessingServiceTests()
@@ -31,6 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             optOutServiceMock = new Mock<IOptOutService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            compareLogic = new CompareLogic();
 
             this.optOutProcessingService = new OptOutProcessingService(
                 optOutService: optOutServiceMock.Object,
@@ -90,6 +93,26 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             };
         }
 
+        private Expression<Func<OptOut, bool>> SameOptOutAs(
+            OptOut expectedOptOut)
+        {
+            return actualOptOut =>
+                this.compareLogic.Compare(expectedOptOut, actualOptOut)
+                    .AreEqual;
+        }
+
+        private static List<string> RandomStringList(int count)
+        {
+            var list = new List<string>();
+
+            for (int i = 0; i < count; i++)
+            {
+                list.Add(GetRandomString());
+            }
+
+            return list;
+        }
+
         private static IQueryable<OptOut> CreateRandomOptOuts(string batchReference)
         {
             List<OptOut> optOuts = new List<OptOut>();
@@ -116,7 +139,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
-                .OnProperty(optOut => optOut.OptOutStatus).Use(GetRandomString(length: 20))
+                .OnProperty(optOut => optOut.Status).Use(GetRandomString(length: 20))
                 .OnProperty(optOut => optOut.CreatedBy).Use(user)
                 .OnProperty(optOut => optOut.UpdatedBy).Use(user);
 
@@ -139,6 +162,35 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             }
 
             return optOuts.AsQueryable();
+        }
+
+        private static List<OptOut> CreateRandomOptOutList(string status)
+        {
+            List<OptOut> optOuts = new List<OptOut>();
+            int count = GetRandomNumber();
+
+            for (int i = 0; i < count; i++)
+            {
+                OptOut optOut = CreateRandomOptOut();
+                optOut.Status = status;
+                optOuts.Add(optOut);
+            }
+
+            return optOuts;
+        }
+
+        private static List<OptOut> CreateRandomOptOutListWithNullOptOut()
+        {
+            List<OptOut> optOuts = new List<OptOut>();
+            int count = GetRandomNumber();
+
+            for (int i = 0; i < count; i++)
+            {
+                OptOut optOut = null;
+                optOuts.Add(optOut);
+            }
+
+            return optOuts;
         }
 
         private OptOut SelectRandomOptOut(IQueryable<OptOut> optOuts)

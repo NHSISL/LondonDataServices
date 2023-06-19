@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
@@ -29,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                   .ThrowsAsync(dependancyValidationException);
 
             // when
-            ValueTask processTask = this.downloadOrchestrationService.ProcessAsync();
+            ValueTask<List<string>> processTask = this.downloadOrchestrationService.ProcessAsync();
 
             DownloadOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<DownloadOrchestrationDependencyValidationException>(processTask.AsTask);
@@ -67,7 +68,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                   .ThrowsAsync(dependancyException);
 
             // when
-            ValueTask processTask = this.downloadOrchestrationService.ProcessAsync();
+            ValueTask<List<string>> processTask = this.downloadOrchestrationService.ProcessAsync();
 
             DownloadOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<DownloadOrchestrationDependencyException>(processTask.AsTask);
@@ -107,7 +108,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask processTask = this.downloadOrchestrationService.ProcessAsync();
+            ValueTask<List<string>> processTask = this.downloadOrchestrationService.ProcessAsync();
 
             DownloadOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<DownloadOrchestrationServiceException>(processTask.AsTask);
@@ -147,7 +148,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                   .Throws(dependancyValidationException);
 
             // when
-            ValueTask processTask = this.downloadOrchestrationService.ProcessAsync(fileName);
+            ValueTask<string> processTask = this.downloadOrchestrationService.ProcessAsync(fileName);
 
             DownloadOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<DownloadOrchestrationDependencyValidationException>(processTask.AsTask);
@@ -187,7 +188,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                   .Throws(dependancyException);
 
             // when
-            ValueTask processTask = this.downloadOrchestrationService.ProcessAsync(fileName);
+            ValueTask<string> processTask = this.downloadOrchestrationService.ProcessAsync(fileName);
 
             DownloadOrchestrationDependencyException actualException =
                 await Assert.ThrowsAsync<DownloadOrchestrationDependencyException>(processTask.AsTask);
@@ -229,7 +230,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     .Throws(serviceException);
 
             // when
-            ValueTask processTask = this.downloadOrchestrationService.ProcessAsync(fileName);
+            ValueTask<string> processTask = this.downloadOrchestrationService.ProcessAsync(fileName);
 
             DownloadOrchestrationServiceException actualException =
                 await Assert.ThrowsAsync<DownloadOrchestrationServiceException>(processTask.AsTask);

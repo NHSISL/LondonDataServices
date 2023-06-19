@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     innerException: invalidArgumentDecryptionOrchestrationException);
 
             // when
-            ValueTask decryptTask =
+            ValueTask<string> decryptTask =
                 this.decryptionOrchestrationService.DecryptAsync(invalidText);
 
             DecryptionOrchestrationValidationException actualException =

@@ -30,31 +30,58 @@ namespace LHDS.Core.Brokers.Mesh
                 ClientCertificate = this.meshConfiguration.ClientCertificate,
                 MexClientVersion = this.meshConfiguration.MexClientVersion,
                 MexOSName = this.meshConfiguration.MexOSName,
-                MexOSVersion = this.meshConfiguration.MexOSVersion
+                MexOSVersion = this.meshConfiguration.MexOSVersion,
+                MaxChunkSizeInMegabytes = this.meshConfiguration.MaxChunkSizeInMegabytes,
             };
 
             this.meshClient = new MeshClient(config);
         }
 
-        public ValueTask<bool> HandshakeAsync() =>
-            this.meshClient.Mailbox.HandshakeAsync();
+        public async ValueTask<bool> HandshakeAsync() =>
+            await this.meshClient.Mailbox.HandshakeAsync();
 
-        public ValueTask<Message> SendMessageAsync(Message message) =>
-            this.meshClient.Mailbox.SendMessageAsync(message);
+        public async ValueTask<Message> SendMessageAsync(
+            string mexTo,
+            string mexWorkflowId,
+            byte[] fileContent,
+            string mexSubject = "",
+            string mexLocalId = "",
+            string mexFileName = "",
+            string mexContentChecksum = "",
+            string contentType = "application/octet-stream",
+            string contentEncoding = "",
+            string accept = "application/json")
+        {
+            try
+            {
+                return await this.meshClient.Mailbox.SendMessageAsync(
+                    mexTo: mexTo,
+                    mexWorkflowId: mexWorkflowId,
+                    fileContent: fileContent,
+                    mexSubject: mexSubject,
+                    mexLocalId: mexLocalId,
+                    mexFileName: mexFileName,
+                    mexContentChecksum: mexContentChecksum,
+                    contentType: contentType,
+                    contentEncoding: contentEncoding,
+                    accept: accept);
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
+        }
 
-        public ValueTask<Message> SendFileAsync(Message message) =>
-            this.meshClient.Mailbox.SendFileAsync(message);
+        public async ValueTask<Message> TrackMessageAsync(string messageId) =>
+            await this.meshClient.Mailbox.TrackMessageAsync(messageId);
 
-        public ValueTask<Message> TrackMessageAsync(string messageId) =>
-            this.meshClient.Mailbox.TrackMessageAsync(messageId);
+        public async ValueTask<List<string>> RetrieveMessageIdsAsync() =>
+            await this.meshClient.Mailbox.RetrieveMessagesAsync();
 
-        public ValueTask<List<string>> RetrieveMessageIdsAsync() =>
-            this.meshClient.Mailbox.RetrieveMessagesAsync();
+        public async ValueTask<Message> RetrieveMessageAsync(string messageId) =>
+            await this.meshClient.Mailbox.RetrieveMessageAsync(messageId);
 
-        public ValueTask<Message> RetrieveMessageAsync(string messageId) =>
-            this.meshClient.Mailbox.RetrieveMessageAsync(messageId);
-
-        public ValueTask<bool> AcknowledgeMessageByIdAsync(string messageId) =>
-            this.meshClient.Mailbox.AcknowledgeMessageAsync(messageId);
+        public async ValueTask<bool> AcknowledgeMessageByIdAsync(string messageId) =>
+            await this.meshClient.Mailbox.AcknowledgeMessageAsync(messageId);
     }
 }

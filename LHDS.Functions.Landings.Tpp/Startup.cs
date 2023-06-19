@@ -43,6 +43,7 @@ namespace LHDS.Functions.Landings.Tpp
                 .AddLogging(setup =>
                 {
                     setup.AddApplicationInsights();
+                    setup.AddConsole();
                 })
                 .AddLandingClient(configuration)
                 .UseRestDownloadProvider(builder => builder.AddRestDownloadProvider());

@@ -56,7 +56,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 
             var serviceCollection = new ServiceCollection();
 
-            // Add a console logger to the service collection
             serviceCollection.AddLogging(builder =>
             {
                 builder.AddConsole();

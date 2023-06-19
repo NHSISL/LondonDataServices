@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="appsettings.ContinuousIntegration.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="appsettings.ContinuousIntegration.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>

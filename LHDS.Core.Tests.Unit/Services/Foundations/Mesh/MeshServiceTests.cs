@@ -166,47 +166,47 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             if (!string.IsNullOrEmpty(mexTo))
             {
-                dictionary.Add("Mex-To", new List<string> { mexTo });
+                dictionary.Add("mex-to", new List<string> { mexTo });
             }
 
             if (!string.IsNullOrEmpty(mexWorkflowId))
             {
-                dictionary.Add("Mex-WorkflowID", new List<string> { mexWorkflowId });
+                dictionary.Add("mex-workflowid", new List<string> { mexWorkflowId });
             }
 
             if (!string.IsNullOrEmpty(mexSubject))
             {
-                dictionary.Add("Mex-Subject", new List<string> { mexSubject });
+                dictionary.Add("mex-subject", new List<string> { mexSubject });
             }
 
             if (!string.IsNullOrEmpty(mexLocalId))
             {
-                dictionary.Add("Mex-LocalID", new List<string> { mexLocalId });
+                dictionary.Add("mex-localid", new List<string> { mexLocalId });
             }
 
             if (!string.IsNullOrEmpty(mexFileName))
             {
-                dictionary.Add("Mex-FileName", new List<string> { mexFileName });
+                dictionary.Add("mex-filename", new List<string> { mexFileName });
             }
 
             if (!string.IsNullOrEmpty(mexContentChecksum))
             {
-                dictionary.Add("Mex-Content-Checksum", new List<string> { mexContentChecksum });
+                dictionary.Add("mex-content-checksum", new List<string> { mexContentChecksum });
             }
 
             if (!string.IsNullOrEmpty(contentType))
             {
-                dictionary.Add("Content-Type", new List<string> { contentType });
+                dictionary.Add("content-type", new List<string> { contentType });
             }
 
             if (!string.IsNullOrEmpty(contentEncoding))
             {
-                dictionary.Add("Content-Encoding", new List<string> { contentEncoding });
+                dictionary.Add("content-encoding", new List<string> { contentEncoding });
             }
 
             if (!string.IsNullOrEmpty(accept))
             {
-                dictionary.Add("Accept", new List<string> { accept });
+                dictionary.Add("accept", new List<string> { accept });
             }
 
             return dictionary;

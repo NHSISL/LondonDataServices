@@ -178,7 +178,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 {
                     MeshMessage message = await meshProcessingService.RetrieveMessageByIdAsync(messageId);
 
-                    if (GetKeyStringValue("Mex-WorkflowID", message.Headers) != this.meshConfiguration.WorkflowId)
+                    if (GetKeyStringValue("mex-workflowid", message.Headers) != this.meshConfiguration.WorkflowId)
                     {
                         continue;
                     }
@@ -193,7 +193,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
 
                     ValidateLocalIdHeaderExists(message);
 
-                    string batchReference = GetHeaderValue(message, "Mex-LocalID");
+                    string batchReference = GetHeaderValue(message, "mex-localid");
 
                     ValidateBacthReferenceExists(batchReference);
 

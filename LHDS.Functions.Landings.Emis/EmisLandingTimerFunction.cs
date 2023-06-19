@@ -42,12 +42,10 @@ namespace LHDS.Functions.Landings.Emis
             catch (Exception ex)
             {
                 this.loggingBroker.LogError(ex);
-                this.logger.LogError(ex, ex.Message);
                 throw;
             }
 
             this.loggingBroker.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
-            this.logger.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
         }
     }
 

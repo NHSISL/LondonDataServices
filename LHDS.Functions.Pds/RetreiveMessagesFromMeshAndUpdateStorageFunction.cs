@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Logging;
 
 namespace LHDS.Functions.Pds
 {
@@ -15,16 +14,13 @@ namespace LHDS.Functions.Pds
     {
         private readonly ILoggingBroker loggingBroker;
         private readonly IPdsClient pdsClient;
-        private readonly ILogger logger;
 
         public RetreiveMessagesFromMeshAndUpdateStorage(
             ILoggingBroker loggingBroker,
-            IPdsClient pdsClient,
-            ILoggerFactory loggerFactory)
+            IPdsClient pdsClient)
         {
             this.loggingBroker = loggingBroker;
             this.pdsClient = pdsClient;
-            this.logger = loggerFactory.CreateLogger<RetreiveMessagesFromMeshAndUpdateStorage>();
         }
 
         [Function("RetreiveMessagesFromMeshAndUpdateStorage")]
@@ -42,12 +38,10 @@ namespace LHDS.Functions.Pds
             catch (Exception ex)
             {
                 this.loggingBroker.LogError(ex);
-                this.logger.LogError(ex, ex.Message);
                 throw;
             }
 
             this.loggingBroker.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
-            this.logger.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
         }
     }
 

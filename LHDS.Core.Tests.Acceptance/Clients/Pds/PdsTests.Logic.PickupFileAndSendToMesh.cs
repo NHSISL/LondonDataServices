@@ -18,7 +18,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         [Fact]
         public async Task ShouldPickupFileAndSendToMeshAsync()
         {
-
             //Given
             string messageId = GetRandomString();
             byte[] pdsFile = Encoding.ASCII.GetBytes(GetRandomString());    

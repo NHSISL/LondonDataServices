@@ -46,16 +46,17 @@ namespace LHDS.Core.Tests.Integration.Landings
                         await auditService.RemoveAuditByIdAsync(item.Id);
                     }
 
-                    await ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+                    await ingestionTrackingService
+                        .RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+
                     await blobStorageBroker.DeleteFileAsync(ingestionTracking.EncryptedFileName);
-                    await blobStorageBroker.DeleteFileAsync(ingestionTracking.DecryptedFileName);
                 }
             }
             catch (Exception ex)
             {
                 loggingBroker.LogError(ex);
                 Console.WriteLine(ex.Message);
-                Assert.Fail($"{ex.Message}, {ex.InnerException.Message}");
+                Assert.Fail($"{ex.Message}, {ex?.InnerException?.Message}");
             }
         }
     }

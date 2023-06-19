@@ -38,7 +38,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             this.csvMapperBroker = new CsvMapperBroker();
             this.dateTimeBroker = new DateTimeBroker();
 
-            var environmentName = "Development";
+            string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var args = Environment.GetCommandLineArgs();
+            var environmentArg = args.FirstOrDefault(arg => arg.StartsWith("--environment="));
+
+            var environmentName = !string.IsNullOrEmpty(aspNetCoreEnvironment)
+                ? aspNetCoreEnvironment
+                : !string.IsNullOrEmpty(environmentArg)
+                    ? environmentArg
+                    : "Development";
 
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)

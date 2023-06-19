@@ -11,6 +11,7 @@ using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Orchestrations.Pds;
+using LHDS.Core.Services.Foundations.PdsAudits;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -26,6 +27,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
         private readonly IPdsClient pdsClient;
         private readonly PdsConfiguration pdsConfiguration;
+        private readonly IPdsAuditService pdsAuditService;
 
         public PdsTests()
         {
@@ -68,6 +70,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
 
             this.pdsConfiguration = serviceProvider.GetService<PdsConfiguration>();
             this.pdsClient = serviceProvider.GetService<IPdsClient>();
+            this.pdsAuditService = serviceProvider.GetService<IPdsAuditService>();
         }
 
         private static int GetRandomNumber() =>

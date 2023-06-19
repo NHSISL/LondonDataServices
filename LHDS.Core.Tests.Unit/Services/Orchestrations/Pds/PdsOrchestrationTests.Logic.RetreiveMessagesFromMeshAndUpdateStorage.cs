@@ -50,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.RetrieveMessageByIdAsync(message.MessageId))
                         .ReturnsAsync(message);
 
-                string filename = message.Headers["Mex-FileName"].FirstOrDefault();
+                string filename = message.Headers["mex-filename"].FirstOrDefault();
                 string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
                 string[] fileNameParts = fileNameWithoutExtension.Split('_');
 
@@ -61,21 +61,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
                 Document document = new Document
                 {
-                    FileName = fileNameOutput,
+                    FileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}",
                     DocumentData = message.FileContent,
                 };
 
                 this.documentServiceMock.Setup(broker =>
                     broker.AddDocumentAsync(document));
 
-                Guid correlationId = Guid.Parse(message.Headers["Mex-LocalID"].FirstOrDefault());
-                string fileName = message.Headers["Mex-FileName"].FirstOrDefault();
+                Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
 
                 PdsAudit pdsAudit = new PdsAudit
                 {
                     Id = identifier,
                     CorrelationId = correlationId,
-                    FileName = fileName,
+                    FileName = document.FileName,
                     Message = $"Received message from mesh with id {message.MessageId}",
                     MessageId = message.MessageId,
                     CreatedDate = randomDate,
@@ -119,7 +118,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.RetrieveMessageByIdAsync(message.MessageId),
                         Times.Once);
 
-                string filename = message.Headers["Mex-FileName"].FirstOrDefault();
+                string filename = message.Headers["mex-filename"].FirstOrDefault();
                 string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
                 string[] fileNameParts = fileNameWithoutExtension.Split('_');
 
@@ -130,7 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
                 Document document = new Document
                 {
-                    FileName = fileNameOutput,
+                    FileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}",
                     DocumentData = message.FileContent,
                 };
 
@@ -138,14 +137,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.AddDocumentAsync(It.Is(SameDocumentAs(document))),
                         Times.Once);
 
-                Guid correlationId = Guid.Parse(message.Headers["Mex-LocalID"].FirstOrDefault());
-                string fileName = message.Headers["Mex-FileName"].FirstOrDefault();
+                Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
 
                 PdsAudit pdsAudit = new PdsAudit
                 {
                     Id = identifier,
                     CorrelationId = correlationId,
-                    FileName = fileName,
+                    FileName = document.FileName,
                     Message = $"Received message from mesh with id {message.MessageId}",
                     MessageId = message.MessageId,
                     CreatedDate = randomDate,
@@ -189,7 +187,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.RetrieveMessageByIdAsync(message.MessageId))
                         .ReturnsAsync(message);
 
-                if (message.Headers["Mex-WorkflowID"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
+                if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
                 {
                     continue;
                 }
@@ -214,7 +212,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     service.RetrieveMessageByIdAsync(message.MessageId),
                         Times.Once);
 
-                if (message.Headers["Mex-WorkflowID"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
+                if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
                 {
                     continue;
                 }

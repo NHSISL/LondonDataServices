@@ -9,17 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="appsettings.ContinuousIntegration.json" />
-    <None Remove="appsettings %28copy%29.ContinuousIntegration.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="appsettings.ContinuousIntegration.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="local.appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

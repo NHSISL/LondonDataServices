@@ -34,7 +34,6 @@ export const Home = () => {
                 <Container className="NELTopPadding">
                     {isAuthenticated ? (
                         <div>
-
                             <Card.Group>
                                 <FeatureSwitch feature={FeatureDefinitions.EmisIngestionTracking}>
                                     <Card.GroupItem width="one-half">

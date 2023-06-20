@@ -1,7 +1,6 @@
 import { debounce } from "lodash";
 import React, { FunctionComponent, useMemo, useState } from "react";
 import { IngestionTrackingHomeView } from "../../models/ingestionTrackings/ingestionTrackingHomeView";
-import { LookupView } from "../../models/views/components/lookups/lookupView";
 import { ingestionTrackingHomeViewService } from "../../services/views/ingestionTrackingHomeViewService";
 import CardBase from "../bases/components/Card/CardBase";
 import CardBaseBody from "../bases/components/Card/CardBase.Body";

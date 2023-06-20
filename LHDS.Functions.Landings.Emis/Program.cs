@@ -36,6 +36,7 @@ var host = new HostBuilder()
             .AddLogging(setup =>
             {
                 setup.AddApplicationInsights();
+                setup.AddConsole();
             })
            .AddLandingClient(context.Configuration)
            .AddDecryptionClient(context.Configuration)

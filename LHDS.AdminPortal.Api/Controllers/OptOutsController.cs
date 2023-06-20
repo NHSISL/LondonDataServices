@@ -21,7 +21,6 @@ namespace LHDS.AdminPortal.Api.Controllers
         public OptOutsController(IOptOutProcessingService optOutProcessingService) =>
             this.optOutProcessingService = optOutProcessingService;
 
-
         [HttpPost]
         public async ValueTask<ActionResult<OptOut>> PostOptOutAsync(
             OptOut optOut)
@@ -57,9 +56,8 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-
         [HttpGet("{nhsNumber}")]
-        public async ValueTask<ActionResult<OptOut>> GetOptOutByNhsNumerAsync(string nhsNumber)
+        public async ValueTask<ActionResult<OptOut>> GetOptOutByNhsNumberAsync(string nhsNumber)
         {
             try
             {

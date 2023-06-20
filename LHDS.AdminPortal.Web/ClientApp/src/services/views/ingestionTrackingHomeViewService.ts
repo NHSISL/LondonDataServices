@@ -53,9 +53,9 @@ export const ingestionTrackingHomeViewService = {
                             ));
                         });
                     });
+
                     setMappedIngestionTrackings(ingestionTrackings);
                     setPages(response.data.pages);
-                   
                 }
             }, [response.data, setSupplierOptions]);
 

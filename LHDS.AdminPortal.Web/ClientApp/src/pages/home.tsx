@@ -34,20 +34,46 @@ export const Home = () => {
                 <Container className="NELTopPadding">
                     {isAuthenticated ? (
                         <div>
-                            
+
                             <Card.Group>
                                 <FeatureSwitch feature={FeatureDefinitions.EmisIngestionTracking}>
-                                <Card.GroupItem width="one-half">
-                                    <Card clickable>
-                                        <Card.Content>
-                                            <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
-                                                <PublicLink to="/ingestionTracking">Supplier data</PublicLink>
-                                            </Card.Heading>
-                                            <Card.Description>
-                                                View Suppliers Data.
-                                            </Card.Description>
-                                        </Card.Content>
-                                    </Card>
+                                    <Card.GroupItem width="one-half">
+                                        <Card clickable>
+                                            <Card.Content>
+                                                <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
+                                                    <PublicLink to="/ingestionTracking">Supplier data</PublicLink>
+                                                </Card.Heading>
+                                                <Card.Description>
+                                                    View Suppliers Data.
+                                                </Card.Description>
+                                            </Card.Content>
+                                        </Card>
+                                    </Card.GroupItem>
+
+                                    <Card.GroupItem width="one-half">
+                                        <Card clickable>
+                                            <Card.Content>
+                                                <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
+                                                    <PublicLink to="/optOutSearch">Search OptOut</PublicLink>
+                                                </Card.Heading>
+                                                <Card.Description>
+                                                    Search Opt Out.
+                                                </Card.Description>
+                                            </Card.Content>
+                                        </Card>
+                                    </Card.GroupItem>
+
+                                    <Card.GroupItem width="one-half">
+                                        <Card clickable>
+                                            <Card.Content>
+                                                <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
+                                                    <PublicLink to="/pds">Search PDS</PublicLink>
+                                                </Card.Heading>
+                                                <Card.Description>
+                                                    Search Pds.
+                                                </Card.Description>
+                                            </Card.Content>
+                                        </Card>
                                     </Card.GroupItem>
                                 </FeatureSwitch>
                             </Card.Group>

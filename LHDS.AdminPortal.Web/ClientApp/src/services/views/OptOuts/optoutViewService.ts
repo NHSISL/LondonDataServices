@@ -17,7 +17,6 @@ export const optOutViewService = {
 
             if (searchTerm) {
                 query = query + `?$orderby=createdDate&$filter=nhsNumber eq '${searchTerm}'`;
-                //query = `?$filter=id eq 508158d9-70d3-4771-baae-c7e93775512d`
             }
 
             const response = optOutService.useGetAllOptOuts(query);
@@ -28,7 +27,9 @@ export const optOutViewService = {
                     const optOuts = response.data.map((optOut: OptOut) => new OptOutView(
                             optOut.id,
                             optOut.nhsNumber,
-                            optOut.optOutStatus,
+                            optOut.status,
+                            optOut.uniqueReference,
+                            optOut.batchReference,
                             optOut.cacheTime,
                             optOut.lastSentToMesh,
                             optOut.createdBy,
@@ -61,7 +62,9 @@ export const optOutViewService = {
                     const optOut = new OptOutView(
                         response.data.id,
                         response.data.nhsNumber,
-                        response.data.optOutStatus,
+                        response.data.status,
+                        response.data.uniqueReference,
+                        response.data.batchReference,
                         response.data.cacheTime,
                         response.data.lastSentToMesh,
                         response.data.createdBy,

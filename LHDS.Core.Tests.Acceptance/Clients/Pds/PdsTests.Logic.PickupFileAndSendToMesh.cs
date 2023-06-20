@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
+using NEL.MESH.Clients.Mailboxes;
 using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
 
@@ -20,40 +21,43 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         {
             //Given
             string messageId = GetRandomString();
-            byte[] pdsFile = Encoding.ASCII.GetBytes(GetRandomString());    
+            byte[] pdsFile = Encoding.ASCII.GetBytes(GetRandomString());
             string fileName = GetRandomString();
             string mexTo = this.pdsConfiguration.To;
             string mexWorkflowId = this.pdsConfiguration.WorkflowId;
-            Guid localId = Guid.NewGuid();
-            Message message = CreateRandomMessage();
-            message.MessageId = messageId;
-            message.Headers["Mex-To"] = new List<string> { mexTo };
-            message.Headers["Mex-WorkflowID"] = new List<string> { mexWorkflowId };
-            message.Headers["Mex-FileName"] = new List<string> { fileName };
-            message.Headers["Mex-Subject"] = new List<string> { GetRandomString() };
-            message.Headers["Mex-Content-Checksum"] = new List<string> { GetRandomString() };
-            message.Headers["Mex-Encoding"] = new List<string> { GetRandomString() };
-            message.Headers["Mex-Content-Type"] = new List<string> { "application/octet-stream" };
-            message.Headers["Mex-Accept"] = new List<string> { "application/json" };
+            string mexLocalId = Guid.NewGuid().ToString();
+            string mexSubject = GetRandomString();
+            string mexContentChecksum = GetRandomString();
+            string contentType = "application/octet-stream";
+            string contentEncoding = GetRandomString();
+            string accept = "application/json";
 
-            this.identifierBrokerMock.Setup(broker => 
-                broker.GetIdentifier())
-                    .Returns(localId);
+            Message message = ComposeMessage.CreateFileMessage(
+                mexTo: mexTo,
+                mexWorkflowId: mexWorkflowId,
+                fileContent: pdsFile,
+                mexSubject: mexSubject,
+                mexLocalId: mexLocalId,
+                mexFileName: fileName,
+                mexContentChecksum: mexContentChecksum,
+                contentType: contentType,
+                contentEncoding: contentEncoding,
+                accept: accept);
 
-            message.Headers["Mex-LocalID"] = new List<string> { localId.ToString() };
             this.meshBrokerMock.Setup(broker =>
                 broker.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
                     pdsFile,
-                    string.Empty,
-                    localId.ToString(),
+                    mexSubject,
+                    mexLocalId,
                     fileName,
-                    string.Empty,
-                    "text/plain",
-                    string.Empty,
-                    "application/json"))
-                        .ReturnsAsync(message);
+                    mexContentChecksum,
+                    contentType,
+                    contentEncoding,
+                    accept))
+                .ReturnsAsync(message);
+
 
             //When
             var actualPdsAudit = await pdsClient.PickupFileAndSendToMesh(pdsFile, fileName);
@@ -71,13 +75,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
                     mexTo,
                     mexWorkflowId,
                     pdsFile,
-                    string.Empty,
-                    localId.ToString(),
+                    mexSubject,
+                    mexLocalId,
                     fileName,
-                    string.Empty,
-                    "text/plain",
-                    string.Empty,
-                    "application/json"),
+                    mexContentChecksum,
+                    contentType,
+                    contentEncoding,
+                    accept),
                         Times.Once);
 
             await this.pdsAuditService.RemovePdsAuditByIdAsync(actualPdsAudit.Id);

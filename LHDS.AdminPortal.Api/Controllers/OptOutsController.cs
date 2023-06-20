@@ -58,13 +58,13 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
 
-        [HttpGet("{optOutNhsNumber}")]
-        public async ValueTask<ActionResult<OptOut>> GetIngestionTrackingByIdAsync(string optOutNhsNumber)
+        [HttpGet("{nhsNumber}")]
+        public async ValueTask<ActionResult<OptOut>> GetOptOutByNhsNumerAsync(string nhsNumber)
         {
             try
             {
                 OptOut getOptOutByNhs =
-                    await this.optOutProcessingService.RetrieveOptOutByNhsNumberAsync(optOutNhsNumber);
+                    await this.optOutProcessingService.RetrieveOptOutByNhsNumberAsync(nhsNumber);
 
                 return Ok(getOptOutByNhs);
             }

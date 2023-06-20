@@ -3,7 +3,9 @@ import { Guid } from 'guid-typescript';
 export class OptOut {
     public id: Guid;
     public nhsNumber: string;
-    public optOutStatus: string;
+    public status: string;
+    public uniqueReference: string;
+    public batchReference: number;
     public cacheTime: Date;
     public lastSentToMesh: Date;
     public createdDate?: Date;
@@ -14,7 +16,9 @@ export class OptOut {
     constructor(optout: any) {
         this.id = optout.id ? Guid.parse(optout.id) : Guid.parse(Guid.EMPTY);
         this.nhsNumber = optout.nhsNumber;
-        this.optOutStatus = optout.optOutStatus;
+        this.status = optout.status;
+        this.uniqueReference = optout.uniqueReference;
+        this.batchReference = optout.batchReference;
         this.cacheTime = optout.cacheTime ? new Date(optout.cacheTime) : new Date();
         this.lastSentToMesh = optout.lastSentToMesh ? new Date(optout.lastSentToMesh) : new Date();
         this.createdDate = optout.createdDate ? new Date(optout.createdDate) : new Date();

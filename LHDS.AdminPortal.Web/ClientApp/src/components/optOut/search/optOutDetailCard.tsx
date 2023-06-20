@@ -1,15 +1,15 @@
 import React, { FunctionComponent } from "react";
-import { OptOutView } from "../../models/views/components/optOuts/optOutView";
-import CardBase from "../bases/components/Card/CardBase";
-import CardBaseBody from "../bases/components/Card/CardBase.Body";
-import CardBaseContent from "../bases/components/Card/CardBase.Content";
-import CardBaseTitle from "../bases/components/Card/CardBase.Title";
+import { OptOutView } from "../../../models/views/components/optOuts/optOutView";
+import CardBase from "../../bases/components/Card/CardBase";
+import CardBaseBody from "../../bases/components/Card/CardBase.Body";
+import CardBaseContent from "../../bases/components/Card/CardBase.Content";
+import CardBaseTitle from "../../bases/components/Card/CardBase.Title";
 import OptOutDetailCardView from "./optOutDetailCardView";
 
 interface OptOutDetailCardProps {
-    optOuts: Array<OptOutView>;
+    optOuts: OptOutView | undefined;
     children?: React.ReactNode;
-    onClearCache: (optOuts: Array<OptOutView>) => void;
+    onClearCache: (optOuts: OptOutView) => void;
 }
 
 const OptOutDetailCard: FunctionComponent<OptOutDetailCardProps> = (props) => {

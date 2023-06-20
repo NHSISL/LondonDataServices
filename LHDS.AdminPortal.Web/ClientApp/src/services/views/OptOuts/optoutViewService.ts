@@ -1,4 +1,3 @@
-import { Guid } from "guid-typescript";
 import { useEffect, useState } from "react";
 import { OptOut } from "../../../models/optout/optout";
 import { OptOutView } from "../../../models/views/components/optOuts/optOutView";

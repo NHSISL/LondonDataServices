@@ -13,6 +13,7 @@ import { ConfigHomePage } from './pages/configuration/configHomePage';
 import { SuppliersPage } from './pages/configuration/suppliersPage';
 import { OptOutSearch } from './pages/OptOutSearch';
 import { OptOutUpload } from './pages/OptOutUpload';
+import { PdsSearch } from './pages/PdsSearch';
 
 const App = ({ msalInstance }: any) => {
     return (
@@ -28,6 +29,7 @@ const App = ({ msalInstance }: any) => {
                         <Route path="/optOutUpload" element={<OptOutUpload />} />
                         <Route path="/configuration" element={<ConfigHomePage/>} />
                         <Route path="/configuration/suppliers" element={<SuppliersPage />} />
+                        <Route path="/pds" element={<PdsSearch />} />
                     </Routes>
                 </PageLayout>
                 <ReactQueryDevtools initialIsOpen={false} />

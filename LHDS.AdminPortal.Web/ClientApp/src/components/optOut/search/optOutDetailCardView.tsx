@@ -29,7 +29,7 @@ const OptOutDetailCardView: FunctionComponent<OptOutDetailCardViewProps> = (prop
                         </SummaryListBaseRow>
                         <SummaryListBaseRow>
                             <SummaryListBaseKey>Opt-Out Status</SummaryListBaseKey>
-                            <SummaryListBaseValue>{optOuts.optOutStatus}</SummaryListBaseValue>
+                            <SummaryListBaseValue>{optOuts.status}</SummaryListBaseValue>
                         </SummaryListBaseRow>
                         <SummaryListBaseRow>
                             <SummaryListBaseKey>Cache Time</SummaryListBaseKey>

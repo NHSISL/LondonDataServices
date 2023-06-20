@@ -1,5 +1,5 @@
 import { debounce } from "lodash";
-import React, { FunctionComponent, useMemo, useState } from "react";
+import React, { FunctionComponent, useMemo, useState, useEffect } from "react";
 import { OptOutView } from "../../../models/views/components/optOuts/optOutView";
 import { toastSuccess } from "../../../brokers/toastBroker";
 import { optOutViewService } from "../../../services/views/OptOuts/optoutViewService";
@@ -12,13 +12,12 @@ interface OptOutDetailProps {
 }
 
 const OptOutDetail: FunctionComponent<OptOutDetailProps> = (props) => {
-    const {
-        children
-    } = props;
+    const { children } = props;
 
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
-    const { mappedOptOut: optOutsRetrieved, isLoading } = optOutViewService.useGetOptOutsByNhsNumber(debouncedTerm);
+    const [optOutRetrieved, setOptOutRetrieved] = useState<OptOutView | undefined>(undefined); // Initialize with undefined
+    const [isLoading, setIsLoading] = useState<boolean>(false); // Add loading state
 
     const handleDebounce = useMemo(
         () =>
@@ -34,11 +33,43 @@ const OptOutDetail: FunctionComponent<OptOutDetailProps> = (props) => {
     };
 
     const updateOptOut = optOutViewService.useUpdateSupplier();
-    const handleClearCache = async (OptOutView: OptOutView) => {
+    const handleClearCache = async (optOutView: OptOutView) => {
         toastSuccess("Clearing Cache");
-        OptOutView.cacheTime = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)  
-        return updateOptOut.mutateAsync(OptOutView);
-    }
+        optOutView.cacheTime = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        return updateOptOut.mutateAsync(optOutView);
+    };
+
+    useEffect(() => {
+        let cancelRequest = false;
+
+        const fetchData = async () => {
+            if (debouncedTerm && debouncedTerm.length === 10) {
+                setIsLoading(true);
+
+                try {
+                    const optOutsResult = await optOutViewService.useGetOptOutsByNhsNumber(debouncedTerm);
+
+                    if (!cancelRequest && optOutsResult.isSuccess) {
+                        const optOuts = optOutsResult.data?.mappedOptOut;
+                        if (optOuts) {
+                            setOptOutRetrieved(optOuts);
+                        }
+                    }
+
+                    setIsLoading(false);
+                } catch (error) {
+                    console.error("Error fetching opt outs:", error);
+                    setIsLoading(false);
+                }
+            }
+        };
+
+        fetchData();
+
+        return () => {
+            cancelRequest = true;
+        };
+    }, [debouncedTerm]);
 
     return (
         <div>
@@ -54,19 +85,23 @@ const OptOutDetail: FunctionComponent<OptOutDetailProps> = (props) => {
                                 handleSearchChange(e.currentTarget.value);
                             }}
                         />
-                        {isLoading && <> <SpinnerBase />.</>}
+                        {isLoading && (
+                            <>
+                                <SpinnerBase />.
+                            </>
+                        )}
                     </div>
                 </div>
 
                 <OptOutDetailCard
-                    optOuts={optOutsRetrieved}
-                    onClearCache={ handleClearCache }
+                    optOuts={optOutRetrieved}
+                    onClearCache={handleClearCache}
                 >
                     {children}
                 </OptOutDetailCard>
             </div>
         </div>
     );
-}
+};
 
 export default OptOutDetail;

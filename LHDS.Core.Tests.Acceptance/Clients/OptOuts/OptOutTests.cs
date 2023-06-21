@@ -35,8 +35,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         {
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
             this.meshBrokerMock = new Mock<IMeshBroker>();
-            this.csvMapperBroker = new CsvMapperBroker();
-            this.dateTimeBroker = new DateTimeBroker();
 
             string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             var args = Environment.GetCommandLineArgs();
@@ -71,6 +69,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.optOutConfiguration = serviceProvider.GetService<OptOutConfiguration>();
+            this.csvMapperBroker = serviceProvider.GetRequiredService<CsvMapperBroker>();
+            this.dateTimeBroker = serviceProvider.GetRequiredService<DateTimeBroker>();
             optOutClient = serviceProvider.GetRequiredService<IOptOutClient>();
         }
 

@@ -97,7 +97,6 @@ namespace LHDS.Core.Clients.Extensions
                             }),
                         options: blobServiceClientOptions));
 
-
                 services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
                 services.AddTransient<IDownloadBroker, DownloadBroker>();
                 services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();

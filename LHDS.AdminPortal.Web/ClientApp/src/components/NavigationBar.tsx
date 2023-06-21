@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
-import { SecuredLink } from './Links';
+import { SecuredComponents, SecuredLink } from './Links';
 
 export const NavigationBar = () => {
     return (
@@ -15,10 +15,13 @@ export const NavigationBar = () => {
                             navbarScroll>
                             <SecuredLink to="/">Home</SecuredLink>
                             <SecuredLink to="/ingestionTracking">Supplier Data</SecuredLink>
-                            <NavDropdown title="Opt Out">
-                                <SecuredLink to="/optOut">  Search Opt-Out</SecuredLink>
-                                <SecuredLink to="/optOut">  Upload Opt-Out</SecuredLink> 
-                            </NavDropdown>
+                            <SecuredComponents>
+                                <NavDropdown title="OptOut" id="optout-dropdown" className="text-white">
+                                    <SecuredLink to="/optOutSearch">Search Opt-Out</SecuredLink>
+                                    <SecuredLink to="/optOutUpload">Upload Opt-Out</SecuredLink>
+                                </NavDropdown>
+                            </SecuredComponents>
+                            <SecuredLink to="/pds">Pds</SecuredLink>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

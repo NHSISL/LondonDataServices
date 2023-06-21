@@ -60,6 +60,12 @@
     <TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetailCard.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetailCardView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\optOut\upload\optOutUploadDetail.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\optOut\upload\optOutUploadDetailCard.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\optOut\upload\optOutUploadDetailCardView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\pds\search\pdsDetail.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\pds\search\pdsDetailCard.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\pds\search\pdsDetailCardView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierErrors.ts" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowAdd.tsx" />
@@ -90,8 +96,10 @@
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\configHomePage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\IngestionTrackingHomepage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\ingestionTrackingPage.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\OptOutHomepage.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\OptOutSearch.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\OptOutUpload.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\ownershipsPage.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\PdsSearch.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\auditService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\documentService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\featureService.ts" />

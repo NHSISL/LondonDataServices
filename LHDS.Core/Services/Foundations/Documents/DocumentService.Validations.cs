@@ -5,8 +5,6 @@
 using System;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
-using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
-using LHDS.Core.Models.Foundations.IngestionTrackings;
 
 namespace LHDS.Core.Services.Foundations.Documents
 {
@@ -83,6 +81,7 @@ namespace LHDS.Core.Services.Foundations.Documents
                         value: rule.Message);
                 }
             }
+
 
             invalidDocumentException.ThrowIfContainsErrors();
         }

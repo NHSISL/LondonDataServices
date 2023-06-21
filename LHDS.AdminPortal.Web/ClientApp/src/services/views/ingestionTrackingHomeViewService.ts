@@ -18,15 +18,11 @@ type IngestionTrackingHomeViewServiceResponse = {
 }
 
 export const ingestionTrackingHomeViewService = {
-    useGetAllIngestionTrackings: (searchTerm?: string, selectedSupplier?: string): IngestionTrackingHomeViewServiceResponse => {
+    useGetAllIngestionTrackings: (searchTerm?: string): IngestionTrackingHomeViewServiceResponse => {
         try {
             let query = `?$orderby=createdDate`;
 
-            if (selectedSupplier && searchTerm) {
-                query = query + `&$filter=supplierId eq '${selectedSupplier}' and (contains(encryptedFileName,'${searchTerm}') or contains(decryptedFileName,'${searchTerm}'))`;
-            } else if (selectedSupplier) {
-                query = query + `&$filter=supplierId eq '${selectedSupplier}'`;
-            } else if (searchTerm) {
+             if (searchTerm) {
                 query = query + `&$filter=contains(encryptedFileName,'${searchTerm}') or contains(decryptedFileName,'${searchTerm}')`;
             }
 
@@ -37,20 +33,6 @@ export const ingestionTrackingHomeViewService = {
             const [selectedOption, setSelectedOption] = useState<string>();
 
             useEffect(() => {
-                // Fetch the supplier list
-                //const fetchSupplierList = async () => {
-                //    try {
-                //        const suppliers = await lookupViewService.useGetSupplierList();
-                //        const supplierLookup: LookupView[] = suppliers?.data?.map((supplier: any) => ({
-                //            id: supplier.id,
-                //            name: supplier.name
-                //        })) || [];
-                //        setSupplierOptions([{ id: '', name: 'Please select...' }, ...supplierLookup]);
-                //    } catch (err) {
-                //        console.log('Error fetching supplier list', err);
-                //    }
-                //}
-
                 if (response.data && response.data.pages) {
                     const ingestionTrackings: Array<IngestionTrackingHomeView> = [];
                     response.data.pages.forEach(x => {
@@ -71,15 +53,11 @@ export const ingestionTrackingHomeViewService = {
                             ));
                         });
                     });
+
                     setMappedIngestionTrackings(ingestionTrackings);
                     setPages(response.data.pages);
-                    if (selectedSupplier) {
-                        setMappedIngestionTrackings(ingestionTrackings.filter(x => x.supplierId === selectedSupplier));
-                    }
                 }
-            }, [response.data, setSupplierOptions, selectedSupplier]);
-
-
+            }, [response.data, setSupplierOptions]);
 
             const handleSupplierChange = (event: React.ChangeEvent<{ value: unknown }>) => {
                 setSelectedOption(event.target.value as string);

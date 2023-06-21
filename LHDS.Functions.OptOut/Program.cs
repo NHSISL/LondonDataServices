@@ -33,6 +33,7 @@ var host = new HostBuilder()
             .AddLogging(setup =>
             {
                 setup.AddApplicationInsights();
+                setup.AddConsole();
             })
            .AddOptOutClient(context.Configuration);
     })

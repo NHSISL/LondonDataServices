@@ -21,8 +21,8 @@ class OptOutBroker {
             .then(result => result.data.map((optOut: any) => new OptOut(optOut)));
     }
 
-    async GetOptOutByIdAsync(id: Guid) {
-        const url = `${this.relativeOptOutUrl}/${id}`;
+    async GetOptOutByNhsNumberAsync(nhsnumber: string) {
+        const url = `${this.relativeOptOutUrl}/${nhsnumber}`;
 
         return await this.apiBroker.GetAsync(url)
             .then(result => new OptOut(result.data));

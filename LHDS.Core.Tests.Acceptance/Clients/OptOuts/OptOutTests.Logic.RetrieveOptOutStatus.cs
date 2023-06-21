@@ -27,9 +27,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         {
             //Given
             Guid identifier = Guid.NewGuid();
-
             List<OptOutIdentifier> optOutIdentifiers = CreateRandomOptOutIdentifiersList();
-
             bool hasHeaderRecord = optOutConfiguration.OptOutFileHasHeader;
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
 

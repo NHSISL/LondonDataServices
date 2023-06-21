@@ -14,6 +14,7 @@ using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts;
+using LHDS.Core.Services.Foundations.OptOuts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -30,6 +31,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         private readonly ICsvMapperBroker csvMapperBroker;
         private readonly OptOutConfiguration optOutConfiguration;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly OptOutService optOutService;
 
         public OptOutTests()
         {
@@ -53,7 +55,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
-
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddLogging(builder =>
@@ -82,6 +83,28 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime().AddDays(7)).GetValue();
+
+        private static List<OptOut> CreateRandomOptOuts(int count)
+        {
+            return CreateOptOutFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count)
+                    .ToList();
+        }
+
+        private static Filler<OptOut> CreateOptOutFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<OptOut>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
+                .OnProperty(optOut => optOut.Status).Use("Unknown")
+                .OnProperty(optOut => optOut.CreatedBy).Use(user)
+                .OnProperty(optOut => optOut.UpdatedBy).Use(user);
+
+            return filler;
+        }
 
         private static List<OptOutIdentifier> CreateRandomOptOutIdentifiersList()
         {

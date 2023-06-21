@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             //Given
             string messageId = GetRandomString();
             List<string> messageIds = new List<string> { messageId };
-            string mexWorkflowId = this.optOutConfiguration.WorkflowId;
+            string mexWorkflowId = this.meshConfiguration.WorkflowId;
             string mexLocalId = GetRandomString();
             string fileName = $"{optOutConfiguration.OutputFolder}/{mexLocalId}_deltaresponse.csv";
             byte[] fileContent = Encoding.ASCII.GetBytes(GetRandomString());
@@ -66,7 +66,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             var actualMessageList = await this.optOutClient.RetrieveUpdatedMeshConsentStatusesChangesAsync();
 
             //Then
-            actualMessageList.Should().BeEquivalentTo(messages);
+            actualMessageList.Should().BeEquivalentTo(expectedMessages);
 
             this.meshBrokerMock.Verify(broker =>
                 broker.RetrieveMessageIdsAsync(),
@@ -78,9 +78,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
                     broker.RetrieveMessageAsync(id),
                         Times.Once);
 
-                this.blobStorageBrokerMock.Verify(broker =>
-                    broker.InsertFileAsync(fileName, It.IsAny<Stream>()),
-                        Times.Once());
             }
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

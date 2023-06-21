@@ -146,8 +146,7 @@ const OptOutDetail: FunctionComponent<OptOutDetailProps> = (props) => {
 
                 <OptOutDetailCard
                     optOuts={optOutRetrieved}
-                    onClearCache={handleClearCache}
-                >
+                    onClearCache={handleClearCache}>
                     {children}
                 </OptOutDetailCard>
             </div>

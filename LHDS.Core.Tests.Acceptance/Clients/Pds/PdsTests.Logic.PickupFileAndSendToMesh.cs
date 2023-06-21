@@ -25,19 +25,24 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             string fileName = GetRandomString();
             string mexTo = this.pdsConfiguration.To;
             string mexWorkflowId = this.pdsConfiguration.WorkflowId;
-            string mexLocalId = Guid.NewGuid().ToString();
-            string mexSubject = GetRandomString();
-            string mexContentChecksum = GetRandomString();
-            string contentType = "application/octet-stream";
-            string contentEncoding = GetRandomString();
+            string mexSubject = string.Empty;
+            string mexContentChecksum = string.Empty;
+            string contentType = "text/plain";
+            string contentEncoding = string.Empty;
             string accept = "application/json";
+            Guid identifier = Guid.NewGuid();
+            string mexLocalId = identifier.ToString();
+
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifier())
+                    .Returns(identifier);
 
             Message message = ComposeMessage.CreateFileMessage(
                 mexTo: mexTo,
                 mexWorkflowId: mexWorkflowId,
                 fileContent: pdsFile,
                 mexSubject: mexSubject,
-                mexLocalId: mexLocalId,
+                mexLocalId: identifier.ToString(),
                 mexFileName: fileName,
                 mexContentChecksum: mexContentChecksum,
                 contentType: contentType,

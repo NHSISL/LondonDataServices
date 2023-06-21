@@ -1,6 +1,6 @@
 import { Guid } from 'guid-typescript';
 
-export class PdsView {
+export class PdsHomeView {
     public id: Guid;
     public correlationId: Guid;
     public message: string;
@@ -20,16 +20,16 @@ export class PdsView {
         createdDate?: Date,
         createdBy?: string,
         updatedDate?: Date,
-        updatedBy?: string) 
-    {
-        this.id = id;
+        updatedBy?: string,
+    ) {
+        this.id = id= id;
         this.correlationId = correlationId;
-        this.message = message || "";
-        this.fileName = fileName || "";
-        this.messageId = messageId || "";
-        this.createdBy = createdBy || "";
-        this.createdDate = createdDate ;
-        this.updatedBy = updatedBy || "";
+        this.message = message;
+        this.fileName = fileName;
+        this.messageId = messageId;
+        this.createdDate = createdDate;
+        this.createdBy = createdBy;
         this.updatedDate = updatedDate;
+        this.updatedBy = updatedBy;
     }
 }

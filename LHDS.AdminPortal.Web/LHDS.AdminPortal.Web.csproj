@@ -68,6 +68,9 @@
     <TypeScriptCompile Remove="ClientApp\src\components\pds\search\pdsDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\pds\search\pdsDetailCard.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\pds\search\pdsDetailCardView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\pds\search\pdsRow.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\pds\search\pdsRowView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\pds\search\pdsTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetailCard.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetailCardView.tsx" />
@@ -92,6 +95,7 @@
     <TypeScriptCompile Remove="ClientApp\src\models\ingestionTrackings\ingestionTrackingHomeView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\optout\optout.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\pds\pds.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\pds\pdsHomeView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\suppliers\supplier.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\audit\auditView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\documents\documentView.ts" />
@@ -119,6 +123,8 @@
     <TypeScriptCompile Remove="ClientApp\src\services\views\ingestionTrackingHomeViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\ingestionTrackingViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\OptOuts\optoutViewService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\Pds\pdsHomeViewService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\Pds\pdsViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\supplierViewService .ts" />
   </ItemGroup>
 

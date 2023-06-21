@@ -1,6 +1,6 @@
 import { useMsal } from "@azure/msal-react";
 import { Guid } from "guid-typescript";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "react-query";
 import PdsBroker from "../../brokers/apiBroker.pds";
 import { Pds } from "../../models/pds/pds";
 
@@ -25,13 +25,30 @@ export const pdsService = {
             });
     },
 
-    useGetAllPdss: (query: string) => {
+    useGetAllPds: (query: string) => {
         const pdsBroker = new PdsBroker();
 
         return useQuery(
             ["PdsGetAll", { query: query }],
             () => pdsBroker.GetAllPdsAsync(query),
             { staleTime: Infinity });
+    },
+
+    useGetAllPdsPages: (query: string) => {
+        const pdsBroker = new PdsBroker();
+
+        return useInfiniteQuery(
+            ["PdsGetAll", { query: query }],
+            ({ pageParam }) => {
+                if (!pageParam) {
+                    return pdsBroker.GetPdsFirstPagesAsync(query)
+                }
+                return pdsBroker.GetPdsSubsequentPagesAsync(pageParam)
+            },
+            {
+                getNextPageParam: (lastPage) => lastPage.nextPage,
+                staleTime: Infinity
+            });
     },
 
     useUpdatePds: () => {

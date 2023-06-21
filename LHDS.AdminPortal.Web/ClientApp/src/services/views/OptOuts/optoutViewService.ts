@@ -85,11 +85,54 @@ export const optOutViewService = {
         }
     },
 
-    useUpdateSupplier: () => {
+    useGetOptOutsByNhsNumbers: (nhsNumbers: string[]) => {
+        const [matchedOptOuts, setMatchedOptOuts] = useState<OptOutView[]>([]);
+
+        useEffect(() => {
+            const fetchData = async () => {
+                const fetchedOptOuts: OptOutView[] = [];
+
+                for (const nhsNumber of nhsNumbers) {
+                    try {
+                        const query = `/${nhsNumber}`;
+                        const response = await optOutService.useGetAllOptOuts(query);
+
+                        if (response.data) {
+                            const optOut = new OptOutView(
+                                response.data.id,
+                                response.data.nhsNumber,
+                                response.data.status,
+                                response.data.uniqueReference,
+                                response.data.batchReference,
+                                response.data.cacheTime,
+                                response.data.lastSentToMesh,
+                                response.data.createdBy,
+                                response.data.createdDate,
+                                response.data.updatedBy,
+                                response.data.updatedDate
+                            );
+
+                            fetchedOptOuts.push(optOut);
+                        }
+                    } catch (error) {
+                        console.error(`Error fetching opt-out for NHS number ${nhsNumber}:`, error);
+                    }
+                }
+
+                setMatchedOptOuts(fetchedOptOuts);
+            };
+
+            fetchData();
+        }, [nhsNumbers]);
+
+        return matchedOptOuts;
+    },
+
+    useUpdateOptOut: () => {
         return optOutService.useUpdateOptOut();
     },
 
-    useRemoveSupplier: () => {
+    useRemoveOptOut: () => {
         return optOutService.useDeleteOptOut();
     },
 }

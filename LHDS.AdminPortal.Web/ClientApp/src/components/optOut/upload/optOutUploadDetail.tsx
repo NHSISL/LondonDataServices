@@ -22,7 +22,7 @@ const OptOutUploadDetail: FunctionComponent<OptOutUploadDetailProps> = (props) =
             const optOutData = {
                 id: Guid.create().toString(),
                 nhsNumber: value,
-                optOutStatus: 'yes',
+                optOutStatus: 'Unknown',
                 cacheTime: DateNow,
                 lastSentToMesh: DateNow,
             };

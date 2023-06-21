@@ -1,15 +1,19 @@
 import { Guid } from "guid-typescript";
 import { Pds } from "../models/pds/pds";
 import ApiBroker from "./apiBroker";
+import { AxiosResponse } from "axios";
 
 class PdsBroker {
-    relativePdsUrl = '/api/Pds';
+    relativePdsUrl = '/api/pdsAudits';
+    relativePdsOdataUrl = '/odata/pdsAudits'
 
     private apiBroker: ApiBroker = new ApiBroker();
 
-    async PostPdsAsync(pds: Pds) {
-        return await this.apiBroker.PostAsync(this.relativePdsUrl, pds)
-            .then(result => new Pds(result.data));
+    private processOdataResult = (result: AxiosResponse) => {
+        const data = result.data.value.map((pds: any) => new Pds(pds));
+
+        const nextPage = result.data['@odata.nextLink'];
+        return { data, nextPage }
     }
 
     async GetAllPdsAsync(queryString: string) {
@@ -19,6 +23,20 @@ class PdsBroker {
         }
         return await this.apiBroker.GetAsync(url)
             .then(result => result.data.map((pds: any) => new Pds(pds)));
+    }
+
+    async GetPdsFirstPagesAsync(query: string) {
+        var url = this.relativePdsOdataUrl + query;
+        return this.processOdataResult(await this.apiBroker.GetAsync(url));
+    }
+
+    async GetPdsSubsequentPagesAsync(absoluteUri: string) {
+        return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
+    }
+
+    async PostPdsAsync(pds: Pds) {
+        return await this.apiBroker.PostAsync(this.relativePdsUrl, pds)
+            .then(result => new Pds(result.data));
     }
 
     async PutPdsAsync(pds: Pds) {

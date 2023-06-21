@@ -15,6 +15,7 @@ using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
@@ -210,6 +211,7 @@ namespace LHDS.AdminPortal.Api
             builder.EntitySet<IngestionTracking>("IngestionTrackings");
             builder.EntitySet<Supplier>("Suppliers");
             builder.EntitySet<Audit>("Audits");
+            builder.EntitySet<PdsAudit>("PdsAudits");
             builder.EnableLowerCamelCase();
 
             return builder.GetEdmModel();

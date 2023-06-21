@@ -12,6 +12,7 @@ using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +31,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         private readonly CsvMapperBroker csvMapperBroker;
         private readonly DateTimeBroker dateTimeBroker;
         private readonly OptOutConfiguration optOutConfiguration;
+        private readonly MeshConfiguration meshConfiguration;
 
         public OptOutTests()
         {
@@ -50,7 +52,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 
             var serviceCollection = new ServiceCollection();
 
-            // Add a console logger to the service collection
             serviceCollection.AddLogging(builder =>
             {
                 builder.AddConsole();
@@ -64,6 +65,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.optOutConfiguration = serviceProvider.GetService<OptOutConfiguration>();
+            this.meshConfiguration = serviceProvider.GetService<MeshConfiguration>();
             optOutClient = serviceProvider.GetRequiredService<IOptOutClient>();
         }
 

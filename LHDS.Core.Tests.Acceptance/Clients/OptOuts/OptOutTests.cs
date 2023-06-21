@@ -38,6 +38,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
             this.meshBrokerMock = new Mock<IMeshBroker>();
             this.csvMapperBroker = new CsvMapperBroker();
+            this.dateTimeBroker = new DateTimeBroker();
 
             string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             var args = Environment.GetCommandLineArgs();

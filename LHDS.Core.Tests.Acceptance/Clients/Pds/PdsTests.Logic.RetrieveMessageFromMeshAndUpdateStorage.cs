@@ -42,7 +42,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
 
             message.MessageId = messageId;
             List<Message> messages = new List<Message> { message };
-            Guid identifier = Guid.NewGuid();
 
             this.meshBrokerMock.Setup(broker =>
                 broker.RetrieveMessageIdsAsync())

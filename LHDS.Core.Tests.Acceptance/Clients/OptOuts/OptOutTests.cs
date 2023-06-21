@@ -27,9 +27,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
         private readonly Mock<IMeshBroker> meshBrokerMock;
         private readonly IOptOutClient optOutClient;
-        private readonly CsvMapperBroker csvMapperBroker;
+        private readonly ICsvMapperBroker csvMapperBroker;
         private readonly OptOutConfiguration optOutConfiguration;
-        private readonly DateTimeBroker dateTimeBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
 
         public OptOutTests()
         {
@@ -69,8 +69,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.optOutConfiguration = serviceProvider.GetService<OptOutConfiguration>();
-            this.csvMapperBroker = serviceProvider.GetRequiredService<CsvMapperBroker>();
-            this.dateTimeBroker = serviceProvider.GetRequiredService<DateTimeBroker>();
+            this.csvMapperBroker = serviceProvider.GetRequiredService<ICsvMapperBroker>();
+            this.dateTimeBroker = serviceProvider.GetRequiredService<IDateTimeBroker>();
             optOutClient = serviceProvider.GetRequiredService<IOptOutClient>();
         }
 

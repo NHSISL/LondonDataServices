@@ -61,8 +61,6 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                     this.storageBroker.SelectAllIngestionTrackings()
                         .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == fileName);
 
-                ValidateStorageIngestionTracking(maybeIngestionTracking, fileName);
-
                 return await ValueTask.FromResult(maybeIngestionTracking);
             });
 

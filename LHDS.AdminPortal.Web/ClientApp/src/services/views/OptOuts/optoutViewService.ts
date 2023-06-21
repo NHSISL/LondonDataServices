@@ -1,4 +1,3 @@
-import { Guid } from "guid-typescript";
 import { useEffect, useState } from "react";
 import { OptOut } from "../../../models/optout/optout";
 import { OptOutView } from "../../../models/views/components/optOuts/optOutView";
@@ -17,7 +16,6 @@ export const optOutViewService = {
 
             if (searchTerm) {
                 query = query + `?$orderby=createdDate&$filter=nhsNumber eq '${searchTerm}'`;
-                //query = `?$filter=id eq 508158d9-70d3-4771-baae-c7e93775512d`
             }
 
             const response = optOutService.useGetAllOptOuts(query);
@@ -28,7 +26,9 @@ export const optOutViewService = {
                     const optOuts = response.data.map((optOut: OptOut) => new OptOutView(
                             optOut.id,
                             optOut.nhsNumber,
-                            optOut.optOutStatus,
+                            optOut.status,
+                            optOut.uniqueReference,
+                            optOut.batchReference,
                             optOut.cacheTime,
                             optOut.lastSentToMesh,
                             optOut.createdBy,
@@ -50,9 +50,9 @@ export const optOutViewService = {
         }
     },
 
-    useGetOptOutsById: (id: Guid) => {
+    useGetOptOutsByNhsNumber: (nhsNumber: string) => {
         try {
-            const query = `?$filter=id eq ${id}`
+            const query = `/${nhsNumber}`
             const response = optOutService.useGetAllOptOuts(query);
             const [mappedOptOut, setMappedOptOut] = useState<OptOutView>();
 
@@ -61,7 +61,9 @@ export const optOutViewService = {
                     const optOut = new OptOutView(
                         response.data.id,
                         response.data.nhsNumber,
-                        response.data.optOutStatus,
+                        response.data.status,
+                        response.data.uniqueReference,
+                        response.data.batchReference,
                         response.data.cacheTime,
                         response.data.lastSentToMesh,
                         response.data.createdBy,

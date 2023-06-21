@@ -114,6 +114,13 @@ steps:
       command: 'build'
       projects: '**/LHDS.Functions.OptOut.csproj'
       arguments: --output $(System.DefaultWorkingDirectory)/publish_output_optout_func --configuration Release
+
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Build (PDS Function)"
+    inputs:
+      command: 'build'
+      projects: '**/LHDS.Functions.Pds.csproj'
+      arguments: --output $(System.DefaultWorkingDirectory)/publish_output_pds_func --configuration Release
   
   #- task: DotNetCoreCLI@2
   #  displayName: C# Integration Tests
@@ -216,6 +223,16 @@ steps:
       archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_optout_func.zip
       replaceExistingArchive: true
 
+  - task: ArchiveFiles@2
+    condition: ne(variables['Build.Reason'], 'PullRequest')
+    displayName: 'Archive files - Pds Function'
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_pds_func'
+      includeRootFolder: false
+      archiveType: zip
+      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_pds_func.zip
+      replaceExistingArchive: true
+
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_website_api.zip
     condition: ne(variables['Build.Reason'], 'PullRequest')  
     displayName: 'Publish Artifact - API'
@@ -235,3 +252,8 @@ steps:
     condition: ne(variables['Build.Reason'], 'PullRequest')
     displayName: 'Publish Artifact - Opt-Out Function'
     artifact: drop-optout-func
+
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_pds_func.zip
+    condition: ne(variables['Build.Reason'], 'PullRequest')
+    displayName: 'Publish Artifact - PDS Function'
+    artifact: drop-pds-func

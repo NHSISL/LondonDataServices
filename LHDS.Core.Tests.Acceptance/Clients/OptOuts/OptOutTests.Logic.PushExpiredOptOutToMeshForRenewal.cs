@@ -30,8 +30,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         {
             //Given
             string messageId = GetRandomString();
+            int randomNumber = GetRandomNumber();
             List<string> messageIds = new List<string> { messageId };
-            List<OptOut> randomOptOuts = CreateRandomOptOutIdentifiersList();
+            List<OptOut> outputOptOuts = CreateRandomOptOuts(randomNumber);
             bool hasHeaderRecord = optOutConfiguration.OptOutFileHasHeader;
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
             string mexWorkflowId = this.optOutConfiguration.WorkflowId;
@@ -41,11 +42,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             var optOutStringList = new StringBuilder();
 
             outputOptOuts
-                .Select(optOut => optOutStringList.AppendLine($"{optOut.NhsNumber}."));
+                .Select(optOut => optOutStringList.AppendLine($"{optOut.NhsNumber},"));
 
             byte[] fileContent = Encoding.ASCII.GetBytes(optOutStringList.ToString());
 
-            this.optOutService.AddOptOutAsync();
+            foreach(OptOut optOut in outputOptOuts)
+            {
+                this.optOutService.AddOptOutAsync(optOut);
+            }
 
 
             Message message = ComposeMessage.CreateFileMessage(
@@ -81,6 +85,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 
             //Then
             actualMessage.Should().BeEquivalentTo(message);
+
+
+            foreach (OptOut optOut in outputOptOuts)
+            {
+                this.optOutService.RemoveOptOutByIdAsync(optOut.Id);
+            }
 
             this.meshBrokerMock.Verify(broker =>
                 broker.SendMessageAsync(

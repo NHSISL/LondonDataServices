@@ -63,7 +63,6 @@ const OptOutUploadDetailCardView: FunctionComponent<OptOutUploadDetailCardViewPr
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const selectedFile = event.target.files?.[0];
         if (selectedFile && selectedFile.type === 'text/csv') {
-
             setFile(selectedFile);
             setValidNhsNumbers([]);
             setInvalidNhsNumbers([]);
@@ -79,8 +78,6 @@ const OptOutUploadDetailCardView: FunctionComponent<OptOutUploadDetailCardViewPr
                 const validNumbers: string[] = [];
                 const invalidNumbers: string[] = [];
 
-                // Do i need to search db for nhsnumber already there and exclude.
-                // Also return exisiting ones to ui to show user.
                 nhsNumbers.forEach((nhsNumber) => {
                     if (isValidNhsNumber(nhsNumber)) {
                         validNumbers.push(nhsNumber);
@@ -102,6 +99,13 @@ const OptOutUploadDetailCardView: FunctionComponent<OptOutUploadDetailCardViewPr
         onUpload(validNhsNumbers);
     };
 
+    const getSummary = (): string => {
+        const totalImported = nhsNumbers.length;
+        const totalInvalid = invalidNhsNumbers.length;
+        const totalValid = totalImported - totalInvalid;
+        return `${totalValid}/${totalImported} imported. ${totalInvalid} invalid NHS numbers excluded.`;
+    };
+
     return (
         <>
             <div>
@@ -110,18 +114,11 @@ const OptOutUploadDetailCardView: FunctionComponent<OptOutUploadDetailCardViewPr
                 {nhsNumbers.length > 0 && (
                     <div>
                         <br />
-                        <ButtonBase onClick={handleUploadClick} add>
-                            <FontAwesomeIcon icon={faUpload} />
-                            &nbsp;Upload VALID NHS Numbers
-                        </ButtonBase>
-                        <br />
+
+                        <p style={{ color: "green" }}><strong>{getSummary()}</strong></p>
+
                         <h3 style={{ color: "red" }}>Invalid NHS numbers:</h3>
                         <ul>
-                            {/*{validNhsNumbers.map((nhsNumber, index) => (*/}
-                            {/*    <li key={index}>*/}
-                            {/*        <span style={{ color: "green" }}>{nhsNumber}</span> (Valid)*/}
-                            {/*    </li>*/}
-                            {/*))}*/}
                             {invalidNhsNumbers.map((nhsNumber, index) => (
                                 <li key={index}>
                                     <span style={{ color: "red" }}>{nhsNumber} (Invalid)</span>
@@ -129,7 +126,13 @@ const OptOutUploadDetailCardView: FunctionComponent<OptOutUploadDetailCardViewPr
                             ))}
                         </ul>
 
-                        <p><strong>NOTE:</strong> Only the valid nhs numbers will be saved.</p>
+                        <p style={{ color: "red" }}>
+                            <strong>NOTE:</strong> Only the valid NHS numbers will be saved.
+                        </p>
+                        <ButtonBase onClick={handleUploadClick} add>
+                            <FontAwesomeIcon icon={faUpload} />
+                            &nbsp;Upload VALID NHS Numbers
+                        </ButtonBase>
                     </div>
                 )}
             </div>

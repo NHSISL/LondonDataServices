@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         private readonly ICsvMapperBroker csvMapperBroker;
         private readonly OptOutConfiguration optOutConfiguration;
         private readonly IDateTimeBroker dateTimeBroker;
-        private readonly OptOutService optOutService;
+        private readonly IOptOutService optOutService;
 
         public OptOutTests()
         {
@@ -72,6 +72,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             this.optOutConfiguration = serviceProvider.GetService<OptOutConfiguration>();
             this.csvMapperBroker = serviceProvider.GetRequiredService<ICsvMapperBroker>();
             this.dateTimeBroker = serviceProvider.GetRequiredService<IDateTimeBroker>();
+            this.optOutService = serviceProvider.GetRequiredService<IOptOutService>();
             optOutClient = serviceProvider.GetRequiredService<IOptOutClient>();
         }
 
@@ -84,11 +85,32 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime().AddDays(7)).GetValue();
 
-        private static List<OptOut> CreateRandomOptOuts(int count)
+        private static List<OptOut> CreateRandomOptOuts(int count, DateTimeOffset dateTimeOffset)
         {
-            return CreateOptOutFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count)
-                    .ToList();
+            List<OptOut> optOuts = new List<OptOut>();
+
+            for (int i = 0; i < count; i++)
+            {
+                var reference = Guid.NewGuid();
+
+                var optOut = new OptOut
+                {
+                    Id = reference,
+                    NhsNumber = GenerateValidNhsNumber(),
+                    Status = "Unknown",
+                    UniqueReference = reference.ToString(),
+                    CacheTime = dateTimeOffset.AddDays(- 50),
+                    LastSentToMesh = dateTimeOffset.AddDays(- 50),
+                    CreatedDate = dateTimeOffset.AddSeconds(i),
+                    CreatedBy = "System",
+                    UpdatedDate = dateTimeOffset.AddSeconds(i),
+                    UpdatedBy = "System",
+                };
+
+                optOuts.Add(optOut);
+            }
+
+            return optOuts.OrderBy(optOut => optOut.CreatedDate).ToList();
         }
 
         private static Filler<OptOut> CreateOptOutFiller(DateTimeOffset dateTimeOffset)

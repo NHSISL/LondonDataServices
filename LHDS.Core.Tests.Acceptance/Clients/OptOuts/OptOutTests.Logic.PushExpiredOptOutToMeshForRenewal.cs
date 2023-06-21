@@ -32,25 +32,25 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             string messageId = GetRandomString();
             int randomNumber = GetRandomNumber();
             List<string> messageIds = new List<string> { messageId };
-            List<OptOut> outputOptOuts = CreateRandomOptOuts(randomNumber);
-            bool hasHeaderRecord = optOutConfiguration.OptOutFileHasHeader;
-            bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
+
+            List<OptOut> outputOptOuts = 
+                CreateRandomOptOuts(randomNumber, this.dateTimeBroker.GetCurrentDateTimeOffset());
+
             string mexWorkflowId = this.optOutConfiguration.WorkflowId;
             string batchReference = this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss");
             string mexTo = this.optOutConfiguration.To;
-
             var optOutStringList = new StringBuilder();
 
             outputOptOuts
-                .Select(optOut => optOutStringList.AppendLine($"{optOut.NhsNumber},"));
+                .ForEach(optOut => 
+                    optOutStringList.AppendLine($"{optOut.UniqueReference},{optOut.NhsNumber},{optOut.Status},,"));
 
             byte[] fileContent = Encoding.ASCII.GetBytes(optOutStringList.ToString());
 
             foreach(OptOut optOut in outputOptOuts)
             {
-                this.optOutService.AddOptOutAsync(optOut);
+                await this.optOutService.AddOptOutAsync(optOut);
             }
-
 
             Message message = ComposeMessage.CreateFileMessage(
                 mexTo,
@@ -86,12 +86,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             //Then
             actualMessage.Should().BeEquivalentTo(message);
 
-
-            foreach (OptOut optOut in outputOptOuts)
-            {
-                this.optOutService.RemoveOptOutByIdAsync(optOut.Id);
-            }
-
             this.meshBrokerMock.Verify(broker =>
                 broker.SendMessageAsync(
                     mexTo,
@@ -109,6 +103,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             this.meshBrokerMock.Verify(broker =>
                 broker.TrackMessageAsync(messageId),
                     Times.Once);
+
+            foreach (OptOut optOut in outputOptOuts)
+            {
+                await this.optOutService.RemoveOptOutByIdAsync(optOut.Id);
+            }
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.meshBrokerMock.VerifyNoOtherCalls();

@@ -31,10 +31,22 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             //Given
             string messageId = GetRandomString();
             List<string> messageIds = new List<string> { messageId };
+            List<OptOut> randomOptOuts = CreateRandomOptOutIdentifiersList();
+            bool hasHeaderRecord = optOutConfiguration.OptOutFileHasHeader;
+            bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
             string mexWorkflowId = this.optOutConfiguration.WorkflowId;
             string batchReference = this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss");
-            byte[] fileContent = Encoding.ASCII.GetBytes(GetRandomString());
             string mexTo = this.optOutConfiguration.To;
+
+            var optOutStringList = new StringBuilder();
+
+            outputOptOuts
+                .Select(optOut => optOutStringList.AppendLine($"{optOut.NhsNumber}."));
+
+            byte[] fileContent = Encoding.ASCII.GetBytes(optOutStringList.ToString());
+
+            this.optOutService.AddOptOutAsync();
+
 
             Message message = ComposeMessage.CreateFileMessage(
                 mexTo,

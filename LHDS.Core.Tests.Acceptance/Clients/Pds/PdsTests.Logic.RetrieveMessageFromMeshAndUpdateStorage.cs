@@ -55,10 +55,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
                         .ReturnsAsync(message);
             }
 
-            this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(identifier);
-
             //When
             List<PdsAudit> actualList = await pdsClient.RetreiveMessagesFromMeshAndUpdateStorage();
 
@@ -81,10 +77,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
 
                 await this.pdsAuditService.RemovePdsAuditByIdAsync(item.Id);
             }
-
-            this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
-                    Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

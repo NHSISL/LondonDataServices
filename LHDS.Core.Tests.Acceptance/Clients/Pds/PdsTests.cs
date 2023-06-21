@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
     {
         private readonly Mock<IMeshBroker> meshBrokerMock;
         private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
-        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
+        private readonly IdentifierBroker identifierBroker;
         private readonly IPdsClient pdsClient;
         private readonly PdsConfiguration pdsConfiguration;
         private readonly IPdsAuditService pdsAuditService;
@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         {
             this.meshBrokerMock = new Mock<IMeshBroker>();
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
-            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
+            this.identifierBroker = new IdentifierBroker();
 
             string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             var args = Environment.GetCommandLineArgs();
@@ -70,8 +70,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
 
             serviceCollection
                 .AddTransient<IMeshBroker>(serviceProvider => meshBrokerMock.Object)
-                .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object)
-                .AddTransient<IIdentifierBroker>(serviceProvider => identifierBrokerMock.Object);
+                .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 

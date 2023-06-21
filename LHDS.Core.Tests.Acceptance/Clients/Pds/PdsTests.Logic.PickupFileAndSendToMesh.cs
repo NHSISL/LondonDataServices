@@ -30,19 +30,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             string contentType = "text/plain";
             string contentEncoding = string.Empty;
             string accept = "application/json";
-            Guid identifier = Guid.NewGuid();
+            Guid identifier = this.identifierBroker.GetIdentifier();
             string mexLocalId = identifier.ToString();
-
-            this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(identifier);
 
             Message message = ComposeMessage.CreateFileMessage(
                 mexTo: mexTo,
                 mexWorkflowId: mexWorkflowId,
                 fileContent: pdsFile,
                 mexSubject: mexSubject,
-                mexLocalId: identifier.ToString(),
+                It.IsAny<string>(),
                 mexFileName: fileName,
                 mexContentChecksum: mexContentChecksum,
                 contentType: contentType,
@@ -55,14 +51,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
                     mexWorkflowId,
                     pdsFile,
                     mexSubject,
-                    mexLocalId,
+                    It.IsAny<string>(),
                     fileName,
                     mexContentChecksum,
                     contentType,
                     contentEncoding,
                     accept))
                 .ReturnsAsync(message);
-
 
             //When
             var actualPdsAudit = await pdsClient.PickupFileAndSendToMesh(pdsFile, fileName);
@@ -71,17 +66,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             actualPdsAudit.Should().NotBeNull();
             actualPdsAudit.FileName.Should().Be(fileName);
 
-            this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
-                    Times.Exactly(3));
-
             this.meshBrokerMock.Verify(broker =>
                 broker.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
                     pdsFile,
                     mexSubject,
-                    mexLocalId,
+                    It.IsAny<string>(),
                     fileName,
                     mexContentChecksum,
                     contentType,

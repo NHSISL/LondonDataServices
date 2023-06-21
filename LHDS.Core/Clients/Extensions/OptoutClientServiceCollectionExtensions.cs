@@ -86,16 +86,20 @@ namespace LHDS.Core.Clients.Extensions
                 MexOSName = GetSettings(configuration, "MeshConfiguration:MexOSName", true),
                 MexOSVersion = GetSettings(configuration, "MeshConfiguration:MexOSVersion", true),
 
-                RootCertificate = GetCertificate(configuration, "MeshConfiguration:RootCertificate", true),
-
-                IntermediateCertificates = GetCertificates(
-                    configuration, "MeshConfiguration:IntermediateCertificates", false),
-
-                ClientCertificate = GetCertificate(configuration, "MeshConfiguration:ClientCertificate", true),
 
                 MaxChunkSizeInMegabytes = int.Parse(
                     GetSettings(configuration, "MeshConfiguration:MaxChunkSizeInMegabytes", true)),
             };
+
+            if (!acceptanceTest)
+            {
+                meshConfig.RootCertificate = GetCertificate(configuration, "MeshConfiguration:RootCertificate", true);
+
+                meshConfig.IntermediateCertificates = GetCertificates(
+                    configuration, "MeshConfiguration:IntermediateCertificates", false);
+
+                meshConfig.ClientCertificate = GetCertificate(configuration, "MeshConfiguration:ClientCertificate", true);
+            }
 
             services.AddSingleton(meshConfig);
 

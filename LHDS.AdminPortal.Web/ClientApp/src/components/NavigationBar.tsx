@@ -21,7 +21,12 @@ export const NavigationBar = () => {
                                     <SecuredLink to="/optOutUpload">Upload Opt-Out</SecuredLink>
                                 </NavDropdown>
                             </SecuredComponents>
-                            <SecuredLink to="/pds">Pds</SecuredLink>
+                            <SecuredComponents>
+                                <NavDropdown title="Pds" id="pds-dropdown" className="text-white">
+                                    <SecuredLink to="/pds">Pds Audit</SecuredLink>
+                                    <SecuredLink to="/pds">Pds Upload</SecuredLink>
+                                </NavDropdown>
+                            </SecuredComponents>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

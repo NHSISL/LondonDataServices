@@ -18,7 +18,7 @@ const OptOutDetail: FunctionComponent<OptOutDetailProps> = (props) => {
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
 
     const [optOutRetrieved, setOptOutRetrieved]
-        = useState<OptOutView | undefined>(undefined); // Initialize with undefined
+        = useState<OptOutView | undefined>(undefined);
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -79,7 +79,7 @@ const OptOutDetail: FunctionComponent<OptOutDetailProps> = (props) => {
         return false;
     };
 
-    const addNewOptOut = optOutViewService.useCreateOptOut();
+    //const addNewOptOut = optOutViewService.useCreateOptOut();
     const addOptOut = async (optOutView: OptOutView, nhsNumber: string) => {
         optOutView.nhsNumber = nhsNumber;
         optOutView.status = "Unkown";

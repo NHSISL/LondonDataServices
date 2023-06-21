@@ -1,7 +1,6 @@
 import { debounce } from "lodash";
 import React, { FunctionComponent, useMemo, useState } from "react";
 import { IngestionTrackingHomeView } from "../../models/ingestionTrackings/ingestionTrackingHomeView";
-import { LookupView } from "../../models/views/components/lookups/lookupView";
 import { ingestionTrackingHomeViewService } from "../../services/views/ingestionTrackingHomeViewService";
 import CardBase from "../bases/components/Card/CardBase";
 import CardBaseBody from "../bases/components/Card/CardBase.Body";
@@ -19,7 +18,6 @@ type IngestionTrackingTableProps = {};
 
 const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (props) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
-    const [selectedSupplier, setSelectedSupplier] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
 
     const {
@@ -30,8 +28,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         hasNextPage,
         data,
     } = ingestionTrackingHomeViewService.useGetAllIngestionTrackings(
-        debouncedTerm,
-        selectedSupplier
+        debouncedTerm
     );
 
     const handleSearchChange = (value: string) => {
@@ -47,29 +44,17 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         []
     );
 
-    const supplierOptions: Array<LookupView> = [
-        { id: "", name: "Please select..." },
-        ...(data?.supplierOptions || []).map((supplier: LookupView) => {
-            return { id: supplier.id.toString(), name: supplier.name || "" };
-        }),
-    ];
-
-    //const handleSupplierChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    //    setSelectedSupplier(event.target.value);
-    //};
-
     const hasNoMorePages = () => {
         return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
     };
 
     return (
-        <div className="infiniteScollContainer">
+        <div className="infiniteScrollContainer">
             <CardBase>
                 <CardBaseBody>
                     <CardBaseTitle>Ingestion Trackings</CardBaseTitle>
                     <CardBaseContent>
                         <InfiniteScroll loading={isLoading} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
-
                             <div className="filter-container">
                                 <div className="filter-item">
                                     <SearchBase
@@ -81,33 +66,18 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                                         }}
                                     />
                                 </div>
-                                <div className="filter-item">
-                                    <label htmlFor="supplier-filter">Filter by Supplier: &nbsp;</label>
-                                    <select
-                                        id="supplier-filter"
-                                        value={selectedSupplier}
-                                        onChange={(e) =>
-                                            setSelectedSupplier(e.currentTarget.value)
-                                        }
-                                    >
-                                        {supplierOptions.map((option) => (
-                                            <option key={option.id} value={option.id}>
-                                                {option.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
                             </div>
 
                             <TableBase>
                                 <TableBaseTbody>
-                                    {ingestionTrackingsRetrieved?.map
-                                        ((ingestionTrackingHomeView: IngestionTrackingHomeView) => (
+                                    {ingestionTrackingsRetrieved?.map(
+                                        (ingestionTrackingHomeView: IngestionTrackingHomeView) => (
                                             <IngestionTrackingRow
                                                 key={ingestionTrackingHomeView.id}
                                                 ingestionTracking={ingestionTrackingHomeView}
                                             />
-                                        ))}
+                                        )
+                                    )}
                                     <tr>
                                         <td colSpan={3} className="text-center">
                                             <InfiniteScrollLoader

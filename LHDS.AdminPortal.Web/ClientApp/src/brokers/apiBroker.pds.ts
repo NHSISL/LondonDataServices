@@ -18,7 +18,7 @@ class PdsBroker {
             return undefined;
         }
         return await this.apiBroker.GetAsync(url)
-            .then(result => result.data.map((optOut: any) => new Pds(optOut)));
+            .then(result => result.data.map((pds: any) => new Pds(pds)));
     }
 
     async PutPdsAsync(pds: Pds) {

@@ -10,12 +10,14 @@ import SummaryListBaseValue from "../../bases/components/SummaryList/SummaryList
 interface OptOutDetailCardViewProps {
     optOuts: OptOutView | undefined;
     onClearCache: (optOuts: OptOutView) => void;
+    onAddNewNHS: () => void;
 }
 
 const OptOutDetailCardView: FunctionComponent<OptOutDetailCardViewProps> = (props) => {
     const {
         optOuts,
-        onClearCache
+        onClearCache,
+        onAddNewNHS 
     } = props;
 
     return (
@@ -53,11 +55,7 @@ const OptOutDetailCardView: FunctionComponent<OptOutDetailCardViewProps> = (prop
             {optOuts === undefined && (
                 <div>
                 <p>You can search for an NHS number in the search bar above.   </p>
-                <p>Alternatively, if you need to add a new patient to the system, click the "Add new" button to enter some details, including a valid NHS number. 
-                 It's important to ensure that all NHS numbers entered into the system are valid and accurate to ensure that patient records are up to date and accessible when needed.
-                 </p>
-
-                    <ButtonBase onClick={() => (optOuts)} view>&nbsp;Add New Nhs Number</ButtonBase>
+                   {/* <ButtonBase onClick={onAddNewNHS} view>&nbsp;Add New Nhs Number</ButtonBase>*/}
                 </div>
             )}
         </>

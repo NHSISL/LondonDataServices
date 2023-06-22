@@ -11,7 +11,7 @@ interface OptOutDetailCardProps {
     optOuts: OptOutView | undefined;
     children?: React.ReactNode;
     onClearCache: (optOuts: OptOutView) => void;
-    onAddNewNHS: () => void;
+    onAddNewNHS: (optOuts: OptOutView) => void;
     nhsNumber: string,
     isValidNumber: boolean
 }
@@ -26,47 +26,29 @@ const OptOutDetailCard: FunctionComponent<OptOutDetailCardProps> = (props) => {
         isValidNumber
     } = props;
 
-    const [showAddView, setShowAddView] = useState(false);
 
-    const handleAddNewNHS = () => {
-        setShowAddView(true);
-    };
-
-    const handleBack = () => {
-        setShowAddView(false);
-    };
 
     return (
         <div>
             <CardBase>
                 <CardBaseBody>
                     <CardBaseTitle>
-                       Patient Opt-Out
+                        Patient Opt-Out
                     </CardBaseTitle>
                     <CardBaseContent>
+                        <OptOutDetailCardView
+                            optOuts={optOuts}
+                            onClearCache={onClearCache}
+                            onAddNewNHS={onAddNewNHS}
+                            isValidNumber={isValidNumber}
+                            nhsNumber={nhsNumber} />
 
-                        {showAddView ? (
-                            <OptOutDetailCardViewAdd
-                                optOuts={optOuts}
-                                onBack={handleBack} />
-                        ) : (
-
-                            <OptOutDetailCardView
-                                    optOuts={optOuts}
-                                    onClearCache={onClearCache}
-                                    onAddNewNHS={handleAddNewNHS}
-                                    isValidNumber={isValidNumber}
-                                    nhsNumber={nhsNumber}
-
-                            />
-                        )}
                         {children !== undefined && (
                             <>
                                 <br />
                                 {children}
                             </>
                         )}
-
                     </CardBaseContent>
                 </CardBaseBody>
             </CardBase>

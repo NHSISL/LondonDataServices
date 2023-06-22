@@ -4,10 +4,10 @@ export class OptOutView {
     public id: Guid;
     public nhsNumber: string;
     public status: string;
-    public uniqueReference: string;
-    public batchReference: number;
     public cacheTime: Date | undefined;
     public lastSentToMesh: Date | undefined;
+    public uniqueReference?: string;
+    public batchReference?: number;
     public createdBy?: string;
     public createdDate?: Date | undefined;
     public updatedBy?: string;
@@ -17,10 +17,10 @@ export class OptOutView {
         id: Guid,
         nhsNumber: string,
         status: string,
-        uniqueReference: string,
-        batchReference: number,
         cacheTime: Date | undefined,
         lastSentToMesh: Date | undefined,
+        uniqueReference?: string,
+        batchReference?: number,
         createdBy?: string,
         createdDate?: Date | undefined,
         updatedBy?: string,

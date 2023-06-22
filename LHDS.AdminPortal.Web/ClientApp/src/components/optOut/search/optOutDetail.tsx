@@ -6,6 +6,7 @@ import { optOutViewService } from "../../../services/views/OptOuts/optoutViewSer
 import SearchBase from "../../bases/inputs/SearchBase";
 import { SpinnerBase } from "../../bases/spinner/SpinnerBase";
 import OptOutDetailCard from "./optOutDetailCard";
+import { Guid } from "guid-typescript";
 
 interface OptOutDetailProps {
     children?: React.ReactNode;
@@ -29,7 +30,6 @@ const OptOutDetail: FunctionComponent<OptOutDetailProps> = (props) => {
                         setDebouncedTerm("");
                     }
                 }
-                
             }, 500),
         []
     );
@@ -85,13 +85,19 @@ const OptOutDetail: FunctionComponent<OptOutDetailProps> = (props) => {
         return false;
     };
 
+    const addNewOptOut = optOutViewService.useCreateOptOut();
 
-    //const addNewOptOut = optOutViewService.useCreateOptOut();
-    const addOptOut = async (optOutView: OptOutView, nhsNumber: string) => {
-        optOutView.nhsNumber = nhsNumber;
-        optOutView.status = "Unkown";
-        //return addNewOptOut.mutateAsync(optOutView);
-        console.log(`Adding new NHS number: ${nhsNumber}`);
+    const addOptOut = async (optOutView: OptOutView) => {
+        optOutView = new OptOutView(
+            optOutView.id = Guid.create(),
+            optOutView.nhsNumber = debouncedTerm,
+            optOutView.status = "Unknown",
+            optOutView.cacheTime = new Date(),
+            optOutView.lastSentToMesh = new Date(),
+        );
+
+        console.log(`Adding new NHS number: ${debouncedTerm}`);
+        return addNewOptOut.mutateAsync(optOutView);
     };
 
     return (
@@ -119,11 +125,10 @@ const OptOutDetail: FunctionComponent<OptOutDetailProps> = (props) => {
                 <OptOutDetailCard
                     optOuts={mappedOptOut}
                     onClearCache={handleClearCache}
-                    onAddNewNHS={() => { }}
+                    onAddNewNHS={addOptOut}
                     isValidNumber={isValidNhsNumber(debouncedTerm)}
-                    nhsNumber={debouncedTerm}
-                    >
-                    
+                    nhsNumber={debouncedTerm}>
+
                     {children}
                 </OptOutDetailCard>
             </div>

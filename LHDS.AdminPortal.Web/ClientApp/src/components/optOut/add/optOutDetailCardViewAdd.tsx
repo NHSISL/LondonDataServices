@@ -23,15 +23,10 @@ const OptOutDetailCardViewAdd: FunctionComponent<OptOutDetailCardViewAddProps> =
 
     return (
         <div>
-            
             <ButtonBase onClick={onBack} view><FontAwesomeIcon icon={faChevronLeft} size="1x" /> Go Back to Search</ButtonBase>
-
             <br /> <br />
             <p>Add form here.</p>
-
             <ButtonBase onClick={() => handleAddNewNHS()} add>&nbsp;Add Nhs Number</ButtonBase>&nbsp;
-
-           
         </div>
     );
 };

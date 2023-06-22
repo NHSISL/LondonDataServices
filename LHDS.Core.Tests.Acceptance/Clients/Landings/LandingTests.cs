@@ -13,7 +13,9 @@ using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Models.Orchestrations.OptOuts;
+using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +31,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         private readonly Mock<IDownloadBroker> downloadBrokerMock;
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly ILandingClient landingClient;
+        private readonly LandingConfiguration landingConfiguration;
+        private readonly IAuditService auditService;
 
         public LandingTests()
         {
@@ -66,8 +70,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
-            this.ingestionTrackingService = serviceProvider.GetRequiredService<IIngestionTrackingService>();
-            landingClient = serviceProvider.GetRequiredService<ILandingClient>();
+            this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
+            this.auditService = serviceProvider.GetService<IAuditService>();
+            this.landingConfiguration = serviceProvider.GetService<LandingConfiguration>();
+            landingClient = serviceProvider.GetService<ILandingClient>();
         }
 
         private static string GetRandomString() =>

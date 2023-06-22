@@ -89,6 +89,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         public async Task ShouldNotProcessExistingDocumentsAsync()
         {
             //Given
+            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             string fileName = GetRandomString();
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
 
@@ -105,8 +106,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                     .ReturnsAsync(documents);
 
             List<IngestionTracking> ingestionTrackings = CreateRandomIngestionTrackings(
-                this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                documents);
+                dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                documents,
+                supplierId: this.landingConfiguration.LandingSupplierId);
 
             foreach(var tracking in ingestionTrackings)
             {
@@ -117,7 +119,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             var actualStringList = await this.landingClient.ProcessAsync();
 
             //Then
-            actualStringList.Should().BeNull();
+            actualStringList.Should().HaveCount(0);
 
             this.downloadBrokerMock.Verify(broker =>
                 broker.GetListOfDocumentsToProcessAsync(),

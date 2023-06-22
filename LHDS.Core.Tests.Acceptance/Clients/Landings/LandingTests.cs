@@ -78,6 +78,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.auditService = serviceProvider.GetService<IAuditService>();
             this.landingConfiguration = serviceProvider.GetService<LandingConfiguration>();
+            this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             landingClient = serviceProvider.GetService<ILandingClient>();
         }
 
@@ -92,24 +93,30 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
         private static List<IngestionTracking> CreateRandomIngestionTrackings(
             DateTimeOffset dateTimeOffset,
-            List<Document> documents)
+            List<Document> documents,
+            Guid supplierId)
         {
             List<IngestionTracking> items = new List<IngestionTracking>();
 
             foreach (var document in documents)
             {
-                items.Add(CreateIngestionTrackingFiller(dateTimeOffset, document.FileName).Create());
+                items.Add(CreateIngestionTrackingFiller(dateTimeOffset, fileName: document.FileName, supplierId).Create());
             }
 
             return items;
         }
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
-            DateTimeOffset dateTimeOffset, string id)
+            DateTimeOffset dateTimeOffset, string fileName, Guid supplierId)
         {
+            string user = "System";
             var filler = new Filler<IngestionTracking>();
+
             filler.Setup()
-                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(id)
+                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(fileName)
+                .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
+                .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
+                .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset);
 
             return filler;

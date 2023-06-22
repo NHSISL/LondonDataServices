@@ -24,6 +24,8 @@ const PdsRow: FunctionComponent<PdsRowProps> = (props) => {
 
         <TableBaseRow>
             <TableBaseData>
+                {pds.id.toString()}
+                <br/>
                 {pds.message}
             </TableBaseData>
             <TableBaseData>

@@ -115,7 +115,7 @@ const OptOutUploadDetailCardView: FunctionComponent<OptOutUploadDetailCardViewPr
                     <div>
                         <br />
 
-                        <p style={{ color: "green" }}><strong>{getSummary()}</strong></p>
+                        <p style={{ }}><strong>{getSummary()}</strong></p>
 
                         <h3 style={{ color: "red" }}>Invalid NHS numbers:</h3>
                         <ul>

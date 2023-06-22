@@ -49,9 +49,7 @@ const OptOutUploadDetail: FunctionComponent<OptOutUploadDetailProps> = (props) =
     return (
         <div>
             <div>
-                <OptOutUploadDetailCard
-                    onUpload={handleUpload}
-                >
+                <OptOutUploadDetailCard onUpload={handleUpload}>
                     {children}
                 </OptOutUploadDetailCard>
             </div>

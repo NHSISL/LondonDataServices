@@ -52,8 +52,7 @@ export const optOutViewService = {
 
     useGetOptOutsByNhsNumber: (nhsNumber: string) => {
         try {
-            const query = `/${nhsNumber}`
-            const response = optOutService.useGetAllOptOuts(query);
+            const response = optOutService.useGetOptOutById(nhsNumber);
             const [mappedOptOut, setMappedOptOut] = useState<OptOutView>();
 
             useEffect(() => {
@@ -73,6 +72,8 @@ export const optOutViewService = {
                     );
 
                     setMappedOptOut(optOut);
+                } else {
+                    setMappedOptOut(undefined);
                 }
             }, [response.data]);
 

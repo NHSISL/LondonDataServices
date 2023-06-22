@@ -26,6 +26,7 @@ const OptOutUploadDetailCard: FunctionComponent<OptOutUploadDetailCardProps> = (
                     <CardBaseContent>
                         <OptOutUploadDetailCardView
                             onUpload={onUpload}
+                            
                         />
                         {children !== undefined && (
                             <>

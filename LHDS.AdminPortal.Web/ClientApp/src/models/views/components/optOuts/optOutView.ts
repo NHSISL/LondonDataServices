@@ -6,12 +6,12 @@ export class OptOutView {
     public status: string;
     public uniqueReference: string;
     public batchReference: number;
-    public cacheTime: Date;
-    public lastSentToMesh: Date;
+    public cacheTime: Date | undefined;
+    public lastSentToMesh: Date | undefined;
     public createdBy?: string;
-    public createdDate?: Date;
+    public createdDate?: Date | undefined;
     public updatedBy?: string;
-    public updatedDate?: Date;
+    public updatedDate?: Date | undefined;
 
     constructor(
         id: Guid,
@@ -19,12 +19,12 @@ export class OptOutView {
         status: string,
         uniqueReference: string,
         batchReference: number,
-        cacheTime: Date,
-        lastSentToMesh: Date,
+        cacheTime: Date | undefined,
+        lastSentToMesh: Date | undefined,
         createdBy?: string,
-        createdDate?: Date,
+        createdDate?: Date | undefined,
         updatedBy?: string,
-        updatedDate?: Date) 
+        updatedDate?: Date | undefined) 
     {
         this.id = id;
         this.nhsNumber = nhsNumber || "";

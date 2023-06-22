@@ -21,7 +21,9 @@ const SupplierRowNew: FunctionComponent<SupplierRowNewProps> = (props) => {
                 <TableBaseData></TableBaseData>
                 <TableBaseData></TableBaseData>
                 <TableBaseData classes="text-end">
-                    <ButtonBase id="supplierssAdd" onClick={() => onAdd(true)} add> <FontAwesomeIcon icon={faCirclePlus} size="lg" />&nbsp; New</ButtonBase>
+                    <ButtonBase id="supplierssAdd" onClick={() => onAdd(true)} add>
+                        <FontAwesomeIcon icon={faCirclePlus} size="lg" />&nbsp; New
+                    </ButtonBase>
                 </TableBaseData>
             </TableBaseRow>
         </SecuredComponents>

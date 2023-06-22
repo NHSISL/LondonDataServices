@@ -11,13 +11,19 @@ interface OptOutDetailCardProps {
     optOuts: OptOutView | undefined;
     children?: React.ReactNode;
     onClearCache: (optOuts: OptOutView) => void;
+    onAddNewNHS: () => void;
+    nhsNumber: string,
+    isValidNumber: boolean
 }
 
 const OptOutDetailCard: FunctionComponent<OptOutDetailCardProps> = (props) => {
     const {
         optOuts,
         children,
-        onClearCache
+        onClearCache,
+        onAddNewNHS,
+        nhsNumber,
+        isValidNumber
     } = props;
 
     const [showAddView, setShowAddView] = useState(false);
@@ -46,9 +52,12 @@ const OptOutDetailCard: FunctionComponent<OptOutDetailCardProps> = (props) => {
                         ) : (
 
                             <OptOutDetailCardView
-                                optOuts={optOuts}
-                                onClearCache={onClearCache}
-                                onAddNewNHS={handleAddNewNHS}
+                                    optOuts={optOuts}
+                                    onClearCache={onClearCache}
+                                    onAddNewNHS={handleAddNewNHS}
+                                    isValidNumber={isValidNumber}
+                                    nhsNumber={nhsNumber}
+
                             />
                         )}
                         {children !== undefined && (

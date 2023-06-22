@@ -11,7 +11,7 @@ import { Guid } from "guid-typescript";
 interface OptOutDetailCardViewProps {
     optOuts: OptOutView | undefined;
     onClearCache: (optOuts: OptOutView) => void;
-    onAddNewNHS: () => void;
+    onAddNewNHS: (optOuts: OptOutView) => void;
     nhsNumber: string,
     isValidNumber: boolean
 }
@@ -26,7 +26,14 @@ const OptOutDetailCardView: FunctionComponent<OptOutDetailCardViewProps> = (prop
     } = props;
 
     if (!optOuts) {
-        return <p>You can search for an NHS number in the search bar above. {!isValidNumber && <div>Please ensure you have typed a valid nhs number</div>}</p>
+        return <p>You can search for an NHS number in the search bar above.
+            {!isValidNumber &&
+                <div>
+                    <br />
+                    <strong>Note: </strong>
+                    Please ensure you have typed a valid nhs number
+                </div>
+            }</p>
     }
 
     if (optOuts.id.toString() !== Guid.EMPTY) {
@@ -34,7 +41,7 @@ const OptOutDetailCardView: FunctionComponent<OptOutDetailCardViewProps> = (prop
             <SummaryListBase>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>NHS Number</SummaryListBaseKey>
-                    <SummaryListBaseValue>{optOuts.nhsNumber}</SummaryListBaseValue>
+                    <SummaryListBaseValue><strong>{optOuts.nhsNumber}</strong></SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Opt-Out Status</SummaryListBaseKey>
@@ -42,12 +49,27 @@ const OptOutDetailCardView: FunctionComponent<OptOutDetailCardViewProps> = (prop
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Cache Time</SummaryListBaseKey>
-                    <SummaryListBaseValue>{optOuts.cacheTime ? moment(optOuts.cacheTime?.toString()).format("Do-MMM-yyyy") : ""}</SummaryListBaseValue>
+                    <SummaryListBaseValue>
+                        {optOuts.cacheTime ? moment(optOuts.cacheTime?.toString()).format("Do-MMM-yyyy") : ""}
+                    </SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Last Sent To Mesh</SummaryListBaseKey>
-                    <SummaryListBaseValue>{optOuts.lastSentToMesh ? moment(optOuts.lastSentToMesh?.toString()).format("Do-MMM-yyyy") : ""}</SummaryListBaseValue>
+                    <SummaryListBaseValue>
+                        {optOuts.lastSentToMesh ? moment(optOuts.lastSentToMesh?.toString()).format("Do-MMM-yyyy") : ""}
+                    </SummaryListBaseValue>
                 </SummaryListBaseRow>
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Last Sent To Mesh</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        {optOuts.createdDate ? moment(optOuts.createdDate?.toString()).format("Do-MMM-yyyy") : ""}
+                    </SummaryListBaseValue>
+                </SummaryListBaseRow>
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Opt-Out Status</SummaryListBaseKey>
+                    <SummaryListBaseValue>{optOuts.createdBy}</SummaryListBaseValue>
+                </SummaryListBaseRow>
+
 
                 <SummaryListBaseRow>
                     <SummaryListBaseKey></SummaryListBaseKey>

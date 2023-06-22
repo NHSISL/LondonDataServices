@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts;
@@ -20,22 +21,69 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
     public partial class LandingTests
     {
         [Fact]
-        public async Task ShouldReturnEmptyStringForNullIngestionTrackingOnProcessAsync()
+        public async Task ShouldProcessNewDocumentsAsync()
         {
             //Given
             string fileName = GetRandomString();
+            byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
+
+            Document document = new Document
+            {
+                DocumentData= documentData,
+                FileName= fileName
+            };
+
+            List<Document> documents = new List<Document> { document };
+
+            this.downloadBrokerMock.Setup(broker =>
+                broker.GetListOfDocumentsToProcessAsync())
+                    .ReturnsAsync(documents);
+
+            this.downloadBrokerMock.Setup(broker =>
+                broker.GetDocumentByFileNameAsync(fileName))
+                    .ReturnsAsync(document);
 
             //When
-            var actualString = await this.landingClient.ProcessAsync(fileName);
+            var actualStringList = await this.landingClient.ProcessAsync();
 
             //Then
-            actualString.Should().Be(null);
 
-            IngestionTracking ingestionTracking = this.ingestionTrackingService.RetrieveAllIngestionTrackings()
-                    .FirstOrDefault(ingestionTracking => ingestionTracking.DecryptedFileName == actualString);
+            this.downloadBrokerMock.Verify(broker =>
+                broker.GetListOfDocumentsToProcessAsync(),
+                    Times.Once);
 
-            ingestionTracking.Should().NotBeNull();
-            await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+
+            foreach (var actualFile in actualStringList) 
+            {
+                this.downloadBrokerMock.Verify(broker =>
+                    broker.GetDocumentByFileNameAsync(fileName),
+                        Times.Once);
+
+                string expectedFile =
+                   $"/{landingConfiguration.DecryptedFolder}/" +
+                   $"{fileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+
+                actualFile.Should().BeEquivalentTo(expectedFile);
+
+                IngestionTracking ingestionTracking = this.ingestionTrackingService.RetrieveAllIngestionTrackings()
+                        .FirstOrDefault(ingestionTracking => ingestionTracking.DecryptedFileName == actualFile);
+
+                ingestionTracking.Should().NotBeNull();
+
+                var audits = this.auditService.RetrieveAllAudits()
+                    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+
+                foreach(var audit in audits)
+                {
+                    await this.auditService.RemoveAuditByIdAsync(audit.Id);
+                }
+
+                await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+
+                this.blobStorageBrokerMock.Verify(broker =>
+                    broker.InsertFileAsync(ingestionTracking.EncryptedFileName, It.IsAny<Stream>()),
+                        Times.Once());
+            }
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.downloadBrokerMock.VerifyNoOtherCalls();

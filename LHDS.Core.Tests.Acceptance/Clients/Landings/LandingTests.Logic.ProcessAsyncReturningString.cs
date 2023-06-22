@@ -31,8 +31,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             //Then
             actualString.Should().Be(null);
 
+            IngestionTracking ingestionTracking = this.ingestionTrackingService.RetrieveAllIngestionTrackings()
+                    .FirstOrDefault(ingestionTracking => ingestionTracking.DecryptedFileName == actualString);
+
+            ingestionTracking.Should().NotBeNull();
+            await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
-            this.meshBrokerMock.VerifyNoOtherCalls();
+            this.downloadBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

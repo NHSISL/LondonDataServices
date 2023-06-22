@@ -1,0 +1,85 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using LHDS.Core.Brokers.CsvMappers;
+using LHDS.Core.Brokers.Downloads;
+using LHDS.Core.Brokers.Mesh;
+using LHDS.Core.Brokers.Storages.Blobs;
+using LHDS.Core.Clients;
+using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Models.Orchestrations.OptOuts;
+using LHDS.Core.Services.Foundations.IngestionTrackings;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Tynamix.ObjectFiller;
+
+namespace LHDS.Core.Tests.Acceptance.Clients.Landings
+{
+    public partial class LandingTests
+    {
+        private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
+        private readonly Mock<IMeshBroker> meshBrokerMock;
+        private readonly IDownloadBroker downloadBroker;
+        private readonly IIngestionTrackingService ingestionTrackingService;
+        private readonly ILandingClient landingClient;
+
+        public LandingTests()
+        {
+            this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
+            this.meshBrokerMock = new Mock<IMeshBroker>();
+
+            string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var args = Environment.GetCommandLineArgs();
+            var environmentArg = args.FirstOrDefault(arg => arg.StartsWith("--environment="));
+
+            var environmentName = !string.IsNullOrEmpty(aspNetCoreEnvironment)
+                ? aspNetCoreEnvironment
+                : !string.IsNullOrEmpty(environmentArg)
+                    ? environmentArg
+                    : "Development";
+
+            var configurationBuilder = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
+
+            IConfiguration configuration = configurationBuilder.Build();
+
+            var serviceCollection = new ServiceCollection();
+
+            serviceCollection.AddLogging(builder =>
+            {
+                builder.AddConsole();
+            });
+
+            serviceCollection.AddLandingClientForAcceptance(configuration);
+            serviceCollection
+                .AddTransient<IMeshBroker>(serviceProvider => meshBrokerMock.Object)
+                .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
+
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            ingestionTrackingService = serviceProvider.GetRequiredService<IIngestionTrackingService>();
+            downloadBroker = serviceProvider.GetRequiredService<IDownloadBroker>();
+            landingClient = serviceProvider.GetRequiredService<ILandingClient>();
+        }
+
+
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
+
+        private static int GetRandomNumber(int min = 2, int max = 10) =>
+            new IntRange(min, max).GetValue();
+
+        private static DateTimeOffset GetRandomDateTimeOffset() =>
+            new DateTimeRange(earliestDate: new DateTime().AddDays(7)).GetValue();
+    }
+}

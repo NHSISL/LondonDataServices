@@ -6,6 +6,7 @@ export class Supplier {
     public friendlyName?: string;
     public description?: string;
     public landingManualTriggerUrl?: string;
+    public decryptionManualTriggerUrl?: string;
     public createdBy?: string;
     public createdDate?: Date;
     public updatedBy?: string;
@@ -17,6 +18,7 @@ export class Supplier {
         this.friendlyName = supplier.friendlyName;
         this.description = supplier.description;
         this.landingManualTriggerUrl = supplier.landingManualTriggerUrl;
+        this.decryptionManualTriggerUrl = supplier.decryptionManualTriggerUrl;
         this.createdBy = supplier.createdBy;
         this.createdDate = new Date(supplier.createdDate);
         this.updatedBy = supplier.updatedBy;

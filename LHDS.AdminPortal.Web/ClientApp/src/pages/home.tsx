@@ -81,11 +81,21 @@ export const Home = () => {
                         <Card>
                             <Card.Content>
                                 <Card.Heading className="nhsuk-heading-m">
-                                    <Card.Link href="#" onClick={() => instance.loginRedirect(loginRequest)}>Login to continue.</Card.Link>
+                                        <Card.Link href="#" onClick={() => instance.loginRedirect(loginRequest)}>
+                                            Login to continue.
+                                        </Card.Link>
                                 </Card.Heading>
                                 <Card.Description>
                                     To unlock all the features of this system,
-                                    please <Button variant="link" className="linkCustom" onClick={() => instance.loginRedirect(loginRequest)}>Login</Button>.
+                                        please
+
+                                        <Button
+                                            variant="link"
+                                            className="linkCustom"
+                                            onClick={() => instance.loginRedirect(loginRequest)}>
+                                            Login
+                                        </Button>.
+
                                     For access requests, please contact your Manager.
                                 </Card.Description>
                             </Card.Content>

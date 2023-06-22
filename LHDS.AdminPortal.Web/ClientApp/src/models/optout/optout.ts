@@ -6,11 +6,11 @@ export class OptOut {
     public status: string;
     public uniqueReference: string;
     public batchReference: number;
-    public cacheTime: Date;
-    public lastSentToMesh: Date;
-    public createdDate?: Date;
+    public cacheTime: Date | undefined;
+    public lastSentToMesh: Date | undefined;
+    public createdDate?: Date | undefined;
     public createdBy?: string;
-    public updatedDate?: Date;
+    public updatedDate?: Date | undefined;
     public updatedBy?: string;
 
     constructor(optout: any) {
@@ -19,11 +19,11 @@ export class OptOut {
         this.status = optout.status;
         this.uniqueReference = optout.uniqueReference;
         this.batchReference = optout.batchReference;
-        this.cacheTime = optout.cacheTime ? new Date(optout.cacheTime) : new Date();
-        this.lastSentToMesh = optout.lastSentToMesh ? new Date(optout.lastSentToMesh) : new Date();
-        this.createdDate = optout.createdDate ? new Date(optout.createdDate) : new Date();
+        this.cacheTime = optout.cacheTime ? new Date(optout.cacheTime) : undefined;
+        this.lastSentToMesh = optout.lastSentToMesh ? new Date(optout.lastSentToMesh) : undefined;
+        this.createdDate = optout.createdDate ? new Date(optout.createdDate) : undefined;
         this.createdBy = optout.createdBy || "";
-        this.updatedDate = optout.updatedDate ? new Date(optout.updatedDate) : new Date();
+        this.updatedDate = optout.updatedDate ? new Date(optout.updatedDate) : undefined;
         this.updatedBy = optout.updatedBy || "";
     }
 }

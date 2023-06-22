@@ -14,7 +14,7 @@ class OptOutBroker {
 
     async GetAllOptOutsAsync(queryString: string) {
         const url = this.relativeOptOutUrl + queryString;
-        if (queryString === "") {
+        if (queryString === "/") {
             return undefined;
         }
         return await this.apiBroker.GetAsync(url)
@@ -22,6 +22,10 @@ class OptOutBroker {
     }
 
     async GetOptOutByNhsNumberAsync(nhsnumber: string) {
+        if (!nhsnumber) {
+            return undefined;
+        }
+
         const url = `${this.relativeOptOutUrl}/${nhsnumber}`;
 
         return await this.apiBroker.GetAsync(url)

@@ -70,10 +70,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.optOutConfiguration = serviceProvider.GetService<OptOutConfiguration>();
-            this.csvMapperBroker = serviceProvider.GetRequiredService<ICsvMapperBroker>();
-            this.dateTimeBroker = serviceProvider.GetRequiredService<IDateTimeBroker>();
-            this.optOutService = serviceProvider.GetRequiredService<IOptOutService>();
-            optOutClient = serviceProvider.GetRequiredService<IOptOutClient>();
+            this.csvMapperBroker = serviceProvider.GetService<ICsvMapperBroker>();
+            this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
+            this.optOutService = serviceProvider.GetService<IOptOutService>();
+            optOutClient = serviceProvider.GetService<IOptOutClient>();
         }
 
         private static string GetRandomString() =>

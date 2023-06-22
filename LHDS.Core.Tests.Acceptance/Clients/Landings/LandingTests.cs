@@ -5,14 +5,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.CsvMappers;
+using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Downloads;
 using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Models.Orchestrations.OptOuts;
 using LHDS.Core.Services.Foundations.Audits;
@@ -29,6 +33,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
     {
         private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
         private readonly Mock<IDownloadBroker> downloadBrokerMock;
+        private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly ILandingClient landingClient;
         private readonly LandingConfiguration landingConfiguration;
@@ -84,5 +89,30 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime().AddDays(7)).GetValue();
+
+        private static List<IngestionTracking> CreateRandomIngestionTrackings(
+            DateTimeOffset dateTimeOffset,
+            List<Document> documents)
+        {
+            List<IngestionTracking> items = new List<IngestionTracking>();
+
+            foreach (var document in documents)
+            {
+                items.Add(CreateIngestionTrackingFiller(dateTimeOffset, document.FileName).Create());
+            }
+
+            return items;
+        }
+
+        private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
+            DateTimeOffset dateTimeOffset, string id)
+        {
+            var filler = new Filler<IngestionTracking>();
+            filler.Setup()
+                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(id)
+                .OnType<DateTimeOffset>().Use(dateTimeOffset);
+
+            return filler;
+        }
     }
 }

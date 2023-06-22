@@ -11,8 +11,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
-using LHDS.Core.Models.Foundations.OptOuts;
-using LHDS.Core.Models.Orchestrations.OptOuts;
 using Moq;
 using Xunit;
 
@@ -47,11 +45,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             var actualStringList = await this.landingClient.ProcessAsync();
 
             //Then
-
             this.downloadBrokerMock.Verify(broker =>
                 broker.GetListOfDocumentsToProcessAsync(),
                     Times.Once);
-
 
             foreach (var actualFile in actualStringList) 
             {
@@ -85,8 +81,63 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                         Times.Once());
             }
 
-            this.blobStorageBrokerMock.VerifyNoOtherCalls();
             this.downloadBrokerMock.VerifyNoOtherCalls();
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldNotProcessExistingDocumentsAsync()
+        {
+            //Given
+            string fileName = GetRandomString();
+            byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
+
+            Document document = new Document
+            {
+                DocumentData = documentData,
+                FileName = fileName
+            };
+
+            List<Document> documents = new List<Document> { document };
+
+            this.downloadBrokerMock.Setup(broker =>
+                broker.GetListOfDocumentsToProcessAsync())
+                    .ReturnsAsync(documents);
+
+            List<IngestionTracking> ingestionTrackings = CreateRandomIngestionTrackings(
+                this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                documents);
+
+            foreach(var tracking in ingestionTrackings)
+            {
+                await this.ingestionTrackingService.AddIngestionTrackingAsync(tracking);
+            }
+
+            //When
+            var actualStringList = await this.landingClient.ProcessAsync();
+
+            //Then
+            actualStringList.Should().BeNull();
+
+            this.downloadBrokerMock.Verify(broker =>
+                broker.GetListOfDocumentsToProcessAsync(),
+                    Times.Once);
+
+            foreach (var tracking in ingestionTrackings)
+            {
+                var audits = this.auditService.RetrieveAllAudits()
+                    .Where(audit => audit.IngestionTrackingId == tracking.Id);
+
+                foreach (var audit in audits)
+                {
+                    await this.auditService.RemoveAuditByIdAsync(audit.Id);
+                }
+
+                await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(tracking.Id);
+            }
+
+            this.downloadBrokerMock.VerifyNoOtherCalls();
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

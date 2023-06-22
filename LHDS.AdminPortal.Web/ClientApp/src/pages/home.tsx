@@ -20,9 +20,9 @@ export const Home = () => {
                         <Col width="full">
                             <div className="nhsuk-hero__wrapper app-hero__wrapper">
                                 <h1 className="nhsuk-u-margin-bottom-4">London Health Data Services</h1>
-                                <p className=" nhsuk-u-margin-bottom-1">
+                                <span className=" nhsuk-u-margin-bottom-1">
                                     <p className="nhsuk-body-l nhsuk-u-margin-bottom-1">Admin Portal</p>
-                                </p>
+                                </span>
                             </div>
                         </Col>
                         <Col width="one-third"></Col>

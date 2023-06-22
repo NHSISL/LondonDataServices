@@ -26,14 +26,14 @@ const OptOutDetailCardView: FunctionComponent<OptOutDetailCardViewProps> = (prop
     } = props;
 
     if (!optOuts) {
-        return <p>You can search for an NHS number in the search bar above.
+        return <div>You can search for an NHS number in the search bar above.
             {!isValidNumber &&
                 <div>
                     <br />
                     <strong>Note: </strong>
                     Please ensure you have typed a valid nhs number
                 </div>
-            }</p>
+            }</div>
     }
 
     if (optOuts.id.toString() !== Guid.EMPTY) {

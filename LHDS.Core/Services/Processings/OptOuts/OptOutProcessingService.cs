@@ -110,7 +110,8 @@ namespace LHDS.Core.Services.Processings.OptOuts
 
                 List<OptOut> expiredOptOuts = allOptOuts
                     .Where(optOut => optOut.CacheTime < expirationDate)
-                        .ToList();
+                        .OrderBy(optOut => optOut.CreatedDate)
+                            .ToList();
 
                 return await ValueTask.FromResult(expiredOptOuts);
             });

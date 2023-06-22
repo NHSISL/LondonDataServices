@@ -20,7 +20,6 @@ using Xunit.Sdk;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 {
-
     public partial class OptOutTests
     {
         [Fact]

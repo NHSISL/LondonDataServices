@@ -26,15 +26,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
     public partial class LandingTests
     {
         private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
-        private readonly Mock<IMeshBroker> meshBrokerMock;
-        private readonly IDownloadBroker downloadBroker;
+        private readonly Mock<IDownloadBroker> downloadBrokerMock;
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly ILandingClient landingClient;
 
         public LandingTests()
         {
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
-            this.meshBrokerMock = new Mock<IMeshBroker>();
+            this.downloadBrokerMock = new Mock<IDownloadBroker>();
 
             string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             var args = Environment.GetCommandLineArgs();
@@ -63,15 +62,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
             serviceCollection.AddLandingClientForAcceptance(configuration);
             serviceCollection
-                .AddTransient<IMeshBroker>(serviceProvider => meshBrokerMock.Object)
+                .AddTransient<IDownloadBroker>(serviceProvider => downloadBrokerMock.Object)
                 .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
-            ingestionTrackingService = serviceProvider.GetRequiredService<IIngestionTrackingService>();
-            downloadBroker = serviceProvider.GetRequiredService<IDownloadBroker>();
+            this.ingestionTrackingService = serviceProvider.GetRequiredService<IIngestionTrackingService>();
             landingClient = serviceProvider.GetRequiredService<ILandingClient>();
         }
-
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();

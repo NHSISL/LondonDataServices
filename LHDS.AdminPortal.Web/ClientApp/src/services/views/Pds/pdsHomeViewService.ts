@@ -14,7 +14,7 @@ type PdsHomeViewServiceResponse = {
 }
 
 export const pdsHomeViewService = {
-    useGetAllPds: (searchTerm?: string) => {
+    useGetAllPds: (searchTerm?: string): PdsHomeViewServiceResponse => {
         try {
             let query = `?$orderby=createdDate`;
 
@@ -23,15 +23,16 @@ export const pdsHomeViewService = {
             }
 
             const response = pdsService.useGetAllPdsPages(query);
-            const [mappedPds, setMappedPds] = useState<Array<PdsHomeView>>([]);;
+            const [mappedPds, setMappedPds] = useState<Array<PdsHomeView>>();;
             const [pages, setPages] = useState<any>([]);
 
             useEffect(() => {
                 if (response.data && response.data.pages) {
-                    const pds: Array<PdsHomeView> = [];
+                    const pdsArray: Array<PdsHomeView> = [];
+
                     response.data.pages.forEach((page: any) => {
                         page.data.forEach((pds: Pds) => {
-                            mappedPds.push(new PdsHomeView(
+                            pdsArray.push(new PdsHomeView(
                                 pds.id,
                                 pds.correlationId,
                                 pds.message,
@@ -43,11 +44,10 @@ export const pdsHomeViewService = {
                         });
                     });
 
-                    setMappedPds(mappedPds);
+                    setMappedPds(pdsArray);
                     setPages(response.data.pages);
                 }
             }, [response.data]);
-
 
             return {
                 mappedPds,

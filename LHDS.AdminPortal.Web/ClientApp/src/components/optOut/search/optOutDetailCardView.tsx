@@ -35,17 +35,22 @@ const OptOutDetailCardView: FunctionComponent<OptOutDetailCardViewProps> = (prop
                         </SummaryListBaseRow>
                         <SummaryListBaseRow>
                             <SummaryListBaseKey>Cache Time</SummaryListBaseKey>
-                            <SummaryListBaseValue>{moment(optOuts.cacheTime?.toString()).format("Do-MMM-yyyy")}</SummaryListBaseValue>
+                            <SummaryListBaseValue>
+                                {moment(optOuts.cacheTime?.toString()).format("Do-MMM-yyyy")}
+                            </SummaryListBaseValue>
                         </SummaryListBaseRow>
                         <SummaryListBaseRow>
                             <SummaryListBaseKey>Last Sent To Mesh</SummaryListBaseKey>
-                            <SummaryListBaseValue>{moment(optOuts.lastSentToMesh?.toString()).format("Do-MMM-yyyy")}</SummaryListBaseValue>
+                            <SummaryListBaseValue>
+                                {moment(optOuts.lastSentToMesh?.toString()).format("Do-MMM-yyyy")}
+                            </SummaryListBaseValue>
                         </SummaryListBaseRow>
-
                         <SummaryListBaseRow>
                             <SummaryListBaseKey></SummaryListBaseKey>
                             <SummaryListBaseValue>
-                                <ButtonBase onClick={() => onClearCache(optOuts)} add>&nbsp;Clear Cache</ButtonBase>&nbsp;
+                                <ButtonBase onClick={() => onClearCache(optOuts)} add>
+                                    &nbsp;Clear Cache
+                                </ButtonBase>&nbsp;
                             </SummaryListBaseValue>
                         </SummaryListBaseRow>
                     </SummaryListBase>

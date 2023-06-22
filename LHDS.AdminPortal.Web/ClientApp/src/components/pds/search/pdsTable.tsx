@@ -66,8 +66,7 @@ const PdsTable: FunctionComponent<PdsTableProps> = (props) => {
                                         value={searchTerm}
                                         onChange={(e) => {
                                             handleSearchChange(e.currentTarget.value);
-                                        }}
-                                    />
+                                        }} />
                                 </div>
                             </div>
 
@@ -85,18 +84,15 @@ const PdsTable: FunctionComponent<PdsTableProps> = (props) => {
                                         (pdsHomeView: PdsHomeView) => (
                                             <PdsRow
                                                 key={pdsHomeView.id.toString()}
-                                                pds={pdsHomeView}
-                                            />
-                                        )
+                                                pds={pdsHomeView} />)
                                     )}
                                     <tr>
-                                        <td colSpan={3} className="text-center">
+                                        <td colSpan={4} className="text-center">
                                             <InfiniteScrollLoader
                                                 loading={isLoading || isFetchingNextPage}
                                                 spinner={<SpinnerBase />}
                                                 noMorePages={hasNoMorePages()}
-                                                noMorePagesMessage={<>---No more Pds---</>}
-                                            />
+                                                noMorePagesMessage={<>---No more Pds---</>} />
                                         </td>
                                     </tr>
                                 </TableBaseTbody>

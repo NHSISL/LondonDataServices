@@ -91,6 +91,20 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime().AddDays(7)).GetValue();
 
+        private static IngestionTracking CreateRandomIngestionTracking(
+           DateTimeOffset dateTimeOffset,
+           Document document,
+           Guid supplierId)
+        {
+            IngestionTracking ingestionTracking = CreateIngestionTrackingFiller(
+                dateTimeOffset, 
+                fileName: document.FileName, 
+                supplierId)
+                    .Create();
+
+            return ingestionTracking;
+        }
+
         private static List<IngestionTracking> CreateRandomIngestionTrackings(
             DateTimeOffset dateTimeOffset,
             List<Document> documents,

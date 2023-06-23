@@ -13,82 +13,32 @@ using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
 using Xunit;
+using Xunit.Sdk;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 {
     public partial class LandingTests
     {
         [Fact]
-        public async Task ShouldProcessNewDocumentsAsync()
+        public async Task ShouldNotProcessNewDocumentAsync()
         {
             //Given
             string fileName = GetRandomString();
-            byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
-
-            Document document = new Document
-            {
-                DocumentData= documentData,
-                FileName= fileName
-            };
-
-            List<Document> documents = new List<Document> { document };
-
-            this.downloadBrokerMock.Setup(broker =>
-                broker.GetListOfDocumentsToProcessAsync())
-                    .ReturnsAsync(documents);
-
-            this.downloadBrokerMock.Setup(broker =>
-                broker.GetDocumentByFileNameAsync(fileName))
-                    .ReturnsAsync(document);
 
             //When
-            var actualStringList = await this.landingClient.ProcessAsync();
+            var actualString = await this.landingClient.ProcessAsync(fileName);
 
             //Then
-            this.downloadBrokerMock.Verify(broker =>
-                broker.GetListOfDocumentsToProcessAsync(),
-                    Times.Once);
-
-            foreach (var actualFile in actualStringList) 
-            {
-                this.downloadBrokerMock.Verify(broker =>
-                    broker.GetDocumentByFileNameAsync(fileName),
-                        Times.Once);
-
-                string expectedFile =
-                   $"/{landingConfiguration.DecryptedFolder}/" +
-                   $"{fileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
-
-                actualFile.Should().BeEquivalentTo(expectedFile);
-
-                IngestionTracking ingestionTracking = this.ingestionTrackingService.RetrieveAllIngestionTrackings()
-                        .FirstOrDefault(ingestionTracking => ingestionTracking.DecryptedFileName == actualFile);
-
-                ingestionTracking.Should().NotBeNull();
-
-                var audits = this.auditService.RetrieveAllAudits()
-                    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
-
-                foreach(var audit in audits)
-                {
-                    await this.auditService.RemoveAuditByIdAsync(audit.Id);
-                }
-
-                await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
-
-                this.blobStorageBrokerMock.Verify(broker =>
-                    broker.InsertFileAsync(ingestionTracking.EncryptedFileName, It.IsAny<Stream>()),
-                        Times.Once());
-            }
+            actualString.Should().BeNull();
 
             this.downloadBrokerMock.VerifyNoOtherCalls();
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldNotProcessExistingDocumentsAsync()
+        public async Task ShouldProcessExistingDocumentAsync()
         {
-            //Given
+            // Given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             string fileName = GetRandomString();
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
@@ -99,47 +49,48 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 FileName = fileName
             };
 
-            List<Document> documents = new List<Document> { document };
-
             this.downloadBrokerMock.Setup(broker =>
-                broker.GetListOfDocumentsToProcessAsync())
-                    .ReturnsAsync(documents);
+                broker.GetDocumentByFileNameAsync(fileName))
+                    .ReturnsAsync(document);
 
-            List<IngestionTracking> ingestionTrackings = CreateRandomIngestionTrackings(
-                dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                documents,
-                supplierId: this.landingConfiguration.LandingSupplierId);
+            IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
+               dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
+               document,
+               supplierId: this.landingConfiguration.LandingSupplierId);
 
-            foreach(var tracking in ingestionTrackings)
-            {
-                await this.ingestionTrackingService.AddIngestionTrackingAsync(tracking);
-            }
+            await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
 
-            //When
-            var actualStringList = await this.landingClient.ProcessAsync();
+            ingestionTracking.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
-            //Then
-            actualStringList.Should().HaveCount(0);
+            await this.ingestionTrackingService.ModifyIngestionTrackingAsync(ingestionTracking);
+
+            // When
+            var actualString = await this.landingClient.ProcessAsync(fileName);
+
+            // Then
+            actualString.Should().BeEquivalentTo(ingestionTracking.DecryptedFileName);
 
             this.downloadBrokerMock.Verify(broker =>
-                broker.GetListOfDocumentsToProcessAsync(),
-                    Times.Once);
+                broker.GetDocumentByFileNameAsync(fileName),
+                    Times.Once());
 
-            foreach (var tracking in ingestionTrackings)
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.InsertFileAsync(ingestionTracking.EncryptedFileName, It.IsAny<Stream>()),
+                    Times.Once());
+
+            var audits = this.auditService.RetrieveAllAudits()
+                            .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+
+            foreach (var audit in audits)
             {
-                var audits = this.auditService.RetrieveAllAudits()
-                    .Where(audit => audit.IngestionTrackingId == tracking.Id);
-
-                foreach (var audit in audits)
-                {
-                    await this.auditService.RemoveAuditByIdAsync(audit.Id);
-                }
-
-                await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(tracking.Id);
+                await this.auditService.RemoveAuditByIdAsync(audit.Id);
             }
+
+            await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
 
             this.downloadBrokerMock.VerifyNoOtherCalls();
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
         }
+
     }
 }

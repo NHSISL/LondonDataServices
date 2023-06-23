@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
@@ -45,27 +46,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             var actualString = await this.decryptionClient.DecryptAsync(fileName);
 
             //Then
-            this.downloadBrokerMock.Verify(broker =>
-                broker.GetListOfDocumentsToProcessAsync(),
-                    Times.Once);
-
-            this.blobStorageBrokerMock.Verify(broker => 
-                broker.InsertFileAsync(
-                    fileName: document.FileName,
-                    stream: It.IsAny<Stream>()),
-                        Times.Once);
+            actualString.Should().BeEquivalentTo(encryptedFileName);
 
             this.downloadBrokerMock.Verify(broker =>
                 broker.GetDocumentByFileNameAsync(fileName),
-            Times.Once);
-            string expectedFile =
-                $"/{landingConfiguration.DecryptedFolder}/" +
-                $"{fileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
-
-            actualFile.Should().BeEquivalentTo(expectedFile);
-
-            IngestionTracking ingestionTracking = this.ingestionTrackingService.RetrieveAllIngestionTrackings()
-                    .FirstOrDefault(ingestionTracking => ingestionTracking.DecryptedFileName == actualFile);
+                    Times.Once);
 
             ingestionTracking.Should().NotBeNull();
 
@@ -82,7 +67,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             this.blobStorageBrokerMock.Verify(broker =>
                 broker.InsertFileAsync(ingestionTracking.EncryptedFileName, It.IsAny<Stream>()),
                     Times.Once());
-            }
 
             this.downloadBrokerMock.VerifyNoOtherCalls();
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

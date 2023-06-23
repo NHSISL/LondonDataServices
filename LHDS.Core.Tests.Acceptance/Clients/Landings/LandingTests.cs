@@ -61,7 +61,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
-
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddLogging(builder =>

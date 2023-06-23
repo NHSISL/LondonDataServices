@@ -162,6 +162,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                             await this.downloadService.RetrieveDownloadByFileNameAsync(fileName);
 
                     var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                    maybeIngestionTracking.UpdatedDate = currentDateTime;
                     maybeIngestionTracking.LastSeen = currentDateTime;
                     maybeIngestionTracking.EncryptedFileSize = externalDocument.DocumentData.Length;
                     await this.documentService.RemoveDocumentByFileNameAsync(fileName);

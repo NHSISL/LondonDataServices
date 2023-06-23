@@ -2,7 +2,6 @@ import React from "react";
 import 'nhsuk-frontend/dist/nhsuk.min'
 import 'nhsuk-frontend/packages/polyfills';
 import { Container } from 'nhsuk-react-components'
-import PdsDetail from "../components/pds/search/pdsDetail";
 import PdsTable from "../components/pds/search/pdsTable";
 
 export const PdsSearch = () => {

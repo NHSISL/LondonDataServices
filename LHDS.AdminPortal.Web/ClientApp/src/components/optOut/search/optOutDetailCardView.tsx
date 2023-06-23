@@ -6,65 +6,88 @@ import SummaryListBase from "../../bases/components/SummaryList/SummaryListBase"
 import SummaryListBaseKey from "../../bases/components/SummaryList/SummaryListBase.Key";
 import SummaryListBaseRow from "../../bases/components/SummaryList/SummaryListBase.Row";
 import SummaryListBaseValue from "../../bases/components/SummaryList/SummaryListBase.Value";
+import { Guid } from "guid-typescript";
 
 interface OptOutDetailCardViewProps {
     optOuts: OptOutView | undefined;
     onClearCache: (optOuts: OptOutView) => void;
-    onAddNewNHS: () => void;
+    onAddNewNHS: (optOuts: OptOutView) => void;
+    nhsNumber: string,
+    isValidNumber: boolean
 }
 
 const OptOutDetailCardView: FunctionComponent<OptOutDetailCardViewProps> = (props) => {
     const {
         optOuts,
         onClearCache,
-        onAddNewNHS 
+        onAddNewNHS,
+        nhsNumber,
+        isValidNumber
     } = props;
 
-    return (
-        <>
-            {optOuts !== undefined && (
+    if (!optOuts) {
+        return <div>You can search for an NHS number in the search bar above.
+            {!isValidNumber &&
                 <div>
-                    <SummaryListBase>
-                        <SummaryListBaseRow>
-                            <SummaryListBaseKey>NHS Number</SummaryListBaseKey>
-                            <SummaryListBaseValue>{optOuts.nhsNumber}</SummaryListBaseValue>
-                        </SummaryListBaseRow>
-                        <SummaryListBaseRow>
-                            <SummaryListBaseKey>Opt-Out Status</SummaryListBaseKey>
-                            <SummaryListBaseValue>{optOuts.status}</SummaryListBaseValue>
-                        </SummaryListBaseRow>
-                        <SummaryListBaseRow>
-                            <SummaryListBaseKey>Cache Time</SummaryListBaseKey>
-                            <SummaryListBaseValue>
-                                {moment(optOuts.cacheTime?.toString()).format("Do-MMM-yyyy")}
-                            </SummaryListBaseValue>
-                        </SummaryListBaseRow>
-                        <SummaryListBaseRow>
-                            <SummaryListBaseKey>Last Sent To Mesh</SummaryListBaseKey>
-                            <SummaryListBaseValue>
-                                {moment(optOuts.lastSentToMesh?.toString()).format("Do-MMM-yyyy")}
-                            </SummaryListBaseValue>
-                        </SummaryListBaseRow>
-                        <SummaryListBaseRow>
-                            <SummaryListBaseKey></SummaryListBaseKey>
-                            <SummaryListBaseValue>
-                                <ButtonBase onClick={() => onClearCache(optOuts)} add>
-                                    &nbsp;Clear Cache
-                                </ButtonBase>&nbsp;
-                            </SummaryListBaseValue>
-                        </SummaryListBaseRow>
-                    </SummaryListBase>
+                    <br />
+                    <strong>Note: </strong>
+                    Please ensure you have typed a valid nhs number
                 </div>
-            )}
+            }</div>
+    }
 
-            {optOuts === undefined && (
-                <div>
-                <p>You can search for an NHS number in the search bar above.   </p>
-                   {/* <ButtonBase onClick={onAddNewNHS} view>&nbsp;Add New Nhs Number</ButtonBase>*/}
-                </div>
-            )}
-        </>
-    );
+    if (optOuts.id.toString() !== Guid.EMPTY) {
+        return <div>
+            <SummaryListBase>
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>NHS Number</SummaryListBaseKey>
+                    <SummaryListBaseValue><strong>{optOuts.nhsNumber}</strong></SummaryListBaseValue>
+                </SummaryListBaseRow>
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Opt-Out Status</SummaryListBaseKey>
+                    <SummaryListBaseValue>{optOuts.status}</SummaryListBaseValue>
+                </SummaryListBaseRow>
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Cache Time</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        {optOuts.cacheTime ? moment(optOuts.cacheTime?.toString()).format("Do-MMM-yyyy") : ""}
+                    </SummaryListBaseValue>
+                </SummaryListBaseRow>
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Last Sent To Mesh</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        {optOuts.lastSentToMesh ? moment(optOuts.lastSentToMesh?.toString()).format("Do-MMM-yyyy") : ""}
+                    </SummaryListBaseValue>
+                </SummaryListBaseRow>
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Last Sent To Mesh</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        {optOuts.createdDate ? moment(optOuts.createdDate?.toString()).format("Do-MMM-yyyy") : ""}
+                    </SummaryListBaseValue>
+                </SummaryListBaseRow>
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Opt-Out Status</SummaryListBaseKey>
+                    <SummaryListBaseValue>{optOuts.createdBy}</SummaryListBaseValue>
+                </SummaryListBaseRow>
+
+
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey></SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        <ButtonBase onClick={() => onClearCache(optOuts)} add>&nbsp;Clear Cache</ButtonBase>&nbsp;
+                    </SummaryListBaseValue>
+                </SummaryListBaseRow>
+            </SummaryListBase>
+        </div>
+    }
+
+    if (optOuts !== undefined && optOuts.id.toString() === Guid.EMPTY) {
+        return <div>
+            <ButtonBase onClick={onAddNewNHS} view>Add {nhsNumber} to NDOP check</ButtonBase>
+        </div>
+    }
+
+    return <></>;
 }
 
 export default OptOutDetailCardView;

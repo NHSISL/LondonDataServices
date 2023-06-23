@@ -97,7 +97,15 @@ const SupplierRowEdit: FunctionComponent<SupplierRowEditProps> = (props) => {
                     required={true}
                     error={errors.name}
                     onChange={handleChange} />
-
+                <TextInputBase
+                    id="decryptionManualTriggerUrl"
+                    name="decryptionManualTriggerUrl"
+                    label="decryption Manual Trigger Url"
+                    placeholder="Decryption Manual Trigger Url"
+                    value={editSupplier.landingManualTriggerUrl}
+                    required={true}
+                    error={errors.name}
+                    onChange={handleChange} />
             </TableBaseData>
             <TableBaseData classes="text-end">
                 <ButtonBase onClick={() => handleCancel()} cancel>Cancel</ButtonBase>&nbsp;

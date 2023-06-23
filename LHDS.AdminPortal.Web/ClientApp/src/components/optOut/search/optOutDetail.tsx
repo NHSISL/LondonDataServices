@@ -6,29 +6,35 @@ import { optOutViewService } from "../../../services/views/OptOuts/optoutViewSer
 import SearchBase from "../../bases/inputs/SearchBase";
 import { SpinnerBase } from "../../bases/spinner/SpinnerBase";
 import OptOutDetailCard from "./optOutDetailCard";
+import { Guid } from "guid-typescript";
 
 interface OptOutDetailProps {
     children?: React.ReactNode;
 }
 
 const OptOutDetail: FunctionComponent<OptOutDetailProps> = (props) => {
-    const { children } = props;
+    const {
+        children
+    } = props;
 
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
 
-    const [optOutRetrieved, setOptOutRetrieved]
-        = useState<OptOutView | undefined>(undefined);
-
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-
     const handleDebounce = useMemo(
         () =>
             debounce((value: string) => {
-                setDebouncedTerm(value);
+                if (value) {
+                    if (isValidNhsNumber(value)) {
+                        setDebouncedTerm(value);
+                    } else {
+                        setDebouncedTerm("");
+                    }
+                }
             }, 500),
         []
     );
+
+    const { mappedOptOut, isFetching } = optOutViewService.useGetOptOutsByNhsNumber(debouncedTerm);
 
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);
@@ -79,48 +85,20 @@ const OptOutDetail: FunctionComponent<OptOutDetailProps> = (props) => {
         return false;
     };
 
-    //const addNewOptOut = optOutViewService.useCreateOptOut();
-    const addOptOut = async (optOutView: OptOutView, nhsNumber: string) => {
-        optOutView.nhsNumber = nhsNumber;
-        optOutView.status = "Unkown";
-        //return addNewOptOut.mutateAsync(optOutView);
-        console.log(`Adding new NHS number: ${nhsNumber}`);
+    const addNewOptOut = optOutViewService.useCreateOptOut();
+
+    const addOptOut = async (optOutView: OptOutView) => {
+        optOutView = new OptOutView(
+            optOutView.id = Guid.create(),
+            optOutView.nhsNumber = debouncedTerm,
+            optOutView.status = "Unknown",
+            optOutView.cacheTime = new Date(),
+            optOutView.lastSentToMesh = new Date(),
+        );
+
+        console.log(`Adding new NHS number: ${debouncedTerm}`);
+        return addNewOptOut.mutateAsync(optOutView);
     };
-
-    useEffect(() => {
-        let cancelRequest = false;
-
-        const fetchData = async () => {
-            if (debouncedTerm && isValidNhsNumber(debouncedTerm)) {
-                setIsLoading(true);
-
-                try {
-                    const optOutsResult = await optOutViewService.useGetOptOutsByNhsNumber(debouncedTerm);
-
-                    if (!cancelRequest && optOutsResult.isSuccess) {
-                        const optOuts = optOutsResult.data?.mappedOptOut;
-                        if (optOuts) {
-                            setOptOutRetrieved(optOuts);
-                        } else {
-                            await addOptOut(optOuts,debouncedTerm);
-                        }
-                    }
-
-                    setIsLoading(false);
-                } catch (error) {
-                    toastError("Error fetching opt outs")
-                    console.log(error);
-                    setIsLoading(false);
-                }
-            }
-        };
-
-        fetchData();
-
-        return () => {
-            cancelRequest = true;
-        };
-    }, [debouncedTerm]);
 
     return (
         <div>
@@ -136,17 +114,21 @@ const OptOutDetail: FunctionComponent<OptOutDetailProps> = (props) => {
                                 handleSearchChange(e.currentTarget.value);
                             }}
                         />
-                        {isLoading && (
+                        {isFetching && (
                             <>
-                                <SpinnerBase />.
+                                <SpinnerBase />
                             </>
                         )}
                     </div>
                 </div>
 
                 <OptOutDetailCard
-                    optOuts={optOutRetrieved}
-                    onClearCache={handleClearCache}>
+                    optOuts={mappedOptOut}
+                    onClearCache={handleClearCache}
+                    onAddNewNHS={addOptOut}
+                    isValidNumber={isValidNhsNumber(debouncedTerm)}
+                    nhsNumber={debouncedTerm}>
+
                     {children}
                 </OptOutDetailCard>
             </div>

@@ -6,6 +6,7 @@ export interface ISupplierErrors extends ErrorBase {
     friendlyName: string;
     description: string;
     landingManualTriggerUrl: string;
+    decryptionManualTriggerUrl: string;
 }
 
 export const supplierErrors: ISupplierErrors = {
@@ -13,5 +14,6 @@ export const supplierErrors: ISupplierErrors = {
     name: "",
     friendlyName: "",
     description: "",
-    landingManualTriggerUrl: ""
+    landingManualTriggerUrl: "",
+    decryptionManualTriggerUrl: ""
 };

@@ -27,10 +27,10 @@ export const optOutViewService = {
                             optOut.id,
                             optOut.nhsNumber,
                             optOut.status,
-                            optOut.uniqueReference,
-                            optOut.batchReference,
                             optOut.cacheTime,
                             optOut.lastSentToMesh,
+                            optOut.uniqueReference,
+                            optOut.batchReference,
                             optOut.createdBy,
                             optOut.createdDate,
                             optOut.updatedBy,
@@ -52,8 +52,7 @@ export const optOutViewService = {
 
     useGetOptOutsByNhsNumber: (nhsNumber: string) => {
         try {
-            const query = `/${nhsNumber}`
-            const response = optOutService.useGetAllOptOuts(query);
+            const response = optOutService.useGetOptOutById(nhsNumber);
             const [mappedOptOut, setMappedOptOut] = useState<OptOutView>();
 
             useEffect(() => {
@@ -62,10 +61,10 @@ export const optOutViewService = {
                         response.data.id,
                         response.data.nhsNumber,
                         response.data.status,
-                        response.data.uniqueReference,
-                        response.data.batchReference,
                         response.data.cacheTime,
                         response.data.lastSentToMesh,
+                        response.data.uniqueReference,
+                        response.data.batchReference,
                         response.data.createdBy,
                         response.data.createdDate,
                         response.data.updatedBy,
@@ -73,6 +72,8 @@ export const optOutViewService = {
                     );
 
                     setMappedOptOut(optOut);
+                } else {
+                    setMappedOptOut(undefined);
                 }
             }, [response.data]);
 

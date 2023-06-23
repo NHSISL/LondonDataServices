@@ -60,10 +60,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
             await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
 
-            ingestionTracking.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
-
-            await this.ingestionTrackingService.ModifyIngestionTrackingAsync(ingestionTracking);
-
             // When
             var actualString = await this.landingClient.ProcessAsync(fileName);
 
@@ -85,6 +81,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             {
                 await this.auditService.RemoveAuditByIdAsync(audit.Id);
             }
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.DeleteFileAsync(fileName),
+                    Times.Once());
 
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
 

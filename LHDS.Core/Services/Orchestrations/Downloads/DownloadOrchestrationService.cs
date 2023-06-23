@@ -190,7 +190,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
                     var filename = externalDocument.FileName.StartsWith('/')
-                    ? externalDocument.FileName
+                        ? externalDocument.FileName
                         : "/" + externalDocument.FileName;
 
                     IngestionTracking newIngestionTracking =

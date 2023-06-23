@@ -14,6 +14,7 @@ const OptOutUploadDetail: FunctionComponent<OptOutUploadDetailProps> = (props) =
         children
     } = props;
 
+    let onUploadSuccess = false;
     const addOptOut = optOutService.useCreateOptOut();
     const handleUpload = (values: string[]) => {
         values.forEach((value) => {
@@ -22,24 +23,19 @@ const OptOutUploadDetail: FunctionComponent<OptOutUploadDetailProps> = (props) =
             const optOutData = {
                 id: Guid.create().toString(),
                 nhsNumber: value,
-                optOutStatus: 'Unknown',
+                status: 'Unknown',
                 cacheTime: DateNow,
                 lastSentToMesh: DateNow,
             };
 
             const optOut = new OptOut(optOutData);
 
-            console.log(Guid.create());
-
-            console.log(optOut);
-
             return addOptOut.mutateAsync(optOut, {
                 onSuccess: () => {
-                    console.log(optOut);
                     toastSuccess("Values uploaded successfully.");
+                    onUploadSuccess = true;
                 },
                 onError: (error) => {
-                    console.log(error);
                     toastError("Error uploading values.");
                 }
             });
@@ -49,7 +45,9 @@ const OptOutUploadDetail: FunctionComponent<OptOutUploadDetailProps> = (props) =
     return (
         <div>
             <div>
-                <OptOutUploadDetailCard onUpload={handleUpload}>
+                <OptOutUploadDetailCard
+                    onUpload={handleUpload}
+                    onUploadSuccess={onUploadSuccess}>
                     {children}
                 </OptOutUploadDetailCard>
             </div>

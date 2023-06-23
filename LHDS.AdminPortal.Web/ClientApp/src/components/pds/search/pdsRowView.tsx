@@ -1,11 +1,8 @@
 import React, { FunctionComponent } from "react";
-import { Badge } from "react-bootstrap";
 import TableBaseRow from "../../bases/components/Table/TableBase.Row";
 import TableBaseData from "../../bases/components/Table/TableBase.Data";
-import ButtonBase from "../../bases/buttons/ButtonBase";
 import { Pds } from "../../../models/pds/pds";
 import moment from "moment";
-import TableBaseHeader from "../../bases/components/Table/TableBase.Header";
 
 type PdsRowProps = {
     pds: Pds;
@@ -16,16 +13,10 @@ const PdsRow: FunctionComponent<PdsRowProps> = (props) => {
         pds
     } = props;
 
-    function trimString(fileName: string) {
-
-    }
-
     return (<>
 
         <TableBaseRow>
             <TableBaseData>
-                {pds.id.toString()}
-                <br/>
                 {pds.message}
             </TableBaseData>
             <TableBaseData>

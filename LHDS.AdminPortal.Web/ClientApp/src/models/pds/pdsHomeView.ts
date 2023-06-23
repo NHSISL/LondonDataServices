@@ -22,7 +22,7 @@ export class PdsHomeView {
         updatedDate?: Date,
         updatedBy?: string,
     ) {
-        this.id = id= id;
+        this.id = id;
         this.correlationId = correlationId;
         this.message = message;
         this.fileName = fileName;

@@ -13,6 +13,7 @@ using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Downloads;
+using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using Microsoft.Extensions.Configuration;
@@ -32,6 +33,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly IDecryptionClient decryptionClient;
         private readonly LandingConfiguration landingConfiguration;
+        private readonly ICryptographyProvider cryptographyProvider;
         private readonly IAuditService auditService;
 
         public DecryptionTests()

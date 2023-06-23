@@ -8,12 +8,14 @@ import OptOutUploadDetailCardView from "./optOutUploadDetailCardView";
 interface OptOutUploadDetailCardProps {
     children?: React.ReactNode;
     onUpload: (data: string[]) => void;
+    onUploadSuccess: boolean;
 }
 
 const OptOutUploadDetailCard: FunctionComponent<OptOutUploadDetailCardProps> = (props) => {
     const {
         children,
-        onUpload
+        onUpload,
+        onUploadSuccess
     } = props;
 
     return (
@@ -26,6 +28,7 @@ const OptOutUploadDetailCard: FunctionComponent<OptOutUploadDetailCardProps> = (
                     <CardBaseContent>
                         <OptOutUploadDetailCardView
                             onUpload={onUpload}
+                            onUploadSuccess={onUploadSuccess}
                             
                         />
                         {children !== undefined && (

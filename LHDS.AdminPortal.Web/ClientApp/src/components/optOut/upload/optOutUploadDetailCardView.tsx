@@ -5,10 +5,11 @@ import ButtonBase from "../../bases/buttons/ButtonBase";
 
 interface OptOutUploadDetailCardViewProps {
     onUpload: (data: string[]) => void;
+    onUploadSuccess: boolean;
 }
 
 const OptOutUploadDetailCardView: FunctionComponent<OptOutUploadDetailCardViewProps> = (props) => {
-    const { onUpload } = props;
+    const { onUpload, onUploadSuccess } = props;
 
     const [file, setFile] = useState<File | null>(null);
     const [nhsNumbers, setNhsNumbers] = useState<string[]>([]);
@@ -111,7 +112,7 @@ const OptOutUploadDetailCardView: FunctionComponent<OptOutUploadDetailCardViewPr
             <div>
                 <input type="file" onChange={handleFileChange} /> <br />
 
-                {nhsNumbers.length > 0 && (
+                {!onUploadSuccess && nhsNumbers.length > 0 && (
                     <div>
                         <br />
 
@@ -135,6 +136,12 @@ const OptOutUploadDetailCardView: FunctionComponent<OptOutUploadDetailCardViewPr
                         </ButtonBase>
                     </div>
                 )}
+
+                {onUploadSuccess && (
+                    <div>
+                        <h1>POW</h1>
+                    </div>
+                    )}
             </div>
         </>
     );

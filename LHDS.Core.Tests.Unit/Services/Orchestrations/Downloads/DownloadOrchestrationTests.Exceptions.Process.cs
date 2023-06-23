@@ -184,8 +184,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     dependancyException.InnerException as Xeption);
 
             this.downloadServiceMock.Setup(service =>
-              service.RetrieveDownloadByFileNameAsync(fileName))
-                  .Throws(dependancyException);
+                service.RetrieveDownloadByFileNameAsync(fileName))
+                    .Throws(dependancyException);
 
             // when
             ValueTask<string> processTask = this.downloadOrchestrationService.ProcessAsync(fileName);
@@ -197,8 +197,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.downloadServiceMock.Verify(service =>
-              service.RetrieveDownloadByFileNameAsync(fileName),
-                Times.Once);
+                service.RetrieveDownloadByFileNameAsync(fileName),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(

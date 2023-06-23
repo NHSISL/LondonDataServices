@@ -303,8 +303,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
 
                 DecryptedFileName =
-                            $"/{landingConfiguration.DecryptedFolder}" +
-                            $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                    $"/{landingConfiguration.DecryptedFolder}" +
+                    $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
                 Decrypted = false,
                 LastSeen = randomDateTime,

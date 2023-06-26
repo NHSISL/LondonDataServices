@@ -37,33 +37,40 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 broker.GetDocumentByFileNameAsync(fileName))
                     .ReturnsAsync(document);
 
+            IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
+                dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                document,
+                supplierId: this.landingConfiguration.LandingSupplierId);
+
+            string encryptedFileName = $"/encrypted/{fileName}";
+            string expectedString = $"/decrypted/{fileName}";
+
             // When
             var actualString = await this.landingClient.ProcessAsync(fileName);
 
             // Then
-            actualString.Should().BeEquivalentTo(ingestionTracking.DecryptedFileName);
+            actualString.Should().BeEquivalentTo(expectedString);
 
             this.downloadBrokerMock.Verify(broker =>
                 broker.GetDocumentByFileNameAsync(fileName),
                     Times.Once());
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.InsertFileAsync(ingestionTracking.EncryptedFileName, It.IsAny<Stream>()),
+                broker.InsertFileAsync(encryptedFileName, It.IsAny<Stream>()),
                     Times.Once());
 
+            IngestionTracking retrievedInestionTracking = 
+                await this.ingestionTrackingService.RetrieveIngestionTrackingByFileNameAsync(fileName);
+
             var audits = this.auditService.RetrieveAllAudits()
-                            .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+                            .Where(audit => audit.IngestionTrackingId == retrievedInestionTracking.Id);
 
             foreach (var audit in audits)
             {
                 await this.auditService.RemoveAuditByIdAsync(audit.Id);
             }
 
-            this.blobStorageBrokerMock.Verify(broker =>
-                broker.DeleteFileAsync(fileName),
-                    Times.Once());
-
-            await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+            await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(retrievedInestionTracking.Id);
 
             this.downloadBrokerMock.VerifyNoOtherCalls();
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

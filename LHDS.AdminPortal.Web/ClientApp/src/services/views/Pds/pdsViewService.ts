@@ -1,4 +1,3 @@
-import { Guid } from 'guid-typescript';
 import { useEffect, useState } from 'react';
 import { Pds } from '../../../models/pds/pds';
 import { PdsView } from '../../../models/views/components/pds/pdsView';

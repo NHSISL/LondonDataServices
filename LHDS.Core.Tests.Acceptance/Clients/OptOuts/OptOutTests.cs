@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using LHDS.Core.Brokers.CsvMappers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
@@ -137,6 +138,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 
         private static List<OptOut> CreateRandomOptOutsList(
             int count,
+            DateTimeOffset dateTimeOffset,
             string batchReference
             )
         {
@@ -144,7 +146,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 
             for (int i = 0; i < count; i++)
             {
-                var optOut = CreateOptOutFiller(GetRandomDateTimeOffset()).Create();
+                var optOut = CreateOptOutFiller(dateTimeOffset).Create();
                 optOut.BatchReference = batchReference;
                 optOuts.Add(optOut);
             }

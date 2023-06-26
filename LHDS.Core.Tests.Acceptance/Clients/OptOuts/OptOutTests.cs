@@ -116,21 +116,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             return optOuts.OrderBy(optOut => optOut.CreatedDate).ToList();
         }
 
-        private static Filler<OptOut> CreateOptOutFiller(DateTimeOffset dateTimeOffset)
-        {
-            string user = Guid.NewGuid().ToString();
-            var filler = new Filler<OptOut>();
-
-            filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
-                .OnProperty(optOut => optOut.Status).Use("Unknown")
-                .OnProperty(optOut => optOut.CreatedBy).Use(user)
-                .OnProperty(optOut => optOut.UpdatedBy).Use(user);
-
-            return filler;
-        }
-
         private static List<OptOutIdentifier> CreateRandomOptOutIdentifiersList()
         {
             return CreateOptOutIdentifierFiller(dateTimeOffset: GetRandomDateTimeOffset())

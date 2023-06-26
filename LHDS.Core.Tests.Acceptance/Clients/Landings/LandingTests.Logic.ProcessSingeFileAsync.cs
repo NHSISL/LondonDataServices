@@ -20,16 +20,50 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
     public partial class LandingTests
     {
         [Fact]
-        public async Task ShouldNotProcessNewDocumentAsync()
+        public async Task ShouldProcessNewDocumentAsync()
         {
-            //Given
+            // Given
+            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             string fileName = GetRandomString();
+            byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
 
-            //When
+            Document document = new Document
+            {
+                DocumentData = documentData,
+                FileName = fileName
+            };
+
+            this.downloadBrokerMock.Setup(broker =>
+                broker.GetDocumentByFileNameAsync(fileName))
+                    .ReturnsAsync(document);
+
+            // When
             var actualString = await this.landingClient.ProcessAsync(fileName);
 
-            //Then
-            actualString.Should().BeNull();
+            // Then
+            actualString.Should().BeEquivalentTo(ingestionTracking.DecryptedFileName);
+
+            this.downloadBrokerMock.Verify(broker =>
+                broker.GetDocumentByFileNameAsync(fileName),
+                    Times.Once());
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.InsertFileAsync(ingestionTracking.EncryptedFileName, It.IsAny<Stream>()),
+                    Times.Once());
+
+            var audits = this.auditService.RetrieveAllAudits()
+                            .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+
+            foreach (var audit in audits)
+            {
+                await this.auditService.RemoveAuditByIdAsync(audit.Id);
+            }
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.DeleteFileAsync(fileName),
+                    Times.Once());
+
+            await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
 
             this.downloadBrokerMock.VerifyNoOtherCalls();
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

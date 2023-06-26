@@ -1,0 +1,45 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
+using LHDS.Core.Services.Orchestrations.Decryptions;
+using Microsoft.AspNetCore.Mvc;
+using RESTFulSense.Controllers;
+
+namespace LHDS.AdminPortal.Api.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class DecryptionsController : RESTFulController
+    {
+        private readonly IDecryptionOrchestrationService decryptionOrchestrationService;
+
+        public DecryptionsController(IDecryptionOrchestrationService decryptionOrchestrationService) =>
+            this.decryptionOrchestrationService = decryptionOrchestrationService;
+
+        [HttpGet("{fileName}")]
+        public async ValueTask<ActionResult<IngestionTracking>> GetDocumentByFileNameToDecryptAsync(string fileName)
+        {
+            try
+            {
+                await this.decryptionOrchestrationService.DecryptAsync(fileName);
+
+                return Ok();
+            }
+            catch (DownloadOrchestrationValidationException downloadOrchestrationValidationException)
+            {
+                return BadRequest(downloadOrchestrationValidationException.InnerException);
+            }
+            catch (DownloadOrchestrationDependencyException downloadOrchestrationDependencyException)
+            {
+                return InternalServerError(downloadOrchestrationDependencyException);
+            }
+            catch (DownloadOrchestrationServiceException downloadOrchestrationServiceException)
+            {
+                return InternalServerError(downloadOrchestrationServiceException);
+            }
+        }
+    }
+}

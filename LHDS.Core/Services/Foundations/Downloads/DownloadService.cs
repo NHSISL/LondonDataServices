@@ -38,6 +38,7 @@ namespace LHDS.Core.Services.Foundations.Downloads
             {
                 ValidateDownloadArgs(fileName);
                 Document maybeDocument = await this.downloadBroker.GetDocumentByFileNameAsync(fileName);
+                ValidateStorageDownload(maybeDocument, fileName);
 
                 return maybeDocument;
             });

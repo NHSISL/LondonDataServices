@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
 
 namespace LHDS.Core.Services.Orchestrations.Downloads
@@ -11,6 +13,14 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         private static void ValidateFileName(string fileName)
         {
             Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));
+        }
+
+        private static void ValidateStorageDownload(Document maybeDocument, string fileName)
+        {
+            if (maybeDocument is null)
+            {
+                throw new NotFoundDownloadOrchestrationException(fileName);
+            }
         }
 
         private static dynamic IsInvalid(string text) => new

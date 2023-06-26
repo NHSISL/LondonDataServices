@@ -5,6 +5,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
+using System.Text;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Storages.Blobs;
@@ -25,6 +29,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
     {
         private readonly Mock<IMeshBroker> meshBrokerMock;
         private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
+        private readonly IdentifierBroker identifierBroker;
         private readonly IPdsClient pdsClient;
         private readonly PdsConfiguration pdsConfiguration;
         private readonly IPdsAuditService pdsAuditService;
@@ -33,6 +38,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         {
             this.meshBrokerMock = new Mock<IMeshBroker>();
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
+            this.identifierBroker = new IdentifierBroker();
 
             string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             var args = Environment.GetCommandLineArgs();

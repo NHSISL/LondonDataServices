@@ -39,8 +39,18 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             string batchReference = GetRandomString();
             bool withHeader = this.optOutConfiguration.OptOutFileHasHeader;
             bool withTrailingComma = this.optOutConfiguration.OptOutFileRequireTrailingComma;
-            List<OptOut> randomOptOutList = CreateRandomOptOutsList(count: GetRandomNumber(), batchReference);
+
+            List<OptOut> randomOptOutList = CreateRandomOptOutsList(
+                count: GetRandomNumber(), 
+                this.dateTimeBroker.GetCurrentDateTimeOffset(), 
+                batchReference);
+
             var csvOptOutList = new StringBuilder();
+
+            foreach(OptOut optOut in randomOptOutList)
+            {
+                await this.optOutService.AddOptOutAsync(optOut);
+            }
 
             randomOptOutList
                 .ForEach(optOut =>
@@ -87,6 +97,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
                 this.meshBrokerMock.Verify(broker =>
                     broker.RetrieveMessageAsync(id),
                         Times.Once);
+            }
+
+            foreach (OptOut optOut in randomOptOutList)
+            {
+                await this.optOutService.RemoveOptOutByIdAsync(optOut.Id);
             }
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

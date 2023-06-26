@@ -1,7 +1,7 @@
 import { debounce } from "lodash";
-import React, { FunctionComponent, useMemo, useState, useEffect } from "react";
+import React, { FunctionComponent, useMemo, useState } from "react";
 import { OptOutView } from "../../../models/views/components/optOuts/optOutView";
-import { toastError, toastSuccess } from "../../../brokers/toastBroker";
+import { toastSuccess } from "../../../brokers/toastBroker";
 import { optOutViewService } from "../../../services/views/OptOuts/optoutViewService";
 import SearchBase from "../../bases/inputs/SearchBase";
 import { SpinnerBase } from "../../bases/spinner/SpinnerBase";

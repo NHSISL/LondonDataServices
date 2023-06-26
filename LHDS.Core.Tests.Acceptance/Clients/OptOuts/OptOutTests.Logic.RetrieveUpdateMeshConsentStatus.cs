@@ -35,14 +35,18 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             string mexWorkflowId = this.meshConfiguration.WorkflowId;
             string mexLocalId = GetRandomString();
             string fileName = $"{optOutConfiguration.OutputFolder}/{mexLocalId}_deltaresponse.csv";
-            byte[] fileContent = Encoding.ASCII.GetBytes(GetRandomString());
             string mexTo = this.optOutConfiguration.To;
             string batchReference = GetRandomString();
             bool withHeader = this.optOutConfiguration.OptOutFileHasHeader;
             bool withTrailingComma = this.optOutConfiguration.OptOutFileRequireTrailingComma;
             List<OptOut> randomOptOutList = CreateRandomOptOutsList(count: GetRandomNumber(), batchReference);
+            var csvOptOutList = new StringBuilder();
 
-            boptOutCsvList = this.csvMapperBroker.MapObjectToCsvAsync<OptOut>(randomOptOutList, withHeader, withTrailingComma);
+            randomOptOutList
+                .ForEach(optOut =>
+                    csvOptOutList.AppendLine($"{optOut.NhsNumber},"));
+
+            byte[] fileContent = Encoding.ASCII.GetBytes(csvOptOutList.ToString());
 
             Message message = ComposeMessage.CreateFileMessage(
                 mexTo,
@@ -83,7 +87,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
                 this.meshBrokerMock.Verify(broker =>
                     broker.RetrieveMessageAsync(id),
                         Times.Once);
-
             }
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

@@ -54,9 +54,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                     .ReturnsAsync(document);
 
             IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
-               dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
-               document,
-               supplierId: this.landingConfiguration.LandingSupplierId);
+                dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                document,
+                supplierId: this.landingConfiguration.LandingSupplierId);
 
             await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
 

@@ -105,6 +105,38 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             return filler;
         }
 
+        private static List<OptOut> CreateRandomOptOutsList(
+            int count,
+            string batchReference
+            )
+        {
+            var optOuts = new List<OptOut>();
+
+            for (int i = 0; i < count; i++)
+            {
+                var optOut = CreateOptOutFiller(GetRandomDateTimeOffset()).Create();
+                optOut.BatchReference = batchReference;
+                optOuts.Add(optOut);
+            }
+
+            return optOuts;
+        }
+
+        private static Filler<OptOut> CreateOptOutFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<OptOut>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
+                .OnProperty(optOut => optOut.Status).Use("Unknown")
+                .OnProperty(optOut => optOut.CreatedBy).Use(user)
+                .OnProperty(optOut => optOut.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
         private static string GenerateValidNhsNumber()
         {
             int total = 10;

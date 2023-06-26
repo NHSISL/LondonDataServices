@@ -112,6 +112,10 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 throw CreateAndLogValidationException(invalidArgumentDownloadOrchestrationException);
             }
+            catch (NotFoundDownloadOrchestrationException notFoundDownloadOrchestrationException)
+            {
+                throw CreateAndLogValidationException(notFoundDownloadOrchestrationException);
+            }
             catch (DocumentValidationException documentValidationException)
             {
                 throw CreateAndLogDependencyValidationException(documentValidationException);

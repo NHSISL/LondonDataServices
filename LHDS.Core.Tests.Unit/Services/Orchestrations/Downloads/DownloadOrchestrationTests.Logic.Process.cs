@@ -207,7 +207,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         }
 
         [Fact]
-        public async Task ShouldProcessNamedDocumentsAsync()
+        public async Task ShouldProcessExistingNamedDocumentsAsync()
         {
             // given
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
@@ -283,81 +283,102 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         }
 
         [Fact]
-        public async Task ShouldNotProcessNamedDocumentsIfFileNameNotExistsAsync()
-        {
-            try
-            {
-                // given
-                string nonExistentFileName = GetRandomMessage();
-                DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-                Document randomDocument = CreateRandomDocument();
-                Document externalDocument = randomDocument;
-                IngestionTracking externalIngestionTracking = CreateRandomIngestionTracking(randomDateTime);
-                List<IngestionTracking> externalIngestionTrackingsFound = new List<IngestionTracking> { externalIngestionTracking };
-
-                this.ingestionTrackingServiceMock.Setup(service =>
-                    service.RetrieveAllIngestionTrackings())
-                        .Returns(externalIngestionTrackingsFound.AsQueryable());
-
-                // when
-                await this.downloadOrchestrationService.ProcessAsync(nonExistentFileName);
-
-                // then
-                this.ingestionTrackingServiceMock.Verify(service =>
-                    service.RetrieveAllIngestionTrackings(),
-                        Times.Once);
-
-                this.dateTimeBrokerMock.Verify(broker =>
-                    broker.GetCurrentDateTimeOffset(),
-                        Times.Never);
-
-                this.documentServiceMock.Verify(service =>
-                    service.RemoveDocumentByFileNameAsync(nonExistentFileName),
-                        Times.Never);
-
-                this.documentServiceMock.Verify(service =>
-                    service.AddDocumentAsync(It.IsAny<Document>()),
-                        Times.Never);
-
-                this.ingestionTrackingServiceMock.Verify(service =>
-                    service.ModifyIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
-                        Times.Never);
-
-                this.auditServiceMock.Verify(service =>
-                    service.AddAuditAsync(It.IsAny<Audit>()),
-                        Times.Never);
-
-                this.documentServiceMock.VerifyNoOtherCalls();
-                this.dateTimeBrokerMock.VerifyNoOtherCalls();
-                this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
-                this.loggingBrokerMock.VerifyNoOtherCalls();
-            }
-            catch (Exception ex)
-            {
-                output.WriteLine($"{ex.Message}, {ex.InnerException.Message}, ");
-                throw ex;
-            }
-        }
-
-        [Fact]
-        public async Task ShouldNotProcessNamedDocumentsIfDownloadIsNullAsync()
+        public async Task ShouldProcessNewNamedDocumentsAsync()
         {
             // given
-            string fileName = GetRandomMessage();
-            List<IngestionTracking> ingestionTrackings = new List<IngestionTracking>();
+            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+            Guid randomIdentifier = Guid.NewGuid();
+            Document randomDocument = CreateRandomDocument();
+            Document externalDocument = randomDocument;
+
+            var filename = randomDocument.FileName.StartsWith('/')
+                ? randomDocument.FileName
+                : "/" + randomDocument.FileName;
+
+            IngestionTracking newIngestionTracking = new IngestionTracking
+            {
+                Id = randomIdentifier,
+                FileName = externalDocument.FileName,
+                SupplierId = this.landingConfiguration.LandingSupplierId,
+                EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
+
+                DecryptedFileName =
+                    $"/{landingConfiguration.DecryptedFolder}" +
+                    $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+
+                Decrypted = false,
+                LastSeen = randomDateTime,
+                FileDeleted = false,
+                RecordCount = 0,
+                EncryptedFileSize = externalDocument.DocumentData.Length,
+                DecryptedFileSize = 0,
+                CreatedBy = "System",
+                CreatedDate = randomDateTime,
+                UpdatedBy = "System",
+                UpdatedDate = randomDateTime
+            };
+
+            List<IngestionTracking> externalIngestionTrackingsFound = new List<IngestionTracking>();
 
             this.ingestionTrackingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackings())
-                    .Returns(ingestionTrackings.AsQueryable());
+                    .Returns(externalIngestionTrackingsFound.AsQueryable());
+
+            this.downloadServiceMock.Setup(service =>
+                  service.RetrieveDownloadByFileNameAsync(newIngestionTracking.FileName))
+                      .ReturnsAsync(externalDocument);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTime);
+
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifier())
+                    .Returns(randomIdentifier);
+
+            IngestionTracking outputIngestionTracking = newIngestionTracking.DeepClone();
+
+            this.ingestionTrackingServiceMock.Setup(service =>
+                service.AddIngestionTrackingAsync(newIngestionTracking))
+                    .ReturnsAsync(outputIngestionTracking);
 
             // when
-            await this.downloadOrchestrationService.ProcessAsync(fileName);
+            await this.downloadOrchestrationService.ProcessAsync(newIngestionTracking.FileName);
 
             // then
+
+            this.downloadServiceMock.Verify(service =>
+                service.RetrieveDownloadByFileNameAsync(newIngestionTracking.FileName),
+                    Times.Once);
+
             this.ingestionTrackingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackings(),
                     Times.Once);
 
+            Document newBlobDocument = new Document
+            {
+                DocumentData = randomDocument.DocumentData,
+                FileName = newIngestionTracking.EncryptedFileName
+            };
+
+            this.documentServiceMock.Verify(service =>
+                service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument))),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(
+                    outputIngestionTracking))),
+                        Times.Once);
+
+            this.auditServiceMock.Verify(service =>
+                service.AddAuditAsync(It.IsAny<Audit>()),
+                    Times.Once);
+
+            this.documentServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

@@ -15,6 +15,7 @@ using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts;
+using LHDS.Core.Services.Foundations.OptOuts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -29,9 +30,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         private readonly Mock<IMeshBroker> meshBrokerMock;
         private readonly IOptOutClient optOutClient;
         private readonly ICsvMapperBroker csvMapperBroker;
-        private readonly IDateTimeBroker dateTimeBroker;
-        private readonly OptOutConfiguration optOutConfiguration;
         private readonly MeshConfiguration meshConfiguration;
+        private readonly OptOutConfiguration optOutConfiguration;
+        private readonly IDateTimeBroker dateTimeBroker;
+        private readonly IOptOutService optOutService;
 
         public OptOutTests()
         {
@@ -55,7 +57,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
-
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddLogging(builder =>
@@ -73,8 +74,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             this.optOutConfiguration = serviceProvider.GetService<OptOutConfiguration>();
             this.meshConfiguration = serviceProvider.GetService<MeshConfiguration>();
             this.csvMapperBroker = serviceProvider.GetService<ICsvMapperBroker>();
-            this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>(); 
-            optOutClient = serviceProvider.GetRequiredService<IOptOutClient>();
+            this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
+            this.optOutService = serviceProvider.GetService<IOptOutService>();
+            optOutClient = serviceProvider.GetService<IOptOutClient>();
         }
 
         private static string GetRandomString() =>
@@ -85,6 +87,49 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime().AddDays(7)).GetValue();
+
+        private static List<OptOut> CreateRandomOptOuts(int count, DateTimeOffset dateTimeOffset)
+        {
+            List<OptOut> optOuts = new List<OptOut>();
+
+            for (int i = 0; i < count; i++)
+            {
+                var reference = Guid.NewGuid();
+
+                var optOut = new OptOut
+                {
+                    Id = reference,
+                    NhsNumber = GenerateValidNhsNumber(),
+                    Status = "Unknown",
+                    UniqueReference = reference.ToString(),
+                    CacheTime = dateTimeOffset.AddDays(- 50),
+                    LastSentToMesh = dateTimeOffset.AddDays(- 50),
+                    CreatedDate = dateTimeOffset.AddSeconds(i),
+                    CreatedBy = "System",
+                    UpdatedDate = dateTimeOffset.AddSeconds(i),
+                    UpdatedBy = "System",
+                };
+
+                optOuts.Add(optOut);
+            }
+
+            return optOuts.OrderBy(optOut => optOut.CreatedDate).ToList();
+        }
+
+        private static Filler<OptOut> CreateOptOutFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<OptOut>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
+                .OnProperty(optOut => optOut.Status).Use("Unknown")
+                .OnProperty(optOut => optOut.CreatedBy).Use(user)
+                .OnProperty(optOut => optOut.UpdatedBy).Use(user);
+
+            return filler;
+        }
 
         private static List<OptOutIdentifier> CreateRandomOptOutIdentifiersList()
         {

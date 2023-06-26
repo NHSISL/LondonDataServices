@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using LHDS.Core.Brokers.CsvMappers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
@@ -12,6 +13,7 @@ using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts;
 using LHDS.Core.Services.Foundations.OptOuts;
@@ -29,6 +31,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         private readonly Mock<IMeshBroker> meshBrokerMock;
         private readonly IOptOutClient optOutClient;
         private readonly ICsvMapperBroker csvMapperBroker;
+        private readonly MeshConfiguration meshConfiguration;
         private readonly OptOutConfiguration optOutConfiguration;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IOptOutService optOutService;
@@ -70,6 +73,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.optOutConfiguration = serviceProvider.GetService<OptOutConfiguration>();
+            this.meshConfiguration = serviceProvider.GetService<MeshConfiguration>();
             this.csvMapperBroker = serviceProvider.GetService<ICsvMapperBroker>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             this.optOutService = serviceProvider.GetService<IOptOutService>();
@@ -113,21 +117,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             return optOuts.OrderBy(optOut => optOut.CreatedDate).ToList();
         }
 
-        private static Filler<OptOut> CreateOptOutFiller(DateTimeOffset dateTimeOffset)
-        {
-            string user = Guid.NewGuid().ToString();
-            var filler = new Filler<OptOut>();
-
-            filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
-                .OnProperty(optOut => optOut.Status).Use("Unknown")
-                .OnProperty(optOut => optOut.CreatedBy).Use(user)
-                .OnProperty(optOut => optOut.UpdatedBy).Use(user);
-
-            return filler;
-        }
-
         private static List<OptOutIdentifier> CreateRandomOptOutIdentifiersList()
         {
             return CreateOptOutIdentifierFiller(dateTimeOffset: GetRandomDateTimeOffset())
@@ -144,6 +133,39 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
                 .OnProperty(optOut => optOut.UniqueReference).Use(GetRandomString())
                 .OnProperty(optOut => optOut.Status).Use(GetRandomString())
                 .OnProperty(optOut => optOut.StatusChangedDateTime).Use(GetRandomDateTimeOffset());
+            return filler;
+        }
+
+        private static List<OptOut> CreateRandomOptOutsList(
+            int count,
+            DateTimeOffset dateTimeOffset,
+            string batchReference
+            )
+        {
+            var optOuts = new List<OptOut>();
+
+            for (int i = 0; i < count; i++)
+            {
+                var optOut = CreateOptOutFiller(dateTimeOffset).Create();
+                optOut.BatchReference = batchReference;
+                optOuts.Add(optOut);
+            }
+
+            return optOuts;
+        }
+
+        private static Filler<OptOut> CreateOptOutFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<OptOut>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
+                .OnProperty(optOut => optOut.Status).Use("Unknown")
+                .OnProperty(optOut => optOut.CreatedBy).Use(user)
+                .OnProperty(optOut => optOut.UpdatedBy).Use(user);
+
             return filler;
         }
 

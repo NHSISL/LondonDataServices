@@ -58,7 +58,6 @@
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingTable.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\optOut\add\optOutDetailCardViewAdd.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetailCard.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetailCardView.tsx" />

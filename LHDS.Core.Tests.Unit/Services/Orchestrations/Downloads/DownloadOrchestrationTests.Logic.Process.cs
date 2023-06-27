@@ -178,6 +178,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                service.RetrieveListOfDocumentsToProcessAsync())
                    .ReturnsAsync(externalDocuments);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTime);
+
             foreach (var document in externalDocuments)
             {
                 this.ingestionTrackingServiceMock.Setup(service =>
@@ -197,6 +201,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             {
                 this.ingestionTrackingServiceMock.Verify(service =>
                     service.RetrieveAllIngestionTrackings(),
+                        Times.Once);
+
+                this.dateTimeBrokerMock.Verify(broker =>
+                    broker.GetCurrentDateTimeOffset(),
+                        Times.Once);
+
+                var maybeIngestionTracking = externalIngestionTrackingsFound
+                    .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == document.FileName);
+
+                maybeIngestionTracking.LastSeen = randomDateTime;
+
+                this.ingestionTrackingServiceMock.Verify(broker =>
+                    broker.ModifyIngestionTrackingAsync(maybeIngestionTracking),
                         Times.Once);
             }
 
@@ -346,7 +363,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             await this.downloadOrchestrationService.ProcessAsync(newIngestionTracking.FileName);
 
             // then
-
             this.downloadServiceMock.Verify(service =>
                 service.RetrieveDownloadByFileNameAsync(newIngestionTracking.FileName),
                     Times.Once);

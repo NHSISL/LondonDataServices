@@ -14,6 +14,7 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Cryptography.Gpg;
 using LHDS.Core.Providers.Downloads;
@@ -51,6 +52,7 @@ namespace LHDS.Core.Clients.Extensions
             bool acceptanceTest)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
+            services.Configure<LandingConfiguration>(configuration.GetSection("LandingConfiguration"));
 
             AddProviders(services);
             AddBrokers(services, configuration, acceptanceTest);

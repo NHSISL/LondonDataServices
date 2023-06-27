@@ -75,6 +75,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             this.auditService = serviceProvider.GetService<IAuditService>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             this.landingConfiguration = serviceProvider.GetService<LandingConfiguration>();
+            this.cryptographyProvider = serviceProvider.GetRequiredService<ICryptographyProvider>();
             decryptionClient = serviceProvider.GetService<IDecryptionClient>();
         }
 

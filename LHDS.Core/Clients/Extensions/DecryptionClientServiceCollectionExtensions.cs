@@ -67,6 +67,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDownloadAbstractProvider, DownloadAbstractProvider>();
             services.AddTransient<ICryptographyAbstractProvider, CryptographyAbstractProvider>();
             services.AddTransient<ICryptographyProvider, GpgCryptographyProvider>();
+            services.AddTransient<IGpgCryptographyProviderSettings, GpgCryptographyProviderSettings>();
         }
 
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration, bool acceptanceTest)

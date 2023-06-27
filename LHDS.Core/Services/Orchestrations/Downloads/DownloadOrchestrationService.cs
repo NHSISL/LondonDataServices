@@ -122,6 +122,13 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                                 return newIngestionTracking.DecryptedFileName;
                             }
+                            else
+                            {
+                                maybeIngestionTracking.LastSeen = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                                await this.ingestionTrackingService
+                                    .ModifyIngestionTrackingAsync(maybeIngestionTracking);
+                            }
 
                             return null;
                         });

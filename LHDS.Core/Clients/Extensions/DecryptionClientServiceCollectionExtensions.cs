@@ -52,7 +52,7 @@ namespace LHDS.Core.Clients.Extensions
             bool acceptanceTest)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
-            services.Configure<LandingConfiguration>(configuration.GetSection("LandingConfiguration"));
+            services.Configure<LandingConfiguration>(configuration.GetSection("LandingSettings"));
 
             AddProviders(services);
             AddBrokers(services, configuration, acceptanceTest);

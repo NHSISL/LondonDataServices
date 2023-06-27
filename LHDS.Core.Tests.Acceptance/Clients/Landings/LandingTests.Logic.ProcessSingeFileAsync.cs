@@ -37,11 +37,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 broker.GetDocumentByFileNameAsync(fileName))
                     .ReturnsAsync(document);
 
-            IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
-                dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                document,
-                supplierId: this.landingConfiguration.LandingSupplierId);
-
             string encryptedFileName = $"/encrypted/{fileName}";
             string expectedString = $"/decrypted/{fileName}";
 
@@ -61,6 +56,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
             IngestionTracking retrievedInestionTracking = 
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByFileNameAsync(fileName);
+
+            retrievedInestionTracking.CreatedDate.Should().Be(retrievedInestionTracking.UpdatedDate);
 
             var audits = this.auditService.RetrieveAllAudits()
                             .Where(audit => audit.IngestionTrackingId == retrievedInestionTracking.Id);
@@ -122,6 +119,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             {
                 await this.auditService.RemoveAuditByIdAsync(audit.Id);
             }
+
+            IngestionTracking modifiedIngestionTracking =
+                await this.ingestionTrackingService.RetrieveIngestionTrackingByFileNameAsync(fileName);
+
+            modifiedIngestionTracking.UpdatedDate.Should().BeAfter(ingestionTracking.UpdatedDate);
 
             this.blobStorageBrokerMock.Verify(broker =>
                 broker.DeleteFileAsync(fileName),

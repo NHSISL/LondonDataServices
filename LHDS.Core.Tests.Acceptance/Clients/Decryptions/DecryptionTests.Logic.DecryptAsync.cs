@@ -22,13 +22,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         {
             //Given
             string fileName = GetRandomString();
-            string encryptedFileName = GetRandomString();
+            //string encryptedFileName = GetRandomString();
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
 
             Document document = new Document
             {
                 DocumentData = documentData,
-                FileName = encryptedFileName
+                FileName = fileName
             };
 
             IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             var actualString = await this.decryptionClient.DecryptAsync(fileName);
 
             //Then
-            actualString.Should().BeEquivalentTo(encryptedFileName);
+            actualString.Should().BeEquivalentTo(fileName);
 
             this.downloadBrokerMock.Verify(broker =>
                 broker.GetDocumentByFileNameAsync(fileName),

@@ -92,6 +92,15 @@ const SupplierRowAdd: FunctionComponent<SupplierRowAddProps> = (props) => {
                     required={true}
                     error={errors.landingManualTriggerUrl}
                     onChange={handleChange} />
+                <TextInputBase
+                    id="decryptionManualTriggerUrl"
+                    name="decryptionManualTriggerUrl"
+                    label="Decryption Manual Trigger Url"
+                    placeholder="landing Manual Trigge Url"
+                    value={supplier.decryptionManualTriggerUrl}
+                    required={true}
+                    error={errors.landingManualTriggerUrl}
+                    onChange={handleChange} />
             </TableBaseData>
             <TableBaseData classes="text-end">
                 <ButtonBase onClick={() => onCancel()} cancel>Cancel</ButtonBase>&nbsp;

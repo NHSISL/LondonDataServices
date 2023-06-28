@@ -29,4 +29,11 @@ export const supplierValidations: Array<Validation> = [
         minLength: 3,
         maxLength: 255,
     },
+    {
+        property: "decryptionManualTriggerUrl",
+        friendlyName: "decryptionManualTriggerUrl",
+        isRequired: true,
+        minLength: 3,
+        maxLength: 255,
+    }
 ]

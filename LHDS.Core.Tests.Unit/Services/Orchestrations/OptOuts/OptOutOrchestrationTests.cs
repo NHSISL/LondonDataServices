@@ -57,24 +57,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             this.output = output;
 
             var appSettingsStub = new Dictionary<string, string> {
-                { "OptOutSettings:ExpiredAfterDays", "7" },
-                { "OptOutSettings:InputFolder", GetRandomString() },
-                { "OptOutSettings:OptOutFileHasHeader", "false" },
-                { "OptOutSettings:OutputFolder", GetRandomString() },
-                { "OptOutSettings:OptOutFileRequireTrailingComma", "true" },
-                { "OptOutSettings:To", GetRandomString() },
-                { "OptOutSettings:WorkflowId", GetRandomString() },
-                { "MeshConfiguration:MailboxId", GetRandomString() },
-                { "MeshConfiguration:Password", GetRandomString() },
-                { "MeshConfiguration:Key", GetRandomString() },
-                { "MeshConfiguration:Url", GetRandomString() },
-                { "MeshConfiguration:MexClientVersion", GetRandomString() },
-                { "MeshConfiguration:MexOSName", GetRandomString() },
-                { "MeshConfiguration:MexOSVersion", GetRandomString() },
-                { "MeshConfiguration:RootCertificate", null },
-                { "MeshConfiguration:IntermediateCertificates", null },
-                { "MeshConfiguration:ClientCertificate", null },
-                { "MeshConfiguration:WorkflowId", GetRandomString() }
+                { "optOutSettings:expiredAfterDays", "7" },
+                { "optOutSettings:inputFolder", GetRandomString() },
+                { "optOutSettings:optOutFileHasHeader", "false" },
+                { "optOutSettings:outputFolder", GetRandomString() },
+                { "optOutSettings:optOutFileRequireTrailingComma", "true" },
+                { "optOutSettings:to", GetRandomString() },
+                { "optOutSettings:workflowId", GetRandomString() },
+                { "meshConfiguration:mailboxId", GetRandomString() },
+                { "meshConfiguration:password", GetRandomString() },
+                { "meshConfiguration:key", GetRandomString() },
+                { "meshConfiguration:url", GetRandomString() },
+                { "meshConfiguration:mexClientVersion", GetRandomString() },
+                { "meshConfiguration:mexOSName", GetRandomString() },
+                { "meshConfiguration:mexOSVersion", GetRandomString() },
+                { "meshConfiguration:rootCertificate", null },
+                { "meshConfiguration:intermediateCertificates", null },
+                { "meshConfiguration:clientCertificate", null },
+                { "meshConfiguration:workflowId", GetRandomString() }
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()
@@ -83,37 +83,37 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             this.optOutConfiguration = new OptOutConfiguration
             {
-                ExpiredAfterDays = int.Parse(inMemoryConfiguration["OptOutSettings:ExpiredAfterDays"]),
-                InputFolder = inMemoryConfiguration["OptOutSettings:InputFolder"],
-                OptOutFileHasHeader = bool.Parse(inMemoryConfiguration["OptOutSettings:OptOutFileHasHeader"]),
-                OutputFolder = inMemoryConfiguration["OptOutSettings:OutputFolder"],
+                ExpiredAfterDays = int.Parse(inMemoryConfiguration["optOutSettings:expiredAfterDays"]),
+                InputFolder = inMemoryConfiguration["optOutSettings:inputFolder"],
+                OptOutFileHasHeader = bool.Parse(inMemoryConfiguration["optOutSettings:optOutFileHasHeader"]),
+                OutputFolder = inMemoryConfiguration["optOutSettings:outputFolder"],
 
                 OptOutFileRequireTrailingComma =
-                    bool.Parse(inMemoryConfiguration["OptOutSettings:OptOutFileRequireTrailingComma"]),
+                    bool.Parse(inMemoryConfiguration["optOutSettings:optOutFileRequireTrailingComma"]),
 
-                To = inMemoryConfiguration["OptOutSettings:InputFolder"],
-                WorkflowId = inMemoryConfiguration["OptOutSettings:WorkflowId"],
+                To = inMemoryConfiguration["optOutSettings:inputFolder"],
+                WorkflowId = inMemoryConfiguration["optOutSettings:workflowId"],
             };
 
             this.meshConfiguration = new MeshConfiguration
             {
-                MailboxId = inMemoryConfiguration["MeshConfiguration:MailboxId"],
-                Password = inMemoryConfiguration["MeshConfiguration:Password"],
-                Key = inMemoryConfiguration["MeshConfiguration:Key"],
-                Url = inMemoryConfiguration["MeshConfiguration:Url"],
-                MexClientVersion = inMemoryConfiguration["MeshConfiguration:MexClientVersion"],
-                MexOSName = inMemoryConfiguration["MeshConfiguration:MexOSName"],
-                MexOSVersion = inMemoryConfiguration["MeshConfiguration:MexOSVersion"],
-                WorkflowId = inMemoryConfiguration["MeshConfiguration:WorkflowId"],
+                MailboxId = inMemoryConfiguration["meshConfiguration:mailboxId"],
+                Password = inMemoryConfiguration["meshConfiguration:password"],
+                Key = inMemoryConfiguration["meshConfiguration:key"],
+                Url = inMemoryConfiguration["meshConfiguration:url"],
+                MexClientVersion = inMemoryConfiguration["meshConfiguration:mexClientVersion"],
+                MexOSName = inMemoryConfiguration["meshConfiguration:mexOSName"],
+                MexOSVersion = inMemoryConfiguration["meshConfiguration:mexOSVersion"],
+                WorkflowId = inMemoryConfiguration["meshConfiguration:workflowId"],
 
-                RootCertificate = GetCertificate(inMemoryConfiguration["MeshConfiguration:RootCertificate"]),
+                RootCertificate = GetCertificate(inMemoryConfiguration["meshConfiguration:rootCertificate"]),
 
                 IntermediateCertificates =
                      GetCertificates(inMemoryConfiguration
-                        .GetSection("MeshConfiguration:IntermediateCertificates")
+                        .GetSection("meshConfiguration:intermediateCertificates")
                             .Get<List<string>>()),
 
-                ClientCertificate = GetCertificate(inMemoryConfiguration["MeshConfiguration:ClientCertificate"])
+                ClientCertificate = GetCertificate(inMemoryConfiguration["meshConfiguration:clientCertificate"])
             };
 
             this.optOutProcessingServiceMock = new Mock<IOptOutProcessingService>();

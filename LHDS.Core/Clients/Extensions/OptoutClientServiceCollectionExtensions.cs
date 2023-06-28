@@ -88,7 +88,7 @@ namespace LHDS.Core.Clients.Extensions
 
 
                 MaxChunkSizeInMegabytes = int.Parse(
-                    GetSettings(configuration, "meshConfiguration:mxChunkSizeInMegabytes", true)),
+                    GetSettings(configuration, "meshConfiguration:maxChunkSizeInMegabytes", true)),
             };
 
             if (!acceptanceTest)

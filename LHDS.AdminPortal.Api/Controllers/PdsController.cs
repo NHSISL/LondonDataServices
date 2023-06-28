@@ -21,8 +21,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.pdsAuditService = pdsAuditService;
 
         [HttpPost]
-        public async ValueTask<ActionResult<PdsAudit>> PostPdsAuditAsync(
-            PdsAudit pdsAudit)
+        public async ValueTask<ActionResult<PdsAudit>> PostPdsAuditAsync(PdsAudit pdsAudit)
         {
             try
             {

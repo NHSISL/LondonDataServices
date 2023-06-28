@@ -38,9 +38,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
 
-            this.downloadBrokerMock.Setup(broker =>
-                broker.GetDocumentByFileNameAsync(fileName))
-                    .ReturnsAsync(document);
+            this.blobStorageBrokerMock.Setup(broker =>
+                broker.SelectByFileNameAsync(ingestionTracking.EncryptedFileName))
+                    .ReturnsAsync(documentData);
 
             //When
             var actualString = await this.decryptionClient.DecryptAsync(fileName);

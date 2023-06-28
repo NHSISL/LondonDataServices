@@ -18,16 +18,18 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
     public partial class DecryptionTests
     {
         [Fact]
-        public async Task ShouldProcessNewDocumentsAsync()
+        public async Task ShouldDecryptNewDocumentsAsync()
         {
             //Given
             string fileName = GetRandomString();
             //string encryptedFileName = GetRandomString();
-            byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
+            byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
+
+            byte[] encryptedData = await this.cryptographyProvider.EncryptAsync(documentData);
 
             Document document = new Document
             {
-                DocumentData = documentData,
+                DocumentData = encryptedData,
                 FileName = fileName
             };
 
@@ -40,16 +42,16 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             this.blobStorageBrokerMock.Setup(broker =>
                 broker.SelectByFileNameAsync(ingestionTracking.EncryptedFileName))
-                    .ReturnsAsync(documentData);
+                    .ReturnsAsync(encryptedData);
 
             //When
             var actualString = await this.decryptionClient.DecryptAsync(fileName);
 
             //Then
-            actualString.Should().BeEquivalentTo(fileName);
+            actualString.Should().BeEquivalentTo(ingestionTracking.DecryptedFileName);
 
-            this.downloadBrokerMock.Verify(broker =>
-                broker.GetDocumentByFileNameAsync(fileName),
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.SelectByFileNameAsync(ingestionTracking.EncryptedFileName),
                     Times.Once);
 
             ingestionTracking.Should().NotBeNull();
@@ -62,11 +64,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 await this.auditService.RemoveAuditByIdAsync(audit.Id);
             }
 
-            await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+            IngestionTracking decryptedIngestionTracking =
+                await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.InsertFileAsync(ingestionTracking.EncryptedFileName, It.IsAny<Stream>()),
+                broker.InsertFileAsync(decryptedIngestionTracking.DecryptedFileName, It.IsAny<Stream>()),
                     Times.Once());
+
+            await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+
 
             this.downloadBrokerMock.VerifyNoOtherCalls();
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

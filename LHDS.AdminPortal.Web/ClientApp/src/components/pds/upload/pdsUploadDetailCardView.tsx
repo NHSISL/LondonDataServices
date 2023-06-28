@@ -3,13 +3,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { ChangeEvent, FunctionComponent, useState } from "react";
 import ButtonBase from "../../bases/buttons/ButtonBase";
 
-interface OptOutUploadDetailCardViewProps {
+interface PdsUploadDetailCardViewProps {
     onUpload: (data: string[]) => void;
-    onUploadSuccess: boolean;
 }
 
-const OptOutUploadDetailCardView: FunctionComponent<OptOutUploadDetailCardViewProps> = (props) => {
-    const { onUpload, onUploadSuccess } = props;
+const PdsUploadDetailCardView: FunctionComponent<PdsUploadDetailCardViewProps> = (props) => {
+    const { onUpload } = props;
 
     const [file, setFile] = useState<File | null>(null);
     const [nhsNumbers, setNhsNumbers] = useState<string[]>([]);
@@ -112,11 +111,11 @@ const OptOutUploadDetailCardView: FunctionComponent<OptOutUploadDetailCardViewPr
             <div>
                 <input type="file" onChange={handleFileChange} /> <br />
 
-                {!onUploadSuccess && nhsNumbers.length > 0 && (
+                {nhsNumbers.length > 0 && (
                     <div>
                         <br />
 
-                        <p style={{ }}><strong>{getSummary()}</strong></p>
+                        <p style={{ color: "green" }}><strong>{getSummary()}</strong></p>
 
                         <h3 style={{ color: "red" }}>Invalid NHS numbers:</h3>
                         <ul>
@@ -136,15 +135,9 @@ const OptOutUploadDetailCardView: FunctionComponent<OptOutUploadDetailCardViewPr
                         </ButtonBase>
                     </div>
                 )}
-
-                {onUploadSuccess && (
-                    <div>
-                        <h1>POW</h1>
-                    </div>
-                    )}
             </div>
         </>
     );
 };
 
-export default OptOutUploadDetailCardView;
+export default PdsUploadDetailCardView;

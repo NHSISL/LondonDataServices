@@ -55,50 +55,50 @@ namespace LHDS.Core.Clients.Extensions
             IConfiguration configuration,
             bool acceptanceTest)
         {
-            var blobServiceUri = GetSettings(configuration, "BlobStorage:azureBlobServiceUri", true);
-            var azureTenantId = GetSettings(configuration, "BlobStorage:azureTenantId", true);
+            var blobServiceUri = GetSettings(configuration, "blobStorage:azureBlobServiceUri", true);
+            var azureTenantId = GetSettings(configuration, "blobStorage:azureTenantId", true);
 
             services.AddSingleton<IConfiguration>(_ => configuration);
             var optOptOutConfiguration = new OptOutConfiguration
             {
-                ExpiredAfterDays = int.Parse(GetSettings(configuration, "OptOutSettings:ExpiredAfterDays", true)),
-                InputFolder = GetSettings(configuration, "OptOutSettings:InputFolder", true),
+                ExpiredAfterDays = int.Parse(GetSettings(configuration, "optOutSettings:expiredAfterDays", true)),
+                InputFolder = GetSettings(configuration, "optOutSettings:inputFolder", true),
 
                 OptOutFileHasHeader =
-                    bool.Parse(GetSettings(configuration, "OptOutSettings:OptOutFileHasHeader", true)),
+                    bool.Parse(GetSettings(configuration, "optOutSettings:optOutFileHasHeader", true)),
 
-                OutputFolder = GetSettings(configuration, "OptOutSettings:OutputFolder"),
+                OutputFolder = GetSettings(configuration, "optOutSettings:outputFolder"),
 
                 OptOutFileRequireTrailingComma =
-                    bool.Parse(GetSettings(configuration, "OptOutSettings:OptOutFileRequireTrailingComma", true)),
+                    bool.Parse(GetSettings(configuration, "optOutSettings:optOutFileRequireTrailingComma", true)),
 
-                To = GetSettings(configuration, "OptOutSettings:To"),
-                WorkflowId = GetSettings(configuration, "OptOutSettings:WorkflowId"),
+                To = GetSettings(configuration, "optOutSettings:to"),
+                WorkflowId = GetSettings(configuration, "optOutSettings:workflowId"),
             };
 
             var meshConfig = new MeshConfiguration
             {
-                MailboxId = GetSettings(configuration, "MeshConfiguration:MailboxId", true),
-                Password = GetSettings(configuration, "MeshConfiguration:Password", true),
-                Key = GetSettings(configuration, "MeshConfiguration:Key", true),
-                Url = GetSettings(configuration, "MeshConfiguration:Url", true),
-                MexClientVersion = GetSettings(configuration, "MeshConfiguration:MexClientVersion", true),
-                MexOSName = GetSettings(configuration, "MeshConfiguration:MexOSName", true),
-                MexOSVersion = GetSettings(configuration, "MeshConfiguration:MexOSVersion", true),
+                MailboxId = GetSettings(configuration, "meshConfiguration:mailboxId", true),
+                Password = GetSettings(configuration, "meshConfiguration:password", true),
+                Key = GetSettings(configuration, "meshConfiguration:key", true),
+                Url = GetSettings(configuration, "meshConfiguration:url", true),
+                MexClientVersion = GetSettings(configuration, "meshConfiguration:mexClientVersion", true),
+                MexOSName = GetSettings(configuration, "meshConfiguration:mexOSName", true),
+                MexOSVersion = GetSettings(configuration, "meshConfiguration:mexOSVersion", true),
 
 
                 MaxChunkSizeInMegabytes = int.Parse(
-                    GetSettings(configuration, "MeshConfiguration:MaxChunkSizeInMegabytes", true)),
+                    GetSettings(configuration, "meshConfiguration:mxChunkSizeInMegabytes", true)),
             };
 
             if (!acceptanceTest)
             {
-                meshConfig.RootCertificate = GetCertificate(configuration, "MeshConfiguration:RootCertificate", true);
+                meshConfig.RootCertificate = GetCertificate(configuration, "meshConfiguration:rootCertificate", true);
 
                 meshConfig.IntermediateCertificates = GetCertificates(
-                    configuration, "MeshConfiguration:IntermediateCertificates", false);
+                    configuration, "meshConfiguration:intermediateCertificates", false);
 
-                meshConfig.ClientCertificate = GetCertificate(configuration, "MeshConfiguration:ClientCertificate", true);
+                meshConfig.ClientCertificate = GetCertificate(configuration, "meshConfiguration:clientCertificate", true);
             }
 
             services.AddSingleton(meshConfig);

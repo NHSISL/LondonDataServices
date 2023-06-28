@@ -34,7 +34,6 @@ export const pdsViewService = {
                 }
             }, [response.data]);
 
-
             return {
                 mappedPds, ...response
             }

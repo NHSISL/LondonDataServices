@@ -29,10 +29,6 @@ const PdsUploadDetail: FunctionComponent<PdsUploadDetailProps> = (props) => {
 
             const pds = new Pds(pdsData);
 
-            console.log(Guid.create());
-
-            console.log(pds);
-
             return addPds.mutateAsync(pds, {
                 onSuccess: () => {
                     console.log(pds);

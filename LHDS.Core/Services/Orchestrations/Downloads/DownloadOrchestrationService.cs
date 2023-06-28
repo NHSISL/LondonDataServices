@@ -122,6 +122,15 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                                 return newIngestionTracking.DecryptedFileName;
                             }
+                            else
+                            {
+                                DateTimeOffset currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                                maybeIngestionTracking.LastSeen = currentDateTime;
+                                maybeIngestionTracking.UpdatedDate = currentDateTime;
+
+                                await this.ingestionTrackingService
+                                    .ModifyIngestionTrackingAsync(maybeIngestionTracking);
+                            }
 
                             return null;
                         });
@@ -137,6 +146,20 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         Console.WriteLine($"Unable to land document: {document.FileName}");
                         exceptions.Add(ex);
                     }
+                }
+
+                List<IngestionTracking> unavailableIngestionTrackings =
+                    this.ingestionTrackingService.RetrieveAllIngestionTrackings()
+                        .Where(ingestionTracking =>
+                            ingestionTracking.LastSeen <=
+                                this.dateTimeBroker.GetCurrentDateTimeOffset().AddMinutes(-15)).ToList();
+
+                foreach (var item in unavailableIngestionTrackings)
+                {
+                    item.FileDeleted = true;
+                    item.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                    await this.ingestionTrackingService.ModifyIngestionTrackingAsync(item);
                 }
 
                 if (exceptions.Any())

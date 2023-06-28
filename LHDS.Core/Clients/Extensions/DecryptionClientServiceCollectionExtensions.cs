@@ -77,8 +77,8 @@ namespace LHDS.Core.Clients.Extensions
 
             if (!acceptanceTest)
             {
-                var blobServiceUri = GetSettings(configuration, "BlobStorage:azureBlobServiceUri", true);
-                var azureTenantId = GetSettings(configuration, "BlobStorage:azureTenantId", true);
+                var blobServiceUri = GetSettings(configuration, "blobStorage:azureBlobServiceUri", true);
+                var azureTenantId = GetSettings(configuration, "blobStorage:azureTenantId", true);
 
                 var blobServiceClientOptions = new BlobClientOptions()
                 {

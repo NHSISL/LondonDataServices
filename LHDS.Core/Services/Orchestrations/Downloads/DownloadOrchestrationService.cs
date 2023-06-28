@@ -124,7 +124,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                             }
                             else
                             {
-                                maybeIngestionTracking.LastSeen = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                                DateTimeOffset currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                                maybeIngestionTracking.LastSeen = currentDateTime;
+                                maybeIngestionTracking.UpdatedDate = currentDateTime;
 
                                 await this.ingestionTrackingService
                                     .ModifyIngestionTrackingAsync(maybeIngestionTracking);

@@ -15,11 +15,13 @@ using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.OptOuts;
+using LHDS.Core.Services.Foundations.PdsAudits;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Processings.OptOuts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -170,6 +172,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IAuditService, AuditService>();
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IOptOutService, OptOutService>();
+            services.AddTransient<IPdsAuditService, PdsAuditService>();
 
             var blobServiceUri = GetSettings(configuration, "blobStorage:azureBlobServiceUri", true);
             var azureTenantId = GetSettings(configuration, "blobStorage:azureTenantId", true);
@@ -208,6 +211,7 @@ namespace LHDS.AdminPortal.Api
             builder.EntitySet<IngestionTracking>("IngestionTrackings");
             builder.EntitySet<Supplier>("Suppliers");
             builder.EntitySet<Audit>("Audits");
+            builder.EntitySet<PdsAudit>("PdsAudits");
             builder.EnableLowerCamelCase();
 
             return builder.GetEdmModel();
@@ -231,7 +235,10 @@ namespace LHDS.AdminPortal.Api
 
     internal static class StartupExtensions
     {
-        public static IAzureClientBuilder<BlobServiceClient, BlobClientOptions> AddBlobServiceClient(this AzureClientFactoryBuilder builder, string serviceUriOrConnectionString, bool preferMsi)
+        public static IAzureClientBuilder<BlobServiceClient, BlobClientOptions> AddBlobServiceClient(
+            this AzureClientFactoryBuilder builder,
+            string serviceUriOrConnectionString,
+            bool preferMsi)
         {
             if (preferMsi && Uri.TryCreate(serviceUriOrConnectionString, UriKind.Absolute, out Uri serviceUri))
             {

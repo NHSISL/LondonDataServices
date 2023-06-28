@@ -24,9 +24,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             List<Document> randomDocuments = CreateRandomDocuments();
             List<Document> externalDocuments = randomDocuments;
+            List<IngestionTracking> externalIngestionTrackingsFound = new List<IngestionTracking>();
 
-            List<IngestionTracking> externalIngestionTrackingsFound =
-                new List<IngestionTracking>();
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTime);
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifier())
@@ -45,10 +47,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 this.downloadServiceMock.Setup(service =>
                   service.RetrieveDownloadByFileNameAsync(document.FileName))
                       .ReturnsAsync(document);
-
-                this.dateTimeBrokerMock.Setup(broker =>
-                    broker.GetCurrentDateTimeOffset())
-                        .Returns(randomDateTime);
 
                 var filename = document.FileName.StartsWith('/')
                     ? document.FileName
@@ -97,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             {
                 this.ingestionTrackingServiceMock.Verify(service =>
                     service.RetrieveAllIngestionTrackings(),
-                        Times.Once);
+                        Times.Exactly(2));
 
                 this.dateTimeBrokerMock.Verify(broker =>
                     broker.GetCurrentDateTimeOffset(),
@@ -178,6 +176,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                service.RetrieveListOfDocumentsToProcessAsync())
                    .ReturnsAsync(externalDocuments);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTime);
+
             foreach (var document in externalDocuments)
             {
                 this.ingestionTrackingServiceMock.Setup(service =>
@@ -197,6 +199,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             {
                 this.ingestionTrackingServiceMock.Verify(service =>
                     service.RetrieveAllIngestionTrackings(),
+                        Times.Exactly(2));
+
+                this.dateTimeBrokerMock.Verify(broker =>
+                    broker.GetCurrentDateTimeOffset(),
+                        Times.AtLeastOnce);
+
+                var maybeIngestionTracking = externalIngestionTrackingsFound
+                    .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == document.FileName);
+
+                maybeIngestionTracking.LastSeen = randomDateTime;
+
+                this.ingestionTrackingServiceMock.Verify(broker =>
+                    broker.ModifyIngestionTrackingAsync(maybeIngestionTracking),
                         Times.Once);
             }
 
@@ -346,7 +361,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             await this.downloadOrchestrationService.ProcessAsync(newIngestionTracking.FileName);
 
             // then
-
             this.downloadServiceMock.Verify(service =>
                 service.RetrieveDownloadByFileNameAsync(newIngestionTracking.FileName),
                     Times.Once);
@@ -377,6 +391,83 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             this.auditServiceMock.Verify(service =>
                 service.AddAuditAsync(It.IsAny<Audit>()),
                     Times.Once);
+
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldMarkUnavailableFilesAsDeletedAsync()
+        {
+            // given
+            Guid randomGuid = Guid.NewGuid();
+            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+            List<Document> externalDocuments = new List<Document>();
+
+            List<IngestionTracking> externalIngestionTrackingsFound = new List<IngestionTracking>
+            {
+                new IngestionTracking
+                {
+                    Id = Guid.NewGuid(),
+                    SupplierId = this.landingConfiguration.LandingSupplierId,
+                    FileName = "test.txt",
+                    EncryptedFileName = "/encrypted/test.txt",
+                    DecryptedFileName = "/decrypted/test.txt",
+                    Decrypted = true,
+                    LastSeen = randomDateTime.AddMinutes(-20),
+                    FileDeleted = false,
+                }
+            };
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTime);
+
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifier())
+                    .Returns(randomGuid);
+
+            this.downloadServiceMock.Setup(service =>
+               service.RetrieveListOfDocumentsToProcessAsync())
+                   .ReturnsAsync(externalDocuments);
+
+            this.ingestionTrackingServiceMock.Setup(service =>
+                service.RetrieveAllIngestionTrackings())
+                    .Returns(externalIngestionTrackingsFound.AsQueryable());
+
+            // when
+            await this.downloadOrchestrationService.ProcessAsync();
+
+            // then
+            this.downloadServiceMock.Verify(service =>
+                service.RetrieveListOfDocumentsToProcessAsync(),
+                    Times.Once);
+
+            DateTimeOffset expireTime = randomDateTime.AddMinutes(-15);
+
+            List<IngestionTracking> expiredIngestionTrackings = externalIngestionTrackingsFound
+                .Where(ingestionTracking => ingestionTracking.LastSeen <= expireTime).ToList();
+
+            this.ingestionTrackingServiceMock.Verify(service =>
+                service.RetrieveAllIngestionTrackings(),
+                    Times.Once);
+
+            foreach (var ingestionTracking in expiredIngestionTrackings)
+            {
+                this.dateTimeBrokerMock.Verify(broker =>
+                    broker.GetCurrentDateTimeOffset(),
+                        Times.Exactly(expiredIngestionTrackings.Count + 1));
+
+                ingestionTracking.FileDeleted = true;
+                ingestionTracking.UpdatedDate = randomDateTime;
+
+                this.ingestionTrackingServiceMock.Verify(service =>
+                    service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(
+                        ingestionTracking))),
+                            Times.Once);
+            }
 
             this.documentServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

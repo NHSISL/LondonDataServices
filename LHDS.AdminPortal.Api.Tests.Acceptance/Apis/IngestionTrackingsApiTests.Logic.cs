@@ -55,8 +55,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
             foreach (IngestionTracking expectedIngestionTracking in expectedIngestionTrackings)
             {
                 IngestionTracking actualIngestionTracking =
-                    actualIngestionTrackings.Single(approval =>
-                        approval.Id == expectedIngestionTracking.Id);
+                    actualIngestionTrackings.Single(ingestionTracking =>
+                        ingestionTracking.Id == expectedIngestionTracking.Id);
 
                 actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
                 await DeleteAuditRecordsAsync(actualIngestionTracking);

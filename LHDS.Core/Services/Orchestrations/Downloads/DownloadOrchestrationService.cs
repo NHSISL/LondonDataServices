@@ -146,6 +146,20 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     }
                 }
 
+                List<IngestionTracking> unavailableIngestionTrackings =
+                    this.ingestionTrackingService.RetrieveAllIngestionTrackings()
+                        .Where(ingestionTracking =>
+                            ingestionTracking.LastSeen <=
+                                this.dateTimeBroker.GetCurrentDateTimeOffset().AddMinutes(-15)).ToList();
+
+                foreach (var item in unavailableIngestionTrackings)
+                {
+                    item.FileDeleted = true;
+                    item.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                    await this.ingestionTrackingService.ModifyIngestionTrackingAsync(item);
+                }
+
                 if (exceptions.Any())
                 {
                     throw new AggregateException($"Unable to land {exceptions.Count} document(s)", exceptions);

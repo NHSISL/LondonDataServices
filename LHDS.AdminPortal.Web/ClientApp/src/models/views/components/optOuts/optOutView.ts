@@ -4,27 +4,27 @@ export class OptOutView {
     public id: Guid;
     public nhsNumber: string;
     public status: string;
-    public uniqueReference: string;
-    public batchReference: number;
-    public cacheTime: Date;
-    public lastSentToMesh: Date;
+    public cacheTime: Date | undefined;
+    public lastSentToMesh: Date | undefined;
+    public uniqueReference?: string;
+    public batchReference?: number;
     public createdBy?: string;
-    public createdDate?: Date;
+    public createdDate?: Date | undefined;
     public updatedBy?: string;
-    public updatedDate?: Date;
+    public updatedDate?: Date | undefined;
 
     constructor(
         id: Guid,
         nhsNumber: string,
         status: string,
-        uniqueReference: string,
-        batchReference: number,
-        cacheTime: Date,
-        lastSentToMesh: Date,
+        cacheTime: Date | undefined,
+        lastSentToMesh: Date | undefined,
+        uniqueReference?: string,
+        batchReference?: number,
         createdBy?: string,
-        createdDate?: Date,
+        createdDate?: Date | undefined,
         updatedBy?: string,
-        updatedDate?: Date) 
+        updatedDate?: Date | undefined) 
     {
         this.id = id;
         this.nhsNumber = nhsNumber || "";

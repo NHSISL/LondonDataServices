@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                key: "FileName",
                values: "Text is required");
 
-            var expectedDownloadOrchestrationFileNameValidationException =
+            var expectedDownloadOrchestrationValidationException =
                 new DownloadOrchestrationValidationException(
                     innerException: invalidArgumentDownloadOrchestrationException);
 
@@ -34,16 +34,57 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             ValueTask<string> DownloadTask =
                 this.downloadOrchestrationService.ProcessAsync(invalidText);
 
+            DownloadOrchestrationValidationException actualDownloadOrchestrationValidationException =
+                await Assert.ThrowsAsync<DownloadOrchestrationValidationException>(DownloadTask.AsTask);
+
+            // then
+            actualDownloadOrchestrationValidationException.Should()
+                .BeEquivalentTo(expectedDownloadOrchestrationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDownloadOrchestrationValidationException))),
+                        Times.Once);
+
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldNotProcessNamedDocumentsIfDownloadIsNullAsync()
+        {
+            // given
+
+            string randomFileName = GetRandomString();
+            string inputFileName = randomFileName;
+
+            var notFoundDownloadOrchestrationException =
+                new NotFoundDownloadOrchestrationException(fileName: inputFileName);
+
+            var expectedDownloadOrchestrationValidationException =
+                new DownloadOrchestrationValidationException(
+                    innerException: notFoundDownloadOrchestrationException);
+
+            this.downloadServiceMock.Setup(service =>
+                  service.RetrieveDownloadByFileNameAsync(inputFileName))
+                      .Returns(null);
+
+            // when
+            ValueTask<string> DownloadTask = this.downloadOrchestrationService.ProcessAsync(inputFileName);
+
             DownloadOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<DownloadOrchestrationValidationException>(DownloadTask.AsTask);
 
             // then
-            actualException.Should()
-                .BeEquivalentTo(expectedDownloadOrchestrationFileNameValidationException);
+            this.downloadServiceMock.Verify(service =>
+                service.RetrieveDownloadByFileNameAsync(inputFileName),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    expectedDownloadOrchestrationFileNameValidationException))),
+                    expectedDownloadOrchestrationValidationException))),
                         Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();

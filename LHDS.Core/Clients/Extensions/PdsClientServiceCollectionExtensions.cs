@@ -81,7 +81,6 @@ namespace LHDS.Core.Clients.Extensions
                 MexOSName = GetSettings(configuration, "MeshConfiguration:MexOSName", true),
                 MexOSVersion = GetSettings(configuration, "MeshConfiguration:MexOSVersion", true),
 
-
                 MaxChunkSizeInMegabytes = int.Parse(
                     GetSettings(configuration, "MeshConfiguration:MaxChunkSizeInMegabytes", true)),
             };

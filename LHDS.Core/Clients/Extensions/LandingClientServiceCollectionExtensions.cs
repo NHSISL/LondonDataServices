@@ -71,6 +71,15 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
 
+            var landingConfiguration = new LandingConfiguration
+            {
+                LandingSupplierId = Guid.Parse(GetSettings(configuration, "LandingSettings:LandingSupplierId", true)),
+                EncryptedFolder = GetSettings(configuration, "LandingSettings:EncryptedFolder", true),
+                DecryptedFolder = GetSettings(configuration, "LandingSettings:DecryptedFolder", true),
+            };
+
+            services.AddSingleton(landingConfiguration);
+
             if (!acceptanceTest)
             {
                 services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
@@ -86,15 +95,6 @@ namespace LHDS.Core.Clients.Extensions
                     Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
                     EnableTenantDiscovery = true
                 };
-
-                var landingConfiguration = new LandingConfiguration
-                {
-                    LandingSupplierId = Guid.Parse(GetSettings(configuration, "LandingSettings:LandingSupplierId", true)),
-                    EncryptedFolder = GetSettings(configuration, "LandingSettings:EncryptedFolder", true),
-                    DecryptedFolder = GetSettings(configuration, "LandingSettings:DecryptedFolder", true),
-                };
-
-                services.AddSingleton(landingConfiguration);
 
                 services.AddSingleton(
                     new BlobServiceClient(

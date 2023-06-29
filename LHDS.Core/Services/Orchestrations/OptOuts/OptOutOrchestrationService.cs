@@ -121,12 +121,17 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 bool withHeader = false;
                 bool shouldAddTrailingComma = this.optOutConfiguration.OptOutFileRequireTrailingComma;
 
-                List<OptOut> mappedOptOuts = await
+                List<OptOut> expiredOptOuts = await
                     this.optOutProcessingService
                         .RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays);
 
+                if (!expiredOptOuts.Any())
+                {
+                    return null;
+                }
+
                 List<OptOutIdentifier> mappedOptOutIdentifiers =
-                    mappedOptOuts.Select(optout => new OptOutIdentifier
+                    expiredOptOuts.Select(optout => new OptOutIdentifier
                     {
                         NhsNumber = optout.NhsNumber,
                         UniqueReference = optout.UniqueReference,
@@ -150,7 +155,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     contentEncoding: string.Empty,
                     accept: "application/json");
 
-                foreach (var optOut in mappedOptOuts)
+                foreach (var optOut in expiredOptOuts)
                 {
                     var dateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
                     optOut.LastSentToMesh = dateTime;

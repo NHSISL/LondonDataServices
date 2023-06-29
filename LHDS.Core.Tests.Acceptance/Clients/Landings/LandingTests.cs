@@ -5,20 +5,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using LHDS.Core.Brokers.CsvMappers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Downloads;
-using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Downloads;
-using LHDS.Core.Models.Orchestrations.OptOuts;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using Microsoft.Extensions.Configuration;
@@ -58,7 +52,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables();
+                .AddEnvironmentVariables("LHDS_ACCEPTANCE_");
 
             IConfiguration configuration = configurationBuilder.Build();
             var serviceCollection = new ServiceCollection();

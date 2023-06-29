@@ -22,9 +22,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         {
             //Given
             string fileName = GetRandomString();
-            //string encryptedFileName = GetRandomString();
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
-
             byte[] encryptedData = await this.cryptographyProvider.EncryptAsync(documentData);
 
             Document document = new Document
@@ -72,7 +70,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                     Times.Once());
 
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
-
 
             this.downloadBrokerMock.VerifyNoOtherCalls();
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

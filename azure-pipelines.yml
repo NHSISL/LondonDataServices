@@ -7,14 +7,11 @@ trigger:
 - main
 
 variables:
-  - group: my-variable-group  
-  - name: solution
-    value: '**/*.sln'
-  # Agent VM image name
-  - name: vmImage
-    value: ubuntu-latest
-  - name: webProjectName
-    value: 'LHDS.AdminPortal.Web'
+variables:
+  group: my-variable-group
+  solution: '**/*.sln'
+  vmImage: ubuntu-latest
+  webProjectName: 'LHDS.AdminPortal.Web'
 
 steps:
   - task: UseDotNet@2

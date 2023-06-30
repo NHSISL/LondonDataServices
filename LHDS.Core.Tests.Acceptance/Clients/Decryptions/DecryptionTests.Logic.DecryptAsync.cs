@@ -74,6 +74,5 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             this.downloadBrokerMock.VerifyNoOtherCalls();
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
         }
-
     }
 }

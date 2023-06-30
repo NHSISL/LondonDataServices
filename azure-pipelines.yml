@@ -7,7 +7,6 @@ trigger:
 - main
 
 variables:
-variables:
   group: my-variable-group
   solution: '**/*.sln'
   vmImage: ubuntu-latest

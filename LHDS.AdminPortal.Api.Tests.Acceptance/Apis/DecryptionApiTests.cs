@@ -28,62 +28,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Decryptions
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static Audit UpdateAuditWithRandomValues(Audit inputAudit)
-        {
-            DateTimeOffset now = DateTimeOffset.UtcNow;
-            var filler = new Filler<Audit>();
-
-            filler.Setup()
-                .OnProperty(audit => audit.Id).Use(inputAudit.Id)
-                .OnProperty(audit => audit.IngestionTrackingId).Use(inputAudit.IngestionTrackingId)
-                .OnType<DateTimeOffset>().Use(GetRandomDateTime())
-                .OnProperty(audit => audit.CreatedDate).Use(inputAudit.CreatedDate)
-                .OnProperty(audit => audit.CreatedBy).Use(inputAudit.CreatedBy)
-                .OnProperty(audit => audit.UpdatedDate).Use(now);
-            return filler.Create();
-        }
-
-        private async ValueTask<Audit> PostRandomAuditAsync(Guid ingestionTrackingId)
-        {
-            Audit randomAudit = CreateRandomAudit(ingestionTrackingId);
-            await this.apiBroker.PostAuditAsync(randomAudit);
-
-            return randomAudit;
-        }
-
-        private async ValueTask<List<Audit>> PostRandomDecryptionsAsync(Guid ingestionTrackingId)
-        {
-            int randomNumber = GetRandomNumber();
-            var randomDecryptions = new List<Audit>();
-
-            for (int i = 0; i < randomNumber; i++)
-            {
-                randomDecryptions.Add(await PostRandomAuditAsync(ingestionTrackingId));
-            }
-
-            return randomDecryptions;
-        }
-
-        private static Audit CreateRandomAudit(Guid ingestionTrackingId) =>
-            CreateRandomAuditFiller(ingestionTrackingId).Create();
-
-        private static Filler<Audit> CreateRandomAuditFiller(Guid ingestionTrackingId)
-        {
-            string user = Guid.NewGuid().ToString();
-            DateTime now = DateTime.UtcNow;
-            var filler = new Filler<Audit>();
-
-            filler.Setup()
-                .OnType<DateTimeOffset>().Use(now)
-                .OnProperty(audit => audit.IngestionTrackingId).Use(ingestionTrackingId)
-                .OnProperty(audit => audit.CreatedDate).Use(now)
-                .OnProperty(audit => audit.CreatedBy).Use(user)
-                .OnProperty(audit => audit.UpdatedDate).Use(now)
-                .OnProperty(audit => audit.UpdatedBy).Use(user);
-
-            return filler;
-        }
-
         private async ValueTask<IngestionTracking> PostRandomIngestionTrackingAsync(Guid supplierId)
         {
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(supplierId);
@@ -91,6 +35,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Decryptions
 
             return randomIngestionTracking;
         }
+
+        private string GetRandomGuidString() => Guid.NewGuid().ToString();
 
         private static IngestionTracking CreateRandomIngestionTracking(Guid supplierId) =>
             CreateRandomIngestionTrackingFiller(supplierId).Create();

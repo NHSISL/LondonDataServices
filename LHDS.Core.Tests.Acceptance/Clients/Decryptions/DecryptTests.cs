@@ -67,6 +67,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             });
 
             serviceCollection.AddDecryptionClientForAcceptance(configuration);
+
             serviceCollection
                 .AddTransient<IDownloadBroker>(serviceProvider => downloadBrokerMock.Object)
                 .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
@@ -75,7 +76,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.auditService = serviceProvider.GetService<IAuditService>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
-            //this.landingConfiguration = serviceProvider.GetService<LandingConfiguration>();
             this.landingConfiguration = serviceProvider.GetRequiredService<IOptions<LandingConfiguration>>().Value;
             this.cryptographyProvider = serviceProvider.GetRequiredService<ICryptographyProvider>();
             decryptionClient = serviceProvider.GetService<IDecryptionClient>();

@@ -134,6 +134,5 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             this.downloadBrokerMock.VerifyNoOtherCalls();
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
         }
-
     }
 }

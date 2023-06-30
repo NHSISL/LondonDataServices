@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
 using Moq;
@@ -136,6 +137,39 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     processing.AddOrModifyOptOutAsync(optOut),
                         Times.Once());
             }
+
+            this.optOutProcessingServiceMock.VerifyNoOtherCalls();
+            this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldNotPushExpiredOptOutsToMeshForRenewalStatusIfNoExpiredRecordsAsync()
+        {
+            // Given
+            DateTimeOffset randomDate = GetRandomDateTimeOffset();
+            DateTimeOffset currentDateTime = randomDate;
+            bool withHeader = false;
+            bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
+            List<OptOut> randomOptOuts = new List<OptOut>();
+            List<OptOut> outputOptOuts = randomOptOuts;
+            MeshMessage expectedMessage = null;
+
+            var processedOutputString = GetRandomString();
+
+            this.optOutProcessingServiceMock.Setup(processing =>
+                processing.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays))
+                    .ReturnsAsync(outputOptOuts);
+
+            // When
+            MeshMessage actualMessage = await this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
+
+            // Then
+            actualMessage.Should().BeEquivalentTo(expectedMessage);
+
+            this.optOutProcessingServiceMock.Verify(processings =>
+                processings.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays),
+                    Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();
             this.csvMapperProcessingServiceMock.VerifyNoOtherCalls();

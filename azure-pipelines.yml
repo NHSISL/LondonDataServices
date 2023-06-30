@@ -7,7 +7,7 @@ trigger:
 - main
 
 variables:
-  group: my-variable-group
+  group: global-variables
   solution: '**/*.sln'
   vmImage: ubuntu-latest
   webProjectName: 'LHDS.AdminPortal.Web'

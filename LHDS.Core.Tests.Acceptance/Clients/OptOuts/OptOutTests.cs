@@ -5,10 +5,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using LHDS.Core.Brokers.CsvMappers;
 using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
@@ -55,7 +53,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables();
+                .AddEnvironmentVariables("LHDS_ACCEPTANCE_");
 
             IConfiguration configuration = configurationBuilder.Build();
             var serviceCollection = new ServiceCollection();
@@ -103,8 +101,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
                     NhsNumber = GenerateValidNhsNumber(),
                     Status = "Unknown",
                     UniqueReference = reference.ToString(),
-                    CacheTime = dateTimeOffset.AddDays(- 50),
-                    LastSentToMesh = dateTimeOffset.AddDays(- 50),
+                    CacheTime = dateTimeOffset.AddDays(-50),
+                    LastSentToMesh = dateTimeOffset.AddDays(-50),
                     CreatedDate = dateTimeOffset.AddSeconds(i),
                     CreatedBy = "System",
                     UpdatedDate = dateTimeOffset.AddSeconds(i),

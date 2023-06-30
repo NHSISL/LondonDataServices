@@ -3,44 +3,77 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using Xunit;
 
-namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
+namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Decryptions
 {
     public partial class DecryptionsApiTests
     {
         [Fact]
         public async Task ShouldDecryptFileAsync()
         {
-            // given
-            string randomFileName = GetRandomGuidString();
-            string inputFileName = randomFileName;
-            string expectedFileName = inputFileName;
+            [Fact]
+            public async Task ShouldDecryptFileAsync()
+            {
+                //Given
+                Supplier randomSupplier = await PostRandomSupplierAsync();
+                IngestionTracking randomIngestionTracking = await PostRandomIngestionTrackingAsync(randomSupplier.Id);
+                await DeleteAuditRecordsAsync(randomIngestionTracking);
+                string randomFileName = GetRandomString();
 
-            // when
-            await this.apiBroker.DecryptFileAsync(inputFileName);
+                Document document = new Document
+                {
+                    DocumentData = encryptedData,
+                    FileName = randomFileName
+                };
 
-            // Check that the file is decrypted successfully. This might be a method in your service 
-            // that confirms the file has been decrypted, depending on your specific implementation.
-            bool isDecrypted = await this.apiBroker.IsFileDecryptedAsync(inputFileName);
+                IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
+                    dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                    document,
+                    supplierId: this.landingConfiguration.LandingSupplierId);
 
-            // then
-            isDecrypted.Should().BeTrue();
+                await this.apiBroker.AddIngestionTrackingAsync(ingestionTracking);
 
-            // Clean up any necessary resources here.
+                this.blobStorageBrokerMock.Setup(broker =>
+                    broker.SelectByFileNameAsync(ingestionTracking.EncryptedFileName))
+                        .ReturnsAsync(encryptedData);
+
+                //When
+                await this.apiBroker.DecryptFileAsync(randomFileName);
+
+                //Then
+                bool isDecrypted = await this.apiBroker.IsFileDecryptedAsync(randomFileName);
+
+                isDecrypted.Should().BeTrue();
+
+                var audits = this.apiBroker.RetrieveAllAudits()
+                    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+
+                foreach (var audit in audits)
+                {
+                    await this.apiBroker.RemoveAuditByIdAsync(audit.Id);
+                }
+
+                IngestionTracking decryptedIngestionTracking =
+                    await this.apiBroker.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id);
+
+                await this.apiBroker.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+            }
+
         }
 
         [Fact]
         public async Task ShouldNotDecryptNonExistentFileAsync()
         {
             // given
-            string nonExistentFileName = GetRandomGuidString();
+            string nonExistentFileName = GetRandomString();
 
             // when
             Func<Task> decryptFunc = async () => { await this.apiBroker.DecryptFileAsync(nonExistentFileName); };
@@ -53,7 +86,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
         public async Task ShouldThrowOnDecryptionServiceExceptionAsync()
         {
             // given
-            string fileNameCausingServiceException = GetRandomGuidString();
+            string fileNameCausingServiceException = GetRandomString();
 
             // when
             Func<Task> decryptFunc = async () => { await this.apiBroker.DecryptFileAsync(fileNameCausingServiceException); };
@@ -66,7 +99,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
         public async Task ShouldThrowOnDecryptionDependencyExceptionAsync()
         {
             // given
-            string fileNameCausingDependencyException = GetRandomGuidString();
+            string fileNameCausingDependencyException = GetRandomString();
 
             // when
             Func<Task> decryptFunc = async () => { await this.apiBroker.DecryptFileAsync(fileNameCausingDependencyException); };

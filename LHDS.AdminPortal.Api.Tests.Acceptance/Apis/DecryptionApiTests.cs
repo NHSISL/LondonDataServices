@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Decryptions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using Tynamix.ObjectFiller;
@@ -22,8 +21,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Decryptions
         public DecryptionsApiTests(ApiBroker apiBroker) =>
             this.apiBroker = apiBroker;
 
-        private int GetRandomNumber() =>
+        private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
+
+        private static string GetRandomString() =>
+            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
@@ -35,8 +37,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Decryptions
 
             return randomIngestionTracking;
         }
-
-        private string GetRandomGuidString() => Guid.NewGuid().ToString();
 
         private static IngestionTracking CreateRandomIngestionTracking(Guid supplierId) =>
             CreateRandomIngestionTrackingFiller(supplierId).Create();

@@ -45,23 +45,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         public PdsOrchestrationTests()
         {
             var appSettingsStub = new Dictionary<string, string> {
-                { "PdsSettings:InputFolder", GetRandomString() },
-                { "PdsSettings:PdsFileHasHeader", "false" },
-                { "PdsSettings:OutputFolder", GetRandomString() },
-                { "PdsSettings:PdsFileRequireTrailingComma", "true" },
-                { "PdsSettings:To", GetRandomString() },
-                { "PdsSettings:WorkflowId", GetRandomString() },
-                { "MeshConfiguration:MailboxId", GetRandomString() },
-                { "MeshConfiguration:Password", GetRandomString() },
-                { "MeshConfiguration:Key", GetRandomString() },
-                { "MeshConfiguration:Url", GetRandomString() },
-                { "MeshConfiguration:MexClientVersion", GetRandomString() },
-                { "MeshConfiguration:MexOSName", GetRandomString() },
-                { "MeshConfiguration:MexOSVersion", GetRandomString() },
-                { "MeshConfiguration:RootCertificate", null },
-                { "MeshConfiguration:IntermediateCertificates", null },
-                { "MeshConfiguration:ClientCertificate", null },
-                { "MeshConfiguration:WorkflowId", GetRandomString() }
+                { "pdsSettings:inputFolder", GetRandomString() },
+                { "pdsSettings:pdsFileHasHeader", "false" },
+                { "pdsSettings:outputFolder", GetRandomString() },
+                { "pdsSettings:pdsFileRequireTrailingComma", "true" },
+                { "pdsSettings:to", GetRandomString() },
+                { "pdsSettings:workflowId", GetRandomString() },
+                { "meshConfiguration:mailboxId", GetRandomString() },
+                { "meshConfiguration:password", GetRandomString() },
+                { "meshConfiguration:key", GetRandomString() },
+                { "meshConfiguration:url", GetRandomString() },
+                { "meshConfiguration:mexClientVersion", GetRandomString() },
+                { "meshConfiguration:mexOSName", GetRandomString() },
+                { "meshConfiguration:mexOSVersion", GetRandomString() },
+                { "meshConfiguration:rootCertificate", null },
+                { "meshConfiguration:intermediateCertificates", null },
+                { "meshConfiguration:clientCertificate", null },
+                { "meshConfiguration:workflowId", GetRandomString() }
             };
 
             this.inMemoryConfiguration = new ConfigurationBuilder()
@@ -70,15 +70,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.pdsConfiguration = new PdsConfiguration
             {
-                InputFolder = inMemoryConfiguration["PdsSettings:InputFolder"],
-                PdsFileHasHeader = bool.Parse(inMemoryConfiguration["PdsSettings:PdsFileHasHeader"]),
-                OutputFolder = inMemoryConfiguration["PdsSettings:OutputFolder"],
+                InputFolder = inMemoryConfiguration["pdsSettings:inputFolder"],
+                PdsFileHasHeader = bool.Parse(inMemoryConfiguration["pdsSettings:pdsFileHasHeader"]),
+                OutputFolder = inMemoryConfiguration["pdsSettings:outputFolder"],
 
                 PdsFileRequireTrailingComma =
-                    bool.Parse(inMemoryConfiguration["PdsSettings:PdsFileRequireTrailingComma"]),
+                    bool.Parse(inMemoryConfiguration["pdsSettings:pdsFileRequireTrailingComma"]),
 
-                To = inMemoryConfiguration["PdsSettings:InputFolder"],
-                WorkflowId = inMemoryConfiguration["PdsSettings:WorkflowId"],
+                To = inMemoryConfiguration["pdsSettings:inputFolder"],
+                WorkflowId = inMemoryConfiguration["pdsSettings:workflowId"],
 
             };
 

@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Integration.Decryptions
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables();
+                .AddEnvironmentVariables("LHDS_INTEGRATION_");
 
             IConfiguration configuration = configurationBuilder.Build();
 

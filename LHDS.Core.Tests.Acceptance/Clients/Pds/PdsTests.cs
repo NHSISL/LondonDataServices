@@ -2,28 +2,28 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.Core.Brokers.Identifiers;
-using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Orchestrations.Pds;
 using LHDS.Core.Services.Foundations.PdsAudits;
-using Microsoft.Extensions.Configuration;
+using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
 using Tynamix.ObjectFiller;
+using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Pds
 {
+    [Collection(nameof(CoreTestCollection))]
     public partial class PdsTests
     {
+        private readonly DependencyBroker dependencyBroker;
         private readonly Mock<IMeshBroker> meshBrokerMock;
         private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
         private readonly IdentifierBroker identifierBroker;
@@ -31,46 +31,19 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         private readonly PdsConfiguration pdsConfiguration;
         private readonly IPdsAuditService pdsAuditService;
 
-        public PdsTests()
+        public PdsTests(DependencyBroker dependencyBroker)
         {
+            this.dependencyBroker = dependencyBroker;
             this.meshBrokerMock = new Mock<IMeshBroker>();
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
             this.identifierBroker = new IdentifierBroker();
 
-            string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var args = Environment.GetCommandLineArgs();
-            var environmentArg = args.FirstOrDefault(arg => arg.StartsWith("--environment="));
-
-            var environmentName = !string.IsNullOrEmpty(aspNetCoreEnvironment)
-                ? aspNetCoreEnvironment
-                : !string.IsNullOrEmpty(environmentArg)
-                    ? environmentArg
-                    : "Development";
-
-            var configurationBuilder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables("LHDS_ACCEPTANCE_");
-
-            IConfiguration configuration = configurationBuilder.Build();
-            var serviceCollection = new ServiceCollection();
-
-            var loggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder.AddConsole();
-            });
-
-            var logger = loggerFactory.CreateLogger<LoggingBroker>();
-            serviceCollection.AddTransient(serviceProvider => logger);
-            serviceCollection.AddPdsClientForAcceptance(configuration);
-
-            serviceCollection
+            this.dependencyBroker.ServiceCollection
                 .AddTransient<IMeshBroker>(serviceProvider => meshBrokerMock.Object)
                 .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-
+            this.dependencyBroker.ServiceCollection.AddPdsClientForAcceptance(this.dependencyBroker.Configuration);
+            var serviceProvider = this.dependencyBroker.ServiceCollection.BuildServiceProvider();
             this.pdsConfiguration = serviceProvider.GetService<PdsConfiguration>();
             this.pdsClient = serviceProvider.GetService<IPdsClient>();
             this.pdsAuditService = serviceProvider.GetService<IPdsAuditService>();

@@ -4,7 +4,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Downloads;
 using LHDS.Core.Brokers.Storages.Blobs;
@@ -15,14 +15,15 @@ using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
-using Microsoft.Extensions.Configuration;
+using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 {
+    [Collection(nameof(CoreTestCollection))]
     public partial class LandingTests
     {
         private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
@@ -33,41 +34,21 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         private readonly LandingConfiguration landingConfiguration;
         private readonly IAuditService auditService;
 
-        public LandingTests()
+        private readonly DependencyBroker dependencyBroker;
+
+        public LandingTests(DependencyBroker dependencyBroker)
         {
+            this.dependencyBroker = dependencyBroker;
+
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
             this.downloadBrokerMock = new Mock<IDownloadBroker>();
 
-            string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var args = Environment.GetCommandLineArgs();
-            var environmentArg = args.FirstOrDefault(arg => arg.StartsWith("--environment="));
-
-            var environmentName = !string.IsNullOrEmpty(aspNetCoreEnvironment)
-                ? aspNetCoreEnvironment
-                : !string.IsNullOrEmpty(environmentArg)
-                    ? environmentArg
-                    : "Development";
-
-            var configurationBuilder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables("LHDS_ACCEPTANCE_");
-
-            IConfiguration configuration = configurationBuilder.Build();
-            var serviceCollection = new ServiceCollection();
-
-            serviceCollection.AddLogging(builder =>
-            {
-                builder.AddConsole();
-            });
-
-            serviceCollection.AddLandingClientForAcceptance(configuration);
-            serviceCollection
+            this.dependencyBroker.ServiceCollection
                 .AddTransient<IDownloadBroker>(serviceProvider => downloadBrokerMock.Object)
                 .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
+            this.dependencyBroker.ServiceCollection.AddLandingClientForAcceptance(this.dependencyBroker.Configuration);
+            var serviceProvider = this.dependencyBroker.ServiceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.auditService = serviceProvider.GetService<IAuditService>();
             this.landingConfiguration = serviceProvider.GetService<LandingConfiguration>();

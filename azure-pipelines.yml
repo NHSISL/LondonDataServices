@@ -7,8 +7,8 @@ trigger:
 - main
 
 variables:
+  group: global-variables
   solution: '**/*.sln'
-  # Agent VM image name
   vmImage: ubuntu-latest
   webProjectName: 'LHDS.AdminPortal.Web'
 

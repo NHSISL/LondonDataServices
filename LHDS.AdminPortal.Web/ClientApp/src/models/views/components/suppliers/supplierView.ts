@@ -6,6 +6,7 @@ export class SupplierView {
     public friendlyName?: string;
     public description?: string;
     public landingManualTriggerUrl?: string;
+    public decryptionManualTriggerUrl?: string;
     public createdBy?: string;
     public createdDate?: Date;
     public updatedBy?: string;
@@ -17,6 +18,7 @@ export class SupplierView {
         friendlyName?: string,
         description?: string,
         landingManualTriggerUrl?: string,
+        decryptionManualTriggerUrl?: string,
         createdBy?: string,
         createdDate?: Date,
         updatedBy?: string,
@@ -28,6 +30,7 @@ export class SupplierView {
         this.friendlyName = friendlyName || "";
         this.description = description || "";
         this.landingManualTriggerUrl = landingManualTriggerUrl || "";
+        this.decryptionManualTriggerUrl = decryptionManualTriggerUrl || ""
         this.createdBy = createdBy || "";
         this.createdDate = createdDate ;
         this.updatedBy = updatedBy || "";

@@ -51,50 +51,51 @@ namespace LHDS.Core.Clients.Extensions
             IConfiguration configuration,
             bool acceptanceTest)
         {
-            var blobServiceUri = GetSettings(configuration, "BlobStorage:azureBlobServiceUri", true);
-            var azureTenantId = GetSettings(configuration, "BlobStorage:azureTenantId", true);
+            var blobServiceUri = GetSettings(configuration, "blobStorage:azureBlobServiceUri", true);
+            var azureTenantId = GetSettings(configuration, "blobStorage:azureTenantId", true);
 
             services.AddSingleton<IConfiguration>(_ => configuration);
             var pdsConfiguration = new PdsConfiguration
             {
-                InputFolder = GetSettings(configuration, "PdsSettings:InputFolder", true),
+                InputFolder = GetSettings(configuration, "pdsSettings:inputFolder", true),
 
                 PdsFileHasHeader =
-                    bool.Parse(GetSettings(configuration, "PdsSettings:PdsFileHasHeader", true)),
+                    bool.Parse(GetSettings(configuration, "pdsSettings:pdsFileHasHeader", true)),
 
-                OutputFolder = GetSettings(configuration, "PdsSettings:OutputFolder"),
+                OutputFolder = GetSettings(configuration, "pdsSettings:outputFolder"),
 
                 PdsFileRequireTrailingComma =
-                    bool.Parse(GetSettings(configuration, "PdsSettings:PdsFileRequireTrailingComma", true)),
+                    bool.Parse(GetSettings(configuration, "pdsSettings:pdsFileRequireTrailingComma", true)),
 
-                To = GetSettings(configuration, "PdsSettings:To"),
-                WorkflowId = GetSettings(configuration, "PdsSettings:WorkflowId"),
+                To = GetSettings(configuration, "pdsSettings:to"),
+                WorkflowId = GetSettings(configuration, "pdsSettings:workflowId"),
             };
 
             var meshConfig = new MeshConfiguration
             {
-                MailboxId = GetSettings(configuration, "MeshConfiguration:MailboxId", true),
-                Password = GetSettings(configuration, "MeshConfiguration:Password", true),
-                Key = GetSettings(configuration, "MeshConfiguration:Key", true),
-                Url = GetSettings(configuration, "MeshConfiguration:Url", true),
-                MexClientVersion = GetSettings(configuration, "MeshConfiguration:MexClientVersion", true),
-                MexOSName = GetSettings(configuration, "MeshConfiguration:MexOSName", true),
-                MexOSVersion = GetSettings(configuration, "MeshConfiguration:MexOSVersion", true),
+                MailboxId = GetSettings(configuration, "meshConfiguration:mailboxId", true),
+                Password = GetSettings(configuration, "meshConfiguration:password", true),
+                Key = GetSettings(configuration, "meshConfiguration:key", true),
+                Url = GetSettings(configuration, "meshConfiguration:url", true),
+                MexClientVersion = GetSettings(configuration, "meshConfiguration:mexClientVersion", true),
+                MexOSName = GetSettings(configuration, "meshConfiguration:mexOSName", true),
+                MexOSVersion = GetSettings(configuration, "meshConfiguration:mexOSVersion", true),
+
 
                 MaxChunkSizeInMegabytes = int.Parse(
-                    GetSettings(configuration, "MeshConfiguration:MaxChunkSizeInMegabytes", true)),
+                    GetSettings(configuration, "meshConfiguration:maxChunkSizeInMegabytes", true)),
             };
 
             if (!acceptanceTest)
             {
                 meshConfig.RootCertificate =
-                    GetCertificate(configuration, "MeshConfiguration:RootCertificate", true);
+                    GetCertificate(configuration, "meshConfiguration:rootCertificate", true);
 
                 meshConfig.IntermediateCertificates =
-                    GetCertificates(configuration, "MeshConfiguration:IntermediateCertificates", false);
+                    GetCertificates(configuration, "meshConfiguration:intermediateCertificates", false);
 
                 meshConfig.ClientCertificate =
-                    GetCertificate(configuration, "MeshConfiguration:ClientCertificate", true);
+                    GetCertificate(configuration, "meshConfiguration:clientCertificate", true);
             }
 
             services.AddSingleton(meshConfig);

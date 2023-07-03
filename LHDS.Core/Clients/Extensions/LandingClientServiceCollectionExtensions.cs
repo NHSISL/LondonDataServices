@@ -73,9 +73,9 @@ namespace LHDS.Core.Clients.Extensions
 
             var landingConfiguration = new LandingConfiguration
             {
-                LandingSupplierId = Guid.Parse(GetSettings(configuration, "LandingSettings:LandingSupplierId", true)),
-                EncryptedFolder = GetSettings(configuration, "LandingSettings:EncryptedFolder", true),
-                DecryptedFolder = GetSettings(configuration, "LandingSettings:DecryptedFolder", true),
+                LandingSupplierId = Guid.Parse(GetSettings(configuration, "landingSettings:landingSupplierId", true)),
+                EncryptedFolder = GetSettings(configuration, "landingSettings:encryptedFolder", true),
+                DecryptedFolder = GetSettings(configuration, "landingSettings:decryptedFolder", true),
             };
 
             services.AddSingleton(landingConfiguration);
@@ -86,8 +86,8 @@ namespace LHDS.Core.Clients.Extensions
                 services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
                 services.AddTransient<IDownloadBroker, DownloadBroker>();
 
-                var blobServiceUri = GetSettings(configuration, "BlobStorage:azureBlobServiceUri", true);
-                var azureTenantId = GetSettings(configuration, "BlobStorage:azureTenantId", true);
+                var blobServiceUri = GetSettings(configuration, "blobStorage:azureBlobServiceUri", true);
+                var azureTenantId = GetSettings(configuration, "blobStorage:azureTenantId", true);
 
                 var blobServiceClientOptions = new BlobClientOptions()
                 {

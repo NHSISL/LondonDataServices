@@ -20,9 +20,9 @@ export const Home = () => {
                         <Col width="full">
                             <div className="nhsuk-hero__wrapper app-hero__wrapper">
                                 <h1 className="nhsuk-u-margin-bottom-4">London Health Data Services</h1>
-                                <p className=" nhsuk-u-margin-bottom-1">
+                                <span className=" nhsuk-u-margin-bottom-1">
                                     <p className="nhsuk-body-l nhsuk-u-margin-bottom-1">Admin Portal</p>
-                                </p>
+                                </span>
                             </div>
                         </Col>
                         <Col width="one-third"></Col>
@@ -81,11 +81,21 @@ export const Home = () => {
                         <Card>
                             <Card.Content>
                                 <Card.Heading className="nhsuk-heading-m">
-                                    <Card.Link href="#" onClick={() => instance.loginRedirect(loginRequest)}>Login to continue.</Card.Link>
+                                        <Card.Link href="#" onClick={() => instance.loginRedirect(loginRequest)}>
+                                            Login to continue.
+                                        </Card.Link>
                                 </Card.Heading>
                                 <Card.Description>
                                     To unlock all the features of this system,
-                                    please <Button variant="link" className="linkCustom" onClick={() => instance.loginRedirect(loginRequest)}>Login</Button>.
+                                        please
+
+                                        <Button
+                                            variant="link"
+                                            className="linkCustom"
+                                            onClick={() => instance.loginRedirect(loginRequest)}>
+                                            Login
+                                        </Button>.
+
                                     For access requests, please contact your Manager.
                                 </Card.Description>
                             </Card.Content>

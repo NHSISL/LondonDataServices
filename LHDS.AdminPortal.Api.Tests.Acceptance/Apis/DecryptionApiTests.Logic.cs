@@ -3,8 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;

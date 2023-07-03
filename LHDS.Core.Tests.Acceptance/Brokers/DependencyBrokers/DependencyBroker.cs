@@ -6,14 +6,11 @@ using System;
 using System.Linq;
 using LHDS.Core.Brokers.Storages.Sql;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers
 {
     public class DependencyBroker
     {
-        public ServiceCollection ServiceCollection = new ServiceCollection();
         public readonly IConfiguration Configuration;
 
         public DependencyBroker()
@@ -38,11 +35,6 @@ namespace LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers
 
             var storageBroker = new StorageBroker(this.Configuration);
             bool canConnect = storageBroker.Database.CanConnect();
-
-            ServiceCollection.AddLogging(builder =>
-            {
-                builder.AddConsole();
-            });
         }
     }
 }

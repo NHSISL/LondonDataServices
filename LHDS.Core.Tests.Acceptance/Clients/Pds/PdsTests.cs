@@ -13,6 +13,7 @@ using LHDS.Core.Models.Orchestrations.Pds;
 using LHDS.Core.Services.Foundations.PdsAudits;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
 using Tynamix.ObjectFiller;
@@ -37,13 +38,19 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             this.meshBrokerMock = new Mock<IMeshBroker>();
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
             this.identifierBroker = new IdentifierBroker();
+            var serviceCollection = new ServiceCollection();
 
-            this.dependencyBroker.ServiceCollection
+            serviceCollection.AddLogging(builder =>
+            {
+                builder.AddConsole();
+            });
+
+            serviceCollection
                 .AddTransient<IMeshBroker>(serviceProvider => meshBrokerMock.Object)
                 .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
 
-            this.dependencyBroker.ServiceCollection.AddPdsClientForAcceptance(this.dependencyBroker.Configuration);
-            var serviceProvider = this.dependencyBroker.ServiceCollection.BuildServiceProvider();
+            serviceCollection.AddPdsClientForAcceptance(this.dependencyBroker.Configuration);
+            var serviceProvider = serviceCollection.BuildServiceProvider();
             this.pdsConfiguration = serviceProvider.GetService<PdsConfiguration>();
             this.pdsClient = serviceProvider.GetService<IPdsClient>();
             this.pdsAuditService = serviceProvider.GetService<IPdsAuditService>();

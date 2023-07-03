@@ -17,6 +17,7 @@ using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xunit;
@@ -42,13 +43,19 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
             this.downloadBrokerMock = new Mock<IDownloadBroker>();
+            var serviceCollection = new ServiceCollection();
 
-            this.dependencyBroker.ServiceCollection
+            serviceCollection.AddLogging(builder =>
+            {
+                builder.AddConsole();
+            });
+
+            serviceCollection
                 .AddTransient<IDownloadBroker>(serviceProvider => downloadBrokerMock.Object)
                 .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
 
-            this.dependencyBroker.ServiceCollection.AddLandingClientForAcceptance(this.dependencyBroker.Configuration);
-            var serviceProvider = this.dependencyBroker.ServiceCollection.BuildServiceProvider();
+            serviceCollection.AddLandingClientForAcceptance(this.dependencyBroker.Configuration);
+            var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.auditService = serviceProvider.GetService<IAuditService>();
             this.landingConfiguration = serviceProvider.GetService<LandingConfiguration>();

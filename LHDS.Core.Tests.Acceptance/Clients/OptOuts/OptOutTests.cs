@@ -18,6 +18,7 @@ using LHDS.Core.Models.Orchestrations.OptOuts;
 using LHDS.Core.Services.Foundations.OptOuts;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xunit;
@@ -42,13 +43,19 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             this.dependencyBroker = dependencyBroker;
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
             this.meshBrokerMock = new Mock<IMeshBroker>();
+            var serviceCollection = new ServiceCollection();
 
-            this.dependencyBroker.ServiceCollection
+            serviceCollection.AddLogging(builder =>
+            {
+                builder.AddConsole();
+            });
+
+            serviceCollection
                 .AddTransient<IMeshBroker>(serviceProvider => meshBrokerMock.Object)
                 .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
 
-            this.dependencyBroker.ServiceCollection.AddOptOutClientForAcceptance(this.dependencyBroker.Configuration);
-            var serviceProvider = this.dependencyBroker.ServiceCollection.BuildServiceProvider();
+            serviceCollection.AddOptOutClientForAcceptance(this.dependencyBroker.Configuration);
+            var serviceProvider = serviceCollection.BuildServiceProvider();
             this.optOutConfiguration = serviceProvider.GetService<OptOutConfiguration>();
             this.meshConfiguration = serviceProvider.GetService<MeshConfiguration>();
             this.csvMapperBroker = serviceProvider.GetService<ICsvMapperBroker>();

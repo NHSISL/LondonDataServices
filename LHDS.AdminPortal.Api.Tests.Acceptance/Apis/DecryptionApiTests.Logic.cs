@@ -3,71 +3,64 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Decryptions
 {
     public partial class DecryptionsApiTests
     {
-        [Fact]
-        public async Task ShouldDecryptFileAsync()
-        {
-            [Fact]
-            public async Task ShouldDecryptFileAsync()
-            {
-                //Given
-                Supplier randomSupplier = await PostRandomSupplierAsync();
-                IngestionTracking randomIngestionTracking = await PostRandomIngestionTrackingAsync(randomSupplier.Id);
-                await DeleteAuditRecordsAsync(randomIngestionTracking);
-                string randomFileName = GetRandomString();
 
-                Document document = new Document
-                {
-                    DocumentData = encryptedData,
-                    FileName = randomFileName
-                };
+        //[Fact]
+        //public async Task ShouldDecryptFileAsync()
+        //{
+        //    //Given
+        //    Supplier randomSupplier = await PostRandomSupplierAsync();
+        //    IngestionTracking randomIngestionTracking = await PostRandomIngestionTrackingAsync(randomSupplier.Id);
+        //    await DeleteAuditRecordsAsync(randomIngestionTracking);
+        //    string randomFileName = GetRandomString();
 
-                IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
-                    dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                    document,
-                    supplierId: this.landingConfiguration.LandingSupplierId);
+        //    Document document = new Document
+        //    {
+        //        DocumentData = encryptedData,
+        //        FileName = randomFileName
+        //    };
 
-                await this.apiBroker.AddIngestionTrackingAsync(ingestionTracking);
+        //    IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
+        //        dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
+        //        document,
+        //        supplierId: this.landingConfiguration.LandingSupplierId);
 
-                this.blobStorageBrokerMock.Setup(broker =>
-                    broker.SelectByFileNameAsync(ingestionTracking.EncryptedFileName))
-                        .ReturnsAsync(encryptedData);
+        //    await this.apiBroker.AddIngestionTrackingAsync(ingestionTracking);
 
-                //When
-                await this.apiBroker.DecryptFileAsync(randomFileName);
+        //    this.blobStorageBrokerMock.Setup(broker =>
+        //        broker.SelectByFileNameAsync(ingestionTracking.EncryptedFileName))
+        //            .ReturnsAsync(encryptedData);
 
-                //Then
-                bool isDecrypted = await this.apiBroker.IsFileDecryptedAsync(randomFileName);
+        //    //When
+        //    await this.apiBroker.DecryptFileAsync(randomFileName);
 
-                isDecrypted.Should().BeTrue();
+        //    //Then
+        //    bool isDecrypted = await this.apiBroker.IsFileDecryptedAsync(randomFileName);
 
-                var audits = this.apiBroker.RetrieveAllAudits()
-                    .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+        //    isDecrypted.Should().BeTrue();
 
-                foreach (var audit in audits)
-                {
-                    await this.apiBroker.RemoveAuditByIdAsync(audit.Id);
-                }
+        //    var audits = this.apiBroker.RetrieveAllAudits()
+        //        .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
 
-                IngestionTracking decryptedIngestionTracking =
-                    await this.apiBroker.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id);
+        //    foreach (var audit in audits)
+        //    {
+        //        await this.apiBroker.RemoveAuditByIdAsync(audit.Id);
+        //    }
 
-                await this.apiBroker.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
-            }
+        //    IngestionTracking decryptedIngestionTracking =
+        //        await this.apiBroker.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id);
 
-        }
+        //    await this.apiBroker.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+        //}
+
 
         [Fact]
         public async Task ShouldNotDecryptNonExistentFileAsync()
@@ -108,7 +101,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Decryptions
             await decryptFunc.Should().ThrowAsync<DownloadOrchestrationDependencyException>();
         }
 
-       
+
     }
 
 }

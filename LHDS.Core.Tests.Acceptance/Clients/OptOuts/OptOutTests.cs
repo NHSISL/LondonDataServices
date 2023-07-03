@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.Core.Brokers.CsvMappers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Mesh;
@@ -15,16 +16,19 @@ using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts;
 using LHDS.Core.Services.Foundations.OptOuts;
-using Microsoft.Extensions.Configuration;
+using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 {
+    [Collection(nameof(CoreTestCollection))]
     public partial class OptOutTests
     {
+        private readonly DependencyBroker dependencyBroker;
         private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
         private readonly Mock<IMeshBroker> meshBrokerMock;
         private readonly IOptOutClient optOutClient;
@@ -34,28 +38,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IOptOutService optOutService;
 
-        public OptOutTests()
+        public OptOutTests(DependencyBroker dependencyBroker)
         {
+            this.dependencyBroker = dependencyBroker;
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
             this.meshBrokerMock = new Mock<IMeshBroker>();
-
-            string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var args = Environment.GetCommandLineArgs();
-            var environmentArg = args.FirstOrDefault(arg => arg.StartsWith("--environment="));
-
-            var environmentName = !string.IsNullOrEmpty(aspNetCoreEnvironment)
-                ? aspNetCoreEnvironment
-                : !string.IsNullOrEmpty(environmentArg)
-                    ? environmentArg
-                    : "Development";
-
-            var configurationBuilder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables("LHDS_ACCEPTANCE_");
-
-            IConfiguration configuration = configurationBuilder.Build();
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddLogging(builder =>
@@ -63,12 +50,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
                 builder.AddConsole();
             });
 
-            serviceCollection.AddOptOutClientForAcceptance(configuration);
-
             serviceCollection
                 .AddTransient<IMeshBroker>(serviceProvider => meshBrokerMock.Object)
                 .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
 
+            serviceCollection.AddOptOutClientForAcceptance(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.optOutConfiguration = serviceProvider.GetService<OptOutConfiguration>();
             this.meshConfiguration = serviceProvider.GetService<MeshConfiguration>();

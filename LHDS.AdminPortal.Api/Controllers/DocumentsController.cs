@@ -47,6 +47,5 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(documentServiceException);
             }
         }
-
     }
 }

@@ -3,8 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Downloads;
 using LHDS.Core.Brokers.Storages.Blobs;
@@ -16,18 +15,20 @@ using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
-using Microsoft.Extensions.Configuration;
+using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 {
+    [Collection(nameof(CoreTestCollection))]
     public partial class DecryptionTests
     {
-
+        private readonly DependencyBroker dependencyBroker
         private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
         private readonly Mock<IDownloadBroker> downloadBrokerMock;
         private readonly IDateTimeBroker dateTimeBroker;
@@ -37,28 +38,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         private readonly ICryptographyProvider cryptographyProvider;
         private readonly IAuditService auditService;
 
-        public DecryptionTests()
+        public DecryptionTests(DependencyBroker dependencyBroker)
         {
+            this.dependencyBroker = dependencyBroker;
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
             this.downloadBrokerMock = new Mock<IDownloadBroker>();
-
-            string aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var args = Environment.GetCommandLineArgs();
-            var environmentArg = args.FirstOrDefault(arg => arg.StartsWith("--environment="));
-
-            var environmentName = !string.IsNullOrEmpty(aspNetCoreEnvironment)
-                ? aspNetCoreEnvironment
-                : !string.IsNullOrEmpty(environmentArg)
-                    ? environmentArg
-                    : "Development";
-
-            var configurationBuilder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables();
-
-            IConfiguration configuration = configurationBuilder.Build();
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddLogging(builder =>
@@ -66,7 +50,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 builder.AddConsole();
             });
 
-            serviceCollection.AddDecryptionClientForAcceptance(configuration);
+            serviceCollection.AddDecryptionClientForAcceptance(this.dependencyBroker.Configuration);
 
             serviceCollection
                 .AddTransient<IDownloadBroker>(serviceProvider => downloadBrokerMock.Object)

@@ -13,6 +13,8 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.PdsAudits;
@@ -174,8 +176,8 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IOptOutService, OptOutService>();
             services.AddTransient<IPdsAuditService, PdsAuditService>();
 
-            var blobServiceUri = GetSettings(configuration, "blobStorage:azureBlobServiceUri", true);
-            var azureTenantId = GetSettings(configuration, "blobStorage:azureTenantId", true);
+            var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
+            ValidateBlobStorageSettings(blobStorageSettings);
 
             var blobServiceClientOptions = new BlobClientOptions()
             {
@@ -186,13 +188,49 @@ namespace LHDS.AdminPortal.Api
 
             services.AddSingleton(
                 new BlobServiceClient(
-                    serviceUri: new Uri(blobServiceUri),
+                    serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
                     credential: new DefaultAzureCredential(
                         new DefaultAzureCredentialOptions
                         {
-                            VisualStudioTenantId = azureTenantId,
+                            VisualStudioTenantId = blobStorageSettings.AzureTenantId,
                         }),
                     options: blobServiceClientOptions));
+        }
+
+        private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)
+        {
+            Validate(
+                (Rule: IsInvalid(blobStorageSettings.AzureBlobServiceUri),
+                    Parameter: "blobStorage__azureBlobServiceUri"),
+
+                (Rule: IsInvalid(blobStorageSettings.AzureTenantId),
+                    Parameter: "blobStorage__azureTenantId"),
+
+                (Rule: IsInvalid(blobStorageSettings.BlobContainerName),
+                    Parameter: "blobStorage__blobContainerName"));
+        }
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Configuration value does not exist"
+        };
+
+        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        {
+            var invalidConfigurationException = new InvalidConfigurationException();
+
+            foreach ((dynamic rule, string parameter) in validations)
+            {
+                if (rule.Condition)
+                {
+                    invalidConfigurationException.UpsertDataList(
+                        key: parameter,
+                        value: rule.Message);
+                }
+            }
+
+            invalidConfigurationException.ThrowIfContainsErrors();
         }
 
         private static void AddOrchestrationServices(IServiceCollection services, IConfiguration configuration)

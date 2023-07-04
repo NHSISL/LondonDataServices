@@ -13,6 +13,8 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Services.Foundations.Audits;
@@ -70,13 +72,8 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
-
-            var landingConfiguration = new LandingConfiguration
-            {
-                LandingSupplierId = Guid.Parse(GetSettings(configuration, "landingSettings:landingSupplierId", true)),
-                EncryptedFolder = GetSettings(configuration, "landingSettings:encryptedFolder", true),
-                DecryptedFolder = GetSettings(configuration, "landingSettings:decryptedFolder", true),
-            };
+            var landingConfiguration = configuration.GetSection("landingSettings").Get<LandingConfiguration>();
+            ValidateLandingConfiguration(landingConfiguration);
 
             services.AddSingleton(landingConfiguration);
 
@@ -86,8 +83,8 @@ namespace LHDS.Core.Clients.Extensions
                 services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
                 services.AddTransient<IDownloadBroker, DownloadBroker>();
 
-                var blobServiceUri = GetSettings(configuration, "blobStorage:azureBlobServiceUri", true);
-                var azureTenantId = GetSettings(configuration, "blobStorage:azureTenantId", true);
+                var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
+                ValidateBlobStorageSettings(blobStorageSettings);
 
                 var blobServiceClientOptions = new BlobClientOptions()
                 {
@@ -98,11 +95,11 @@ namespace LHDS.Core.Clients.Extensions
 
                 services.AddSingleton(
                     new BlobServiceClient(
-                        serviceUri: new Uri(blobServiceUri),
+                        serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
                         credential: new DefaultAzureCredential(
                             new DefaultAzureCredentialOptions
                             {
-                                VisualStudioTenantId = azureTenantId,
+                                VisualStudioTenantId = blobStorageSettings.AzureTenantId,
                             }),
                         options: blobServiceClientOptions));
 
@@ -132,19 +129,60 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ILandingClient, LandingClient>();
         }
 
-        private static string GetSettings(IConfiguration configuration, string configurationKey, bool mandatory = true)
+        private static void ValidateLandingConfiguration(LandingConfiguration landingConfiguration)
         {
-            var value = configuration[configurationKey];
+            Validate(
+                (Rule: IsInvalid(landingConfiguration.LandingSupplierId),
+                    Parameter: "landingSettings__landingSupplierId"),
 
-            if (string.IsNullOrEmpty(value))
+                (Rule: IsInvalid(landingConfiguration.EncryptedFolder),
+                    Parameter: "landingSettings:encryptedFolder"),
+
+                (Rule: IsInvalid(landingConfiguration.DecryptedFolder),
+                    Parameter: "landingSettings:decryptedFolder"));
+        }
+
+        private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)
+        {
+            Validate(
+                (Rule: IsInvalid(blobStorageSettings.AzureBlobServiceUri),
+                    Parameter: "blobStorage__azureBlobServiceUri"),
+
+                (Rule: IsInvalid(blobStorageSettings.AzureTenantId),
+                    Parameter: "blobStorage__azureTenantId"),
+
+                (Rule: IsInvalid(blobStorageSettings.BlobContainerName),
+                    Parameter: "blobStorage__blobContainerName"));
+        }
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Configuration value does not exist"
+        };
+
+        private static dynamic IsInvalid(Guid id) => new
+        {
+            Condition = id == Guid.Empty,
+            Message = "IConfiguration value does not exist"
+        };
+
+        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        {
+            var invalidConfigurationException = new InvalidConfigurationException();
+
+            foreach ((dynamic rule, string parameter) in validations)
             {
-                if (mandatory)
+                if (rule.Condition)
                 {
-                    throw new Exception($"Configuration value {configurationKey} does not exist");
+                    invalidConfigurationException.UpsertDataList(
+                        key: parameter,
+                        value: rule.Message);
                 }
             }
 
-            return value;
+            invalidConfigurationException.ThrowIfContainsErrors();
         }
+
     }
 }

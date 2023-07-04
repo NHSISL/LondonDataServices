@@ -40,7 +40,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         public LandingTests(DependencyBroker dependencyBroker)
         {
             this.dependencyBroker = dependencyBroker;
-
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
             this.downloadBrokerMock = new Mock<IDownloadBroker>();
             var serviceCollection = new ServiceCollection();
@@ -78,8 +77,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
            Guid supplierId)
         {
             IngestionTracking ingestionTracking = CreateIngestionTrackingFiller(
-                dateTimeOffset, 
-                fileName: document.FileName, 
+                dateTimeOffset,
+                fileName: document.FileName,
                 supplierId)
                     .Create();
 

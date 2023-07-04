@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using LHDS.Core.Brokers.Storages.Sql;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers
@@ -33,7 +34,7 @@ namespace LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers
 
             this.Configuration = configurationBuilder.Build();
             var storageBroker = new StorageBroker(this.Configuration);
-            storageBroker.Database.EnsureCreated();
+            storageBroker.Database.Migrate();
             bool canConnect = storageBroker.Database.CanConnect();
         }
     }

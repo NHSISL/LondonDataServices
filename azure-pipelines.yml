@@ -90,14 +90,14 @@ steps:
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Build (API)"
     inputs:
-      command: 'publish'
+      command: 'build'
       projects: '**/LHDS.AdminPortal.Api.csproj'
       arguments: --output $(System.DefaultWorkingDirectory)/publish_output_website_api --configuration Release
 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Build (Frontend)"
     inputs:
-      command: 'publish'
+      command: 'build'
       projects: '**/LHDS.AdminPortal.Web.csproj'
       arguments: --output $(System.DefaultWorkingDirectory)/publish_output_website_frontend --configuration Release
 
@@ -142,16 +142,16 @@ steps:
   #    workingDir: $(webProjectName)/ClientApp
   #    customCommand: 'run test:ci'    
 
-  #- task: DotNetCoreCLI@2
-  #  displayName: "Dotnet Publish (Debug)"
-  #  condition: ne(variables['Build.Reason'], 'PullRequest')
-  #  inputs:
-  #    command: "publish"
-  #    publishWebProjects: true
-  #    projects: "**/*.csproj"
-  #    arguments: "-o $(Build.ArtifactStagingDirectory)/debug --configuration Debug"
-  #    zipAfterPublish: true
-  #    modifyOutputPath: true
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Publish (Debug)"
+    condition: ne(variables['Build.Reason'], 'PullRequest')
+    inputs:
+      command: "publish"
+      publishWebProjects: true
+      projects: "**/LDHS.AdminPortal.Web.csproj"
+      arguments: "-o $(Build.ArtifactStagingDirectory)/publish_output_development_frontend_website' --configuration Debug"
+      zipAfterPublish: true
+      modifyOutputPath: true
  
   #- task: DotNetCoreCLI@2
   #  displayName: "Dotnet Publish (Acceptance)"
@@ -197,10 +197,10 @@ steps:
     condition: ne(variables['Build.Reason'], 'PullRequest')  
     displayName: 'Archive files - Frontend'
     inputs:
-      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_website_frontend'
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_development_frontend_website'
       includeRootFolder: false
       archiveType: zip
-      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_website_frontend.zip
+      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_development_website_frontend.zip
       replaceExistingArchive: true
 
   - task: ArchiveFiles@2

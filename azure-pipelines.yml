@@ -149,7 +149,7 @@ steps:
       command: "publish"
       publishWebProjects: false
       projects: "**/LHDS.AdminPortal.Web.csproj"
-      arguments: "-o $(Build.ArtifactStagingDirectory)/publish_output_development_frontend_website --configuration Debug"
+      arguments: "-o $(System.DefaultWorkingDirectory)/publish_output_development_frontend_website --configuration Debug"
       zipAfterPublish: true
       modifyOutputPath: true
  
@@ -197,7 +197,7 @@ steps:
     condition: ne(variables['Build.Reason'], 'PullRequest')  
     displayName: 'Archive files - Frontend'
     inputs:
-      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_development_frontend_website/LHDS.AdminPortal.Web'
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_development_frontend_website/LHDS.AdminPortal.Web/'
       includeRootFolder: false
       archiveType: zip
       archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_development_website_frontend.zip

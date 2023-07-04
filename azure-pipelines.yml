@@ -149,9 +149,9 @@ steps:
       command: "publish"
       publishWebProjects: false
       projects: "**/LHDS.AdminPortal.Web.csproj"
-      arguments: "-o $(System.DefaultWorkingDirectory)/publish_output_development_frontend_website --configuration Debug"
+      arguments: "-o $(Build.ArtifactStagingDirectory)/publish_output_development_frontend_website --configuration Debug"
       zipAfterPublish: true
-      modifyOutputPath: true
+      modifyOutputPath: false
  
   #- task: DotNetCoreCLI@2
   #  displayName: "Dotnet Publish (Acceptance)"
@@ -183,25 +183,25 @@ steps:
   #    ArtifactName: 'drop'
   #    publishLocation: 'Container'
 
-  - task: ArchiveFiles@2
-    condition: ne(variables['Build.Reason'], 'PullRequest')  
-    displayName: 'Archive files - API'
-    inputs:
-      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_website_api'
-      includeRootFolder: false
-      archiveType: zip
-      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_website_api.zip
-      replaceExistingArchive: true
+  #- task: ArchiveFiles@2
+  #  condition: ne(variables['Build.Reason'], 'PullRequest')  
+  #  displayName: 'Archive files - API'
+  #  inputs:
+  #    rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_website_api'
+  #    includeRootFolder: false
+  #    archiveType: zip
+  #    archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_website_api.zip
+  #    replaceExistingArchive: true
 
-  - task: ArchiveFiles@2
-    condition: ne(variables['Build.Reason'], 'PullRequest')  
-    displayName: 'Archive files - Frontend'
-    inputs:
-      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_development_frontend_website/LHDS.AdminPortal.Web/'
-      includeRootFolder: false
-      archiveType: zip
-      archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_development_website_frontend.zip
-      replaceExistingArchive: true
+  #- task: ArchiveFiles@2
+  #  condition: ne(variables['Build.Reason'], 'PullRequest')  
+  #  displayName: 'Archive files - Frontend'
+  #  inputs:
+  #    rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_development_frontend_website/LHDS.AdminPortal.Web'
+  #    includeRootFolder: false
+  #    archiveType: zip
+  #    archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_development_website_frontend.zip
+  #    replaceExistingArchive: true
 
   - task: ArchiveFiles@2
     condition: ne(variables['Build.Reason'], 'PullRequest')  
@@ -238,7 +238,7 @@ steps:
     displayName: 'Publish Artifact - API'
     artifact: drop-api
 
-  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_website_frontend.zip
+  - publish: $(Build.ArtifactStagingDirectory)/publish_output_development_frontend_website
     condition: ne(variables['Build.Reason'], 'PullRequest')  
     displayName: 'Publish Artifact - Frontend'
     artifact: drop-frontend

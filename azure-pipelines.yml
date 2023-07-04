@@ -147,7 +147,7 @@ steps:
     condition: ne(variables['Build.Reason'], 'PullRequest')
     inputs:
       command: "publish"
-      publishWebProjects: true
+      publishWebProjects: false
       projects: "LDHS.AdminPortal.Web/LDHS.AdminPortal.Web.csproj"
       arguments: "-o $(Build.ArtifactStagingDirectory)/publish_output_development_frontend_website' --configuration Debug"
       zipAfterPublish: true

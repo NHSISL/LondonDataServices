@@ -9,7 +9,7 @@ using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using Xunit;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 
-namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Decryptions
+namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
 {
     public partial class DecryptionsApiTests
     {

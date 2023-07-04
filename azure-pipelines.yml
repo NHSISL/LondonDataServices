@@ -197,7 +197,7 @@ steps:
     condition: ne(variables['Build.Reason'], 'PullRequest')  
     displayName: 'Archive files - Frontend'
     inputs:
-      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_development_frontend_website'
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_development_frontend_website/LHDS.AdminPortal.Web'
       includeRootFolder: false
       archiveType: zip
       archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_development_website_frontend.zip

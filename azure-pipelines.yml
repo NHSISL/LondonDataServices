@@ -90,14 +90,14 @@ steps:
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Build (API)"
     inputs:
-      command: 'build'
+      command: 'publish'
       projects: '**/LHDS.AdminPortal.Api.csproj'
       arguments: --output $(System.DefaultWorkingDirectory)/publish_output_website_api --configuration Release
 
   - task: DotNetCoreCLI@2
     displayName: "Dotnet Build (Frontend)"
     inputs:
-      command: 'build'
+      command: 'publish'
       projects: '**/LHDS.AdminPortal.Web.csproj'
       arguments: --output $(System.DefaultWorkingDirectory)/publish_output_website_frontend --configuration Release
 

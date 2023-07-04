@@ -17,7 +17,7 @@ namespace LHDS.Core.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.7")
+                .HasAnnotation("ProductVersion", "7.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -249,14 +249,14 @@ namespace LHDS.Core.Migrations
                         {
                             Id = new Guid("67680f17-9d0c-4474-8b35-56ca8f9df1f6"),
                             CreatedBy = "System",
-                            CreatedDate = new DateTimeOffset(new DateTime(2023, 6, 19, 11, 10, 2, 273, DateTimeKind.Unspecified).AddTicks(7421), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedDate = new DateTimeOffset(new DateTime(2023, 7, 4, 9, 43, 10, 955, DateTimeKind.Unspecified).AddTicks(8577), new TimeSpan(0, 0, 0, 0, 0)),
                             DecryptionManualTriggerUrl = "Update this => environment specific",
                             Description = "Emis Supplier",
                             FriendlyName = "EMIS",
                             LandingManualTriggerUrl = "Update this => environment specific",
                             Name = "EMIS",
                             UpdatedBy = "System",
-                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 6, 19, 11, 10, 2, 273, DateTimeKind.Unspecified).AddTicks(7434), new TimeSpan(0, 0, 0, 0, 0))
+                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 7, 4, 9, 43, 10, 955, DateTimeKind.Unspecified).AddTicks(8588), new TimeSpan(0, 0, 0, 0, 0))
                         });
                 });
 

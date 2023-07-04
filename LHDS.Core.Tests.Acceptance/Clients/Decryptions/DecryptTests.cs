@@ -18,7 +18,6 @@ using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xunit;
@@ -60,7 +59,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.auditService = serviceProvider.GetService<IAuditService>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
-            this.landingConfiguration = serviceProvider.GetRequiredService<IOptions<LandingConfiguration>>().Value;
+            this.landingConfiguration = serviceProvider.GetRequiredService<LandingConfiguration>();
             this.cryptographyProvider = serviceProvider.GetRequiredService<ICryptographyProvider>();
             decryptionClient = serviceProvider.GetService<IDecryptionClient>();
         }

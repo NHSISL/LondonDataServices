@@ -56,10 +56,9 @@ namespace LHDS.Core.Clients.Extensions
             services.AddSingleton<IConfiguration>(_ => configuration);
             var landingConfiguration = configuration.GetSection("landingSettings").Get<LandingConfiguration>();
             ValidateLandingConfiguration(landingConfiguration);
+            services.AddSingleton<LandingConfiguration>(landingConfiguration);
 
-            services.AddSingleton(landingConfiguration);
-
-            AddProviders(services);
+            AddProviders(services, configuration);
             AddBrokers(services, configuration, acceptanceTest);
             AddServices(services);
             AddProcessingServices(services);
@@ -69,12 +68,16 @@ namespace LHDS.Core.Clients.Extensions
             return services;
         }
 
-        private static void AddProviders(IServiceCollection services)
+        private static void AddProviders(IServiceCollection services, IConfiguration configuration)
         {
+            IGpgCryptographyProviderSettings gpgCryptographyProviderSettings =
+                configuration.GetSection("cryptography").Get<GpgCryptographyProviderSettings>();
+
+            ValidateCryptographyProviderSettings(gpgCryptographyProviderSettings);
+            services.AddSingleton<IGpgCryptographyProviderSettings>(gpgCryptographyProviderSettings);
             services.AddTransient<IDownloadAbstractProvider, DownloadAbstractProvider>();
             services.AddTransient<ICryptographyAbstractProvider, CryptographyAbstractProvider>();
             services.AddTransient<ICryptographyProvider, GpgCryptographyProvider>();
-            services.AddTransient<IGpgCryptographyProviderSettings, GpgCryptographyProviderSettings>();
         }
 
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration, bool acceptanceTest)
@@ -136,6 +139,20 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDecryptionClient, DecryptionClient>();
         }
 
+        private static void ValidateCryptographyProviderSettings(
+            IGpgCryptographyProviderSettings cryptographyProviderSettings)
+        {
+            Validate(
+                (Rule: IsInvalid(cryptographyProviderSettings.PrivateKey),
+                    Parameter: "cryptography__privateKey"),
+
+                (Rule: IsInvalid(cryptographyProviderSettings.PublicKey),
+                    Parameter: "cryptography__publicKey"),
+
+                (Rule: IsInvalid(cryptographyProviderSettings.Passphrase),
+                    Parameter: "cryptography__passphrase"));
+        }
+
         private static void ValidateLandingConfiguration(LandingConfiguration landingConfiguration)
         {
             Validate(
@@ -162,7 +179,7 @@ namespace LHDS.Core.Clients.Extensions
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
-            Message = "IConfiguration value does not exist"
+            Message = "Configuration value does not exist"
         };
 
         private static dynamic IsInvalid(string text) => new

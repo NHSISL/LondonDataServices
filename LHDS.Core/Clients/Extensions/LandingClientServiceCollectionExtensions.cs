@@ -164,7 +164,7 @@ namespace LHDS.Core.Clients.Extensions
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
-            Message = "IConfiguration value does not exist"
+            Message = "Configuration value does not exist"
         };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

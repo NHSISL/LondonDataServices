@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
     [Collection(nameof(CoreTestCollection))]
     public partial class DecryptionTests
     {
-        private readonly DependencyBroker dependencyBroker
+        private readonly DependencyBroker dependencyBroker;
         private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
         private readonly Mock<IDownloadBroker> downloadBrokerMock;
         private readonly IDateTimeBroker dateTimeBroker;

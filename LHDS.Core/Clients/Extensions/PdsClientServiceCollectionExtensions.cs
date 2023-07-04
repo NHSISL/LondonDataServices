@@ -55,7 +55,10 @@ namespace LHDS.Core.Clients.Extensions
             bool acceptanceTest)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
-            var meshConfigurationSettings = configuration.GetSection("meshConfiguration").Get<MeshConfigurationSettings>();
+            
+            var meshConfigurationSettings = 
+                configuration.GetSection("meshConfiguration").Get<MeshConfigurationSettings>();
+            
             ValidateMeshConfigurationSettings(meshConfigurationSettings, acceptanceTest);
 
             var meshConfig = new MeshConfiguration

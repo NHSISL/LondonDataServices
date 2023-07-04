@@ -59,7 +59,10 @@ namespace LHDS.Core.Clients.Extensions
             bool acceptanceTest)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
-            var meshConfigurationSettings = configuration.GetSection("meshConfiguration").Get<MeshConfigurationSettings>();
+            
+            var meshConfigurationSettings = 
+                configuration.GetSection("meshConfiguration").Get<MeshConfigurationSettings>();
+            
             ValidateMeshConfigurationSettings(meshConfigurationSettings, acceptanceTest);
 
             var meshConfig = new MeshConfiguration
@@ -140,7 +143,6 @@ namespace LHDS.Core.Clients.Extensions
         {
             var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
             ValidateBlobStorageSettings(blobStorageSettings);
-
             var optOptOutConfiguration = configuration.GetSection("optOutSettings").Get<OptOutConfiguration>();
             ValidateOptOutConfigurationSettings(optOptOutConfiguration);
 
@@ -308,6 +310,5 @@ namespace LHDS.Core.Clients.Extensions
 
             invalidConfigurationException.ThrowIfContainsErrors();
         }
-
     }
 }

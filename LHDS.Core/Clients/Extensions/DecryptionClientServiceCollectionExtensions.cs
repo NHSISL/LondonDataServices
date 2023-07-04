@@ -14,6 +14,8 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Cryptography.Gpg;
@@ -52,7 +54,10 @@ namespace LHDS.Core.Clients.Extensions
             bool acceptanceTest)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
-            services.Configure<LandingConfiguration>(configuration.GetSection("LandingSettings"));
+            var landingConfiguration = configuration.GetSection("landingSettings").Get<LandingConfiguration>();
+            ValidateLandingConfiguration(landingConfiguration);
+
+            services.AddSingleton(landingConfiguration);
 
             AddProviders(services);
             AddBrokers(services, configuration, acceptanceTest);
@@ -82,8 +87,8 @@ namespace LHDS.Core.Clients.Extensions
 
             if (!acceptanceTest)
             {
-                var blobServiceUri = GetSettings(configuration, "blobStorage:azureBlobServiceUri", true);
-                var azureTenantId = GetSettings(configuration, "blobStorage:azureTenantId", true);
+                var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
+                ValidateBlobStorageSettings(blobStorageSettings);
 
                 var blobServiceClientOptions = new BlobClientOptions()
                 {
@@ -94,11 +99,11 @@ namespace LHDS.Core.Clients.Extensions
 
                 services.AddSingleton(
                     new BlobServiceClient(
-                        serviceUri: new Uri(blobServiceUri),
+                        serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
                         credential: new DefaultAzureCredential(
                             new DefaultAzureCredentialOptions
                             {
-                                VisualStudioTenantId = azureTenantId,
+                                VisualStudioTenantId = blobStorageSettings.AzureTenantId,
                             }),
                         options: blobServiceClientOptions));
 
@@ -131,19 +136,56 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDecryptionClient, DecryptionClient>();
         }
 
-        private static string GetSettings(IConfiguration configuration, string configurationKey, bool mandatory = true)
+        private static void ValidateLandingConfiguration(LandingConfiguration landingConfiguration)
         {
-            var value = configuration[configurationKey];
+            Validate(
+                (Rule: IsInvalid(landingConfiguration.LandingSupplierId),
+                    Parameter: "landingSettings__landingSupplierId"),
 
-            if (string.IsNullOrEmpty(value))
+                (Rule: IsInvalid(landingConfiguration.EncryptedFolder),
+                    Parameter: "landingSettings:encryptedFolder"),
+
+                (Rule: IsInvalid(landingConfiguration.DecryptedFolder),
+                    Parameter: "landingSettings:decryptedFolder"));
+        }
+
+        private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)
+        {
+            Validate(
+                (Rule: IsInvalid(blobStorageSettings.AzureBlobServiceUri),
+                    Parameter: "BlobStorageSettings__AzureBlobServiceUri"),
+
+                (Rule: IsInvalid(blobStorageSettings.AzureTenantId),
+                    Parameter: "BlobStorageSettings__AzureTenantId"));
+        }
+
+        private static dynamic IsInvalid(Guid id) => new
+        {
+            Condition = id == Guid.Empty,
+            Message = "IConfiguration value does not exist"
+        };
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Configuration value does not exist"
+        };
+
+        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        {
+            var invalidConfigurationException = new InvalidConfigurationException();
+
+            foreach ((dynamic rule, string parameter) in validations)
             {
-                if (mandatory)
+                if (rule.Condition)
                 {
-                    throw new Exception($"Configuration value {configurationKey} does not exist");
+                    invalidConfigurationException.UpsertDataList(
+                        key: parameter,
+                        value: rule.Message);
                 }
             }
 
-            return value;
+            invalidConfigurationException.ThrowIfContainsErrors();
         }
     }
 }

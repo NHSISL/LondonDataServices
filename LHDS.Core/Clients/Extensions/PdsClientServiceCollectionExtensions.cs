@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using Azure.Core.Pipeline;
@@ -17,6 +18,8 @@ using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Mesh;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Orchestrations.Pds;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.CsvMappers;
@@ -51,55 +54,36 @@ namespace LHDS.Core.Clients.Extensions
             IConfiguration configuration,
             bool acceptanceTest)
         {
-            var blobServiceUri = GetSettings(configuration, "blobStorage:azureBlobServiceUri", true);
-            var azureTenantId = GetSettings(configuration, "blobStorage:azureTenantId", true);
-
             services.AddSingleton<IConfiguration>(_ => configuration);
-            var pdsConfiguration = new PdsConfiguration
-            {
-                InputFolder = GetSettings(configuration, "pdsSettings:inputFolder", true),
-
-                PdsFileHasHeader =
-                    bool.Parse(GetSettings(configuration, "pdsSettings:pdsFileHasHeader", true)),
-
-                OutputFolder = GetSettings(configuration, "pdsSettings:outputFolder"),
-
-                PdsFileRequireTrailingComma =
-                    bool.Parse(GetSettings(configuration, "pdsSettings:pdsFileRequireTrailingComma", true)),
-
-                To = GetSettings(configuration, "pdsSettings:to"),
-                WorkflowId = GetSettings(configuration, "pdsSettings:workflowId"),
-            };
+            var meshConfigurationSettings = configuration.GetSection("meshConfiguration").Get<MeshConfigurationSettings>();
+            ValidateMeshConfigurationSettings(meshConfigurationSettings, acceptanceTest);
 
             var meshConfig = new MeshConfiguration
             {
-                MailboxId = GetSettings(configuration, "meshConfiguration:mailboxId", true),
-                Password = GetSettings(configuration, "meshConfiguration:password", true),
-                Key = GetSettings(configuration, "meshConfiguration:key", true),
-                Url = GetSettings(configuration, "meshConfiguration:url", true),
-                MexClientVersion = GetSettings(configuration, "meshConfiguration:mexClientVersion", true),
-                MexOSName = GetSettings(configuration, "meshConfiguration:mexOSName", true),
-                MexOSVersion = GetSettings(configuration, "meshConfiguration:mexOSVersion", true),
-
-
-                MaxChunkSizeInMegabytes = int.Parse(
-                    GetSettings(configuration, "meshConfiguration:maxChunkSizeInMegabytes", true)),
+                MailboxId = meshConfigurationSettings.MailboxId,
+                Password = meshConfigurationSettings.Password,
+                Key = meshConfigurationSettings.Key,
+                Url = meshConfigurationSettings.Url,
+                MexClientVersion = meshConfigurationSettings.MexClientVersion,
+                MexOSName = meshConfigurationSettings.MexOSName,
+                MexOSVersion = meshConfigurationSettings.MexOSVersion,
+                MaxChunkSizeInMegabytes = meshConfigurationSettings.MaxChunkSizeInMegabytes,
             };
 
             if (!acceptanceTest)
             {
                 meshConfig.RootCertificate =
-                    GetCertificate(configuration, "meshConfiguration:rootCertificate", true);
+                    GetCertificate(value: meshConfigurationSettings.RootCertificate);
 
                 meshConfig.IntermediateCertificates =
-                    GetCertificates(configuration, "meshConfiguration:intermediateCertificates", false);
+                    GetCertificates(values: meshConfigurationSettings.IntermediateCertificates);
 
                 meshConfig.ClientCertificate =
-                    GetCertificate(configuration, "meshConfiguration:clientCertificate", true);
+                    GetCertificate(value: meshConfigurationSettings.ClientCertificate);
             }
 
             services.AddSingleton(meshConfig);
-            AddClients(services, blobServiceUri, azureTenantId, pdsConfiguration);
+            AddClients(services, configuration);
             AddBrokers(services, acceptanceTest);
             AddOrchestrations(services);
             AddServices(services);
@@ -109,10 +93,14 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddClients(
             IServiceCollection services,
-            string blobServiceUri,
-            string azureTenantId,
-            PdsConfiguration pdsConfiguration)
+            IConfiguration configuration)
         {
+            var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
+            ValidateBlobStorageSettings(blobStorageSettings);
+
+            var pdsConfiguration = configuration.GetSection("pdsSettings").Get<PdsConfiguration>();
+            ValidatePdsConfigurationSettings(pdsConfiguration);
+
             var blobServiceClientOptions = new BlobClientOptions()
             {
                 Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
@@ -122,11 +110,11 @@ namespace LHDS.Core.Clients.Extensions
 
             services.AddSingleton(
                 new BlobServiceClient(
-                    serviceUri: new Uri(blobServiceUri),
+                    serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
                     credential: new DefaultAzureCredential(
                         new DefaultAzureCredentialOptions
                         {
-                            VisualStudioTenantId = azureTenantId,
+                            VisualStudioTenantId = blobStorageSettings.AzureTenantId,
                         }),
                     options: blobServiceClientOptions));
 
@@ -166,63 +154,139 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IPdsAuditService, PdsAuditService>();
         }
 
-        private static string GetSettings(IConfiguration configuration, string configurationKey, bool mandatory = true)
+        private static X509Certificate2 GetCertificate(string value)
         {
-            var value = configuration[configurationKey];
-
-            if (string.IsNullOrEmpty(value))
+            if (!string.IsNullOrEmpty(value))
             {
-                if (mandatory)
-                {
-                    throw new Exception($"Configuration value {configurationKey} does not exist");
-                }
+                byte[] certBytes = Convert.FromBase64String(value);
+
+                return new X509Certificate2(certBytes);
             }
 
-            return value;
+            return null;
         }
 
-        private static X509Certificate2 GetCertificate(IConfiguration configuration, string configurationKey, bool mandatory = true)
+        private static X509Certificate2Collection GetCertificates(List<string> values)
         {
-            var value = configuration[configurationKey];
-
-            if (string.IsNullOrEmpty(value))
-            {
-                if (mandatory)
-                {
-                    throw new Exception($"Configuration value {configurationKey} does not exist");
-                }
-            }
-
-            byte[] certBytes = Convert.FromBase64String(value);
-
-            return new X509Certificate2(certBytes);
-        }
-
-        private static X509Certificate2Collection GetCertificates(IConfiguration configuration, string configurationKey, bool mandatory = true)
-        {
-            List<string> intermediateCertificates =
-               configuration.GetSection(configurationKey)
-                   .Get<List<string>>();
-
-            if (intermediateCertificates == null)
-            {
-                intermediateCertificates = new List<string>();
-            }
-
-            if (mandatory && intermediateCertificates.Count == 0)
-            {
-                throw new Exception($"Configuration value {configurationKey} does not exist");
-            }
+            values ??= new List<string>();
 
             var certificates = new X509Certificate2Collection();
 
-            foreach (string item in intermediateCertificates)
+            if (values.Any())
             {
-                byte[] certBytes = Convert.FromBase64String(item);
-                certificates.Add(new X509Certificate2(certBytes));
+                foreach (string item in values)
+                {
+                    byte[] certBytes = Convert.FromBase64String(item);
+                    certificates.Add(new X509Certificate2(certBytes));
+                }
             }
 
             return certificates;
+        }
+
+        private static void ValidateMeshConfigurationSettings(
+            MeshConfigurationSettings meshConfigurationSettings,
+            bool acceptanceTest)
+        {
+            Validate(
+                (Rule: IsInvalid(meshConfigurationSettings.MailboxId),
+                    Parameter: "meshConfiguration__mailboxId"),
+
+                (Rule: IsInvalid(meshConfigurationSettings.Password),
+                    Parameter: "meshConfiguration__password"),
+
+                (Rule: IsInvalid(meshConfigurationSettings.Key),
+                    Parameter: "meshConfiguration__key"),
+
+                (Rule: IsInvalid(meshConfigurationSettings.Url),
+                    Parameter: "meshConfiguration__url"),
+
+                (Rule: IsInvalid(meshConfigurationSettings.MexClientVersion),
+                    Parameter: "meshConfiguration__mexClientVersion"),
+
+                (Rule: IsInvalid(meshConfigurationSettings.MexOSName),
+                    Parameter: "meshConfiguration__mexOSName"),
+
+                (Rule: IsInvalid(meshConfigurationSettings.MexOSVersion),
+                    Parameter: "meshConfiguration__mexOSVersion"));
+
+            if (acceptanceTest)
+            {
+                Validate(
+                    (Rule: IsInvalid(meshConfigurationSettings.RootCertificate),
+                        Parameter: "meshConfiguration__rootCertificate"),
+
+                    (Rule: IsInvalid(meshConfigurationSettings.Password),
+                        Parameter: "meshConfiguration__intermediateCertificates"),
+
+                    (Rule: IsInvalid(meshConfigurationSettings.MexOSVersion),
+                        Parameter: "meshConfiguration__clientCertificate"));
+            }
+        }
+
+        private static void ValidatePdsConfigurationSettings(PdsConfiguration pdsConfiguration)
+        {
+
+            Validate(
+                (Rule: IsInvalid(pdsConfiguration.InputFolder),
+                    Parameter: "pdsSettings__inputFolder"),
+
+                (Rule: IsInvalid(pdsConfiguration.OutputFolder),
+                    Parameter: "pdsSettings:outputFolder"),
+
+                (Rule: IsInvalid(pdsConfiguration.PdsFileHasHeader),
+                    Parameter: "pdsSettings__pdsFileHasHeader"),
+
+                (Rule: IsInvalid(pdsConfiguration.PdsFileRequireTrailingComma),
+                    Parameter: "pdsSettings__pdsFileRequireTrailingComma"),
+
+                (Rule: IsInvalid(pdsConfiguration.To),
+                    Parameter: "pdsSettings__to"),
+
+                (Rule: IsInvalid(pdsConfiguration.WorkflowId),
+                    Parameter: "pdsSettings__workflowId"));
+        }
+
+        private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)
+        {
+            Validate(
+                (Rule: IsInvalid(blobStorageSettings.AzureBlobServiceUri),
+                    Parameter: "blobStorage__azureBlobServiceUri"),
+
+                (Rule: IsInvalid(blobStorageSettings.AzureTenantId),
+                    Parameter: "blobStorage__azureTenantId"),
+
+                (Rule: IsInvalid(blobStorageSettings.BlobContainerName),
+                    Parameter: "blobStorage__blobContainerName"));
+        }
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Configuration value does not exist"
+        };
+
+        private static dynamic IsInvalid(bool value) => new
+        {
+            Condition = value == null,
+            Message = "Configuration value does not exist"
+        };
+
+        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        {
+            var invalidConfigurationException = new InvalidConfigurationException();
+
+            foreach ((dynamic rule, string parameter) in validations)
+            {
+                if (rule.Condition)
+                {
+                    invalidConfigurationException.UpsertDataList(
+                        key: parameter,
+                        value: rule.Message);
+                }
+            }
+
+            invalidConfigurationException.ThrowIfContainsErrors();
         }
     }
 }

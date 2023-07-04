@@ -149,7 +149,7 @@ steps:
       command: "publish"
       publishWebProjects: false
       projects: "**/LHDS.AdminPortal.Web.csproj"
-      arguments: "-o $(Build.ArtifactStagingDirectory)/publish_output_development_frontend_website' --configuration Debug"
+      arguments: "-o $(Build.ArtifactStagingDirectory)/publish_output_development_frontend_website --configuration Debug"
       zipAfterPublish: true
       modifyOutputPath: true
  

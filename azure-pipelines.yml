@@ -143,7 +143,7 @@ steps:
   #    customCommand: 'run test:ci'    
 
   - task: DotNetCoreCLI@2
-    displayName: "Dotnet Publish (Debug)"
+    displayName: "Dotnet Publish Frontend (Debug)"
     condition: ne(variables['Build.Reason'], 'PullRequest')
     inputs:
       command: "publish"
@@ -153,6 +153,17 @@ steps:
       zipAfterPublish: true
       modifyOutputPath: false
  
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Publish API (Debug)"
+    condition: ne(variables['Build.Reason'], 'PullRequest')
+    inputs:
+      command: "publish"
+      publishWebProjects: false
+      projects: "**/LHDS.AdminPortal.Api.csproj"
+      arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_development_api_website --configuration Debug"
+      zipAfterPublish: true
+      modifyOutputPath: false
+
   #- task: DotNetCoreCLI@2
   #  displayName: "Dotnet Publish (Acceptance)"
   #  condition: ne(variables['Build.Reason'], 'PullRequest')
@@ -233,10 +244,10 @@ steps:
       archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_pds_func.zip
       replaceExistingArchive: true
 
-  #- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_website_api.zip
-  #  condition: ne(variables['Build.Reason'], 'PullRequest')  
-  #  displayName: 'Publish Artifact - API'
-  #  artifact: drop-api
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_development_api_website
+    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    displayName: 'Publish Artifact - API'
+    artifact: drop-api
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_development_frontend_website
     condition: ne(variables['Build.Reason'], 'PullRequest')  

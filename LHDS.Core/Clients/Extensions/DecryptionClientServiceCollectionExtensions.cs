@@ -155,6 +155,11 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void ValidateLandingConfiguration(LandingConfiguration landingConfiguration)
         {
+            if (landingConfiguration == null)
+            {
+                throw new InvalidConfigurationException("Configuration section 'landingSettings' not defined.");
+            }
+
             Validate(
                 (Rule: IsInvalid(landingConfiguration.LandingSupplierId),
                     Parameter: "landingSettings__landingSupplierId"),

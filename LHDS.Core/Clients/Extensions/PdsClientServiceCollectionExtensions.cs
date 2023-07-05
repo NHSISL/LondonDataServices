@@ -55,10 +55,10 @@ namespace LHDS.Core.Clients.Extensions
             bool acceptanceTest)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
-            
-            var meshConfigurationSettings = 
+
+            var meshConfigurationSettings =
                 configuration.GetSection("meshConfiguration").Get<MeshConfigurationSettings>();
-            
+
             ValidateMeshConfigurationSettings(meshConfigurationSettings, acceptanceTest);
 
             var meshConfig = new MeshConfiguration
@@ -191,6 +191,12 @@ namespace LHDS.Core.Clients.Extensions
             MeshConfigurationSettings meshConfigurationSettings,
             bool acceptanceTest)
         {
+            if (meshConfigurationSettings == null)
+            {
+                throw new InvalidConfigurationException(
+                    "Configuration section 'meshConfiguration' not defined.");
+            }
+
             Validate(
                 (Rule: IsInvalid(meshConfigurationSettings.MailboxId),
                     Parameter: "meshConfiguration__mailboxId"),
@@ -229,6 +235,11 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void ValidatePdsConfigurationSettings(PdsConfiguration pdsConfiguration)
         {
+            if (pdsConfiguration == null)
+            {
+                throw new InvalidConfigurationException(
+                    "Configuration section 'pdsSettings' not defined.");
+            }
 
             Validate(
                 (Rule: IsInvalid(pdsConfiguration.InputFolder),
@@ -252,6 +263,12 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)
         {
+            if (blobStorageSettings == null)
+            {
+                throw new InvalidConfigurationException(
+                    "Configuration section 'blobStorage' not defined.");
+            }
+
             Validate(
                 (Rule: IsInvalid(blobStorageSettings.AzureBlobServiceUri),
                     Parameter: "blobStorage__azureBlobServiceUri"),

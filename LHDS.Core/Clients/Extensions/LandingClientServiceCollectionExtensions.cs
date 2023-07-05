@@ -131,6 +131,11 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void ValidateLandingConfiguration(LandingConfiguration landingConfiguration)
         {
+            if (landingConfiguration == null)
+            {
+                throw new InvalidConfigurationException("Configuration section 'landingSettings' not defined.");
+            }
+
             Validate(
                 (Rule: IsInvalid(landingConfiguration.LandingSupplierId),
                     Parameter: "landingSettings__landingSupplierId"),
@@ -144,6 +149,11 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)
         {
+            if (blobStorageSettings == null)
+            {
+                throw new InvalidConfigurationException("Configuration section 'blobStorage' not defined.");
+            }
+
             Validate(
                 (Rule: IsInvalid(blobStorageSettings.AzureBlobServiceUri),
                     Parameter: "blobStorage__azureBlobServiceUri"),
@@ -183,6 +193,5 @@ namespace LHDS.Core.Clients.Extensions
 
             invalidConfigurationException.ThrowIfContainsErrors();
         }
-
     }
 }

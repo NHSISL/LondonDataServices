@@ -7,12 +7,26 @@ trigger:
 - main
 
 variables:
-  group: global-variables
-  solution: '**/*.sln'
-  vmImage: ubuntu-latest
-  webProjectName: 'LHDS.AdminPortal.Web'
+  - group: global-variables
+  - name: solution
+    value: '**/*.sln'
+  - name: vmImage
+    value: 'ubuntu-latest'
+  - name: webProjectName
+    value: 'LHDS.AdminPortal.Web'
 
 steps:
+
+  - task: Bash@3
+    displayName: Print environment variables
+    inputs:
+      targetType: 'inline'
+      script: |
+        echo "The value of LHDS_CRYPTOGRAPHY__GPGPRIVATEKEY is $LHDS_CRYPTOGRAPHY__GPGPRIVATEKEY"
+        echo "The value of LHDS_CRYPTOGRAPHY__GPGPUBLICKEY is $LHDS_CRYPTOGRAPHY__GPGPUBLICKEY"
+        echo "The value of LHDS_CRYPTOGRAPHY__GPGPASSPHRASE is $LHDS_CRYPTOGRAPHY__GPGPASSPHRASE"
+        echo "The value of LHDS_MESHCONFIGURATION__MAILBOXID is $LHDS_MESHCONFIGURATION__MAILBOXID"
+
   - task: UseDotNet@2
     displayName: "Install .NET Core SDK"
     inputs:
@@ -72,16 +86,6 @@ steps:
             -p 1433:1433 --name sql1 --hostname sql1 \
             -d \
             mcr.microsoft.com/mssql/server:2022-latest
-
-  - task: Bash@3
-    displayName: Print environment variables
-    inputs:
-      targetType: 'inline'
-      script: |
-        echo "The value of LHDS_CRYPTOGRAPHY__GPGPRIVATEKEY is $LHDS_CRYPTOGRAPHY__GPGPRIVATEKEY"
-        echo "The value of LHDS_CRYPTOGRAPHY__GPGPUBLICKEY is $LHDS_CRYPTOGRAPHY__GPGPUBLICKEY"
-        echo "The value of LHDS_CRYPTOGRAPHY__GPGPASSPHRASE is $LHDS_CRYPTOGRAPHY__GPGPASSPHRASE"
-        echo "The value of LHDS_MESHCONFIGURATION__MAILBOXID is $LHDS_MESHCONFIGURATION__MAILBOXID"
 
   - task: DotNetCoreCLI@2
     displayName: C# Acceptance Tests

@@ -304,7 +304,8 @@ namespace LHDS.Core.Clients.Extensions
             {
                 if (rule.Condition)
                 {
-                    validationErrors.AppendLine($"{parameter}");
+                    validationErrors.AppendLine(
+                        $"{parameter} -> Configuration value does not exist or does not meet validation criteria");
 
                     if (errors.Contains(parameter))
                     {

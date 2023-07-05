@@ -25,8 +25,16 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
             string randomFileName = GetRandomString();
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
 
+            Document document = new Document
+            {
+                DocumentData = documentData,
+                FileName = randomFileName
+            };
+
             IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
                 supplierId: randomSupplier.Id);
+
+            ingestionTracking.EncryptedFileName = document.FileName;
 
             await this.apiBroker.PostIngestionTrackingAsync(ingestionTracking);
 

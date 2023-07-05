@@ -3,6 +3,9 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Text;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Providers.Downloads.Builders;
 using LHDS.Core.Providers.Downloads.FtpDownloads;
@@ -70,17 +73,29 @@ namespace LHDS.Core.Providers.Downloads.Extensions
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidConfigurationException = new InvalidConfigurationException();
+            StringBuilder validationErrors = new StringBuilder();
+            validationErrors.AppendLine("Configuration error(s):");
+            IDictionary errors = new Dictionary<string, List<string>>();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidConfigurationException.UpsertDataList(
-                        key: parameter,
-                        value: rule.Message);
+                    validationErrors.AppendLine($"{parameter}");
+
+                    if (errors.Contains(parameter))
+                    {
+                        (errors[parameter] as List<string>)?.Add(rule.Message);
+                        return;
+                    }
+
+                    errors.Add(parameter, new List<string> { rule.Message });
                 }
             }
+
+            var invalidConfigurationException = new InvalidConfigurationException(
+                message: validationErrors.ToString(),
+                data: errors);
 
             invalidConfigurationException.ThrowIfContainsErrors();
         }

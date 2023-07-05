@@ -22,7 +22,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
             //Given
             Supplier randomSupplier = await PostRandomSupplierAsync();
             IngestionTracking randomIngestionTracking = await PostRandomIngestionTrackingAsync(randomSupplier.Id);
-            await DeleteAuditRecordsAsync(randomIngestionTracking);
             string randomFileName = GetRandomString();
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
 
@@ -40,6 +39,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
 
             decryptedIngestionTracking.Decrypted.Should().BeTrue();
 
+            await DeleteAuditRecordsAsync(randomIngestionTracking);
             await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }

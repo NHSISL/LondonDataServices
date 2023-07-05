@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables("LHDS_ACCEPTANCE_");
+                .AddEnvironmentVariables("LHDS_");
 
             this.Configuration = configurationBuilder.Build();
 

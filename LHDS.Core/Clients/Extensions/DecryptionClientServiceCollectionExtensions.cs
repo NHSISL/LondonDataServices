@@ -147,6 +147,11 @@ namespace LHDS.Core.Clients.Extensions
         private static void ValidateCryptographyProviderSettings(
             IGpgCryptographyProviderSettings cryptographyProviderSettings)
         {
+            if (cryptographyProviderSettings == null)
+            {
+                throw new InvalidConfigurationException("Configuration section 'cryptography' not defined.");
+            }
+
             Validate(
                 (Rule: IsInvalid(cryptographyProviderSettings.PrivateKey),
                     Parameter: "cryptography__privateKey"),

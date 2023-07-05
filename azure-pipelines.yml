@@ -17,16 +17,6 @@ variables:
 
 steps:
 
-  - task: Bash@3
-    displayName: Print environment variables
-    inputs:
-      targetType: 'inline'
-      script: |
-        echo "The value of LHDS_CRYPTOGRAPHY__PRIVATEKEY is $LHDS_CRYPTOGRAPHY__PRIVATEKEY"
-        echo "The value of LHDS_CRYPTOGRAPHY__PUBLICKEY is $LHDS_CRYPTOGRAPHY__PUBLICKEY"
-        echo "The value of LHDS_CRYPTOGRAPHY__PASSPHRASE is $LHDS_CRYPTOGRAPHY__PASSPHRASE"
-        echo "The value of LHDS_MESHCONFIGURATION__MAILBOXID is $LHDS_MESHCONFIGURATION__MAILBOXID"
-
   - task: UseDotNet@2
     displayName: "Install .NET Core SDK"
     inputs:

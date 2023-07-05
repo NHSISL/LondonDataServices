@@ -173,12 +173,20 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)
         {
+            if (blobStorageSettings == null)
+            {
+                throw new InvalidConfigurationException("Configuration section 'blobStorage' not defined.");
+            }
+
             Validate(
                 (Rule: IsInvalid(blobStorageSettings.AzureBlobServiceUri),
-                    Parameter: "BlobStorageSettings__AzureBlobServiceUri"),
+                    Parameter: "blobStorage__azureBlobServiceUri"),
 
                 (Rule: IsInvalid(blobStorageSettings.AzureTenantId),
-                    Parameter: "BlobStorageSettings__AzureTenantId"));
+                    Parameter: "blobStorage__azureTenantId"),
+
+                (Rule: IsInvalid(blobStorageSettings.BlobContainerName),
+                    Parameter: "blobStorage__blobContainerName"));
         }
 
         private static dynamic IsInvalid(Guid id) => new

@@ -73,6 +73,15 @@ steps:
             -d \
             mcr.microsoft.com/mssql/server:2022-latest
 
+  - task: PowerShell@2
+    inputs:
+      targetType: 'inline'
+      script: |
+        Write-Host "The value of LHDS_CRYPTOGRAPHY__GPGPRIVATEKEY is $(LHDS_CRYPTOGRAPHY__GPGPRIVATEKEY)"
+        Write-Host "The value of LHDS_CRYPTOGRAPHY__GPGPUBLICKEY is $(LHDS_CRYPTOGRAPHY__GPGPUBLICKEY)"
+        Write-Host "The value of LHDS_CRYPTOGRAPHY__GPGPASSPHRASE is $(LHDS_CRYPTOGRAPHY__GPGPASSPHRASE)"
+        Write-Host "The value of LHDS_MESHCONFIGURATION__MAILBOXID is $(LHDS_MESHCONFIGURATION__MAILBOXID)"
+
   - task: DotNetCoreCLI@2
     displayName: C# Acceptance Tests
     inputs:
@@ -96,11 +105,7 @@ steps:
         LHDS_FTPDOWNLOAD__FTPUSERNAME=$(LHDS_FTPDOWNLOAD__FTPUSERNAME)
         LHDS_FTPDOWNLOAD__FTPKEY=$(LHDS_FTPDOWNLOAD__FTPKEY)
         LHDS_FTPDOWNLOAD__FTPPASSPHRASE=$(LHDS_FTPDOWNLOAD__FTPPASSPHRASE)
-      script: |
-        Write-Host "The value of LHDS_CRYPTOGRAPHY__GPGPRIVATEKEY is $(LHDS_CRYPTOGRAPHY__GPGPRIVATEKEY)"
-        Write-Host "The value of LHDS_CRYPTOGRAPHY__GPGPUBLICKEY is $(LHDS_CRYPTOGRAPHY__GPGPUBLICKEY)"
-        Write-Host "The value of LHDS_CRYPTOGRAPHY__GPGPASSPHRASE is $(LHDS_CRYPTOGRAPHY__GPGPASSPHRASE)"
-        Write-Host "The value of LHDS_MESHCONFIGURATION__MAILBOXID is $(LHDS_MESHCONFIGURATION__MAILBOXID)"
+
   - task: Npm@1
     displayName: NPM Install
     inputs:

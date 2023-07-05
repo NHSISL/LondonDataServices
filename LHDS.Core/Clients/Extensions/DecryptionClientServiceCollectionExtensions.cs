@@ -45,6 +45,11 @@ namespace LHDS.Core.Clients.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
+            if (configuration == null)
+            {
+                new Exception("No configuration found");
+            }
+
             return AddDecryptionClient(services, configuration, acceptanceTest: true);
         }
 

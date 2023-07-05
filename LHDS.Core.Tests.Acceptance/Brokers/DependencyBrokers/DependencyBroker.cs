@@ -33,6 +33,12 @@ namespace LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers
                 .AddEnvironmentVariables("LHDS_ACCEPTANCE_");
 
             this.Configuration = configurationBuilder.Build();
+
+            if (this.Configuration == null)
+            {
+                throw new Exception("No configuration");
+            }
+
             var storageBroker = new StorageBroker(this.Configuration);
             storageBroker.Database.Migrate();
             bool canConnect = storageBroker.Database.CanConnect();

@@ -8,6 +8,8 @@ using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using Xunit;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
+using System.Text;
+using LHDS.Core.Models.Foundations.Documents;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
 {
@@ -22,11 +24,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
             IngestionTracking randomIngestionTracking = await PostRandomIngestionTrackingAsync(randomSupplier.Id);
             await DeleteAuditRecordsAsync(randomIngestionTracking);
             string randomFileName = GetRandomString();
+            byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
 
             IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
-                dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                document,
-                supplierId: this.landingConfiguration.LandingSupplierId);
+                supplierId: randomSupplier.Id);
 
             await this.apiBroker.PostIngestionTrackingAsync(ingestionTracking);
 
@@ -34,22 +35,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
             await this.apiBroker.DecryptFileAsync(randomFileName);
 
             //Then
-            bool isDecrypted = await this.apiBroker.IsFileDecryptedAsync(randomFileName);
-
-            isDecrypted.Should().BeTrue();
-
-            var audits = this.apiBroker.RetrieveAllAudits()
-                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
-
-            foreach (var audit in audits)
-            {
-                await this.apiBroker.RemoveAuditByIdAsync(audit.Id);
-            }
-
             IngestionTracking decryptedIngestionTracking =
-                await this.apiBroker.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id);
+                await this.apiBroker.GetIngestionTrackingByIdAsync(ingestionTracking.Id);
 
-            await this.apiBroker.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+            decryptedIngestionTracking.Decrypted.Should().BeTrue();
+
+            await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
+            await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }
     }
 }

@@ -3,10 +3,12 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
@@ -55,10 +57,10 @@ namespace LHDS.Core.Clients.Extensions
             bool acceptanceTest)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
-            
-            var meshConfigurationSettings = 
+
+            var meshConfigurationSettings =
                 configuration.GetSection("meshConfiguration").Get<MeshConfigurationSettings>();
-            
+
             ValidateMeshConfigurationSettings(meshConfigurationSettings, acceptanceTest);
 
             var meshConfig = new MeshConfiguration
@@ -191,6 +193,12 @@ namespace LHDS.Core.Clients.Extensions
             MeshConfigurationSettings meshConfigurationSettings,
             bool acceptanceTest)
         {
+            if (meshConfigurationSettings == null)
+            {
+                throw new InvalidConfigurationException(
+                    "Configuration section 'meshConfiguration' not defined.");
+            }
+
             Validate(
                 (Rule: IsInvalid(meshConfigurationSettings.MailboxId),
                     Parameter: "meshConfiguration__mailboxId"),
@@ -229,6 +237,11 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void ValidatePdsConfigurationSettings(PdsConfiguration pdsConfiguration)
         {
+            if (pdsConfiguration == null)
+            {
+                throw new InvalidConfigurationException(
+                    "Configuration section 'pdsSettings' not defined.");
+            }
 
             Validate(
                 (Rule: IsInvalid(pdsConfiguration.InputFolder),
@@ -252,6 +265,12 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)
         {
+            if (blobStorageSettings == null)
+            {
+                throw new InvalidConfigurationException(
+                    "Configuration section 'blobStorage' not defined.");
+            }
+
             Validate(
                 (Rule: IsInvalid(blobStorageSettings.AzureBlobServiceUri),
                     Parameter: "blobStorage__azureBlobServiceUri"),
@@ -277,17 +296,30 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidConfigurationException = new InvalidConfigurationException();
+            StringBuilder validationErrors = new StringBuilder();
+            validationErrors.AppendLine("Configuration error(s):");
+            IDictionary errors = new Dictionary<string, List<string>>();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidConfigurationException.UpsertDataList(
-                        key: parameter,
-                        value: rule.Message);
+                    validationErrors.AppendLine(
+                        $"{parameter} -> Configuration value does not exist or does not meet validation criteria");
+
+                    if (errors.Contains(parameter))
+                    {
+                        (errors[parameter] as List<string>)?.Add(rule.Message);
+                        return;
+                    }
+
+                    errors.Add(parameter, new List<string> { rule.Message });
                 }
             }
+
+            var invalidConfigurationException = new InvalidConfigurationException(
+                message: validationErrors.ToString(),
+                data: errors);
 
             invalidConfigurationException.ThrowIfContainsErrors();
         }

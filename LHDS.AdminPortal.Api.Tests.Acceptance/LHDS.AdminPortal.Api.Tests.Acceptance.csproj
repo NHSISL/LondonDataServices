@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
@@ -31,6 +31,12 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\LHDS.AdminPortal.Api\LHDS.AdminPortal.Api.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="local.appsettings.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>

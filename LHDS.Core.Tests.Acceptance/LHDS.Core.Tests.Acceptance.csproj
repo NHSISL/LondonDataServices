@@ -9,18 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="appsettings.ContinuousIntegration.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="appsettings.ContinuousIntegration.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
 	  <PackageReference Include="DeepCloner" Version="0.10.4" />
 	  <PackageReference Include="EFxceptions" Version="0.4.5" />
 	  <PackageReference Include="FluentAssertions" Version="6.11.0" />
@@ -52,6 +40,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="appsettings.ContinuousIntegration.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Update="appsettings.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

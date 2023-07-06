@@ -2,13 +2,22 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
+using System.Collections;
 using Xeptions;
 
 namespace LHDS.Core.Models.Configurations
 {
     public class InvalidConfigurationException : Xeption
     {
-        public InvalidConfigurationException()
-            : base(message: "Invalid configuration. Please correct the errors and try again.") { }
+        public InvalidConfigurationException(
+            string message = "",
+            Exception innerException = null,
+            IDictionary data = null)
+            : base(
+                  message: $"Invalid configuration. Please correct the errors and try again.  {message}",
+                  innerException,
+                  data)
+        { }
     }
 }

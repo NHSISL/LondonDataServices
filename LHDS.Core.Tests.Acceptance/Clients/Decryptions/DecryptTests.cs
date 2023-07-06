@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Downloads;
@@ -13,6 +12,7 @@ using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Downloads;
+using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
@@ -22,22 +22,22 @@ using Moq;
 using Tynamix.ObjectFiller;
 using Xunit;
 
-namespace LHDS.Core.Tests.Acceptance.Clients.Landings
+namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 {
     [Collection(nameof(CoreTestCollection))]
-    public partial class LandingTests
+    public partial class DecryptionTests
     {
+        private readonly DependencyBroker dependencyBroker;
         private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
         private readonly Mock<IDownloadBroker> downloadBrokerMock;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIngestionTrackingService ingestionTrackingService;
-        private readonly ILandingClient landingClient;
+        private readonly IDecryptionClient decryptionClient;
         private readonly LandingConfiguration landingConfiguration;
+        private readonly ICryptographyProvider cryptographyProvider;
         private readonly IAuditService auditService;
 
-        private readonly DependencyBroker dependencyBroker;
-
-        public LandingTests(DependencyBroker dependencyBroker)
+        public DecryptionTests(DependencyBroker dependencyBroker)
         {
             this.dependencyBroker = dependencyBroker;
             this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
@@ -49,17 +49,19 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 builder.AddConsole();
             });
 
+            serviceCollection.AddDecryptionClientForAcceptance(this.dependencyBroker.Configuration);
+
             serviceCollection
                 .AddTransient<IDownloadBroker>(serviceProvider => downloadBrokerMock.Object)
                 .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
 
-            serviceCollection.AddLandingClientForAcceptance(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             this.auditService = serviceProvider.GetService<IAuditService>();
-            this.landingConfiguration = serviceProvider.GetService<LandingConfiguration>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
-            landingClient = serviceProvider.GetService<ILandingClient>();
+            this.landingConfiguration = serviceProvider.GetRequiredService<LandingConfiguration>();
+            this.cryptographyProvider = serviceProvider.GetRequiredService<ICryptographyProvider>();
+            decryptionClient = serviceProvider.GetService<IDecryptionClient>();
         }
 
         private static string GetRandomString() =>
@@ -83,21 +85,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                     .Create();
 
             return ingestionTracking;
-        }
-
-        private static List<IngestionTracking> CreateRandomIngestionTrackings(
-            DateTimeOffset dateTimeOffset,
-            List<Document> documents,
-            Guid supplierId)
-        {
-            List<IngestionTracking> items = new List<IngestionTracking>();
-
-            foreach (var document in documents)
-            {
-                items.Add(CreateIngestionTrackingFiller(dateTimeOffset, fileName: document.FileName, supplierId).Create());
-            }
-
-            return items;
         }
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(

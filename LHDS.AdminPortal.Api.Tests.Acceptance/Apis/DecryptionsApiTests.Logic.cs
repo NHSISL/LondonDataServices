@@ -31,7 +31,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
                 FileName = randomFileName
             };
 
-            this.apiBroker.documentService.AddDocumentAsync(document);
+            await this.apiBroker.documentService.AddDocumentAsync(document);
 
             IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
                 supplierId: randomSupplier.Id);

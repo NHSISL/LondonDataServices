@@ -205,9 +205,6 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     List<OptOut> originalBatch = await this.optOutProcessingService
                         .RetrieveAllOptOutsByBatchReferenceAsync(batchReference);
 
-                    List<OptOut> consentedItems = originalBatch
-                        .Where(optOut => consentedIdentifiers.Contains(optOut.NhsNumber)).ToList();
-
                     List<OptOut> delta = await this.optOutProcessingService
                         .ConsolidateOptOutChangesAndReturnChangesOnly(originalBatch, consentedIdentifiers);
 
@@ -239,8 +236,9 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                         };
 
                         await this.documentProcessingService.AddDocumentAsync(document);
-                        await this.meshProcessingService.AcknowledgeMessageByIdAsync(messageId);
                     }
+
+                    await this.meshProcessingService.AcknowledgeMessageByIdAsync(messageId);
                 }
 
                 return meshMessageList;

@@ -3,7 +3,10 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
@@ -131,6 +134,11 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void ValidateLandingConfiguration(LandingConfiguration landingConfiguration)
         {
+            if (landingConfiguration == null)
+            {
+                throw new InvalidConfigurationException("Configuration section 'landingSettings' not defined.");
+            }
+
             Validate(
                 (Rule: IsInvalid(landingConfiguration.LandingSupplierId),
                     Parameter: "landingSettings__landingSupplierId"),
@@ -144,6 +152,11 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)
         {
+            if (blobStorageSettings == null)
+            {
+                throw new InvalidConfigurationException("Configuration section 'blobStorage' not defined.");
+            }
+
             Validate(
                 (Rule: IsInvalid(blobStorageSettings.AzureBlobServiceUri),
                     Parameter: "blobStorage__azureBlobServiceUri"),
@@ -164,25 +177,37 @@ namespace LHDS.Core.Clients.Extensions
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
-            Message = "IConfiguration value does not exist"
+            Message = "Configuration value does not exist"
         };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidConfigurationException = new InvalidConfigurationException();
+            StringBuilder validationErrors = new StringBuilder();
+            validationErrors.AppendLine("Configuration error(s):");
+            IDictionary errors = new Dictionary<string, List<string>>();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidConfigurationException.UpsertDataList(
-                        key: parameter,
-                        value: rule.Message);
+                    validationErrors.AppendLine(
+                        $"{parameter} -> Configuration value does not exist or does not meet validation criteria");
+
+                    if (errors.Contains(parameter))
+                    {
+                        (errors[parameter] as List<string>)?.Add(rule.Message);
+                        return;
+                    }
+
+                    errors.Add(parameter, new List<string> { rule.Message });
                 }
             }
 
+            var invalidConfigurationException = new InvalidConfigurationException(
+                message: validationErrors.ToString(),
+                data: errors);
+
             invalidConfigurationException.ThrowIfContainsErrors();
         }
-
     }
 }

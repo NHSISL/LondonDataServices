@@ -2,9 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
-using Microsoft.Extensions.Configuration;
-
 namespace LHDS.Core.Providers.Downloads.FtpDownloads
 {
     /// <summary>
@@ -12,70 +9,30 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
     /// </summary>
     public class FtpDownloadProviderSettings : IFtpDownloadProviderSettings
     {
-        private IConfiguration Configuration { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Settings"/> class.
-        /// </summary>
-        /// <param name="configuration">The configuration.</param>
-        public FtpDownloadProviderSettings(IConfiguration configuration)
-        {
-            this.Configuration = configuration;
-        }
+        /// <inheritdoc/>
+        public string FtpServer { get; set; }
 
         /// <inheritdoc/>
-        public string FtpServer => this.GetSettings("ftpDownload:ftpServer");
+        public int FtpPort { get; set; } = 22;
 
         /// <inheritdoc/>
-        public int FtpPort
-        {
-            get
-            {
-                try
-                {
-                    return int.Parse(this.GetSettings("ftpDownload:ftpPort"));
-                }
-                catch
-                {
-                    return 22;
-                }
-            }
-        }
+        public string FtpPassword { get; set; }
 
         /// <inheritdoc/>
-        public string FtpPassword => this.GetSettings("ftpDownload:ftpPassword", false);
+        public string FtpUserName { get; set; }
 
         /// <inheritdoc/>
-        public string FtpUserName => this.GetSettings("ftpDownload:ftpUserName");
+        public string TempFolder { get; set; }
 
         /// <inheritdoc/>
-        public string TempFolder => this.GetSettings("ftpDownload:tempFolder");
+        public string FtpKey { get; set; }
 
         /// <inheritdoc/>
-        public string FtpKey => this.GetSettings("ftpDownload:ftpKey", false);
+        public string FtpPassPhrase { get; set; }
 
         /// <inheritdoc/>
-        public string FtpPassPhrase => this.GetSettings("ftpDownload:ftpPassPhrase", false);
+        public string FtpRootFolder { get; set; } = "/";
 
-        /// <inheritdoc/>
-        public string FtpRootFolder => this.GetSettings("ftpDownload:ftpRootFolder", false) ?? "/";
-
-        public bool IncludeSubDirectories =>
-            Convert.ToBoolean(this.GetSettings("ftpDownload:includeSubDirectories", false) ?? "true");
-
-        private string GetSettings(string configurationKey, bool mandatory = true)
-        {
-            var value = this.Configuration[configurationKey];
-
-            if (string.IsNullOrEmpty(value))
-            {
-                if (mandatory)
-                {
-                    throw new Exception($"Configuration value {configurationKey} does not exist");
-                }
-            }
-
-            return value;
-        }
+        public bool IncludeSubDirectories { get; set; } = true;
     }
 }

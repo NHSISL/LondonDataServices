@@ -254,21 +254,6 @@ namespace LHDS.AdminPortal.Api
 
             return builder.GetEdmModel();
         }
-
-        private static string GetSettings(IConfiguration configuration, string configurationKey, bool mandatory = true)
-        {
-            var value = configuration[configurationKey];
-
-            if (string.IsNullOrEmpty(value))
-            {
-                if (mandatory)
-                {
-                    throw new Exception($"Configuration value {configurationKey} does not exist");
-                }
-            }
-
-            return value;
-        }
     }
 
     internal static class StartupExtensions

@@ -130,23 +130,22 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     return null;
                 }
 
-                List<OptOutIdentifier> mappedOptOutIdentifiers =
-                    expiredOptOuts.Select(optout => new OptOutIdentifier
-                    {
-                        NhsNumber = optout.NhsNumber,
-                        UniqueReference = optout.UniqueReference,
-                        Status = optout.Status
-                    }).ToList();
+                List<string> expiredOptOutIdentifiers =
+                    expiredOptOuts.Select(optout => $"{optout.NhsNumber},").ToList();
 
-                var processedString = await this.csvMapperProcessingService
-                       .MapObjectToCsvAsync(mappedOptOutIdentifiers, false, shouldAddTrailingComma);
+                StringBuilder csvExpiredOptOutIdentifiers = new StringBuilder();
+
+                foreach (var item in expiredOptOuts)
+                {
+                    csvExpiredOptOutIdentifiers.AppendLine($"{item.NhsNumber},");
+                }
 
                 string batchReference = this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss");
 
                 MeshMessage message = await this.meshProcessingService.SendMessageAsync(
                     mexTo: this.optOutConfiguration.To,
                     mexWorkflowId: this.optOutConfiguration.WorkflowId,
-                    fileContent: Encoding.UTF8.GetBytes(processedString),
+                    fileContent: Encoding.UTF8.GetBytes(csvExpiredOptOutIdentifiers.ToString()),
                     mexSubject: string.Empty,
                     mexLocalId: batchReference,
                     mexFileName: $"{batchReference}.txt",

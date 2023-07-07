@@ -104,8 +104,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 MexClientVersion = inMemoryConfiguration["meshConfiguration:mexClientVersion"],
                 MexOSName = inMemoryConfiguration["meshConfiguration:mexOSName"],
                 MexOSVersion = inMemoryConfiguration["meshConfiguration:mexOSVersion"],
-                WorkflowId = inMemoryConfiguration["meshConfiguration:workflowId"],
-
                 RootCertificate = GetCertificate(inMemoryConfiguration["meshConfiguration:rootCertificate"]),
 
                 IntermediateCertificates =

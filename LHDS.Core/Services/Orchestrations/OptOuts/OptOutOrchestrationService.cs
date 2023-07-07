@@ -184,7 +184,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 {
                     MeshMessage message = await meshProcessingService.RetrieveMessageByIdAsync(messageId);
 
-                    if (GetKeyStringValue("mex-workflowid", message.Headers) != this.meshConfiguration.WorkflowId)
+                    if (GetKeyStringValue("mex-workflowid", message.Headers) != this.optOutConfiguration.WorkflowId)
                     {
                         continue;
                     }

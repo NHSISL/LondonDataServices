@@ -77,6 +77,7 @@ namespace LHDS.Core.Clients.Extensions
                 MexOSName = meshConfigurationSettings.MexOSName,
                 MexOSVersion = meshConfigurationSettings.MexOSVersion,
                 MaxChunkSizeInMegabytes = meshConfigurationSettings.MaxChunkSizeInMegabytes,
+                WorkflowId = meshConfigurationSettings.WorkflowId
             };
 
             if (!acceptanceTest)

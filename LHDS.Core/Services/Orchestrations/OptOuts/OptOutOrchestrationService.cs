@@ -80,6 +80,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 foreach (var optOut in mappedOptOuts)
                 {
                     DateTimeOffset timeStamp = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                    var expirationDate = timeStamp.AddDays(-optOutConfiguration.ExpiredAfterDays);
 
                     OptOut item = await this.optOutProcessingService
                         .RetrieveOrAddOptOutAsync(
@@ -89,6 +90,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                                 NhsNumber = optOut.NhsNumber,
                                 Status = string.IsNullOrWhiteSpace(optOut.Status) ? "Unknown" : optOut.Status,
                                 UniqueReference = optOut.UniqueReference,
+                                CacheTime = expirationDate,
                                 CreatedDate = timeStamp,
                                 UpdatedDate = timeStamp,
                                 CreatedBy = "System",

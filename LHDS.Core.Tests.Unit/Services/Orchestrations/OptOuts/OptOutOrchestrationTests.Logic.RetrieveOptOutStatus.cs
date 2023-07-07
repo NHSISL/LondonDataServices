@@ -27,6 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             var inputBytes = Encoding.ASCII.GetBytes(inputString);
             var randomRecieveName = GetRandomString();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DateTimeOffset expireDate = randomDateTimeOffset.AddDays(-optOutConfiguration.ExpiredAfterDays);
             List<OptOutIdentifier> randomOptOuts = CreateRandomOptOutIdentifiersList();
             List<OptOutIdentifier> outputOptOuts = randomOptOuts;
 
@@ -48,6 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     NhsNumber = optOut.NhsNumber,
                     Status = string.IsNullOrWhiteSpace(optOut.Status) ? "Unknown" : optOut.Status,
                     UniqueReference = optOut.UniqueReference,
+                    CacheTime = expireDate,
                     CreatedDate = randomDateTimeOffset,
                     UpdatedDate = randomDateTimeOffset,
                     CreatedBy = "System",
@@ -104,6 +106,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     NhsNumber = optOut.NhsNumber,
                     Status = string.IsNullOrWhiteSpace(optOut.Status) ? "Unknown" : optOut.Status,
                     UniqueReference = optOut.UniqueReference,
+                    CacheTime = expireDate,
                     CreatedDate = randomDateTimeOffset,
                     UpdatedDate = randomDateTimeOffset,
                     CreatedBy = "System",

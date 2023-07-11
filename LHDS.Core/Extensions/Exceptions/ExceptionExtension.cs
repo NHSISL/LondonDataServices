@@ -21,21 +21,21 @@ namespace LHDS.Core.Extensions.Exceptions
             }
 
             StringBuilder validationSummary = new StringBuilder();
-            validationSummary.Append(GetErrorSummary(exception));
-            validationSummary.Append(GetErrorSummary(exception.InnerException));
+            AppendErrorSummary(exception, validationSummary);
+
+            if (exception.InnerException != null)
+            {
+                AppendInnerErrorSummary(exception.InnerException, validationSummary);
+            }
 
             return validationSummary.ToString();
         }
 
-        private static string GetErrorSummary(Exception exception)
+        private static void AppendErrorSummary(Exception exception, StringBuilder validationSummary)
         {
-            StringBuilder validationSummary = new StringBuilder();
-
-            if (exception != null && exception.Data.Count > 0)
+            if (exception.Data.Count > 0)
             {
                 validationSummary.Append($"{exception.GetType().Name} Errors:  ");
-
-                StringBuilder errors = new StringBuilder();
 
                 foreach (DictionaryEntry entry in exception.Data)
                 {
@@ -43,14 +43,29 @@ namespace LHDS.Core.Extensions.Exceptions
                         .Select((string value) => value)
                         .Aggregate((string current, string next) => current + ", " + next);
 
-                    errors.Append($"{entry.Key} => {errorSummary};  ");
+                    string line = $"{entry.Key} => {errorSummary};  ";
+
+                    if (!validationSummary.ToString().Contains(line))
+                    {
+                        validationSummary.Append(line);
+                    }
                 }
 
-                validationSummary.Append(errors.ToString().Trim());
                 validationSummary.AppendLine();
             }
+        }
 
-            return validationSummary.ToString();
+        private static void AppendInnerErrorSummary(Exception exception, StringBuilder validationSummary)
+        {
+            if (exception != null)
+            {
+                AppendErrorSummary(exception, validationSummary);
+
+                if (exception.InnerException != null)
+                {
+                    AppendInnerErrorSummary(exception.InnerException, validationSummary);
+                }
+            }
         }
     }
 }

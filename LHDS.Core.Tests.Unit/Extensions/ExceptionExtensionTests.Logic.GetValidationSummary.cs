@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using FluentAssertions;
 using LHDS.Core.Extensions.Exceptions;
-using Xeptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Extensions
@@ -25,6 +24,12 @@ namespace LHDS.Core.Tests.Unit.Extensions
             string actualResult = randomException.GetValidationSummary();
 
             // then
+            output.WriteLine($"Actual:");
+            output.WriteLine(actualResult);
+            output.WriteLine("");
+            output.WriteLine($"Expected:");
+            output.WriteLine(expectedResult);
+
             actualResult.Should().BeEquivalentTo(expectedResult);
         }
 
@@ -33,17 +38,23 @@ namespace LHDS.Core.Tests.Unit.Extensions
         {
             // given
             string randomMessage = GetRandomString();
-            Xeption randomXeption = new Xeption(message: randomMessage);
-            randomXeption.Data.Add("Error1", new List<string> { "Error message 1" });
-            randomXeption.Data.Add("Error2", new List<string> { "Error message 2", "Error message 3" });
+            ParentException randomXeption = new ParentException(message: randomMessage);
+            randomXeption.Data.Add("Key1", new List<string> { "Value1" });
+            randomXeption.Data.Add("Key2", new List<string> { "Value2", "Value3" });
 
             string expectedResult = $"{randomXeption.GetType().Name} Errors:  " +
-                $"Error1 => Error message 1;  Error2 => Error message 2, Error message 3;" + Environment.NewLine;
+                $"Key1 => Value1;  Key2 => Value2, Value3;  " + Environment.NewLine;
 
             // when
             string actualResult = randomXeption.GetValidationSummary();
 
             // then
+            output.WriteLine($"Actual:");
+            output.WriteLine(actualResult);
+            output.WriteLine("");
+            output.WriteLine($"Expected:");
+            output.WriteLine(expectedResult);
+
             actualResult.Should().BeEquivalentTo(expectedResult);
         }
 
@@ -53,18 +64,24 @@ namespace LHDS.Core.Tests.Unit.Extensions
             // given
             string randomMessage = GetRandomString();
             string randomInnerExceptionMessage = GetRandomString();
-            Xeption randomInnerXeption = new Xeption(message: randomInnerExceptionMessage);
-            randomInnerXeption.Data.Add("Error1", new List<string> { "Error message 1" });
-            randomInnerXeption.Data.Add("Error2", new List<string> { "Error message 2", "Error message 3" });
-            Xeption randomXeption = new Xeption(randomMessage, randomInnerXeption);
+            ChildException randomInnerXeption = new ChildException(message: randomInnerExceptionMessage);
+            randomInnerXeption.Data.Add("Key1", new List<string> { "Value1" });
+            randomInnerXeption.Data.Add("Key2", new List<string> { "Value2", "Value3" });
+            ParentException randomXeption = new ParentException(randomMessage, randomInnerXeption);
 
             string expectedResult = $"{randomInnerXeption.GetType().Name} Errors:  " +
-                $"Error1 => Error message 1;  Error2 => Error message 2, Error message 3;" + Environment.NewLine;
+                $"Key1 => Value1;  Key2 => Value2, Value3;  " + Environment.NewLine;
 
             // when
             string actualResult = randomXeption.GetValidationSummary();
 
             // then
+            output.WriteLine($"Actual:");
+            output.WriteLine(actualResult);
+            output.WriteLine("");
+            output.WriteLine($"Expected:");
+            output.WriteLine(expectedResult);
+
             actualResult.Should().BeEquivalentTo(expectedResult);
         }
 
@@ -74,28 +91,34 @@ namespace LHDS.Core.Tests.Unit.Extensions
             // given
             string randomMessage = GetRandomString();
             string randomInnerExceptionMessage = GetRandomString();
-            Xeption randomInnerXeption =
-                new Xeption(message: randomInnerExceptionMessage);
+            ChildException randomInnerXeption =
+                new ChildException(message: randomInnerExceptionMessage);
 
-            randomInnerXeption.Data.Add("Error3", new List<string> { "Error message 4" });
-            randomInnerXeption.Data.Add("Error4", new List<string> { "Error message 5", "Error message 6" });
+            randomInnerXeption.Data.Add("Key3", new List<string> { "Value4" });
+            randomInnerXeption.Data.Add("Key4", new List<string> { "Value5", "Value6" });
 
-            Xeption randomXeption =
-                new Xeption(randomMessage, randomInnerXeption);
+            ParentException randomXeption =
+                new ParentException(randomMessage, randomInnerXeption);
 
-            randomXeption.Data.Add("Error1", new List<string> { "Error message 1" });
-            randomXeption.Data.Add("Error2", new List<string> { "Error message 2", "Error message 3" });
+            randomXeption.Data.Add("Key1", new List<string> { "Value1" });
+            randomXeption.Data.Add("Key2", new List<string> { "Value2", "Value3" });
 
             string expectedResult =
                 $"{randomXeption.GetType().Name} Errors:  " +
-                $"Error1 => Error message 1;  Error2 => Error message 2, Error message 3;" + Environment.NewLine +
+                $"Key1 => Value1;  Key2 => Value2, Value3;  " + Environment.NewLine +
                 $"{randomInnerXeption.GetType().Name} Errors:  " +
-                $"Error3 => Error message 4;  Error4 => Error message 5, Error message 6;" + Environment.NewLine;
+                $"Key3 => Value4;  Key4 => Value5, Value6;  " + Environment.NewLine;
 
             // when
             string actualResult = randomXeption.GetValidationSummary();
 
             // then
+            output.WriteLine($"Actual:");
+            output.WriteLine(actualResult);
+            output.WriteLine("");
+            output.WriteLine($"Expected:");
+            output.WriteLine(expectedResult);
+
             actualResult.Should().BeEquivalentTo(expectedResult);
         }
     }

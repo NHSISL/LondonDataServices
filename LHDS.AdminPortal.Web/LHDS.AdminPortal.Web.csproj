@@ -40,9 +40,11 @@
     <TypeScriptCompile Remove="ClientApp\cypress.config.ts" />
     <TypeScriptCompile Remove="ClientApp\src\App.test.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.audits.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.decryptions.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.documents.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.features.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ingestionTrackings.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.landings.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.optout.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.pds.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.suppliers.ts" />

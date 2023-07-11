@@ -4,11 +4,14 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Documents;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
+using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
@@ -19,16 +22,30 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
         public async Task ShouldGetDownloadLinkAsync()
         {
             // given
-            Supplier randomSupplier = await PostRandomSupplierAsync();
-            IngestionTracking randomIngestionTracking = await PostRandomIngestionTrackingAsync(randomSupplier.Id);
             string randomFileName = GetRandomString();
+            byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
+
+            Document document = new Document
+            {
+                DocumentData = documentData,
+                FileName = randomFileName
+            };
+
+            await this.apiBroker.documentService.AddDocumentAsync(document);
 
             // when
-            await this.apiBroker.GetDownloadLinkAsync(randomFileName);
+            ActionResult<Document> documentResult = await this.apiBroker.GetDownloadLinkAsync(randomFileName);
 
             // then
-            await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
-            await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
+            documentResult.Result.Should().BeOfType<OkObjectResult>();
+
+            Document returnedDocument = ((OkObjectResult)documentResult.Result).Value as Document;
+
+            returnedDocument.FileName.Should().Be(document.FileName);
+            returnedDocument.DocumentData.Should().BeEquivalentTo(document.DocumentData);
+
+            // clean up
+            await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(document.FileName);
         }
     }
 }

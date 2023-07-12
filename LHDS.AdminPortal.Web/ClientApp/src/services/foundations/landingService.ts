@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useMutation } from "react-query";
 import LandingBroker from "../../brokers/apiBroker.landings";
 import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
 

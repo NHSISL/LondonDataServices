@@ -4,26 +4,31 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
+using LHDS.Core.Models.Foundations.OptOuts;
 using Tynamix.ObjectFiller;
 using Xunit;
 
-namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
+namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
 {
     [Collection(nameof(ApiTestCollection))]
-    public partial class AuditsApiTests
+    public partial class OptOutsApiTests
     {
         private readonly ApiBroker apiBroker;
 
-        public AuditsApiTests(ApiBroker apiBroker) =>
+        public OptOutsApiTests(ApiBroker apiBroker) =>
             this.apiBroker = apiBroker;
 
-        private int GetRandomNumber() =>
+        private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
+
+        private static string GetRandomString() =>
+            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
@@ -62,6 +67,79 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             }
 
             return randomAudits;
+        }
+
+        private static string GenerateValidNhsNumber()
+        {
+            int total = 10;
+            string formattedNhsNumber = string.Empty;
+
+            while (total == 10)
+            {
+                var randomNumber = new LongRange(100000000, 999999999);
+                formattedNhsNumber = randomNumber.GetValue().ToString();
+                int[] multiplers = new int[] { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
+                int currentNumber;
+                int currentSum = 0;
+                int currentMultipler;
+                string currentString;
+                int remainder;
+
+                for (int i = 0; i <= 8; i++)
+                {
+                    currentString = formattedNhsNumber.Substring(i, 1);
+
+                    currentNumber = Convert.ToInt16(currentString);
+                    currentMultipler = multiplers[i];
+                    currentSum = currentSum + (currentNumber * currentMultipler);
+                }
+
+                remainder = currentSum % 11;
+                total = 11 - remainder;
+
+                if (total.Equals(11))
+                {
+                    total = 0;
+                }
+
+                if (total != 10)
+                {
+                    break;
+                }
+            }
+
+            string checkNumber = total.ToString();
+
+            return $"{formattedNhsNumber}{checkNumber}";
+        }
+
+
+        private static IQueryable<OptOut> CreateRandomOptOuts()
+        {
+            return CreateOptOutFiller(dateTimeOffset: GetRandomDateTime())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
+
+        private static OptOut CreateRandomOptOut() =>
+            CreateOptOutFiller(dateTimeOffset: GetRandomDateTime()).Create();
+
+        private static OptOut CreateRandomOptOut(DateTimeOffset dateTimeOffset) =>
+            CreateOptOutFiller(dateTimeOffset).Create();
+
+        private static Filler<OptOut> CreateOptOutFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<OptOut>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
+                .OnProperty(optOut => optOut.Status).Use(GetRandomString())
+                .OnProperty(optOut => optOut.CreatedBy).Use(user)
+                .OnProperty(optOut => optOut.UpdatedBy).Use(user);
+
+            return filler;
         }
 
         private static Audit CreateRandomAudit(Guid ingestionTrackingId) =>

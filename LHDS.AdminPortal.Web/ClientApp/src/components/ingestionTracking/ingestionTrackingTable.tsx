@@ -13,6 +13,7 @@ import InfiniteScroll from "../bases/pagers/InfiniteScroll";
 import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import IngestionTrackingRow from "./ingestionTrackingRow";
+import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
 
 type IngestionTrackingTableProps = {};
 
@@ -43,6 +44,23 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
             }, 500),
         []
     );
+
+    const handleRelanding = (ingestionTracking: IngestionTracking) => {
+        return ingestionTrackingHomeViewService.useRelandIngestionTracking(ingestionTracking);
+    };
+
+    const handleRedecrypt = (ingestionTracking: IngestionTracking) => {
+        return ingestionTrackingHomeViewService.useRedecryptIngestionTracking(ingestionTracking);
+    };
+
+    const handleEncryptedDownload = (ingestionTracking: IngestionTracking) => {
+        ingestionTrackingHomeViewService.useDownloadEncryptedDocument(ingestionTracking);
+    };
+
+    const handleDecryptedDownload = (ingestionTracking: IngestionTracking) => {
+        return ingestionTrackingHomeViewService.useDownloadDecryptedDocument(ingestionTracking);
+    };
+
 
     const hasNoMorePages = () => {
         return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
@@ -75,6 +93,10 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                                             <IngestionTrackingRow
                                                 key={ingestionTrackingHomeView.id}
                                                 ingestionTracking={ingestionTrackingHomeView}
+                                                onRelanding={handleRelanding}
+                                                onRedecrypt={handleRedecrypt}
+                                                onEncryptedDownload={handleEncryptedDownload}
+                                                onDecryptedDownload={handleDecryptedDownload}
                                             />
                                         )
                                     )}

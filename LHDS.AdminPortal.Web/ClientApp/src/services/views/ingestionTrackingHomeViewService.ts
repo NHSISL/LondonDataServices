@@ -83,8 +83,8 @@ export const ingestionTrackingHomeViewService = {
         }
     },
 
-    useRelandIngestionTracking: (ingestionTracking: IngestionTracking) => {
-        return landingService.useGetDownloadLinkByFileName(ingestionTracking.fileName);
+    useRelandIngestionTracking: () => {
+        return landingService.useGetDownloadLinkByFileName();
     },
 
     useRedecryptIngestionTracking: (ingestionTracking: IngestionTracking) => {

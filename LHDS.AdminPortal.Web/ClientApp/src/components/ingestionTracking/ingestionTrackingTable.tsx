@@ -45,8 +45,15 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         []
     );
 
+    const relandIngestionTracking = ingestionTrackingHomeViewService.useRelandIngestionTracking();
+
     const handleRelanding = (ingestionTracking: IngestionTracking) => {
-        return ingestionTrackingHomeViewService.useRelandIngestionTracking(ingestionTracking);
+        return relandIngestionTracking.mutateAsync(ingestionTracking, {
+            onSuccess: () => {
+            },
+            onError: (error: any) => {
+            }
+        });
     };
 
     const handleRedecrypt = (ingestionTracking: IngestionTracking) => {
@@ -60,7 +67,6 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
     const handleDecryptedDownload = (ingestionTracking: IngestionTracking) => {
         return ingestionTrackingHomeViewService.useDownloadDecryptedDocument(ingestionTracking);
     };
-
 
     const hasNoMorePages = () => {
         return !isLoading && data?.pages.at(-1)?.nextPage === undefined;

@@ -8,7 +8,6 @@ using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Downloads;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
@@ -21,15 +20,13 @@ using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Foundations.Suppliers;
-using LHDS.Core.Models.Orchestrations.Downloads;
+using LHDS.Core.Providers.Downloads.Extensions;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
-using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.PdsAudits;
 using LHDS.Core.Services.Foundations.Suppliers;
-using LHDS.Core.Services.Orchestrations.Downloads;
 using LHDS.Core.Services.Processings.OptOuts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -102,7 +99,7 @@ namespace LHDS.AdminPortal.Api
             AddProcessingServices(services, this.Configuration);
 
             services.AddLandingClient(this.Configuration);
-
+            services.UseFtpDownloadProvider(this.Configuration);
 
             var blobServiceUri = Configuration["BlobStorage:blob"];
 
@@ -166,13 +163,6 @@ namespace LHDS.AdminPortal.Api
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
-
-            var landingConfiguration = configuration.GetSection("landingSettings").Get<LandingConfiguration>();
-            ValidateLandingConfiguration(landingConfiguration);
-
-            services.AddSingleton(landingConfiguration);
-
-
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
@@ -180,7 +170,6 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
-            services.AddTransient<IDownloadBroker, DownloadBroker>();
         }
 
         private static void AddFoundationServices(IServiceCollection services, IConfiguration configuration)
@@ -191,7 +180,6 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IOptOutService, OptOutService>();
             services.AddTransient<IPdsAuditService, PdsAuditService>();
-            services.AddTransient<IDownloadService, DownloadService>();
 
             var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
             ValidateBlobStorageSettings(blobStorageSettings);
@@ -227,35 +215,11 @@ namespace LHDS.AdminPortal.Api
                     Parameter: "blobStorage__blobContainerName"));
         }
 
-        private static dynamic IsInvalid(Guid id) => new
-        {
-            Condition = id == Guid.Empty,
-            Message = "Configuration value does not exist"
-        };
-
         private static dynamic IsInvalid(string text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Configuration value does not exist"
         };
-
-        private static void ValidateLandingConfiguration(LandingConfiguration landingConfiguration)
-        {
-            if (landingConfiguration == null)
-            {
-                throw new InvalidConfigurationException("Configuration section 'landingSettings' not defined.");
-            }
-
-            Validate(
-                (Rule: IsInvalid(landingConfiguration.LandingSupplierId),
-                    Parameter: "landingSettings__landingSupplierId"),
-
-                (Rule: IsInvalid(landingConfiguration.EncryptedFolder),
-                    Parameter: "landingSettings:encryptedFolder"),
-
-                (Rule: IsInvalid(landingConfiguration.DecryptedFolder),
-                    Parameter: "landingSettings:decryptedFolder"));
-        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
@@ -275,9 +239,7 @@ namespace LHDS.AdminPortal.Api
         }
 
         private static void AddOrchestrationServices(IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddTransient<IDownloadOrchestrationService, DownloadOrchestrationService>();
-        }
+        { }
 
         private static void AddProcessingServices(IServiceCollection services, IConfiguration configuration)
         {

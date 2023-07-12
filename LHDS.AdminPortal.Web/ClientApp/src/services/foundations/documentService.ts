@@ -1,24 +1,17 @@
-import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import { useMutation } from "react-query";
 import DocumentBroker from "../../brokers/apiBroker.documents";
-import { Document } from "../../models/documents/document";
+import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
 
 export const documentService = {
-    useGetDownloadLinkByFileName: (fileName: string) => {
+    useGetDownloadLinkByFileName: () => {
         const documentBroker = new DocumentBroker();
-        const [mappedLink, setMappedLink] = useState<Document>();
 
-        const query = useQuery(
-            ["DownloadLinkByFileName", { fileName: fileName }],
-            () => documentBroker.GetDownloadLinkAsync(fileName),
-            { enabled: !!fileName ,  staleTime: Infinity });
-
-        useEffect(() => {
-            setMappedLink(query.data)
-        },[query.data])
-
-        return {...query,mappedLink}
+        return useMutation((ingestionTracking: IngestionTracking) => {
+            return documentBroker.GetDownloadLinkAsync(ingestionTracking.fileName);
+        },
+            {
+                onSuccess: (variables) => {
+                }
+            });
     }
-
-    
 }

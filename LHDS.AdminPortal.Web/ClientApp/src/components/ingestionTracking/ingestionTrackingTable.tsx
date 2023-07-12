@@ -45,10 +45,13 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         []
     );
 
-    const relandIngestionTracking = ingestionTrackingHomeViewService.useRelandIngestionTracking();
+    const relandDocument = ingestionTrackingHomeViewService.useRelandIngestionTracking();
+    const decryptDocument = ingestionTrackingHomeViewService.useRedecryptIngestionTracking();
+    const downloadEncryptedDocument = ingestionTrackingHomeViewService.useDownloadEncryptedDocument();
+    const downloadDecryptedDocument = ingestionTrackingHomeViewService.useDownloadDecryptedDocument();
 
     const handleRelanding = (ingestionTracking: IngestionTracking) => {
-        return relandIngestionTracking.mutateAsync(ingestionTracking, {
+        return relandDocument.mutateAsync(ingestionTracking, {
             onSuccess: () => {
             },
             onError: (error: any) => {
@@ -57,15 +60,30 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
     };
 
     const handleRedecrypt = (ingestionTracking: IngestionTracking) => {
-        return ingestionTrackingHomeViewService.useRedecryptIngestionTracking(ingestionTracking);
+        return decryptDocument.mutateAsync(ingestionTracking, {
+            onSuccess: () => {
+            },
+            onError: (error: any) => {
+            }
+        });
     };
 
     const handleEncryptedDownload = (ingestionTracking: IngestionTracking) => {
-        ingestionTrackingHomeViewService.useDownloadEncryptedDocument(ingestionTracking);
+        return downloadEncryptedDocument.mutateAsync(ingestionTracking, {
+            onSuccess: () => {
+            },
+            onError: (error: any) => {
+            }
+        });
     };
 
     const handleDecryptedDownload = (ingestionTracking: IngestionTracking) => {
-        return ingestionTrackingHomeViewService.useDownloadDecryptedDocument(ingestionTracking);
+        return downloadDecryptedDocument.mutateAsync(ingestionTracking, {
+            onSuccess: () => {
+            },
+            onError: (error: any) => {
+            }
+        });
     };
 
     const hasNoMorePages = () => {

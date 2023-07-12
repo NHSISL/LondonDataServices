@@ -97,13 +97,8 @@ namespace LHDS.AdminPortal.Api
             AddFoundationServices(services, this.Configuration);
             AddOrchestrationServices(services, this.Configuration);
             AddProcessingServices(services, this.Configuration);
-
             services.AddLandingClient(this.Configuration);
-            services.UseFtpDownloadProvider(this.Configuration);
-
-            var blobServiceUri = Configuration["BlobStorage:blob"];
-
-            services.AddSingleton<IAzureBlobClient, AzureBlobClient>();
+            services.UseFtpDownloadProvider(this.Configuration, builder => builder.AddFtpDownloadProvider());
 
             services.AddSwaggerGen(options =>
             {
@@ -120,11 +115,6 @@ namespace LHDS.AdminPortal.Api
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
-
-            services.AddAzureClients(builder =>
-            {
-                builder.AddBlobServiceClient(Configuration["BlobStorage:blob"], preferMsi: true);
-            });
 
             services.AddApplicationInsightsTelemetry();
         }

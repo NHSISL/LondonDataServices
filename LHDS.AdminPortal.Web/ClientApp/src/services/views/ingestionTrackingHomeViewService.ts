@@ -87,15 +87,15 @@ export const ingestionTrackingHomeViewService = {
         return landingService.useGetDownloadLinkByFileName();
     },
 
-    useRedecryptIngestionTracking: (ingestionTracking: IngestionTracking) => {
-        return decryptionService.useGetDocumentByFileNameToDecryptAsync(ingestionTracking.decryptedFileName);
+    useRedecryptIngestionTracking: () => {
+        return decryptionService.useGetDocumentByFileNameToDecryptAsync();
     },
 
-    useDownloadEncryptedDocument: (ingestionTracking: IngestionTracking) => {
-        return documentService.useGetDownloadLinkByFileName(ingestionTracking.encryptedFileName);
+    useDownloadEncryptedDocument: () => {
+        return documentService.useGetDownloadLinkByFileName();
     },
 
-    useDownloadDecryptedDocument: (ingestionTracking: IngestionTracking) => {
-        return documentService.useGetDownloadLinkByFileName(ingestionTracking.decryptedFileName);
+    useDownloadDecryptedDocument: () => {
+        return documentService.useGetDownloadLinkByFileName();
     },
 };

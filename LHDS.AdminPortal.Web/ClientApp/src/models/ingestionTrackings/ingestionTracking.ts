@@ -17,7 +17,6 @@ export class IngestionTracking {
     public createdDate?: Date;
     public updatedBy?: string;
     public updatedDate?: Date;
-    public audit: Audit;
     public supplier?: Supplier;
 
     constructor(ingestionTracking: any) {
@@ -36,9 +35,8 @@ export class IngestionTracking {
         this.createdDate = ingestionTracking.createdDate;
         this.updatedBy = ingestionTracking.updatedBy !== undefined ? ingestionTracking.updatedBy : ''
         this.updatedDate = ingestionTracking.updatedDate;
-        this.audit = ingestionTracking.audit;
 
-        if (ingestionTracking.borough !== undefined && ingestionTracking.borough !== null) {
+        if (ingestionTracking.supplier !== undefined && ingestionTracking.supplier !== null) {
             this.supplier = new Supplier(ingestionTracking.supplier);
         }
     }

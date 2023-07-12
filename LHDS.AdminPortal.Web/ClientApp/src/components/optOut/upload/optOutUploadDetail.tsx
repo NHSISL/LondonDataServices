@@ -16,14 +16,15 @@ const OptOutUploadDetail: FunctionComponent<OptOutUploadDetailProps> = (props) =
 
     let onUploadSuccess = false;
     const addOptOut = optOutService.useCreateOptOut();
-    const handleUpload = (values: string[]) => {
+    const handleUpload = (values: OptOut[]) => {  
         values.forEach((value) => {
             let DateNow = new Date();
 
             const optOutData = {
                 id: Guid.create().toString(),
-                nhsNumber: value,
-                status: 'Unknown',
+                uniqueReference: value.uniqueReference ? value.uniqueReference : " ",
+                nhsNumber: value.nhsNumber,
+                status: value.status ? value.status : 'Unknown',
                 cacheTime: DateNow,
                 lastSentToMesh: DateNow,
             };

@@ -2,9 +2,11 @@ import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { ChangeEvent, FunctionComponent, useState } from "react";
 import ButtonBase from "../../bases/buttons/ButtonBase";
+import { OptOut } from "../../../models/optout/optout";
+import { Guid } from "guid-typescript";
 
 interface OptOutUploadDetailCardViewProps {
-    onUpload: (data: string[]) => void;
+    onUpload: (data: OptOut[]) => void;
     onUploadSuccess: boolean;
 }
 
@@ -13,15 +15,31 @@ const OptOutUploadDetailCardView: FunctionComponent<OptOutUploadDetailCardViewPr
 
     const [file, setFile] = useState<File | null>(null);
     const [nhsNumbers, setNhsNumbers] = useState<string[]>([]);
-    const [validNhsNumbers, setValidNhsNumbers] = useState<string[]>([]);
+    const [validNhsNumbers, setValidNhsNumbers] = useState<OptOut[]>([]);
     const [invalidNhsNumbers, setInvalidNhsNumbers] = useState<string[]>([]);
 
-    const splitCSVRows = (csvContent: string) => {
+    const splitCSVRows = (csvContent: string): OptOut[] => {
         const rows = csvContent.split('\n');
-        const nhsNumbers = rows
-            .map((row) => row.replace(/"/g, '').split(',')[0])
-            .filter((row) => row.trim() !== '');
-        return nhsNumbers;
+        const optOuts: OptOut[] = [];
+
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i].trim();
+            if (row === '') {
+                continue;
+            }
+
+            const columns = row.split(',');
+
+            const optOut: any = {};
+            optOut.id = Guid.parse(Guid.EMPTY);
+            optOut.nhsNumber = columns[1];
+            optOut.status = columns[2];
+            optOut.uniqueReference = columns[0];
+
+            optOuts.push(new OptOut(optOut));
+        }
+
+        return optOuts;
     };
 
     const isValidNhsNumber = (nhsNumber: string): boolean => {
@@ -72,23 +90,24 @@ const OptOutUploadDetailCardView: FunctionComponent<OptOutUploadDetailCardViewPr
 
             reader.onload = () => {
                 const result = reader.result?.toString();
-                const nhsNumbers = splitCSVRows(result || '');
+                const optOuts = splitCSVRows(result || '');
 
-                setNhsNumbers(nhsNumbers);
+                setNhsNumbers(optOuts.map((optOut) => optOut.nhsNumber));
 
-                const validNumbers: string[] = [];
-                const invalidNumbers: string[] = [];
+                const validOptOuts: OptOut[] = [];
+                const invalidNhsNumbers: string[] = [];
 
-                nhsNumbers.forEach((nhsNumber) => {
-                    if (isValidNhsNumber(nhsNumber)) {
-                        validNumbers.push(nhsNumber);
+                optOuts.forEach((optOut) => {
+                    if (isValidNhsNumber(optOut.nhsNumber)) {
+                        validOptOuts.push(optOut);
                     } else {
-                        invalidNumbers.push(nhsNumber);
+                        invalidNhsNumbers.push(optOut.nhsNumber);
                     }
                 });
-                setValidNhsNumbers(validNumbers);
-                setInvalidNhsNumbers(invalidNumbers);
+                setValidNhsNumbers(validOptOuts);
+                setInvalidNhsNumbers(invalidNhsNumbers);
             };
+
             reader.readAsText(selectedFile);
         }
     };
@@ -100,9 +119,12 @@ const OptOutUploadDetailCardView: FunctionComponent<OptOutUploadDetailCardViewPr
         onUpload(validNhsNumbers);
     };
 
+    let totalImported = 0;
+    let totalInvalid = 0;
+
     const getSummary = (): string => {
-        const totalImported = nhsNumbers.length;
-        const totalInvalid = invalidNhsNumbers.length;
+        totalImported = nhsNumbers.length;
+        totalInvalid = invalidNhsNumbers.length;
         const totalValid = totalImported - totalInvalid;
         return `${totalValid}/${totalImported} imported. ${totalInvalid} invalid NHS numbers excluded.`;
     };
@@ -118,6 +140,8 @@ const OptOutUploadDetailCardView: FunctionComponent<OptOutUploadDetailCardViewPr
 
                         <p style={{ }}><strong>{getSummary()}</strong></p>
 
+                        {totalInvalid > 0 &&
+                        <>
                         <h3 style={{ color: "red" }}>Invalid NHS numbers:</h3>
                         <ul>
                             {invalidNhsNumbers.map((nhsNumber, index) => (
@@ -130,6 +154,8 @@ const OptOutUploadDetailCardView: FunctionComponent<OptOutUploadDetailCardViewPr
                         <p style={{ color: "red" }}>
                             <strong>NOTE:</strong> Only the valid NHS numbers will be saved.
                         </p>
+                        </>
+                        }
                         <ButtonBase onClick={handleUploadClick} add>
                             <FontAwesomeIcon icon={faUpload} />
                             &nbsp;Upload VALID NHS Numbers

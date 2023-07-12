@@ -7,11 +7,19 @@ import TableBaseData from "../bases/components/Table/TableBase.Data";
 import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
 
 type IngestionTrackingRowProps = {
+    onRelanding: (ingestionTracking: IngestionTracking) => void;
+    onRedecrypt: (ingestionTracking: IngestionTracking) => void;
+    onEncryptedDownload: (ingestionTracking: IngestionTracking) => void;
+    onDecryptedDownload: (ingestionTracking: IngestionTracking) => void;
     ingestionTracking: IngestionTracking;
 }
 
 const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (props) => {
     const {
+        onRelanding,
+        onRedecrypt,
+        onEncryptedDownload,
+        onDecryptedDownload,
         ingestionTracking
     } = props;
 
@@ -25,16 +33,28 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
         <TableBaseRow>
             <TableBaseData>
                 {/*{ingestionTracking.supplierId}*/}
-                EMIS
+                EMIS (Hardcoded)
             </TableBaseData>
             <TableBaseData>
-                {trimString(ingestionTracking.encryptedFileName)}
+                {trimString(ingestionTracking.fileName)}
                 <br />
-                <Badge pill bg="success text-white">Re-land</Badge> &nbsp;
-                <Badge pill bg="success text-white">Decrypt</Badge>
-               
-              
+                <ButtonBase onClick={() => onRelanding(ingestionTracking)} add>
+                    Re-land
+                </ButtonBase>
 
+                <ButtonBase onClick={() => onRedecrypt(ingestionTracking)} add>
+                    Re-decrypt
+                </ButtonBase>
+
+                <ButtonBase onClick={() => onEncryptedDownload(ingestionTracking)} add>
+                    Download Encrypted File
+                </ButtonBase>
+
+                {ingestionTracking.decrypted &&
+                    <ButtonBase onClick={() => onDecryptedDownload(ingestionTracking)} add>
+                        Download Decrypted File
+                    </ButtonBase>
+                }
             </TableBaseData>
             <TableBaseData>
                 <Link to={`/ingestionTrackingDetail/${ingestionTracking.id}`}>

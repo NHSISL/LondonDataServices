@@ -2,7 +2,7 @@ import { useQuery } from "react-query";
 import DecryptionBroker from "../../brokers/apiBroker.decryptions";
 
 export const decryptionService = {
-    useGetDownloadLinkByFileName: (fileName: string) => {
+    useGetDocumentByFileNameToDecryptAsync: (fileName: string) => {
         const decryptionBroker = new DecryptionBroker();
 
         return useQuery(

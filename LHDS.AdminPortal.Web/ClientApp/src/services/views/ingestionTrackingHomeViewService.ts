@@ -3,6 +3,9 @@ import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTrac
 import { IngestionTrackingHomeView } from "../../models/ingestionTrackings/ingestionTrackingHomeView";
 import { LookupView } from "../../models/views/components/lookups/lookupView";
 import { ingestionTrackingService } from "../foundations/ingestionTrackingService";
+import { landingService } from "../foundations/landingService";
+import { decryptionService } from "../foundations/decryptionService";
+import { documentService } from "../foundations/documentService";
 
 type IngestionTrackingHomeViewServiceResponse = {
     mappedIngestionTrackings: IngestionTrackingHomeView[] | undefined;
@@ -78,5 +81,21 @@ export const ingestionTrackingHomeViewService = {
         } catch (err) {
             throw err;
         }
+    },
+
+    useRelandIngestionTracking: (ingestionTracking: IngestionTracking) => {
+        return landingService.useGetDownloadLinkByFileName(ingestionTracking.fileName);
+    },
+
+    useRedecryptIngestionTracking: (ingestionTracking: IngestionTracking) => {
+        return decryptionService.useGetDocumentByFileNameToDecryptAsync(ingestionTracking.decryptedFileName);
+    },
+
+    useDownloadEncryptedDocument: (ingestionTracking: IngestionTracking) => {
+        return documentService.useGetDownloadLinkByFileName(ingestionTracking.encryptedFileName);
+    },
+
+    useDownloadDecryptedDocument: (ingestionTracking: IngestionTracking) => {
+        return documentService.useGetDownloadLinkByFileName(ingestionTracking.decryptedFileName);
     },
 };

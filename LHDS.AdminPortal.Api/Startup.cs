@@ -14,6 +14,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
+using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Foundations.Audits;
@@ -99,6 +100,9 @@ namespace LHDS.AdminPortal.Api
             AddFoundationServices(services, this.Configuration);
             AddOrchestrationServices(services, this.Configuration);
             AddProcessingServices(services, this.Configuration);
+
+            services.AddLandingClient(this.Configuration);
+
 
             var blobServiceUri = Configuration["BlobStorage:blob"];
 

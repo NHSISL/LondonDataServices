@@ -32,8 +32,7 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
     return (
         <TableBaseRow>
             <TableBaseData>
-                {/*{ingestionTracking.supplierId}*/}
-                EMIS (Hardcoded)
+                {ingestionTracking.supplier?.name}
             </TableBaseData>
             <TableBaseData>
                 {trimString(ingestionTracking.fileName)}

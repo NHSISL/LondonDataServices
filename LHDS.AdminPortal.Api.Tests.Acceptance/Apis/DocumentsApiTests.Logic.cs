@@ -23,6 +23,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
         public async Task ShouldGetDownloadLinkAsync()
         {
             // given
+            Supplier randomSupplier = await PostRandomSupplierAsync();
+            IngestionTracking randomIngestionTracking = await PostRandomIngestionTrackingAsync(randomSupplier.Id);
             string randomFileName = GetRandomString();
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
 
@@ -34,11 +36,19 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
 
             await this.apiBroker.documentService.AddDocumentAsync(document);
 
+            IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
+               supplierId: randomSupplier.Id);
+
+            ingestionTracking.DecryptedFileName = document.FileName;
+
             // when
             ActionResult<Document> documentResult = await this.apiBroker.GetDownloadLinkAsync(randomFileName);
 
             // then
             documentResult.Result.Should().BeOfType<OkObjectResult>();
+
+            IngestionTracking retrievedIngestionTracking =
+                await this.apiBroker.GetIngestionTrackingByIdAsync(ingestionTracking.Id);
 
             Document returnedDocument = ((OkObjectResult)documentResult.Result).Value as Document;
 
@@ -47,6 +57,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
 
             // clean up
             await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(document.FileName);
+            await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
+            await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }
     }
 }

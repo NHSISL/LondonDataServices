@@ -7,6 +7,9 @@ using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using LHDS.Core.Services.Foundations.Suppliers;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
+#if RELEASE
+using Microsoft.AspNetCore.Authorization;
+#endif
 
 namespace LHDS.AdminPortal.Api.Controllers
 {

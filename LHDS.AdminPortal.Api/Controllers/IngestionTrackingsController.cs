@@ -21,6 +21,9 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.ingestionTrackingService = ingestionTrackingService;
 
         [HttpPost]
+#if RELEASE
+        [Authorize(Roles = "lhdsApi.Administrators, lhds.Api.IngestionTracking")]
+#endif
         public async ValueTask<ActionResult<IngestionTracking>> PostIngestionTrackingAsync(
             IngestionTracking ingestionTracking)
         {
@@ -57,6 +60,9 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [HttpGet]
         [EnableQuery(PageSize = 50)]
+#if RELEASE
+        [Authorize(Roles = "lhdsApi.Administrators, lhds.Api.IngestionTracking, lhdsApi.ReadOnly")]
+#endif
         public ActionResult<IQueryable<IngestionTracking>> Get()
         {
             try
@@ -77,6 +83,9 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet("{ingestionTrackingId}")]
+#if RELEASE
+        [Authorize(Roles = "lhdsApi.Administrators, lhds.Api.IngestionTracking, lhdsApi.ReadOnly")]
+#endif
         public async ValueTask<ActionResult<IngestionTracking>> GetIngestionTrackingByIdAsync(Guid ingestionTrackingId)
         {
             try
@@ -106,6 +115,9 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpPut]
+#if RELEASE
+        [Authorize(Roles = "lhdsApi.Administrators, lhds.Api.IngestionTracking")]
+#endif
         public async ValueTask<ActionResult<IngestionTracking>> PutIngestionTrackingAsync(IngestionTracking ingestionTracking)
         {
             try
@@ -145,6 +157,9 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpDelete("{ingestionTrackingId}")]
+#if RELEASE
+        [Authorize(Roles = "lhdsApi.Administrators, lhds.Api.IngestionTracking")]
+#endif
         public async ValueTask<ActionResult<IngestionTracking>> DeleteIngestionTrackingByIdAsync(Guid ingestionTrackingId)
         {
             try

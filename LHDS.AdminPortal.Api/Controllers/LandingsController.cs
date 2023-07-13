@@ -20,6 +20,9 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.downloadOrchestrationService = downloadOrchestrationService;
 
         [HttpGet("{fileName}")]
+#if RELEASE
+        [Authorize(Roles = "lhdsApi.Administrators, lhds.Api.IngestionTracking, lhdsApi.ReadOnly")]
+#endif
         public async ValueTask<ActionResult<IngestionTracking>> GetLandingDocumentByFileNameAsync(string fileName)
         {
             try

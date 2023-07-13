@@ -20,6 +20,9 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.auditService = auditService;
 
         [HttpPost]
+#if RELEASE
+        [Authorize(Roles = "lhdsApi.Administrators, lhds.Api.IngestionTracking")]
+#endif
         public async ValueTask<ActionResult<Audit>> PostAuditAsync(Audit audit)
         {
             try
@@ -54,6 +57,9 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
+#if RELEASE
+        [Authorize(Roles = "lhdsApi.Administrators, lhds.Api.IngestionTracking, lhdsApi.ReadOnly")]
+#endif
         public ActionResult<IQueryable<Audit>> GetAllAudits()
         {
             try
@@ -74,6 +80,9 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet("{auditId}")]
+#if RELEASE
+        [Authorize(Roles = "lhdsApi.Administrators, lhds.Api.IngestionTracking, lhdsApi.ReadOnly")]
+#endif
         public async ValueTask<ActionResult<Audit>> GetAuditByIdAsync(Guid auditId)
         {
             try
@@ -102,6 +111,9 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpPut]
+#if RELEASE
+        [Authorize(Roles = "lhdsApi.Administrators, lhds.Api.IngestionTracking")]
+#endif
         public async ValueTask<ActionResult<Audit>> PutAuditAsync(Audit audit)
         {
             try
@@ -141,6 +153,9 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpDelete("{auditId}")]
+#if RELEASE
+        [Authorize(Roles = "lhdsApi.Administrators, lhds.Api.IngestionTracking")]
+#endif
         public async ValueTask<ActionResult<Audit>> DeleteAuditByIdAsync(Guid auditId)
         {
             try

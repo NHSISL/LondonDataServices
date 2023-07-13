@@ -20,6 +20,9 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.decryptionOrchestrationService = decryptionOrchestrationService;
 
         [HttpGet("{fileName}")]
+#if RELEASE
+        [Authorize(Roles = "lhdsApi.Administrators, lhds.Api.IngestionTracking, lhdsApi.ReadOnly")]
+#endif
         public async ValueTask<ActionResult<IngestionTracking>> GetDocumentByFileNameToDecryptAsync(string fileName)
         {
             try

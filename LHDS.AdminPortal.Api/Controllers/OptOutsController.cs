@@ -22,6 +22,9 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.optOutProcessingService = optOutProcessingService;
 
         [HttpPost]
+#if RELEASE
+        [Authorize(Roles = "lhdsApi.Administrators, lhdsApi.OptOut")]
+#endif
         public async ValueTask<ActionResult<OptOut>> PostOptOutAsync(
             OptOut optOut)
         {
@@ -57,6 +60,9 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet("{nhsNumber}")]
+#if RELEASE
+        [Authorize(Roles = "lhdsApi.Administrators, lhdsApi.OptOut, lhdsApi.ReadOnly")]
+#endif
         public async ValueTask<ActionResult<OptOut>> GetOptOutByNhsNumberAsync(string nhsNumber)
         {
             try
@@ -86,6 +92,9 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpPut]
+#if RELEASE
+        [Authorize(Roles = "lhdsApi.Administrators, lhdsApi.OptOut")]
+#endif
         public async ValueTask<ActionResult<OptOut>> PutOptOutAsync(OptOut optOut)
         {
             try

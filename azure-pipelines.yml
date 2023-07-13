@@ -296,6 +296,16 @@ steps:
     displayName: 'Publish Artifact - Frontend'
     artifact: drop-frontend
 
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_test_frontend_website
+    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    displayName: 'Publish Artifact - Frontend'
+    artifact: drop-frontend
+
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_production_frontend_website
+    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    displayName: 'Publish Artifact - Frontend'
+    artifact: drop-frontend
+
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_emis_func.zip
     condition: ne(variables['Build.Reason'], 'PullRequest')  
     displayName: 'Publish Artifact - Emis Function'

@@ -8,9 +8,10 @@ const securityPoints = {
         edit: ["", ""],
         view: ["", ""]
     },
-    configNavigation: {
-        view: ["administrator", ""]
+    pdsNavigation: {
+        view: ["lhdsApi.Pds"]
     },
+
 }
 
 export default securityPoints

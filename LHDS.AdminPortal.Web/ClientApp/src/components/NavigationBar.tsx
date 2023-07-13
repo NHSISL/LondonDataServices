@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container, Form, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { SecuredComponents, SecuredLink } from './Links';
+import securityPoints from '../SecurityMatrix';
 
 export const NavigationBar = () => {
     return (
@@ -19,10 +20,10 @@ export const NavigationBar = () => {
                                     <SecuredLink to="/optOutUpload">Upload Opt-Out</SecuredLink>
                                 </NavDropdown>
                             </SecuredComponents>
-                            <SecuredComponents>
+                            <SecuredComponents allowedRoles={securityPoints.pdsNavigation.view}>
                                 <NavDropdown title="Pds" id="pds-dropdown" className="text-white">
                                     <SecuredLink to="/pds">Pds Audit</SecuredLink>
-                                    <SecuredLink to="/pds">Pds Upload</SecuredLink>
+                                    <SecuredLink to="/pdsUpload">Pds Upload</SecuredLink>
                                 </NavDropdown>
                             </SecuredComponents>
                         </Nav>

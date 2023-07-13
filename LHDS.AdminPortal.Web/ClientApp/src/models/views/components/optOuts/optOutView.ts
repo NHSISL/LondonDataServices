@@ -29,7 +29,7 @@ export class OptOutView {
         this.id = id;
         this.nhsNumber = nhsNumber || "";
         this.status = status || "";
-        this.uniqueReference = uniqueReference;
+        this.uniqueReference = uniqueReference || "";
         this.batchReference = batchReference
         this.cacheTime = cacheTime;
         this.lastSentToMesh = lastSentToMesh;

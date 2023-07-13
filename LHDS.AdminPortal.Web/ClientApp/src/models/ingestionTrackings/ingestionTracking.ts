@@ -1,4 +1,3 @@
-import { Audit } from '../audits/audit';
 import { Supplier } from '../suppliers/supplier';
 
 export class IngestionTracking {

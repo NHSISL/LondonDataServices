@@ -17,7 +17,6 @@ const PdsUploadDetail: FunctionComponent<PdsUploadDetailProps> = (props) => {
     const addPds = pdsService.useCreatePds();
     const handleUpload = (values: string[]) => {
         values.forEach((value) => {
-            let DateNow = new Date();
 
             const pdsData = {
                 id: Guid.create().toString(),

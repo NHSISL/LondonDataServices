@@ -8,6 +8,9 @@ using LHDS.Core.Services.Foundations.IngestionTrackings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
+#if RELEASE
+using Microsoft.AspNetCore.Authorization;
+#endif
 
 namespace LHDS.AdminPortal.Api.Controllers
 {

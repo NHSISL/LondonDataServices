@@ -9,6 +9,9 @@ using LHDS.Core.Models.Processings.OptOuts.Exceptions;
 using LHDS.Core.Services.Processings.OptOuts;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
+#if RELEASE
+using Microsoft.AspNetCore.Authorization;
+#endif
 
 namespace LHDS.AdminPortal.Api.Controllers
 {

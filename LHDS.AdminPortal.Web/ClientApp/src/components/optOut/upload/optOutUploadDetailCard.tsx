@@ -4,10 +4,11 @@ import CardBaseBody from "../../bases/components/Card/CardBase.Body";
 import CardBaseContent from "../../bases/components/Card/CardBase.Content";
 import CardBaseTitle from "../../bases/components/Card/CardBase.Title";
 import OptOutUploadDetailCardView from "./optOutUploadDetailCardView";
+import { OptOut } from "../../../models/optout/optout";
 
 interface OptOutUploadDetailCardProps {
     children?: React.ReactNode;
-    onUpload: (data: string[]) => void;
+    onUpload: (data: OptOut[]) => void;
     onUploadSuccess: boolean;
 }
 

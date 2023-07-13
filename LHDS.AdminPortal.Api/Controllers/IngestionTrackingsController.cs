@@ -22,7 +22,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [HttpPost]
 #if RELEASE
-        [Authorize(Roles = "lhdsApi.Administrators, lhds.Api.IngestionTracking")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking")]
 #endif
         public async ValueTask<ActionResult<IngestionTracking>> PostIngestionTrackingAsync(
             IngestionTracking ingestionTracking)
@@ -61,7 +61,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         [HttpGet]
         [EnableQuery(PageSize = 50)]
 #if RELEASE
-        [Authorize(Roles = "lhdsApi.Administrators, lhds.Api.IngestionTracking, lhdsApi.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
 #endif
         public ActionResult<IQueryable<IngestionTracking>> Get()
         {
@@ -84,7 +84,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [HttpGet("{ingestionTrackingId}")]
 #if RELEASE
-        [Authorize(Roles = "lhdsApi.Administrators, lhds.Api.IngestionTracking, lhdsApi.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
 #endif
         public async ValueTask<ActionResult<IngestionTracking>> GetIngestionTrackingByIdAsync(Guid ingestionTrackingId)
         {
@@ -116,7 +116,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [HttpPut]
 #if RELEASE
-        [Authorize(Roles = "lhdsApi.Administrators, lhds.Api.IngestionTracking")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking")]
 #endif
         public async ValueTask<ActionResult<IngestionTracking>> PutIngestionTrackingAsync(IngestionTracking ingestionTracking)
         {
@@ -158,7 +158,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [HttpDelete("{ingestionTrackingId}")]
 #if RELEASE
-        [Authorize(Roles = "lhdsApi.Administrators, lhds.Api.IngestionTracking")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking")]
 #endif
         public async ValueTask<ActionResult<IngestionTracking>> DeleteIngestionTrackingByIdAsync(Guid ingestionTrackingId)
         {

@@ -21,7 +21,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [HttpPost]
 #if RELEASE
-        [Authorize(Roles = "lhdsApi.Administrators, lhdsApi.Suppliers")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Suppliers")]
 #endif
         public async ValueTask<ActionResult<Supplier>> PostSupplierAsync(Supplier supplier)
         {
@@ -58,7 +58,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [HttpGet]
 #if RELEASE
-        [Authorize(Roles = "lhdsApi.Administrators, lhdsApi.Suppliers, lhdsApi.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Suppliers, ISL.LDS.AdminApi.ReadOnly")]
 #endif
         public ActionResult<IQueryable<Supplier>> GetAllSuppliers()
         {
@@ -81,7 +81,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [HttpGet("{supplierId}")]
 #if RELEASE
-        [Authorize(Roles = "lhdsApi.Administrators, lhdsApi.Suppliers, lhdsApi.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Suppliers, ISL.LDS.AdminApi.ReadOnly")]
 #endif
         public async ValueTask<ActionResult<Supplier>> GetSupplierByIdAsync(Guid supplierId)
         {
@@ -112,7 +112,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [HttpPut]
 #if RELEASE
-        [Authorize(Roles = "lhdsApi.Administrators, lhdsApi.Suppliers")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Suppliers")]
 #endif
         public async ValueTask<ActionResult<Supplier>> PutSupplierAsync(Supplier supplier)
         {
@@ -154,7 +154,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [HttpDelete("{supplierId}")]
 #if RELEASE
-        [Authorize(Roles = "lhdsApi.Administrators, lhdsApi.Suppliers")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Suppliers")]
 #endif
         public async ValueTask<ActionResult<Supplier>> DeleteSupplierByIdAsync(Guid supplierId)
         {

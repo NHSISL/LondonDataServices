@@ -172,26 +172,37 @@ steps:
       arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_development_frontend_website --configuration Development"
       zipAfterPublish: true
       modifyOutputPath: false
- 
-  - task: DotNetCoreCLI@2
-    displayName: "Dotnet Publish API (Test)"
+
+ - task: DotNetCoreCLI@2
+    displayName: "Dotnet Publish Frontend (Test)"
     condition: ne(variables['Build.Reason'], 'PullRequest')
     inputs:
       command: "publish"
       publishWebProjects: false
-      projects: "**/LHDS.AdminPortal.Api.csproj"
-      arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_api_website --configuration Test"
+      projects: "**/LHDS.AdminPortal.Web.csproj"
+      arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_test_frontend_website --configuration Test"
       zipAfterPublish: true
       modifyOutputPath: false
 
   - task: DotNetCoreCLI@2
-    displayName: "Dotnet Publish API (Production)"
+    displayName: "Dotnet Publish Frontend (Production)"
+    condition: ne(variables['Build.Reason'], 'PullRequest')
+    inputs:
+      command: "publish"
+      publishWebProjects: false
+      projects: "**/LHDS.AdminPortal.Web.csproj"
+      arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_production_frontend_website --configuration Production"
+      zipAfterPublish: true
+      modifyOutputPath: false
+
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Publish API"
     condition: ne(variables['Build.Reason'], 'PullRequest')
     inputs:
       command: "publish"
       publishWebProjects: false
       projects: "**/LHDS.AdminPortal.Api.csproj"
-      arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_api_website --configuration Production"
+      arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_api_website --configuration Release"
       zipAfterPublish: true
       modifyOutputPath: false
 

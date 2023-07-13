@@ -173,7 +173,7 @@ steps:
       zipAfterPublish: true
       modifyOutputPath: false
 
- - task: DotNetCoreCLI@2
+  - task: DotNetCoreCLI@2
     displayName: "Dotnet Publish Frontend (Test)"
     condition: ne(variables['Build.Reason'], 'PullRequest')
     inputs:

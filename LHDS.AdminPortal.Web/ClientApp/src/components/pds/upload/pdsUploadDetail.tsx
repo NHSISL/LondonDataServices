@@ -21,10 +21,6 @@ const PdsUploadDetail: FunctionComponent<PdsUploadDetailProps> = (props) => {
 
             const pdsData = {
                 id: Guid.create().toString(),
-                nhsNumber: value,
-                pdsStatus: 'Unknown',
-                cacheTime: DateNow,
-                lastSentToMesh: DateNow,
             };
 
             const pds = new Pds(pdsData);

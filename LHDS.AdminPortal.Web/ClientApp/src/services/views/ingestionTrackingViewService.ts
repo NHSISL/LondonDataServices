@@ -56,8 +56,6 @@ export const ingestionTrackingViewService = {
         try {
             let query = `?$expand=supplier&$orderby=createdDate&$filter=id eq ${id}` ;
 
-
-
             const response = ingestionTrackingService.useGetAllIngestionTrackings(query);
             const [mappedIngestionTracking, setMappedIngestionTracking] = useState<IngestionTrackingView>();
 
@@ -86,7 +84,6 @@ export const ingestionTrackingViewService = {
                     setMappedIngestionTracking(ingestionTrackings[0]);
                 }
             }, [response.data]);
-
 
             return {
                 mappedIngestionTracking, ...response

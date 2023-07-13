@@ -23,7 +23,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [HttpPost]
 #if RELEASE
-        [Authorize(Roles = "lhdsApi.Administrators, lhdsApi.OptOut")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.OptOut")]
 #endif
         public async ValueTask<ActionResult<OptOut>> PostOptOutAsync(
             OptOut optOut)
@@ -61,7 +61,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [HttpGet("{nhsNumber}")]
 #if RELEASE
-        [Authorize(Roles = "lhdsApi.Administrators, lhdsApi.OptOut, lhdsApi.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.OptOut, ISL.LDS.AdminApi.ReadOnly")]
 #endif
         public async ValueTask<ActionResult<OptOut>> GetOptOutByNhsNumberAsync(string nhsNumber)
         {
@@ -93,7 +93,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [HttpPut]
 #if RELEASE
-        [Authorize(Roles = "lhdsApi.Administrators, lhdsApi.OptOut")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.OptOut")]
 #endif
         public async ValueTask<ActionResult<OptOut>> PutOptOutAsync(OptOut optOut)
         {

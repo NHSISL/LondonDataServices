@@ -8,7 +8,7 @@ export const ingestionTrackingViewService = {
 
     useGetAllIngestionTrackings: (searchTerm?: string) => {
         try {
-            let query = `?$expand=audit&$orderby=createdDate`;
+            let query = `?$expand=audit&$expand=supplier&$orderby=createdDate`;
 
             if (searchTerm) {
                 query = query + `&$filter=contains(Id,'${searchTerm}')`;

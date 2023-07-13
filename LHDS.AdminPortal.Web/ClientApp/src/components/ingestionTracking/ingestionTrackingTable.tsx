@@ -13,6 +13,7 @@ import InfiniteScroll from "../bases/pagers/InfiniteScroll";
 import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import IngestionTrackingRow from "./ingestionTrackingRow";
+import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
 
 type IngestionTrackingTableProps = {};
 
@@ -43,6 +44,47 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
             }, 500),
         []
     );
+
+    const relandDocument = ingestionTrackingHomeViewService.useRelandIngestionTracking();
+    const decryptDocument = ingestionTrackingHomeViewService.useRedecryptIngestionTracking();
+    const downloadEncryptedDocument = ingestionTrackingHomeViewService.useDownloadEncryptedDocument();
+    const downloadDecryptedDocument = ingestionTrackingHomeViewService.useDownloadDecryptedDocument();
+
+    const handleRelanding = (ingestionTracking: IngestionTracking) => {
+        return relandDocument.mutateAsync(ingestionTracking, {
+            onSuccess: () => {
+            },
+            onError: (error: any) => {
+            }
+        });
+    };
+
+    const handleRedecrypt = (ingestionTracking: IngestionTracking) => {
+        return decryptDocument.mutateAsync(ingestionTracking, {
+            onSuccess: () => {
+            },
+            onError: (error: any) => {
+            }
+        });
+    };
+
+    const handleEncryptedDownload = (ingestionTracking: IngestionTracking) => {
+        return downloadEncryptedDocument.mutateAsync(ingestionTracking, {
+            onSuccess: () => {
+            },
+            onError: (error: any) => {
+            }
+        });
+    };
+
+    const handleDecryptedDownload = (ingestionTracking: IngestionTracking) => {
+        return downloadDecryptedDocument.mutateAsync(ingestionTracking, {
+            onSuccess: () => {
+            },
+            onError: (error: any) => {
+            }
+        });
+    };
 
     const hasNoMorePages = () => {
         return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
@@ -75,6 +117,10 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                                             <IngestionTrackingRow
                                                 key={ingestionTrackingHomeView.id}
                                                 ingestionTracking={ingestionTrackingHomeView}
+                                                onRelanding={handleRelanding}
+                                                onRedecrypt={handleRedecrypt}
+                                                onEncryptedDownload={handleEncryptedDownload}
+                                                onDecryptedDownload={handleDecryptedDownload}
                                             />
                                         )
                                     )}

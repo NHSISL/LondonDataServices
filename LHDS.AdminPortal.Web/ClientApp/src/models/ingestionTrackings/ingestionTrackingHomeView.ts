@@ -1,4 +1,4 @@
-import { Audit } from '../audits/audit';
+import { Supplier } from '../suppliers/supplier';
 
 export class IngestionTrackingHomeView {
     public id: string;
@@ -12,7 +12,7 @@ export class IngestionTrackingHomeView {
     public recordCount: number;
     public encryptedFileSize: number;
     public decryptedFileSize: number;
-    public audit: Audit;
+    public supplier?: Supplier;
 
     constructor(
         id: string,
@@ -26,7 +26,7 @@ export class IngestionTrackingHomeView {
         recordCount: number,
         encryptedFileSize: number,
         decryptedFileSize: number,
-        audit: Audit
+        supplier?: Supplier
     ) {
         this.id = id;
         this.fileName = fileName;
@@ -39,6 +39,6 @@ export class IngestionTrackingHomeView {
         this.recordCount = recordCount;
         this.encryptedFileSize = encryptedFileSize;
         this.decryptedFileSize = decryptedFileSize;
-        this.audit = audit;
+        this.supplier = supplier;
     }
 }

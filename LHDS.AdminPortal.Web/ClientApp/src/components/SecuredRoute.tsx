@@ -36,7 +36,6 @@ export const SecuredRoute = ({ children, allowedRoles = [], deniedRoles = [] }: 
 
     const NoAccess = () => {
         return <Container className="mt-3">
-
             <WarningCallout>
                 <WarningCallout.Label id="deniedAccessReason">
                     Invalid Access
@@ -48,7 +47,6 @@ export const SecuredRoute = ({ children, allowedRoles = [], deniedRoles = [] }: 
                     {isAuthenticated ? "" : <ButtonBase className="inlineLogin" onClick={() => instance.loginRedirect(loginRequest)} edit>Login</ButtonBase>}
                 </p>
             </WarningCallout>
-
         </Container>
     }
 
@@ -67,7 +65,6 @@ export const SecuredRoute = ({ children, allowedRoles = [], deniedRoles = [] }: 
     }
 
     return <Container className="mt-3">
-
         <WarningCallout>
             <WarningCallout.Label visuallyHiddenText="Not Important: " id="deniedAccessReason">
                 You are not logged in.
@@ -77,8 +74,5 @@ export const SecuredRoute = ({ children, allowedRoles = [], deniedRoles = [] }: 
                 <ButtonBase className="inlineLoginNotAuth" onClick={() => instance.loginRedirect(loginRequest)} edit>Login</ButtonBase>
             </p>
         </WarningCallout>
-
     </Container>
-
-
 }

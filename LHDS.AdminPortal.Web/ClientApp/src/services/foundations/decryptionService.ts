@@ -1,13 +1,13 @@
 import { useMutation } from "react-query";
-import DocumentBroker from "../../brokers/apiBroker.documents";
+import DecryptionBroker from "../../brokers/apiBroker.decryptions";
 import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
 
-export const documentService = {
-    useGetDownloadLinkByFileName: () => {
-        const documentBroker = new DocumentBroker();
+export const decryptionService = {
+    useGetDocumentByFileNameToDecryptAsync: () => {
+        const decryptionBroker = new DecryptionBroker();
 
         return useMutation((ingestionTracking: IngestionTracking) => {
-            return documentBroker.GetDownloadLinkAsync(ingestionTracking.fileName);
+            return decryptionBroker.GetDocumentByFileNameToDecryptAsync(ingestionTracking.fileName);
         },
             {
                 onSuccess: (variables) => {

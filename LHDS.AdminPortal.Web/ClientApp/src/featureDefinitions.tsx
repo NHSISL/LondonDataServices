@@ -1,6 +1,6 @@
 export enum FeatureDefinitions {
     OptOut,
-    EmisIngestionTracking,
+    IngestionTracking,
     IngestionTrackingSearch,
     Pds
 }

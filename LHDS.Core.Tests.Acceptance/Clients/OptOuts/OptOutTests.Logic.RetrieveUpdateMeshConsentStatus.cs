@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             //Given
             string messageId = GetRandomString();
             List<string> messageIds = new List<string> { messageId };
-            string mexWorkflowId = this.meshConfiguration.WorkflowId;
+            string mexWorkflowId = this.optOutConfiguration.WorkflowId;
             string mexLocalId = GetRandomString();
             string fileName = $"{optOutConfiguration.OutputFolder}/{mexLocalId}_deltaresponse.csv";
             string mexTo = this.optOutConfiguration.To;

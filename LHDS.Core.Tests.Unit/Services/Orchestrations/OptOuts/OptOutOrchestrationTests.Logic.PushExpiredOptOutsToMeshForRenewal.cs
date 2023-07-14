@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -28,16 +27,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             List<OptOut> randomOptOuts = CreateRandomOptOutsList();
             List<OptOut> outputOptOuts = randomOptOuts;
 
-            List<OptOutIdentifier> mappedOptOuts = outputOptOuts
-                .Select(optout => new OptOutIdentifier
-                {
-                    NhsNumber = optout.NhsNumber,
-                    UniqueReference = optout.UniqueReference,
-                    Status = optout.Status
-                }).ToList();
-
-            var processedOutputString = GetRandomString();
-
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
                     .Returns(randomDate);
@@ -46,16 +35,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 processing.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays))
                     .ReturnsAsync(outputOptOuts);
 
+            StringBuilder processedOutputString = new StringBuilder();
+
+            foreach (var item in outputOptOuts)
+            {
+                processedOutputString.AppendLine($"{item.NhsNumber},");
+            }
+
+            string csvFileContent = processedOutputString.ToString();
             string batchReference = randomDate.ToString("yyyyMMddHHmmss");
-
-            this.csvMapperProcessingServiceMock.Setup(processings =>
-                processings.MapObjectToCsvAsync(
-                    It.Is(SameOptOutIdentifierListAs(mappedOptOuts)), withHeader, shouldAddTrailingComma))
-                        .ReturnsAsync(processedOutputString);
-
             string mexTo = this.optOutConfiguration.To;
             string mexWorkflowId = this.optOutConfiguration.WorkflowId;
-            byte[] fileContent = Encoding.UTF8.GetBytes(processedOutputString);
+            byte[] fileContent = Encoding.UTF8.GetBytes(csvFileContent);
             string mexSubject = string.Empty;
             string mexLocalId = batchReference;
             string mexFileName = $"{batchReference}.txt";
@@ -107,10 +98,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             // Then
             this.optOutProcessingServiceMock.Verify(processings =>
                 processings.RetrieveAllExpiredOptOutsAsync(optOutConfiguration.ExpiredAfterDays),
-                    Times.Once);
-
-            this.csvMapperProcessingServiceMock.Verify(processings =>
-                processings.MapObjectToCsvAsync(It.IsAny<List<OptOutIdentifier>>(), withHeader, shouldAddTrailingComma),
                     Times.Once);
 
             this.meshProcessingServiceMock.Verify(processings =>

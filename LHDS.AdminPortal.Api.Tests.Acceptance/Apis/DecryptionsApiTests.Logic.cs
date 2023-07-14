@@ -37,7 +37,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
                 supplierId: randomSupplier.Id);
 
             ingestionTracking.EncryptedFileName = document.FileName;
-
             await this.apiBroker.PostIngestionTrackingAsync(ingestionTracking);
 
             //When

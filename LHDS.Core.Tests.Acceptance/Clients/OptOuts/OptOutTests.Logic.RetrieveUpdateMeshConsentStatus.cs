@@ -2,24 +2,16 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.IO.Enumeration;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Clients;
 using LHDS.Core.Models.Foundations.OptOuts;
 using Moq;
 using NEL.MESH.Clients.Mailboxes;
 using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
-using Xunit.Sdk;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 {
@@ -32,7 +24,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             //Given
             string messageId = GetRandomString();
             List<string> messageIds = new List<string> { messageId };
-            string mexWorkflowId = this.meshConfiguration.WorkflowId;
+            string mexWorkflowId = this.optOutConfiguration.WorkflowId;
             string mexLocalId = GetRandomString();
             string fileName = $"{optOutConfiguration.OutputFolder}/{mexLocalId}_deltaresponse.csv";
             string mexTo = this.optOutConfiguration.To;
@@ -41,13 +33,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             bool withTrailingComma = this.optOutConfiguration.OptOutFileRequireTrailingComma;
 
             List<OptOut> randomOptOutList = CreateRandomOptOutsList(
-                count: GetRandomNumber(), 
-                this.dateTimeBroker.GetCurrentDateTimeOffset(), 
+                count: GetRandomNumber(),
+                this.dateTimeBroker.GetCurrentDateTimeOffset(),
                 batchReference);
 
             var csvOptOutList = new StringBuilder();
 
-            foreach(OptOut optOut in randomOptOutList)
+            foreach (OptOut optOut in randomOptOutList)
             {
                 await this.optOutService.AddOptOutAsync(optOut);
             }
@@ -96,6 +88,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             {
                 this.meshBrokerMock.Verify(broker =>
                     broker.RetrieveMessageAsync(id),
+                        Times.Once);
+
+                this.meshBrokerMock.Verify(broker =>
+                    broker.AcknowledgeMessageByIdAsync(id),
                         Times.Once);
             }
 

@@ -85,7 +85,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             List<OptOut> actualOptOutList = await this.optOutProcessingService
                 .ConsolidateOptOutChangesAndReturnChangesOnly(
                 currentOptOutInputList, 
-                consentedItems: consentedNhsNumbers);
+                consentedIdentifiers: consentedNhsNumbers);
 
             // then
             actualOptOutList.Should().BeEquivalentTo(expectedOptOutList);
@@ -184,7 +184,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             List<OptOut> actualOptOutList = await this.optOutProcessingService
                 .ConsolidateOptOutChangesAndReturnChangesOnly(
                 currentOptOutInputList, 
-                consentedItems: consentedNhsNumbers);
+                consentedIdentifiers: consentedNhsNumbers);
 
             // then
             actualOptOutList.Should().BeEquivalentTo(expectedOptOutList);

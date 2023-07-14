@@ -14,6 +14,7 @@ import { SuppliersPage } from './pages/configuration/suppliersPage';
 import { OptOutSearch } from './pages/OptOutSearch';
 import { OptOutUpload } from './pages/OptOutUpload';
 import { PdsSearch } from './pages/PdsSearch';
+import { PdsUpload } from './pages/PdsUpload';
 
 const App = ({ msalInstance }: any) => {
     return (
@@ -30,6 +31,7 @@ const App = ({ msalInstance }: any) => {
                         <Route path="/configuration" element={<ConfigHomePage/>} />
                         <Route path="/configuration/suppliers" element={<SuppliersPage />} />
                         <Route path="/pds" element={<PdsSearch />} />
+                        <Route path="/pdsUpload" element={<PdsUpload />} />
                     </Routes>
                 </PageLayout>
                 <ReactQueryDevtools initialIsOpen={false} />

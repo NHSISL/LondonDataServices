@@ -8,8 +8,8 @@
 
   <ItemGroup>
 	  <PackageReference Include="Azure.Storage.Blobs" Version="12.16.0" />
-	  <PackageReference Include="Azure.Storage.Files.Shares" Version="12.14.0" />
-	  <PackageReference Include="Azure.Storage.Queues" Version="12.14.0" />
+	  <PackageReference Include="Azure.Storage.Files.Shares" Version="12.15.0" />
+	  <PackageReference Include="Azure.Storage.Queues" Version="12.15.0" />
 	  <PackageReference Include="EFxceptions" Version="0.4.5" />
 	  <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
 	  <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
@@ -26,7 +26,7 @@
 	  <PackageReference Include="RESTFulSense" Version="2.15.0" />
 	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 	  <PackageReference Include="Xeption" Version="2.5.0" />
-	  <PackageReference Include="xunit.extensibility.core" Version="2.4.2" />
+	  <PackageReference Include="xunit.extensibility.core" Version="2.5.0" />
   </ItemGroup>
 
   <ItemGroup>

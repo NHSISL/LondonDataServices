@@ -18,7 +18,7 @@ namespace LHDS.AdminPortal.Api
                 config.AddJsonFile(path: "appsettings.json")
                 .AddJsonFile(path: $"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true)
                 .AddJsonFile(path: "local.appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables();
+                .AddEnvironmentVariables("LHDS_");
             })
             .ConfigureWebHostDefaults(webBuilder =>
             {

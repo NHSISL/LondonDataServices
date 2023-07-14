@@ -16,8 +16,8 @@ export class OptOut {
     constructor(optout: any) {
         this.id = optout.id ? Guid.parse(optout.id) : Guid.parse(Guid.EMPTY);
         this.nhsNumber = optout.nhsNumber;
-        this.status = optout.status;
-        this.uniqueReference = optout.uniqueReference;
+        this.status = optout.status || "";
+        this.uniqueReference = optout.uniqueReference || "";
         this.batchReference = optout.batchReference;
         this.cacheTime = optout.cacheTime ? new Date(optout.cacheTime) : undefined;
         this.lastSentToMesh = optout.lastSentToMesh ? new Date(optout.lastSentToMesh) : undefined;

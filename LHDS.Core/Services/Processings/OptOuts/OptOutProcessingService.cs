@@ -106,10 +106,15 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 var expirationDate = this.dateTimeBroker.
                     GetCurrentDateTimeOffset().AddDays(-olderThanDays);
 
+                var lastSentExpirationDate = this.dateTimeBroker.
+                    GetCurrentDateTimeOffset().AddDays(-2);
+
                 IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
 
                 List<OptOut> expiredOptOuts = allOptOuts
-                    .Where(optOut => optOut.CacheTime < expirationDate)
+                    .Where(optOut =>
+                        optOut.CacheTime < expirationDate
+                        && optOut.LastSentToMesh < lastSentExpirationDate)
                         .OrderBy(optOut => optOut.CreatedDate)
                             .ToList();
 
@@ -132,13 +137,13 @@ namespace LHDS.Core.Services.Processings.OptOuts
 
         public ValueTask<List<OptOut>> ConsolidateOptOutChangesAndReturnChangesOnly(
             List<OptOut> currentOptOutList,
-            List<string> consentedItems) =>
+            List<string> consentedIdentifiers) =>
             TryCatch(async () =>
         {
-            ValidateCurrentOptOutListProcessingOnConsolidate(currentOptOutList, consentedItems);
+            ValidateCurrentOptOutListProcessingOnConsolidate(currentOptOutList, consentedIdentifiers);
 
             List<OptOut> consentedList = currentOptOutList
-                .Where(optOut => consentedItems.Contains(optOut.NhsNumber))
+                .Where(optOut => consentedIdentifiers.Contains(optOut.NhsNumber))
                     .ToList();
 
             List<OptOut> nonConsentedList = currentOptOutList

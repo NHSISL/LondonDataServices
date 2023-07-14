@@ -73,7 +73,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         {
                             IngestionTracking maybeIngestionTracking =
                                 this.ingestionTrackingService.RetrieveAllIngestionTrackings()
-                                    .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == document.FileName);
+                                    .FirstOrDefault(ingestionTracking =>
+                                        ingestionTracking.FileName == document.FileName);
 
                             if (maybeIngestionTracking == null)
                             {

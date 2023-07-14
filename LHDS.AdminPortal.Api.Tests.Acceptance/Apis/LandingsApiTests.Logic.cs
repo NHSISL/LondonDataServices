@@ -2,16 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FluentAssertions;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using LHDS.Core.Models.Foundations.Documents;
-using RESTFulSense.Exceptions;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
@@ -24,13 +19,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             // given
             Supplier randomSupplier = await PostRandomSupplierAsync();
             IngestionTracking randomIngestionTracking = await PostRandomIngestionTrackingAsync(randomSupplier.Id);
-            string randomFileName = GetRandomString();
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
 
             Document document = new Document
             {
                 DocumentData = documentData,
-                FileName = randomFileName
+                FileName = randomIngestionTracking.EncryptedFileName
             };
 
             await this.apiBroker.documentService.AddDocumentAsync(document);
@@ -41,7 +35,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             ingestionTracking.DecryptedFileName = document.FileName;
 
             // when
-            await this.apiBroker.GetLandingDocumentByFileNameAsync(randomFileName);
+            await this.apiBroker.GetLandingDocumentByFileNameAsync(randomIngestionTracking.EncryptedFileName);
 
             // then
             IngestionTracking createdIngestionTracking =

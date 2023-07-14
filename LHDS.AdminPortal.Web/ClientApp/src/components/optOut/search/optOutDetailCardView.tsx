@@ -7,6 +7,8 @@ import SummaryListBaseKey from "../../bases/components/SummaryList/SummaryListBa
 import SummaryListBaseRow from "../../bases/components/SummaryList/SummaryListBase.Row";
 import SummaryListBaseValue from "../../bases/components/SummaryList/SummaryListBase.Value";
 import { Guid } from "guid-typescript";
+import securityPoints from "../../../SecurityMatrix";
+import { SecuredComponents } from "../../Links";
 
 interface OptOutDetailCardViewProps {
     optOuts: OptOutView | undefined;
@@ -69,8 +71,6 @@ const OptOutDetailCardView: FunctionComponent<OptOutDetailCardViewProps> = (prop
                     <SummaryListBaseKey>Opt-Out Status</SummaryListBaseKey>
                     <SummaryListBaseValue>{optOuts.createdBy}</SummaryListBaseValue>
                 </SummaryListBaseRow>
-
-
                 <SummaryListBaseRow>
                     <SummaryListBaseKey></SummaryListBaseKey>
                     <SummaryListBaseValue>
@@ -83,7 +83,12 @@ const OptOutDetailCardView: FunctionComponent<OptOutDetailCardViewProps> = (prop
 
     if (optOuts !== undefined && optOuts.id.toString() === Guid.EMPTY) {
         return <div>
-            <ButtonBase onClick={onAddNewNHS} view>Add {nhsNumber} to NDOP check</ButtonBase>
+            <SecuredComponents allowedRoles={securityPoints.optOut.add}>
+                <ButtonBase onClick={onAddNewNHS} view>Add {nhsNumber} to NDOP check</ButtonBase>
+            </SecuredComponents>
+            <SecuredComponents allowedRoles={securityPoints.optOut.readonly}>
+                <p>You do not have permission to add NHS Number: <strong>{nhsNumber}</strong></p>
+            </SecuredComponents>
         </div>
     }
 

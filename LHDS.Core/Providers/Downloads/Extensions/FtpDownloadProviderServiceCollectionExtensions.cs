@@ -22,7 +22,7 @@ namespace LHDS.Core.Providers.Downloads.Extensions
             Action<FtpProviderRegistrationBuilder> builderAction)
         {
             IFtpDownloadProviderSettings ftpDownloadProviderSettings =
-                configuration.GetSection("cryptography").Get<FtpDownloadProviderSettings>();
+                configuration.GetSection("ftpDownload").Get<FtpDownloadProviderSettings>();
 
             ValidateFtpProviderSettings(ftpDownloadProviderSettings);
 
@@ -45,9 +45,6 @@ namespace LHDS.Core.Providers.Downloads.Extensions
 
                 (Rule: IsInvalid(ftpDownloadProviderSettings.FtpUserName),
                     Parameter: "ftpDownload__ftpUserName"),
-
-                (Rule: IsInvalid(ftpDownloadProviderSettings.TempFolder),
-                    Parameter: "ftpDownload__tempFolder"),
 
                 (Rule: IsInvalid(ftpDownloadProviderSettings.IncludeSubDirectories),
                     Parameter: "ftpDownload__includeSubDirectories"));

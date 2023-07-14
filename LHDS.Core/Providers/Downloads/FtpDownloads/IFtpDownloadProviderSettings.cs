@@ -39,10 +39,6 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
         /// </summary>
         string FtpPassword { get; }
 
-        /// <summary>
-        /// Gets the temp folder path.
-        /// </summary>
-        string TempFolder { get; }
 
         /// <summary>
         /// Gets the root folder for the FTP server.

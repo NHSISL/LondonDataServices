@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables("LHDS_INTEGRATION_");
+                .AddEnvironmentVariables("LHDS_");
 
             IConfiguration configuration = configurationBuilder.Build();
 

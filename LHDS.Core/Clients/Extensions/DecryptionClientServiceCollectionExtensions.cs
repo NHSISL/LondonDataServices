@@ -3,7 +3,10 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
@@ -16,7 +19,9 @@ using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
+using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Providers.Cryptography;
+using LHDS.Core.Providers.Cryptography.Gpg;
 using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Decryptions;
@@ -43,6 +48,11 @@ namespace LHDS.Core.Clients.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
+            if (configuration == null)
+            {
+                new Exception("No configuration found");
+            }
+
             return AddDecryptionClient(services, configuration, acceptanceTest: true);
         }
 
@@ -52,8 +62,11 @@ namespace LHDS.Core.Clients.Extensions
             bool acceptanceTest)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
+            var landingConfiguration = configuration.GetSection("landingSettings").Get<LandingConfiguration>();
+            ValidateLandingConfiguration(landingConfiguration);
+            services.AddSingleton<LandingConfiguration>(landingConfiguration);
 
-            AddProviders(services);
+            AddProviders(services, configuration);
             AddBrokers(services, configuration, acceptanceTest);
             AddServices(services);
             AddProcessingServices(services);
@@ -63,10 +76,16 @@ namespace LHDS.Core.Clients.Extensions
             return services;
         }
 
-        private static void AddProviders(IServiceCollection services)
+        private static void AddProviders(IServiceCollection services, IConfiguration configuration)
         {
+            IGpgCryptographyProviderSettings gpgCryptographyProviderSettings =
+                configuration.GetSection("cryptography").Get<GpgCryptographyProviderSettings>();
+
+            ValidateCryptographyProviderSettings(gpgCryptographyProviderSettings);
+            services.AddSingleton<IGpgCryptographyProviderSettings>(gpgCryptographyProviderSettings);
             services.AddTransient<IDownloadAbstractProvider, DownloadAbstractProvider>();
             services.AddTransient<ICryptographyAbstractProvider, CryptographyAbstractProvider>();
+            services.AddTransient<ICryptographyProvider, GpgCryptographyProvider>();
         }
 
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration, bool acceptanceTest)
@@ -128,15 +147,66 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDecryptionClient, DecryptionClient>();
         }
 
+        private static void ValidateCryptographyProviderSettings(
+            IGpgCryptographyProviderSettings cryptographyProviderSettings)
+        {
+            if (cryptographyProviderSettings == null)
+            {
+                throw new InvalidConfigurationException("Configuration section 'cryptography' not defined.");
+            }
+
+            Validate(
+                (Rule: IsInvalid(cryptographyProviderSettings.PrivateKey),
+                    Parameter: "cryptography__privateKey"),
+
+                (Rule: IsInvalid(cryptographyProviderSettings.PublicKey),
+                    Parameter: "cryptography__publicKey"),
+
+                (Rule: IsInvalid(cryptographyProviderSettings.Passphrase),
+                    Parameter: "cryptography__passphrase"));
+        }
+
+        private static void ValidateLandingConfiguration(LandingConfiguration landingConfiguration)
+        {
+            if (landingConfiguration == null)
+            {
+                throw new InvalidConfigurationException("Configuration section 'landingSettings' not defined.");
+            }
+
+            Validate(
+                (Rule: IsInvalid(landingConfiguration.LandingSupplierId),
+                    Parameter: "landingSettings__landingSupplierId"),
+
+                (Rule: IsInvalid(landingConfiguration.EncryptedFolder),
+                    Parameter: "landingSettings:encryptedFolder"),
+
+                (Rule: IsInvalid(landingConfiguration.DecryptedFolder),
+                    Parameter: "landingSettings:decryptedFolder"));
+        }
+
         private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)
         {
+            if (blobStorageSettings == null)
+            {
+                throw new InvalidConfigurationException("Configuration section 'blobStorage' not defined.");
+            }
+
             Validate(
                 (Rule: IsInvalid(blobStorageSettings.AzureBlobServiceUri),
-                    Parameter: "BlobStorageSettings__AzureBlobServiceUri"),
+                    Parameter: "blobStorage__azureBlobServiceUri"),
 
                 (Rule: IsInvalid(blobStorageSettings.AzureTenantId),
-                    Parameter: "BlobStorageSettings__AzureTenantId"));
+                    Parameter: "blobStorage__azureTenantId"),
+
+                (Rule: IsInvalid(blobStorageSettings.BlobContainerName),
+                    Parameter: "blobStorage__blobContainerName"));
         }
+
+        private static dynamic IsInvalid(Guid id) => new
+        {
+            Condition = id == Guid.Empty,
+            Message = "Configuration value does not exist"
+        };
 
         private static dynamic IsInvalid(string text) => new
         {
@@ -146,17 +216,30 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidConfigurationException = new InvalidConfigurationException();
+            StringBuilder validationErrors = new StringBuilder();
+            validationErrors.AppendLine("Configuration error(s):");
+            IDictionary errors = new Dictionary<string, List<string>>();
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidConfigurationException.UpsertDataList(
-                        key: parameter,
-                        value: rule.Message);
+                    validationErrors.AppendLine(
+                        $"{parameter} -> Configuration value does not exist or does not meet validation criteria");
+
+                    if (errors.Contains(parameter))
+                    {
+                        (errors[parameter] as List<string>)?.Add(rule.Message);
+                        return;
+                    }
+
+                    errors.Add(parameter, new List<string> { rule.Message });
                 }
             }
+
+            var invalidConfigurationException = new InvalidConfigurationException(
+                message: validationErrors.ToString(),
+                data: errors);
 
             invalidConfigurationException.ThrowIfContainsErrors();
         }

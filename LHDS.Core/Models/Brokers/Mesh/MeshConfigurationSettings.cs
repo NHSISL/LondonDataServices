@@ -19,6 +19,5 @@ namespace LHDS.Core.Models.Brokers.Mesh
         public string MexOSName { get; set; }
         public string MexOSVersion { get; set; }
         public int MaxChunkSizeInMegabytes { get; set; }
-        public string WorkflowId { get; set; }
     }
 }

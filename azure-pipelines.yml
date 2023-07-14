@@ -163,18 +163,40 @@ steps:
   #    customCommand: 'run test:ci'    
 
   - task: DotNetCoreCLI@2
-    displayName: "Dotnet Publish Frontend (Debug)"
+    displayName: "Dotnet Publish Frontend (Development)"
     condition: ne(variables['Build.Reason'], 'PullRequest')
     inputs:
       command: "publish"
       publishWebProjects: false
       projects: "**/LHDS.AdminPortal.Web.csproj"
-      arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_development_frontend_website --configuration Debug"
+      arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_development_frontend_website --configuration Development"
       zipAfterPublish: true
       modifyOutputPath: false
- 
+
   - task: DotNetCoreCLI@2
-    displayName: "Dotnet Publish API (Debug)"
+    displayName: "Dotnet Publish Frontend (Test)"
+    condition: ne(variables['Build.Reason'], 'PullRequest')
+    inputs:
+      command: "publish"
+      publishWebProjects: false
+      projects: "**/LHDS.AdminPortal.Web.csproj"
+      arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_test_frontend_website --configuration Test"
+      zipAfterPublish: true
+      modifyOutputPath: false
+
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Publish Frontend (Production)"
+    condition: ne(variables['Build.Reason'], 'PullRequest')
+    inputs:
+      command: "publish"
+      publishWebProjects: false
+      projects: "**/LHDS.AdminPortal.Web.csproj"
+      arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_production_frontend_website --configuration Production"
+      zipAfterPublish: true
+      modifyOutputPath: false
+
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Publish API"
     condition: ne(variables['Build.Reason'], 'PullRequest')
     inputs:
       command: "publish"
@@ -271,8 +293,18 @@ steps:
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_development_frontend_website
     condition: ne(variables['Build.Reason'], 'PullRequest')  
-    displayName: 'Publish Artifact - Frontend'
-    artifact: drop-frontend
+    displayName: 'Publish Artifact - Frontend (Development)'
+    artifact: drop-frontend-development
+
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_test_frontend_website
+    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    displayName: 'Publish Artifact - Frontend (Test)'
+    artifact: drop-frontend-test
+
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_production_frontend_website
+    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    displayName: 'Publish Artifact - Frontend (Production)'
+    artifact: drop-frontend-production
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_emis_func.zip
     condition: ne(variables['Build.Reason'], 'PullRequest')  

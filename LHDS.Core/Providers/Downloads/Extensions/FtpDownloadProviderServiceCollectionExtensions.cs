@@ -3,6 +3,10 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Text;
+using LHDS.Core.Models.Configurations;
 using LHDS.Core.Providers.Downloads.Builders;
 using LHDS.Core.Providers.Downloads.FtpDownloads;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +22,9 @@ namespace LHDS.Core.Providers.Downloads.Extensions
             Action<FtpProviderRegistrationBuilder> builderAction)
         {
             IFtpDownloadProviderSettings ftpDownloadProviderSettings =
-                new FtpDownloadProviderSettings(configuration);
+                configuration.GetSection("ftpDownload").Get<FtpDownloadProviderSettings>();
+
+            ValidateFtpProviderSettings(ftpDownloadProviderSettings);
 
             FtpProviderRegistrationBuilder builder =
                 new FtpProviderRegistrationBuilder(ftpDownloadProviderSettings);
@@ -29,6 +35,66 @@ namespace LHDS.Core.Providers.Downloads.Extensions
             services.AddTransient<IDownloadProvider, FtpDownloadProvider>();
 
             return services;
+        }
+
+        private static void ValidateFtpProviderSettings(IFtpDownloadProviderSettings ftpDownloadProviderSettings)
+        {
+            Validate(
+                (Rule: IsInvalid(ftpDownloadProviderSettings.FtpPort),
+                    Parameter: "ftpDownload__ftpPort"),
+
+                (Rule: IsInvalid(ftpDownloadProviderSettings.FtpUserName),
+                    Parameter: "ftpDownload__ftpUserName"),
+
+                (Rule: IsInvalid(ftpDownloadProviderSettings.IncludeSubDirectories),
+                    Parameter: "ftpDownload__includeSubDirectories"));
+        }
+
+        private static dynamic IsInvalid(int value) => new
+        {
+            Condition = value == 0,
+            Message = "Configuration value does not exist"
+        };
+
+        private static dynamic IsInvalid(bool value) => new
+        {
+            Condition = value == null,
+            Message = "Configuration value does not exist"
+        };
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Configuration value does not exist"
+        };
+
+        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        {
+            StringBuilder validationErrors = new StringBuilder();
+            validationErrors.AppendLine("Configuration error(s):");
+            IDictionary errors = new Dictionary<string, List<string>>();
+
+            foreach ((dynamic rule, string parameter) in validations)
+            {
+                if (rule.Condition)
+                {
+                    validationErrors.AppendLine($"{parameter}");
+
+                    if (errors.Contains(parameter))
+                    {
+                        (errors[parameter] as List<string>)?.Add(rule.Message);
+                        return;
+                    }
+
+                    errors.Add(parameter, new List<string> { rule.Message });
+                }
+            }
+
+            var invalidConfigurationException = new InvalidConfigurationException(
+                message: validationErrors.ToString(),
+                data: errors);
+
+            invalidConfigurationException.ThrowIfContainsErrors();
         }
     }
 }

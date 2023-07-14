@@ -1,3 +1,4 @@
+import { Supplier } from "../../../suppliers/supplier";
 
 export class IngestionTrackingView {
     public id: string;
@@ -15,6 +16,7 @@ export class IngestionTrackingView {
     public createdDate?: Date;
     public updatedBy?: string;
     public updatedDate?: Date;
+    public supplier?: Supplier;
 
     constructor(
         id: string,
@@ -32,6 +34,7 @@ export class IngestionTrackingView {
         createdDate?: Date,
         updatedBy?: string,
         updatedDate?: Date,
+        supplier?: Supplier,
     ) {
         this.id = id;
         this.fileName = fileName || "";
@@ -48,5 +51,9 @@ export class IngestionTrackingView {
         this.createdDate = createdDate;
         this.updatedBy = updatedBy;
         this.updatedDate = updatedDate;
+
+        if (supplier !== undefined && supplier !== null) {
+            this.supplier = new Supplier(supplier);
+        }
     }
 }

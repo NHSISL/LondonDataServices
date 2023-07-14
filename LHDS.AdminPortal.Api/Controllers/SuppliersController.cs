@@ -7,6 +7,9 @@ using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using LHDS.Core.Services.Foundations.Suppliers;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
+#if RELEASE
+using Microsoft.AspNetCore.Authorization;
+#endif
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
@@ -20,6 +23,9 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.supplierService = supplierService;
 
         [HttpPost]
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Suppliers")]
+#endif
         public async ValueTask<ActionResult<Supplier>> PostSupplierAsync(Supplier supplier)
         {
             try
@@ -54,6 +60,9 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Suppliers, ISL.LDS.AdminApi.ReadOnly")]
+#endif
         public ActionResult<IQueryable<Supplier>> GetAllSuppliers()
         {
             try
@@ -74,6 +83,9 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet("{supplierId}")]
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Suppliers, ISL.LDS.AdminApi.ReadOnly")]
+#endif
         public async ValueTask<ActionResult<Supplier>> GetSupplierByIdAsync(Guid supplierId)
         {
             try
@@ -102,6 +114,9 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpPut]
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Suppliers")]
+#endif
         public async ValueTask<ActionResult<Supplier>> PutSupplierAsync(Supplier supplier)
         {
             try
@@ -141,6 +156,9 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpDelete("{supplierId}")]
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Suppliers")]
+#endif
         public async ValueTask<ActionResult<Supplier>> DeleteSupplierByIdAsync(Guid supplierId)
         {
             try

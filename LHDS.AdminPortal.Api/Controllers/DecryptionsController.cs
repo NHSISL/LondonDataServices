@@ -7,6 +7,9 @@ using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
 using LHDS.Core.Services.Orchestrations.Decryptions;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
+#if RELEASE
+using Microsoft.AspNetCore.Authorization;
+#endif
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
@@ -20,6 +23,9 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.decryptionOrchestrationService = decryptionOrchestrationService;
 
         [HttpGet("{fileName}")]
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
+#endif
         public async ValueTask<ActionResult<IngestionTracking>> GetDocumentByFileNameToDecryptAsync(string fileName)
         {
             try

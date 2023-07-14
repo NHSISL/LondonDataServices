@@ -28,10 +28,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             List<string> outputMessageIds = GetRandomStrings(count: GetRandomNumber());
             List<string> randomConsentedIdentifiers = CreateRandomListOfConsentedIdentifiers(count: GetRandomNumber());
-            string randomWorkflowId = this.meshConfiguration.WorkflowId;
+            string randomWorkflowId = this.optOutConfiguration.WorkflowId;
 
             List<MeshMessage> outputMessages = GetRandomMessages(
-                items: outputMessageIds, 
+                items: outputMessageIds,
                 randomConsentedIdentifiers,
                 workflowId: randomWorkflowId);
 
@@ -190,7 +190,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
                 foreach (var message in outputMessages)
                 {
-                    message.Headers["mex-workflowid"] = new List<string> { this.meshConfiguration.WorkflowId };
+                    message.Headers["mex-workflowid"] = new List<string> { this.optOutConfiguration.WorkflowId };
                 }
 
                 meshProcessingServiceMock.Setup(processings =>

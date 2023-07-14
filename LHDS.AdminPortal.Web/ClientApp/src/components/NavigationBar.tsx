@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container, Form, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { SecuredComponents, SecuredLink } from './Links';
+import securityPoints from '../SecurityMatrix';
 
 export const NavigationBar = () => {
     return (
@@ -12,23 +13,34 @@ export const NavigationBar = () => {
                     <Navbar.Collapse id="navbarScroll">
                         <Nav className="me-auto my-2 my-lg-0" style={{ maxHeight: '100px' }} navbarScroll>
                             <SecuredLink to="/">Home</SecuredLink>
-                            <SecuredLink to="/ingestionTracking">Ingestion Tracking</SecuredLink>
-                            <SecuredComponents>
+
+                            <SecuredComponents allowedRoles={securityPoints.ingestionTrackingNavigation.view}>
+                                <SecuredLink to="/ingestionTracking">Ingestion Tracking</SecuredLink>
+                            </SecuredComponents>
+
+                            <SecuredComponents allowedRoles={securityPoints.optOutNavigation.view}>
                                 <NavDropdown title="OptOut" id="optout-dropdown" className="text-white">
                                     <SecuredLink to="/optOutSearch">Search Opt-Out</SecuredLink>
-                                    <SecuredLink to="/optOutUpload">Upload Opt-Out</SecuredLink>
+
+                                    <SecuredComponents allowedRoles={securityPoints.optOut.upload}>
+                                        <SecuredLink to="/optOutUpload">Upload Opt-Out</SecuredLink>
+                                    </SecuredComponents>
                                 </NavDropdown>
+
                             </SecuredComponents>
-                            <SecuredComponents>
+                            <SecuredComponents allowedRoles={securityPoints.pdsNavigation.view}>
                                 <NavDropdown title="Pds" id="pds-dropdown" className="text-white">
-                                    <SecuredLink to="/pds">Pds Audit</SecuredLink>
-                                    <SecuredLink to="/pds">Pds Upload</SecuredLink>
+                                    <SecuredLink to="/pds">Search Pds Audit</SecuredLink>
+                                    <SecuredComponents allowedRoles={securityPoints.pds.upload}>
+                                        <SecuredLink to="/pdsUpload">Pds Upload</SecuredLink>
+                                    </SecuredComponents>
                                 </NavDropdown>
                             </SecuredComponents>
+
                         </Nav>
                         <Nav className="ms-auto">
                             <Form className="d-flex">
-                                <SecuredComponents>
+                                <SecuredComponents allowedRoles={securityPoints.configNavigation.view}>
                                     <SecuredLink to="/configuration">Admin Configuration</SecuredLink>
                                 </SecuredComponents>
                             </Form>

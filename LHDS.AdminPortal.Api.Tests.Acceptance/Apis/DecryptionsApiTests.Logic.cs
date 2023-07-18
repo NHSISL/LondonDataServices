@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
@@ -10,6 +9,7 @@ using Xunit;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using System.Text;
 using LHDS.Core.Models.Foundations.Documents;
+using System.Diagnostics.SymbolStore;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
 {
@@ -22,13 +22,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
             //Given
             Supplier randomSupplier = await PostRandomSupplierAsync();
             IngestionTracking randomIngestionTracking = await PostRandomIngestionTrackingAsync(randomSupplier.Id);
-            string randomFileName = GetRandomString();
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
 
             Document document = new Document
             {
                 DocumentData = documentData,
-                FileName = randomFileName
+                FileName = randomIngestionTracking.EncryptedFileName
             };
 
             await this.apiBroker.documentService.AddDocumentAsync(document);
@@ -40,7 +39,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
             await this.apiBroker.PostIngestionTrackingAsync(ingestionTracking);
 
             //When
-            await this.apiBroker.DecryptFileAsync(randomFileName);
+            await this.apiBroker.DecryptFileAsync(document.FileName);
 
             //Then
             IngestionTracking decryptedIngestionTracking =
@@ -49,7 +48,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
             decryptedIngestionTracking.Decrypted.Should().BeTrue();
 
             await DeleteAuditRecordsAsync(randomIngestionTracking);
-            await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(randomFileName);
+            await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(document.FileName);
             await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }

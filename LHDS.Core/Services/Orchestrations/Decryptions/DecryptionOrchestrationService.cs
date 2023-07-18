@@ -49,6 +49,8 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 var ingestionTracking = await this.ingestionTrackingService
                     .RetrieveIngestionTrackingByFileNameAsync(fileName);
 
+                //validate ingestion tracking null separate PR
+
                 Document document = await this.documentService
                     .RetrieveDocumentByFileNameAsync(ingestionTracking.EncryptedFileName);
 

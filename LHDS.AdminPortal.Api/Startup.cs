@@ -98,6 +98,7 @@ namespace LHDS.AdminPortal.Api
             AddOrchestrationServices(services, this.Configuration);
             AddProcessingServices(services, this.Configuration);
             services.AddLandingClient(this.Configuration);
+            services.AddDecryptionClient(this.Configuration);
             services.UseFtpDownloadProvider(this.Configuration, builder => builder.AddFtpDownloadProvider());
 
             services.AddSwaggerGen(options =>

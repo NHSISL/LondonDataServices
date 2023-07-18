@@ -13,7 +13,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         private const string DecryptionsRelativeUrl = "api/decryptions";
 
         public async ValueTask DecryptFileAsync(string fileName) =>
-            await this.apiFactoryClient.PostContentAsync($"{DecryptionsRelativeUrl}/{fileName}", new { });
+            await this.apiFactoryClient.GetContentStringAsync($"{DecryptionsRelativeUrl}/{fileName}");
     }
-
 }

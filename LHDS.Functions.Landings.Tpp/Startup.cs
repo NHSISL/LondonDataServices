@@ -34,7 +34,7 @@ namespace LHDS.Functions.Landings.Tpp
                    .AddJsonFile(
                         path: Path.Combine(context.ApplicationRootPath, $"appsettings.{context.EnvironmentName}.json"),
                         optional: true)
-                   .AddEnvironmentVariables("LHDS_");
+                   .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
             builder.Services.AddTransient<IConfiguration>(_ => configuration);

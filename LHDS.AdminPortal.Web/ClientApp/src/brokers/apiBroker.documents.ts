@@ -7,7 +7,7 @@ class DocumentBroker {
     private apiBroker: ApiBroker = new ApiBroker();
 
     async GetDownloadLinkAsync(fileName: string) {
-        const url = `${this.relativeDocumentUrl}/${fileName}`;
+        const url = `${this.relativeDocumentUrl}/${encodeURIComponent(fileName)}`;
 
         return await this.apiBroker.GetAsync(url)
             .then(result => new Document(result.data));

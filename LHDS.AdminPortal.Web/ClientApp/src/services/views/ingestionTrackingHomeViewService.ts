@@ -3,6 +3,9 @@ import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTrac
 import { IngestionTrackingHomeView } from "../../models/ingestionTrackings/ingestionTrackingHomeView";
 import { LookupView } from "../../models/views/components/lookups/lookupView";
 import { ingestionTrackingService } from "../foundations/ingestionTrackingService";
+import { landingService } from "../foundations/landingService";
+import { decryptionService } from "../foundations/decryptionService";
+import { documentService } from "../foundations/documentService";
 
 type IngestionTrackingHomeViewServiceResponse = {
     mappedIngestionTrackings: IngestionTrackingHomeView[] | undefined;
@@ -20,7 +23,7 @@ type IngestionTrackingHomeViewServiceResponse = {
 export const ingestionTrackingHomeViewService = {
     useGetAllIngestionTrackings: (searchTerm?: string): IngestionTrackingHomeViewServiceResponse => {
         try {
-            let query = `?$orderby=createdDate`;
+            let query = `?$orderby=createdDate&$expand=supplier`;
 
              if (searchTerm) {
                 query = query + `&$filter=contains(encryptedFileName,'${searchTerm}') or contains(decryptedFileName,'${searchTerm}')`;
@@ -49,7 +52,7 @@ export const ingestionTrackingHomeViewService = {
                                 ingestionTracking.recordCount,
                                 ingestionTracking.encryptedFileSize,
                                 ingestionTracking.decryptedFileSize,
-                                ingestionTracking.audit
+                                ingestionTracking.supplier,
                             ));
                         });
                     });
@@ -78,5 +81,21 @@ export const ingestionTrackingHomeViewService = {
         } catch (err) {
             throw err;
         }
+    },
+
+    useRelandIngestionTracking: () => {
+        return landingService.useGetDownloadLinkByFileName();
+    },
+
+    useRedecryptIngestionTracking: () => {
+        return decryptionService.useGetDocumentByFileNameToDecryptAsync();
+    },
+
+    useDownloadEncryptedDocument: () => {
+        return documentService.useGetDownloadLinkByFileName();
+    },
+
+    useDownloadDecryptedDocument: () => {
+        return documentService.useGetDownloadLinkByFileName();
     },
 };

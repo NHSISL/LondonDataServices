@@ -1,13 +1,17 @@
-import { useQuery } from "react-query";
+import { useMutation } from "react-query";
 import LandingBroker from "../../brokers/apiBroker.landings";
+import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
 
 export const landingService = {
-    useGetDownloadLinkByFileName: (fileName: string) => {
+    useGetDownloadLinkByFileName: () => {
         const landingBroker = new LandingBroker();
 
-        return useQuery(
-            ["LandingGetDocumentByFileNameAsync", { fileName: fileName }],
-            () => landingBroker.GetLandingDocumentByFileNameAsync(fileName),
-            { staleTime: Infinity });
+        return useMutation((ingestionTracking: IngestionTracking) => {
+            return landingBroker.GetLandingDocumentByFileNameAsync(ingestionTracking.fileName);
+        },
+            {
+                onSuccess: (variables) => {
+                }
+            });
     }
 }

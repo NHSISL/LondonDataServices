@@ -37,7 +37,7 @@ namespace LHDS.Core.SeedGenerator
                 .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables("LHDS_");
+                .AddEnvironmentVariables("");
 
             IConfiguration configuration = configurationBuilder.Build();
 

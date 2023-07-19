@@ -35,7 +35,7 @@ export const Home = () => {
                     {isAuthenticated ? (
                         <div>
                             <Card.Group>
-                                <FeatureSwitch feature={FeatureDefinitions.EmisIngestionTracking}>
+                                <FeatureSwitch feature={FeatureDefinitions.IngestionTracking}>
                                     <Card.GroupItem width="one-half">
                                         <Card clickable>
                                             <Card.Content>

@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Integration.Pds
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables("LHDS_");
+                .AddEnvironmentVariables();
 
             configuration = configurationBuilder.Build();
         }

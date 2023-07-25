@@ -106,26 +106,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
             return filler;
         }
 
-        private static Audit CreateRandomAudit(Guid ingestionTrackingId) =>
-            CreateRandomAuditFiller(ingestionTrackingId).Create();
-
-        private static Filler<Audit> CreateRandomAuditFiller(Guid ingestionTrackingId)
-        {
-            string user = Guid.NewGuid().ToString();
-            DateTime now = DateTime.UtcNow;
-            var filler = new Filler<Audit>();
-
-            filler.Setup()
-                .OnType<DateTimeOffset>().Use(now)
-                .OnProperty(audit => audit.IngestionTrackingId).Use(ingestionTrackingId)
-                .OnProperty(audit => audit.CreatedDate).Use(now)
-                .OnProperty(audit => audit.CreatedBy).Use(user)
-                .OnProperty(audit => audit.UpdatedDate).Use(now)
-                .OnProperty(audit => audit.UpdatedBy).Use(user);
-
-            return filler;
-        }
-
         private async ValueTask<IngestionTracking> PostRandomIngestionTrackingAsync(Guid supplierId)
         {
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(supplierId);

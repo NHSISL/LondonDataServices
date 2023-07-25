@@ -33,42 +33,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static Audit UpdateAuditWithRandomValues(Audit inputAudit)
-        {
-            DateTimeOffset now = DateTimeOffset.UtcNow;
-            var filler = new Filler<Audit>();
-
-            filler.Setup()
-                .OnProperty(audit => audit.Id).Use(inputAudit.Id)
-                .OnProperty(audit => audit.IngestionTrackingId).Use(inputAudit.IngestionTrackingId)
-                .OnType<DateTimeOffset>().Use(GetRandomDateTime())
-                .OnProperty(audit => audit.CreatedDate).Use(inputAudit.CreatedDate)
-                .OnProperty(audit => audit.CreatedBy).Use(inputAudit.CreatedBy)
-                .OnProperty(audit => audit.UpdatedDate).Use(now);
-            return filler.Create();
-        }
-
-        private async ValueTask<Audit> PostRandomAuditAsync(Guid ingestionTrackingId)
-        {
-            Audit randomAudit = CreateRandomAudit(ingestionTrackingId);
-            await this.apiBroker.PostAuditAsync(randomAudit);
-
-            return randomAudit;
-        }
-
-        private async ValueTask<List<Audit>> PostRandomAuditsAsync(Guid ingestionTrackingId)
-        {
-            int randomNumber = GetRandomNumber();
-            var randomAudits = new List<Audit>();
-
-            for (int i = 0; i < randomNumber; i++)
-            {
-                randomAudits.Add(await PostRandomAuditAsync(ingestionTrackingId));
-            }
-
-            return randomAudits;
-        }
-
         private static string GenerateValidNhsNumber()
         {
             int total = 10;

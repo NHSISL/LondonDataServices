@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits;
-//using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Documents;
 using LHDS.Core.Models.Foundations.Documents;
 using Microsoft.AspNetCore.Mvc;
 

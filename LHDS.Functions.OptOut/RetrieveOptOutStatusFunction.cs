@@ -31,7 +31,7 @@ namespace LHDS.Functions.OptOut
             this.loggingBroker
                 .LogInformation(
                     $"C# Blob trigger function Processing blob\n " +
-                    $"Name: optout/in/{{name}} \n");
+                    $"Name: optout/in/{{name}}");
 
             try
             {

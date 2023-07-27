@@ -31,7 +31,7 @@ namespace LHDS.Functions.Landings.Emis
             this.loggingBroker
                 .LogInformation(
                     $"C# Blob trigger function Processing blob\n " +
-                    $"Name: emislanding/encrypted/{name} \n");
+                    $"Name: emislanding/encrypted/{name}");
 
             try
             {

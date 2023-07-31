@@ -4,6 +4,9 @@ import ButtonBase from "../bases/buttons/ButtonBase";
 import TableBaseRow from "../bases/components/Table/TableBase.Row";
 import TableBaseData from "../bases/components/Table/TableBase.Data";
 import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileImport, faLockOpen, faFileDownload, faFileExport } from '@fortawesome/free-solid-svg-icons';
+import { Button, Dropdown } from "react-bootstrap";
 
 type IngestionTrackingRowProps = {
     onRelanding: (ingestionTracking: IngestionTracking) => void;
@@ -35,24 +38,48 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
             </TableBaseData>
             <TableBaseData>
                 {trimString(ingestionTracking.fileName)}
-                <br />
-                <ButtonBase onClick={() => onRelanding(ingestionTracking)} add>
-                    Re-land
-                </ButtonBase>
+                {/*<br />*/}
+                {/*<ButtonBase onClick={() => onRelanding(ingestionTracking)} add >*/}
+                {/*    <FontAwesomeIcon icon={faFileImport} title="Re-Land" /> Re-decrypt*/}
+                {/*</ButtonBase>*/}
 
-                <ButtonBase onClick={() => onRedecrypt(ingestionTracking)} add>
-                    Re-decrypt
-                </ButtonBase>
+                {/*<ButtonBase onClick={() => onRedecrypt(ingestionTracking)} add>*/}
+                {/*    <FontAwesomeIcon icon={faLockOpen} /> Re-decrypt*/}
+                {/*</ButtonBase>*/}
 
-                <ButtonBase onClick={() => onEncryptedDownload(ingestionTracking)} add>
-                    Download Encrypted File
-                </ButtonBase>
+                {/*<ButtonBase onClick={() => onEncryptedDownload(ingestionTracking)} add>*/}
+                {/*    <FontAwesomeIcon icon={faFileDownload} />  Download Encrypted File*/}
+                {/*</ButtonBase>*/}
 
-                {ingestionTracking.decrypted &&
-                    <ButtonBase onClick={() => onDecryptedDownload(ingestionTracking)} add>
-                        Download Decrypted File
-                    </ButtonBase>
-                }
+                {/*{ingestionTracking.decrypted &&*/}
+                {/*    <ButtonBase onClick={() => onDecryptedDownload(ingestionTracking)} add>*/}
+                {/*        <FontAwesomeIcon icon={faFileExport} /> Download Decrypted File*/}
+                {/*    </ButtonBase>*/}
+                {/*}*/}
+
+            </TableBaseData>
+            <TableBaseData>
+                <Dropdown>
+                    <Dropdown.Toggle as={ButtonBase} variant="secondary" id="actions-dropdown" edit>
+                        Actions
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        <Dropdown.Item onClick={() => onRelanding(ingestionTracking)}>
+                            <FontAwesomeIcon icon={faFileImport} title="Re-Land" /> Re-decrypt
+                        </Dropdown.Item>
+                        <Dropdown.Item onClick={() => onRedecrypt(ingestionTracking)}>
+                            <FontAwesomeIcon icon={faLockOpen} /> Re-decrypt
+                        </Dropdown.Item>
+                        <Dropdown.Item onClick={() => onEncryptedDownload(ingestionTracking)}>
+                            <FontAwesomeIcon icon={faFileDownload} /> Download Encrypted File
+                        </Dropdown.Item>
+                        {ingestionTracking.decrypted && (
+                            <Dropdown.Item onClick={() => onDecryptedDownload(ingestionTracking)}>
+                                <FontAwesomeIcon icon={faFileExport} /> Download Decrypted File
+                            </Dropdown.Item>
+                        )}
+                    </Dropdown.Menu>
+                </Dropdown>
             </TableBaseData>
             <TableBaseData>
                 <Link to={`/ingestionTrackingDetail/${ingestionTracking.id}`}>

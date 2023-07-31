@@ -8,7 +8,11 @@ export const auditViewService = {
     useGetAllAudits: (ingestionTrackingId: string) => {
         try {
 
-            let query = `?$orderby=createdDate&ingestionTrackingId eq ${ingestionTrackingId}`;
+            let query = `?$orderby=createdDate`;
+
+            if (ingestionTrackingId) {
+                query = query + `&$filter=ingestionTrackingId eq ${ingestionTrackingId}`;
+            }
 
             const response = auditService.useGetAllAudits(query);
             const [mappedAudits, setMappedAudits] = useState<Array<AuditView>>([]);

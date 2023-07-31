@@ -267,7 +267,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 {
                     Id = Guid.NewGuid(),
                     IngestionTrackingId = ingestionTracking.Id,
-                    Message = $"{message} document - {document.FileName}",
+                    Message = $"{message} document",
                     CreatedBy = "DownloadOrchestrationService",
                     CreatedDate = currentDateTime,
                     UpdatedBy = "DownloadOrchestrationService",

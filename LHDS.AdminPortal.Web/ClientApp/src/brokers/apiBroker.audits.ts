@@ -7,7 +7,7 @@ class AuditBroker {
     private apiBroker: ApiBroker = new ApiBroker();
 
     async GetAllAuditsAsync(queryString: string) {
-        var url = this.relativeAuditUrl + queryString;
+        const url = this.relativeAuditUrl + queryString;
 
         return await this.apiBroker.GetAsync(url)
             .then(result => result.data.map((audit: any) => new Audit(audit)));

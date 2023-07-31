@@ -6,7 +6,7 @@ import TableBaseData from "../bases/components/Table/TableBase.Data";
 import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileImport, faLockOpen, faFileDownload, faFileExport } from '@fortawesome/free-solid-svg-icons';
-import { Button, Dropdown } from "react-bootstrap";
+import { Dropdown } from "react-bootstrap";
 
 type IngestionTrackingRowProps = {
     onRelanding: (ingestionTracking: IngestionTracking) => void;
@@ -38,25 +38,6 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
             </TableBaseData>
             <TableBaseData>
                 {trimString(ingestionTracking.fileName)}
-                {/*<br />*/}
-                {/*<ButtonBase onClick={() => onRelanding(ingestionTracking)} add >*/}
-                {/*    <FontAwesomeIcon icon={faFileImport} title="Re-Land" /> Re-decrypt*/}
-                {/*</ButtonBase>*/}
-
-                {/*<ButtonBase onClick={() => onRedecrypt(ingestionTracking)} add>*/}
-                {/*    <FontAwesomeIcon icon={faLockOpen} /> Re-decrypt*/}
-                {/*</ButtonBase>*/}
-
-                {/*<ButtonBase onClick={() => onEncryptedDownload(ingestionTracking)} add>*/}
-                {/*    <FontAwesomeIcon icon={faFileDownload} />  Download Encrypted File*/}
-                {/*</ButtonBase>*/}
-
-                {/*{ingestionTracking.decrypted &&*/}
-                {/*    <ButtonBase onClick={() => onDecryptedDownload(ingestionTracking)} add>*/}
-                {/*        <FontAwesomeIcon icon={faFileExport} /> Download Decrypted File*/}
-                {/*    </ButtonBase>*/}
-                {/*}*/}
-
             </TableBaseData>
             <TableBaseData>
                 <Dropdown>

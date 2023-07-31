@@ -5,6 +5,7 @@ import CardBaseBody from "../bases/components/Card/CardBase.Body";
 import CardBaseContent from "../bases/components/Card/CardBase.Content";
 import CardBaseTitle from "../bases/components/Card/CardBase.Title";
 import SupplierDetailCardView from "./ingestionTrackingDetailCardView";
+import AuditTable from "../audit/auditTable";
 
 interface IngestionTrackingDetailCardProps {
     ingestionTracking: IngestionTrackingView;
@@ -56,6 +57,17 @@ const IngestionTrackingDetailCard: FunctionComponent<IngestionTrackingDetailCard
                                 {children}
                             </>
                         )}
+                    </CardBaseContent>
+                </CardBaseBody>
+            </CardBase>
+
+            <CardBase>
+                <CardBaseBody>
+                    <CardBaseTitle>
+                        Audit
+                    </CardBaseTitle>
+                    <CardBaseContent>
+                        <AuditTable ingestionTrackingId={ingestionTracking.id}></AuditTable>
                     </CardBaseContent>
                 </CardBaseBody>
             </CardBase>

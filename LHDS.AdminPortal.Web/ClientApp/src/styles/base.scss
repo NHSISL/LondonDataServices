@@ -99,3 +99,12 @@ td, tr, thead, tbody, table, th, body {
 #navbarScroll > div > div.nav-item.show.dropdown > div > div:nth-child(2) > a {
     color: #000 !important;
 }
+
+
+@media (min-width: 40.0625em) {th, td {
+    padding-top: 15px;
+    padding-bottom: 0px;
+    ;
+}
+
+}

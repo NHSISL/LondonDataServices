@@ -60,7 +60,7 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
                     <SummaryListBaseValue>{ingestionTracking.encryptedFileSize}</SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
-                    <SummaryListBaseKey>Encrypted File Size</SummaryListBaseKey>
+                    <SummaryListBaseKey>Decrypted File Size</SummaryListBaseKey>
                     <SummaryListBaseValue>{ingestionTracking.decryptedFileSize}</SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>

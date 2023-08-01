@@ -2,12 +2,13 @@ import React from 'react';
 import { Container, Row, Col, Card } from 'nhsuk-react-components';
 import 'nhsuk-frontend/dist/nhsuk.min';
 import 'nhsuk-frontend/packages/polyfills';
-import { PublicLink } from '../components/Links';
+import { PublicLink, SecuredComponents } from '../components/Links';
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 import { loginRequest } from '../authConfig';
 import { Button } from 'react-bootstrap';
 import { FeatureSwitch } from '../components/accessControl/FeatureSwitch';
 import { FeatureDefinitions } from '../featureDefinitions';
+import securityPoints from '../SecurityMatrix';
 
 export const Home = () => {
     const isAuthenticated = useIsAuthenticated();
@@ -36,44 +37,51 @@ export const Home = () => {
                         <div>
                             <Card.Group>
                                 <FeatureSwitch feature={FeatureDefinitions.IngestionTracking}>
-                                    <Card.GroupItem width="one-half">
-                                        <Card clickable>
-                                            <Card.Content>
-                                                <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
-                                                    <PublicLink to="/ingestionTracking">Supplier data</PublicLink>
-                                                </Card.Heading>
-                                                <Card.Description>
-                                                    View Suppliers Data.
-                                                </Card.Description>
-                                            </Card.Content>
-                                        </Card>
-                                    </Card.GroupItem>
+                                    <SecuredComponents allowedRoles={securityPoints.ingestionTrackingNavigation.view}>
+                                        <Card.GroupItem width="one-half">
+                                            <Card clickable>
+                                                <Card.Content>
+                                                    <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
+                                                        <PublicLink to="/ingestionTracking">Supplier data</PublicLink>
+                                                    </Card.Heading>
+                                                    <Card.Description>
+                                                        View Suppliers Data.
+                                                    </Card.Description>
+                                                </Card.Content>
+                                            </Card>
+                                        </Card.GroupItem>
+                                    </SecuredComponents>
 
-                                    <Card.GroupItem width="one-half">
-                                        <Card clickable>
-                                            <Card.Content>
-                                                <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
-                                                    <PublicLink to="/optOutSearch">Search OptOut</PublicLink>
-                                                </Card.Heading>
-                                                <Card.Description>
-                                                    Search Opt Out.
-                                                </Card.Description>
-                                            </Card.Content>
-                                        </Card>
-                                    </Card.GroupItem>
+                                    <SecuredComponents allowedRoles={securityPoints.optOutNavigation.view}>
+                                        <Card.GroupItem width="one-half">
+                                            <Card clickable>
+                                                <Card.Content>
+                                                    <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
+                                                        <PublicLink to="/optOutSearch">Search OptOut</PublicLink>
+                                                    </Card.Heading>
+                                                    <Card.Description>
+                                                        Search Opt Out.
+                                                    </Card.Description>
+                                                </Card.Content>
+                                            </Card>
+                                        </Card.GroupItem>
+                                    </SecuredComponents>
 
-                                    <Card.GroupItem width="one-half">
-                                        <Card clickable>
-                                            <Card.Content>
-                                                <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
-                                                    <PublicLink to="/pds">Search PDS</PublicLink>
-                                                </Card.Heading>
-                                                <Card.Description>
-                                                    Search Pds.
-                                                </Card.Description>
-                                            </Card.Content>
-                                        </Card>
-                                    </Card.GroupItem>
+
+                                    <SecuredComponents allowedRoles={securityPoints.pdsNavigation.view}>
+                                        <Card.GroupItem width="one-half">
+                                            <Card clickable>
+                                                <Card.Content>
+                                                    <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
+                                                        <PublicLink to="/pds">Search PDS</PublicLink>
+                                                    </Card.Heading>
+                                                    <Card.Description>
+                                                        Search Pds.
+                                                    </Card.Description>
+                                                </Card.Content>
+                                            </Card>
+                                        </Card.GroupItem>
+                                    </SecuredComponents>
                                 </FeatureSwitch>
                             </Card.Group>
                         </div>

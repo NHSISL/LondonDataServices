@@ -86,7 +86,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 {
                     Id = Guid.NewGuid(),
                     IngestionTrackingId = ingestionTracking.Id,
-                    Message = $"Decrypted document - {document.FileName}",
+                    Message = $"Decrypted document",
                     CreatedDate = currentDateTime,
                     CreatedBy = "DecryptionOrchestrationService",
                     UpdatedDate = currentDateTime,

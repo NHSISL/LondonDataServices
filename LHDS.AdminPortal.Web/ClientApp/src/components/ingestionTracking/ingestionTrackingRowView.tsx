@@ -44,19 +44,24 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
                     <Dropdown.Toggle as={ButtonBase} variant="secondary" id="actions-dropdown" edit>
                         Actions
                     </Dropdown.Toggle>
+
                     <Dropdown.Menu>
-                        <Dropdown.Item onClick={() => onRelanding(ingestionTracking)}>
-                            <FontAwesomeIcon icon={faFileImport} title="Re-Land" /> Re-decrypt
+                        <Dropdown.Item onClick={() => onRelanding(ingestionTracking)}
+                            style={{ color: "#121212" }}>
+                            <FontAwesomeIcon icon={faFileImport} title="Re-Land" /> Re-Land File
                         </Dropdown.Item>
-                        <Dropdown.Item onClick={() => onRedecrypt(ingestionTracking)}>
-                            <FontAwesomeIcon icon={faLockOpen} /> Re-decrypt
+                        <Dropdown.Item onClick={() => onRedecrypt(ingestionTracking)}
+                            style={{ color: "#121212" }}>
+                            <FontAwesomeIcon icon={faLockOpen} /> Re-Decrypt File
                         </Dropdown.Item>
-                        <Dropdown.Item onClick={() => onEncryptedDownload(ingestionTracking)}>
-                            <FontAwesomeIcon icon={faFileDownload} /> Download Encrypted File
+                        <Dropdown.Item onClick={() => onEncryptedDownload(ingestionTracking)}
+                            style={{ color: "#121212" }}>
+                            <FontAwesomeIcon icon={faFileDownload} />  &nbsp;Download Encrypted File
                         </Dropdown.Item>
                         {ingestionTracking.decrypted && (
-                            <Dropdown.Item onClick={() => onDecryptedDownload(ingestionTracking)}>
-                                <FontAwesomeIcon icon={faFileExport} /> Download Decrypted File
+                            <Dropdown.Item onClick={() => onDecryptedDownload(ingestionTracking)}
+                                style={{ color: "#121212" }}>
+                                <FontAwesomeIcon icon={faFileExport} />  Download Decrypted File
                             </Dropdown.Item>
                         )}
                     </Dropdown.Menu>

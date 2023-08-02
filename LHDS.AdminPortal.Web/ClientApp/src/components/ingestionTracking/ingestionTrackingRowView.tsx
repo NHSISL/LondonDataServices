@@ -6,7 +6,7 @@ import TableBaseData from "../bases/components/Table/TableBase.Data";
 import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileImport, faLockOpen, faFileDownload, faFileExport } from '@fortawesome/free-solid-svg-icons';
-import { Dropdown, DropdownButton } from "react-bootstrap";
+import { Dropdown } from "react-bootstrap";
 
 type IngestionTrackingRowProps = {
     onRelanding: (ingestionTracking: IngestionTracking) => void;

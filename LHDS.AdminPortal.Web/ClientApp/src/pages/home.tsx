@@ -42,10 +42,10 @@ export const Home = () => {
                                             <Card clickable>
                                                 <Card.Content>
                                                     <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
-                                                        <PublicLink to="/ingestionTracking">Supplier data</PublicLink>
+                                                        <PublicLink to="/ingestionTracking">Ingestion Tracking</PublicLink>
                                                     </Card.Heading>
                                                     <Card.Description>
-                                                        View Suppliers Data.
+                                                        View Ingestion Data.
                                                     </Card.Description>
                                                 </Card.Content>
                                             </Card>

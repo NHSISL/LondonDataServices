@@ -94,7 +94,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         <div className="infiniteScrollContainer">
             <CardBase>
                 <CardBaseBody>
-                    <CardBaseTitle>Ingestion Trackings</CardBaseTitle>
+                    <CardBaseTitle>Ingestion Tracking</CardBaseTitle>
                     <CardBaseContent>
                         <InfiniteScroll loading={isLoading} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
                             <div className="filter-container">

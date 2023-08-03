@@ -29,6 +29,9 @@ namespace LHDS.Core.Services.Processings.OptOuts
             this.dateTimeBroker = dateTimeBroker;
         }
 
+        public ValueTask<OptOut> RetrieveAllOptOutsAsync() =>
+            throw new NotImplementedException();
+
         public ValueTask<OptOut> RetrieveOrAddOptOutAsync(OptOut optOut) =>
             TryCatch(async () =>
             {

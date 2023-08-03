@@ -14,11 +14,11 @@ export const NavigationBar = () => {
                         <Nav className="me-auto my-2 my-lg-0" style={{ maxHeight: '100px' }} navbarScroll>
                             <SecuredLink to="/">Home</SecuredLink>
 
-                            <SecuredComponents allowedRoles={securityPoints.ingestionTrackingNavigation.view}>
+                            <SecuredComponents allowedRoles={securityPoints.ingestionTracking.view}>
                                 <SecuredLink to="/ingestionTracking">Ingestion Tracking</SecuredLink>
                             </SecuredComponents>
 
-                            <SecuredComponents allowedRoles={securityPoints.optOutNavigation.view}>
+                            <SecuredComponents allowedRoles={securityPoints.optOut.view}>
                                 <NavDropdown title="OptOut" id="optout-dropdown" className="text-white">
                                     <SecuredLink to="/optOutSearch">Search Opt-Out</SecuredLink>
 
@@ -28,7 +28,7 @@ export const NavigationBar = () => {
                                 </NavDropdown>
 
                             </SecuredComponents>
-                            <SecuredComponents allowedRoles={securityPoints.pdsNavigation.view}>
+                            <SecuredComponents allowedRoles={securityPoints.pds.view}>
                                 <NavDropdown title="Pds" id="pds-dropdown" className="text-white">
                                     <SecuredLink to="/pds">Search Pds Audit</SecuredLink>
                                     <SecuredComponents allowedRoles={securityPoints.pds.upload}>
@@ -40,7 +40,7 @@ export const NavigationBar = () => {
                         </Nav>
                         <Nav className="ms-auto">
                             <Form className="d-flex">
-                                <SecuredComponents allowedRoles={securityPoints.configNavigation.view}>
+                                <SecuredComponents allowedRoles={securityPoints.configuration.view}>
                                     <SecuredLink to="/configuration">Admin Configuration</SecuredLink>
                                 </SecuredComponents>
                             </Form>

@@ -67,7 +67,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
                 ingestionTracking.Decrypted = true;
-                ingestionTracking.RecordCount = lines.Length - 1;
+                ingestionTracking.RecordCount = lines.Length - 2;
                 ingestionTracking.DecryptedFileSize = newDecryptedDocument.DocumentData.Length;
                 ingestionTracking.UpdatedDate = currentDateTime;
 

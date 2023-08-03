@@ -37,7 +37,7 @@ export const Home = () => {
                         <div>
                             <Card.Group>
                                 <FeatureSwitch feature={FeatureDefinitions.IngestionTracking}>
-                                    <SecuredComponents allowedRoles={securityPoints.ingestionTrackingNavigation.view}>
+                                    <SecuredComponents allowedRoles={securityPoints.ingestionTracking.view}>
                                         <Card.GroupItem width="one-half">
                                             <Card clickable>
                                                 <Card.Content>
@@ -52,7 +52,7 @@ export const Home = () => {
                                         </Card.GroupItem>
                                     </SecuredComponents>
 
-                                    <SecuredComponents allowedRoles={securityPoints.optOutNavigation.view}>
+                                    <SecuredComponents allowedRoles={securityPoints.optOut.view}>
                                         <Card.GroupItem width="one-half">
                                             <Card clickable>
                                                 <Card.Content>
@@ -68,7 +68,7 @@ export const Home = () => {
                                     </SecuredComponents>
 
 
-                                    <SecuredComponents allowedRoles={securityPoints.pdsNavigation.view}>
+                                    <SecuredComponents allowedRoles={securityPoints.pds.view}>
                                         <Card.GroupItem width="one-half">
                                             <Card clickable>
                                                 <Card.Content>

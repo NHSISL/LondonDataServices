@@ -11,7 +11,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
 {
     public interface IOptOutProcessingService
     {
-        ValueTask<OptOut> RetrieveAllOptOutsAsync();
+        ValueTask<List<OptOut>> RetrieveAllOptOutsAsync();
         ValueTask<OptOut> RetrieveOrAddOptOutAsync(OptOut optOut);
         ValueTask<OptOut> AddOrModifyOptOutAsync(OptOut optOut);
         ValueTask<OptOut> RemoveOptOutByIdAsync(Guid optOutId);

@@ -2,10 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.OptOuts;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
@@ -17,16 +20,24 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
         {
             // given
             IQueryable<OptOut> randomOptOuts = CreateRandomOptOuts();
-            IQueryable<OptOut> storageOptOuts = randomOptOuts;
-            IQueryable<OptOut> expectedOptOuts = storageOptOuts;
+            IQueryable<OptOut> retrievedOptOuts = randomOptOuts.DeepClone();
+
+            List<OptOut> expectedOptOuts = retrievedOptOuts.ToList();
+
+            this.optOutServiceMock.Setup(service =>
+                service.RetrieveAllOptOuts())
+                    .Returns(retrievedOptOuts);
 
             // when
-            OptOut actualOptOut =
+            List<OptOut> actualOptOuts =
                 await this.optOutProcessingService.RetrieveAllOptOutsAsync();
 
             // then
-            actualOptOut.Should().BeEquivalentTo(expectedOptOuts);
+            actualOptOuts.Should().BeEquivalentTo(expectedOptOuts);
 
+            this.optOutServiceMock.Verify(service =>
+                service.RetrieveAllOptOuts(),
+                    Times.Once);
 
             this.optOutServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

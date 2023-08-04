@@ -8,7 +8,11 @@ using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
 using LHDS.Core.Models.Processings.OptOuts.Exceptions;
 using LHDS.Core.Services.Processings.OptOuts;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
+#if RELEASE
+using Microsoft.AspNetCore.Authorization;
+#endif
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
@@ -21,7 +25,34 @@ namespace LHDS.AdminPortal.Api.Controllers
         public OptOutsController(IOptOutProcessingService optOutProcessingService) =>
             this.optOutProcessingService = optOutProcessingService;
 
+        [HttpGet]
+        [EnableQuery(PageSize = 50)]
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
+#endif
+        public ActionResult<IQueryable<OptOut>> Get()
+        {
+            try
+            {
+                ValueTask<List<OptOut>> retrievedOptOuts =
+                    this.optOutProcessingService.RetrieveAllOptOutsAsync();
+
+                return Ok(retrievedOptOuts);
+            }
+            catch (OptOutDependencyException optOutDependencyException)
+            {
+                return InternalServerError(optOutDependencyException);
+            }
+            catch (OptOutServiceException optOutServiceException)
+            {
+                return InternalServerError(optOutServiceException);
+            }
+        }
+
         [HttpPost]
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.OptOut")]
+#endif
         public async ValueTask<ActionResult<OptOut>> PostOptOutAsync(
             OptOut optOut)
         {
@@ -57,6 +88,9 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet("{nhsNumber}")]
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.OptOut, ISL.LDS.AdminApi.ReadOnly")]
+#endif
         public async ValueTask<ActionResult<OptOut>> GetOptOutByNhsNumberAsync(string nhsNumber)
         {
             try
@@ -86,6 +120,9 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpPut]
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.OptOut")]
+#endif
         public async ValueTask<ActionResult<OptOut>> PutOptOutAsync(OptOut optOut)
         {
             try

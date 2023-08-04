@@ -61,7 +61,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             var updatedIngestionTracking = storageIngestionTracking.DeepClone();
             updatedIngestionTracking.Decrypted = true;
-            updatedIngestionTracking.RecordCount = lines.Length - 1;
+            updatedIngestionTracking.RecordCount = lines.Length - 2;
             updatedIngestionTracking.DecryptedFileSize = decryptedDocument.DocumentData.Length;
             updatedIngestionTracking.UpdatedDate = randomDateTimeOffset;
 

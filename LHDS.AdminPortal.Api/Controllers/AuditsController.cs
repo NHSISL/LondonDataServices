@@ -6,7 +6,11 @@ using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using LHDS.Core.Services.Foundations.Audits;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
+#if RELEASE
+using Microsoft.AspNetCore.Authorization;
+#endif
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
@@ -20,6 +24,9 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.auditService = auditService;
 
         [HttpPost]
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking")]
+#endif
         public async ValueTask<ActionResult<Audit>> PostAuditAsync(Audit audit)
         {
             try
@@ -54,6 +61,10 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
+#endif
+        [EnableQuery(PageSize = 50)]
         public ActionResult<IQueryable<Audit>> GetAllAudits()
         {
             try
@@ -74,6 +85,9 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet("{auditId}")]
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
+#endif
         public async ValueTask<ActionResult<Audit>> GetAuditByIdAsync(Guid auditId)
         {
             try
@@ -102,6 +116,9 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpPut]
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking")]
+#endif
         public async ValueTask<ActionResult<Audit>> PutAuditAsync(Audit audit)
         {
             try
@@ -141,6 +158,9 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpDelete("{auditId}")]
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking")]
+#endif
         public async ValueTask<ActionResult<Audit>> DeleteAuditByIdAsync(Guid auditId)
         {
             try

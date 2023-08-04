@@ -28,7 +28,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
             new IntRange(min: 2, max: 10).GetValue();
 
         private static string GetRandomString() =>
-            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+            new MnemonicString(wordCount: 1, wordMinLength: 2,wordMaxLength: GetRandomNumber()).GetValue();
 
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
@@ -87,16 +87,14 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
         private static OptOut CreateRandomOptOut() =>
             CreateOptOutFiller(dateTimeOffset: GetRandomDateTime()).Create();
 
-        private static OptOut CreateRandomOptOut(DateTimeOffset dateTimeOffset) =>
-            CreateOptOutFiller(dateTimeOffset).Create();
-
         private static Filler<OptOut> CreateOptOutFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();
             var filler = new Filler<OptOut>();
+            var now = DateTimeOffset.UtcNow;
 
             filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset>().Use(now)
                 .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
                 .OnProperty(optOut => optOut.Status).Use(GetRandomString())
                 .OnProperty(optOut => optOut.CreatedBy).Use(user)

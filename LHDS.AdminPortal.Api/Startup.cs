@@ -13,12 +13,14 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Clients;
+using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Foundations.Suppliers;
+using LHDS.Core.Providers.Downloads.Extensions;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
@@ -95,10 +97,8 @@ namespace LHDS.AdminPortal.Api
             AddFoundationServices(services, this.Configuration);
             AddOrchestrationServices(services, this.Configuration);
             AddProcessingServices(services, this.Configuration);
-
-            var blobServiceUri = Configuration["BlobStorage:blob"];
-
-            services.AddSingleton<IAzureBlobClient, AzureBlobClient>();
+            services.AddLandingClient(this.Configuration);
+            services.UseFtpDownloadProvider(this.Configuration, builder => builder.AddFtpDownloadProvider());
 
             services.AddSwaggerGen(options =>
             {
@@ -115,11 +115,6 @@ namespace LHDS.AdminPortal.Api
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
-
-            services.AddAzureClients(builder =>
-            {
-                builder.AddBlobServiceClient(Configuration["BlobStorage:blob"], preferMsi: true);
-            });
 
             services.AddApplicationInsightsTelemetry();
         }

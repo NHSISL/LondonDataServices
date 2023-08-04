@@ -7,6 +7,8 @@ import SummaryListBaseKey from "../../bases/components/SummaryList/SummaryListBa
 import SummaryListBaseRow from "../../bases/components/SummaryList/SummaryListBase.Row";
 import SummaryListBaseValue from "../../bases/components/SummaryList/SummaryListBase.Value";
 import { Guid } from "guid-typescript";
+import securityPoints from "../../../SecurityMatrix";
+import { SecuredComponents } from "../../Links";
 
 interface OptOutDetailCardViewProps {
     optOuts: OptOutView | undefined;
@@ -48,29 +50,35 @@ const OptOutDetailCardView: FunctionComponent<OptOutDetailCardViewProps> = (prop
                     <SummaryListBaseValue>{optOuts.status}</SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
+                    <SummaryListBaseKey>Batch Reference</SummaryListBaseKey>
+                    <SummaryListBaseValue>{optOuts.batchReference}</SummaryListBaseValue>
+                </SummaryListBaseRow>
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Unique Reference</SummaryListBaseKey>
+                    <SummaryListBaseValue>{optOuts.uniqueReference}</SummaryListBaseValue>
+                </SummaryListBaseRow>
+                <SummaryListBaseRow>
                     <SummaryListBaseKey>Cache Time</SummaryListBaseKey>
                     <SummaryListBaseValue>
-                        {optOuts.cacheTime ? moment(optOuts.cacheTime?.toString()).format("Do-MMM-yyyy") : ""}
+                        {optOuts.cacheTime ? moment(optOuts.cacheTime?.toString()).format("Do-MMM-yyyy HH:mm") : ""}
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Last Sent To Mesh</SummaryListBaseKey>
                     <SummaryListBaseValue>
-                        {optOuts.lastSentToMesh ? moment(optOuts.lastSentToMesh?.toString()).format("Do-MMM-yyyy") : ""}
+                        {optOuts.lastSentToMesh ? moment(optOuts.lastSentToMesh?.toString()).format("Do-MMM-yyyy HH:mm") : ""}
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
-                    <SummaryListBaseKey>Last Sent To Mesh</SummaryListBaseKey>
-                    <SummaryListBaseValue>
-                        {optOuts.createdDate ? moment(optOuts.createdDate?.toString()).format("Do-MMM-yyyy") : ""}
-                    </SummaryListBaseValue>
-                </SummaryListBaseRow>
-                <SummaryListBaseRow>
-                    <SummaryListBaseKey>Opt-Out Status</SummaryListBaseKey>
+                    <SummaryListBaseKey>Created By</SummaryListBaseKey>
                     <SummaryListBaseValue>{optOuts.createdBy}</SummaryListBaseValue>
                 </SummaryListBaseRow>
-
-
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Created When</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        {optOuts.createdDate ? moment(optOuts.createdDate?.toString()).format("Do-MMM-yyyy HH:mm") : ""}
+                    </SummaryListBaseValue>
+                </SummaryListBaseRow>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey></SummaryListBaseKey>
                     <SummaryListBaseValue>
@@ -83,7 +91,12 @@ const OptOutDetailCardView: FunctionComponent<OptOutDetailCardViewProps> = (prop
 
     if (optOuts !== undefined && optOuts.id.toString() === Guid.EMPTY) {
         return <div>
-            <ButtonBase onClick={onAddNewNHS} view>Add {nhsNumber} to NDOP check</ButtonBase>
+            <SecuredComponents allowedRoles={securityPoints.optOut.add}>
+                <ButtonBase onClick={onAddNewNHS} view>Add {nhsNumber} to NDOP check</ButtonBase>
+            </SecuredComponents>
+            <SecuredComponents allowedRoles={securityPoints.optOut.readonly}>
+                <p>You do not have permission to add NHS Number: <strong>{nhsNumber}</strong></p>
+            </SecuredComponents>
         </div>
     }
 

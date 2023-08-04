@@ -25,7 +25,7 @@ var host = new HostBuilder()
             path: "appsettings.local.json",
             optional: true,
             reloadOnChange: true)
-        .AddEnvironmentVariables("LHDS_");
+        .AddEnvironmentVariables();
     })
     .ConfigureServices((context, services) =>
     {
@@ -35,7 +35,7 @@ var host = new HostBuilder()
                 setup.AddApplicationInsights();
                 setup.AddConsole();
             })
-           .AddOptOutClient(context.Configuration);
+           .AddPdsClient(context.Configuration);
     })
     .UseDefaultServiceProvider(options => options.ValidateScopes = false)
     .Build();

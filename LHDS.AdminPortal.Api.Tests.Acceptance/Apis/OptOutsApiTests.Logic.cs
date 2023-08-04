@@ -40,9 +40,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
         public async Task ShouldGetOptOutByNhsNumberAsync()
         {
             // Given
-            OptOut randomOptOut = CreateRandomOptOut();
+            OptOut randomOptOut = await PostRandomOptOutAsync();
             OptOut expectedOptOut = randomOptOut;
-            
 
             // When
             OptOut actualOptOut =
@@ -52,7 +51,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
             actualOptOut.Should().BeEquivalentTo(expectedOptOut);
 
             // Cleanup
-            await this.apiBroker.DeleteOptOutByIdAsync(actualOptOut.Id);
+            //await this.apiBroker.DeleteOptOutByIdAsync(actualOptOut.Id);
         }
     }
 }

@@ -32,5 +32,24 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
             // Cleanup
             await this.apiBroker.DeletePdsAuditByIdAsync(inputPdsAudit.Id);
         }
+
+        [Fact]
+        public async Task ShouldGetPdsAuditByIdAsync()
+        {
+            // Given
+            PdsAudit randomPdsAudit = CreateRandomPdsAudit();
+            PdsAudit inputPdsAudit = randomPdsAudit;
+            PdsAudit expectedPdsAudit = inputPdsAudit;
+            await this.apiBroker.PostPdsAuditAsync(inputPdsAudit);
+
+            // When
+            PdsAudit actualPdsAudit = await this.apiBroker.GetPdsAuditByIdAsync(inputPdsAudit.Id);
+
+            // Then
+            actualPdsAudit.Should().BeEquivalentTo(expectedPdsAudit);
+
+            // Cleanup
+            await this.apiBroker.DeletePdsAuditByIdAsync(inputPdsAudit.Id);
+        }
     }
 }

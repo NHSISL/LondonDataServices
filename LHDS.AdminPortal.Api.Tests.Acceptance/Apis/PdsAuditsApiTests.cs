@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits;
@@ -23,7 +24,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
         public PdsAuditsApiTests(ApiBroker apiBroker) =>
             this.apiBroker = apiBroker;
 
-        private int GetRandomNumber() =>
+        private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
         private static DateTimeOffset GetRandomDateTime() =>
@@ -36,6 +37,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
             await this.apiBroker.PostIngestionTrackingAsync(randomIngestionTracking);
 
             return randomIngestionTracking;
+        }
+
+        private static IQueryable<PdsAudit> CreateRandomPdsAudits()
+        {
+            return CreatePdsAuditFiller()
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
         }
 
         private static PdsAudit CreateRandomPdsAudit() =>

@@ -6,9 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.PdsAudits;
-using RESTFulSense.Exceptions;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
@@ -33,6 +31,31 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
             await this.apiBroker.DeletePdsAuditByIdAsync(inputPdsAudit.Id);
         }
 
+        [Fact]
+        public async Task ShouldGetAllPdsAuditsAsync()
+        {
+            // Given
+            IQueryable<PdsAudit> randomPdsAudits = CreateRandomPdsAudits();
+            IQueryable<PdsAudit> inputPdsAudits = randomPdsAudits;
+            IQueryable<PdsAudit> expectedPdsAudits = inputPdsAudits;
+
+            foreach (PdsAudit inputPdsAudit in inputPdsAudits)
+            {
+                await this.apiBroker.PostPdsAuditAsync(inputPdsAudit);
+            }
+
+            // When
+            List<PdsAudit> actualPdsAudits = await this.apiBroker.GetAllPdsAuditsAsync();
+
+            // Then
+            actualPdsAudits.Should().BeEquivalentTo(inputPdsAudits);
+
+            // Cleanup
+            foreach (PdsAudit inputPdsAudit in inputPdsAudits)
+            {
+                await this.apiBroker.DeletePdsAuditByIdAsync(inputPdsAudit.Id);
+            }
+          
         [Fact]
         public async Task ShouldGetPdsAuditByIdAsync()
         {

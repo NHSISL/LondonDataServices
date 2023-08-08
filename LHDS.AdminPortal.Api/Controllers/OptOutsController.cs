@@ -2,9 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
+using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Processings.OptOuts.Exceptions;
 using LHDS.Core.Services.Processings.OptOuts;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +28,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         [HttpGet]
         [EnableQuery(PageSize = 50)]
 #if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.OptOut, ISL.LDS.AdminApi.ReadOnly")]
 #endif
         public ActionResult<IQueryable<OptOut>> Get()
         {
@@ -101,7 +101,7 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return Ok(getOptOutByNhs);
             }
             catch (OptOutProcessingValidationException optOutProcessingValidationException)
-                when (optOutProcessingValidationException.InnerException is NotFoundIngestionTrackingException)
+                when (optOutProcessingValidationException.InnerException is NotFoundOptOutException)
             {
                 return NotFound(optOutProcessingValidationException.InnerException);
             }
@@ -158,6 +158,47 @@ namespace LHDS.AdminPortal.Api.Controllers
             catch (OptOutServiceException optOutProcessingServiceException)
             {
                 return InternalServerError(optOutProcessingServiceException);
+            }
+        }
+
+        [HttpDelete("{optOuytId}")]
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.OptOut")]
+#endif
+        public async ValueTask<ActionResult<PdsAudit>> DeleteOptOutByIdAsync(Guid optOutId)
+        {
+            try
+            {
+                OptOut deletedOptout =
+                    await this.optOutProcessingService.RemoveOptOutByIdAsync(optOutId);
+
+                return Ok(deletedOptout);
+            }
+            catch (OptOutValidationException optOutValidationException)
+                 when (optOutValidationException.InnerException is NotFoundOptOutException)
+            {
+                return NotFound(optOutValidationException.InnerException);
+            }
+            catch (OptOutValidationException optOutValidationException)
+            {
+                return BadRequest(optOutValidationException.InnerException);
+            }
+            catch (OptOutDependencyValidationException optOutDependencyValidationException)
+                when (optOutDependencyValidationException.InnerException is LockedOptOutException)
+            {
+                return Locked(optOutDependencyValidationException.InnerException);
+            }
+            catch (OptOutDependencyValidationException optOutDependencyValidationException)
+            {
+                return BadRequest(optOutDependencyValidationException);
+            }
+            catch (OptOutDependencyException optOutDependencyException)
+            {
+                return InternalServerError(optOutDependencyException);
+            }
+            catch (OptOutServiceException optOutServiceException)
+            {
+                return InternalServerError(optOutServiceException);
             }
         }
     }

@@ -30,6 +30,25 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static PdsAudit UpdatePdsAuditWithRandomValues(PdsAudit inputPdsAudit)
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            var filler = new Filler<PdsAudit>();
+
+            filler.Setup()
+                .OnProperty(pdsAudit => pdsAudit.Id).Use(inputPdsAudit.Id)
+                .OnProperty(pdsAudit => pdsAudit.CorrelationId).Use(inputPdsAudit.CorrelationId)
+                .OnProperty(pdsAudit => pdsAudit.FileName).Use(inputPdsAudit.FileName)
+                .OnProperty(pdsAudit => pdsAudit.Message).Use(inputPdsAudit.Message)
+                .OnProperty(pdsAudit => pdsAudit.MessageId).Use(inputPdsAudit.Message)
+                .OnProperty(pdsAudit => pdsAudit.CreatedBy).Use(inputPdsAudit.CreatedBy)
+                .OnProperty(pdsAudit => pdsAudit.CreatedDate).Use(inputPdsAudit.CreatedDate)
+                .OnProperty(pdsAudit => pdsAudit.UpdatedDate).Use(now)
+                .OnType<DateTimeOffset>().Use(GetRandomDateTime());
+
+            return filler.Create();
+        }
+
 
         private async ValueTask<IngestionTracking> PostRandomIngestionTrackingAsync(Guid supplierId)
         {

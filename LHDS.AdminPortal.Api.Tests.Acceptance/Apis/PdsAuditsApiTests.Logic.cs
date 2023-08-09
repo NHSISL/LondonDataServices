@@ -48,10 +48,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
             List<PdsAudit> actualPdsAudits = await this.apiBroker.GetAllPdsAuditsAsync();
 
             // Then
-            actualPdsAudits.Should().BeEquivalentTo(inputPdsAudits);
+            actualPdsAudits.Should().BeEquivalentTo(expectedPdsAudits);
 
             // Cleanup
-            foreach (PdsAudit inputPdsAudit in inputPdsAudits)
+            foreach (PdsAudit inputPdsAudit in expectedPdsAudits)
             {
                 await this.apiBroker.DeletePdsAuditByIdAsync(inputPdsAudit.Id);
             }
@@ -67,7 +67,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
             await this.apiBroker.PostPdsAuditAsync(inputPdsAudit);
 
             // When
-            PdsAudit actualPdsAudit = 
+            PdsAudit actualPdsAudit =
                 await this.apiBroker.GetPdsAuditByIdAsync(inputPdsAudit.Id);
 
             // Then

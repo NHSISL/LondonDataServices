@@ -5,8 +5,9 @@ import TableBaseRow from "../bases/components/Table/TableBase.Row";
 import TableBaseData from "../bases/components/Table/TableBase.Data";
 import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileImport, faLockOpen, faFileDownload, faFileExport } from '@fortawesome/free-solid-svg-icons';
+import { faFileImport, faLockOpen, faFileDownload, faFileExport, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Dropdown } from "react-bootstrap";
+import moment from "moment";
 
 type IngestionTrackingRowProps = {
     onRelanding: (ingestionTracking: IngestionTracking) => void;
@@ -34,10 +35,21 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
     return (
         <TableBaseRow>
             <TableBaseData>
-                {ingestionTracking.supplier?.name}
+                <div className="text-white p-2 rounded" style={{ backgroundColor: ingestionTracking.supplier?.name === 'EMIS' ? '#0984e3' : '#00b894' }}>
+                    {ingestionTracking.supplier?.name}
+                </div>
             </TableBaseData>
             <TableBaseData>
-                {trimString(ingestionTracking.fileName)}
+                FileName: {trimString(ingestionTracking.fileName)}
+                <br />
+                Decrypted: {ingestionTracking.decrypted ? <FontAwesomeIcon icon={faCheck} className="text-success" /> : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp;
+                Deleted: {ingestionTracking.fileDeleted ? <FontAwesomeIcon icon={faCheck} className="text-success" /> : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp;
+                Record Count: {ingestionTracking.recordCount} &nbsp;
+                
+            </TableBaseData>
+            <TableBaseData>
+                Created Date: <br/>
+                {moment(ingestionTracking.createdDate?.toString()).format("Do-MMM-yyyy HH:mm")}
             </TableBaseData>
             <TableBaseData>
                 <Dropdown>

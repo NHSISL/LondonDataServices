@@ -130,7 +130,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                                                 loading={isLoading || isFetchingNextPage}
                                                 spinner={<SpinnerBase />}
                                                 noMorePages={hasNoMorePages()}
-                                                noMorePagesMessage={<>---No more IngestionTrackings---</>}
+                                                noMorePagesMessage={<>-- No more pages --</>}
                                             />
                                         </td>
                                     </tr>

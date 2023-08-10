@@ -53,5 +53,21 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
             // Cleanup
             //await this.apiBroker.DeleteOptOutByIdAsync(actualOptOut.Id);
         }
+
+        [Fact]
+        public async Task ShouldPutOptOutAsync()
+        {
+            // given
+            OptOut randomOptOut = await PostRandomOptOutAsync();
+            OptOut modifiedOptOut = UpdateOptOutWithRandomValues(randomOptOut);
+
+            // when
+            await this.apiBroker.PutOptOutAsync(modifiedOptOut);
+            OptOut actualOptOut = await this.apiBroker.GetOptOutByNhsNumberAsync(randomOptOut.NhsNumber);
+
+            // then
+            actualOptOut.Should().BeEquivalentTo(modifiedOptOut);
+            //await this.apiBroker.DeleteOptOutByIdAsync(actualOptOut.Id);
+        }
     }
 }

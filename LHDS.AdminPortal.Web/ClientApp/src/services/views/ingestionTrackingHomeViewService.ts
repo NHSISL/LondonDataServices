@@ -18,6 +18,7 @@ type IngestionTrackingHomeViewServiceResponse = {
     isFetchingNextPage: boolean;
     hasNextPage: boolean;
     data: any;
+    refetch: () => void
 }
 
 export const ingestionTrackingHomeViewService = {
@@ -77,6 +78,7 @@ export const ingestionTrackingHomeViewService = {
                 isFetchingNextPage: response.isFetchingNextPage,
                 hasNextPage: !!response.hasNextPage,
                 data: response.data,
+                refetch: response.refetch
             };
         } catch (err) {
             throw err;

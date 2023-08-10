@@ -1,9 +1,10 @@
 import { Guid } from "guid-typescript";
-import React, { FunctionComponent, useEffect } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { IngestionTrackingView } from "../../models/views/components/ingestionTracking/ingestionTrackingView";
 import { ingestionTrackingViewService } from "../../services/views/ingestionTrackingViewService";
 import IngestionTrackingDetailCard from "./ingestionTrackingDetailCard";
 import { toastSuccess } from "../../brokers/toastBroker";
+
 
 interface IngestionTrackingDetailProps {
     ingestionTrackingId: string;
@@ -37,9 +38,11 @@ const IngestionTrackingDetail: FunctionComponent<IngestionTrackingDetailProps> =
         toastSuccess("Re-Decrypt");
     }
 
-    useEffect(() => {
-
-    })
+    const handleRefresh = async (ingestionTrackingView: IngestionTrackingView) => {
+        toastSuccess("Refresh");
+         //if (ingestionTrackingView.id)
+         //   ingestionTrackingViewService.useGetIngestionTrackingById(Guid.parse(ingestionTrackingView.id))
+    }
 
     return (
         <div>
@@ -51,7 +54,7 @@ const IngestionTrackingDetail: FunctionComponent<IngestionTrackingDetailProps> =
                         onDownload={handleDownload}
                         onReLand={handleReLand}
                         onReDecrypt={handleReDecrypt}
-                    >
+                        onRefresh={handleRefresh}>
 
                         {children}
                     </IngestionTrackingDetailCard>

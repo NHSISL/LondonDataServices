@@ -84,6 +84,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
 
             filler.Setup()
                 .OnProperty(optOut => optOut.Id).Use(inputOptOut.Id)
+                .OnProperty(optOut => optOut.BatchReference).Use(inputOptOut.BatchReference)
                 .OnProperty(optOut => optOut.NhsNumber).Use(inputOptOut.NhsNumber)
                 .OnProperty(optOut => optOut.CreatedDate).Use(inputOptOut.CreatedDate)
                 .OnProperty(optOut => optOut.CreatedBy).Use(inputOptOut.CreatedBy)

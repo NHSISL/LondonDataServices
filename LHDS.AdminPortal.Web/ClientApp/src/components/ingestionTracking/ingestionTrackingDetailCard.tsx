@@ -13,6 +13,7 @@ interface IngestionTrackingDetailCardProps {
     onDownload: (ingestionTracking: IngestionTrackingView) => void;
     onReLand: (ingestionTracking: IngestionTrackingView) => void;
     onReDecrypt: (ingestionTracking: IngestionTrackingView) => void;
+    onRefresh: (ingestionTracking: IngestionTrackingView) => void;
 }
 
 const IngestionTrackingDetailCard: FunctionComponent<IngestionTrackingDetailCardProps> = (props) => {
@@ -21,8 +22,10 @@ const IngestionTrackingDetailCard: FunctionComponent<IngestionTrackingDetailCard
         children,
         onDownload,
         onReLand,
-        onReDecrypt
+        onReDecrypt,
+        onRefresh
     } = props;
+
 
     const handleDownload = async (ingestionTracking: IngestionTrackingView) => {
         await onDownload(ingestionTracking);
@@ -34,6 +37,10 @@ const IngestionTrackingDetailCard: FunctionComponent<IngestionTrackingDetailCard
 
     const handlReDecrypt = async (ingestionTracking: IngestionTrackingView) => {
         await onReDecrypt(ingestionTracking);
+    }
+
+    const handlRefresh = async (ingestionTracking: IngestionTrackingView) => {
+        await onRefresh(ingestionTracking);
     }
 
     return (
@@ -49,6 +56,7 @@ const IngestionTrackingDetailCard: FunctionComponent<IngestionTrackingDetailCard
                             onDownload={handleDownload}
                             onReLand={handleReland}
                             onReDecrypt={handlReDecrypt}
+                            onRefresh={handlRefresh}
                         />
 
                         {children !== undefined && (

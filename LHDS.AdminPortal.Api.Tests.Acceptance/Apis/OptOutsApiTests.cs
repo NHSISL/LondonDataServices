@@ -77,6 +77,23 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
             return $"{formattedNhsNumber}{checkNumber}";
         }
 
+        private static OptOut UpdateOptOutWithRandomValues(OptOut inputOptOut)
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            var filler = new Filler<OptOut>();
+
+            filler.Setup()
+                .OnProperty(optOut => optOut.Id).Use(inputOptOut.Id)
+                .OnProperty(optOut => optOut.NhsNumber).Use(inputOptOut.NhsNumber)
+                .OnProperty(optOut => optOut.CreatedDate).Use(inputOptOut.CreatedDate)
+                .OnProperty(optOut => optOut.CreatedBy).Use(inputOptOut.CreatedBy)
+                .OnProperty(optOut => optOut.CacheTime).Use(now.AddDays(-7))
+                .OnProperty(optOut => optOut.UpdatedDate).Use(now)
+                .OnType<DateTimeOffset>().Use(GetRandomDateTime());
+
+            return filler.Create();
+        }
+
         private static IQueryable<OptOut> CreateRandomOptOuts()
         {
             return CreateOptOutFiller(dateTimeOffset: GetRandomDateTime())

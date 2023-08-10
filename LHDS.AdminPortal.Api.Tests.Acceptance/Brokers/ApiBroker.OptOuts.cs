@@ -22,5 +22,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 
         public async ValueTask<OptOut> GetOptOutByNhsNumberAsync(string nhsNumber) =>
             await this.apiFactoryClient.GetContentAsync<OptOut>($"{OptOutsRelativeUrl}/{nhsNumber}");
+
+        public async ValueTask<OptOut> PutOptOutAsync(OptOut optOut) =>
+            await this.apiFactoryClient.PutContentAsync(OptOutsRelativeUrl, optOut);
     }
 }

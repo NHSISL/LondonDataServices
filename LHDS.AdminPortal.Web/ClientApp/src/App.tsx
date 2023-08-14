@@ -15,6 +15,8 @@ import { OptOutSearch } from './pages/OptOutSearch';
 import { OptOutUpload } from './pages/OptOutUpload';
 import { PdsSearch } from './pages/PdsSearch';
 import { PdsUpload } from './pages/PdsUpload';
+import { SecuredRoute } from './components/SecuredRoute';
+import securityPoints from './SecurityMatrix';
 
 const App = ({ msalInstance }: any) => {
     return (
@@ -23,15 +25,15 @@ const App = ({ msalInstance }: any) => {
                 <PageLayout>
                     <Routes>
                         <Route path="/" element={<Home />} />
-                        <Route path="/ingestionTracking" element={<IngestionTrackingHomepage />} />
-                        <Route path="/ingestionTrackingDetail" element={<IngestionTrackingPage />} />
-                        <Route path="/ingestionTrackingDetail/:ingestionTrackingId" element={<IngestionTrackingPage />} />
-                        <Route path="/optOutSearch" element={<OptOutSearch />} />
-                        <Route path="/optOutUpload" element={<OptOutUpload />} />
-                        <Route path="/configuration" element={<ConfigHomePage/>} />
-                        <Route path="/configuration/suppliers" element={<SuppliersPage />} />
-                        <Route path="/pds" element={<PdsSearch />} />
-                        <Route path="/pdsUpload" element={<PdsUpload />} />
+                        <Route path="/ingestionTracking" element={<SecuredRoute allowedRoles={securityPoints.ingestionTracking.view}><IngestionTrackingHomepage /></SecuredRoute>} />
+                        <Route path="/ingestionTrackingDetail" element={<SecuredRoute allowedRoles={securityPoints.ingestionTracking.view}><IngestionTrackingPage /></SecuredRoute>} />
+                        <Route path="/ingestionTrackingDetail/:ingestionTrackingId" element={<SecuredRoute allowedRoles={securityPoints.ingestionTracking.view}><IngestionTrackingPage /></SecuredRoute>} />
+                        <Route path="/optOutSearch" element={<SecuredRoute allowedRoles={securityPoints.optOut.view}><OptOutSearch /></SecuredRoute>} />
+                        <Route path="/optOutUpload" element={<SecuredRoute allowedRoles={securityPoints.optOut.view}><OptOutUpload /></SecuredRoute>} />
+                        <Route path="/configuration" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><ConfigHomePage/></SecuredRoute>} />
+                        <Route path="/configuration/suppliers" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><SuppliersPage /></SecuredRoute >} />
+                        <Route path="/pds" element={<SecuredRoute allowedRoles={securityPoints.pds.view}>< PdsSearch /></SecuredRoute >} />
+                        <Route path="/pdsUpload" element={<SecuredRoute allowedRoles={securityPoints.pds.view}>< PdsUpload /></SecuredRoute >} />
                     </Routes>
                 </PageLayout>
                 <ReactQueryDevtools initialIsOpen={false} />

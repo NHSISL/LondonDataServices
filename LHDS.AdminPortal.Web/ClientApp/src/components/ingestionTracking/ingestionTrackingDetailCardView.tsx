@@ -41,15 +41,22 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Decrypted</SummaryListBaseKey>
-                    <SummaryListBaseValue>{ingestionTracking.decrypted ? <FontAwesomeIcon icon={faCheck} className="text-success" /> : <FontAwesomeIcon icon={faTimes} className="text-danger" />}</SummaryListBaseValue>
+                    <SummaryListBaseValue>{ingestionTracking.decrypted ?
+                        <FontAwesomeIcon icon={faCheck} className="text-success" /> :
+                        <FontAwesomeIcon icon={faTimes} className="text-danger" />}
+                    </SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Last Seen</SummaryListBaseKey>
-                    <SummaryListBaseValue>{moment(ingestionTracking.lastSeen?.toString()).format("Do-MMM-yyyy")}</SummaryListBaseValue>
+                    <SummaryListBaseValue>{moment(ingestionTracking.lastSeen?.toString()).format("Do-MMM-yyyy HH:mm")}
+                    </SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>File Deleted</SummaryListBaseKey>
-                    <SummaryListBaseValue>{ingestionTracking.fileDeleted ? <FontAwesomeIcon icon={faCheck} className="text-success" /> : <FontAwesomeIcon icon={faTimes} className="text-danger" />}</SummaryListBaseValue>
+                    <SummaryListBaseValue>{ingestionTracking.fileDeleted ?
+                        <FontAwesomeIcon icon={faCheck} className="text-success" /> :
+                        <FontAwesomeIcon icon={faTimes} className="text-danger" />}
+                    </SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Record Count</SummaryListBaseKey>
@@ -60,23 +67,29 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
                     <SummaryListBaseValue>{ingestionTracking.encryptedFileSize}</SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
-                    <SummaryListBaseKey>Encrypted File Size</SummaryListBaseKey>
+                    <SummaryListBaseKey>Decrypted File Size</SummaryListBaseKey>
                     <SummaryListBaseValue>{ingestionTracking.decryptedFileSize}</SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Created Date</SummaryListBaseKey>
-                    <SummaryListBaseValue>{moment(ingestionTracking.createdDate?.toString()).format("Do-MMM-yyyy")}</SummaryListBaseValue>
+                    <SummaryListBaseValue>
+                        {moment(ingestionTracking.createdDate?.toString()).format("Do-MMM-yyyy HH:mm")}
+                    </SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Updated Date</SummaryListBaseKey>
-                    <SummaryListBaseValue>{moment(ingestionTracking.updatedDate?.toString()).format("Do-MMM-yyyy")}</SummaryListBaseValue>
+                    <SummaryListBaseValue>
+                        {moment(ingestionTracking.updatedDate?.toString()).format("Do-MMM-yyyy HH:mm")}
+                    </SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Actions</SummaryListBaseKey>
                     <SummaryListBaseValue>
                         <ButtonBase onClick={() => onReLand(ingestionTracking)} add>&nbsp;Re-Land</ButtonBase>&nbsp;
                         <ButtonBase onClick={() => onReDecrypt(ingestionTracking)} add>&nbsp;Re-Decrypt</ButtonBase>&nbsp;
-                        <ButtonBase onClick={() => onDownload(ingestionTracking)} add><FontAwesomeIcon icon={faFileDownload} />&nbsp;Download</ButtonBase>&nbsp;
+                        <ButtonBase onClick={() => onDownload(ingestionTracking)} add>
+                            <FontAwesomeIcon icon={faFileDownload} />&nbsp;Download
+                        </ButtonBase>&nbsp;
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
             </SummaryListBase>

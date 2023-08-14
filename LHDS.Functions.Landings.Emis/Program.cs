@@ -27,7 +27,7 @@ var host = new HostBuilder()
             path: "appsettings.local.json",
             optional: true,
             reloadOnChange: true)
-        .AddEnvironmentVariables("LHDS_");
+        .AddEnvironmentVariables();
     })
     .ConfigureServices((context, services) =>
     {

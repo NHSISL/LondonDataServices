@@ -80,17 +80,20 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
         private static OptOut UpdateOptOutWithRandomValues(OptOut inputOptOut)
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
+            now.AddSeconds(1);
             var filler = new Filler<OptOut>();
 
             filler.Setup()
+                .OnType<DateTimeOffset>().Use(GetRandomDateTime())
                 .OnProperty(optOut => optOut.Id).Use(inputOptOut.Id)
                 .OnProperty(optOut => optOut.BatchReference).Use(inputOptOut.BatchReference)
+                .OnProperty(optOut => optOut.UniqueReference).Use(inputOptOut.UniqueReference)
                 .OnProperty(optOut => optOut.NhsNumber).Use(inputOptOut.NhsNumber)
                 .OnProperty(optOut => optOut.CreatedDate).Use(inputOptOut.CreatedDate)
                 .OnProperty(optOut => optOut.CreatedBy).Use(inputOptOut.CreatedBy)
                 .OnProperty(optOut => optOut.CacheTime).Use(now.AddDays(-7))
-                .OnProperty(optOut => optOut.UpdatedDate).Use(now)
-                .OnType<DateTimeOffset>().Use(GetRandomDateTime());
+                .OnProperty(optOut => optOut.UpdatedBy).Use(inputOptOut.UpdatedBy)
+                .OnProperty(optOut => optOut.UpdatedDate).Use(now);
 
             return filler.Create();
         }

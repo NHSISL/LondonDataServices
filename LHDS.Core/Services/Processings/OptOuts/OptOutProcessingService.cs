@@ -72,7 +72,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 maybeOptOut.BatchReference = optOut.BatchReference;
                 maybeOptOut.CacheTime = optOut.CacheTime;
                 maybeOptOut.LastSentToMesh = optOut.LastSentToMesh;
-                maybeOptOut.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+                maybeOptOut.UpdatedDate = optOut.UpdatedDate;
 
                 return await this.optOutService.ModifyOptOutAsync(maybeOptOut);
             });

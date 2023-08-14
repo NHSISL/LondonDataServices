@@ -88,7 +88,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
 
             // When
             await this.apiBroker.PutPdsAuditAsync(modifiedPdsAudit);
-
             PdsAudit actualPdsAudit = await this.apiBroker.GetPdsAuditByIdAsync(inputPdsAudit.Id);
 
             // Then

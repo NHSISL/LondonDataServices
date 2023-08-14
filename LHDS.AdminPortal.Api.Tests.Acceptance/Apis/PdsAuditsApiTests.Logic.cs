@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.PdsAudits;
+using RESTFulSense.Exceptions;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
@@ -75,6 +76,29 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.PdsAudits
 
             // Cleanup
             await this.apiBroker.DeletePdsAuditByIdAsync(inputPdsAudit.Id);
+        }
+
+        [Fact]
+        public async Task ShouldDeletePdsAuditAsync()
+        {
+            // given
+            PdsAudit randomPdsAudit = CreateRandomPdsAudit();
+            PdsAudit inputPdsAudit = randomPdsAudit;
+            PdsAudit expectedPdsAudit = inputPdsAudit;
+            await this.apiBroker.PostPdsAuditAsync(inputPdsAudit);
+
+            // when
+            PdsAudit deletedPdsAudit =
+                await this.apiBroker.DeletePdsAuditByIdAsync(inputPdsAudit.Id);
+
+            ValueTask<PdsAudit> getPdsAuditbyIdTask =
+                this.apiBroker.GetPdsAuditByIdAsync(inputPdsAudit.Id);
+
+            // then
+            deletedPdsAudit.Should().BeEquivalentTo(expectedPdsAudit);
+
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
+                getPdsAuditbyIdTask.AsTask());
         }
 
         [Fact]

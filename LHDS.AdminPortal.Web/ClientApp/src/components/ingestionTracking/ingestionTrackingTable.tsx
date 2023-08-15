@@ -14,7 +14,7 @@ import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import IngestionTrackingRow from "./ingestionTrackingRow";
 import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
-import { Button, Col, Row, Spinner } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRefresh } from "@fortawesome/free-solid-svg-icons";
 
@@ -147,7 +147,6 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                                         </tr>
                                     ) : (
                                         <>
-
                                             {ingestionTrackingsRetrieved?.map(
                                                 (ingestionTrackingHomeView: IngestionTrackingHomeView) => (
                                                     <IngestionTrackingRow

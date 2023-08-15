@@ -1,6 +1,6 @@
 import { faCheck, faTimes, faFileDownload, faRefresh } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent } from "react";
 import moment from "moment";
 import { IngestionTrackingView } from "../../models/views/components/ingestionTracking/ingestionTrackingView";
 import SummaryListBase from "../bases/components/SummaryList/SummaryListBase";
@@ -9,7 +9,6 @@ import SummaryListBaseRow from "../bases/components/SummaryList/SummaryListBase.
 import SummaryListBaseValue from "../bases/components/SummaryList/SummaryListBase.Value";
 import ButtonBase from "../bases/buttons/ButtonBase";
 import { Button, Col, Row } from "react-bootstrap";
-import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 
 interface IngestionTrackingDetailCardViewProps {
     ingestionTracking: IngestionTrackingView;
@@ -34,9 +33,9 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
             <Row>
                 <Col>&nbsp;</Col>
                 <Col style={{ textAlign: "right" }}>
-                        <Button variant="light">
-                                <FontAwesomeIcon icon={faRefresh} onClick={() => onRefresh(ingestionTracking)} />
-                        </Button>
+                        {/*<Button variant="light">*/}
+                        {/*        <FontAwesomeIcon icon={faRefresh} onClick={() => onRefresh(ingestionTracking)} />*/}
+                        {/*</Button>*/}
                 </Col>
             </Row>
 
@@ -99,7 +98,7 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Actions</SummaryListBaseKey>
                     <SummaryListBaseValue>
-                    <br/>
+                        <br/>
                         <ButtonBase onClick={() => onReLand(ingestionTracking)} add>&nbsp;Re-Land</ButtonBase>&nbsp;
                         <ButtonBase onClick={() => onReDecrypt(ingestionTracking)} add>&nbsp;Re-Decrypt</ButtonBase>&nbsp;
                         <ButtonBase onClick={() => onDownload(ingestionTracking)} add>

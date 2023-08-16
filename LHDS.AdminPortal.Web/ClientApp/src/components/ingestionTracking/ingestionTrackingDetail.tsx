@@ -5,7 +5,6 @@ import { ingestionTrackingViewService } from "../../services/views/ingestionTrac
 import IngestionTrackingDetailCard from "./ingestionTrackingDetailCard";
 import { toastSuccess } from "../../brokers/toastBroker";
 
-
 interface IngestionTrackingDetailProps {
     ingestionTrackingId: string;
     children?: React.ReactNode;
@@ -38,9 +37,7 @@ const IngestionTrackingDetail: FunctionComponent<IngestionTrackingDetailProps> =
         toastSuccess("Re-Decrypt");
     }
 
-    const handleRefresh = async (ingestionTrackingView: IngestionTrackingView) => {
-        //TODO: Apply Refresh, invalidate query.
-    }
+    const handleRefresh = async (ingestionTrackingView: IngestionTrackingView) => {}
 
     return (
         <div>

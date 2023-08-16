@@ -26,15 +26,11 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
         onReDecrypt
     } = props;
 
-
     return (
         <>
             <Row>
                 <Col>&nbsp;</Col>
                 <Col style={{ textAlign: "right" }}>
-                        {/*<Button variant="light">*/}
-                        {/*        <FontAwesomeIcon icon={faRefresh} onClick={() => onRefresh(ingestionTracking)} />*/}
-                        {/*</Button>*/}
                 </Col>
             </Row>
 

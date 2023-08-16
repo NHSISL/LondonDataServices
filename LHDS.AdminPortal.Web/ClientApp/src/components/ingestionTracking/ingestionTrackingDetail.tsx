@@ -39,9 +39,7 @@ const IngestionTrackingDetail: FunctionComponent<IngestionTrackingDetailProps> =
     }
 
     const handleRefresh = async (ingestionTrackingView: IngestionTrackingView) => {
-        toastSuccess("Refresh");
-         //if (ingestionTrackingView.id)
-         //   ingestionTrackingViewService.useGetIngestionTrackingById(Guid.parse(ingestionTrackingView.id))
+        //TODO: Apply Refresh, invalidate query.
     }
 
     return (

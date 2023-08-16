@@ -1,4 +1,4 @@
-import { faCheck, faTimes, faFileDownload, faRefresh } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faTimes, faFileDownload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { FunctionComponent } from "react";
 import moment from "moment";
@@ -8,7 +8,6 @@ import SummaryListBaseKey from "../bases/components/SummaryList/SummaryListBase.
 import SummaryListBaseRow from "../bases/components/SummaryList/SummaryListBase.Row";
 import SummaryListBaseValue from "../bases/components/SummaryList/SummaryListBase.Value";
 import ButtonBase from "../bases/buttons/ButtonBase";
-import { Button, Col, Row } from "react-bootstrap";
 
 interface IngestionTrackingDetailCardViewProps {
     ingestionTracking: IngestionTrackingView;
@@ -23,8 +22,7 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
         ingestionTracking,
         onDownload,
         onReLand,
-        onReDecrypt,
-        onRefresh
+        onReDecrypt
     } = props;
 
 

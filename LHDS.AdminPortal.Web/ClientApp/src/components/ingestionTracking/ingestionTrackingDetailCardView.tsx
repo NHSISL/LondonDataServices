@@ -8,12 +8,14 @@ import SummaryListBaseKey from "../bases/components/SummaryList/SummaryListBase.
 import SummaryListBaseRow from "../bases/components/SummaryList/SummaryListBase.Row";
 import SummaryListBaseValue from "../bases/components/SummaryList/SummaryListBase.Value";
 import ButtonBase from "../bases/buttons/ButtonBase";
+import { Col, Row } from "react-bootstrap";
 
 interface IngestionTrackingDetailCardViewProps {
     ingestionTracking: IngestionTrackingView;
     onDownload: (ingestionTracking: IngestionTrackingView) => void;
     onReLand: (ingestionTracking: IngestionTrackingView) => void;
     onReDecrypt: (ingestionTracking: IngestionTrackingView) => void;
+    onRefresh: (ingestionTracking: IngestionTrackingView) => void;
 }
 
 const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetailCardViewProps> = (props) => {
@@ -26,6 +28,12 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
 
     return (
         <>
+            <Row>
+                <Col>&nbsp;</Col>
+                <Col style={{ textAlign: "right" }}>
+                </Col>
+            </Row>
+
             <SummaryListBase>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Supplier</SummaryListBaseKey>
@@ -85,6 +93,7 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Actions</SummaryListBaseKey>
                     <SummaryListBaseValue>
+                        <br/>
                         <ButtonBase onClick={() => onReLand(ingestionTracking)} add>&nbsp;Re-Land</ButtonBase>&nbsp;
                         <ButtonBase onClick={() => onReDecrypt(ingestionTracking)} add>&nbsp;Re-Decrypt</ButtonBase>&nbsp;
                         <ButtonBase onClick={() => onDownload(ingestionTracking)} add>

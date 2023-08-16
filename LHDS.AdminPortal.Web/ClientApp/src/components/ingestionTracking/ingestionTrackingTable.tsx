@@ -96,12 +96,12 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
     };
 
     const refreshData = () => {
-        setShowSpinner(true); 
+        setShowSpinner(true);
         setTimeout(() => {
             refetch();
             setTimeout(() => {
-                setShowSpinner(false); 
-            }, 200); 
+                setShowSpinner(false);
+            }, 200);
         }, 200);
     };
 
@@ -124,19 +124,20 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                                     )}
                                 </Col>
                             </Row>
-                            <div className="filter-container">
-                                <div className="filter-item">
-                                    <SearchBase
-                                        id="search"
-                                        label="Search IngestionTrackings"
-                                        value={searchTerm}
-                                        onChange={(e) => {
-                                            handleSearchChange(e.currentTarget.value);
-                                        }}
-                                    />
+                            <Row>
+                                <div className="filter-container">
+                                    <div className="filter-item">
+                                        <SearchBase
+                                            id="search"
+                                            label="Search IngestionTrackings"
+                                            value={searchTerm}
+                                            onChange={(e) => {
+                                                handleSearchChange(e.currentTarget.value);
+                                            }}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-
+                            </Row>
                             <TableBase>
                                 <TableBaseTbody>
                                     {isLoading || showSpinner ? (

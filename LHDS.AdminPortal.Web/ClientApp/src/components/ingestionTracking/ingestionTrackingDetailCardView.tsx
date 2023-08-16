@@ -8,6 +8,7 @@ import SummaryListBaseKey from "../bases/components/SummaryList/SummaryListBase.
 import SummaryListBaseRow from "../bases/components/SummaryList/SummaryListBase.Row";
 import SummaryListBaseValue from "../bases/components/SummaryList/SummaryListBase.Value";
 import ButtonBase from "../bases/buttons/ButtonBase";
+import { Col, Row } from "react-bootstrap";
 
 interface IngestionTrackingDetailCardViewProps {
     ingestionTracking: IngestionTrackingView;

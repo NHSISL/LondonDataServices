@@ -83,14 +83,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
             OptOut deletedOptOut =
                 await this.apiBroker.DeleteOptOutByIdAsync(inputOptOut.Id);
 
-            ValueTask<OptOut> getOptOutByNhsNumberTask = 
-                this.apiBroker.GetOptOutByNhsNumberAsync(inputOptOut.NhsNumber);
+            OptOut optOutByNhsNumber = 
+                 await this.apiBroker.GetOptOutByNhsNumberAsync(inputOptOut.NhsNumber);
 
             // then
             deletedOptOut.Should().BeEquivalentTo(expectedOptOut);
-
-            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
-                getOptOutByNhsNumberTask.AsTask());
+            optOutByNhsNumber.Should().BeNull();
         }
     }
 }

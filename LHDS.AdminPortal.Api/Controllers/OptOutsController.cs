@@ -161,7 +161,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [HttpDelete("{optOuytId}")]
+        [HttpDelete("{optOutId}")]
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.OptOut")]
 #endif

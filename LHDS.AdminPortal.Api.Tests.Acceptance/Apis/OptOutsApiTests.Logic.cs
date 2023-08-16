@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
             actualOptOut.Should().BeEquivalentTo(expectedOptOut);
 
             // Cleanup
-            //await this.apiBroker.DeleteOptOutByIdAsync(actualOptOut.Id);
+            await this.apiBroker.DeleteOptOutByIdAsync(actualOptOut.Id);
         }
 
         [Fact]
@@ -51,7 +52,23 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
             actualOptOut.Should().BeEquivalentTo(expectedOptOut);
 
             // Cleanup
-            //await this.apiBroker.DeleteOptOutByIdAsync(actualOptOut.Id);
+            await this.apiBroker.DeleteOptOutByIdAsync(actualOptOut.Id);
+        }
+
+        [Fact]
+        public async Task ShouldPutOptOutAsync()
+        {
+            // given
+            OptOut randomOptOut = await PostRandomOptOutAsync();
+            OptOut modifiedOptOut = UpdateOptOutWithRandomValues(randomOptOut);
+
+            // when
+            await this.apiBroker.PutOptOutAsync(modifiedOptOut);
+            OptOut actualOptOut = await this.apiBroker.GetOptOutByNhsNumberAsync(randomOptOut.NhsNumber);
+
+            // then
+            actualOptOut.Should().BeEquivalentTo(modifiedOptOut);
+            await this.apiBroker.DeleteOptOutByIdAsync(actualOptOut.Id);
         }
     }
 }

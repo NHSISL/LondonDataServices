@@ -34,7 +34,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
             actualOptOut.Should().BeEquivalentTo(expectedOptOut);
 
             // Cleanup
-            //await this.apiBroker.DeleteOptOutByIdAsync(actualOptOut.Id);
+            await this.apiBroker.DeleteOptOutByIdAsync(actualOptOut.Id);
         }
 
         [Fact]
@@ -52,7 +52,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
             actualOptOut.Should().BeEquivalentTo(expectedOptOut);
 
             // Cleanup
-            //await this.apiBroker.DeleteOptOutByIdAsync(actualOptOut.Id);
+            await this.apiBroker.DeleteOptOutByIdAsync(actualOptOut.Id);
         }
 
         [Fact]
@@ -68,7 +68,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
 
             // then
             actualOptOut.Should().BeEquivalentTo(modifiedOptOut);
-            //await this.apiBroker.DeleteOptOutByIdAsync(actualOptOut.Id);
+            await this.apiBroker.DeleteOptOutByIdAsync(actualOptOut.Id);
         }
     }
 }

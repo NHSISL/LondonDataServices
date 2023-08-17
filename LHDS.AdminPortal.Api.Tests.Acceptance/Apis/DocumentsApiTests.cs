@@ -3,12 +3,11 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
+using LHDS.Core.Models.Orchestrations.Downloads;
 using Tynamix.ObjectFiller;
 using Xunit;
 
@@ -31,18 +30,29 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
-        private async ValueTask<IngestionTracking> PostRandomIngestionTrackingAsync(Guid supplierId)
+        private async ValueTask<IngestionTracking> PostRandomIngestionTrackingAsync(
+            Guid supplierId, 
+            string encryptedFilePath,
+            string decryptedFilePath)
         {
-            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(supplierId);
+            IngestionTracking randomIngestionTracking = 
+                CreateRandomIngestionTracking(supplierId, encryptedFilePath, decryptedFilePath);
+
             await this.apiBroker.PostIngestionTrackingAsync(randomIngestionTracking);
 
             return randomIngestionTracking;
         }
 
-        private static IngestionTracking CreateRandomIngestionTracking(Guid supplierId) =>
-            CreateRandomIngestionTrackingFiller(supplierId).Create();
+        private static IngestionTracking CreateRandomIngestionTracking(
+            Guid supplierId, 
+            string encryptedFilePath,
+            string decryptedFilePath) =>
+            CreateRandomIngestionTrackingFiller(supplierId, encryptedFilePath, decryptedFilePath).Create();
 
-        private static Filler<IngestionTracking> CreateRandomIngestionTrackingFiller(Guid supplierId)
+        private static Filler<IngestionTracking> CreateRandomIngestionTrackingFiller(
+            Guid supplierId,
+            string encryptedFilePath,
+            string decryptedFilePath)
         {
             string user = Guid.NewGuid().ToString();
             DateTime now = DateTime.UtcNow;
@@ -51,11 +61,18 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
+                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use($"{supplierId}.doc")
+
+                .OnProperty(ingestionTracking => 
+                    ingestionTracking.EncryptedFileName).Use($"/{encryptedFilePath}/{supplierId}.doc")
+
+                .OnProperty(ingestionTracking => 
+                    ingestionTracking.DecryptedFileName).Use($"/{decryptedFilePath}/{supplierId}.doc")
+
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedDate).Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedDate).Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user);
-
             return filler;
         }
 

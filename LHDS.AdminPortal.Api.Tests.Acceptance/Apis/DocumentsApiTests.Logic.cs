@@ -23,36 +23,38 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
         {
             // given
             Supplier randomSupplier = await PostRandomSupplierAsync();
-            IngestionTracking randomIngestionTracking = await PostRandomIngestionTrackingAsync(randomSupplier.Id);
-            string randomFileName = GetRandomString();
+            string encryptedFilePath = "encrypted";
+            string decryptedFilePath = "decrypted";
+
+            IngestionTracking randomIngestionTracking = 
+                await PostRandomIngestionTrackingAsync(randomSupplier.Id, encryptedFilePath, decryptedFilePath);
+
+            string inputFileName = randomIngestionTracking.EncryptedFileName;
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
 
             Document document = new Document
             {
                 DocumentData = documentData,
-                FileName = randomFileName
+                FileName = inputFileName
             };
+
+            Document expectedDocument = document;
 
             await this.apiBroker.documentService.AddDocumentAsync(document);
 
-            IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
-               supplierId: randomSupplier.Id);
-
-            ingestionTracking.DecryptedFileName = document.FileName;
-
             // when
-            ActionResult<Document> documentResult = await this.apiBroker.GetDownloadLinkAsync(randomFileName);
+            Document actualDocument = await this.apiBroker.GetDownloadLinkAsync(inputFileName);
 
             // then
-            documentResult.Result.Should().BeOfType<OkObjectResult>();
+            actualDocument.Should().BeEquivalentTo(expectedDocument);
 
             IngestionTracking retrievedIngestionTracking =
-                await this.apiBroker.GetIngestionTrackingByIdAsync(ingestionTracking.Id);
+                await this.apiBroker.GetIngestionTrackingByIdAsync(randomIngestionTracking.Id);
 
-            Document returnedDocument = ((OkObjectResult)documentResult.Result).Value as Document;
+            //Document returnedDocument = ((OkObjectResult)documentResult.Result).Value as Document;
 
-            returnedDocument.FileName.Should().Be(document.FileName);
-            returnedDocument.DocumentData.Should().BeEquivalentTo(document.DocumentData);
+            actualDocument.FileName.Should().Be(expectedDocument.FileName);
+            actualDocument.DocumentData.Should().BeEquivalentTo(expectedDocument.DocumentData);
 
             // clean up
             await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(document.FileName);

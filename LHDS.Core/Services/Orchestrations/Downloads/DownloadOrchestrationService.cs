@@ -119,7 +119,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                                 await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
                                 await this.documentService.AddDocumentAsync(newBlobDocument);
-                                LogAudit(newIngestionTracking, document, currentDateTime, "Landed");
+                                LogAudit(newIngestionTracking, document, "Landed");
 
                                 return newIngestionTracking.DecryptedFileName;
                             }
@@ -205,7 +205,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     LogAudit(
                         ingestionTracking: maybeIngestionTracking,
                         document: externalDocument,
-                        currentDateTime,
                         message: "Refreshed");
 
                     return maybeIngestionTracking.DecryptedFileName;
@@ -250,7 +249,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                     await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
                     await this.documentService.AddDocumentAsync(newBlobDocument);
-                    LogAudit(newIngestionTracking, externalDocument, currentDateTime, "Re-Landed");
+                    LogAudit(newIngestionTracking, externalDocument, "Re-Landed");
 
                     return newIngestionTracking.DecryptedFileName;
                 }
@@ -259,15 +258,16 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         private void LogAudit(
             IngestionTracking ingestionTracking,
             Document document,
-            DateTimeOffset currentDateTime,
             string message)
         {
+            var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
             Audit newAudit =
                 new Audit
                 {
                     Id = Guid.NewGuid(),
                     IngestionTrackingId = ingestionTracking.Id,
-                    Message = $"{message} document - {document.FileName}",
+                    Message = $"{message} document",
                     CreatedBy = "DownloadOrchestrationService",
                     CreatedDate = currentDateTime,
                     UpdatedBy = "DownloadOrchestrationService",

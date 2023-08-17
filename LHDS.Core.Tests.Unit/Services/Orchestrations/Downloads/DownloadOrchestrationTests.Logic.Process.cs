@@ -99,7 +99,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
                 this.dateTimeBrokerMock.Verify(broker =>
                     broker.GetCurrentDateTimeOffset(),
-                        Times.Exactly(externalDocuments.Count));
+                        Times.Exactly(externalDocuments.Count * 2));
 
                 var filename = document.FileName.StartsWith('/')
                     ? document.FileName
@@ -280,7 +280,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
-                    Times.Once);
+                    Times.Exactly(2));
 
             this.ingestionTrackingServiceMock.Verify(service =>
                 service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(
@@ -381,7 +381,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
-                    Times.Once);
+                    Times.Exactly(2));
 
             this.ingestionTrackingServiceMock.Verify(service =>
                 service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(

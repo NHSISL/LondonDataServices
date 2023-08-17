@@ -5,12 +5,13 @@ import { auditService } from "../foundations/auditService";
 
 export const auditViewService = {
 
-    useGetAllAudits: (searchTerm?: string) => {
+    useGetAllAudits: (ingestionTrackingId: string) => {
         try {
-            let query = '?$orderby=createdDate';
 
-            if (searchTerm) {
-                query = query + `&$filter=contains(Message,'${searchTerm}')`;
+            let query = `?$orderby=createdDate`;
+
+            if (ingestionTrackingId) {
+                query = query + `&$filter=ingestionTrackingId eq ${ingestionTrackingId}`;
             }
 
             const response = auditService.useGetAllAudits(query);
@@ -20,10 +21,10 @@ export const auditViewService = {
                 if (response.data) {
                     const audits = response.data.map((audit: Audit) =>
                         new AuditView(
-                            audits.id,
-                            audits.ingestionTrackingId,
-                            audits.message,
-                            audits.createdDate,
+                            audit.id,
+                            audit.ingestionTrackingId,
+                            audit.message,
+                            audit.createdDate,
                         ));
 
                     setMappedAudits(audits);
@@ -31,8 +32,9 @@ export const auditViewService = {
             }, [response.data]);
 
             return {
-                mappedAudits, ...response
-            }
+                mappedAudits,
+                ...response,
+            };
         } catch (err) {
             throw err;
         }

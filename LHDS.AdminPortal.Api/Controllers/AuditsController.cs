@@ -6,6 +6,7 @@ using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using LHDS.Core.Services.Foundations.Audits;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
 #if RELEASE
 using Microsoft.AspNetCore.Authorization;
@@ -63,6 +64,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
 #endif
+        [EnableQuery(PageSize = 50)]
         public ActionResult<IQueryable<Audit>> GetAllAudits()
         {
             try

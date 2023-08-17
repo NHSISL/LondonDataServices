@@ -18,12 +18,13 @@ type IngestionTrackingHomeViewServiceResponse = {
     isFetchingNextPage: boolean;
     hasNextPage: boolean;
     data: any;
+    refetch: () => void
 }
 
 export const ingestionTrackingHomeViewService = {
     useGetAllIngestionTrackings: (searchTerm?: string): IngestionTrackingHomeViewServiceResponse => {
         try {
-            let query = `?$orderby=createdDate&$expand=supplier`;
+            let query = `?$orderby=createdDate desc&$expand=supplier`;
 
              if (searchTerm) {
                 query = query + `&$filter=contains(encryptedFileName,'${searchTerm}') or contains(decryptedFileName,'${searchTerm}')`;
@@ -52,6 +53,10 @@ export const ingestionTrackingHomeViewService = {
                                 ingestionTracking.recordCount,
                                 ingestionTracking.encryptedFileSize,
                                 ingestionTracking.decryptedFileSize,
+                                ingestionTracking.createdBy,
+                                ingestionTracking.createdDate,
+                                ingestionTracking.updatedBy,
+                                ingestionTracking.updatedDate,
                                 ingestionTracking.supplier,
                             ));
                         });
@@ -77,6 +82,7 @@ export const ingestionTrackingHomeViewService = {
                 isFetchingNextPage: response.isFetchingNextPage,
                 hasNextPage: !!response.hasNextPage,
                 data: response.data,
+                refetch: response.refetch
             };
         } catch (err) {
             throw err;

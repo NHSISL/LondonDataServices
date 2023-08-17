@@ -17,14 +17,14 @@
 	  <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
 	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.9" />
 	  <PackageReference Include="Microsoft.AspNetCore.OData" Version="8.2.0" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.9" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.8">
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.10" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.9">
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		  <PrivateAssets>all</PrivateAssets>
 	  </PackageReference>
 	  <PackageReference Include="Microsoft.Extensions.Azure" Version="1.6.3" />
 	  <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
-	  <PackageReference Include="Microsoft.Identity.Web" Version="2.13.0" />
+	  <PackageReference Include="Microsoft.Identity.Web" Version="2.13.2" />
 	  <PackageReference Include="RESTFulSense" Version="2.15.0" />
 	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 	  <PackageReference Include="Xeption" Version="2.5.0" />

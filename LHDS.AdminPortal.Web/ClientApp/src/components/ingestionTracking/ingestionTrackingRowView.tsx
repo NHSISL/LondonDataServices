@@ -4,6 +4,10 @@ import ButtonBase from "../bases/buttons/ButtonBase";
 import TableBaseRow from "../bases/components/Table/TableBase.Row";
 import TableBaseData from "../bases/components/Table/TableBase.Data";
 import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileImport, faLockOpen, faFileDownload, faFileExport, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { Dropdown } from "react-bootstrap";
+import moment from "moment";
 
 type IngestionTrackingRowProps = {
     onRelanding: (ingestionTracking: IngestionTracking) => void;
@@ -31,28 +35,55 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
     return (
         <TableBaseRow>
             <TableBaseData>
-                {ingestionTracking.supplier?.name}
+                <div
+                    className="text-white p-2 rounded al text-center"
+                    style={{ backgroundColor: ingestionTracking.supplier?.name === 'EMIS' ? '#0984e3' : '#00b894' }}>
+                    {ingestionTracking.supplier?.name}
+                </div>
             </TableBaseData>
             <TableBaseData>
-                {trimString(ingestionTracking.fileName)}
+                FileName: {trimString(ingestionTracking.fileName)}
                 <br />
-                <ButtonBase onClick={() => onRelanding(ingestionTracking)} add>
-                    Re-land
-                </ButtonBase>
+                Decrypted: {ingestionTracking.decrypted ? <FontAwesomeIcon icon={faCheck} className="text-success" />
+                    : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp;
 
-                <ButtonBase onClick={() => onRedecrypt(ingestionTracking)} add>
-                    Re-decrypt
-                </ButtonBase>
+                Deleted: {ingestionTracking.fileDeleted ? <FontAwesomeIcon icon={faCheck} className="text-success" />
 
-                <ButtonBase onClick={() => onEncryptedDownload(ingestionTracking)} add>
-                    Download Encrypted File
-                </ButtonBase>
+                    : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp;
+                Record Count: {ingestionTracking.recordCount} &nbsp;
+                
+            </TableBaseData>
+            <TableBaseData>
+                <strong>Created Date: </strong><br/>
+                {moment(ingestionTracking.createdDate?.toString()).format("Do-MMM-yyyy HH:mm")}
+            </TableBaseData>
+            <TableBaseData>
+                <Dropdown>
+                    <Dropdown.Toggle as={ButtonBase} variant="secondary" id="actions-dropdown" edit>
+                        Actions
+                    </Dropdown.Toggle>
 
-                {ingestionTracking.decrypted &&
-                    <ButtonBase onClick={() => onDecryptedDownload(ingestionTracking)} add>
-                        Download Decrypted File
-                    </ButtonBase>
-                }
+                    <Dropdown.Menu>
+                        <Dropdown.Item onClick={() => onRelanding(ingestionTracking)}
+                            style={{ color: "#121212" }}>
+                            <FontAwesomeIcon icon={faFileImport} title="Re-Land" /> Re-Land File
+                        </Dropdown.Item>
+                        <Dropdown.Item onClick={() => onRedecrypt(ingestionTracking)}
+                            style={{ color: "#121212" }}>
+                            <FontAwesomeIcon icon={faLockOpen} /> Re-Decrypt File
+                        </Dropdown.Item>
+                        <Dropdown.Item onClick={() => onEncryptedDownload(ingestionTracking)}
+                            style={{ color: "#121212" }}>
+                            <FontAwesomeIcon icon={faFileDownload} />  &nbsp;Download Encrypted File
+                        </Dropdown.Item>
+                        {ingestionTracking.decrypted && (
+                            <Dropdown.Item onClick={() => onDecryptedDownload(ingestionTracking)}
+                                style={{ color: "#121212" }}>
+                                <FontAwesomeIcon icon={faFileExport} />  Download Decrypted File
+                            </Dropdown.Item>
+                        )}
+                    </Dropdown.Menu>
+                </Dropdown>
             </TableBaseData>
             <TableBaseData>
                 <Link to={`/ingestionTrackingDetail/${ingestionTracking.id}`}>

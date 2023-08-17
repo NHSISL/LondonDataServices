@@ -53,6 +53,10 @@ export const ingestionTrackingHomeViewService = {
                                 ingestionTracking.recordCount,
                                 ingestionTracking.encryptedFileSize,
                                 ingestionTracking.decryptedFileSize,
+                                ingestionTracking.createdBy,
+                                ingestionTracking.createdDate,
+                                ingestionTracking.updatedBy,
+                                ingestionTracking.updatedDate,
                                 ingestionTracking.supplier,
                             ));
                         });

@@ -18,28 +18,31 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
         {
             // given
             Supplier randomSupplier = await PostRandomSupplierAsync();
-            IngestionTracking randomIngestionTracking = await PostRandomIngestionTrackingAsync(randomSupplier.Id);
+            string encryptedFilePath = "encrypted";
+            string decryptedFilePath = "decrypted";
+
+            IngestionTracking randomIngestionTracking =
+                await PostRandomIngestionTrackingAsync(randomSupplier.Id, encryptedFilePath, decryptedFilePath);
+
+            string inputFileName = randomIngestionTracking.EncryptedFileName;
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
 
             Document document = new Document
             {
                 DocumentData = documentData,
-                FileName = randomIngestionTracking.EncryptedFileName
+                FileName = inputFileName
             };
 
+            Document expectedDocument = document;
+
             await this.apiBroker.documentService.AddDocumentAsync(document);
-
-            IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
-                supplierId: randomSupplier.Id);
-
-            ingestionTracking.DecryptedFileName = document.FileName;
 
             // when
             await this.apiBroker.GetLandingDocumentByFileNameAsync(randomIngestionTracking.EncryptedFileName);
 
             // then
             IngestionTracking createdIngestionTracking =
-                await this.apiBroker.GetIngestionTrackingByIdAsync(ingestionTracking.Id);
+                await this.apiBroker.GetIngestionTrackingByIdAsync(randomIngestionTracking.Id);
 
             createdIngestionTracking.FileName = document.FileName;
 

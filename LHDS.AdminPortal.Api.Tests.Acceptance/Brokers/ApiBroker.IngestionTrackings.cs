@@ -12,7 +12,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
     public partial class ApiBroker
     {
         private const string IngestionTrackingsRelativeUrl = "api/ingestionTrackings";
-        private const string IngestionTrackingsRelativeOdataUrl = "odata/ingestionTrackings";
 
         public async ValueTask<IngestionTracking> PostIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
             await this.apiFactoryClient.PostContentAsync(IngestionTrackingsRelativeUrl, ingestionTracking);

@@ -14,12 +14,16 @@ import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import IngestionTrackingRow from "./ingestionTrackingRow";
 import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
+import { Button, Col, Row } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRefresh } from "@fortawesome/free-solid-svg-icons";
 
 type IngestionTrackingTableProps = {};
 
 const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (props) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
+    const [showSpinner, setShowSpinner] = useState(false);
 
     const {
         mappedIngestionTrackings: ingestionTrackingsRetrieved,
@@ -28,6 +32,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         isFetchingNextPage,
         hasNextPage,
         data,
+        refetch
     } = ingestionTrackingHomeViewService.useGetAllIngestionTrackings(
         debouncedTerm
     );
@@ -90,50 +95,83 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
     };
 
+    const refreshData = () => {
+        setShowSpinner(true);
+        setTimeout(() => {
+            refetch();
+            setTimeout(() => {
+                setShowSpinner(false);
+            }, 200);
+        }, 200);
+    };
+
     return (
         <div className="infiniteScrollContainer">
             <CardBase>
                 <CardBaseBody>
-                    <CardBaseTitle>Ingestion Trackings</CardBaseTitle>
+                    <CardBaseTitle>Ingestion Tracking</CardBaseTitle>
                     <CardBaseContent>
-                        <InfiniteScroll loading={isLoading} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
-                            <div className="filter-container">
-                                <div className="filter-item">
-                                    <SearchBase
-                                        id="search"
-                                        label="Search IngestionTrackings"
-                                        value={searchTerm}
-                                        onChange={(e) => {
-                                            handleSearchChange(e.currentTarget.value);
-                                        }}
-                                    />
+                        <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
+                            <Row>
+                                <Col>&nbsp;</Col>
+                                <Col style={{ textAlign: "right" }}>
+                                    {showSpinner ? (
+                                        <SpinnerBase />
+                                    ) : (
+                                        <Button variant="light">
+                                            <FontAwesomeIcon icon={faRefresh} onClick={refreshData} />
+                                        </Button>
+                                    )}
+                                </Col>
+                            </Row>
+                            <Row>
+                                <div className="filter-container">
+                                    <div className="filter-item">
+                                        <SearchBase
+                                            id="search"
+                                            label="Search IngestionTrackings"
+                                            value={searchTerm}
+                                            onChange={(e) => {
+                                                handleSearchChange(e.currentTarget.value);
+                                            }}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-
+                            </Row>
                             <TableBase>
                                 <TableBaseTbody>
-                                    {ingestionTrackingsRetrieved?.map(
-                                        (ingestionTrackingHomeView: IngestionTrackingHomeView) => (
-                                            <IngestionTrackingRow
-                                                key={ingestionTrackingHomeView.id}
-                                                ingestionTracking={ingestionTrackingHomeView}
-                                                onRelanding={handleRelanding}
-                                                onRedecrypt={handleRedecrypt}
-                                                onEncryptedDownload={handleEncryptedDownload}
-                                                onDecryptedDownload={handleDecryptedDownload}
-                                            />
-                                        )
+                                    {isLoading || showSpinner ? (
+                                        <tr>
+                                            <td colSpan={6} className="text-center">
+                                                <SpinnerBase />
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        <>
+                                            {ingestionTrackingsRetrieved?.map(
+                                                (ingestionTrackingHomeView: IngestionTrackingHomeView) => (
+                                                    <IngestionTrackingRow
+                                                        key={ingestionTrackingHomeView.id}
+                                                        ingestionTracking={ingestionTrackingHomeView}
+                                                        onRelanding={handleRelanding}
+                                                        onRedecrypt={handleRedecrypt}
+                                                        onEncryptedDownload={handleEncryptedDownload}
+                                                        onDecryptedDownload={handleDecryptedDownload}
+                                                    />
+                                                )
+                                            )}
+                                            <tr>
+                                                <td colSpan={3} className="text-center">
+                                                    <InfiniteScrollLoader
+                                                        loading={isLoading || isFetchingNextPage}
+                                                        spinner={<SpinnerBase />}
+                                                        noMorePages={hasNoMorePages()}
+                                                        noMorePagesMessage={<>-- No more pages --</>}
+                                                    />
+                                                </td>
+                                            </tr>
+                                        </>
                                     )}
-                                    <tr>
-                                        <td colSpan={3} className="text-center">
-                                            <InfiniteScrollLoader
-                                                loading={isLoading || isFetchingNextPage}
-                                                spinner={<SpinnerBase />}
-                                                noMorePages={hasNoMorePages()}
-                                                noMorePagesMessage={<>---No more IngestionTrackings---</>}
-                                            />
-                                        </td>
-                                    </tr>
                                 </TableBaseTbody>
                             </TableBase>
                         </InfiniteScroll>

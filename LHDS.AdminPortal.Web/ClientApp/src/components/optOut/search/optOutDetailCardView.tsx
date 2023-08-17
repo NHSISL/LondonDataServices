@@ -50,26 +50,34 @@ const OptOutDetailCardView: FunctionComponent<OptOutDetailCardViewProps> = (prop
                     <SummaryListBaseValue>{optOuts.status}</SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
+                    <SummaryListBaseKey>Batch Reference</SummaryListBaseKey>
+                    <SummaryListBaseValue>{optOuts.batchReference}</SummaryListBaseValue>
+                </SummaryListBaseRow>
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Unique Reference</SummaryListBaseKey>
+                    <SummaryListBaseValue>{optOuts.uniqueReference}</SummaryListBaseValue>
+                </SummaryListBaseRow>
+                <SummaryListBaseRow>
                     <SummaryListBaseKey>Cache Time</SummaryListBaseKey>
                     <SummaryListBaseValue>
-                        {optOuts.cacheTime ? moment(optOuts.cacheTime?.toString()).format("Do-MMM-yyyy") : ""}
+                        {optOuts.cacheTime ? moment(optOuts.cacheTime?.toString()).format("Do-MMM-yyyy HH:mm") : ""}
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Last Sent To Mesh</SummaryListBaseKey>
                     <SummaryListBaseValue>
-                        {optOuts.lastSentToMesh ? moment(optOuts.lastSentToMesh?.toString()).format("Do-MMM-yyyy") : ""}
+                        {optOuts.lastSentToMesh ? moment(optOuts.lastSentToMesh?.toString()).format("Do-MMM-yyyy HH:mm") : ""}
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
-                    <SummaryListBaseKey>Last Sent To Mesh</SummaryListBaseKey>
-                    <SummaryListBaseValue>
-                        {optOuts.createdDate ? moment(optOuts.createdDate?.toString()).format("Do-MMM-yyyy") : ""}
-                    </SummaryListBaseValue>
-                </SummaryListBaseRow>
-                <SummaryListBaseRow>
-                    <SummaryListBaseKey>Opt-Out Status</SummaryListBaseKey>
+                    <SummaryListBaseKey>Created By</SummaryListBaseKey>
                     <SummaryListBaseValue>{optOuts.createdBy}</SummaryListBaseValue>
+                </SummaryListBaseRow>
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Created When</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        {optOuts.createdDate ? moment(optOuts.createdDate?.toString()).format("Do-MMM-yyyy HH:mm") : ""}
+                    </SummaryListBaseValue>
                 </SummaryListBaseRow>
                 <SummaryListBaseRow>
                     <SummaryListBaseKey></SummaryListBaseKey>

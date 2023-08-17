@@ -35,7 +35,7 @@ var host = new HostBuilder()
                 setup.AddApplicationInsights();
                 setup.AddConsole();
             })
-           .AddOptOutClient(context.Configuration);
+           .AddPdsClient(context.Configuration);
     })
     .UseDefaultServiceProvider(options => options.ValidateScopes = false)
     .Build();

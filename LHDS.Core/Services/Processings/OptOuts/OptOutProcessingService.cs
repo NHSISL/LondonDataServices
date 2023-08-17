@@ -29,6 +29,14 @@ namespace LHDS.Core.Services.Processings.OptOuts
             this.dateTimeBroker = dateTimeBroker;
         }
 
+        public ValueTask<List<OptOut>> RetrieveAllOptOutsAsync() =>
+            TryCatch(async () =>
+            {
+                IQueryable<OptOut> allOptOuts = this.optOutService.RetrieveAllOptOuts();
+                return await ValueTask.FromResult(allOptOuts.ToList());
+            });
+
+
         public ValueTask<OptOut> RetrieveOrAddOptOutAsync(OptOut optOut) =>
             TryCatch(async () =>
             {
@@ -64,7 +72,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
                 maybeOptOut.BatchReference = optOut.BatchReference;
                 maybeOptOut.CacheTime = optOut.CacheTime;
                 maybeOptOut.LastSentToMesh = optOut.LastSentToMesh;
-                maybeOptOut.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+                maybeOptOut.UpdatedDate = optOut.UpdatedDate;
 
                 return await this.optOutService.ModifyOptOutAsync(maybeOptOut);
             });

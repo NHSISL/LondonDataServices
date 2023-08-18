@@ -24,6 +24,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             IngestionTracking randomIngestionTracking =
                 await PostRandomIngestionTrackingAsync(randomSupplier.Id, encryptedFilePath, decryptedFilePath);
 
+            IngestionTracking inputIngestionTracking = randomIngestionTracking;
+            IngestionTracking expectedIngestionTracking = inputIngestionTracking;
+
             string inputFileName = randomIngestionTracking.EncryptedFileName;
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
 

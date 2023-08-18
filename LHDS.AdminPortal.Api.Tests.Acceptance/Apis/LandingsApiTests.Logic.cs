@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using LHDS.Core.Models.Foundations.Documents;
+using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
@@ -36,18 +37,18 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
                 FileName = inputFileName
             };
 
-            Document expectedDocument = document;
-
             await this.apiBroker.documentService.AddDocumentAsync(document);
 
             // when
-            await this.apiBroker.GetLandingDocumentByFileNameAsync(randomIngestionTracking.EncryptedFileName);
+            ActionResult<IngestionTracking> result = 
+                await this.apiBroker.GetLandingDocumentByFileNameAsync(randomIngestionTracking.EncryptedFileName);
 
-            // then
-            IngestionTracking createdIngestionTracking =
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<OkObjectResult>(result.Result);
+
+            IngestionTracking createdIngestionTracking = 
                 await this.apiBroker.GetIngestionTrackingByIdAsync(randomIngestionTracking.Id);
-
-            createdIngestionTracking.FileName = document.FileName;
 
             await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);

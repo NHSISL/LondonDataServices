@@ -18,31 +18,34 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
         [Fact]
         public async Task ShouldDecryptFileAsync()
         {
-            //Given
+            // given
             Supplier randomSupplier = await PostRandomSupplierAsync();
-            IngestionTracking randomIngestionTracking = await PostRandomIngestionTrackingAsync(randomSupplier.Id);
+            string encryptedFilePath = "encrypted";
+            string decryptedFilePath = "decrypted";
+
+            IngestionTracking randomIngestionTracking =
+                await PostRandomIngestionTrackingAsync(randomSupplier.Id, encryptedFilePath, decryptedFilePath);
+
+            IngestionTracking inputIngestionTracking = randomIngestionTracking;
+            IngestionTracking expectedIngestionTracking = inputIngestionTracking;
+
+            string inputFileName = randomIngestionTracking.EncryptedFileName;
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
 
             Document document = new Document
             {
                 DocumentData = documentData,
-                FileName = randomIngestionTracking.EncryptedFileName
+                FileName = inputFileName
             };
 
             await this.apiBroker.documentService.AddDocumentAsync(document);
-
-            IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
-                supplierId: randomSupplier.Id);
-
-            ingestionTracking.EncryptedFileName = document.FileName;
-            await this.apiBroker.PostIngestionTrackingAsync(ingestionTracking);
 
             //When
             await this.apiBroker.DecryptFileAsync(document.FileName);
 
             //Then
             IngestionTracking decryptedIngestionTracking =
-                await this.apiBroker.GetIngestionTrackingByIdAsync(ingestionTracking.Id);
+                await this.apiBroker.GetIngestionTrackingByIdAsync(expectedIngestionTracking.Id);
 
             decryptedIngestionTracking.Decrypted.Should().BeTrue();
 

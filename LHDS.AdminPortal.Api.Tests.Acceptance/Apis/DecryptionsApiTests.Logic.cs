@@ -32,10 +32,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
 
             string inputFileName = randomIngestionTracking.EncryptedFileName;
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
+            byte[] encryptedData = await this.apiBroker.cryptographyProvider.EncryptAsync(documentData);
 
             Document document = new Document
             {
-                DocumentData = documentData,
+                DocumentData = encryptedData,
                 FileName = inputFileName
             };
 

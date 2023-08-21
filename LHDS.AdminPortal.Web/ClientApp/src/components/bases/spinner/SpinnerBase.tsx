@@ -1,9 +1,9 @@
 import React from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { faCircleNotch } from '@fortawesome/free-solid-svg-icons'
 
 export const SpinnerBase = () => {
     return (
-        <FontAwesomeIcon icon={faSpinner} spin size="2x" className="loadingSpinner" />
+        <FontAwesomeIcon icon={faCircleNotch} spin size="2x" className="loadingSpinner text-info p-2" />
     );
 }

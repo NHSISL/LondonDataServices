@@ -10,6 +10,7 @@ using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using System.Text;
 using LHDS.Core.Models.Foundations.Documents;
 using System.Diagnostics.SymbolStore;
+using System.Web;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
 {
@@ -41,7 +42,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
             await this.apiBroker.documentService.AddDocumentAsync(document);
 
             //When
-            await this.apiBroker.DecryptFileAsync(document.FileName);
+            await this.apiBroker.GetDocumentByFileNameToDecryptAsync(inputIngestionTracking.FileName);
 
             //Then
             IngestionTracking decryptedIngestionTracking =

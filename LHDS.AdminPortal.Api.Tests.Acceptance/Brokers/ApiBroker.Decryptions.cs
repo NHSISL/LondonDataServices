@@ -2,8 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
@@ -12,7 +10,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
     {
         private const string DecryptionsRelativeUrl = "api/decryptions";
 
-        public async ValueTask DecryptFileAsync(string fileName) =>
+        public async ValueTask GetDocumentByFileNameToDecryptAsync(string fileName) =>
             await this.apiFactoryClient.GetContentStringAsync($"{DecryptionsRelativeUrl}/{fileName}");
     }
 }

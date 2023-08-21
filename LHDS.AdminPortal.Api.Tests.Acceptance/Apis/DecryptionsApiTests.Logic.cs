@@ -42,7 +42,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
             await this.apiBroker.documentService.AddDocumentAsync(document);
 
             //When
-            await this.apiBroker.GetDocumentByFileNameToDecryptAsync(inputIngestionTracking.FileName);
+            await this.apiBroker.GetDocumentByFileNameToDecryptAsync(HttpUtility.UrlEncode(inputIngestionTracking.FileName));
 
             //Then
             IngestionTracking decryptedIngestionTracking =

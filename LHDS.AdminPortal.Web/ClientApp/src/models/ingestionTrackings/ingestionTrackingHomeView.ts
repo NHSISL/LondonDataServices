@@ -12,6 +12,10 @@ export class IngestionTrackingHomeView {
     public recordCount: number;
     public encryptedFileSize: number;
     public decryptedFileSize: number;
+    public createdBy?: string;
+    public createdDate?: Date;
+    public updatedBy?: string;
+    public updatedDate?: Date;
     public supplier?: Supplier;
 
     constructor(
@@ -26,7 +30,11 @@ export class IngestionTrackingHomeView {
         recordCount: number,
         encryptedFileSize: number,
         decryptedFileSize: number,
-        supplier?: Supplier
+        createdBy?: string,
+        createdDate?: Date,
+        updatedBy?: string,
+        updatedDate?: Date,
+        supplier?: Supplier,
     ) {
         this.id = id;
         this.fileName = fileName;
@@ -39,6 +47,10 @@ export class IngestionTrackingHomeView {
         this.recordCount = recordCount;
         this.encryptedFileSize = encryptedFileSize;
         this.decryptedFileSize = decryptedFileSize;
+        this.createdBy = createdBy;
+        this.createdDate = createdDate;
+        this.updatedBy = updatedBy;
+        this.updatedDate = updatedDate;
         this.supplier = supplier;
     }
 }

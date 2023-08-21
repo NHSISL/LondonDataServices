@@ -69,7 +69,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
                 ingestionTracking.Decrypted = true;
-                ingestionTracking.RecordCount = lines.Length - 1;
+                ingestionTracking.RecordCount = lines.Length - 2;
                 ingestionTracking.DecryptedFileSize = newDecryptedDocument.DocumentData.Length;
                 ingestionTracking.UpdatedDate = currentDateTime;
 
@@ -88,7 +88,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 {
                     Id = Guid.NewGuid(),
                     IngestionTrackingId = ingestionTracking.Id,
-                    Message = $"Decrypted document - {document.FileName}",
+                    Message = $"Decrypted document",
                     CreatedDate = currentDateTime,
                     CreatedBy = "DecryptionOrchestrationService",
                     UpdatedDate = currentDateTime,

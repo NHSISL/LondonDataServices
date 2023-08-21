@@ -1,0 +1,24 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using LHDS.Core.Models.Foundations.SchemaDefinitions;
+using Microsoft.EntityFrameworkCore;
+
+namespace LHDS.Core.Brokers.Storages.Sql
+{
+    public partial class StorageBroker
+    {
+        private static void AddSchemaDefinitionConfigurations(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<SchemaDefinition>()
+                .ToTable(columnDefinition => columnDefinition.IsTemporal());
+
+            modelBuilder.Entity<SchemaDefinition>()
+                .HasOne(schemaDefinition => schemaDefinition.DataSet)
+                .WithMany(dataSet => dataSet.SchemaDefinitions)
+                .HasForeignKey(schemaDefinition => schemaDefinition.DataSetId)
+                .OnDelete(DeleteBehavior.NoAction);
+        }
+    }
+}

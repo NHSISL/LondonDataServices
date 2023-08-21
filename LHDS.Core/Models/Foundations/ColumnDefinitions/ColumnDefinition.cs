@@ -3,20 +3,23 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using LHDS.Core.Models.Bases;
-using LHDS.Core.Models.Foundations.ColumnDefinitions;
+using LHDS.Core.Models.Foundations.DataTypes;
+using LHDS.Core.Models.Foundations.SchemaDefinitions;
 
-namespace LHDS.Core.Models.Foundations.DataTypes
+namespace LHDS.Core.Models.Foundations.ColumnDefinitions
 {
-    public class DataType : IKey, IAudit
+    public class ColumnDefinition : IKey, IAudit
     {
         public Guid Id { get; set; }
+        public Guid SchemaDefinitionId { get; set; }
+        public Guid DataTypeId { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
 
-        public List<ColumnDefinition> ColumnDefinitions { get; set; } = new List<ColumnDefinition>();
+        public SchemaDefinition SchemaDefinition { get; set; }
+        public DataType DataType { get; set; }
     }
 }

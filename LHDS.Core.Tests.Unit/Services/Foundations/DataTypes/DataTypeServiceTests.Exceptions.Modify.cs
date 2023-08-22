@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -58,6 +59,64 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateDataTypeAsync(randomDataType),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            DataType someDataType = CreateRandomDataType();
+            string randomMessage = GetRandomMessage();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidDataTypeReferenceException =
+                new InvalidDataTypeReferenceException(
+                    message: "Invalid dataType reference error occurred.", 
+                    innerException: foreignKeyConstraintConflictException);
+
+            DataTypeDependencyValidationException expectedDataTypeDependencyValidationException =
+                new DataTypeDependencyValidationException(
+                    message: "DataType dependency validation occurred, please try again.",
+                    innerException: invalidDataTypeReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<DataType> modifyDataTypeTask =
+                this.dataTypeService.ModifyDataTypeAsync(someDataType);
+
+            DataTypeDependencyValidationException actualDataTypeDependencyValidationException =
+                await Assert.ThrowsAsync<DataTypeDependencyValidationException>(
+                    modifyDataTypeTask.AsTask);
+
+            // then
+            actualDataTypeDependencyValidationException.Should()
+                .BeEquivalentTo(expectedDataTypeDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataTypeByIdAsync(someDataType.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(expectedDataTypeDependencyValidationException))),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateDataTypeAsync(someDataType),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

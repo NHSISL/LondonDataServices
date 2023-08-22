@@ -18,7 +18,13 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                 (Rule: IsInvalid(dataType.CreatedDate), Parameter: nameof(DataType.CreatedDate)),
                 (Rule: IsInvalid(dataType.CreatedBy), Parameter: nameof(DataType.CreatedBy)),
                 (Rule: IsInvalid(dataType.UpdatedDate), Parameter: nameof(DataType.UpdatedDate)),
-                (Rule: IsInvalid(dataType.UpdatedBy), Parameter: nameof(DataType.UpdatedBy)));
+                (Rule: IsInvalid(dataType.UpdatedBy), Parameter: nameof(DataType.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    firstDate: dataType.UpdatedDate,
+                    secondDate: dataType.CreatedDate,
+                    secondDateName: nameof(DataType.CreatedDate)),
+                Parameter: nameof(DataType.UpdatedDate)));
         }
 
         private static void ValidateDataTypeIsNotNull(DataType dataType)
@@ -46,6 +52,15 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsNotSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate != secondDate,
+                Message = $"Date is not the same as {secondDateName}"
+            };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

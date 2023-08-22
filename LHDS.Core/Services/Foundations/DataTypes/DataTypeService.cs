@@ -22,7 +22,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<DataType> AddDataTypeAsync(DataType dataType) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<DataType> AddDataTypeAsync(DataType dataType) =>
+            await this.storageBroker.InsertDataTypeAsync(dataType);
     }
 }

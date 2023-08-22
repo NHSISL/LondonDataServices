@@ -11,5 +11,6 @@ namespace LHDS.Core.Services.Foundations.DataTypes
         IQueryable<DataType> RetrieveAllDataTypes();
         ValueTask<DataType> RetrieveDataTypeByIdAsync(Guid dataTypeId);
         ValueTask<DataType> ModifyDataTypeAsync(DataType dataType);
+        ValueTask<DataType> RemoveDataTypeByIdAsync(Guid dataTypeId);
     }
 }

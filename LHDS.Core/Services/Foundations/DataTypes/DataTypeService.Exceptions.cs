@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
     public partial class DataTypeService
     {
         private delegate ValueTask<DataType> ReturningDataTypeFunction();
+        private delegate IQueryable<DataType> ReturningDataTypesFunction();
 
         private async ValueTask<DataType> TryCatch(ReturningDataTypeFunction returningDataTypeFunction)
         {
@@ -61,6 +63,20 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                     new FailedDataTypeServiceException(exception);
 
                 throw CreateAndLogServiceException(failedDataTypeServiceException);
+            }
+        }
+
+        private IQueryable<DataType> TryCatch(ReturningDataTypesFunction returningDataTypesFunction)
+        {
+            try
+            {
+                return returningDataTypesFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedDataTypeStorageException =
+                    new FailedDataTypeStorageException(sqlException);
+                throw CreateAndLogCriticalDependencyException(failedDataTypeStorageException);
             }
         }
 

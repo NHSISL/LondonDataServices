@@ -106,7 +106,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     modifyDataTypeTask.AsTask);
 
             //then
-            actualDataTypeValidationException.Should().BeEquivalentTo(expectedDataTypeValidationException);
+            actualDataTypeValidationException.Should()
+                .BeEquivalentTo(expectedDataTypeValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -147,7 +148,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     modifyDataTypeTask.AsTask);
 
             // then
-            actualDataTypeValidationException.Should().BeEquivalentTo(expectedDataTypeValidationException);
+            actualDataTypeValidationException.Should()
+                .BeEquivalentTo(expectedDataTypeValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -161,6 +163,58 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsNotRecentAndLogItAsync(int minutes)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DataType randomDataType = CreateRandomDataType(randomDateTimeOffset);
+            randomDataType.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
+
+            var invalidDataTypeException =
+                new InvalidDataTypeException();
+
+            invalidDataTypeException.AddData(
+                key: nameof(DataType.UpdatedDate),
+                values: "Date is not recent");
+
+            var expectedDataTypeValidatonException =
+                new DataTypeValidationException(invalidDataTypeException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<DataType> modifyDataTypeTask =
+                this.dataTypeService.ModifyDataTypeAsync(randomDataType);
+
+            DataTypeValidationException actualDataTypeValidationException =
+                await Assert.ThrowsAsync<DataTypeValidationException>(
+                    modifyDataTypeTask.AsTask);
+
+            // then
+            actualDataTypeValidationException.Should().BeEquivalentTo(expectedDataTypeValidatonException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataTypeValidatonException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataTypeByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

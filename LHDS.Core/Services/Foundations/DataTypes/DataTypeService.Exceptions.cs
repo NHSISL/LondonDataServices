@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
@@ -33,6 +34,15 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
                 throw CreateAndLogCriticalDependencyException(failedDataTypeStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsDataTypeException =
+                    new AlreadyExistsDataTypeException(
+                        message: "DataType with the same Id already exists.",
+                        innerException: duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsDataTypeException);
+            }
         }
 
         private DataTypeValidationException CreateAndLogValidationException(Xeption exception)
@@ -55,6 +65,18 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             this.loggingBroker.LogCritical(dataTypeDependencyException);
 
             return dataTypeDependencyException;
+        }
+
+        private DataTypeDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var dataTypeDependencyValidationException =
+                new DataTypeDependencyValidationException(
+                    message: "DataType dependency validation occurred, please try again.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(dataTypeDependencyValidationException);
+
+            return dataTypeDependencyValidationException;
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -57,10 +58,19 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             {
                 var failedDataTypeStorageException =
                     new FailedDataTypeStorageException(
-                    message: "Failed dataType storage error occurred, contact support.",
-                    innerException: databaseUpdateException);
+                        message: "Failed dataType storage error occurred, contact support.",
+                        innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedDataTypeStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedDataTypeServiceException =
+                    new FailedDataTypeServiceException(
+                        message: "Failed dataType service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedDataTypeServiceException);
             }
         }
 
@@ -109,6 +119,19 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             this.loggingBroker.LogError(dataTypeDependencyException);
 
             return dataTypeDependencyException;
+        }
+
+        private DataTypeServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var dataTypeServiceException = 
+                new DataTypeServiceException(
+                    message: "DataType service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(dataTypeServiceException);
+
+            return dataTypeServiceException;
         }
     }
 }

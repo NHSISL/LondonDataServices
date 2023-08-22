@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
@@ -41,7 +42,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
 
             // when
             ActionResult<IngestionTracking> result = 
-                await this.apiBroker.GetLandingDocumentByFileNameAsync(randomIngestionTracking.EncryptedFileName);
+                await this.apiBroker.GetLandingDocumentByFileNameAsync(inputIngestionTracking.FileName);
 
             // Assert
             Assert.NotNull(result);

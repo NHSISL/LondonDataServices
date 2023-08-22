@@ -111,5 +111,48 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveWhenSqlExceptionOccursAndLogItAsync()
+        {
+            // given
+            Guid someDataTypeId = Guid.NewGuid();
+            SqlException sqlException = GetSqlException();
+
+            var failedDataTypeStorageException =
+                new FailedDataTypeStorageException(sqlException);
+
+            var expectedDataTypeDependencyException =
+                new DataTypeDependencyException(failedDataTypeStorageException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectDataTypeByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(sqlException);
+
+            // when
+            ValueTask<DataType> deleteDataTypeTask =
+                this.dataTypeService.RemoveDataTypeByIdAsync(someDataTypeId);
+
+            DataTypeDependencyException actualDataTypeDependencyException =
+                await Assert.ThrowsAsync<DataTypeDependencyException>(
+                    deleteDataTypeTask.AsTask);
+
+            // then
+            actualDataTypeDependencyException.Should()
+                .BeEquivalentTo(expectedDataTypeDependencyException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataTypeByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedDataTypeDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             });
 
         public IQueryable<DataType> RetrieveAllDataTypes() =>
-            throw new System.NotImplementedException();
+            this.storageBroker.SelectAllDataTypes();
     }
 }

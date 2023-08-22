@@ -51,5 +51,47 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfDataTypeIsNotFoundAndLogItAsync()
+        {
+            //given
+            Guid someDataTypeId = Guid.NewGuid();
+            DataType noDataType = null;
+
+            var notFoundDataTypeException =
+                new NotFoundDataTypeException(someDataTypeId);
+
+            var expectedDataTypeValidationException =
+                new DataTypeValidationException(notFoundDataTypeException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectDataTypeByIdAsync(It.IsAny<Guid>()))
+                    .ReturnsAsync(noDataType);
+
+            //when
+            ValueTask<DataType> retrieveDataTypeByIdTask =
+                this.dataTypeService.RetrieveDataTypeByIdAsync(someDataTypeId);
+
+            DataTypeValidationException actualDataTypeValidationException =
+                await Assert.ThrowsAsync<DataTypeValidationException>(
+                    retrieveDataTypeByIdTask.AsTask);
+
+            //then
+            actualDataTypeValidationException.Should().BeEquivalentTo(expectedDataTypeValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataTypeByIdAsync(It.IsAny<Guid>()),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataTypeValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

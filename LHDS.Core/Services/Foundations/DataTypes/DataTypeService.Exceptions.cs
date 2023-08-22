@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
     public partial class DataTypeService
     {
         private delegate ValueTask<DataType> ReturningDataTypeFunction();
+        private delegate IQueryable<DataType> ReturningDataTypesFunction();
 
         private async ValueTask<DataType> TryCatch(ReturningDataTypeFunction returningDataTypeFunction)
         {
@@ -74,6 +76,23 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             }
         }
 
+        private IQueryable<DataType> TryCatch(ReturningDataTypesFunction returningDataTypesFunction)
+        {
+            try
+            {
+                return returningDataTypesFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedDataTypeStorageException =
+                    new FailedDataTypeStorageException(
+                        message: "Failed dataType storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedDataTypeStorageException);
+            }
+        }
+
         private DataTypeValidationException CreateAndLogValidationException(Xeption exception)
         {
             var dataTypeValidationException =
@@ -91,7 +110,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             var dataTypeDependencyException = 
                 new DataTypeDependencyException(
                     message: "DataType dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(dataTypeDependencyException);
 
@@ -116,7 +135,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             var dataTypeDependencyException = 
                 new DataTypeDependencyException(
                     message: "DataType dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(dataTypeDependencyException);
 

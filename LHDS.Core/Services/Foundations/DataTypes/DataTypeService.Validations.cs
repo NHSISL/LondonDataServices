@@ -53,7 +53,9 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                     firstDate: dataType.UpdatedDate,
                     secondDate: dataType.CreatedDate,
                     secondDateName: nameof(DataType.CreatedDate)),
-                Parameter: nameof(DataType.UpdatedDate)));
+                Parameter: nameof(DataType.UpdatedDate)),
+
+                (Rule: IsNotRecent(dataType.UpdatedDate), Parameter: nameof(dataType.UpdatedDate)));
         }
 
         public void ValidateDataTypeId(Guid dataTypeId) =>

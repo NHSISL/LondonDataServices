@@ -23,6 +23,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             DataType expectedDataType = updatedDataType.DeepClone();
             Guid dataTypeId = inputDataType.Id;
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.UpdateDataTypeAsync(inputDataType))
                     .ReturnsAsync(updatedDataType);
@@ -34,13 +38,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             // then
             actualDataType.Should().BeEquivalentTo(expectedDataType);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateDataTypeAsync(inputDataType),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -83,6 +84,53 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             invalidDataTypeException.AddData(
                 key: nameof(DataType.UpdatedBy),
                 values: "Text is required");
+
+            var expectedDataTypeValidationException =
+                new DataTypeValidationException(invalidDataTypeException);
+
+            // when
+            ValueTask<DataType> addDataTypeTask =
+                this.dataTypeService.AddDataTypeAsync(invalidDataType);
+
+            DataTypeValidationException actualDataTypeValidationException =
+                await Assert.ThrowsAsync<DataTypeValidationException>(
+                    addDataTypeTask.AsTask);
+
+            // then
+            actualDataTypeValidationException.Should()
+                .BeEquivalentTo(expectedDataTypeValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataTypeValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDataTypeAsync(It.IsAny<DataType>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateDatesIsNotSameAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNumber();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DataType randomDataType = CreateRandomDataType(randomDateTimeOffset);
+            DataType invalidDataType = randomDataType;
+
+            invalidDataType.UpdatedDate =
+                invalidDataType.CreatedDate.AddDays(randomNumber);
+
+            var invalidDataTypeException = new InvalidDataTypeException();
+
+            invalidDataTypeException.AddData(
+                key: nameof(DataType.UpdatedDate),
+                values: $"Date is not the same as {nameof(DataType.CreatedDate)}");
 
             var expectedDataTypeValidationException =
                 new DataTypeValidationException(invalidDataTypeException);

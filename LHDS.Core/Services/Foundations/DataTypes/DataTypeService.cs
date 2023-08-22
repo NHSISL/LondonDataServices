@@ -47,5 +47,8 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
                 return maybeDataType;
             });
+
+        public ValueTask<DataType> ModifyDataTypeAsync(DataType dataType) =>
+            throw new NotImplementedException();
     }
 }

@@ -36,6 +36,10 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
                 throw CreateAndLogCriticalDependencyException(failedDataTypeStorageException);
             }
+            catch (NotFoundDataTypeException notFoundDataTypeException)
+            {
+                throw CreateAndLogValidationException(notFoundDataTypeException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsDataTypeException =

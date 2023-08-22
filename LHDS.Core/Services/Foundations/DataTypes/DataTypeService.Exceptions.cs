@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -54,6 +55,13 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
                 throw CreateAndLogDependencyException(failedDataTypeStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedDataTypeServiceException =
+                    new FailedDataTypeServiceException(exception);
+
+                throw CreateAndLogServiceException(failedDataTypeServiceException);
+            }
         }
 
         private DataTypeValidationException CreateAndLogValidationException(Xeption exception)
@@ -91,6 +99,15 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             this.loggingBroker.LogError(dataTypeDependencyException);
 
             return dataTypeDependencyException;
+        }
+
+        private DataTypeServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var dataTypeServiceException = new DataTypeServiceException(exception);
+            this.loggingBroker.LogError(dataTypeServiceException);
+
+            return dataTypeServiceException;
         }
     }
 }

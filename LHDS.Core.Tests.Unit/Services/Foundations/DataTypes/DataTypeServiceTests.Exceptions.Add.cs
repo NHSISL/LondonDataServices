@@ -108,5 +108,55 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            DataType someDataType = CreateRandomDataType();
+            string randomMessage = GetRandomMessage();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidDataTypeReferenceException =
+                new InvalidDataTypeReferenceException(foreignKeyConstraintConflictException);
+
+            var expectedDataTypeValidationException =
+                new DataTypeDependencyValidationException(invalidDataTypeReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<DataType> addDataTypeTask =
+                this.dataTypeService.AddDataTypeAsync(someDataType);
+
+            // then
+            DataTypeDependencyValidationException actualDataTypeDependencyValidationException =
+                await Assert.ThrowsAsync<DataTypeDependencyValidationException>(
+                    addDataTypeTask.AsTask);
+
+            actualDataTypeDependencyValidationException.Should().BeEquivalentTo(expectedDataTypeValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataTypeValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDataTypeAsync(someDataType),
+                    Times.Never());
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

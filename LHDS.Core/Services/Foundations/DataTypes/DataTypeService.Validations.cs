@@ -27,10 +27,12 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                 Parameter: nameof(DataType.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    firstId: dataType.UpdatedBy,
-                    secondId: dataType.CreatedBy,
-                    secondIdName: nameof(DataType.CreatedBy)),
-                Parameter: nameof(DataType.UpdatedBy)));
+                    first: dataType.UpdatedBy,
+                    second: dataType.CreatedBy,
+                    secondName: nameof(DataType.CreatedBy)),
+                Parameter: nameof(DataType.UpdatedBy)),
+
+                (Rule: IsNotRecent(dataType.CreatedDate), Parameter: nameof(DataType.CreatedDate)));
         }
 
         private static void ValidateDataTypeIsNotNull(DataType dataType)
@@ -85,6 +87,23 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                Condition = first != second,
                Message = $"Text is not the same as {secondName}"
            };
+
+        private dynamic IsNotRecent(DateTimeOffset date) => new
+        {
+            Condition = IsDateNotRecent(date),
+            Message = "Date is not recent"
+        };
+
+        private bool IsDateNotRecent(DateTimeOffset date)
+        {
+            DateTimeOffset currentDateTime =
+                this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+            TimeSpan timeDifference = currentDateTime.Subtract(date);
+            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+
+            return timeDifference.Duration() > oneMinute;
+        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

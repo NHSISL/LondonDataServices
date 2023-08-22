@@ -28,6 +28,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
+                broker.SelectDataTypeByIdAsync(dataTypeId))
+                    .ReturnsAsync(storageDataType);
+
+            this.storageBrokerMock.Setup(broker =>
                 broker.UpdateDataTypeAsync(inputDataType))
                     .ReturnsAsync(updatedDataType);
 
@@ -43,12 +47,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataTypeByIdAsync(inputDataType.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
                 broker.UpdateDataTypeAsync(inputDataType),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

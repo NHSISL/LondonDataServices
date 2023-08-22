@@ -21,6 +21,5 @@ namespace LHDS.Core.Models.Foundations.SchemaDefinitions
 
         public DataSet DataSet { get; set; }
         public List<ColumnDefinition> ColumnDefinitions { get; set; } = new List<ColumnDefinition>();
-
     }
 }

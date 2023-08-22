@@ -48,7 +48,12 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                 return maybeDataType;
             });
 
-        public async ValueTask<DataType> ModifyDataTypeAsync(DataType dataType) =>
-            await this.storageBroker.UpdateDataTypeAsync(dataType);
+        public ValueTask<DataType> ModifyDataTypeAsync(DataType dataType) =>
+            TryCatch(async () =>
+            {
+                ValidateDataTypeOnModify(dataType);
+
+                return await this.storageBroker.UpdateDataTypeAsync(dataType);
+            });
     }
 }

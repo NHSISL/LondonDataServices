@@ -35,6 +35,11 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                 (Rule: IsNotRecent(dataType.CreatedDate), Parameter: nameof(DataType.CreatedDate)));
         }
 
+        private void ValidateDataTypeOnModify(DataType dataType)
+        {
+            ValidateDataTypeIsNotNull(dataType);
+        }
+
         public void ValidateDataTypeId(Guid dataTypeId) =>
             Validate((Rule: IsInvalid(dataTypeId), Parameter: nameof(DataType.Id)));
 
@@ -89,7 +94,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
-
+        
         private static dynamic IsNotSame(
            string first,
            string second,

@@ -60,6 +60,15 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
                 throw CreateAndLogDependencyValidationException(invalidDataTypeReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedDataTypeException = 
+                    new LockedDataTypeException(
+                        message: "Locked dataType record exception, please try again later",
+                        innerException: databaseUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedDataTypeException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedDataTypeStorageException =
@@ -121,7 +130,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             var dataTypeDependencyException = 
                 new DataTypeDependencyException(
                     message: "DataType dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(dataTypeDependencyException);
 
@@ -146,7 +155,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             var dataTypeDependencyException = 
                 new DataTypeDependencyException(
                     message: "DataType dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(dataTypeDependencyException);
 

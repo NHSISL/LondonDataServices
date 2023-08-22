@@ -5,11 +5,11 @@
 using System;
 using System.Collections.Generic;
 using LHDS.Core.Models.Bases;
-using LHDS.Core.Models.Foundations.ColumnDefinitions;
+using LHDS.Core.Models.Foundations.SchemaDefinitions;
 
-namespace LHDS.Core.Models.Foundations.DataTypes
+namespace LHDS.Core.Models.Foundations.DataSets
 {
-    public class DataType : IKey, IAudit
+    public class DataSet : IKey, IAudit
     {
         public Guid Id { get; set; }
         public string CreatedBy { get; set; }
@@ -17,6 +17,6 @@ namespace LHDS.Core.Models.Foundations.DataTypes
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
 
-        public List<ColumnDefinition> ColumnDefinitions { get; set; } = new List<ColumnDefinition>();
+        public List<SchemaDefinition> SchemaDefinitions { get; set; } = new List<SchemaDefinition>();
     }
 }

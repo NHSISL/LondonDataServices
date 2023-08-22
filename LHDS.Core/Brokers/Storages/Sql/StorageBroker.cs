@@ -34,6 +34,10 @@ namespace LHDS.Core.Brokers.Storages.Sql
             AddOptOutConfigurations(modelBuilder);
             AddPdsAuditConfigurations(modelBuilder);
             AddSupplierSeedData(modelBuilder);
+            AddDataTypeConfigurations(modelBuilder);
+            AddColumnDefinitionConfigurations(modelBuilder);
+            AddSchemaDefinitionConfigurations(modelBuilder);
+            AddDataSetConfigurations(modelBuilder);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

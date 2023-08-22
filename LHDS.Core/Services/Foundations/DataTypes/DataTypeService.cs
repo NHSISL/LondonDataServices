@@ -43,6 +43,8 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                 DataType maybeDataType = await this.storageBroker
                     .SelectDataTypeByIdAsync(dataTypeId);
 
+                ValidateStorageDataType(maybeDataType, dataTypeId);
+
                 return maybeDataType;
             });
     }

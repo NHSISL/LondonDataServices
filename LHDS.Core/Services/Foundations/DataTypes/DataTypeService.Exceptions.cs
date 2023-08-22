@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
 using Xeptions;
@@ -23,6 +24,15 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             {
                 throw CreateAndLogValidationException(invalidDataTypeException);
             }
+            catch (SqlException sqlException)
+            {
+                var failedDataTypeStorageException =
+                    new FailedDataTypeStorageException(
+                        message: "Failed dataType storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedDataTypeStorageException);
+            }
         }
 
         private DataTypeValidationException CreateAndLogValidationException(Xeption exception)
@@ -35,6 +45,18 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             this.loggingBroker.LogError(dataTypeValidationException);
 
             return dataTypeValidationException;
+        }
+
+        private DataTypeDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        {
+            var dataTypeDependencyException = 
+                new DataTypeDependencyException(
+                    message: "DataType dependency error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogCritical(dataTypeDependencyException);
+
+            return dataTypeDependencyException;
         }
     }
 }

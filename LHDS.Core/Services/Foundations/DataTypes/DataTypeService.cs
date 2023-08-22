@@ -1,59 +1,62 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages.Sql;
+using FluentAssertions;
+using Force.DeepCloner;
+using Moq;
 using LHDS.Core.Models.Foundations.DataTypes;
+using Xunit;
 
-namespace LHDS.Core.Services.Foundations.DataTypes
+namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
 {
-    public partial class DataTypeService : IDataTypeService
+    public partial class DataTypeServiceTests
     {
-        private readonly IStorageBroker storageBroker;
-        private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ILoggingBroker loggingBroker;
-
-        public DataTypeService(
-            IStorageBroker storageBroker,
-            IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker)
+        [Fact]
+        public async Task ShouldModifyDataTypeAsync()
         {
-            this.storageBroker = storageBroker;
-            this.dateTimeBroker = dateTimeBroker;
-            this.loggingBroker = loggingBroker;
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DataType randomDataType = CreateRandomModifyDataType(randomDateTimeOffset);
+            DataType inputDataType = randomDataType;
+            DataType storageDataType = inputDataType.DeepClone();
+            storageDataType.UpdatedDate = randomDataType.CreatedDate;
+            DataType updatedDataType = inputDataType;
+            DataType expectedDataType = updatedDataType.DeepClone();
+            Guid dataTypeId = inputDataType.Id;
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectDataTypeByIdAsync(dataTypeId))
+                    .ReturnsAsync(storageDataType);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.UpdateDataTypeAsync(inputDataType))
+                    .ReturnsAsync(updatedDataType);
+
+            // when
+            DataType actualDataType =
+                await this.dataTypeService.ModifyDataTypeAsync(inputDataType);
+
+            // then
+            actualDataType.Should().BeEquivalentTo(expectedDataType);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataTypeByIdAsync(inputDataType.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateDataTypeAsync(inputDataType),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
-
-        public ValueTask<DataType> AddDataTypeAsync(DataType dataType) =>
-            TryCatch(async () =>
-            {
-                ValidateDataTypeOnAdd(dataType);
-
-                return await this.storageBroker.InsertDataTypeAsync(dataType);
-            });
-
-        public IQueryable<DataType> RetrieveAllDataTypes() =>
-            TryCatch(() => this.storageBroker.SelectAllDataTypes());
-
-        public ValueTask<DataType> RetrieveDataTypeByIdAsync(Guid dataTypeId) =>
-            TryCatch(async () =>
-            {
-                ValidateDataTypeId(dataTypeId);
-
-                DataType maybeDataType = await this.storageBroker
-                    .SelectDataTypeByIdAsync(dataTypeId);
-
-                ValidateStorageDataType(maybeDataType, dataTypeId);
-
-                return maybeDataType;
-            });
-
-        public ValueTask<DataType> ModifyDataTypeAsync(DataType dataType) =>
-            TryCatch(async () =>
-            {
-                ValidateDataTypeOnModify(dataType);
-
-                return await this.storageBroker.UpdateDataTypeAsync(dataType);
-            });
     }
 }

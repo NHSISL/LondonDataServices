@@ -43,6 +43,15 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsDataTypeException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidDataTypeReferenceException =
+                    new InvalidDataTypeReferenceException(
+                        message: "Invalid dataType reference error occurred.", 
+                        innerException: foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidDataTypeReferenceException);
+            }
         }
 
         private DataTypeValidationException CreateAndLogValidationException(Xeption exception)
@@ -60,7 +69,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             var dataTypeDependencyException = 
                 new DataTypeDependencyException(
                     message: "DataType dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(dataTypeDependencyException);
 

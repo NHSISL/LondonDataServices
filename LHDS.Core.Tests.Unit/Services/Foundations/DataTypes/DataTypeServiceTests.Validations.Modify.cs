@@ -88,7 +88,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
 
             invalidDataTypeException.AddData(
                 key: nameof(DataType.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(DataType.CreatedDate)}"
+                });
 
             invalidDataTypeException.AddData(
                 key: nameof(DataType.UpdatedBy),
@@ -131,6 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             DataType randomDataType = CreateRandomDataType(randomDateTimeOffset);
             DataType invalidDataType = randomDataType;
+            
             var invalidDataTypeException = 
                 new InvalidDataTypeException(
                     message: "Invalid dataType. Please correct the errors and try again.");

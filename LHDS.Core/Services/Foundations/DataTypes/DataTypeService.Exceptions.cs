@@ -54,6 +54,12 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
                 throw CreateAndLogDependencyValidationException(invalidDataTypeReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedDataTypeException = new LockedDataTypeException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedDataTypeException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedDataTypeStorageException =

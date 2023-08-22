@@ -91,6 +91,15 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
                 throw CreateAndLogCriticalDependencyException(failedDataTypeStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedDataTypeServiceException =
+                    new FailedDataTypeServiceException(
+                        message: "Failed dataType service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedDataTypeServiceException);
+            }
         }
 
         private DataTypeValidationException CreateAndLogValidationException(Xeption exception)

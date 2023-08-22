@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
@@ -151,7 +152,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 await Assert.ThrowsAsync<DataTypeDependencyValidationException>(
                     addDataTypeTask.AsTask);
 
-            actualDataTypeDependencyValidationException.Should().BeEquivalentTo(expectedDataTypeValidationException);
+            actualDataTypeDependencyValidationException.Should()
+                .BeEquivalentTo(expectedDataTypeValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -169,6 +171,59 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnAddIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            DataType someDataType = CreateRandomDataType();
+
+            var databaseUpdateException =
+                new DbUpdateException();
+
+            var failedDataTypeStorageException =
+                new FailedDataTypeStorageException(
+                    message: "Failed dataType storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+            var expectedDataTypeDependencyException =
+                new DataTypeDependencyException(
+                    message: "DataType dependency error occurred, contact support.",
+                    innerException: failedDataTypeStorageException); 
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<DataType> addDataTypeTask =
+                this.dataTypeService.AddDataTypeAsync(someDataType);
+
+            DataTypeDependencyException actualDataTypeDependencyException =
+                await Assert.ThrowsAsync<DataTypeDependencyException>(
+                    addDataTypeTask.AsTask);
+
+            // then
+            actualDataTypeDependencyException.Should()
+                .BeEquivalentTo(expectedDataTypeDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDataTypeAsync(It.IsAny<DataType>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataTypeDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

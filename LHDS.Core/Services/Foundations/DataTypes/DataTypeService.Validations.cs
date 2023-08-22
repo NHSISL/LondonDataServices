@@ -24,7 +24,13 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                     firstDate: dataType.UpdatedDate,
                     secondDate: dataType.CreatedDate,
                     secondDateName: nameof(DataType.CreatedDate)),
-                Parameter: nameof(DataType.UpdatedDate)));
+                Parameter: nameof(DataType.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    firstId: dataType.UpdatedBy,
+                    secondId: dataType.CreatedBy,
+                    secondIdName: nameof(DataType.CreatedBy)),
+                Parameter: nameof(DataType.UpdatedBy)));
         }
 
         private static void ValidateDataTypeIsNotNull(DataType dataType)
@@ -61,6 +67,24 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                 Condition = firstDate != secondDate,
                 Message = $"Date is not the same as {secondDateName}"
             };
+
+        private static dynamic IsNotSame(
+            Guid firstId,
+            Guid secondId,
+            string secondIdName) => new
+            {
+                Condition = firstId != secondId,
+                Message = $"Id is not the same as {secondIdName}"
+            };
+
+        private static dynamic IsNotSame(
+           string first,
+           string second,
+           string secondName) => new
+           {
+               Condition = first != second,
+               Message = $"Text is not the same as {secondName}"
+           };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.SchemaDefinitions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace LHDS.Core.Brokers.Storages.Sql
 {
@@ -15,59 +14,18 @@ namespace LHDS.Core.Brokers.Storages.Sql
     {
         public DbSet<SchemaDefinition> SchemaDefinitions { get; set; }
 
-        public async ValueTask<SchemaDefinition> InsertSchemaDefinitionAsync(SchemaDefinition schemaDefinition)
-        {
-            using var broker =
-                new StorageBroker(this.configuration);
+        public async ValueTask<SchemaDefinition> InsertSchemaDefinitionAsync(SchemaDefinition schemaDefinition) =>
+            await InsertAsync(schemaDefinition);
 
-            EntityEntry<SchemaDefinition> schemaDefinitionEntityEntry =
-                await broker.SchemaDefinitions.AddAsync(schemaDefinition);
+        public IQueryable<SchemaDefinition> SelectAllSchemaDefinitions() => ReadAll<SchemaDefinition>();
 
-            await broker.SaveChangesAsync();
+        public async ValueTask<SchemaDefinition> SelectSchemaDefinitionByIdAsync(Guid schemaDefinitionId) =>
+            await ReadAsync<SchemaDefinition>(schemaDefinitionId);
 
-            return schemaDefinitionEntityEntry.Entity;
-        }
+        public async ValueTask<SchemaDefinition> UpdateSchemaDefinitionAsync(SchemaDefinition schemaDefinition) =>
+            await UpdateAsync(schemaDefinition);
 
-        public IQueryable<SchemaDefinition> SelectAllSchemaDefinitions()
-        {
-            using var broker =
-                new StorageBroker(this.configuration);
-
-            return broker.SchemaDefinitions;
-        }
-
-        public async ValueTask<SchemaDefinition> SelectSchemaDefinitionByIdAsync(Guid schemaDefinitionId)
-        {
-            using var broker =
-                new StorageBroker(this.configuration);
-
-            return await broker.SchemaDefinitions.FindAsync(schemaDefinitionId);
-        }
-
-        public async ValueTask<SchemaDefinition> UpdateSchemaDefinitionAsync(SchemaDefinition schemaDefinition)
-        {
-            using var broker =
-                new StorageBroker(this.configuration);
-
-            EntityEntry<SchemaDefinition> schemaDefinitionEntityEntry =
-                broker.SchemaDefinitions.Update(schemaDefinition);
-
-            await broker.SaveChangesAsync();
-
-            return schemaDefinitionEntityEntry.Entity;
-        }
-
-        public async ValueTask<SchemaDefinition> DeleteSchemaDefinitionAsync(SchemaDefinition schemaDefinition)
-        {
-            using var broker =
-                new StorageBroker(this.configuration);
-
-            EntityEntry<SchemaDefinition> schemaDefinitionEntityEntry =
-                broker.SchemaDefinitions.Remove(schemaDefinition);
-
-            await broker.SaveChangesAsync();
-
-            return schemaDefinitionEntityEntry.Entity;
-        }
+        public async ValueTask<SchemaDefinition> DeleteSchemaDefinitionAsync(SchemaDefinition schemaDefinition) =>
+            await DeleteAsync(schemaDefinition);
     }
 }

@@ -167,5 +167,56 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyErrorOccursAndLogAsync()
+        {
+            // given
+            DataType randomDataType = CreateRandomDataType();
+            var databaseUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedDataTypeException =
+                new LockedDataTypeException(databaseUpdateConcurrencyException);
+
+            var expectedDataTypeDependencyValidationException =
+                new DataTypeDependencyValidationException(lockedDataTypeException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<DataType> modifyDataTypeTask =
+                this.dataTypeService.ModifyDataTypeAsync(randomDataType);
+
+            DataTypeDependencyValidationException actualDataTypeDependencyValidationException =
+                await Assert.ThrowsAsync<DataTypeDependencyValidationException>(
+                    modifyDataTypeTask.AsTask);
+
+            // then
+            actualDataTypeDependencyValidationException.Should()
+                .BeEquivalentTo(expectedDataTypeDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataTypeByIdAsync(randomDataType.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataTypeDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateDataTypeAsync(randomDataType),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

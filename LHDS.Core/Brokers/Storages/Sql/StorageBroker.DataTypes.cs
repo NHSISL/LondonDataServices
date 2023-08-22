@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.DataTypes;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace LHDS.Core.Brokers.Storages.Sql
 {
@@ -15,59 +14,18 @@ namespace LHDS.Core.Brokers.Storages.Sql
     {
         public DbSet<DataType> DataTypes { get; set; }
 
-        public async ValueTask<DataType> InsertDataTypeAsync(DataType dataType)
-        {
-            using var broker =
-                new StorageBroker(this.configuration);
+        public async ValueTask<DataType> InsertDataTypeAsync(DataType dataType) =>
+            await InsertAsync(dataType);
 
-            EntityEntry<DataType> dataTypeEntityEntry =
-                await broker.DataTypes.AddAsync(dataType);
+        public IQueryable<DataType> SelectAllDataTypes() => ReadAll<DataType>();
 
-            await broker.SaveChangesAsync();
+        public async ValueTask<DataType> SelectDataTypeByIdAsync(Guid dataTypeId) =>
+            await ReadAsync<DataType>(dataTypeId);
 
-            return dataTypeEntityEntry.Entity;
-        }
+        public async ValueTask<DataType> UpdateDataTypeAsync(DataType dataType) =>
+            await UpdateAsync(dataType);
 
-        public IQueryable<DataType> SelectAllDataTypes()
-        {
-            using var broker =
-                new StorageBroker(this.configuration);
-
-            return broker.DataTypes;
-        }
-
-        public async ValueTask<DataType> SelectDataTypeByIdAsync(Guid dataTypeId)
-        {
-            using var broker =
-                new StorageBroker(this.configuration);
-
-            return await broker.DataTypes.FindAsync(dataTypeId);
-        }
-
-        public async ValueTask<DataType> UpdateDataTypeAsync(DataType dataType)
-        {
-            using var broker =
-                new StorageBroker(this.configuration);
-
-            EntityEntry<DataType> dataTypeEntityEntry =
-                broker.DataTypes.Update(dataType);
-
-            await broker.SaveChangesAsync();
-
-            return dataTypeEntityEntry.Entity;
-        }
-
-        public async ValueTask<DataType> DeleteDataTypeAsync(DataType dataType)
-        {
-            using var broker =
-                new StorageBroker(this.configuration);
-
-            EntityEntry<DataType> dataTypeEntityEntry =
-                broker.DataTypes.Remove(dataType);
-
-            await broker.SaveChangesAsync();
-
-            return dataTypeEntityEntry.Entity;
-        }
+        public async ValueTask<DataType> DeleteDataTypeAsync(DataType dataType) =>
+            await DeleteAsync(dataType);
     }
 }

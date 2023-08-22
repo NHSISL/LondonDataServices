@@ -78,6 +78,13 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                     new FailedDataTypeStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedDataTypeStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedDataTypeServiceException =
+                    new FailedDataTypeServiceException(exception);
+
+                throw CreateAndLogServiceException(failedDataTypeServiceException);
+            }
         }
 
         private DataTypeValidationException CreateAndLogValidationException(Xeption exception)

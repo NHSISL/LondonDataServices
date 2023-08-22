@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -203,6 +204,53 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedDataTypeDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            DataType someDataType = CreateRandomDataType();
+            var serviceException = new Exception();
+
+            var failedDataTypeServiceException =
+                new FailedDataTypeServiceException(serviceException);
+
+            var expectedDataTypeServiceException =
+                new DataTypeServiceException(failedDataTypeServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<DataType> addDataTypeTask =
+                this.dataTypeService.AddDataTypeAsync(someDataType);
+
+            DataTypeServiceException actualDataTypeServiceException =
+                await Assert.ThrowsAsync<DataTypeServiceException>(
+                    addDataTypeTask.AsTask);
+
+            // then
+            actualDataTypeServiceException.Should()
+                .BeEquivalentTo(expectedDataTypeServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDataTypeAsync(It.IsAny<DataType>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataTypeServiceException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

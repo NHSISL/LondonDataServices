@@ -19,6 +19,10 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             {
                 throw CreateAndLogValidationException(nullDataTypeException);
             }
+            catch (InvalidDataTypeException invalidDataTypeException)
+            {
+                throw CreateAndLogValidationException(invalidDataTypeException);
+            }
         }
 
         private DataTypeValidationException CreateAndLogValidationException(Xeption exception)

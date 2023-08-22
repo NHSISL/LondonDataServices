@@ -39,6 +39,13 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsDataTypeException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidDataTypeReferenceException =
+                    new InvalidDataTypeReferenceException(foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidDataTypeReferenceException);
+            }
         }
 
         private DataTypeValidationException CreateAndLogValidationException(Xeption exception)

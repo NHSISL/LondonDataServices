@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -110,6 +111,47 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateDataTypeAsync(It.IsAny<DataType>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DataType randomDataType = CreateRandomDataType(randomDateTimeOffset);
+            DataType invalidDataType = randomDataType;
+            var invalidDataTypeException = new InvalidDataTypeException();
+
+            invalidDataTypeException.AddData(
+                key: nameof(DataType.UpdatedDate),
+                values: $"Date is the same as {nameof(DataType.CreatedDate)}");
+
+            var expectedDataTypeValidationException =
+                new DataTypeValidationException(invalidDataTypeException);
+
+            // when
+            ValueTask<DataType> modifyDataTypeTask =
+                this.dataTypeService.ModifyDataTypeAsync(invalidDataType);
+
+            DataTypeValidationException actualDataTypeValidationException =
+                await Assert.ThrowsAsync<DataTypeValidationException>(
+                    modifyDataTypeTask.AsTask);
+
+            // then
+            actualDataTypeValidationException.Should().BeEquivalentTo(expectedDataTypeValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataTypeValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataTypeByIdAsync(invalidDataType.Id),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

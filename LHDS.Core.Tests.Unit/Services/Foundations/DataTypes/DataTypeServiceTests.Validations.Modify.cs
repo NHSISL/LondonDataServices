@@ -184,9 +184,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 broker.SelectDataTypeByIdAsync(invalidDataType.Id),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -295,8 +295,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                     expectedDataTypeValidationException))),
                         Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -359,8 +359,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                    expectedDataTypeValidationException))),
                        Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -420,8 +420,64 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                    expectedDataTypeValidationException))),
                        Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfStorageUpdatedDateSameAsUpdatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DataType randomDataType = CreateRandomModifyDataType(randomDateTimeOffset);
+            DataType invalidDataType = randomDataType;
+            DataType storageDataType = randomDataType.DeepClone();
+
+            var invalidDataTypeException = 
+                new InvalidDataTypeException(
+                    message: "Invalid dataType. Please correct the errors and try again.");
+
+            invalidDataTypeException.AddData(
+                key: nameof(DataType.UpdatedDate),
+                values: $"Date is the same as {nameof(DataType.UpdatedDate)}");
+
+            var expectedDataTypeValidationException =
+                new DataTypeValidationException(
+                    message: "DataType validation errors occurred, please try again.",
+                    innerException: invalidDataTypeException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectDataTypeByIdAsync(invalidDataType.Id))
+                .ReturnsAsync(storageDataType);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<DataType> modifyDataTypeTask =
+                this.dataTypeService.ModifyDataTypeAsync(invalidDataType);
+
+            // then
+            await Assert.ThrowsAsync<DataTypeValidationException>(
+                modifyDataTypeTask.AsTask);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataTypeValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataTypeByIdAsync(invalidDataType.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

@@ -13,6 +13,11 @@ namespace LHDS.Core.Brokers.Storages.Sql
         {
             modelBuilder.Entity<DataType>()
                 .ToTable(dataType => dataType.IsTemporal());
+
+            modelBuilder.Entity<DataType>()
+                .Property(dataType => dataType.Name)
+                .HasMaxLength(50)
+                .IsRequired();
         }
     }
 }

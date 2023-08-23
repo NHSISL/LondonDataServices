@@ -1,13 +1,17 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
-using Microsoft.Data.SqlClient;
-using Moq;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Services.Foundations.DataTypes;
+using Microsoft.Data.SqlClient;
+using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
@@ -77,9 +81,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(dataType => dataType.CreatedBy).Use(user)
-                .OnProperty(dataType => dataType.UpdatedBy).Use(user);
-
-            // TODO: Complete the filler setup e.g. ignore related properties etc...
+                .OnProperty(dataType => dataType.UpdatedBy).Use(user)
+                .OnProperty(dataType => dataType.ColumnDefinitions).IgnoreIt();
 
             return filler;
         }

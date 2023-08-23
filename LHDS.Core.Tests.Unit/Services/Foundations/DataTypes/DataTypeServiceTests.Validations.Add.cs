@@ -1,9 +1,13 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
@@ -55,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             // given
             var invalidDataType = new DataType
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                Name = invalidText
             };
 
             var invalidDataTypeException =
@@ -66,11 +70,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 key: nameof(DataType.Id),
                 values: "Id is required");
 
-            //invalidDataTypeException.AddData(
-            //    key: nameof(DataType.Name),
-            //    values: "Text is required");
-
-            // TODO: Add or remove data here to suit the validation needs for the DataType model
+            invalidDataTypeException.AddData(
+                key: nameof(DataType.Name),
+                values: "Text is required");
 
             invalidDataTypeException.AddData(
                 key: nameof(DataType.CreatedDate),
@@ -135,7 +137,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             invalidDataType.UpdatedDate =
                 invalidDataType.CreatedDate.AddDays(randomNumber);
 
-            var invalidDataTypeException = 
+            var invalidDataTypeException =
                 new InvalidDataTypeException(
                     message: "Invalid dataType. Please correct the errors and try again.");
 

@@ -40,8 +40,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
-        private static string GetRandomMessage() =>
+        private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+
+        private static string GetRandomString(int length) =>
+            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
         public static TheoryData MinutesBeforeOrAfter()
         {

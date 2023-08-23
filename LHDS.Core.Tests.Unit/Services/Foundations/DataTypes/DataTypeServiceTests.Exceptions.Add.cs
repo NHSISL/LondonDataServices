@@ -1,12 +1,16 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.DataTypes;
+using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using LHDS.Core.Models.Foundations.DataTypes;
-using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
@@ -28,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             var expectedDataTypeDependencyException =
                 new DataTypeDependencyException(
                     message: "DataType dependency error occurred, contact support.",
-                    innerException: failedDataTypeStorageException); 
+                    innerException: failedDataTypeStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -70,7 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             // given
             DataType randomDataType = CreateRandomDataType();
             DataType alreadyExistsDataType = randomDataType;
-            string randomMessage = GetRandomMessage();
+            string randomMessage = GetRandomString();
 
             var duplicateKeyException =
                 new DuplicateKeyException(randomMessage);
@@ -124,7 +128,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
         {
             // given
             DataType someDataType = CreateRandomDataType();
-            string randomMessage = GetRandomMessage();
+            string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
 
             var foreignKeyConstraintConflictException =
@@ -132,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
 
             var invalidDataTypeReferenceException =
                 new InvalidDataTypeReferenceException(
-                    message: "Invalid dataType reference error occurred.", 
+                    message: "Invalid dataType reference error occurred.",
                     innerException: foreignKeyConstraintConflictException);
 
             var expectedDataTypeValidationException =
@@ -191,7 +195,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             var expectedDataTypeDependencyException =
                 new DataTypeDependencyException(
                     message: "DataType dependency error occurred, contact support.",
-                    innerException: failedDataTypeStorageException); 
+                    innerException: failedDataTypeStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -236,7 +240,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
 
             var failedDataTypeServiceException =
                 new FailedDataTypeServiceException(
-                    message: "Failed dataType service occurred, please contact support", 
+                    message: "Failed dataType service occurred, please contact support",
                     innerException: serviceException);
 
             var expectedDataTypeServiceException =

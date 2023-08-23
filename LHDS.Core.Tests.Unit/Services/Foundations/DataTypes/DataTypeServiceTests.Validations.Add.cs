@@ -1,9 +1,13 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
@@ -55,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             // given
             var invalidDataType = new DataType
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                Name = invalidText
             };
 
             var invalidDataTypeException =
@@ -66,11 +70,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
                 key: nameof(DataType.Id),
                 values: "Id is required");
 
-            //invalidDataTypeException.AddData(
-            //    key: nameof(DataType.Name),
-            //    values: "Text is required");
-
-            // TODO: Add or remove data here to suit the validation needs for the DataType model
+            invalidDataTypeException.AddData(
+                key: nameof(DataType.Name),
+                values: "Text is required");
 
             invalidDataTypeException.AddData(
                 key: nameof(DataType.CreatedDate),
@@ -124,6 +126,62 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
         }
 
         [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfDataTypePropertyLengthsIsInvalidAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DataType randomDataType = CreateRandomDataType(randomDateTimeOffset);
+            randomDataType.Name = GetRandomString(51);
+            var invalidDataType = randomDataType;
+
+            var invalidDataTypeException =
+                new InvalidDataTypeException(
+                    message: "Invalid dataType. Please correct the errors and try again.");
+
+            invalidDataTypeException.AddData(
+                key: nameof(DataType.Name),
+                values: "Text is exceeding max length");
+
+            var expectedDataTypeValidationException =
+                new DataTypeValidationException(
+                    message: "DataType validation errors occurred, please try again.",
+                    innerException: invalidDataTypeException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<DataType> addDataTypeTask =
+                this.dataTypeService.AddDataTypeAsync(invalidDataType);
+
+            DataTypeValidationException actualDataTypeValidationException =
+                await Assert.ThrowsAsync<DataTypeValidationException>(() =>
+                    addDataTypeTask.AsTask());
+
+            // then
+            actualDataTypeValidationException.Should()
+                .BeEquivalentTo(expectedDataTypeValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataTypeValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDataTypeAsync(It.IsAny<DataType>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
         public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateDatesIsNotSameAndLogItAsync()
         {
             // given
@@ -135,7 +193,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             invalidDataType.UpdatedDate =
                 invalidDataType.CreatedDate.AddDays(randomNumber);
 
-            var invalidDataTypeException = 
+            var invalidDataTypeException =
                 new InvalidDataTypeException(
                     message: "Invalid dataType. Please correct the errors and try again.");
 

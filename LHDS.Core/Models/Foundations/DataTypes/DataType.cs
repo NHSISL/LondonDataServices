@@ -12,6 +12,7 @@ namespace LHDS.Core.Models.Foundations.DataTypes
     public class DataType : IKey, IAudit
     {
         public Guid Id { get; set; }
+        public string Name { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }

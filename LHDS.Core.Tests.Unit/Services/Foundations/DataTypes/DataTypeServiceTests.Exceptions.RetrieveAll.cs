@@ -1,8 +1,12 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
-using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
@@ -58,12 +62,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
         public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            string exceptionMessage = GetRandomMessage();
+            string exceptionMessage = GetRandomString();
             var serviceException = new Exception(exceptionMessage);
 
             var failedDataTypeServiceException =
                 new FailedDataTypeServiceException(
-                    message: "Failed dataType service occurred, please contact support", 
+                    message: "Failed dataType service occurred, please contact support",
                     innerException: serviceException);
 
             var expectedDataTypeServiceException =

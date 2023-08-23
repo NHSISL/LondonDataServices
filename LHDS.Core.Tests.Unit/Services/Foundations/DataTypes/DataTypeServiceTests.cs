@@ -71,6 +71,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static DataType CreateRandomModifyDataType(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            DataType randomDataType = CreateRandomDataType(dateTimeOffset);
+
+            randomDataType.CreatedDate =
+                randomDataType.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomDataType;
+        }
+
         private static IQueryable<DataType> CreateRandomDataTypes()
         {
             return CreateDataTypeFiller(dateTimeOffset: GetRandomDateTimeOffset())

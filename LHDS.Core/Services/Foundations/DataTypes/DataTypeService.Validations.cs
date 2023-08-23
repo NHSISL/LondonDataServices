@@ -40,6 +40,30 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                 (Rule: IsNotRecent(dataType.CreatedDate), Parameter: nameof(DataType.CreatedDate)));
         }
 
+        private void ValidateDataTypeOnModify(DataType dataType)
+        {
+            ValidateDataTypeIsNotNull(dataType);
+
+            Validate(
+                (Rule: IsInvalid(dataType.Id), Parameter: nameof(DataType.Id)),
+                (Rule: IsInvalid(dataType.Name), Parameter: nameof(DataType.Name)),
+                (Rule: IsInvalid(dataType.CreatedDate), Parameter: nameof(DataType.CreatedDate)),
+                (Rule: IsInvalid(dataType.CreatedBy), Parameter: nameof(DataType.CreatedBy)),
+                (Rule: IsInvalid(dataType.UpdatedDate), Parameter: nameof(DataType.UpdatedDate)),
+                (Rule: IsInvalid(dataType.UpdatedBy), Parameter: nameof(DataType.UpdatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataType.Name, 50), Parameter: nameof(DataType.Name)),
+
+                (Rule: IsSame(
+                    firstDate: dataType.UpdatedDate,
+                    secondDate: dataType.CreatedDate,
+                    secondDateName: nameof(DataType.CreatedDate)),
+                Parameter: nameof(DataType.UpdatedDate)),
+
+                (Rule: IsNotRecent(dataType.UpdatedDate), Parameter: nameof(dataType.UpdatedDate)));
+        }
+
         public void ValidateDataTypeId(Guid dataTypeId) =>
             Validate((Rule: IsInvalid(dataTypeId), Parameter: nameof(DataType.Id)));
 
@@ -57,6 +81,28 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             {
                 throw new NullDataTypeException(message: "DataType is null.");
             }
+        }
+
+        private static void ValidateAgainstStorageDataTypeOnModify(DataType inputDataType, DataType storageDataType)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputDataType.CreatedDate,
+                    secondDate: storageDataType.CreatedDate,
+                    secondDateName: nameof(DataType.CreatedDate)),
+                Parameter: nameof(DataType.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    first: inputDataType.CreatedBy,
+                    second: storageDataType.CreatedBy,
+                    secondName: nameof(DataType.CreatedBy)),
+                Parameter: nameof(DataType.CreatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: inputDataType.UpdatedDate,
+                    secondDate: storageDataType.UpdatedDate,
+                    secondDateName: nameof(DataType.UpdatedDate)),
+                Parameter: nameof(DataType.UpdatedDate)));
         }
 
         private static dynamic IsInvalid(Guid id) => new
@@ -82,6 +128,15 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using LHDS.Core.Brokers.DateTimes;
@@ -69,6 +70,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static IQueryable<DataType> CreateRandomDataTypes()
+        {
+            return CreateDataTypeFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
 
         private static DataType CreateRandomDataType() =>
             CreateDataTypeFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();

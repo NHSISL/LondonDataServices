@@ -40,6 +40,17 @@ namespace LHDS.Core.Services.Foundations.DataTypes
                 (Rule: IsNotRecent(dataType.CreatedDate), Parameter: nameof(DataType.CreatedDate)));
         }
 
+        public void ValidateDataTypeId(Guid dataTypeId) =>
+            Validate((Rule: IsInvalid(dataTypeId), Parameter: nameof(DataType.Id)));
+
+        private static void ValidateStorageDataType(DataType maybeDataType, Guid dataTypeId)
+        {
+            if (maybeDataType is null)
+            {
+                throw new NotFoundDataTypeException(dataTypeId);
+            }
+        }
+
         private static void ValidateDataTypeIsNotNull(DataType dataType)
         {
             if (dataType is null)

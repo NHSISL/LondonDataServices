@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -33,5 +34,18 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
         public IQueryable<DataType> RetrieveAllDataTypes() =>
             TryCatch(() => this.storageBroker.SelectAllDataTypes());
+
+        public ValueTask<DataType> RetrieveDataTypeByIdAsync(Guid dataTypeId) =>
+            TryCatch(async () =>
+            {
+                ValidateDataTypeId(dataTypeId);
+
+                DataType maybeDataType = await this.storageBroker
+                    .SelectDataTypeByIdAsync(dataTypeId);
+
+                ValidateStorageDataType(maybeDataType, dataTypeId);
+
+                return maybeDataType;
+            });
     }
 }

@@ -46,13 +46,14 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
             Validate(
                 (Rule: IsInvalid(dataType.Id), Parameter: nameof(DataType.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(dataType.Name), Parameter: nameof(DataType.Name)),
                 (Rule: IsInvalid(dataType.CreatedDate), Parameter: nameof(DataType.CreatedDate)),
                 (Rule: IsInvalid(dataType.CreatedBy), Parameter: nameof(DataType.CreatedBy)),
                 (Rule: IsInvalid(dataType.UpdatedDate), Parameter: nameof(DataType.UpdatedDate)),
                 (Rule: IsInvalid(dataType.UpdatedBy), Parameter: nameof(DataType.UpdatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataType.Name, 50), Parameter: nameof(DataType.Name)),
 
                 (Rule: IsSame(
                     firstDate: dataType.UpdatedDate,

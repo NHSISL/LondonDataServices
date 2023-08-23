@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
@@ -12,9 +16,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
             Validate(
                 (Rule: IsInvalid(dataType.Id), Parameter: nameof(DataType.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(dataType.Name), Parameter: nameof(DataType.Name)),
                 (Rule: IsInvalid(dataType.CreatedDate), Parameter: nameof(DataType.CreatedDate)),
                 (Rule: IsInvalid(dataType.CreatedBy), Parameter: nameof(DataType.CreatedBy)),
                 (Rule: IsInvalid(dataType.UpdatedDate), Parameter: nameof(DataType.UpdatedDate)),
@@ -107,7 +109,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidDataTypeException = 
+            var invalidDataTypeException =
                 new InvalidDataTypeException(
                     message: "Invalid dataType. Please correct the errors and try again.");
 

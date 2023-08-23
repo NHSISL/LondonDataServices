@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
@@ -12,13 +16,14 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
             Validate(
                 (Rule: IsInvalid(dataType.Id), Parameter: nameof(DataType.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(dataType.Name), Parameter: nameof(DataType.Name)),
                 (Rule: IsInvalid(dataType.CreatedDate), Parameter: nameof(DataType.CreatedDate)),
                 (Rule: IsInvalid(dataType.CreatedBy), Parameter: nameof(DataType.CreatedBy)),
                 (Rule: IsInvalid(dataType.UpdatedDate), Parameter: nameof(DataType.UpdatedDate)),
                 (Rule: IsInvalid(dataType.UpdatedBy), Parameter: nameof(DataType.UpdatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataType.Name, 50), Parameter: nameof(DataType.Name)),
 
                 (Rule: IsNotSame(
                     firstDate: dataType.UpdatedDate,
@@ -64,6 +69,12 @@ namespace LHDS.Core.Services.Foundations.DataTypes
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
+        };
+
+        private static dynamic IsEqualOrSmallerThan(string text, int maxLength) => new
+        {
+            Condition = (text ?? string.Empty).Length > maxLength,
+            Message = "Text is exceeding max length"
         };
 
         private static dynamic IsInvalid(DateTimeOffset date) => new
@@ -118,7 +129,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidDataTypeException = 
+            var invalidDataTypeException =
                 new InvalidDataTypeException(
                     message: "Invalid dataType. Please correct the errors and try again.");
 

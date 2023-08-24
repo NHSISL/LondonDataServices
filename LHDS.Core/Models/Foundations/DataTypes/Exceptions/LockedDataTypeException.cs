@@ -7,7 +7,6 @@ namespace LHDS.Core.Models.Foundations.DataTypes.Exceptions
     {
         public LockedDataTypeException(string message, Exception innerException)
             : base(message, innerException)
-        {
-        }
+        { }
     }
 }

@@ -61,5 +61,18 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
                 return await this.storageBroker.UpdateDataTypeAsync(dataType);
             });
+
+        public ValueTask<DataType> RemoveDataTypeByIdAsync(Guid dataTypeId) =>
+            TryCatch(async () =>
+            {
+                ValidateDataTypeId(dataTypeId);
+
+                DataType maybeDataType = await this.storageBroker
+                    .SelectDataTypeByIdAsync(dataTypeId);
+
+                ValidateStorageDataType(maybeDataType, dataTypeId);
+
+                return await this.storageBroker.DeleteDataTypeAsync(maybeDataType);
+            });
     }
 }

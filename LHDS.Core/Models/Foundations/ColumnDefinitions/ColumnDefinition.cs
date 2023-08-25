@@ -4,7 +4,6 @@
 
 using System;
 using LHDS.Core.Models.Bases;
-using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.SchemaDefinitions;
 
 namespace LHDS.Core.Models.Foundations.ColumnDefinitions
@@ -20,6 +19,5 @@ namespace LHDS.Core.Models.Foundations.ColumnDefinitions
         public DateTimeOffset CreatedDate { get; set; }
 
         public SchemaDefinition SchemaDefinition { get; set; }
-        public DataType DataType { get; set; }
     }
 }

@@ -17,6 +17,6 @@ namespace LHDS.Core.Models.Foundations.DataSets
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
 
-        public List<SchemaDefinition> SchemaDefinitions { get; set; } = new List<SchemaDefinition>();
+        public List<DatasetObject> SchemaDefinitions { get; set; } = new List<DatasetObject>();
     }
 }

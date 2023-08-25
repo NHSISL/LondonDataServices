@@ -12,20 +12,20 @@ namespace LHDS.Core.Brokers.Storages.Sql
 {
     public partial class StorageBroker
     {
-        public DbSet<SchemaDefinition> SchemaDefinitions { get; set; }
+        public DbSet<DatasetObject> SchemaDefinitions { get; set; }
 
-        public async ValueTask<SchemaDefinition> InsertSchemaDefinitionAsync(SchemaDefinition schemaDefinition) =>
+        public async ValueTask<DatasetObject> InsertSchemaDefinitionAsync(DatasetObject schemaDefinition) =>
             await InsertAsync(schemaDefinition);
 
-        public IQueryable<SchemaDefinition> SelectAllSchemaDefinitions() => ReadAll<SchemaDefinition>();
+        public IQueryable<DatasetObject> SelectAllSchemaDefinitions() => ReadAll<DatasetObject>();
 
-        public async ValueTask<SchemaDefinition> SelectSchemaDefinitionByIdAsync(Guid schemaDefinitionId) =>
-            await ReadAsync<SchemaDefinition>(schemaDefinitionId);
+        public async ValueTask<DatasetObject> SelectSchemaDefinitionByIdAsync(Guid schemaDefinitionId) =>
+            await ReadAsync<DatasetObject>(schemaDefinitionId);
 
-        public async ValueTask<SchemaDefinition> UpdateSchemaDefinitionAsync(SchemaDefinition schemaDefinition) =>
+        public async ValueTask<DatasetObject> UpdateSchemaDefinitionAsync(DatasetObject schemaDefinition) =>
             await UpdateAsync(schemaDefinition);
 
-        public async ValueTask<SchemaDefinition> DeleteSchemaDefinitionAsync(SchemaDefinition schemaDefinition) =>
+        public async ValueTask<DatasetObject> DeleteSchemaDefinitionAsync(DatasetObject schemaDefinition) =>
             await DeleteAsync(schemaDefinition);
     }
 }

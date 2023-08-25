@@ -99,5 +99,44 @@ namespace LHDS.Core.Controllers
                 return InternalServerError(dataTypeServiceException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<DataType>> PutDataTypeAsync(DataType dataType)
+        {
+            try
+            {
+                DataType modifiedDataType =
+                    await this.dataTypeService.ModifyDataTypeAsync(dataType);
+
+                return Ok(modifiedDataType);
+            }
+            catch (DataTypeValidationException dataTypeValidationException)
+                when (dataTypeValidationException.InnerException is NotFoundDataTypeException)
+            {
+                return NotFound(dataTypeValidationException.InnerException);
+            }
+            catch (DataTypeValidationException dataTypeValidationException)
+            {
+                return BadRequest(dataTypeValidationException.InnerException);
+            }
+            catch (DataTypeDependencyValidationException dataTypeValidationException)
+                when (dataTypeValidationException.InnerException is InvalidDataTypeReferenceException)
+            {
+                return FailedDependency(dataTypeValidationException.InnerException);
+            }
+            catch (DataTypeDependencyValidationException dataTypeDependencyValidationException)
+               when (dataTypeDependencyValidationException.InnerException is AlreadyExistsDataTypeException)
+            {
+                return Conflict(dataTypeDependencyValidationException.InnerException);
+            }
+            catch (DataTypeDependencyException dataTypeDependencyException)
+            {
+                return InternalServerError(dataTypeDependencyException);
+            }
+            catch (DataTypeServiceException dataTypeServiceException)
+            {
+                return InternalServerError(dataTypeServiceException);
+            }
+        }
     }
 }

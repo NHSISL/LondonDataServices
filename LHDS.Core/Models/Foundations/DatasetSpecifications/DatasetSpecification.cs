@@ -9,7 +9,7 @@ using LHDS.Core.Models.Foundations.SchemaDefinitions;
 
 namespace LHDS.Core.Models.Foundations.DataSets
 {
-    public class DataSet : IKey, IAudit
+    public class DatasetSpecification : IKey, IAudit
     {
         public Guid Id { get; set; }
         public string CreatedBy { get; set; }
@@ -17,6 +17,6 @@ namespace LHDS.Core.Models.Foundations.DataSets
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
 
-        public List<DatasetObject> SchemaDefinitions { get; set; } = new List<DatasetObject>();
+        public List<DatasetObject> DatasetObjects { get; set; } = new List<DatasetObject>();
     }
 }

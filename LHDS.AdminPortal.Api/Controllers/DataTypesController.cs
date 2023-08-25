@@ -1,9 +1,12 @@
-using System.Threading.Tasks;
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using LHDS.Core.Models.Foundations.DataTypes;
+using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
+using LHDS.Core.Services.Foundations.DataTypes;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
-using LHDS.AdminPortal.Api.Models.Foundations.DataTypes;
-using LHDS.AdminPortal.Api.Models.Foundations.DataTypes.Exceptions;
-using LHDS.AdminPortal.Api.Services.Foundations.DataTypes;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {

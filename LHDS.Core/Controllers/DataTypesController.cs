@@ -138,5 +138,43 @@ namespace LHDS.Core.Controllers
                 return InternalServerError(dataTypeServiceException);
             }
         }
+
+        [HttpDelete("{dataTypeId}")]
+        public async ValueTask<ActionResult<DataType>> DeleteDataTypeByIdAsync(Guid dataTypeId)
+        {
+            try
+            {
+                DataType deletedDataType =
+                    await this.dataTypeService.RemoveDataTypeByIdAsync(dataTypeId);
+
+                return Ok(deletedDataType);
+            }
+            catch (DataTypeValidationException dataTypeValidationException)
+                when (dataTypeValidationException.InnerException is NotFoundDataTypeException)
+            {
+                return NotFound(dataTypeValidationException.InnerException);
+            }
+            catch (DataTypeValidationException dataTypeValidationException)
+            {
+                return BadRequest(dataTypeValidationException.InnerException);
+            }
+            catch (DataTypeDependencyValidationException dataTypeDependencyValidationException)
+                when (dataTypeDependencyValidationException.InnerException is LockedDataTypeException)
+            {
+                return Locked(dataTypeDependencyValidationException.InnerException);
+            }
+            catch (DataTypeDependencyValidationException dataTypeDependencyValidationException)
+            {
+                return BadRequest(dataTypeDependencyValidationException);
+            }
+            catch (DataTypeDependencyException dataTypeDependencyException)
+            {
+                return InternalServerError(dataTypeDependencyException);
+            }
+            catch (DataTypeServiceException dataTypeServiceException)
+            {
+                return InternalServerError(dataTypeServiceException);
+            }
+        }
     }
 }

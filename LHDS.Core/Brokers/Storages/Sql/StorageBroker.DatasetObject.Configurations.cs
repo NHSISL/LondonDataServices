@@ -2,22 +2,22 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using LHDS.Core.Models.Foundations.ColumnDefinitions;
+using LHDS.Core.Models.Foundations.DataSetObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.Core.Brokers.Storages.Sql
 {
     public partial class StorageBroker
     {
-        private static void AddObjectColumnConfigurations(ModelBuilder modelBuilder)
+        private static void AddDatasetObjectConfigurations(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ObjectColumn>()
+            modelBuilder.Entity<DataSetObject>()
                 .ToTable(columnDefinition => columnDefinition.IsTemporal());
 
-            modelBuilder.Entity<ObjectColumn>()
-                .HasOne(columnDefinition => columnDefinition.DatasetObject)
+            modelBuilder.Entity<DataSetObject>()
+                .HasOne(columnDefinition => columnDefinition.DataSetSpecification)
                 .WithMany(schemaDefinition => schemaDefinition.DataSetObjects)
-                .HasForeignKey(columnDefinition => columnDefinition.DatasetObjectId)
+                .HasForeignKey(columnDefinition => columnDefinition.DataSetSpecificationId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
     }

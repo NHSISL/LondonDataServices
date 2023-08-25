@@ -35,9 +35,10 @@ namespace LHDS.Core.Brokers.Storages.Sql
             AddPdsAuditConfigurations(modelBuilder);
             AddSupplierSeedData(modelBuilder);
             AddDataTypeConfigurations(modelBuilder);
-            AddColumnDefinitionConfigurations(modelBuilder);
-            AddSchemaDefinitionConfigurations(modelBuilder);
-            AddDataSetConfigurations(modelBuilder);
+            AddObjectColumnConfigurations(modelBuilder);
+            AddDatasetObjectConfigurations(modelBuilder);
+            AddDatasetSpecificationConfigurations(modelBuilder);
+            AddDatasetConfigurations(modelBuilder);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

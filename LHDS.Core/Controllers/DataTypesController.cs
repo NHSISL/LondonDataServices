@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
@@ -39,6 +40,26 @@ namespace LHDS.Core.Controllers
                when (dataTypeDependencyValidationException.InnerException is AlreadyExistsDataTypeException)
             {
                 return Conflict(dataTypeDependencyValidationException.InnerException);
+            }
+            catch (DataTypeDependencyException dataTypeDependencyException)
+            {
+                return InternalServerError(dataTypeDependencyException);
+            }
+            catch (DataTypeServiceException dataTypeServiceException)
+            {
+                return InternalServerError(dataTypeServiceException);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult<IQueryable<DataType>> GetAllDataTypes()
+        {
+            try
+            {
+                IQueryable<DataType> retrievedDataTypes =
+                    this.dataTypeService.RetrieveAllDataTypes();
+
+                return Ok(retrievedDataTypes);
             }
             catch (DataTypeDependencyException dataTypeDependencyException)
             {

@@ -16,7 +16,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
             modelBuilder.Entity<DataSetSpecification>()
                 .HasOne(columnDefinition => columnDefinition.DataSet)
-                .WithMany(schemaDefinition => schemaDefinition.DatasetSpecifications)
+                .WithMany(schemaDefinition => schemaDefinition.DataSetSpecifications)
                 .HasForeignKey(columnDefinition => columnDefinition.DataSetId)
                 .OnDelete(DeleteBehavior.NoAction);
         }

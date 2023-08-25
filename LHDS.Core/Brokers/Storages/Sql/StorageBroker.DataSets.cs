@@ -12,20 +12,20 @@ namespace LHDS.Core.Brokers.Storages.Sql
 {
     public partial class StorageBroker
     {
-        public DbSet<DataSet> DataSets { get; set; }
+        public DbSet<DatasetSpecification> DataSets { get; set; }
 
-        public async ValueTask<DataSet> InsertDataSetAsync(DataSet dataSet) =>
+        public async ValueTask<DatasetSpecification> InsertDataSetAsync(DatasetSpecification dataSet) =>
             await InsertAsync(dataSet);
 
-        public IQueryable<DataSet> SelectAllDataSets() => ReadAll<DataSet>();
+        public IQueryable<DatasetSpecification> SelectAllDataSets() => ReadAll<DatasetSpecification>();
 
-        public async ValueTask<DataSet> SelectDataSetByIdAsync(Guid dataSetId) =>
-            await ReadAsync<DataSet>(dataSetId);
+        public async ValueTask<DatasetSpecification> SelectDataSetByIdAsync(Guid dataSetId) =>
+            await ReadAsync<DatasetSpecification>(dataSetId);
 
-        public async ValueTask<DataSet> UpdateDataSetAsync(DataSet dataSet) =>
+        public async ValueTask<DatasetSpecification> UpdateDataSetAsync(DatasetSpecification dataSet) =>
             await UpdateAsync(dataSet);
 
-        public async ValueTask<DataSet> DeleteDataSetAsync(DataSet dataSet) =>
+        public async ValueTask<DatasetSpecification> DeleteDataSetAsync(DatasetSpecification dataSet) =>
             await DeleteAsync(dataSet);
     }
 }

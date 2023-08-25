@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,34 @@ namespace LHDS.AdminPortal.Api.Controllers
                     this.dataTypeService.RetrieveAllDataTypes();
 
                 return Ok(retrievedDataTypes);
+            }
+            catch (DataTypeDependencyException dataTypeDependencyException)
+            {
+                return InternalServerError(dataTypeDependencyException);
+            }
+            catch (DataTypeServiceException dataTypeServiceException)
+            {
+                return InternalServerError(dataTypeServiceException);
+            }
+        }
+
+        [HttpGet("{dataTypeId}")]
+        public async ValueTask<ActionResult<DataType>> GetDataTypeByIdAsync(Guid dataTypeId)
+        {
+            try
+            {
+                DataType dataType = await this.dataTypeService.RetrieveDataTypeByIdAsync(dataTypeId);
+
+                return Ok(dataType);
+            }
+            catch (DataTypeValidationException dataTypeValidationException)
+                when (dataTypeValidationException.InnerException is NotFoundDataTypeException)
+            {
+                return NotFound(dataTypeValidationException.InnerException);
+            }
+            catch (DataTypeValidationException dataTypeValidationException)
+            {
+                return BadRequest(dataTypeValidationException.InnerException);
             }
             catch (DataTypeDependencyException dataTypeDependencyException)
             {

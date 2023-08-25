@@ -2,11 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using LHDS.Core.Models.Foundations.Documents;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
@@ -19,40 +21,37 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
         public async Task ShouldGetLandingDocumentByFileNameAsync()
         {
             // given
-            Supplier randomSupplier = await PostRandomSupplierAsync();
-            string encryptedFilePath = "encrypted";
-            string decryptedFilePath = "decrypted";
+            List<Document> retrievedDocuments = 
+                await this.apiBroker.downloadService.RetrieveListOfDocumentsToProcessAsync();
 
-            IngestionTracking randomIngestionTracking =
-                await PostRandomIngestionTrackingAsync(randomSupplier.Id, encryptedFilePath, decryptedFilePath);
+            Document retrievedDocument = retrievedDocuments[0];
 
-            IngestionTracking inputIngestionTracking = randomIngestionTracking;
-            IngestionTracking expectedIngestionTracking = inputIngestionTracking;
-
-            string inputFileName = randomIngestionTracking.EncryptedFileName;
-            byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
-
-            Document document = new Document
-            {
-                DocumentData = documentData,
-                FileName = inputFileName
-            };
-
-            await this.apiBroker.documentService.AddDocumentAsync(document);
+            await this.apiBroker.documentService.AddDocumentAsync(retrievedDocument);
 
             // when
             ActionResult<IngestionTracking> result = 
-                await this.apiBroker.GetLandingDocumentByFileNameAsync(inputIngestionTracking.FileName);
+                await this.apiBroker.GetLandingDocumentByFileNameAsync(retrievedDocument.FileName);
 
-            // Assert
+            List<IngestionTracking> retrievedIngestionTrackings = await this.apiBroker.GetAllIngestionTrackingsAsync();
+
+            IngestionTracking landingIngestionTracking = 
+                retrievedIngestionTrackings.FirstOrDefault(it => it.FileName == retrievedDocument.FileName);
+            
+            List<Audit> retrievedAudits = await this.apiBroker.GetAllAuditsAsync();
+
+            List<Audit> ingestionTrackingAudits = 
+                retrievedAudits.Where(audit => audit.IngestionTrackingId == landingIngestionTracking.Id).ToList();
+
+            //Then
             Assert.NotNull(result);
             Assert.IsType<OkObjectResult>(result.Result);
 
-            IngestionTracking createdIngestionTracking = 
-                await this.apiBroker.GetIngestionTrackingByIdAsync(randomIngestionTracking.Id);
+            await this.apiBroker.DeleteIngestionTrackingByIdAsync(landingIngestionTracking.Id);
 
-            await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
-            await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
+            foreach(var audit in ingestionTrackingAudits)
+            { 
+                await this.apiBroker.DeleteAuditByIdAsync(audit.Id);
+            }
         }
     }
 }

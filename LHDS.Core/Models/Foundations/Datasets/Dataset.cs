@@ -11,9 +11,9 @@ namespace LHDS.Core.Models.Foundations.DataSets
     public class DataSet : IKey, IAudit
     {
         public Guid Id { get; set; }
-        public string Name { get; set; }
-        public string Aliasses { get; set; }
-        public string Author { get; set; }
+        public string DataSetName { get; set; }
+        public string DataSetAliasses { get; set; }
+        public string DataSetAuthor { get; set; }
         public string DataSourceType { get; set; }
         public bool IsActive { get; set; }
         public DateTimeOffset ActiveFrom { get; set; }

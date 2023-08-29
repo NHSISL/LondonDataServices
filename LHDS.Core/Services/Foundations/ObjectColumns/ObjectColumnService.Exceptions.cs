@@ -19,6 +19,10 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             {
                 throw CreateAndLogValidationException(nullObjectColumnException);
             }
+            catch (InvalidObjectColumnException invalidObjectColumnException)
+            {
+                throw CreateAndLogValidationException(invalidObjectColumnException);
+            }
         }
 
         private ObjectColumnValidationException CreateAndLogValidationException(Xeption exception)

@@ -28,6 +28,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
+                broker.SelectDataSetSpecificationByIdAsync(dataSetSpecificationId))
+                    .ReturnsAsync(storageDataSetSpecification);
+
+            this.storageBrokerMock.Setup(broker =>
                 broker.UpdateDataSetSpecificationAsync(inputDataSetSpecification))
                     .ReturnsAsync(updatedDataSetSpecification);
 
@@ -43,12 +47,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataSetSpecificationByIdAsync(inputDataSetSpecification.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
                 broker.UpdateDataSetSpecificationAsync(inputDataSetSpecification),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

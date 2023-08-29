@@ -217,5 +217,66 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreatedDateIsNotRecentAndLogItAsync(
+            int minutesBeforeOrAfter)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+
+            DateTimeOffset invalidDateTime =
+                randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
+
+            DataSetObject randomDataSetObject = CreateRandomDataSetObject(invalidDateTime);
+            DataSetObject invalidDataSetObject = randomDataSetObject;
+
+            var invalidDataSetObjectException =
+                new InvalidDataSetObjectException(
+                    message: "Invalid dataSetObject. Please correct the errors and try again.");
+
+            invalidDataSetObjectException.AddData(
+                key: nameof(DataSetObject.CreatedDate),
+                values: "Date is not recent");
+
+            var expectedDataSetObjectValidationException =
+                new DataSetObjectValidationException(
+                    message: "DataSetObject validation errors occurred, please try again.",
+                    innerException: invalidDataSetObjectException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<DataSetObject> addDataSetObjectTask =
+                this.dataSetObjectService.AddDataSetObjectAsync(invalidDataSetObject);
+
+            DataSetObjectValidationException actualDataSetObjectValidationException =
+                await Assert.ThrowsAsync<DataSetObjectValidationException>(
+                    addDataSetObjectTask.AsTask);
+
+            // then
+            actualDataSetObjectValidationException.Should()
+                .BeEquivalentTo(expectedDataSetObjectValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetObjectValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDataSetObjectAsync(It.IsAny<DataSetObject>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

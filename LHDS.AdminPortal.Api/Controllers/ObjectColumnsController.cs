@@ -139,5 +139,43 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(objectColumnServiceException);
             }
         }
+
+        [HttpDelete("{objectColumnId}")]
+        public async ValueTask<ActionResult<ObjectColumn>> DeleteObjectColumnByIdAsync(Guid objectColumnId)
+        {
+            try
+            {
+                ObjectColumn deletedObjectColumn =
+                    await this.objectColumnService.RemoveObjectColumnByIdAsync(objectColumnId);
+
+                return Ok(deletedObjectColumn);
+            }
+            catch (ObjectColumnValidationException objectColumnValidationException)
+                when (objectColumnValidationException.InnerException is NotFoundObjectColumnException)
+            {
+                return NotFound(objectColumnValidationException.InnerException);
+            }
+            catch (ObjectColumnValidationException objectColumnValidationException)
+            {
+                return BadRequest(objectColumnValidationException.InnerException);
+            }
+            catch (ObjectColumnDependencyValidationException objectColumnDependencyValidationException)
+                when (objectColumnDependencyValidationException.InnerException is LockedObjectColumnException)
+            {
+                return Locked(objectColumnDependencyValidationException.InnerException);
+            }
+            catch (ObjectColumnDependencyValidationException objectColumnDependencyValidationException)
+            {
+                return BadRequest(objectColumnDependencyValidationException);
+            }
+            catch (ObjectColumnDependencyException objectColumnDependencyException)
+            {
+                return InternalServerError(objectColumnDependencyException);
+            }
+            catch (ObjectColumnServiceException objectColumnServiceException)
+            {
+                return InternalServerError(objectColumnServiceException);
+            }
+        }
     }
 }

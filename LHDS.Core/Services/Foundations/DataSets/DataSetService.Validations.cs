@@ -38,6 +38,16 @@ namespace LHDS.Core.Services.Foundations.DataSets
         private void ValidateDataSetOnModify(DataSet dataSet)
         {
             ValidateDataSetIsNotNull(dataSet);
+
+            Validate(
+                (Rule: IsInvalid(dataSet.Id), Parameter: nameof(DataSet.Id)),
+
+                // TODO: Add any other required validation rules
+
+                (Rule: IsInvalid(dataSet.CreatedDate), Parameter: nameof(DataSet.CreatedDate)),
+                (Rule: IsInvalid(dataSet.CreatedBy), Parameter: nameof(DataSet.CreatedBy)),
+                (Rule: IsInvalid(dataSet.UpdatedDate), Parameter: nameof(DataSet.UpdatedDate)),
+                (Rule: IsInvalid(dataSet.UpdatedBy), Parameter: nameof(DataSet.UpdatedBy)));
         }
 
         public void ValidateDataSetId(Guid dataSetId) =>
@@ -94,7 +104,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
-        
+
         private static dynamic IsNotSame(
            string first,
            string second,

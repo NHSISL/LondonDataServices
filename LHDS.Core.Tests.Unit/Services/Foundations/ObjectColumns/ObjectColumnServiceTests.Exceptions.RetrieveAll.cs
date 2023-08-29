@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             var expectedObjectColumnDependencyException =
                 new ObjectColumnDependencyException(
                     message: "ObjectColumn dependency error occurred, contact support.",
-                    innerException: failedObjectColumnStorageException); 
+                    innerException: failedObjectColumnStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllObjectColumns())
@@ -52,6 +52,51 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomString();
+            var serviceException = new Exception(exceptionMessage);
+
+            var failedObjectColumnServiceException =
+                new FailedObjectColumnServiceException(
+                    message: "Failed objectColumn service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedObjectColumnServiceException =
+                new ObjectColumnServiceException(
+                    message: "ObjectColumn service error occurred, contact support.",
+                    innerException: failedObjectColumnServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllObjectColumns())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllObjectColumnsAction = () =>
+                this.objectColumnService.RetrieveAllObjectColumns();
+
+            ObjectColumnServiceException actualObjectColumnServiceException =
+                Assert.Throws<ObjectColumnServiceException>(retrieveAllObjectColumnsAction);
+
+            // then
+            actualObjectColumnServiceException.Should()
+                .BeEquivalentTo(expectedObjectColumnServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllObjectColumns(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedObjectColumnServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

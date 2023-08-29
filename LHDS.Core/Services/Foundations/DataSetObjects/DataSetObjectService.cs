@@ -48,7 +48,12 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
                 return maybeDataSetObject;
             });
 
-        public async ValueTask<DataSetObject> ModifyDataSetObjectAsync(DataSetObject dataSetObject) =>
-            await this.storageBroker.UpdateDataSetObjectAsync(dataSetObject);
+        public ValueTask<DataSetObject> ModifyDataSetObjectAsync(DataSetObject dataSetObject) =>
+            TryCatch(async () =>
+            {
+                ValidateDataSetObjectOnModify(dataSetObject);
+
+                return await this.storageBroker.UpdateDataSetObjectAsync(dataSetObject);
+            });
     }
 }

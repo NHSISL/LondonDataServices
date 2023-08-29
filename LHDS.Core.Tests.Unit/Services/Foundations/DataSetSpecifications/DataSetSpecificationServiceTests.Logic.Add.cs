@@ -22,6 +22,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             DataSetSpecification storageDataSetSpecification = inputDataSetSpecification;
             DataSetSpecification expectedDataSetSpecification = storageDataSetSpecification.DeepClone();
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertDataSetSpecificationAsync(inputDataSetSpecification))
                     .ReturnsAsync(storageDataSetSpecification);
@@ -33,13 +37,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             // then
             actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertDataSetSpecificationAsync(inputDataSetSpecification),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -29,8 +29,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 this.dataSetSpecificationService.AddDataSetSpecificationAsync(nullDataSetSpecification);
 
             DataSetSpecificationValidationException actualDataSetSpecificationValidationException =
-                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(
-                    addDataSetSpecificationTask.AsTask);
+                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(() =>
+                    addDataSetSpecificationTask.AsTask());
 
             // then
             actualDataSetSpecificationValidationException.Should()
@@ -98,12 +98,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 this.dataSetSpecificationService.AddDataSetSpecificationAsync(invalidDataSetSpecification);
 
             DataSetSpecificationValidationException actualDataSetSpecificationValidationException =
-                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(
-                    addDataSetSpecificationTask.AsTask);
+                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(() =>
+                    addDataSetSpecificationTask.AsTask());
 
             // then
             actualDataSetSpecificationValidationException.Should()
                 .BeEquivalentTo(expectedDataSetSpecificationValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -144,17 +148,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     message: "DataSetSpecification validation errors occurred, please try again.",
                     innerException: invalidDataSetSpecificationException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<DataSetSpecification> addDataSetSpecificationTask =
                 this.dataSetSpecificationService.AddDataSetSpecificationAsync(invalidDataSetSpecification);
 
             DataSetSpecificationValidationException actualDataSetSpecificationValidationException =
-                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(
-                    addDataSetSpecificationTask.AsTask);
+                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(() =>
+                    addDataSetSpecificationTask.AsTask());
 
             // then
             actualDataSetSpecificationValidationException.Should()
                 .BeEquivalentTo(expectedDataSetSpecificationValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -165,9 +177,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 broker.InsertDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -192,17 +204,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     message: "DataSetSpecification validation errors occurred, please try again.",
                     innerException: invalidDataSetSpecificationException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<DataSetSpecification> addDataSetSpecificationTask =
                 this.dataSetSpecificationService.AddDataSetSpecificationAsync(invalidDataSetSpecification);
 
             DataSetSpecificationValidationException actualDataSetSpecificationValidationException =
-                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(
-                    addDataSetSpecificationTask.AsTask);
+                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(() =>
+                    addDataSetSpecificationTask.AsTask());
 
             // then
             actualDataSetSpecificationValidationException.Should()
                 .BeEquivalentTo(expectedDataSetSpecificationValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -254,8 +274,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 this.dataSetSpecificationService.AddDataSetSpecificationAsync(invalidDataSetSpecification);
 
             DataSetSpecificationValidationException actualDataSetSpecificationValidationException =
-                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(
-                    addDataSetSpecificationTask.AsTask);
+                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(() =>
+                    addDataSetSpecificationTask.AsTask());
 
             // then
             actualDataSetSpecificationValidationException.Should()

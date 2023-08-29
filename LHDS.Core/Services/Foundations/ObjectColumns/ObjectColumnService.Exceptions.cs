@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -57,10 +58,19 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             {
                 var failedObjectColumnStorageException =
                     new FailedObjectColumnStorageException(
-                    message: "Failed objectColumn storage error occurred, contact support.",
-                    innerException: databaseUpdateException);
+                        message: "Failed objectColumn storage error occurred, contact support.",
+                        innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedObjectColumnStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedObjectColumnServiceException =
+                    new FailedObjectColumnServiceException(
+                        message: "Failed objectColumn service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedObjectColumnServiceException);
             }
         }
 
@@ -111,6 +121,19 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             this.loggingBroker.LogError(objectColumnDependencyException);
 
             return objectColumnDependencyException;
+        }
+
+        private ObjectColumnServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var objectColumnServiceException = 
+                new ObjectColumnServiceException(
+                    message: "ObjectColumn service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(objectColumnServiceException);
+
+            return objectColumnServiceException;
         }
     }
 }

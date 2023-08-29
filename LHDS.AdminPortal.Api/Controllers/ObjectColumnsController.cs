@@ -1,11 +1,12 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using LHDS.Core.Models.Foundations.ObjectColumns;
+using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
+using LHDS.Core.Services.Foundations.ObjectColumns;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
-using LHDS.AdminPortal.Api.Models.Foundations.ObjectColumns;
-using LHDS.AdminPortal.Api.Models.Foundations.ObjectColumns.Exceptions;
-using LHDS.AdminPortal.Api.Services.Foundations.ObjectColumns;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {

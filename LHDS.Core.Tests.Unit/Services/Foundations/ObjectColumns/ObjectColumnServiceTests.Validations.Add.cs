@@ -32,7 +32,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     addObjectColumnTask.AsTask);
 
             // then
-            actualObjectColumnValidationException.Should().BeEquivalentTo(expectedObjectColumnValidationException);
+            actualObjectColumnValidationException.Should()
+                .BeEquivalentTo(expectedObjectColumnValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -42,6 +43,79 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnAddIfObjectColumnIsInvalidAndLogItAsync(string invalidText)
+        {
+            // given
+            var invalidObjectColumn = new ObjectColumn
+            {
+                // TODO:  Add default values for your properties i.e. Name = invalidText
+            };
+
+            var invalidObjectColumnException =
+                new InvalidObjectColumnException(
+                    message: "Invalid objectColumn. Please correct the errors and try again.");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.Id),
+                values: "Id is required");
+
+            //invalidObjectColumnException.AddData(
+            //    key: nameof(ObjectColumn.Name),
+            //    values: "Text is required");
+
+            // TODO: Add or remove data here to suit the validation needs for the ObjectColumn model
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.CreatedDate),
+                values: "Date is required");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.CreatedBy),
+                values: "Text is required");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.UpdatedDate),
+                values: "Date is required");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.UpdatedBy),
+                values: "Text is required");
+
+            var expectedObjectColumnValidationException =
+                new ObjectColumnValidationException(
+                    message: "ObjectColumn validation errors occurred, please try again.",
+                    innerException: invalidObjectColumnException);
+
+            // when
+            ValueTask<ObjectColumn> addObjectColumnTask =
+                this.objectColumnService.AddObjectColumnAsync(invalidObjectColumn);
+
+            ObjectColumnValidationException actualObjectColumnValidationException =
+                await Assert.ThrowsAsync<ObjectColumnValidationException>(
+                    addObjectColumnTask.AsTask);
+
+            // then
+            actualObjectColumnValidationException.Should()
+                .BeEquivalentTo(expectedObjectColumnValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedObjectColumnValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertObjectColumnAsync(It.IsAny<ObjectColumn>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

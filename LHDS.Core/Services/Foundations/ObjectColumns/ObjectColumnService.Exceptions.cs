@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
     public partial class ObjectColumnService
     {
         private delegate ValueTask<ObjectColumn> ReturningObjectColumnFunction();
+        private delegate IQueryable<ObjectColumn> ReturningObjectColumnsFunction();
 
         private async ValueTask<ObjectColumn> TryCatch(ReturningObjectColumnFunction returningObjectColumnFunction)
         {
@@ -74,6 +76,32 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             }
         }
 
+        private IQueryable<ObjectColumn> TryCatch(ReturningObjectColumnsFunction returningObjectColumnsFunction)
+        {
+            try
+            {
+                return returningObjectColumnsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedObjectColumnStorageException =
+                    new FailedObjectColumnStorageException(
+                        message: "Failed objectColumn storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedObjectColumnStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedObjectColumnServiceException =
+                    new FailedObjectColumnServiceException(
+                        message: "Failed objectColumn service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedObjectColumnServiceException);
+            }
+        }
+
         private ObjectColumnValidationException CreateAndLogValidationException(Xeption exception)
         {
             var objectColumnValidationException =
@@ -91,7 +119,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             var objectColumnDependencyException = 
                 new ObjectColumnDependencyException(
                     message: "ObjectColumn dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(objectColumnDependencyException);
 
@@ -116,7 +144,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             var objectColumnDependencyException = 
                 new ObjectColumnDependencyException(
                     message: "ObjectColumn dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(objectColumnDependencyException);
 

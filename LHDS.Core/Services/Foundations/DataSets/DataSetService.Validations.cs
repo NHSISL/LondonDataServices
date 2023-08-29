@@ -35,6 +35,9 @@ namespace LHDS.Core.Services.Foundations.DataSets
                 (Rule: IsNotRecent(dataSet.CreatedDate), Parameter: nameof(DataSet.CreatedDate)));
         }
 
+        public void ValidateDataSetId(Guid dataSetId) =>
+            Validate((Rule: IsInvalid(dataSetId), Parameter: nameof(DataSet.Id)));
+
         private static void ValidateDataSetIsNotNull(DataSet dataSet)
         {
             if (dataSet is null)

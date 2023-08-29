@@ -43,6 +43,8 @@ namespace LHDS.Core.Services.Foundations.DataSets
                 DataSet maybeDataSet = await this.storageBroker
                     .SelectDataSetByIdAsync(dataSetId);
 
+                ValidateStorageDataSet(maybeDataSet, dataSetId);
+
                 return maybeDataSet;
             });
     }

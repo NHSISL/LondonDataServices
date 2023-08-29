@@ -15,9 +15,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .ToTable(columnDefinition => columnDefinition.IsTemporal());
 
             modelBuilder.Entity<ObjectColumn>()
-                .HasOne(columnDefinition => columnDefinition.DatasetObject)
+                .HasOne(columnDefinition => columnDefinition.DataSetObject)
                 .WithMany(schemaDefinition => schemaDefinition.DataSetObjects)
-                .HasForeignKey(columnDefinition => columnDefinition.DatasetObjectId)
+                .HasForeignKey(columnDefinition => columnDefinition.DataSetObjectId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
     }

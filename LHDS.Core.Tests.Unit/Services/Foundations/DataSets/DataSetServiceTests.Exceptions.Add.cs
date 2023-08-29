@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             var expectedDataSetDependencyException =
                 new DataSetDependencyException(
                     message: "DataSet dependency error occurred, contact support.",
-                    innerException: failedDataSetStorageException);             
+                    innerException: failedDataSetStorageException); 
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -115,6 +115,60 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            DataSet someDataSet = CreateRandomDataSet();
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidDataSetReferenceException =
+                new InvalidDataSetReferenceException(
+                    message: "Invalid dataSet reference error occurred.", 
+                    innerException: foreignKeyConstraintConflictException);
+
+            var expectedDataSetValidationException =
+                new DataSetDependencyValidationException(
+                    message: "DataSet dependency validation occurred, please try again.",
+                    innerException: invalidDataSetReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<DataSet> addDataSetTask =
+                this.dataSetService.AddDataSetAsync(someDataSet);
+
+            // then
+            DataSetDependencyValidationException actualDataSetDependencyValidationException =
+                await Assert.ThrowsAsync<DataSetDependencyValidationException>(
+                    addDataSetTask.AsTask);
+
+            actualDataSetDependencyValidationException.Should().BeEquivalentTo(expectedDataSetValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDataSetAsync(someDataSet),
+                    Times.Never());
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

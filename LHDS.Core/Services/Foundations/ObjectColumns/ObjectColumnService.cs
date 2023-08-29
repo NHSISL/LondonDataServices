@@ -22,7 +22,12 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<ObjectColumn> AddObjectColumnAsync(ObjectColumn objectColumn) =>
-            await this.storageBroker.InsertObjectColumnAsync(objectColumn);
+        public ValueTask<ObjectColumn> AddObjectColumnAsync(ObjectColumn objectColumn) =>
+            TryCatch(async () =>
+            {
+                ValidateObjectColumnOnAdd(objectColumn);
+
+                return await this.storageBroker.InsertObjectColumnAsync(objectColumn);
+            });
     }
 }

@@ -77,6 +77,16 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             }
         }
 
+        private static void ValidateAgainstStorageObjectColumnOnModify(ObjectColumn inputObjectColumn, ObjectColumn storageObjectColumn)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputObjectColumn.CreatedDate,
+                    secondDate: storageObjectColumn.CreatedDate,
+                    secondDateName: nameof(ObjectColumn.CreatedDate)),
+                Parameter: nameof(ObjectColumn.CreatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

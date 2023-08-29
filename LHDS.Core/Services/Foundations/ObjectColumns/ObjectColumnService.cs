@@ -1,62 +1,65 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
-using FluentAssertions;
-using Force.DeepCloner;
-using Moq;
+using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.ObjectColumns;
-using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
+namespace LHDS.Core.Services.Foundations.ObjectColumns
 {
-    public partial class ObjectColumnServiceTests
+    public partial class ObjectColumnService : IObjectColumnService
     {
-        [Fact]
-        public async Task ShouldModifyObjectColumnAsync()
+        private readonly IStorageBroker storageBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ILoggingBroker loggingBroker;
+
+        public ObjectColumnService(
+            IStorageBroker storageBroker,
+            IDateTimeBroker dateTimeBroker,
+            ILoggingBroker loggingBroker)
         {
-            // given
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            ObjectColumn randomObjectColumn = CreateRandomModifyObjectColumn(randomDateTimeOffset);
-            ObjectColumn inputObjectColumn = randomObjectColumn;
-            ObjectColumn storageObjectColumn = inputObjectColumn.DeepClone();
-            storageObjectColumn.UpdatedDate = randomObjectColumn.CreatedDate;
-            ObjectColumn updatedObjectColumn = inputObjectColumn;
-            ObjectColumn expectedObjectColumn = updatedObjectColumn.DeepClone();
-            Guid objectColumnId = inputObjectColumn.Id;
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
-
-            this.storageBrokerMock.Setup(broker =>
-                broker.SelectObjectColumnByIdAsync(objectColumnId))
-                    .ReturnsAsync(storageObjectColumn);
-
-            this.storageBrokerMock.Setup(broker =>
-                broker.UpdateObjectColumnAsync(inputObjectColumn))
-                    .ReturnsAsync(updatedObjectColumn);
-
-            // when
-            ObjectColumn actualObjectColumn =
-                await this.objectColumnService.ModifyObjectColumnAsync(inputObjectColumn);
-
-            // then
-            actualObjectColumn.Should().BeEquivalentTo(expectedObjectColumn);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectObjectColumnByIdAsync(inputObjectColumn.Id),
-                    Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.UpdateObjectColumnAsync(inputObjectColumn),
-                    Times.Once);
-
-            this.storageBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBroker = storageBroker;
+            this.dateTimeBroker = dateTimeBroker;
+            this.loggingBroker = loggingBroker;
         }
+
+        public ValueTask<ObjectColumn> AddObjectColumnAsync(ObjectColumn objectColumn) =>
+            TryCatch(async () =>
+            {
+                ValidateObjectColumnOnAdd(objectColumn);
+
+                return await this.storageBroker.InsertObjectColumnAsync(objectColumn);
+            });
+
+        public IQueryable<ObjectColumn> RetrieveAllObjectColumns() =>
+            TryCatch(() => this.storageBroker.SelectAllObjectColumns());
+
+        public ValueTask<ObjectColumn> RetrieveObjectColumnByIdAsync(Guid objectColumnId) =>
+            TryCatch(async () =>
+            {
+                ValidateObjectColumnId(objectColumnId);
+
+                ObjectColumn maybeObjectColumn = await this.storageBroker
+                    .SelectObjectColumnByIdAsync(objectColumnId);
+
+                ValidateStorageObjectColumn(maybeObjectColumn, objectColumnId);
+
+                return maybeObjectColumn;
+            });
+
+        public ValueTask<ObjectColumn> ModifyObjectColumnAsync(ObjectColumn objectColumn) =>
+            TryCatch(async () =>
+            {
+                ValidateObjectColumnOnModify(objectColumn);
+
+                ObjectColumn maybeObjectColumn =
+                    await this.storageBroker.SelectObjectColumnByIdAsync(objectColumn.Id);
+
+                ValidateStorageObjectColumn(maybeObjectColumn, objectColumn.Id);
+                ValidateAgainstStorageObjectColumnOnModify(inputObjectColumn: objectColumn, storageObjectColumn: maybeObjectColumn);
+
+                return await this.storageBroker.UpdateObjectColumnAsync(objectColumn);
+            });
     }
 }

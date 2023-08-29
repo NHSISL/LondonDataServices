@@ -27,10 +27,12 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 Parameter: nameof(ObjectColumn.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    firstId: objectColumn.UpdatedBy,
-                    secondId: objectColumn.CreatedBy,
-                    secondIdName: nameof(ObjectColumn.CreatedBy)),
-                Parameter: nameof(ObjectColumn.UpdatedBy)));
+                    first: objectColumn.UpdatedBy,
+                    second: objectColumn.CreatedBy,
+                    secondName: nameof(ObjectColumn.CreatedBy)),
+                Parameter: nameof(ObjectColumn.UpdatedBy)),
+
+                (Rule: IsNotRecent(objectColumn.CreatedDate), Parameter: nameof(ObjectColumn.CreatedDate)));
         }
 
         private static void ValidateObjectColumnIsNotNull(ObjectColumn objectColumn)
@@ -85,6 +87,23 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                Condition = first != second,
                Message = $"Text is not the same as {secondName}"
            };
+
+        private dynamic IsNotRecent(DateTimeOffset date) => new
+        {
+            Condition = IsDateNotRecent(date),
+            Message = "Date is not recent"
+        };
+
+        private bool IsDateNotRecent(DateTimeOffset date)
+        {
+            DateTimeOffset currentDateTime =
+                this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+            TimeSpan timeDifference = currentDateTime.Subtract(date);
+            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+
+            return timeDifference.Duration() > oneMinute;
+        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

@@ -52,5 +52,25 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(objectColumnServiceException);
             }
         }
+
+        [HttpGet]
+        public ActionResult<IQueryable<ObjectColumn>> GetAllObjectColumns()
+        {
+            try
+            {
+                IQueryable<ObjectColumn> retrievedObjectColumns =
+                    this.objectColumnService.RetrieveAllObjectColumns();
+
+                return Ok(retrievedObjectColumns);
+            }
+            catch (ObjectColumnDependencyException objectColumnDependencyException)
+            {
+                return InternalServerError(objectColumnDependencyException);
+            }
+            catch (ObjectColumnServiceException objectColumnServiceException)
+            {
+                return InternalServerError(objectColumnServiceException);
+            }
+        }
     }
 }

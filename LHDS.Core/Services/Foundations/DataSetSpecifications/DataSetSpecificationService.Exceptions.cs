@@ -1,10 +1,14 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.DataSetSpecifications
@@ -49,7 +53,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             {
                 var invalidDataSetSpecificationReferenceException =
                     new InvalidDataSetSpecificationReferenceException(
-                        message: "Invalid dataSetSpecification reference error occurred.", 
+                        message: "Invalid dataSetSpecification reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidDataSetSpecificationReferenceException);
@@ -67,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             {
                 var failedDataSetSpecificationServiceException =
                     new FailedDataSetSpecificationServiceException(
-                        message: "Failed dataSetSpecification service occurred, please contact support", 
+                        message: "Failed dataSetSpecification service occurred, please contact support",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedDataSetSpecificationServiceException);
@@ -88,10 +92,10 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
 
         private DataSetSpecificationDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
-            var dataSetSpecificationDependencyException = 
+            var dataSetSpecificationDependencyException =
                 new DataSetSpecificationDependencyException(
                     message: "DataSetSpecification dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(dataSetSpecificationDependencyException);
 
@@ -113,10 +117,10 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
         private DataSetSpecificationDependencyException CreateAndLogDependencyException(
             Xeption exception)
         {
-            var dataSetSpecificationDependencyException = 
+            var dataSetSpecificationDependencyException =
                 new DataSetSpecificationDependencyException(
                     message: "DataSetSpecification dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(dataSetSpecificationDependencyException);
 
@@ -126,7 +130,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
         private DataSetSpecificationServiceException CreateAndLogServiceException(
             Xeption exception)
         {
-            var dataSetSpecificationServiceException = 
+            var dataSetSpecificationServiceException =
                 new DataSetSpecificationServiceException(
                     message: "DataSetSpecification service error occurred, contact support.",
                     innerException: exception);

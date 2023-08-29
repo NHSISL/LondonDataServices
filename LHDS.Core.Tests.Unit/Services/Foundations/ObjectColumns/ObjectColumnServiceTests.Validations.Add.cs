@@ -29,8 +29,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 this.objectColumnService.AddObjectColumnAsync(nullObjectColumn);
 
             ObjectColumnValidationException actualObjectColumnValidationException =
-                await Assert.ThrowsAsync<ObjectColumnValidationException>(
-                    addObjectColumnTask.AsTask);
+                await Assert.ThrowsAsync<ObjectColumnValidationException>(() =>
+                    addObjectColumnTask.AsTask());
 
             // then
             actualObjectColumnValidationException.Should()
@@ -98,12 +98,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 this.objectColumnService.AddObjectColumnAsync(invalidObjectColumn);
 
             ObjectColumnValidationException actualObjectColumnValidationException =
-                await Assert.ThrowsAsync<ObjectColumnValidationException>(
-                    addObjectColumnTask.AsTask);
+                await Assert.ThrowsAsync<ObjectColumnValidationException>(() =>
+                    addObjectColumnTask.AsTask());
 
             // then
             actualObjectColumnValidationException.Should()
                 .BeEquivalentTo(expectedObjectColumnValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -144,17 +148,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     message: "ObjectColumn validation errors occurred, please try again.",
                     innerException: invalidObjectColumnException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<ObjectColumn> addObjectColumnTask =
                 this.objectColumnService.AddObjectColumnAsync(invalidObjectColumn);
 
             ObjectColumnValidationException actualObjectColumnValidationException =
-                await Assert.ThrowsAsync<ObjectColumnValidationException>(
-                    addObjectColumnTask.AsTask);
+                await Assert.ThrowsAsync<ObjectColumnValidationException>(() =>
+                    addObjectColumnTask.AsTask());
 
             // then
             actualObjectColumnValidationException.Should()
                 .BeEquivalentTo(expectedObjectColumnValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -165,9 +177,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.InsertObjectColumnAsync(It.IsAny<ObjectColumn>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -192,17 +204,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     message: "ObjectColumn validation errors occurred, please try again.",
                     innerException: invalidObjectColumnException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<ObjectColumn> addObjectColumnTask =
                 this.objectColumnService.AddObjectColumnAsync(invalidObjectColumn);
 
             ObjectColumnValidationException actualObjectColumnValidationException =
-                await Assert.ThrowsAsync<ObjectColumnValidationException>(
-                    addObjectColumnTask.AsTask);
+                await Assert.ThrowsAsync<ObjectColumnValidationException>(() =>
+                    addObjectColumnTask.AsTask());
 
             // then
             actualObjectColumnValidationException.Should()
                 .BeEquivalentTo(expectedObjectColumnValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -254,8 +274,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 this.objectColumnService.AddObjectColumnAsync(invalidObjectColumn);
 
             ObjectColumnValidationException actualObjectColumnValidationException =
-                await Assert.ThrowsAsync<ObjectColumnValidationException>(
-                    addObjectColumnTask.AsTask);
+                await Assert.ThrowsAsync<ObjectColumnValidationException>(() =>
+                    addObjectColumnTask.AsTask());
 
             // then
             actualObjectColumnValidationException.Should()

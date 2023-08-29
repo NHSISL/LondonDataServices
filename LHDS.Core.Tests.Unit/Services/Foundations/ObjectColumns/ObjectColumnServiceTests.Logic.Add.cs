@@ -22,6 +22,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             ObjectColumn storageObjectColumn = inputObjectColumn;
             ObjectColumn expectedObjectColumn = storageObjectColumn.DeepClone();
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertObjectColumnAsync(inputObjectColumn))
                     .ReturnsAsync(storageObjectColumn);
@@ -33,13 +37,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             // then
             actualObjectColumn.Should().BeEquivalentTo(expectedObjectColumn);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertObjectColumnAsync(inputObjectColumn),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

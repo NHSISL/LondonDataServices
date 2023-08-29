@@ -84,7 +84,13 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                     firstDate: inputObjectColumn.CreatedDate,
                     secondDate: storageObjectColumn.CreatedDate,
                     secondDateName: nameof(ObjectColumn.CreatedDate)),
-                Parameter: nameof(ObjectColumn.CreatedDate)));
+                Parameter: nameof(ObjectColumn.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    first: inputObjectColumn.CreatedBy,
+                    second: storageObjectColumn.CreatedBy,
+                    secondName: nameof(ObjectColumn.CreatedBy)),
+                Parameter: nameof(ObjectColumn.CreatedBy)));
         }
 
         private static dynamic IsInvalid(Guid id) => new

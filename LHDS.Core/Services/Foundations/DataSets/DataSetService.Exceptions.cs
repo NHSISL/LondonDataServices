@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
     public partial class DataSetService
     {
         private delegate ValueTask<DataSet> ReturningDataSetFunction();
+        private delegate IQueryable<DataSet> ReturningDataSetsFunction();
 
         private async ValueTask<DataSet> TryCatch(ReturningDataSetFunction returningDataSetFunction)
         {
@@ -74,6 +76,23 @@ namespace LHDS.Core.Services.Foundations.DataSets
             }
         }
 
+        private IQueryable<DataSet> TryCatch(ReturningDataSetsFunction returningDataSetsFunction)
+        {
+            try
+            {
+                return returningDataSetsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedDataSetStorageException =
+                    new FailedDataSetStorageException(
+                        message: "Failed dataSet storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedDataSetStorageException);
+            }
+        }
+
         private DataSetValidationException CreateAndLogValidationException(Xeption exception)
         {
             var dataSetValidationException =
@@ -91,7 +110,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
             var dataSetDependencyException = 
                 new DataSetDependencyException(
                     message: "DataSet dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(dataSetDependencyException);
 
@@ -116,7 +135,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
             var dataSetDependencyException = 
                 new DataSetDependencyException(
                     message: "DataSet dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(dataSetDependencyException);
 

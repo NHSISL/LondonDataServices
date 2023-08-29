@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using Moq;
 using LHDS.Core.Models.Foundations.DataSetObjects;
 using LHDS.Core.Models.Foundations.DataSetObjects.Exceptions;
@@ -128,9 +129,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                 broker.UpdateDataSetObjectAsync(It.IsAny<DataSetObject>()),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -140,7 +141,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             DataSetObject randomDataSetObject = CreateRandomDataSetObject(randomDateTimeOffset);
             DataSetObject invalidDataSetObject = randomDataSetObject;
-
+            
             var invalidDataSetObjectException = 
                 new InvalidDataSetObjectException(
                     message: "Invalid dataSetObject. Please correct the errors and try again.");
@@ -183,9 +184,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                 broker.SelectDataSetObjectByIdAsync(invalidDataSetObject.Id),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -197,9 +198,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
             DataSetObject randomDataSetObject = CreateRandomDataSetObject(randomDateTimeOffset);
             randomDataSetObject.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var invalidDataSetObjectException = 
-                new InvalidDataSetObjectException(
-                    message: "Invalid dataSetObject. Please correct the errors and try again.");
+            var invalidDataSetObjectException =
+                new InvalidDataSetObjectException();
 
             invalidDataSetObjectException.AddData(
                 key: nameof(DataSetObject.UpdatedDate),
@@ -293,6 +293,70 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedDataSetObjectValidationException))),
                         Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfStorageCreatedDateNotSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNegativeNumber();
+            int randomMinutes = randomNumber;
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DataSetObject randomDataSetObject = CreateRandomModifyDataSetObject(randomDateTimeOffset);
+            DataSetObject invalidDataSetObject = randomDataSetObject.DeepClone();
+            DataSetObject storageDataSetObject = invalidDataSetObject.DeepClone();
+            storageDataSetObject.CreatedDate = storageDataSetObject.CreatedDate.AddMinutes(randomMinutes);
+            storageDataSetObject.UpdatedDate = storageDataSetObject.UpdatedDate.AddMinutes(randomMinutes);
+            
+            var invalidDataSetObjectException = 
+                new InvalidDataSetObjectException(
+                    message: "Invalid dataSetObject. Please correct the errors and try again.");
+
+            invalidDataSetObjectException.AddData(
+                key: nameof(DataSetObject.CreatedDate),
+                values: $"Date is not the same as {nameof(DataSetObject.CreatedDate)}");
+
+            var expectedDataSetObjectValidationException =
+                new DataSetObjectValidationException(
+                    message: "DataSetObject validation errors occurred, please try again.",
+                    innerException: invalidDataSetObjectException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectDataSetObjectByIdAsync(invalidDataSetObject.Id))
+                .ReturnsAsync(storageDataSetObject);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<DataSetObject> modifyDataSetObjectTask =
+                this.dataSetObjectService.ModifyDataSetObjectAsync(invalidDataSetObject);
+
+            DataSetObjectValidationException actualDataSetObjectValidationException =
+                await Assert.ThrowsAsync<DataSetObjectValidationException>(
+                    modifyDataSetObjectTask.AsTask);
+
+            // then
+            actualDataSetObjectValidationException.Should()
+                .BeEquivalentTo(expectedDataSetObjectValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataSetObjectByIdAsync(invalidDataSetObject.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedDataSetObjectValidationException))),
+                       Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

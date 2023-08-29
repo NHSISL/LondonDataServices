@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
@@ -33,6 +34,15 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
 
                 throw CreateAndLogCriticalDependencyException(failedDataSetSpecificationStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsDataSetSpecificationException =
+                    new AlreadyExistsDataSetSpecificationException(
+                        message: "DataSetSpecification with the same Id already exists.",
+                        innerException: duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsDataSetSpecificationException);
+            }
         }
 
         private DataSetSpecificationValidationException CreateAndLogValidationException(Xeption exception)
@@ -57,6 +67,18 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             this.loggingBroker.LogCritical(dataSetSpecificationDependencyException);
 
             return dataSetSpecificationDependencyException;
+        }
+
+        private DataSetSpecificationDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var dataSetSpecificationDependencyValidationException =
+                new DataSetSpecificationDependencyValidationException(
+                    message: "DataSetSpecification dependency validation occurred, please try again.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(dataSetSpecificationDependencyValidationException);
+
+            return dataSetSpecificationDependencyValidationException;
         }
     }
 }

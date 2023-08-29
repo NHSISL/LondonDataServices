@@ -38,6 +38,16 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         private void ValidateObjectColumnOnModify(ObjectColumn objectColumn)
         {
             ValidateObjectColumnIsNotNull(objectColumn);
+
+            Validate(
+                (Rule: IsInvalid(objectColumn.Id), Parameter: nameof(ObjectColumn.Id)),
+
+                // TODO: Add any other required validation rules
+
+                (Rule: IsInvalid(objectColumn.CreatedDate), Parameter: nameof(ObjectColumn.CreatedDate)),
+                (Rule: IsInvalid(objectColumn.CreatedBy), Parameter: nameof(ObjectColumn.CreatedBy)),
+                (Rule: IsInvalid(objectColumn.UpdatedDate), Parameter: nameof(ObjectColumn.UpdatedDate)),
+                (Rule: IsInvalid(objectColumn.UpdatedBy), Parameter: nameof(ObjectColumn.UpdatedBy)));
         }
 
         public void ValidateObjectColumnId(Guid objectColumnId) =>
@@ -94,7 +104,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
-        
+
         private static dynamic IsNotSame(
            string first,
            string second,

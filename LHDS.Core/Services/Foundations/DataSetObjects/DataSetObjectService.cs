@@ -1,62 +1,65 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
-using FluentAssertions;
-using Force.DeepCloner;
-using Moq;
+using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.DataSetObjects;
-using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
+namespace LHDS.Core.Services.Foundations.DataSetObjects
 {
-    public partial class DataSetObjectServiceTests
+    public partial class DataSetObjectService : IDataSetObjectService
     {
-        [Fact]
-        public async Task ShouldModifyDataSetObjectAsync()
+        private readonly IStorageBroker storageBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ILoggingBroker loggingBroker;
+
+        public DataSetObjectService(
+            IStorageBroker storageBroker,
+            IDateTimeBroker dateTimeBroker,
+            ILoggingBroker loggingBroker)
         {
-            // given
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            DataSetObject randomDataSetObject = CreateRandomModifyDataSetObject(randomDateTimeOffset);
-            DataSetObject inputDataSetObject = randomDataSetObject;
-            DataSetObject storageDataSetObject = inputDataSetObject.DeepClone();
-            storageDataSetObject.UpdatedDate = randomDataSetObject.CreatedDate;
-            DataSetObject updatedDataSetObject = inputDataSetObject;
-            DataSetObject expectedDataSetObject = updatedDataSetObject.DeepClone();
-            Guid dataSetObjectId = inputDataSetObject.Id;
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
-
-            this.storageBrokerMock.Setup(broker =>
-                broker.SelectDataSetObjectByIdAsync(dataSetObjectId))
-                    .ReturnsAsync(storageDataSetObject);
-
-            this.storageBrokerMock.Setup(broker =>
-                broker.UpdateDataSetObjectAsync(inputDataSetObject))
-                    .ReturnsAsync(updatedDataSetObject);
-
-            // when
-            DataSetObject actualDataSetObject =
-                await this.dataSetObjectService.ModifyDataSetObjectAsync(inputDataSetObject);
-
-            // then
-            actualDataSetObject.Should().BeEquivalentTo(expectedDataSetObject);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectDataSetObjectByIdAsync(inputDataSetObject.Id),
-                    Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.UpdateDataSetObjectAsync(inputDataSetObject),
-                    Times.Once);
-
-            this.storageBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBroker = storageBroker;
+            this.dateTimeBroker = dateTimeBroker;
+            this.loggingBroker = loggingBroker;
         }
+
+        public ValueTask<DataSetObject> AddDataSetObjectAsync(DataSetObject dataSetObject) =>
+            TryCatch(async () =>
+            {
+                ValidateDataSetObjectOnAdd(dataSetObject);
+
+                return await this.storageBroker.InsertDataSetObjectAsync(dataSetObject);
+            });
+
+        public IQueryable<DataSetObject> RetrieveAllDataSetObjects() =>
+            TryCatch(() => this.storageBroker.SelectAllDataSetObjects());
+
+        public ValueTask<DataSetObject> RetrieveDataSetObjectByIdAsync(Guid dataSetObjectId) =>
+            TryCatch(async () =>
+            {
+                ValidateDataSetObjectId(dataSetObjectId);
+
+                DataSetObject maybeDataSetObject = await this.storageBroker
+                    .SelectDataSetObjectByIdAsync(dataSetObjectId);
+
+                ValidateStorageDataSetObject(maybeDataSetObject, dataSetObjectId);
+
+                return maybeDataSetObject;
+            });
+
+        public ValueTask<DataSetObject> ModifyDataSetObjectAsync(DataSetObject dataSetObject) =>
+            TryCatch(async () =>
+            {
+                ValidateDataSetObjectOnModify(dataSetObject);
+
+                DataSetObject maybeDataSetObject =
+                    await this.storageBroker.SelectDataSetObjectByIdAsync(dataSetObject.Id);
+
+                ValidateStorageDataSetObject(maybeDataSetObject, dataSetObject.Id);
+                ValidateAgainstStorageDataSetObjectOnModify(inputDataSetObject: dataSetObject, storageDataSetObject: maybeDataSetObject);
+
+                return await this.storageBroker.UpdateDataSetObjectAsync(dataSetObject);
+            });
     }
 }

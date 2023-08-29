@@ -91,6 +91,15 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
 
                 throw CreateAndLogCriticalDependencyException(failedDataSetObjectStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedDataSetObjectServiceException =
+                    new FailedDataSetObjectServiceException(
+                        message: "Failed dataSetObject service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedDataSetObjectServiceException);
+            }
         }
 
         private DataSetObjectValidationException CreateAndLogValidationException(Xeption exception)

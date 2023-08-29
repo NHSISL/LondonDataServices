@@ -60,6 +60,15 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
 
                 throw CreateAndLogDependencyValidationException(invalidDataSetSpecificationReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedDataSetSpecificationException = 
+                    new LockedDataSetSpecificationException(
+                        message: "Locked dataSetSpecification record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedDataSetSpecificationException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedDataSetSpecificationStorageException =
@@ -123,7 +132,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             var dataSetSpecificationDependencyException = 
                 new DataSetSpecificationDependencyException(
                     message: "DataSetSpecification dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(dataSetSpecificationDependencyException);
 
@@ -148,7 +157,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             var dataSetSpecificationDependencyException = 
                 new DataSetSpecificationDependencyException(
                     message: "DataSetSpecification dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(dataSetSpecificationDependencyException);
 

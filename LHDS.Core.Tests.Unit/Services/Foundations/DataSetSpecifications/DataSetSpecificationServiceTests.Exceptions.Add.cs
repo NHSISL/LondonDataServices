@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -25,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             var expectedDataSetSpecificationDependencyException =
                 new DataSetSpecificationDependencyException(
                     message: "DataSetSpecification dependency error occurred, contact support.",
-                    innerException: failedDataSetSpecificationStorageException);
+                    innerException: failedDataSetSpecificationStorageException);             
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -54,6 +55,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
                     expectedDataSetSpecificationDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfDataSetSpecificationAlreadyExsitsAndLogItAsync()
+        {
+            // given
+            DataSetSpecification randomDataSetSpecification = CreateRandomDataSetSpecification();
+            DataSetSpecification alreadyExistsDataSetSpecification = randomDataSetSpecification;
+            string randomMessage = GetRandomString();
+
+            var duplicateKeyException =
+                new DuplicateKeyException(randomMessage);
+
+            var alreadyExistsDataSetSpecificationException =
+                new AlreadyExistsDataSetSpecificationException(
+                    message: "DataSetSpecification with the same Id already exists.",
+                    innerException: duplicateKeyException);
+
+            var expectedDataSetSpecificationDependencyValidationException =
+                new DataSetSpecificationDependencyValidationException(
+                    message: "DataSetSpecification dependency validation occurred, please try again.",
+                    innerException: alreadyExistsDataSetSpecificationException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(duplicateKeyException);
+
+            // when
+            ValueTask<DataSetSpecification> addDataSetSpecificationTask =
+                this.dataSetSpecificationService.AddDataSetSpecificationAsync(alreadyExistsDataSetSpecification);
+
+            // then
+            DataSetSpecificationDependencyValidationException actualDataSetSpecificationDependencyValidationException =
+                await Assert.ThrowsAsync<DataSetSpecificationDependencyValidationException>(
+                    addDataSetSpecificationTask.AsTask);
+
+            actualDataSetSpecificationDependencyValidationException.Should()
+                .BeEquivalentTo(expectedDataSetSpecificationDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetSpecificationDependencyValidationException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

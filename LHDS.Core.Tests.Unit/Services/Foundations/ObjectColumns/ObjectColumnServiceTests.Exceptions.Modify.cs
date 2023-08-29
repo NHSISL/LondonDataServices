@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -58,6 +59,64 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateObjectColumnAsync(randomObjectColumn),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            ObjectColumn someObjectColumn = CreateRandomObjectColumn();
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidObjectColumnReferenceException =
+                new InvalidObjectColumnReferenceException(
+                    message: "Invalid objectColumn reference error occurred.", 
+                    innerException: foreignKeyConstraintConflictException);
+
+            ObjectColumnDependencyValidationException expectedObjectColumnDependencyValidationException =
+                new ObjectColumnDependencyValidationException(
+                    message: "ObjectColumn dependency validation occurred, please try again.",
+                    innerException: invalidObjectColumnReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<ObjectColumn> modifyObjectColumnTask =
+                this.objectColumnService.ModifyObjectColumnAsync(someObjectColumn);
+
+            ObjectColumnDependencyValidationException actualObjectColumnDependencyValidationException =
+                await Assert.ThrowsAsync<ObjectColumnDependencyValidationException>(
+                    modifyObjectColumnTask.AsTask);
+
+            // then
+            actualObjectColumnDependencyValidationException.Should()
+                .BeEquivalentTo(expectedObjectColumnDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectObjectColumnByIdAsync(someObjectColumn.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(expectedObjectColumnDependencyValidationException))),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateObjectColumnAsync(someObjectColumn),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

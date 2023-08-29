@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -33,5 +34,8 @@ namespace LHDS.Core.Services.Foundations.DataSets
 
         public IQueryable<DataSet> RetrieveAllDataSets() =>
             TryCatch(() => this.storageBroker.SelectAllDataSets());
+
+        public ValueTask<DataSet> RetrieveDataSetByIdAsync(Guid dataSetId) =>
+            throw new NotImplementedException();
     }
 }

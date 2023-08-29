@@ -1,0 +1,58 @@
+using System;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Moq;
+using LHDS.Core.Models.Foundations.ObjectColumns;
+using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
+{
+    public partial class ObjectColumnServiceTests
+    {
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnRetrieveByIdIfIdIsInvalidAndLogItAsync()
+        {
+            // given
+            var invalidObjectColumnId = Guid.Empty;
+
+            var invalidObjectColumnException = 
+                new InvalidObjectColumnException(
+                    message: "Invalid objectColumn. Please correct the errors and try again.");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.Id),
+                values: "Id is required");
+
+            var expectedObjectColumnValidationException =
+                new ObjectColumnValidationException(
+                    message: "ObjectColumn validation errors occurred, please try again.",
+                    innerException: invalidObjectColumnException);
+
+            // when
+            ValueTask<ObjectColumn> retrieveObjectColumnByIdTask =
+                this.objectColumnService.RetrieveObjectColumnByIdAsync(invalidObjectColumnId);
+
+            ObjectColumnValidationException actualObjectColumnValidationException =
+                await Assert.ThrowsAsync<ObjectColumnValidationException>(
+                    retrieveObjectColumnByIdTask.AsTask);
+
+            // then
+            actualObjectColumnValidationException.Should()
+                .BeEquivalentTo(expectedObjectColumnValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedObjectColumnValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectObjectColumnByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

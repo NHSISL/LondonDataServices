@@ -1,0 +1,52 @@
+using System;
+using Moq;
+using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Foundations.DataSets;
+using LHDS.Core.Services.Foundations.DataSets;
+using Tynamix.ObjectFiller;
+
+namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
+{
+    public partial class DataSetServiceTests
+    {
+        private readonly Mock<IStorageBroker> storageBrokerMock;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly IDataSetService dataSetService;
+
+        public DataSetServiceTests()
+        {
+            this.storageBrokerMock = new Mock<IStorageBroker>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.loggingBrokerMock = new Mock<ILoggingBroker>();
+
+            this.dataSetService = new DataSetService(
+                storageBroker: this.storageBrokerMock.Object,
+                dateTimeBroker: this.dateTimeBrokerMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object);
+        }
+
+        private static DateTimeOffset GetRandomDateTimeOffset() =>
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static DataSet CreateRandomDataSet(DateTimeOffset dateTimeOffset) =>
+            CreateDataSetFiller(dateTimeOffset).Create();
+
+        private static Filler<DataSet> CreateDataSetFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<DataSet>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.UpdatedBy).Use(user);
+
+            // TODO: Complete the filler setup e.g. ignore related properties etc...
+
+            return filler;
+        }
+    }
+}

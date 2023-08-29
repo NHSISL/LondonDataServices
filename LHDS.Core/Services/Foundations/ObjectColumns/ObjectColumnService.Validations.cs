@@ -59,6 +59,17 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 (Rule: IsNotRecent(objectColumn.CreatedDate), Parameter: nameof(ObjectColumn.CreatedDate)));
         }
 
+        public void ValidateObjectColumnId(Guid objectColumnId) =>
+            Validate((Rule: IsInvalid(objectColumnId), Parameter: nameof(ObjectColumn.Id)));
+
+        private static void ValidateStorageObjectColumn(ObjectColumn maybeObjectColumn, Guid objectColumnId)
+        {
+            if (maybeObjectColumn is null)
+            {
+                throw new NotFoundObjectColumnException(objectColumnId);
+            }
+        }
+
         private static void ValidateObjectColumnIsNotNull(ObjectColumn objectColumn)
         {
             if (objectColumn is null)

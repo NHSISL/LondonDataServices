@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -33,5 +34,18 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
         public IQueryable<ObjectColumn> RetrieveAllObjectColumns() =>
             TryCatch(() => this.storageBroker.SelectAllObjectColumns());
+
+        public ValueTask<ObjectColumn> RetrieveObjectColumnByIdAsync(Guid objectColumnId) =>
+            TryCatch(async () =>
+            {
+                ValidateObjectColumnId(objectColumnId);
+
+                ObjectColumn maybeObjectColumn = await this.storageBroker
+                    .SelectObjectColumnByIdAsync(objectColumnId);
+
+                ValidateStorageObjectColumn(maybeObjectColumn, objectColumnId);
+
+                return maybeObjectColumn;
+            });
     }
 }

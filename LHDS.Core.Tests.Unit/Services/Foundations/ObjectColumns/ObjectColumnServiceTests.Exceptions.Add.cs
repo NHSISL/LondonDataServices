@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -219,6 +220,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedObjectColumnDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            ObjectColumn someObjectColumn = CreateRandomObjectColumn();
+            var serviceException = new Exception();
+
+            var failedObjectColumnServiceException =
+                new FailedObjectColumnServiceException(
+                    message: "Failed objectColumn service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedObjectColumnServiceException =
+                new ObjectColumnServiceException(
+                    message: "ObjectColumn service error occurred, contact support.",
+                    innerException: failedObjectColumnServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<ObjectColumn> addObjectColumnTask =
+                this.objectColumnService.AddObjectColumnAsync(someObjectColumn);
+
+            ObjectColumnServiceException actualObjectColumnServiceException =
+                await Assert.ThrowsAsync<ObjectColumnServiceException>(
+                    addObjectColumnTask.AsTask);
+
+            // then
+            actualObjectColumnServiceException.Should()
+                .BeEquivalentTo(expectedObjectColumnServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertObjectColumnAsync(It.IsAny<ObjectColumn>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedObjectColumnServiceException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

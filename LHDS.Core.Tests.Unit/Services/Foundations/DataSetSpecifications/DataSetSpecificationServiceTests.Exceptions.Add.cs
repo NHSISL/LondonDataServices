@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             var expectedDataSetSpecificationDependencyException =
                 new DataSetSpecificationDependencyException(
                     message: "DataSetSpecification dependency error occurred, contact support.",
-                    innerException: failedDataSetSpecificationStorageException);             
+                    innerException: failedDataSetSpecificationStorageException); 
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -115,6 +115,60 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            DataSetSpecification someDataSetSpecification = CreateRandomDataSetSpecification();
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidDataSetSpecificationReferenceException =
+                new InvalidDataSetSpecificationReferenceException(
+                    message: "Invalid dataSetSpecification reference error occurred.", 
+                    innerException: foreignKeyConstraintConflictException);
+
+            var expectedDataSetSpecificationValidationException =
+                new DataSetSpecificationDependencyValidationException(
+                    message: "DataSetSpecification dependency validation occurred, please try again.",
+                    innerException: invalidDataSetSpecificationReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<DataSetSpecification> addDataSetSpecificationTask =
+                this.dataSetSpecificationService.AddDataSetSpecificationAsync(someDataSetSpecification);
+
+            // then
+            DataSetSpecificationDependencyValidationException actualDataSetSpecificationDependencyValidationException =
+                await Assert.ThrowsAsync<DataSetSpecificationDependencyValidationException>(
+                    addDataSetSpecificationTask.AsTask);
+
+            actualDataSetSpecificationDependencyValidationException.Should().BeEquivalentTo(expectedDataSetSpecificationValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetSpecificationValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDataSetSpecificationAsync(someDataSetSpecification),
+                    Times.Never());
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

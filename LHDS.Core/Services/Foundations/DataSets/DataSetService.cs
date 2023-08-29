@@ -22,7 +22,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<DataSet> AddDataSetAsync(DataSet dataSet) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<DataSet> AddDataSetAsync(DataSet dataSet) =>
+            await this.storageBroker.InsertDataSetAsync(dataSet);
     }
 }

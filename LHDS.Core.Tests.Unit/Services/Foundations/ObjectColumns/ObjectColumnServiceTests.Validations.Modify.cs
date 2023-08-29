@@ -196,14 +196,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 key: nameof(ObjectColumn.UpdatedBy),
                 values: "Text is exceeding max length");
 
-            invalidObjectColumnException.AddData(
-                key: nameof(ObjectColumn.UpdatedBy),
-                values: "Text is required");
-
             var expectedObjectColumnValidationException =
                 new ObjectColumnValidationException(
                     message: "ObjectColumn validation errors occurred, please try again.",
                     innerException: invalidObjectColumnException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
 
             // when
             ValueTask<ObjectColumn> modifyObjectColumnTask =

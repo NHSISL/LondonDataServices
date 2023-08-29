@@ -54,5 +54,49 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfDataSetSpecificationIsNotFoundAndLogItAsync()
+        {
+            //given
+            Guid someDataSetSpecificationId = Guid.NewGuid();
+            DataSetSpecification noDataSetSpecification = null;
+
+            var notFoundDataSetSpecificationException =
+                new NotFoundDataSetSpecificationException(someDataSetSpecificationId);
+
+            var expectedDataSetSpecificationValidationException =
+                new DataSetSpecificationValidationException(
+                    message: "DataSetSpecification validation errors occurred, please try again.",
+                    innerException: notFoundDataSetSpecificationException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectDataSetSpecificationByIdAsync(It.IsAny<Guid>()))
+                    .ReturnsAsync(noDataSetSpecification);
+
+            //when
+            ValueTask<DataSetSpecification> retrieveDataSetSpecificationByIdTask =
+                this.dataSetSpecificationService.RetrieveDataSetSpecificationByIdAsync(someDataSetSpecificationId);
+
+            DataSetSpecificationValidationException actualDataSetSpecificationValidationException =
+                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(
+                    retrieveDataSetSpecificationByIdTask.AsTask);
+
+            //then
+            actualDataSetSpecificationValidationException.Should().BeEquivalentTo(expectedDataSetSpecificationValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataSetSpecificationByIdAsync(It.IsAny<Guid>()),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetSpecificationValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

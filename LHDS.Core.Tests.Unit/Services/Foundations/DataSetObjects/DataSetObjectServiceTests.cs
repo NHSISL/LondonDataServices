@@ -1,0 +1,52 @@
+using System;
+using Moq;
+using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Foundations.DataSetObjects;
+using LHDS.Core.Services.Foundations.DataSetObjects;
+using Tynamix.ObjectFiller;
+
+namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
+{
+    public partial class DataSetObjectServiceTests
+    {
+        private readonly Mock<IStorageBroker> storageBrokerMock;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly IDataSetObjectService dataSetObjectService;
+
+        public DataSetObjectServiceTests()
+        {
+            this.storageBrokerMock = new Mock<IStorageBroker>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.loggingBrokerMock = new Mock<ILoggingBroker>();
+
+            this.dataSetObjectService = new DataSetObjectService(
+                storageBroker: this.storageBrokerMock.Object,
+                dateTimeBroker: this.dateTimeBrokerMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object);
+        }
+
+        private static DateTimeOffset GetRandomDateTimeOffset() =>
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static DataSetObject CreateRandomDataSetObject(DateTimeOffset dateTimeOffset) =>
+            CreateDataSetObjectFiller(dateTimeOffset).Create();
+
+        private static Filler<DataSetObject> CreateDataSetObjectFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<DataSetObject>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(dataSetObject => dataSetObject.CreatedBy).Use(user)
+                .OnProperty(dataSetObject => dataSetObject.UpdatedBy).Use(user);
+
+            // TODO: Complete the filler setup e.g. ignore related properties etc...
+
+            return filler;
+        }
+    }
+}

@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             });
 
         public IQueryable<ObjectColumn> RetrieveAllObjectColumns() =>
-            throw new System.NotImplementedException();
+            this.storageBroker.SelectAllObjectColumns();
     }
 }

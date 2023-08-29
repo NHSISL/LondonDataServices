@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -219,6 +220,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedDataSetDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            DataSet someDataSet = CreateRandomDataSet();
+            var serviceException = new Exception();
+
+            var failedDataSetServiceException =
+                new FailedDataSetServiceException(
+                    message: "Failed dataSet service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedDataSetServiceException =
+                new DataSetServiceException(
+                    message: "DataSet service error occurred, contact support.",
+                    innerException: failedDataSetServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<DataSet> addDataSetTask =
+                this.dataSetService.AddDataSetAsync(someDataSet);
+
+            DataSetServiceException actualDataSetServiceException =
+                await Assert.ThrowsAsync<DataSetServiceException>(
+                    addDataSetTask.AsTask);
+
+            // then
+            actualDataSetServiceException.Should()
+                .BeEquivalentTo(expectedDataSetServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDataSetAsync(It.IsAny<DataSet>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetServiceException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

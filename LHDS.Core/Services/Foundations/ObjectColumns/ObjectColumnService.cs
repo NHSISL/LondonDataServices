@@ -62,12 +62,15 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 return await this.storageBroker.UpdateObjectColumnAsync(objectColumn);
             });
 
-        public async ValueTask<ObjectColumn> RemoveObjectColumnByIdAsync(Guid objectColumnId)
-        {
-            ObjectColumn maybeObjectColumn = await this.storageBroker
+        public ValueTask<ObjectColumn> RemoveObjectColumnByIdAsync(Guid objectColumnId) =>
+            TryCatch(async () =>
+            {
+                ValidateObjectColumnId(objectColumnId);
+
+                ObjectColumn maybeObjectColumn = await this.storageBroker
                     .SelectObjectColumnByIdAsync(objectColumnId);
 
-            return await this.storageBroker.DeleteObjectColumnAsync(maybeObjectColumn);
-        }
+                return await this.storageBroker.DeleteObjectColumnAsync(maybeObjectColumn);
+            });
     }
 }

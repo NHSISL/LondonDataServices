@@ -1,9 +1,13 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
@@ -55,7 +59,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             // given
             var invalidObjectColumn = new ObjectColumn
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                OurColumnName = invalidText,
+                SqlDataType = invalidText,
             };
 
             var invalidObjectColumnException =
@@ -66,11 +71,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 key: nameof(ObjectColumn.Id),
                 values: "Id is required");
 
-            //invalidObjectColumnException.AddData(
-            //    key: nameof(ObjectColumn.Name),
-            //    values: "Text is required");
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.DataSetObjectId),
+                values: "Id is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the ObjectColumn model
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.OurColumnName),
+                values: "Text is required");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.SqlDataType),
+                values: "Text is required");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.CodeSystem),
+                values: "Text is required");
 
             invalidObjectColumnException.AddData(
                 key: nameof(ObjectColumn.CreatedDate),
@@ -135,7 +150,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             invalidObjectColumn.UpdatedDate =
                 invalidObjectColumn.CreatedDate.AddDays(randomNumber);
 
-            var invalidObjectColumnException = 
+            var invalidObjectColumnException =
                 new InvalidObjectColumnException(
                     message: "Invalid objectColumn. Please correct the errors and try again.");
 

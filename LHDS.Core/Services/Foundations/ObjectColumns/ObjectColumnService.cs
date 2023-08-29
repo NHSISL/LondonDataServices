@@ -48,7 +48,12 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 return maybeObjectColumn;
             });
 
-        public async ValueTask<ObjectColumn> ModifyObjectColumnAsync(ObjectColumn objectColumn) =>
-            await this.storageBroker.UpdateObjectColumnAsync(objectColumn);
+        public ValueTask<ObjectColumn> ModifyObjectColumnAsync(ObjectColumn objectColumn) =>
+            TryCatch(async () =>
+            {
+                ValidateObjectColumnOnModify(objectColumn);
+
+                return await this.storageBroker.UpdateObjectColumnAsync(objectColumn);
+            });
     }
 }

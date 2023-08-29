@@ -179,5 +179,60 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyErrorOccursAndLogAsync()
+        {
+            // given
+            DataSetObject randomDataSetObject = CreateRandomDataSetObject();
+            var databaseUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedDataSetObjectException =
+                new LockedDataSetObjectException(
+                    message: "Locked dataSetObject record exception, please try again later",
+                    innerException: databaseUpdateConcurrencyException);
+
+            var expectedDataSetObjectDependencyValidationException =
+                new DataSetObjectDependencyValidationException(
+                    message: "DataSetObject dependency validation occurred, please try again.",
+                    innerException: lockedDataSetObjectException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<DataSetObject> modifyDataSetObjectTask =
+                this.dataSetObjectService.ModifyDataSetObjectAsync(randomDataSetObject);
+
+            DataSetObjectDependencyValidationException actualDataSetObjectDependencyValidationException =
+                await Assert.ThrowsAsync<DataSetObjectDependencyValidationException>(
+                    modifyDataSetObjectTask.AsTask);
+
+            // then
+            actualDataSetObjectDependencyValidationException.Should()
+                .BeEquivalentTo(expectedDataSetObjectDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataSetObjectByIdAsync(randomDataSetObject.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetObjectDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateDataSetObjectAsync(randomDataSetObject),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

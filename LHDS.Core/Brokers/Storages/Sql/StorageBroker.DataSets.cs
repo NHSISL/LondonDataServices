@@ -12,7 +12,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
 {
     public partial class StorageBroker
     {
-        public DbSet<DataSet> Datasets { get; set; }
+        public DbSet<DataSet> DataSets { get; set; }
 
         public async ValueTask<DataSet> InsertDataSetAsync(DataSet dataSet) =>
             await InsertAsync(dataSet);

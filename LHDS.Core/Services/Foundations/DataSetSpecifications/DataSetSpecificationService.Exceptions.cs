@@ -19,6 +19,10 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             {
                 throw CreateAndLogValidationException(nullDataSetSpecificationException);
             }
+            catch (InvalidDataSetSpecificationException invalidDataSetSpecificationException)
+            {
+                throw CreateAndLogValidationException(invalidDataSetSpecificationException);
+            }
         }
 
         private DataSetSpecificationValidationException CreateAndLogValidationException(Xeption exception)

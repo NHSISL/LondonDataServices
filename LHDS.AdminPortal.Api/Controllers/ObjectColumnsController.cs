@@ -99,5 +99,44 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(objectColumnServiceException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<ObjectColumn>> PutObjectColumnAsync(ObjectColumn objectColumn)
+        {
+            try
+            {
+                ObjectColumn modifiedObjectColumn =
+                    await this.objectColumnService.ModifyObjectColumnAsync(objectColumn);
+
+                return Ok(modifiedObjectColumn);
+            }
+            catch (ObjectColumnValidationException objectColumnValidationException)
+                when (objectColumnValidationException.InnerException is NotFoundObjectColumnException)
+            {
+                return NotFound(objectColumnValidationException.InnerException);
+            }
+            catch (ObjectColumnValidationException objectColumnValidationException)
+            {
+                return BadRequest(objectColumnValidationException.InnerException);
+            }
+            catch (ObjectColumnDependencyValidationException objectColumnValidationException)
+                when (objectColumnValidationException.InnerException is InvalidObjectColumnReferenceException)
+            {
+                return FailedDependency(objectColumnValidationException.InnerException);
+            }
+            catch (ObjectColumnDependencyValidationException objectColumnDependencyValidationException)
+               when (objectColumnDependencyValidationException.InnerException is AlreadyExistsObjectColumnException)
+            {
+                return Conflict(objectColumnDependencyValidationException.InnerException);
+            }
+            catch (ObjectColumnDependencyException objectColumnDependencyException)
+            {
+                return InternalServerError(objectColumnDependencyException);
+            }
+            catch (ObjectColumnServiceException objectColumnServiceException)
+            {
+                return InternalServerError(objectColumnServiceException);
+            }
+        }
     }
 }

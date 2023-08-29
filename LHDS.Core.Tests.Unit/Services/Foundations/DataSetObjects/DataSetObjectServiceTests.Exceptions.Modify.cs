@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -58,6 +59,64 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateDataSetObjectAsync(randomDataSetObject),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            DataSetObject someDataSetObject = CreateRandomDataSetObject();
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidDataSetObjectReferenceException =
+                new InvalidDataSetObjectReferenceException(
+                    message: "Invalid dataSetObject reference error occurred.", 
+                    innerException: foreignKeyConstraintConflictException);
+
+            DataSetObjectDependencyValidationException expectedDataSetObjectDependencyValidationException =
+                new DataSetObjectDependencyValidationException(
+                    message: "DataSetObject dependency validation occurred, please try again.",
+                    innerException: invalidDataSetObjectReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<DataSetObject> modifyDataSetObjectTask =
+                this.dataSetObjectService.ModifyDataSetObjectAsync(someDataSetObject);
+
+            DataSetObjectDependencyValidationException actualDataSetObjectDependencyValidationException =
+                await Assert.ThrowsAsync<DataSetObjectDependencyValidationException>(
+                    modifyDataSetObjectTask.AsTask);
+
+            // then
+            actualDataSetObjectDependencyValidationException.Should()
+                .BeEquivalentTo(expectedDataSetObjectDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataSetObjectByIdAsync(someDataSetObject.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(expectedDataSetObjectDependencyValidationException))),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateDataSetObjectAsync(someDataSetObject),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

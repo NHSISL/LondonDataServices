@@ -48,7 +48,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 return maybeObjectColumn;
             });
 
-        public ValueTask<ObjectColumn> ModifyObjectColumnAsync(ObjectColumn objectColumn) =>
-            throw new NotImplementedException();
+        public async ValueTask<ObjectColumn> ModifyObjectColumnAsync(ObjectColumn objectColumn) =>
+            await this.storageBroker.UpdateObjectColumnAsync(objectColumn);
     }
 }

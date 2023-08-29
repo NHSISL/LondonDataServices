@@ -1,0 +1,61 @@
+using System;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Microsoft.Data.SqlClient;
+using Moq;
+using LHDS.Core.Models.Foundations.DataSets;
+using LHDS.Core.Models.Foundations.DataSets.Exceptions;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
+{
+    public partial class DataSetServiceTests
+    {
+        [Fact]
+        public async Task ShouldThrowCriticalDependencyExceptionOnRetrieveByIdIfSqlErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            SqlException sqlException = GetSqlException();
+
+            var failedDataSetStorageException =
+                new FailedDataSetStorageException(
+                    message: "Failed dataSet storage error occurred, contact support.",
+                    innerException: sqlException);
+
+            var expectedDataSetDependencyException =
+                new DataSetDependencyException(
+                    message: "DataSet dependency error occurred, contact support.",
+                    innerException: failedDataSetStorageException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectDataSetByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(sqlException);
+
+            // when
+            ValueTask<DataSet> retrieveDataSetByIdTask =
+                this.dataSetService.RetrieveDataSetByIdAsync(someId);
+
+            DataSetDependencyException actualDataSetDependencyException =
+                await Assert.ThrowsAsync<DataSetDependencyException>(
+                    retrieveDataSetByIdTask.AsTask);
+
+            // then
+            actualDataSetDependencyException.Should()
+                .BeEquivalentTo(expectedDataSetDependencyException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataSetByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedDataSetDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

@@ -53,7 +53,9 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                     firstDate: dataSetSpecification.UpdatedDate,
                     secondDate: dataSetSpecification.CreatedDate,
                     secondDateName: nameof(DataSetSpecification.CreatedDate)),
-                Parameter: nameof(DataSetSpecification.UpdatedDate)));
+                Parameter: nameof(DataSetSpecification.UpdatedDate)),
+
+                (Rule: IsNotRecent(dataSetSpecification.UpdatedDate), Parameter: nameof(dataSetSpecification.UpdatedDate)));
         }
 
         public void ValidateDataSetSpecificationId(Guid dataSetSpecificationId) =>

@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.DataSets
             });
 
         public IQueryable<DataSet> RetrieveAllDataSets() =>
-            throw new System.NotImplementedException();
+            this.storageBroker.SelectAllDataSets();
     }
 }

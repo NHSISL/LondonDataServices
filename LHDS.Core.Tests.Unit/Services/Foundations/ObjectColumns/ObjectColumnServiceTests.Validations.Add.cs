@@ -59,8 +59,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             // given
             var invalidObjectColumn = new ObjectColumn
             {
+                SupplierColumnName = invalidText,
                 OurColumnName = invalidText,
                 SqlDataType = invalidText,
+                CodeSystem = invalidText,
             };
 
             var invalidObjectColumnException =

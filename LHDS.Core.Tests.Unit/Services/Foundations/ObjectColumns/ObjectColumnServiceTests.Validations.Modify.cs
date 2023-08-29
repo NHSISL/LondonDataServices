@@ -1,10 +1,14 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using Moq;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
@@ -62,10 +66,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             // given 
             var invalidObjectColumn = new ObjectColumn
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                SupplierColumnName = invalidText,
+                OurColumnName = invalidText,
+                SqlDataType = invalidText,
+                CodeSystem = invalidText,
             };
 
-            var invalidObjectColumnException = 
+            var invalidObjectColumnException =
                 new InvalidObjectColumnException(
                     message: "Invalid objectColumn. Please correct the errors and try again.");
 
@@ -73,11 +80,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 key: nameof(ObjectColumn.Id),
                 values: "Id is required");
 
-            //invalidObjectColumnException.AddData(
-            //    key: nameof(ObjectColumn.Name),
-            //    values: "Text is required");
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.DataSetObjectId),
+                values: "Id is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the ObjectColumn model
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.SupplierColumnName),
+                values: "Text is required");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.OurColumnName),
+                values: "Text is required");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.SqlDataType),
+                values: "Text is required");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.CodeSystem),
+                values: "Text is required");
 
             invalidObjectColumnException.AddData(
                 key: nameof(ObjectColumn.CreatedDate),
@@ -141,8 +162,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             ObjectColumn randomObjectColumn = CreateRandomObjectColumn(randomDateTimeOffset);
             ObjectColumn invalidObjectColumn = randomObjectColumn;
-            
-            var invalidObjectColumnException = 
+
+            var invalidObjectColumnException =
                 new InvalidObjectColumnException(
                     message: "Invalid objectColumn. Please correct the errors and try again.");
 
@@ -198,7 +219,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             ObjectColumn randomObjectColumn = CreateRandomObjectColumn(randomDateTimeOffset);
             randomObjectColumn.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var invalidObjectColumnException = 
+            var invalidObjectColumnException =
                 new InvalidObjectColumnException(
                     message: "Invalid objectColumn. Please correct the errors and try again.");
 
@@ -312,8 +333,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             ObjectColumn storageObjectColumn = invalidObjectColumn.DeepClone();
             storageObjectColumn.CreatedDate = storageObjectColumn.CreatedDate.AddMinutes(randomMinutes);
             storageObjectColumn.UpdatedDate = storageObjectColumn.UpdatedDate.AddMinutes(randomMinutes);
-            
-            var invalidObjectColumnException = 
+
+            var invalidObjectColumnException =
                 new InvalidObjectColumnException(
                     message: "Invalid objectColumn. Please correct the errors and try again.");
 
@@ -375,7 +396,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             invalidObjectColumn.CreatedBy = Guid.NewGuid().ToString();
             storageObjectColumn.UpdatedDate = storageObjectColumn.CreatedDate;
 
-            var invalidObjectColumnException = 
+            var invalidObjectColumnException =
                 new InvalidObjectColumnException(
                     message: "Invalid objectColumn. Please correct the errors and try again.");
 
@@ -434,7 +455,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             ObjectColumn invalidObjectColumn = randomObjectColumn;
             ObjectColumn storageObjectColumn = randomObjectColumn.DeepClone();
 
-            var invalidObjectColumnException = 
+            var invalidObjectColumnException =
                 new InvalidObjectColumnException(
                     message: "Invalid objectColumn. Please correct the errors and try again.");
 

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -65,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             var invalidObjectColumnException = 
                 new InvalidObjectColumnException(
-                        message: "Invalid objectColumn. Please correct the errors and try again.");
+                    message: "Invalid objectColumn. Please correct the errors and try again.");
 
             invalidObjectColumnException.AddData(
                 key: nameof(ObjectColumn.Id),
@@ -116,6 +117,51 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateObjectColumnAsync(It.IsAny<ObjectColumn>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ObjectColumn randomObjectColumn = CreateRandomObjectColumn(randomDateTimeOffset);
+            ObjectColumn invalidObjectColumn = randomObjectColumn;
+            var invalidObjectColumnException = 
+                new InvalidObjectColumnException(
+                    message: "Invalid objectColumn. Please correct the errors and try again.");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.UpdatedDate),
+                values: $"Date is the same as {nameof(ObjectColumn.CreatedDate)}");
+
+            var expectedObjectColumnValidationException =
+                new ObjectColumnValidationException(
+                    message: "ObjectColumn validation errors occurred, please try again.",
+                    innerException: invalidObjectColumnException);
+
+            // when
+            ValueTask<ObjectColumn> modifyObjectColumnTask =
+                this.objectColumnService.ModifyObjectColumnAsync(invalidObjectColumn);
+
+            ObjectColumnValidationException actualObjectColumnValidationException =
+                await Assert.ThrowsAsync<ObjectColumnValidationException>(
+                    modifyObjectColumnTask.AsTask);
+
+            // then
+            actualObjectColumnValidationException.Should().BeEquivalentTo(expectedObjectColumnValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedObjectColumnValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

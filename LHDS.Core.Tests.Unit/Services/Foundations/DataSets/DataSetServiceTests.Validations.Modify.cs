@@ -88,7 +88,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             invalidDataSetException.AddData(
                 key: nameof(DataSet.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(DataSet.CreatedDate)}"
+                });
 
             invalidDataSetException.AddData(
                 key: nameof(DataSet.UpdatedBy),
@@ -131,6 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             DataSet randomDataSet = CreateRandomDataSet(randomDateTimeOffset);
             DataSet invalidDataSet = randomDataSet;
+            
             var invalidDataSetException = 
                 new InvalidDataSetException(
                     message: "Invalid dataSet. Please correct the errors and try again.");

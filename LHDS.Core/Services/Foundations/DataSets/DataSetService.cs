@@ -22,7 +22,12 @@ namespace LHDS.Core.Services.Foundations.DataSets
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<DataSet> AddDataSetAsync(DataSet dataSet) =>
-            await this.storageBroker.InsertDataSetAsync(dataSet);
+        public ValueTask<DataSet> AddDataSetAsync(DataSet dataSet) =>
+            TryCatch(async () =>
+            {
+                ValidateDataSetOnAdd(dataSet);
+
+                return await this.storageBroker.InsertDataSetAsync(dataSet);
+            });
     }
 }

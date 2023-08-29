@@ -62,7 +62,12 @@ namespace LHDS.Core.Services.Foundations.DataSets
                 return await this.storageBroker.UpdateDataSetAsync(dataSet);
             });
 
-        public ValueTask<DataSet> RemoveDataSetByIdAsync(Guid dataSetId) =>
-            throw new NotImplementedException();
+        public async ValueTask<DataSet> RemoveDataSetByIdAsync(Guid dataSetId)
+        {
+            DataSet maybeDataSet = await this.storageBroker
+                    .SelectDataSetByIdAsync(dataSetId);
+
+            return await this.storageBroker.DeleteDataSetAsync(maybeDataSet);
+        }
     }
 }

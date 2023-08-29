@@ -166,5 +166,52 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRemoveIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someObjectColumnId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedObjectColumnServiceException =
+                new FailedObjectColumnServiceException(
+                    message: "Failed objectColumn service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedObjectColumnServiceException =
+                new ObjectColumnServiceException(
+                    message: "ObjectColumn service error occurred, contact support.",
+                    innerException: failedObjectColumnServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectObjectColumnByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<ObjectColumn> removeObjectColumnByIdTask =
+                this.objectColumnService.RemoveObjectColumnByIdAsync(someObjectColumnId);
+
+            ObjectColumnServiceException actualObjectColumnServiceException =
+                await Assert.ThrowsAsync<ObjectColumnServiceException>(
+                    removeObjectColumnByIdTask.AsTask);
+
+            // then
+            actualObjectColumnServiceException.Should()
+                .BeEquivalentTo(expectedObjectColumnServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectObjectColumnByIdAsync(It.IsAny<Guid>()),
+                        Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedObjectColumnServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

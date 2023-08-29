@@ -61,5 +61,8 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
                 return await this.storageBroker.UpdateObjectColumnAsync(objectColumn);
             });
+
+        public ValueTask<ObjectColumn> RemoveObjectColumnByIdAsync(Guid objectColumnId) =>
+            throw new NotImplementedException();
     }
 }

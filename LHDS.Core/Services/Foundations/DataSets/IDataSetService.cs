@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.DataSets;
 
@@ -6,5 +7,6 @@ namespace LHDS.Core.Services.Foundations.DataSets
     public interface IDataSetService
     {
         ValueTask<DataSet> AddDataSetAsync(DataSet dataSet);
+        IQueryable<DataSet> RetrieveAllDataSets();
     }
 }

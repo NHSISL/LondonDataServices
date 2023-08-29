@@ -115,6 +115,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             actualDataSetValidationException.Should()
                 .BeEquivalentTo(expectedDataSetValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedDataSetValidationException))),
@@ -124,9 +128,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 broker.UpdateDataSetAsync(It.IsAny<DataSet>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -136,7 +140,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             DataSet randomDataSet = CreateRandomDataSet(randomDateTimeOffset);
             DataSet invalidDataSet = randomDataSet;
-            
+
             var invalidDataSetException = 
                 new InvalidDataSetException(
                     message: "Invalid dataSet. Please correct the errors and try again.");
@@ -150,6 +154,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     message: "DataSet validation errors occurred, please try again.",
                     innerException: invalidDataSetException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<DataSet> modifyDataSetTask =
                 this.dataSetService.ModifyDataSetAsync(invalidDataSet);
@@ -162,6 +170,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             actualDataSetValidationException.Should()
                 .BeEquivalentTo(expectedDataSetValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedDataSetValidationException))),
@@ -171,9 +183,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 broker.SelectDataSetByIdAsync(invalidDataSet.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]

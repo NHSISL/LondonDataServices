@@ -77,6 +77,16 @@ namespace LHDS.Core.Services.Foundations.DataSets
             }
         }
 
+        private static void ValidateAgainstStorageDataSetOnModify(DataSet inputDataSet, DataSet storageDataSet)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputDataSet.CreatedDate,
+                    secondDate: storageDataSet.CreatedDate,
+                    secondDateName: nameof(DataSet.CreatedDate)),
+                Parameter: nameof(DataSet.CreatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
@@ -117,6 +118,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateObjectColumnAsync(someObjectColumn),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnModifyIfDatabaseUpdateExceptionOccursAndLogItAsync()
+        {
+            // given
+            ObjectColumn randomObjectColumn = CreateRandomObjectColumn();
+            var databaseUpdateException = new DbUpdateException();
+
+            var failedObjectColumnStorageException =
+                new FailedObjectColumnStorageException(
+                    message: "Failed objectColumn storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+            var expectedObjectColumnDependencyException =
+                new ObjectColumnDependencyException(
+                    message: "ObjectColumn dependency error occurred, contact support.",
+                    innerException: failedObjectColumnStorageException); 
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<ObjectColumn> modifyObjectColumnTask =
+                this.objectColumnService.ModifyObjectColumnAsync(randomObjectColumn);
+
+            ObjectColumnDependencyException actualObjectColumnDependencyException =
+                await Assert.ThrowsAsync<ObjectColumnDependencyException>(
+                    modifyObjectColumnTask.AsTask);
+
+            // then
+            actualObjectColumnDependencyException.Should()
+                .BeEquivalentTo(expectedObjectColumnDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectObjectColumnByIdAsync(randomObjectColumn.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedObjectColumnDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateObjectColumnAsync(randomObjectColumn),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

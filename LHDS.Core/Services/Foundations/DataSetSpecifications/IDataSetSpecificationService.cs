@@ -10,5 +10,6 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
         ValueTask<DataSetSpecification> AddDataSetSpecificationAsync(DataSetSpecification dataSetSpecification);
         IQueryable<DataSetSpecification> RetrieveAllDataSetSpecifications();
         ValueTask<DataSetSpecification> RetrieveDataSetSpecificationByIdAsync(Guid dataSetSpecificationId);
+        ValueTask<DataSetSpecification> ModifyDataSetSpecificationAsync(DataSetSpecification dataSetSpecification);
     }
 }

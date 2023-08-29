@@ -1,59 +1,62 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages.Sql;
+using FluentAssertions;
+using Force.DeepCloner;
+using Moq;
 using LHDS.Core.Models.Foundations.DataSets;
+using Xunit;
 
-namespace LHDS.Core.Services.Foundations.DataSets
+namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 {
-    public partial class DataSetService : IDataSetService
+    public partial class DataSetServiceTests
     {
-        private readonly IStorageBroker storageBroker;
-        private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ILoggingBroker loggingBroker;
-
-        public DataSetService(
-            IStorageBroker storageBroker,
-            IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker)
+        [Fact]
+        public async Task ShouldModifyDataSetAsync()
         {
-            this.storageBroker = storageBroker;
-            this.dateTimeBroker = dateTimeBroker;
-            this.loggingBroker = loggingBroker;
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DataSet randomDataSet = CreateRandomModifyDataSet(randomDateTimeOffset);
+            DataSet inputDataSet = randomDataSet;
+            DataSet storageDataSet = inputDataSet.DeepClone();
+            storageDataSet.UpdatedDate = randomDataSet.CreatedDate;
+            DataSet updatedDataSet = inputDataSet;
+            DataSet expectedDataSet = updatedDataSet.DeepClone();
+            Guid dataSetId = inputDataSet.Id;
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectDataSetByIdAsync(dataSetId))
+                    .ReturnsAsync(storageDataSet);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.UpdateDataSetAsync(inputDataSet))
+                    .ReturnsAsync(updatedDataSet);
+
+            // when
+            DataSet actualDataSet =
+                await this.dataSetService.ModifyDataSetAsync(inputDataSet);
+
+            // then
+            actualDataSet.Should().BeEquivalentTo(expectedDataSet);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataSetByIdAsync(inputDataSet.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateDataSetAsync(inputDataSet),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
-
-        public ValueTask<DataSet> AddDataSetAsync(DataSet dataSet) =>
-            TryCatch(async () =>
-            {
-                ValidateDataSetOnAdd(dataSet);
-
-                return await this.storageBroker.InsertDataSetAsync(dataSet);
-            });
-
-        public IQueryable<DataSet> RetrieveAllDataSets() =>
-            TryCatch(() => this.storageBroker.SelectAllDataSets());
-
-        public ValueTask<DataSet> RetrieveDataSetByIdAsync(Guid dataSetId) =>
-            TryCatch(async () =>
-            {
-                ValidateDataSetId(dataSetId);
-
-                DataSet maybeDataSet = await this.storageBroker
-                    .SelectDataSetByIdAsync(dataSetId);
-
-                ValidateStorageDataSet(maybeDataSet, dataSetId);
-
-                return maybeDataSet;
-            });
-
-        public ValueTask<DataSet> ModifyDataSetAsync(DataSet dataSet) =>
-            TryCatch(async () =>
-            {
-                ValidateDataSetOnModify(dataSet);
-
-                return await this.storageBroker.UpdateDataSetAsync(dataSet);
-            });
     }
 }

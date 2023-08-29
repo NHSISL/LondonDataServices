@@ -60,6 +60,15 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
                 throw CreateAndLogDependencyValidationException(invalidObjectColumnReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedObjectColumnException = 
+                    new LockedObjectColumnException(
+                        message: "Locked objectColumn record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedObjectColumnException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedObjectColumnStorageException =
@@ -123,7 +132,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             var objectColumnDependencyException = 
                 new ObjectColumnDependencyException(
                     message: "ObjectColumn dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(objectColumnDependencyException);
 
@@ -148,7 +157,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             var objectColumnDependencyException = 
                 new ObjectColumnDependencyException(
                     message: "ObjectColumn dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(objectColumnDependencyException);
 

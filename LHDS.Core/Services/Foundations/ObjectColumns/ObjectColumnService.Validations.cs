@@ -16,7 +16,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
             Validate(
                 (Rule: IsInvalid(objectColumn.Id), Parameter: nameof(ObjectColumn.Id)),
-                (Rule: IsInvalid(objectColumn.Id), Parameter: nameof(ObjectColumn.DataSetObjectId)),
+                (Rule: IsInvalid(objectColumn.DataSetObjectId), Parameter: nameof(ObjectColumn.DataSetObjectId)),
                 (Rule: IsInvalid(objectColumn.SupplierColumnName), Parameter: nameof(ObjectColumn.SupplierColumnName)),
                 (Rule: IsInvalid(objectColumn.OurColumnName), Parameter: nameof(ObjectColumn.OurColumnName)),
                 (Rule: IsInvalid(objectColumn.SqlDataType), Parameter: nameof(ObjectColumn.SqlDataType)),
@@ -59,6 +59,49 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 (Rule: IsNotRecent(objectColumn.CreatedDate), Parameter: nameof(ObjectColumn.CreatedDate)));
         }
 
+        private void ValidateObjectColumnOnModify(ObjectColumn objectColumn)
+        {
+            ValidateObjectColumnIsNotNull(objectColumn);
+
+            Validate(
+                (Rule: IsInvalid(objectColumn.Id), Parameter: nameof(ObjectColumn.Id)),
+                (Rule: IsInvalid(objectColumn.DataSetObjectId), Parameter: nameof(ObjectColumn.DataSetObjectId)),
+                (Rule: IsInvalid(objectColumn.SupplierColumnName), Parameter: nameof(ObjectColumn.SupplierColumnName)),
+                (Rule: IsInvalid(objectColumn.OurColumnName), Parameter: nameof(ObjectColumn.OurColumnName)),
+                (Rule: IsInvalid(objectColumn.SqlDataType), Parameter: nameof(ObjectColumn.SqlDataType)),
+                (Rule: IsInvalid(objectColumn.CodeSystem), Parameter: nameof(ObjectColumn.CodeSystem)),
+                (Rule: IsInvalid(objectColumn.CreatedDate), Parameter: nameof(ObjectColumn.CreatedDate)),
+                (Rule: IsInvalid(objectColumn.CreatedBy), Parameter: nameof(ObjectColumn.CreatedBy)),
+                (Rule: IsInvalid(objectColumn.UpdatedDate), Parameter: nameof(ObjectColumn.UpdatedDate)),
+                (Rule: IsInvalid(objectColumn.UpdatedBy), Parameter: nameof(ObjectColumn.UpdatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.SupplierColumnName, 255), Parameter: nameof(objectColumn.SupplierColumnName)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.OurColumnName, 255), Parameter: nameof(objectColumn.OurColumnName)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.SqlDataType, 50), Parameter: nameof(objectColumn.SqlDataType)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.CodeSystem, 255), Parameter: nameof(objectColumn.CodeSystem)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.CreatedBy, 255), Parameter: nameof(objectColumn.CreatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.UpdatedBy, 255), Parameter: nameof(objectColumn.UpdatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: objectColumn.UpdatedDate,
+                    secondDate: objectColumn.CreatedDate,
+                    secondDateName: nameof(ObjectColumn.CreatedDate)),
+                Parameter: nameof(ObjectColumn.UpdatedDate)),
+
+                (Rule: IsNotRecent(objectColumn.UpdatedDate), Parameter: nameof(objectColumn.UpdatedDate)));
+        }
+
         public void ValidateObjectColumnId(Guid objectColumnId) =>
             Validate((Rule: IsInvalid(objectColumnId), Parameter: nameof(ObjectColumn.Id)));
 
@@ -76,6 +119,28 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             {
                 throw new NullObjectColumnException(message: "ObjectColumn is null.");
             }
+        }
+
+        private static void ValidateAgainstStorageObjectColumnOnModify(ObjectColumn inputObjectColumn, ObjectColumn storageObjectColumn)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputObjectColumn.CreatedDate,
+                    secondDate: storageObjectColumn.CreatedDate,
+                    secondDateName: nameof(ObjectColumn.CreatedDate)),
+                Parameter: nameof(ObjectColumn.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    first: inputObjectColumn.CreatedBy,
+                    second: storageObjectColumn.CreatedBy,
+                    secondName: nameof(ObjectColumn.CreatedBy)),
+                Parameter: nameof(ObjectColumn.CreatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: inputObjectColumn.UpdatedDate,
+                    secondDate: storageObjectColumn.UpdatedDate,
+                    secondDateName: nameof(ObjectColumn.UpdatedDate)),
+                Parameter: nameof(ObjectColumn.UpdatedDate)));
         }
 
         private static dynamic IsInvalid(Guid id) => new
@@ -101,6 +166,15 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,

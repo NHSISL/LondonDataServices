@@ -112,7 +112,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     modifyDataSetSpecificationTask.AsTask);
 
             //then
-            actualDataSetSpecificationValidationException.Should().BeEquivalentTo(expectedDataSetSpecificationValidationException);
+            actualDataSetSpecificationValidationException.Should()
+                .BeEquivalentTo(expectedDataSetSpecificationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -158,7 +159,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     modifyDataSetSpecificationTask.AsTask);
 
             // then
-            actualDataSetSpecificationValidationException.Should().BeEquivalentTo(expectedDataSetSpecificationValidationException);
+            actualDataSetSpecificationValidationException.Should()
+                .BeEquivalentTo(expectedDataSetSpecificationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -172,6 +174,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsNotRecentAndLogItAsync(int minutes)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DataSetSpecification randomDataSetSpecification = CreateRandomDataSetSpecification(randomDateTimeOffset);
+            randomDataSetSpecification.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
+
+            var invalidDataSetSpecificationException = 
+                new InvalidDataSetSpecificationException(
+                    message: "Invalid dataSetSpecification. Please correct the errors and try again.");
+
+            invalidDataSetSpecificationException.AddData(
+                key: nameof(DataSetSpecification.UpdatedDate),
+                values: "Date is not recent");
+
+            var expectedDataSetSpecificationValidatonException =
+                new DataSetSpecificationValidationException(
+                    message: "DataSetSpecification validation errors occurred, please try again.",
+                    innerException: invalidDataSetSpecificationException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<DataSetSpecification> modifyDataSetSpecificationTask =
+                this.dataSetSpecificationService.ModifyDataSetSpecificationAsync(randomDataSetSpecification);
+
+            DataSetSpecificationValidationException actualDataSetSpecificationValidationException =
+                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(
+                    modifyDataSetSpecificationTask.AsTask);
+
+            // then
+            actualDataSetSpecificationValidationException.Should().BeEquivalentTo(expectedDataSetSpecificationValidatonException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetSpecificationValidatonException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataSetSpecificationByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

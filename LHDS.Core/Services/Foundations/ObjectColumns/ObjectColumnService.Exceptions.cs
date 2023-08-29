@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 using Xeptions;
@@ -23,6 +24,15 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             {
                 throw CreateAndLogValidationException(invalidObjectColumnException);
             }
+            catch (SqlException sqlException)
+            {
+                var failedObjectColumnStorageException =
+                    new FailedObjectColumnStorageException(
+                        message: "Failed objectColumn storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedObjectColumnStorageException);
+            }
         }
 
         private ObjectColumnValidationException CreateAndLogValidationException(Xeption exception)
@@ -35,6 +45,18 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             this.loggingBroker.LogError(objectColumnValidationException);
 
             return objectColumnValidationException;
+        }
+
+        private ObjectColumnDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        {
+            var objectColumnDependencyException = 
+                new ObjectColumnDependencyException(
+                    message: "ObjectColumn dependency error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogCritical(objectColumnDependencyException);
+
+            return objectColumnDependencyException;
         }
     }
 }

@@ -18,7 +18,13 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 (Rule: IsInvalid(objectColumn.CreatedDate), Parameter: nameof(ObjectColumn.CreatedDate)),
                 (Rule: IsInvalid(objectColumn.CreatedBy), Parameter: nameof(ObjectColumn.CreatedBy)),
                 (Rule: IsInvalid(objectColumn.UpdatedDate), Parameter: nameof(ObjectColumn.UpdatedDate)),
-                (Rule: IsInvalid(objectColumn.UpdatedBy), Parameter: nameof(ObjectColumn.UpdatedBy)));
+                (Rule: IsInvalid(objectColumn.UpdatedBy), Parameter: nameof(ObjectColumn.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    firstDate: objectColumn.UpdatedDate,
+                    secondDate: objectColumn.CreatedDate,
+                    secondDateName: nameof(ObjectColumn.CreatedDate)),
+                Parameter: nameof(ObjectColumn.UpdatedDate)));
         }
 
         private static void ValidateObjectColumnIsNotNull(ObjectColumn objectColumn)
@@ -46,6 +52,15 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsNotSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate != secondDate,
+                Message = $"Date is not the same as {secondDateName}"
+            };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

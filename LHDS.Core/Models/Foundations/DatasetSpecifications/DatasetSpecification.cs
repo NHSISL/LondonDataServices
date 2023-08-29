@@ -6,8 +6,9 @@ using System;
 using System.Collections.Generic;
 using LHDS.Core.Models.Bases;
 using LHDS.Core.Models.Foundations.DataSetObjects;
+using LHDS.Core.Models.Foundations.DataSets;
 
-namespace LHDS.Core.Models.Foundations.DataSets
+namespace LHDS.Core.Models.Foundations.DataSetSpecifications
 {
     public class DataSetSpecification : IKey, IAudit
     {

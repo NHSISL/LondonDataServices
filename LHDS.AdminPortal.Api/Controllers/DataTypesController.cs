@@ -72,5 +72,33 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(dataTypeServiceException);
             }
         }
+
+        [HttpGet("{dataTypeId}")]
+        public async ValueTask<ActionResult<DataType>> GetDataTypeByIdAsync(Guid dataTypeId)
+        {
+            try
+            {
+                DataType dataType = await this.dataTypeService.RetrieveDataTypeByIdAsync(dataTypeId);
+
+                return Ok(dataType);
+            }
+            catch (DataTypeValidationException dataTypeValidationException)
+                when (dataTypeValidationException.InnerException is NotFoundDataTypeException)
+            {
+                return NotFound(dataTypeValidationException.InnerException);
+            }
+            catch (DataTypeValidationException dataTypeValidationException)
+            {
+                return BadRequest(dataTypeValidationException.InnerException);
+            }
+            catch (DataTypeDependencyException dataTypeDependencyException)
+            {
+                return InternalServerError(dataTypeDependencyException);
+            }
+            catch (DataTypeServiceException dataTypeServiceException)
+            {
+                return InternalServerError(dataTypeServiceException);
+            }
+        }
     }
 }

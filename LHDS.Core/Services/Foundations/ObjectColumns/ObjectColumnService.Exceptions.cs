@@ -91,6 +91,15 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
                 throw CreateAndLogCriticalDependencyException(failedObjectColumnStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedObjectColumnServiceException =
+                    new FailedObjectColumnServiceException(
+                        message: "Failed objectColumn service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedObjectColumnServiceException);
+            }
         }
 
         private ObjectColumnValidationException CreateAndLogValidationException(Xeption exception)

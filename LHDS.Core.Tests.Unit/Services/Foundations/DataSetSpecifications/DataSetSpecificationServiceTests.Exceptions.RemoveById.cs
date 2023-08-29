@@ -1,6 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
@@ -58,6 +60,59 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
+                    Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationOnRemoveIfDatabaseUpdateConcurrencyErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someDataSetSpecificationId = Guid.NewGuid();
+
+            var databaseUpdateConcurrencyException =
+                new DbUpdateConcurrencyException();
+
+            var lockedDataSetSpecificationException =
+                new LockedDataSetSpecificationException(
+                    message: "Locked dataSetSpecification record exception, please try again later",
+                    innerException: databaseUpdateConcurrencyException);
+
+            var expectedDataSetSpecificationDependencyValidationException =
+                new DataSetSpecificationDependencyValidationException(
+                    message: "DataSetSpecification dependency validation occurred, please try again.",
+                    innerException: lockedDataSetSpecificationException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectDataSetSpecificationByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<DataSetSpecification> removeDataSetSpecificationByIdTask =
+                this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(someDataSetSpecificationId);
+
+            DataSetSpecificationDependencyValidationException actualDataSetSpecificationDependencyValidationException =
+                await Assert.ThrowsAsync<DataSetSpecificationDependencyValidationException>(
+                    removeDataSetSpecificationByIdTask.AsTask);
+
+            // then
+            actualDataSetSpecificationDependencyValidationException.Should()
+                .BeEquivalentTo(expectedDataSetSpecificationDependencyValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataSetSpecificationByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetSpecificationDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.DeleteDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()),
                     Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

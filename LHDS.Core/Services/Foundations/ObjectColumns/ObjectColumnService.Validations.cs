@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
@@ -12,13 +16,33 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
             Validate(
                 (Rule: IsInvalid(objectColumn.Id), Parameter: nameof(ObjectColumn.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(objectColumn.Id), Parameter: nameof(ObjectColumn.DataSetObjectId)),
+                (Rule: IsInvalid(objectColumn.SupplierColumnName), Parameter: nameof(ObjectColumn.SupplierColumnName)),
+                (Rule: IsInvalid(objectColumn.OurColumnName), Parameter: nameof(ObjectColumn.OurColumnName)),
+                (Rule: IsInvalid(objectColumn.SqlDataType), Parameter: nameof(ObjectColumn.SqlDataType)),
+                (Rule: IsInvalid(objectColumn.CodeSystem), Parameter: nameof(ObjectColumn.CodeSystem)),
                 (Rule: IsInvalid(objectColumn.CreatedDate), Parameter: nameof(ObjectColumn.CreatedDate)),
                 (Rule: IsInvalid(objectColumn.CreatedBy), Parameter: nameof(ObjectColumn.CreatedBy)),
                 (Rule: IsInvalid(objectColumn.UpdatedDate), Parameter: nameof(ObjectColumn.UpdatedDate)),
                 (Rule: IsInvalid(objectColumn.UpdatedBy), Parameter: nameof(ObjectColumn.UpdatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.SupplierColumnName, 255), Parameter: nameof(objectColumn.SupplierColumnName)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.OurColumnName, 255), Parameter: nameof(objectColumn.OurColumnName)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.SqlDataType, 50), Parameter: nameof(objectColumn.SqlDataType)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.CodeSystem, 255), Parameter: nameof(objectColumn.CodeSystem)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.CreatedBy, 255), Parameter: nameof(objectColumn.CreatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.UpdatedBy, 255), Parameter: nameof(objectColumn.UpdatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: objectColumn.UpdatedDate,
@@ -111,6 +135,12 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             Message = "Text is required"
         };
 
+        private static dynamic IsEqualOrSmallerThan(string text, int maxLength) => new
+        {
+            Condition = (text ?? string.Empty).Length > maxLength,
+            Message = "Text is exceeding max length"
+        };
+
         private static dynamic IsInvalid(DateTimeOffset date) => new
         {
             Condition = date == default,
@@ -172,7 +202,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidObjectColumnException = 
+            var invalidObjectColumnException =
                 new InvalidObjectColumnException(
                     message: "Invalid objectColumn. Please correct the errors and try again.");
 

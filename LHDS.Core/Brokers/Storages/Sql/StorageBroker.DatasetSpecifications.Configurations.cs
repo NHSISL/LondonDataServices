@@ -9,14 +9,14 @@ namespace LHDS.Core.Brokers.Storages.Sql
 {
     public partial class StorageBroker
     {
-        private static void AddDatasetSpecificationConfigurations(ModelBuilder modelBuilder)
+        private static void AddDataSetSpecificationConfigurations(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<DataSetSpecification>()
                 .ToTable(dataSet => dataSet.IsTemporal());
 
             modelBuilder.Entity<DataSetSpecification>()
                 .HasOne(columnDefinition => columnDefinition.DataSet)
-                .WithMany(schemaDefinition => schemaDefinition.DatasetSpecifications)
+                .WithMany(schemaDefinition => schemaDefinition.DataSetSpecifications)
                 .HasForeignKey(columnDefinition => columnDefinition.DataSetId)
                 .OnDelete(DeleteBehavior.NoAction);
         }

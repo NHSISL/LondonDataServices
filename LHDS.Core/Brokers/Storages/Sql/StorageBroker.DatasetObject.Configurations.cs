@@ -9,7 +9,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
 {
     public partial class StorageBroker
     {
-        private static void AddDatasetObjectConfigurations(ModelBuilder modelBuilder)
+        private static void AddDataSetObjectConfigurations(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<DataSetObject>()
                 .ToTable(columnDefinition => columnDefinition.IsTemporal());

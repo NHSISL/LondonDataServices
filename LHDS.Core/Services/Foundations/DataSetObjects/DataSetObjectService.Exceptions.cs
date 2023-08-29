@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Foundations.DataSetObjects;
 using LHDS.Core.Models.Foundations.DataSetObjects.Exceptions;
 using Xeptions;
@@ -23,6 +24,15 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
             {
                 throw CreateAndLogValidationException(invalidDataSetObjectException);
             }
+            catch (SqlException sqlException)
+            {
+                var failedDataSetObjectStorageException =
+                    new FailedDataSetObjectStorageException(
+                        message: "Failed dataSetObject storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedDataSetObjectStorageException);
+            }
         }
 
         private DataSetObjectValidationException CreateAndLogValidationException(Xeption exception)
@@ -35,6 +45,18 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
             this.loggingBroker.LogError(dataSetObjectValidationException);
 
             return dataSetObjectValidationException;
+        }
+
+        private DataSetObjectDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        {
+            var dataSetObjectDependencyException = 
+                new DataSetObjectDependencyException(
+                    message: "DataSetObject dependency error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogCritical(dataSetObjectDependencyException);
+
+            return dataSetObjectDependencyException;
         }
     }
 }

@@ -179,5 +179,60 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyErrorOccursAndLogAsync()
+        {
+            // given
+            ObjectColumn randomObjectColumn = CreateRandomObjectColumn();
+            var databaseUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedObjectColumnException =
+                new LockedObjectColumnException(
+                    message: "Locked objectColumn record exception, please try again later",
+                    innerException: databaseUpdateConcurrencyException);
+
+            var expectedObjectColumnDependencyValidationException =
+                new ObjectColumnDependencyValidationException(
+                    message: "ObjectColumn dependency validation occurred, please try again.",
+                    innerException: lockedObjectColumnException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<ObjectColumn> modifyObjectColumnTask =
+                this.objectColumnService.ModifyObjectColumnAsync(randomObjectColumn);
+
+            ObjectColumnDependencyValidationException actualObjectColumnDependencyValidationException =
+                await Assert.ThrowsAsync<ObjectColumnDependencyValidationException>(
+                    modifyObjectColumnTask.AsTask);
+
+            // then
+            actualObjectColumnDependencyValidationException.Should()
+                .BeEquivalentTo(expectedObjectColumnDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectObjectColumnByIdAsync(randomObjectColumn.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedObjectColumnDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateObjectColumnAsync(randomObjectColumn),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

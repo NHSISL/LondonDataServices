@@ -47,7 +47,13 @@ namespace LHDS.Core.Services.Foundations.DataSets
                 (Rule: IsInvalid(dataSet.CreatedDate), Parameter: nameof(DataSet.CreatedDate)),
                 (Rule: IsInvalid(dataSet.CreatedBy), Parameter: nameof(DataSet.CreatedBy)),
                 (Rule: IsInvalid(dataSet.UpdatedDate), Parameter: nameof(DataSet.UpdatedDate)),
-                (Rule: IsInvalid(dataSet.UpdatedBy), Parameter: nameof(DataSet.UpdatedBy)));
+                (Rule: IsInvalid(dataSet.UpdatedBy), Parameter: nameof(DataSet.UpdatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: dataSet.UpdatedDate,
+                    secondDate: dataSet.CreatedDate,
+                    secondDateName: nameof(DataSet.CreatedDate)),
+                Parameter: nameof(DataSet.UpdatedDate)));
         }
 
         public void ValidateDataSetId(Guid dataSetId) =>
@@ -86,6 +92,15 @@ namespace LHDS.Core.Services.Foundations.DataSets
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,

@@ -14,5 +14,6 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         ValueTask<ObjectColumn> AddObjectColumnAsync(ObjectColumn objectColumn);
         IQueryable<ObjectColumn> RetrieveAllObjectColumns();
         ValueTask<ObjectColumn> RetrieveObjectColumnByIdAsync(Guid objectColumnId);
+        ValueTask<ObjectColumn> ModifyObjectColumnAsync(ObjectColumn objectColumn);
     }
 }

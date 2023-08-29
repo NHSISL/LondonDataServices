@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             var expectedDataSetSpecificationDependencyException =
                 new DataSetSpecificationDependencyException(
                     message: "DataSetSpecification dependency error occurred, contact support.",
-                    innerException: failedDataSetSpecificationStorageException); 
+                    innerException: failedDataSetSpecificationStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllDataSetSpecifications())
@@ -52,6 +52,51 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomString();
+            var serviceException = new Exception(exceptionMessage);
+
+            var failedDataSetSpecificationServiceException =
+                new FailedDataSetSpecificationServiceException(
+                    message: "Failed dataSetSpecification service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedDataSetSpecificationServiceException =
+                new DataSetSpecificationServiceException(
+                    message: "DataSetSpecification service error occurred, contact support.",
+                    innerException: failedDataSetSpecificationServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllDataSetSpecifications())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllDataSetSpecificationsAction = () =>
+                this.dataSetSpecificationService.RetrieveAllDataSetSpecifications();
+
+            DataSetSpecificationServiceException actualDataSetSpecificationServiceException =
+                Assert.Throws<DataSetSpecificationServiceException>(retrieveAllDataSetSpecificationsAction);
+
+            // then
+            actualDataSetSpecificationServiceException.Should()
+                .BeEquivalentTo(expectedDataSetSpecificationServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllDataSetSpecifications(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetSpecificationServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

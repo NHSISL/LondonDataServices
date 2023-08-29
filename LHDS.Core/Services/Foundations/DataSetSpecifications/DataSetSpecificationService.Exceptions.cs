@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
     public partial class DataSetSpecificationService
     {
         private delegate ValueTask<DataSetSpecification> ReturningDataSetSpecificationFunction();
+        private delegate IQueryable<DataSetSpecification> ReturningDataSetSpecificationsFunction();
 
         private async ValueTask<DataSetSpecification> TryCatch(ReturningDataSetSpecificationFunction returningDataSetSpecificationFunction)
         {
@@ -74,6 +76,23 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             }
         }
 
+        private IQueryable<DataSetSpecification> TryCatch(ReturningDataSetSpecificationsFunction returningDataSetSpecificationsFunction)
+        {
+            try
+            {
+                return returningDataSetSpecificationsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedDataSetSpecificationStorageException =
+                    new FailedDataSetSpecificationStorageException(
+                        message: "Failed dataSetSpecification storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedDataSetSpecificationStorageException);
+            }
+        }
+
         private DataSetSpecificationValidationException CreateAndLogValidationException(Xeption exception)
         {
             var dataSetSpecificationValidationException =
@@ -91,7 +110,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             var dataSetSpecificationDependencyException = 
                 new DataSetSpecificationDependencyException(
                     message: "DataSetSpecification dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(dataSetSpecificationDependencyException);
 
@@ -116,7 +135,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             var dataSetSpecificationDependencyException = 
                 new DataSetSpecificationDependencyException(
                     message: "DataSetSpecification dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(dataSetSpecificationDependencyException);
 

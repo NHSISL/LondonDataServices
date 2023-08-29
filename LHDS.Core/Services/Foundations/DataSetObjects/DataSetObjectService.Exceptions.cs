@@ -43,6 +43,15 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsDataSetObjectException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidDataSetObjectReferenceException =
+                    new InvalidDataSetObjectReferenceException(
+                        message: "Invalid dataSetObject reference error occurred.", 
+                        innerException: foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidDataSetObjectReferenceException);
+            }
         }
 
         private DataSetObjectValidationException CreateAndLogValidationException(Xeption exception)
@@ -62,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
             var dataSetObjectDependencyException = 
                 new DataSetObjectDependencyException(
                     message: "DataSetObject dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(dataSetObjectDependencyException);
 

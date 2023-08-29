@@ -11,7 +11,7 @@ namespace LHDS.Core.Models.Foundations.ColumnDefinitions
     public class ObjectColumn : IKey, IAudit
     {
         public Guid Id { get; set; }
-        public Guid DatasetObjectId { get; set; }
+        public Guid DataSetObjectId { get; set; }
         public string SupplierColumnName { get; set; }
         public string OurColumnName { get; set; }
         public string ColumnDescription { get; set; }
@@ -43,6 +43,6 @@ namespace LHDS.Core.Models.Foundations.ColumnDefinitions
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
 
-        public DataSetObject DatasetObject { get; set; }
+        public DataSetObject DataSetObject { get; set; }
     }
 }

@@ -28,6 +28,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
+                broker.SelectObjectColumnByIdAsync(objectColumnId))
+                    .ReturnsAsync(storageObjectColumn);
+
+            this.storageBrokerMock.Setup(broker =>
                 broker.UpdateObjectColumnAsync(inputObjectColumn))
                     .ReturnsAsync(updatedObjectColumn);
 
@@ -43,12 +47,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
+                broker.SelectObjectColumnByIdAsync(inputObjectColumn.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
                 broker.UpdateObjectColumnAsync(inputObjectColumn),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

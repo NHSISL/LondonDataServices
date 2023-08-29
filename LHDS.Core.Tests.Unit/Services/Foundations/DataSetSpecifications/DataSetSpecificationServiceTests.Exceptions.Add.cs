@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -219,6 +220,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedDataSetSpecificationDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            DataSetSpecification someDataSetSpecification = CreateRandomDataSetSpecification();
+            var serviceException = new Exception();
+
+            var failedDataSetSpecificationServiceException =
+                new FailedDataSetSpecificationServiceException(
+                    message: "Failed dataSetSpecification service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedDataSetSpecificationServiceException =
+                new DataSetSpecificationServiceException(
+                    message: "DataSetSpecification service error occurred, contact support.",
+                    innerException: failedDataSetSpecificationServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<DataSetSpecification> addDataSetSpecificationTask =
+                this.dataSetSpecificationService.AddDataSetSpecificationAsync(someDataSetSpecification);
+
+            DataSetSpecificationServiceException actualDataSetSpecificationServiceException =
+                await Assert.ThrowsAsync<DataSetSpecificationServiceException>(
+                    addDataSetSpecificationTask.AsTask);
+
+            // then
+            actualDataSetSpecificationServiceException.Should()
+                .BeEquivalentTo(expectedDataSetSpecificationServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetSpecificationServiceException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

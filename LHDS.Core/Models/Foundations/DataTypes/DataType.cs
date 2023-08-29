@@ -3,9 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using LHDS.Core.Models.Bases;
-using LHDS.Core.Models.Foundations.ColumnDefinitions;
 
 namespace LHDS.Core.Models.Foundations.DataTypes
 {
@@ -17,7 +15,5 @@ namespace LHDS.Core.Models.Foundations.DataTypes
         public string UpdatedBy { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
-
-        public List<ColumnDefinition> ColumnDefinitions { get; set; } = new List<ColumnDefinition>();
     }
 }

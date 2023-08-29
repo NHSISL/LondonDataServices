@@ -23,6 +23,6 @@ namespace LHDS.Core.Models.Foundations.DataSets
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
 
-        public List<DataSetSpecification> DatasetSpecifications { get; set; } = new List<DataSetSpecification>();
+        public List<DataSetSpecification> DataSetSpecifications { get; set; } = new List<DataSetSpecification>();
     }
 }

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
 using Xeptions;
@@ -23,6 +24,15 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             {
                 throw CreateAndLogValidationException(invalidDataSetSpecificationException);
             }
+            catch (SqlException sqlException)
+            {
+                var failedDataSetSpecificationStorageException =
+                    new FailedDataSetSpecificationStorageException(
+                        message: "Failed dataSetSpecification storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedDataSetSpecificationStorageException);
+            }
         }
 
         private DataSetSpecificationValidationException CreateAndLogValidationException(Xeption exception)
@@ -35,6 +45,18 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             this.loggingBroker.LogError(dataSetSpecificationValidationException);
 
             return dataSetSpecificationValidationException;
+        }
+
+        private DataSetSpecificationDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        {
+            var dataSetSpecificationDependencyException = 
+                new DataSetSpecificationDependencyException(
+                    message: "DataSetSpecification dependency error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogCritical(dataSetSpecificationDependencyException);
+
+            return dataSetSpecificationDependencyException;
         }
     }
 }

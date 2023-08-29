@@ -60,6 +60,15 @@ namespace LHDS.Core.Services.Foundations.DataSets
 
                 throw CreateAndLogDependencyValidationException(invalidDataSetReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedDataSetException = 
+                    new LockedDataSetException(
+                        message: "Locked dataSet record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedDataSetException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedDataSetStorageException =
@@ -123,7 +132,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
             var dataSetDependencyException = 
                 new DataSetDependencyException(
                     message: "DataSet dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(dataSetDependencyException);
 
@@ -148,7 +157,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
             var dataSetDependencyException = 
                 new DataSetDependencyException(
                     message: "DataSet dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(dataSetDependencyException);
 

@@ -112,7 +112,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     modifyDataSetTask.AsTask);
 
             //then
-            actualDataSetValidationException.Should().BeEquivalentTo(expectedDataSetValidationException);
+            actualDataSetValidationException.Should()
+                .BeEquivalentTo(expectedDataSetValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -158,7 +159,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     modifyDataSetTask.AsTask);
 
             // then
-            actualDataSetValidationException.Should().BeEquivalentTo(expectedDataSetValidationException);
+            actualDataSetValidationException.Should()
+                .BeEquivalentTo(expectedDataSetValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -172,6 +174,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsNotRecentAndLogItAsync(int minutes)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DataSet randomDataSet = CreateRandomDataSet(randomDateTimeOffset);
+            randomDataSet.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
+
+            var invalidDataSetException = 
+                new InvalidDataSetException(
+                    message: "Invalid dataSet. Please correct the errors and try again.");
+
+            invalidDataSetException.AddData(
+                key: nameof(DataSet.UpdatedDate),
+                values: "Date is not recent");
+
+            var expectedDataSetValidatonException =
+                new DataSetValidationException(
+                    message: "DataSet validation errors occurred, please try again.",
+                    innerException: invalidDataSetException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<DataSet> modifyDataSetTask =
+                this.dataSetService.ModifyDataSetAsync(randomDataSet);
+
+            DataSetValidationException actualDataSetValidationException =
+                await Assert.ThrowsAsync<DataSetValidationException>(
+                    modifyDataSetTask.AsTask);
+
+            // then
+            actualDataSetValidationException.Should().BeEquivalentTo(expectedDataSetValidatonException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetValidatonException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataSetByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

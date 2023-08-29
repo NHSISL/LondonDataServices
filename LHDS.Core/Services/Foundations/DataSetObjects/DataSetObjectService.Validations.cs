@@ -18,7 +18,13 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
                 (Rule: IsInvalid(dataSetObject.CreatedDate), Parameter: nameof(DataSetObject.CreatedDate)),
                 (Rule: IsInvalid(dataSetObject.CreatedBy), Parameter: nameof(DataSetObject.CreatedBy)),
                 (Rule: IsInvalid(dataSetObject.UpdatedDate), Parameter: nameof(DataSetObject.UpdatedDate)),
-                (Rule: IsInvalid(dataSetObject.UpdatedBy), Parameter: nameof(DataSetObject.UpdatedBy)));
+                (Rule: IsInvalid(dataSetObject.UpdatedBy), Parameter: nameof(DataSetObject.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    firstDate: dataSetObject.UpdatedDate,
+                    secondDate: dataSetObject.CreatedDate,
+                    secondDateName: nameof(DataSetObject.CreatedDate)),
+                Parameter: nameof(DataSetObject.UpdatedDate)));
         }
 
         private static void ValidateDataSetObjectIsNotNull(DataSetObject dataSetObject)
@@ -46,6 +52,15 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsNotSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate != secondDate,
+                Message = $"Date is not the same as {secondDateName}"
+            };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

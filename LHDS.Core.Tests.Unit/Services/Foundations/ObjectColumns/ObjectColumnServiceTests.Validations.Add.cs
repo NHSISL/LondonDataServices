@@ -169,5 +169,53 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateUsersIsNotSameAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ObjectColumn randomObjectColumn = CreateRandomObjectColumn(randomDateTimeOffset);
+            ObjectColumn invalidObjectColumn = randomObjectColumn;
+            invalidObjectColumn.UpdatedBy = Guid.NewGuid().ToString();
+
+            var invalidObjectColumnException =
+                new InvalidObjectColumnException(
+                    message: "Invalid objectColumn. Please correct the errors and try again.");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.UpdatedBy),
+                values: $"Text is not the same as {nameof(ObjectColumn.CreatedBy)}");
+
+            var expectedObjectColumnValidationException =
+                new ObjectColumnValidationException(
+                    message: "ObjectColumn validation errors occurred, please try again.",
+                    innerException: invalidObjectColumnException);
+
+            // when
+            ValueTask<ObjectColumn> addObjectColumnTask =
+                this.objectColumnService.AddObjectColumnAsync(invalidObjectColumn);
+
+            ObjectColumnValidationException actualObjectColumnValidationException =
+                await Assert.ThrowsAsync<ObjectColumnValidationException>(
+                    addObjectColumnTask.AsTask);
+
+            // then
+            actualObjectColumnValidationException.Should()
+                .BeEquivalentTo(expectedObjectColumnValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedObjectColumnValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertObjectColumnAsync(It.IsAny<ObjectColumn>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

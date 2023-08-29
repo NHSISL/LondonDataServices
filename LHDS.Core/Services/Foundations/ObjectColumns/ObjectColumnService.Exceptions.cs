@@ -43,6 +43,15 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsObjectColumnException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidObjectColumnReferenceException =
+                    new InvalidObjectColumnReferenceException(
+                        message: "Invalid objectColumn reference error occurred.", 
+                        innerException: foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidObjectColumnReferenceException);
+            }
         }
 
         private ObjectColumnValidationException CreateAndLogValidationException(Xeption exception)
@@ -62,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             var objectColumnDependencyException = 
                 new ObjectColumnDependencyException(
                     message: "ObjectColumn dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(objectColumnDependencyException);
 

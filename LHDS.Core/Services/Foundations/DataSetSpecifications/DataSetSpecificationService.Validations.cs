@@ -90,7 +90,13 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                     first: inputDataSetSpecification.CreatedBy,
                     second: storageDataSetSpecification.CreatedBy,
                     secondName: nameof(DataSetSpecification.CreatedBy)),
-                Parameter: nameof(DataSetSpecification.CreatedBy)));
+                Parameter: nameof(DataSetSpecification.CreatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: inputDataSetSpecification.UpdatedDate,
+                    secondDate: storageDataSetSpecification.UpdatedDate,
+                    secondDateName: nameof(DataSetSpecification.UpdatedDate)),
+                Parameter: nameof(DataSetSpecification.UpdatedDate)));
         }
 
         private static dynamic IsInvalid(Guid id) => new

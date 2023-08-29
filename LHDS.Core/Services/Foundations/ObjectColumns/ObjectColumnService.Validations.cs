@@ -53,7 +53,9 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                     firstDate: objectColumn.UpdatedDate,
                     secondDate: objectColumn.CreatedDate,
                     secondDateName: nameof(ObjectColumn.CreatedDate)),
-                Parameter: nameof(ObjectColumn.UpdatedDate)));
+                Parameter: nameof(ObjectColumn.UpdatedDate)),
+
+                (Rule: IsNotRecent(objectColumn.UpdatedDate), Parameter: nameof(objectColumn.UpdatedDate)));
         }
 
         public void ValidateObjectColumnId(Guid objectColumnId) =>

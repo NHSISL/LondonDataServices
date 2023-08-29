@@ -47,7 +47,13 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 (Rule: IsInvalid(objectColumn.CreatedDate), Parameter: nameof(ObjectColumn.CreatedDate)),
                 (Rule: IsInvalid(objectColumn.CreatedBy), Parameter: nameof(ObjectColumn.CreatedBy)),
                 (Rule: IsInvalid(objectColumn.UpdatedDate), Parameter: nameof(ObjectColumn.UpdatedDate)),
-                (Rule: IsInvalid(objectColumn.UpdatedBy), Parameter: nameof(ObjectColumn.UpdatedBy)));
+                (Rule: IsInvalid(objectColumn.UpdatedBy), Parameter: nameof(ObjectColumn.UpdatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: objectColumn.UpdatedDate,
+                    secondDate: objectColumn.CreatedDate,
+                    secondDateName: nameof(ObjectColumn.CreatedDate)),
+                Parameter: nameof(ObjectColumn.UpdatedDate)));
         }
 
         public void ValidateObjectColumnId(Guid objectColumnId) =>
@@ -86,6 +92,15 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,

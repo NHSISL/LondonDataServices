@@ -88,7 +88,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             invalidObjectColumnException.AddData(
                 key: nameof(ObjectColumn.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(ObjectColumn.CreatedDate)}"
+                });
 
             invalidObjectColumnException.AddData(
                 key: nameof(ObjectColumn.UpdatedBy),
@@ -131,6 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             ObjectColumn randomObjectColumn = CreateRandomObjectColumn(randomDateTimeOffset);
             ObjectColumn invalidObjectColumn = randomObjectColumn;
+            
             var invalidObjectColumnException = 
                 new InvalidObjectColumnException(
                     message: "Invalid objectColumn. Please correct the errors and try again.");

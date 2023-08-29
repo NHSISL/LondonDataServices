@@ -54,5 +54,49 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfDataSetObjectIsNotFoundAndLogItAsync()
+        {
+            //given
+            Guid someDataSetObjectId = Guid.NewGuid();
+            DataSetObject noDataSetObject = null;
+
+            var notFoundDataSetObjectException =
+                new NotFoundDataSetObjectException(someDataSetObjectId);
+
+            var expectedDataSetObjectValidationException =
+                new DataSetObjectValidationException(
+                    message: "DataSetObject validation errors occurred, please try again.",
+                    innerException: notFoundDataSetObjectException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectDataSetObjectByIdAsync(It.IsAny<Guid>()))
+                    .ReturnsAsync(noDataSetObject);
+
+            //when
+            ValueTask<DataSetObject> retrieveDataSetObjectByIdTask =
+                this.dataSetObjectService.RetrieveDataSetObjectByIdAsync(someDataSetObjectId);
+
+            DataSetObjectValidationException actualDataSetObjectValidationException =
+                await Assert.ThrowsAsync<DataSetObjectValidationException>(
+                    retrieveDataSetObjectByIdTask.AsTask);
+
+            //then
+            actualDataSetObjectValidationException.Should().BeEquivalentTo(expectedDataSetObjectValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataSetObjectByIdAsync(It.IsAny<Guid>()),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetObjectValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

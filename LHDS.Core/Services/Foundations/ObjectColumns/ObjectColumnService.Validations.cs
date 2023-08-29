@@ -16,7 +16,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
             Validate(
                 (Rule: IsInvalid(objectColumn.Id), Parameter: nameof(ObjectColumn.Id)),
-                (Rule: IsInvalid(objectColumn.Id), Parameter: nameof(ObjectColumn.DataSetObjectId)),
+                (Rule: IsInvalid(objectColumn.DataSetObjectId), Parameter: nameof(ObjectColumn.DataSetObjectId)),
                 (Rule: IsInvalid(objectColumn.SupplierColumnName), Parameter: nameof(ObjectColumn.SupplierColumnName)),
                 (Rule: IsInvalid(objectColumn.OurColumnName), Parameter: nameof(ObjectColumn.OurColumnName)),
                 (Rule: IsInvalid(objectColumn.SqlDataType), Parameter: nameof(ObjectColumn.SqlDataType)),
@@ -65,9 +65,11 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
             Validate(
                 (Rule: IsInvalid(objectColumn.Id), Parameter: nameof(ObjectColumn.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(objectColumn.DataSetObjectId), Parameter: nameof(ObjectColumn.DataSetObjectId)),
+                (Rule: IsInvalid(objectColumn.SupplierColumnName), Parameter: nameof(ObjectColumn.SupplierColumnName)),
+                (Rule: IsInvalid(objectColumn.OurColumnName), Parameter: nameof(ObjectColumn.OurColumnName)),
+                (Rule: IsInvalid(objectColumn.SqlDataType), Parameter: nameof(ObjectColumn.SqlDataType)),
+                (Rule: IsInvalid(objectColumn.CodeSystem), Parameter: nameof(ObjectColumn.CodeSystem)),
                 (Rule: IsInvalid(objectColumn.CreatedDate), Parameter: nameof(ObjectColumn.CreatedDate)),
                 (Rule: IsInvalid(objectColumn.CreatedBy), Parameter: nameof(ObjectColumn.CreatedBy)),
                 (Rule: IsInvalid(objectColumn.UpdatedDate), Parameter: nameof(ObjectColumn.UpdatedDate)),

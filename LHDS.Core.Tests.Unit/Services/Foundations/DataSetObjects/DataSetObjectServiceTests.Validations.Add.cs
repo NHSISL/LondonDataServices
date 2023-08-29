@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -86,6 +87,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
             invalidDataSetObjectException.AddData(
                 key: nameof(DataSetObject.UpdatedBy),
                 values: "Text is required");
+
+            var expectedDataSetObjectValidationException =
+                new DataSetObjectValidationException(
+                    message: "DataSetObject validation errors occurred, please try again.",
+                    innerException: invalidDataSetObjectException);
+
+            // when
+            ValueTask<DataSetObject> addDataSetObjectTask =
+                this.dataSetObjectService.AddDataSetObjectAsync(invalidDataSetObject);
+
+            DataSetObjectValidationException actualDataSetObjectValidationException =
+                await Assert.ThrowsAsync<DataSetObjectValidationException>(
+                    addDataSetObjectTask.AsTask);
+
+            // then
+            actualDataSetObjectValidationException.Should()
+                .BeEquivalentTo(expectedDataSetObjectValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetObjectValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDataSetObjectAsync(It.IsAny<DataSetObject>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateDatesIsNotSameAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNumber();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DataSetObject randomDataSetObject = CreateRandomDataSetObject(randomDateTimeOffset);
+            DataSetObject invalidDataSetObject = randomDataSetObject;
+
+            invalidDataSetObject.UpdatedDate =
+                invalidDataSetObject.CreatedDate.AddDays(randomNumber);
+
+            var invalidDataSetObjectException = 
+                new InvalidDataSetObjectException(
+                    message: "Invalid dataSetObject. Please correct the errors and try again.");
+
+            invalidDataSetObjectException.AddData(
+                key: nameof(DataSetObject.UpdatedDate),
+                values: $"Date is not the same as {nameof(DataSetObject.CreatedDate)}");
 
             var expectedDataSetObjectValidationException =
                 new DataSetObjectValidationException(

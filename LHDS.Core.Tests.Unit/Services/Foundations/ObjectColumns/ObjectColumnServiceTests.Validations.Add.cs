@@ -142,7 +142,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
-
         [Fact]
         public async Task ShouldThrowValidationExceptionOnAddIfObjectColumnsIsInvalidLenghtAndLogItAsync()
         {
@@ -154,7 +153,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             invalidObjectColumn.SqlDataType = GetRandomString(51);
             invalidObjectColumn.CodeSystem = GetRandomString(256);
             invalidObjectColumn.CreatedBy = GetRandomString(256);
-            invalidObjectColumn.UpdatedBy = GetRandomString(256);
+            invalidObjectColumn.UpdatedBy = invalidObjectColumn.CreatedBy;
 
             var invalidObjectColumnException =
                 new InvalidObjectColumnException(
@@ -188,6 +187,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 new ObjectColumnValidationException(
                     message: "ObjectColumn validation errors occurred, please try again.",
                     innerException: invalidObjectColumnException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
 
             // when
             ValueTask<ObjectColumn> addObjectColumnTask =

@@ -90,7 +90,13 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                     first: inputObjectColumn.CreatedBy,
                     second: storageObjectColumn.CreatedBy,
                     secondName: nameof(ObjectColumn.CreatedBy)),
-                Parameter: nameof(ObjectColumn.CreatedBy)));
+                Parameter: nameof(ObjectColumn.CreatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: inputObjectColumn.UpdatedDate,
+                    secondDate: storageObjectColumn.UpdatedDate,
+                    secondDateName: nameof(ObjectColumn.UpdatedDate)),
+                Parameter: nameof(ObjectColumn.UpdatedDate)));
         }
 
         private static dynamic IsInvalid(Guid id) => new

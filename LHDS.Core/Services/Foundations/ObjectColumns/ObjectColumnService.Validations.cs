@@ -75,6 +75,24 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 (Rule: IsInvalid(objectColumn.UpdatedDate), Parameter: nameof(ObjectColumn.UpdatedDate)),
                 (Rule: IsInvalid(objectColumn.UpdatedBy), Parameter: nameof(ObjectColumn.UpdatedBy)),
 
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.SupplierColumnName, 255), Parameter: nameof(objectColumn.SupplierColumnName)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.OurColumnName, 255), Parameter: nameof(objectColumn.OurColumnName)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.SqlDataType, 50), Parameter: nameof(objectColumn.SqlDataType)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.CodeSystem, 255), Parameter: nameof(objectColumn.CodeSystem)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.CreatedBy, 255), Parameter: nameof(objectColumn.CreatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.UpdatedBy, 255), Parameter: nameof(objectColumn.UpdatedBy)),
+
                 (Rule: IsSame(
                     firstDate: objectColumn.UpdatedDate,
                     secondDate: objectColumn.CreatedDate,

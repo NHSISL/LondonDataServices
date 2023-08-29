@@ -38,6 +38,10 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
 
                 throw CreateAndLogCriticalDependencyException(failedDataSetSpecificationStorageException);
             }
+            catch (NotFoundDataSetSpecificationException notFoundDataSetSpecificationException)
+            {
+                throw CreateAndLogValidationException(notFoundDataSetSpecificationException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsDataSetSpecificationException =

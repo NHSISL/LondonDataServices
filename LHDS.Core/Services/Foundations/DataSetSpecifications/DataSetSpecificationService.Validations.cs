@@ -38,6 +38,14 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
         public void ValidateDataSetSpecificationId(Guid dataSetSpecificationId) =>
             Validate((Rule: IsInvalid(dataSetSpecificationId), Parameter: nameof(DataSetSpecification.Id)));
 
+        private static void ValidateStorageDataSetSpecification(DataSetSpecification maybeDataSetSpecification, Guid dataSetSpecificationId)
+        {
+            if (maybeDataSetSpecification is null)
+            {
+                throw new NotFoundDataSetSpecificationException(dataSetSpecificationId);
+            }
+        }
+
         private static void ValidateDataSetSpecificationIsNotNull(DataSetSpecification dataSetSpecification)
         {
             if (dataSetSpecification is null)

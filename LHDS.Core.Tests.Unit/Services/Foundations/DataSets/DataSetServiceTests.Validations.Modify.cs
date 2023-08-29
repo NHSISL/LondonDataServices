@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -65,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             var invalidDataSetException = 
                 new InvalidDataSetException(
-                        message: "Invalid dataSet. Please correct the errors and try again.");
+                    message: "Invalid dataSet. Please correct the errors and try again.");
 
             invalidDataSetException.AddData(
                 key: nameof(DataSet.Id),
@@ -116,6 +117,51 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateDataSetAsync(It.IsAny<DataSet>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DataSet randomDataSet = CreateRandomDataSet(randomDateTimeOffset);
+            DataSet invalidDataSet = randomDataSet;
+            var invalidDataSetException = 
+                new InvalidDataSetException(
+                    message: "Invalid dataSet. Please correct the errors and try again.");
+
+            invalidDataSetException.AddData(
+                key: nameof(DataSet.UpdatedDate),
+                values: $"Date is the same as {nameof(DataSet.CreatedDate)}");
+
+            var expectedDataSetValidationException =
+                new DataSetValidationException(
+                    message: "DataSet validation errors occurred, please try again.",
+                    innerException: invalidDataSetException);
+
+            // when
+            ValueTask<DataSet> modifyDataSetTask =
+                this.dataSetService.ModifyDataSetAsync(invalidDataSet);
+
+            DataSetValidationException actualDataSetValidationException =
+                await Assert.ThrowsAsync<DataSetValidationException>(
+                    modifyDataSetTask.AsTask);
+
+            // then
+            actualDataSetValidationException.Should().BeEquivalentTo(expectedDataSetValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataSetByIdAsync(invalidDataSet.Id),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

@@ -156,6 +156,86 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
         }
 
         [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfObjectColumnIsInvalidLengthAndLogItAsync()
+        {
+            // given 
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ObjectColumn invalidObjectColumn = CreateRandomModifyObjectColumn(randomDateTimeOffset);
+            invalidObjectColumn.SupplierColumnName = GetRandomString(256);
+            invalidObjectColumn.OurColumnName = GetRandomString(256);
+            invalidObjectColumn.SqlDataType = GetRandomString(51);
+            invalidObjectColumn.CodeSystem = GetRandomString(256);
+            invalidObjectColumn.CreatedBy = GetRandomString(256);
+            invalidObjectColumn.UpdatedBy = invalidObjectColumn.CreatedBy;
+
+            var invalidObjectColumnException =
+                new InvalidObjectColumnException(
+                    message: "Invalid objectColumn. Please correct the errors and try again.");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.SupplierColumnName),
+                values: "Text is exceeding max length");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.OurColumnName),
+                values: "Text is exceeding max length");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.SqlDataType),
+                values: "Text is exceeding max length");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.CodeSystem),
+                values: "Text is exceeding max length");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.CreatedBy),
+                values: "Text is exceeding max length");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.UpdatedBy),
+                values: "Text is exceeding max length");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.UpdatedBy),
+                values: "Text is required");
+
+            var expectedObjectColumnValidationException =
+                new ObjectColumnValidationException(
+                    message: "ObjectColumn validation errors occurred, please try again.",
+                    innerException: invalidObjectColumnException);
+
+            // when
+            ValueTask<ObjectColumn> modifyObjectColumnTask =
+                this.objectColumnService.ModifyObjectColumnAsync(invalidObjectColumn);
+
+            ObjectColumnValidationException actualObjectColumnValidationException =
+                await Assert.ThrowsAsync<ObjectColumnValidationException>(
+                    modifyObjectColumnTask.AsTask);
+
+            //then
+            actualObjectColumnValidationException.Should()
+                .BeEquivalentTo(expectedObjectColumnValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedObjectColumnValidationException))),
+                        Times.Once());
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateObjectColumnAsync(It.IsAny<ObjectColumn>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
         public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
         {
             // given

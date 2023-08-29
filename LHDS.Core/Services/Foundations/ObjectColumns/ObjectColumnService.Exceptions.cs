@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
@@ -33,6 +34,15 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
                 throw CreateAndLogCriticalDependencyException(failedObjectColumnStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsObjectColumnException =
+                    new AlreadyExistsObjectColumnException(
+                        message: "ObjectColumn with the same Id already exists.",
+                        innerException: duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsObjectColumnException);
+            }
         }
 
         private ObjectColumnValidationException CreateAndLogValidationException(Xeption exception)
@@ -57,6 +67,18 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             this.loggingBroker.LogCritical(objectColumnDependencyException);
 
             return objectColumnDependencyException;
+        }
+
+        private ObjectColumnDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var objectColumnDependencyValidationException =
+                new ObjectColumnDependencyValidationException(
+                    message: "ObjectColumn dependency validation occurred, please try again.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(objectColumnDependencyValidationException);
+
+            return objectColumnDependencyValidationException;
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
@@ -8,5 +9,6 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
     {
         ValueTask<DataSetSpecification> AddDataSetSpecificationAsync(DataSetSpecification dataSetSpecification);
         IQueryable<DataSetSpecification> RetrieveAllDataSetSpecifications();
+        ValueTask<DataSetSpecification> RetrieveDataSetSpecificationByIdAsync(Guid dataSetSpecificationId);
     }
 }

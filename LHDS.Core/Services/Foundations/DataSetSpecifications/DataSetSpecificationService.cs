@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -33,5 +34,8 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
 
         public IQueryable<DataSetSpecification> RetrieveAllDataSetSpecifications() =>
             TryCatch(() => this.storageBroker.SelectAllDataSetSpecifications());
+
+        public ValueTask<DataSetSpecification> RetrieveDataSetSpecificationByIdAsync(Guid dataSetSpecificationId) =>
+            throw new NotImplementedException();
     }
 }

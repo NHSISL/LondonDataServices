@@ -184,9 +184,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 broker.SelectDataSetByIdAsync(invalidDataSet.Id),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -295,8 +295,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                     expectedDataSetValidationException))),
                         Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -359,8 +359,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                    expectedDataSetValidationException))),
                        Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -420,8 +420,64 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                    expectedDataSetValidationException))),
                        Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfStorageUpdatedDateSameAsUpdatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DataSet randomDataSet = CreateRandomModifyDataSet(randomDateTimeOffset);
+            DataSet invalidDataSet = randomDataSet;
+            DataSet storageDataSet = randomDataSet.DeepClone();
+
+            var invalidDataSetException = 
+                new InvalidDataSetException(
+                    message: "Invalid dataSet. Please correct the errors and try again.");
+
+            invalidDataSetException.AddData(
+                key: nameof(DataSet.UpdatedDate),
+                values: $"Date is the same as {nameof(DataSet.UpdatedDate)}");
+
+            var expectedDataSetValidationException =
+                new DataSetValidationException(
+                    message: "DataSet validation errors occurred, please try again.",
+                    innerException: invalidDataSetException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectDataSetByIdAsync(invalidDataSet.Id))
+                .ReturnsAsync(storageDataSet);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<DataSet> modifyDataSetTask =
+                this.dataSetService.ModifyDataSetAsync(invalidDataSet);
+
+            // then
+            await Assert.ThrowsAsync<DataSetValidationException>(
+                modifyDataSetTask.AsTask);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataSetByIdAsync(invalidDataSet.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

@@ -119,5 +119,52 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveWhenSqlExceptionOccursAndLogItAsync()
+        {
+            // given
+            Guid someDataSetObjectId = Guid.NewGuid();
+            SqlException sqlException = GetSqlException();
+
+            var failedDataSetObjectStorageException =
+                new FailedDataSetObjectStorageException(
+                    message: "Failed dataSetObject storage error occurred, contact support.",
+                    innerException: sqlException);
+
+            var expectedDataSetObjectDependencyException =
+                new DataSetObjectDependencyException(
+                    message: "DataSetObject dependency error occurred, contact support.",
+                    innerException: failedDataSetObjectStorageException); 
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectDataSetObjectByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(sqlException);
+
+            // when
+            ValueTask<DataSetObject> deleteDataSetObjectTask =
+                this.dataSetObjectService.RemoveDataSetObjectByIdAsync(someDataSetObjectId);
+
+            DataSetObjectDependencyException actualDataSetObjectDependencyException =
+                await Assert.ThrowsAsync<DataSetObjectDependencyException>(
+                    deleteDataSetObjectTask.AsTask);
+
+            // then
+            actualDataSetObjectDependencyException.Should()
+                .BeEquivalentTo(expectedDataSetObjectDependencyException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataSetObjectByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedDataSetObjectDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

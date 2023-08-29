@@ -35,7 +35,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         public IQueryable<ObjectColumn> RetrieveAllObjectColumns() =>
             TryCatch(() => this.storageBroker.SelectAllObjectColumns());
 
-        public ValueTask<ObjectColumn> RetrieveObjectColumnByIdAsync(Guid objectColumnId) =>
-            throw new NotImplementedException();
+        public async ValueTask<ObjectColumn> RetrieveObjectColumnByIdAsync(Guid objectColumnId) =>
+            await this.storageBroker.SelectObjectColumnByIdAsync(objectColumnId);
     }
 }

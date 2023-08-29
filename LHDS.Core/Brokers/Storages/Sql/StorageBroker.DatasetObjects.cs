@@ -20,7 +20,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
         public IQueryable<DataSetObject> SelectAllDataSetObjects() => ReadAll<DataSetObject>();
 
         public async ValueTask<DataSetObject> SelectDataSetObjectByIdAsync(Guid dataSetObjectId) =>
-            await ReadAsync<DataSetObject>(datasetObjectId);
+            await ReadAsync<DataSetObject>(dataSetObjectId);
 
         public async ValueTask<DataSetObject> UpdateDataSetObjectAsync(DataSetObject dataSetObject) =>
             await UpdateAsync(dataSetObject);

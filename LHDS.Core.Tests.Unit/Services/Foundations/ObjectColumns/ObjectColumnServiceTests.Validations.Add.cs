@@ -76,6 +76,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 values: "Id is required");
 
             invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.SupplierColumnName),
+                values: "Text is required");
+
+            invalidObjectColumnException.AddData(
                 key: nameof(ObjectColumn.OurColumnName),
                 values: "Text is required");
 

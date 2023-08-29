@@ -64,6 +64,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static DataSetSpecification CreateRandomModifyDataSetSpecification(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            DataSetSpecification randomDataSetSpecification = CreateRandomDataSetSpecification(dateTimeOffset);
+
+            randomDataSetSpecification.CreatedDate =
+                randomDataSetSpecification.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomDataSetSpecification;
+        }
+
         private static IQueryable<DataSetSpecification> CreateRandomDataSetSpecifications()
         {
             return CreateDataSetSpecificationFiller(dateTimeOffset: GetRandomDateTimeOffset())

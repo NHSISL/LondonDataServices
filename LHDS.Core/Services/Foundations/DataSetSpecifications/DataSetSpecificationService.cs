@@ -47,5 +47,8 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
 
                 return maybeDataSetSpecification;
             });
+
+        public ValueTask<DataSetSpecification> ModifyDataSetSpecificationAsync(DataSetSpecification dataSetSpecification) =>
+            throw new NotImplementedException();
     }
 }

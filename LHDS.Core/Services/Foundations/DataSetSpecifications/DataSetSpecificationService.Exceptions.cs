@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -57,10 +58,19 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             {
                 var failedDataSetSpecificationStorageException =
                     new FailedDataSetSpecificationStorageException(
-                    message: "Failed dataSetSpecification storage error occurred, contact support.",
-                    innerException: databaseUpdateException);
+                        message: "Failed dataSetSpecification storage error occurred, contact support.",
+                        innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedDataSetSpecificationStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedDataSetSpecificationServiceException =
+                    new FailedDataSetSpecificationServiceException(
+                        message: "Failed dataSetSpecification service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedDataSetSpecificationServiceException);
             }
         }
 
@@ -111,6 +121,19 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             this.loggingBroker.LogError(dataSetSpecificationDependencyException);
 
             return dataSetSpecificationDependencyException;
+        }
+
+        private DataSetSpecificationServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var dataSetSpecificationServiceException = 
+                new DataSetSpecificationServiceException(
+                    message: "DataSetSpecification service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(dataSetSpecificationServiceException);
+
+            return dataSetSpecificationServiceException;
         }
     }
 }

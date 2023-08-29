@@ -35,7 +35,15 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         public IQueryable<ObjectColumn> RetrieveAllObjectColumns() =>
             TryCatch(() => this.storageBroker.SelectAllObjectColumns());
 
-        public async ValueTask<ObjectColumn> RetrieveObjectColumnByIdAsync(Guid objectColumnId) =>
-            await this.storageBroker.SelectObjectColumnByIdAsync(objectColumnId);
+        public ValueTask<ObjectColumn> RetrieveObjectColumnByIdAsync(Guid objectColumnId) =>
+            TryCatch(async () =>
+            {
+                ValidateObjectColumnId(objectColumnId);
+
+                ObjectColumn maybeObjectColumn = await this.storageBroker
+                    .SelectObjectColumnByIdAsync(objectColumnId);
+
+                return maybeObjectColumn;
+            });
     }
 }

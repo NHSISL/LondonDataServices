@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSets.Exceptions;
@@ -117,6 +118,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateDataSetAsync(someDataSet),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnModifyIfDatabaseUpdateExceptionOccursAndLogItAsync()
+        {
+            // given
+            DataSet randomDataSet = CreateRandomDataSet();
+            var databaseUpdateException = new DbUpdateException();
+
+            var failedDataSetStorageException =
+                new FailedDataSetStorageException(
+                    message: "Failed dataSet storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+            var expectedDataSetDependencyException =
+                new DataSetDependencyException(
+                    message: "DataSet dependency error occurred, contact support.",
+                    innerException: failedDataSetStorageException); 
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<DataSet> modifyDataSetTask =
+                this.dataSetService.ModifyDataSetAsync(randomDataSet);
+
+            DataSetDependencyException actualDataSetDependencyException =
+                await Assert.ThrowsAsync<DataSetDependencyException>(
+                    modifyDataSetTask.AsTask);
+
+            // then
+            actualDataSetDependencyException.Should()
+                .BeEquivalentTo(expectedDataSetDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataSetByIdAsync(randomDataSet.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateDataSetAsync(randomDataSet),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

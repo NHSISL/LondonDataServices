@@ -119,5 +119,52 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveWhenSqlExceptionOccursAndLogItAsync()
+        {
+            // given
+            Guid someObjectColumnId = Guid.NewGuid();
+            SqlException sqlException = GetSqlException();
+
+            var failedObjectColumnStorageException =
+                new FailedObjectColumnStorageException(
+                    message: "Failed objectColumn storage error occurred, contact support.",
+                    innerException: sqlException);
+
+            var expectedObjectColumnDependencyException =
+                new ObjectColumnDependencyException(
+                    message: "ObjectColumn dependency error occurred, contact support.",
+                    innerException: failedObjectColumnStorageException); 
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectObjectColumnByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(sqlException);
+
+            // when
+            ValueTask<ObjectColumn> deleteObjectColumnTask =
+                this.objectColumnService.RemoveObjectColumnByIdAsync(someObjectColumnId);
+
+            ObjectColumnDependencyException actualObjectColumnDependencyException =
+                await Assert.ThrowsAsync<ObjectColumnDependencyException>(
+                    deleteObjectColumnTask.AsTask);
+
+            // then
+            actualObjectColumnDependencyException.Should()
+                .BeEquivalentTo(expectedObjectColumnDependencyException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectObjectColumnByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedObjectColumnDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

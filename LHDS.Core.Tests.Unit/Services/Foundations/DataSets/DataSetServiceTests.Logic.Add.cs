@@ -22,6 +22,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             DataSet storageDataSet = inputDataSet;
             DataSet expectedDataSet = storageDataSet.DeepClone();
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertDataSetAsync(inputDataSet))
                     .ReturnsAsync(storageDataSet);
@@ -33,13 +37,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             // then
             actualDataSet.Should().BeEquivalentTo(expectedDataSet);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertDataSetAsync(inputDataSet),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

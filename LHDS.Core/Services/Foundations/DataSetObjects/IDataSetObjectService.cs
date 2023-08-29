@@ -11,5 +11,6 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
         IQueryable<DataSetObject> RetrieveAllDataSetObjects();
         ValueTask<DataSetObject> RetrieveDataSetObjectByIdAsync(Guid dataSetObjectId);
         ValueTask<DataSetObject> ModifyDataSetObjectAsync(DataSetObject dataSetObject);
+        ValueTask<DataSetObject> RemoveDataSetObjectByIdAsync(Guid dataSetObjectId);
     }
 }

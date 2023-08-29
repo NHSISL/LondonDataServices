@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -86,6 +87,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             invalidObjectColumnException.AddData(
                 key: nameof(ObjectColumn.UpdatedBy),
                 values: "Text is required");
+
+            var expectedObjectColumnValidationException =
+                new ObjectColumnValidationException(
+                    message: "ObjectColumn validation errors occurred, please try again.",
+                    innerException: invalidObjectColumnException);
+
+            // when
+            ValueTask<ObjectColumn> addObjectColumnTask =
+                this.objectColumnService.AddObjectColumnAsync(invalidObjectColumn);
+
+            ObjectColumnValidationException actualObjectColumnValidationException =
+                await Assert.ThrowsAsync<ObjectColumnValidationException>(
+                    addObjectColumnTask.AsTask);
+
+            // then
+            actualObjectColumnValidationException.Should()
+                .BeEquivalentTo(expectedObjectColumnValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedObjectColumnValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertObjectColumnAsync(It.IsAny<ObjectColumn>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateDatesIsNotSameAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNumber();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ObjectColumn randomObjectColumn = CreateRandomObjectColumn(randomDateTimeOffset);
+            ObjectColumn invalidObjectColumn = randomObjectColumn;
+
+            invalidObjectColumn.UpdatedDate =
+                invalidObjectColumn.CreatedDate.AddDays(randomNumber);
+
+            var invalidObjectColumnException = 
+                new InvalidObjectColumnException(
+                    message: "Invalid objectColumn. Please correct the errors and try again.");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.UpdatedDate),
+                values: $"Date is not the same as {nameof(ObjectColumn.CreatedDate)}");
 
             var expectedObjectColumnValidationException =
                 new ObjectColumnValidationException(

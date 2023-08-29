@@ -47,5 +47,8 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
                 return maybeObjectColumn;
             });
+
+        public ValueTask<ObjectColumn> ModifyObjectColumnAsync(ObjectColumn objectColumn) =>
+            throw new NotImplementedException();
     }
 }

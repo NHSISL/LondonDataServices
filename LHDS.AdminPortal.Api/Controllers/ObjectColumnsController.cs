@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
@@ -39,6 +40,26 @@ namespace LHDS.AdminPortal.Api.Controllers
                when (objectColumnDependencyValidationException.InnerException is AlreadyExistsObjectColumnException)
             {
                 return Conflict(objectColumnDependencyValidationException.InnerException);
+            }
+            catch (ObjectColumnDependencyException objectColumnDependencyException)
+            {
+                return InternalServerError(objectColumnDependencyException);
+            }
+            catch (ObjectColumnServiceException objectColumnServiceException)
+            {
+                return InternalServerError(objectColumnServiceException);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult<IQueryable<ObjectColumn>> GetAllObjectColumns()
+        {
+            try
+            {
+                IQueryable<ObjectColumn> retrievedObjectColumns =
+                    this.objectColumnService.RetrieveAllObjectColumns();
+
+                return Ok(retrievedObjectColumns);
             }
             catch (ObjectColumnDependencyException objectColumnDependencyException)
             {

@@ -27,10 +27,12 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
                 Parameter: nameof(DataSetObject.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    firstId: dataSetObject.UpdatedBy,
-                    secondId: dataSetObject.CreatedBy,
-                    secondIdName: nameof(DataSetObject.CreatedBy)),
-                Parameter: nameof(DataSetObject.UpdatedBy)));
+                    first: dataSetObject.UpdatedBy,
+                    second: dataSetObject.CreatedBy,
+                    secondName: nameof(DataSetObject.CreatedBy)),
+                Parameter: nameof(DataSetObject.UpdatedBy)),
+
+                (Rule: IsNotRecent(dataSetObject.CreatedDate), Parameter: nameof(DataSetObject.CreatedDate)));
         }
 
         private static void ValidateDataSetObjectIsNotNull(DataSetObject dataSetObject)
@@ -85,6 +87,23 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
                Condition = first != second,
                Message = $"Text is not the same as {secondName}"
            };
+
+        private dynamic IsNotRecent(DateTimeOffset date) => new
+        {
+            Condition = IsDateNotRecent(date),
+            Message = "Date is not recent"
+        };
+
+        private bool IsDateNotRecent(DateTimeOffset date)
+        {
+            DateTimeOffset currentDateTime =
+                this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+            TimeSpan timeDifference = currentDateTime.Subtract(date);
+            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+
+            return timeDifference.Duration() > oneMinute;
+        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

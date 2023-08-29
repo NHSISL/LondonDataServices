@@ -54,5 +54,49 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfDataSetIsNotFoundAndLogItAsync()
+        {
+            //given
+            Guid someDataSetId = Guid.NewGuid();
+            DataSet noDataSet = null;
+
+            var notFoundDataSetException =
+                new NotFoundDataSetException(someDataSetId);
+
+            var expectedDataSetValidationException =
+                new DataSetValidationException(
+                    message: "DataSet validation errors occurred, please try again.",
+                    innerException: notFoundDataSetException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectDataSetByIdAsync(It.IsAny<Guid>()))
+                    .ReturnsAsync(noDataSet);
+
+            //when
+            ValueTask<DataSet> retrieveDataSetByIdTask =
+                this.dataSetService.RetrieveDataSetByIdAsync(someDataSetId);
+
+            DataSetValidationException actualDataSetValidationException =
+                await Assert.ThrowsAsync<DataSetValidationException>(
+                    retrieveDataSetByIdTask.AsTask);
+
+            //then
+            actualDataSetValidationException.Should().BeEquivalentTo(expectedDataSetValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataSetByIdAsync(It.IsAny<Guid>()),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

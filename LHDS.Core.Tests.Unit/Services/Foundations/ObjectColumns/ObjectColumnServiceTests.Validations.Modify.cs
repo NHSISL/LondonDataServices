@@ -184,9 +184,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -295,8 +295,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                     expectedObjectColumnValidationException))),
                         Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -359,8 +359,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                    expectedObjectColumnValidationException))),
                        Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -420,8 +420,64 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                    expectedObjectColumnValidationException))),
                        Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfStorageUpdatedDateSameAsUpdatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ObjectColumn randomObjectColumn = CreateRandomModifyObjectColumn(randomDateTimeOffset);
+            ObjectColumn invalidObjectColumn = randomObjectColumn;
+            ObjectColumn storageObjectColumn = randomObjectColumn.DeepClone();
+
+            var invalidObjectColumnException = 
+                new InvalidObjectColumnException(
+                    message: "Invalid objectColumn. Please correct the errors and try again.");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.UpdatedDate),
+                values: $"Date is the same as {nameof(ObjectColumn.UpdatedDate)}");
+
+            var expectedObjectColumnValidationException =
+                new ObjectColumnValidationException(
+                    message: "ObjectColumn validation errors occurred, please try again.",
+                    innerException: invalidObjectColumnException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id))
+                .ReturnsAsync(storageObjectColumn);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<ObjectColumn> modifyObjectColumnTask =
+                this.objectColumnService.ModifyObjectColumnAsync(invalidObjectColumn);
+
+            // then
+            await Assert.ThrowsAsync<ObjectColumnValidationException>(
+                modifyObjectColumnTask.AsTask);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedObjectColumnValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectObjectColumnByIdAsync(invalidObjectColumn.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

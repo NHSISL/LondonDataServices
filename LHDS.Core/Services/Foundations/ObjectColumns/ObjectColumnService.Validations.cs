@@ -26,6 +26,24 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 (Rule: IsInvalid(objectColumn.UpdatedDate), Parameter: nameof(ObjectColumn.UpdatedDate)),
                 (Rule: IsInvalid(objectColumn.UpdatedBy), Parameter: nameof(ObjectColumn.UpdatedBy)),
 
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.SupplierColumnName, 255), Parameter: nameof(objectColumn.SupplierColumnName)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.OurColumnName, 255), Parameter: nameof(objectColumn.OurColumnName)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.SqlDataType, 50), Parameter: nameof(objectColumn.SqlDataType)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.CodeSystem, 255), Parameter: nameof(objectColumn.CodeSystem)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.CreatedBy, 255), Parameter: nameof(objectColumn.CreatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.UpdatedBy, 255), Parameter: nameof(objectColumn.UpdatedBy)),
+
                 (Rule: IsNotSame(
                     firstDate: objectColumn.UpdatedDate,
                     secondDate: objectColumn.CreatedDate,
@@ -59,6 +77,12 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
+        };
+
+        private static dynamic IsEqualOrSmallerThan(string text, int maxLength) => new
+        {
+            Condition = (text ?? string.Empty).Length > maxLength,
+            Message = "Text is exceeding max length"
         };
 
         private static dynamic IsInvalid(DateTimeOffset date) => new

@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
@@ -151,7 +152,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 await Assert.ThrowsAsync<DataSetSpecificationDependencyValidationException>(
                     addDataSetSpecificationTask.AsTask);
 
-            actualDataSetSpecificationDependencyValidationException.Should().BeEquivalentTo(expectedDataSetSpecificationValidationException);
+            actualDataSetSpecificationDependencyValidationException.Should()
+                .BeEquivalentTo(expectedDataSetSpecificationValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -169,6 +171,59 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnAddIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            DataSetSpecification someDataSetSpecification = CreateRandomDataSetSpecification();
+
+            var databaseUpdateException =
+                new DbUpdateException();
+
+            var failedDataSetSpecificationStorageException =
+                new FailedDataSetSpecificationStorageException(
+                    message: "Failed dataSetSpecification storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+            var expectedDataSetSpecificationDependencyException =
+                new DataSetSpecificationDependencyException(
+                    message: "DataSetSpecification dependency error occurred, contact support.",
+                    innerException: failedDataSetSpecificationStorageException); 
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<DataSetSpecification> addDataSetSpecificationTask =
+                this.dataSetSpecificationService.AddDataSetSpecificationAsync(someDataSetSpecification);
+
+            DataSetSpecificationDependencyException actualDataSetSpecificationDependencyException =
+                await Assert.ThrowsAsync<DataSetSpecificationDependencyException>(
+                    addDataSetSpecificationTask.AsTask);
+
+            // then
+            actualDataSetSpecificationDependencyException.Should()
+                .BeEquivalentTo(expectedDataSetSpecificationDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetSpecificationDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

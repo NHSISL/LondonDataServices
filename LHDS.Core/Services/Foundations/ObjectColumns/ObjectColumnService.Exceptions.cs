@@ -38,6 +38,10 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
                 throw CreateAndLogCriticalDependencyException(failedObjectColumnStorageException);
             }
+            catch (NotFoundObjectColumnException notFoundObjectColumnException)
+            {
+                throw CreateAndLogValidationException(notFoundObjectColumnException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsObjectColumnException =

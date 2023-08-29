@@ -43,6 +43,8 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 ObjectColumn maybeObjectColumn = await this.storageBroker
                     .SelectObjectColumnByIdAsync(objectColumnId);
 
+                ValidateStorageObjectColumn(maybeObjectColumn, objectColumnId);
+
                 return maybeObjectColumn;
             });
     }

@@ -223,7 +223,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     modifyDataSetObjectTask.AsTask);
 
             // then
-            actualDataSetObjectValidationException.Should().BeEquivalentTo(expectedDataSetObjectValidatonException);
+            actualDataSetObjectValidationException.Should()
+                .BeEquivalentTo(expectedDataSetObjectValidatonException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -241,6 +242,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfDataSetObjectDoesNotExistAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DataSetObject randomDataSetObject = CreateRandomModifyDataSetObject(randomDateTimeOffset);
+            DataSetObject nonExistDataSetObject = randomDataSetObject;
+            DataSetObject nullDataSetObject = null;
+
+            var notFoundDataSetObjectException =
+                new NotFoundDataSetObjectException(nonExistDataSetObject.Id);
+
+            var expectedDataSetObjectValidationException =
+                new DataSetObjectValidationException(
+                    message: "DataSetObject validation errors occurred, please try again.",
+                    innerException: notFoundDataSetObjectException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectDataSetObjectByIdAsync(nonExistDataSetObject.Id))
+                .ReturnsAsync(nullDataSetObject);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when 
+            ValueTask<DataSetObject> modifyDataSetObjectTask =
+                this.dataSetObjectService.ModifyDataSetObjectAsync(nonExistDataSetObject);
+
+            DataSetObjectValidationException actualDataSetObjectValidationException =
+                await Assert.ThrowsAsync<DataSetObjectValidationException>(
+                    modifyDataSetObjectTask.AsTask);
+
+            // then
+            actualDataSetObjectValidationException.Should()
+                .BeEquivalentTo(expectedDataSetObjectValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataSetObjectByIdAsync(nonExistDataSetObject.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetObjectValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

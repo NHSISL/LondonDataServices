@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -224,6 +225,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedDataSetObjectDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateDataSetObjectAsync(randomDataSetObject),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnModifyIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            DataSetObject randomDataSetObject = CreateRandomDataSetObject();
+            var serviceException = new Exception();
+
+            var failedDataSetObjectServiceException =
+                new FailedDataSetObjectServiceException(
+                    message: "Failed dataSetObject service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedDataSetObjectServiceException =
+                new DataSetObjectServiceException(
+                    message: "DataSetObject service error occurred, contact support.",
+                    innerException: failedDataSetObjectServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<DataSetObject> modifyDataSetObjectTask =
+                this.dataSetObjectService.ModifyDataSetObjectAsync(randomDataSetObject);
+
+            DataSetObjectServiceException actualDataSetObjectServiceException =
+                await Assert.ThrowsAsync<DataSetObjectServiceException>(
+                    modifyDataSetObjectTask.AsTask);
+
+            // then
+            actualDataSetObjectServiceException.Should()
+                .BeEquivalentTo(expectedDataSetObjectServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectDataSetObjectByIdAsync(randomDataSetObject.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetObjectServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

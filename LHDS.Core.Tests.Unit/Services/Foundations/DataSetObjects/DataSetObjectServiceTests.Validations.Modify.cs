@@ -88,7 +88,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
 
             invalidDataSetObjectException.AddData(
                 key: nameof(DataSetObject.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(DataSetObject.CreatedDate)}"
+                });
 
             invalidDataSetObjectException.AddData(
                 key: nameof(DataSetObject.UpdatedBy),
@@ -131,6 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             DataSetObject randomDataSetObject = CreateRandomDataSetObject(randomDateTimeOffset);
             DataSetObject invalidDataSetObject = randomDataSetObject;
+            
             var invalidDataSetObjectException = 
                 new InvalidDataSetObjectException(
                     message: "Invalid dataSetObject. Please correct the errors and try again.");

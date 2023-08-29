@@ -1,9 +1,13 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
@@ -50,12 +54,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnAddIfObjectColumnIsInvalidAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnAddIfObjectColumnsIsInvalidAndLogItAsync(string invalidText)
         {
             // given
             var invalidObjectColumn = new ObjectColumn
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                SupplierColumnName = invalidText,
+                OurColumnName = invalidText,
+                SqlDataType = invalidText,
+                CodeSystem = invalidText,
             };
 
             var invalidObjectColumnException =
@@ -66,11 +73,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 key: nameof(ObjectColumn.Id),
                 values: "Id is required");
 
-            //invalidObjectColumnException.AddData(
-            //    key: nameof(ObjectColumn.Name),
-            //    values: "Text is required");
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.DataSetObjectId),
+                values: "Id is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the ObjectColumn model
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.SupplierColumnName),
+                values: "Text is required");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.OurColumnName),
+                values: "Text is required");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.SqlDataType),
+                values: "Text is required");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.CodeSystem),
+                values: "Text is required");
 
             invalidObjectColumnException.AddData(
                 key: nameof(ObjectColumn.CreatedDate),
@@ -124,6 +145,86 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
         }
 
         [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfObjectColumnsIsInvalidLenghtAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ObjectColumn invalidObjectColumn = CreateRandomObjectColumn(randomDateTimeOffset);
+            invalidObjectColumn.SupplierColumnName = GetRandomString(256);
+            invalidObjectColumn.OurColumnName = GetRandomString(256);
+            invalidObjectColumn.SqlDataType = GetRandomString(51);
+            invalidObjectColumn.CodeSystem = GetRandomString(256);
+            invalidObjectColumn.CreatedBy = GetRandomString(256);
+            invalidObjectColumn.UpdatedBy = invalidObjectColumn.CreatedBy;
+
+            var invalidObjectColumnException =
+                new InvalidObjectColumnException(
+                    message: "Invalid objectColumn. Please correct the errors and try again.");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.SupplierColumnName),
+                values: "Text is exceeding max length");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.OurColumnName),
+                values: "Text is exceeding max length");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.SqlDataType),
+                values: "Text is exceeding max length");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.CodeSystem),
+                values: "Text is exceeding max length");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.CreatedBy),
+                values: "Text is exceeding max length");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.UpdatedBy),
+                values: "Text is exceeding max length");
+
+            var expectedObjectColumnValidationException =
+                new ObjectColumnValidationException(
+                    message: "ObjectColumn validation errors occurred, please try again.",
+                    innerException: invalidObjectColumnException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<ObjectColumn> addObjectColumnTask =
+                this.objectColumnService.AddObjectColumnAsync(invalidObjectColumn);
+
+            ObjectColumnValidationException actualObjectColumnValidationException =
+                await Assert.ThrowsAsync<ObjectColumnValidationException>(() =>
+                    addObjectColumnTask.AsTask());
+
+            // then
+            actualObjectColumnValidationException.Should()
+                .BeEquivalentTo(expectedObjectColumnValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedObjectColumnValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertObjectColumnAsync(It.IsAny<ObjectColumn>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
         public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateDatesIsNotSameAndLogItAsync()
         {
             // given
@@ -135,7 +236,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             invalidObjectColumn.UpdatedDate =
                 invalidObjectColumn.CreatedDate.AddDays(randomNumber);
 
-            var invalidObjectColumnException = 
+            var invalidObjectColumnException =
                 new InvalidObjectColumnException(
                     message: "Invalid objectColumn. Please correct the errors and try again.");
 

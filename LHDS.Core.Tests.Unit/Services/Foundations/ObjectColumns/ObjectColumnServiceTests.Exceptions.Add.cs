@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
@@ -151,7 +152,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 await Assert.ThrowsAsync<ObjectColumnDependencyValidationException>(
                     addObjectColumnTask.AsTask);
 
-            actualObjectColumnDependencyValidationException.Should().BeEquivalentTo(expectedObjectColumnValidationException);
+            actualObjectColumnDependencyValidationException.Should()
+                .BeEquivalentTo(expectedObjectColumnValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -169,6 +171,59 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnAddIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            ObjectColumn someObjectColumn = CreateRandomObjectColumn();
+
+            var databaseUpdateException =
+                new DbUpdateException();
+
+            var failedObjectColumnStorageException =
+                new FailedObjectColumnStorageException(
+                    message: "Failed objectColumn storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+            var expectedObjectColumnDependencyException =
+                new ObjectColumnDependencyException(
+                    message: "ObjectColumn dependency error occurred, contact support.",
+                    innerException: failedObjectColumnStorageException); 
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<ObjectColumn> addObjectColumnTask =
+                this.objectColumnService.AddObjectColumnAsync(someObjectColumn);
+
+            ObjectColumnDependencyException actualObjectColumnDependencyException =
+                await Assert.ThrowsAsync<ObjectColumnDependencyException>(
+                    addObjectColumnTask.AsTask);
+
+            // then
+            actualObjectColumnDependencyException.Should()
+                .BeEquivalentTo(expectedObjectColumnDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertObjectColumnAsync(It.IsAny<ObjectColumn>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedObjectColumnDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

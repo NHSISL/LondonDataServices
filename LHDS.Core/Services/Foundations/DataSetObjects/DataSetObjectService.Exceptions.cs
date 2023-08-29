@@ -19,6 +19,10 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
             {
                 throw CreateAndLogValidationException(nullDataSetObjectException);
             }
+            catch (InvalidDataSetObjectException invalidDataSetObjectException)
+            {
+                throw CreateAndLogValidationException(invalidDataSetObjectException);
+            }
         }
 
         private DataSetObjectValidationException CreateAndLogValidationException(Xeption exception)

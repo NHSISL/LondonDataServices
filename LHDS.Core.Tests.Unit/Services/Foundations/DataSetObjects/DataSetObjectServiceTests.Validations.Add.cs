@@ -29,8 +29,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                 this.dataSetObjectService.AddDataSetObjectAsync(nullDataSetObject);
 
             DataSetObjectValidationException actualDataSetObjectValidationException =
-                await Assert.ThrowsAsync<DataSetObjectValidationException>(
-                    addDataSetObjectTask.AsTask);
+                await Assert.ThrowsAsync<DataSetObjectValidationException>(() =>
+                    addDataSetObjectTask.AsTask());
 
             // then
             actualDataSetObjectValidationException.Should()
@@ -98,12 +98,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                 this.dataSetObjectService.AddDataSetObjectAsync(invalidDataSetObject);
 
             DataSetObjectValidationException actualDataSetObjectValidationException =
-                await Assert.ThrowsAsync<DataSetObjectValidationException>(
-                    addDataSetObjectTask.AsTask);
+                await Assert.ThrowsAsync<DataSetObjectValidationException>(() =>
+                    addDataSetObjectTask.AsTask());
 
             // then
             actualDataSetObjectValidationException.Should()
                 .BeEquivalentTo(expectedDataSetObjectValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -144,17 +148,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     message: "DataSetObject validation errors occurred, please try again.",
                     innerException: invalidDataSetObjectException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<DataSetObject> addDataSetObjectTask =
                 this.dataSetObjectService.AddDataSetObjectAsync(invalidDataSetObject);
 
             DataSetObjectValidationException actualDataSetObjectValidationException =
-                await Assert.ThrowsAsync<DataSetObjectValidationException>(
-                    addDataSetObjectTask.AsTask);
+                await Assert.ThrowsAsync<DataSetObjectValidationException>(() =>
+                    addDataSetObjectTask.AsTask());
 
             // then
             actualDataSetObjectValidationException.Should()
                 .BeEquivalentTo(expectedDataSetObjectValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -165,9 +177,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                 broker.InsertDataSetObjectAsync(It.IsAny<DataSetObject>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -192,17 +204,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     message: "DataSetObject validation errors occurred, please try again.",
                     innerException: invalidDataSetObjectException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<DataSetObject> addDataSetObjectTask =
                 this.dataSetObjectService.AddDataSetObjectAsync(invalidDataSetObject);
 
             DataSetObjectValidationException actualDataSetObjectValidationException =
-                await Assert.ThrowsAsync<DataSetObjectValidationException>(
-                    addDataSetObjectTask.AsTask);
+                await Assert.ThrowsAsync<DataSetObjectValidationException>(() =>
+                    addDataSetObjectTask.AsTask());
 
             // then
             actualDataSetObjectValidationException.Should()
                 .BeEquivalentTo(expectedDataSetObjectValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -254,8 +274,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                 this.dataSetObjectService.AddDataSetObjectAsync(invalidDataSetObject);
 
             DataSetObjectValidationException actualDataSetObjectValidationException =
-                await Assert.ThrowsAsync<DataSetObjectValidationException>(
-                    addDataSetObjectTask.AsTask);
+                await Assert.ThrowsAsync<DataSetObjectValidationException>(() =>
+                    addDataSetObjectTask.AsTask());
 
             // then
             actualDataSetObjectValidationException.Should()

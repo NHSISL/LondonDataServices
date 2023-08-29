@@ -38,6 +38,16 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
         private void ValidateDataSetSpecificationOnModify(DataSetSpecification dataSetSpecification)
         {
             ValidateDataSetSpecificationIsNotNull(dataSetSpecification);
+
+            Validate(
+                (Rule: IsInvalid(dataSetSpecification.Id), Parameter: nameof(DataSetSpecification.Id)),
+
+                // TODO: Add any other required validation rules
+
+                (Rule: IsInvalid(dataSetSpecification.CreatedDate), Parameter: nameof(DataSetSpecification.CreatedDate)),
+                (Rule: IsInvalid(dataSetSpecification.CreatedBy), Parameter: nameof(DataSetSpecification.CreatedBy)),
+                (Rule: IsInvalid(dataSetSpecification.UpdatedDate), Parameter: nameof(DataSetSpecification.UpdatedDate)),
+                (Rule: IsInvalid(dataSetSpecification.UpdatedBy), Parameter: nameof(DataSetSpecification.UpdatedBy)));
         }
 
         public void ValidateDataSetSpecificationId(Guid dataSetSpecificationId) =>
@@ -94,7 +104,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
-        
+
         private static dynamic IsNotSame(
            string first,
            string second,

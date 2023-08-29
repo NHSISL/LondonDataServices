@@ -70,6 +70,8 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                 DataSetSpecification maybeDataSetSpecification = await this.storageBroker
                     .SelectDataSetSpecificationByIdAsync(dataSetSpecificationId);
 
+                ValidateStorageDataSetSpecification(maybeDataSetSpecification, dataSetSpecificationId);
+
                 return await this.storageBroker.DeleteDataSetSpecificationAsync(maybeDataSetSpecification);
             });
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -57,10 +58,19 @@ namespace LHDS.Core.Services.Foundations.DataSets
             {
                 var failedDataSetStorageException =
                     new FailedDataSetStorageException(
-                    message: "Failed dataSet storage error occurred, contact support.",
-                    innerException: databaseUpdateException);
+                        message: "Failed dataSet storage error occurred, contact support.",
+                        innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedDataSetStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedDataSetServiceException =
+                    new FailedDataSetServiceException(
+                        message: "Failed dataSet service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedDataSetServiceException);
             }
         }
 
@@ -111,6 +121,19 @@ namespace LHDS.Core.Services.Foundations.DataSets
             this.loggingBroker.LogError(dataSetDependencyException);
 
             return dataSetDependencyException;
+        }
+
+        private DataSetServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var dataSetServiceException = 
+                new DataSetServiceException(
+                    message: "DataSet service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(dataSetServiceException);
+
+            return dataSetServiceException;
         }
     }
 }

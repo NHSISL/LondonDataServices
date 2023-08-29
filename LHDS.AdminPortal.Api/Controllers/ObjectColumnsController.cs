@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,34 @@ namespace LHDS.AdminPortal.Api.Controllers
                     this.objectColumnService.RetrieveAllObjectColumns();
 
                 return Ok(retrievedObjectColumns);
+            }
+            catch (ObjectColumnDependencyException objectColumnDependencyException)
+            {
+                return InternalServerError(objectColumnDependencyException);
+            }
+            catch (ObjectColumnServiceException objectColumnServiceException)
+            {
+                return InternalServerError(objectColumnServiceException);
+            }
+        }
+
+        [HttpGet("{objectColumnId}")]
+        public async ValueTask<ActionResult<ObjectColumn>> GetObjectColumnByIdAsync(Guid objectColumnId)
+        {
+            try
+            {
+                ObjectColumn objectColumn = await this.objectColumnService.RetrieveObjectColumnByIdAsync(objectColumnId);
+
+                return Ok(objectColumn);
+            }
+            catch (ObjectColumnValidationException objectColumnValidationException)
+                when (objectColumnValidationException.InnerException is NotFoundObjectColumnException)
+            {
+                return NotFound(objectColumnValidationException.InnerException);
+            }
+            catch (ObjectColumnValidationException objectColumnValidationException)
+            {
+                return BadRequest(objectColumnValidationException.InnerException);
             }
             catch (ObjectColumnDependencyException objectColumnDependencyException)
             {

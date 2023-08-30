@@ -64,6 +64,17 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
                 (Rule: IsNotRecent(dataSetObject.CreatedDate), Parameter: nameof(DataSetObject.CreatedDate)));
         }
 
+        public void ValidateDataSetObjectId(Guid dataSetObjectId) =>
+            Validate((Rule: IsInvalid(dataSetObjectId), Parameter: nameof(DataSetObject.Id)));
+
+        private static void ValidateStorageDataSetObject(DataSetObject maybeDataSetObject, Guid dataSetObjectId)
+        {
+            if (maybeDataSetObject is null)
+            {
+                throw new NotFoundDataSetObjectException(dataSetObjectId);
+            }
+        }
+
         private static void ValidateDataSetObjectIsNotNull(DataSetObject dataSetObject)
         {
             if (dataSetObject is null)

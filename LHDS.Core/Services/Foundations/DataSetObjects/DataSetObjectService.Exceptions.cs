@@ -38,6 +38,10 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
 
                 throw CreateAndLogCriticalDependencyException(failedDataSetObjectStorageException);
             }
+            catch (NotFoundDataSetObjectException notFoundDataSetObjectException)
+            {
+                throw CreateAndLogValidationException(notFoundDataSetObjectException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsDataSetObjectException =

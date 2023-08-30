@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -33,5 +34,18 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
 
         public IQueryable<DataSetObject> RetrieveAllDataSetObjects() =>
             TryCatch(() => this.storageBroker.SelectAllDataSetObjects());
+
+        public ValueTask<DataSetObject> RetrieveDataSetObjectByIdAsync(Guid dataSetObjectId) =>
+            TryCatch(async () =>
+            {
+                ValidateDataSetObjectId(dataSetObjectId);
+
+                DataSetObject maybeDataSetObject = await this.storageBroker
+                    .SelectDataSetObjectByIdAsync(dataSetObjectId);
+
+                ValidateStorageDataSetObject(maybeDataSetObject, dataSetObjectId);
+
+                return maybeDataSetObject;
+            });
     }
 }

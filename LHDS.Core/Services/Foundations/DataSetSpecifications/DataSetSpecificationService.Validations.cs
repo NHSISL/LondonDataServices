@@ -47,8 +47,10 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
 
             Validate(
                 (Rule: IsInvalid(dataSetSpecification.Id), Parameter: nameof(DataSetSpecification.Id)),
+                (Rule: IsInvalid(dataSetSpecification.DataSetId), Parameter: nameof(DataSetSpecification.DataSetId)),
 
-                // TODO: Add any other required validation rules
+                (Rule: IsInvalid(dataSetSpecification.SupplierSpecificationVersion),
+                    Parameter: nameof(DataSetSpecification.SupplierSpecificationVersion)),
 
                 (Rule: IsInvalid(dataSetSpecification.CreatedDate), Parameter: nameof(DataSetSpecification.CreatedDate)),
                 (Rule: IsInvalid(dataSetSpecification.CreatedBy), Parameter: nameof(DataSetSpecification.CreatedBy)),

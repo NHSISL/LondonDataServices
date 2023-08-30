@@ -144,6 +144,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             DataSetSpecification invalidDataSetSpecification = CreateRandomDataSetSpecification(randomDateTimeOffset);
             invalidDataSetSpecification.SupplierSpecificationVersion = GetRandomString(11);
+            invalidDataSetSpecification.OurSpecificationVersion = GetRandomString(11);
+            invalidDataSetSpecification.SupersededBy = GetRandomString(256);
+            invalidDataSetSpecification.PresededBy = GetRandomString(256);
+            invalidDataSetSpecification.CreatedBy = GetRandomString(256);
+            invalidDataSetSpecification.UpdatedBy = invalidDataSetSpecification.CreatedBy;
 
             var invalidDataSetSpecificationException =
                 new InvalidDataSetSpecificationException(
@@ -177,6 +182,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 new DataSetSpecificationValidationException(
                     message: "DataSetSpecification validation errors occurred, please try again.",
                     innerException: invalidDataSetSpecificationException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
 
             // when
             ValueTask<DataSetSpecification> addDataSetSpecificationTask =

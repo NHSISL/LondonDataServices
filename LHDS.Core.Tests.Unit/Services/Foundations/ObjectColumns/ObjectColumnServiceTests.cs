@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using LHDS.Core.Brokers.DateTimes;
@@ -69,6 +70,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static ObjectColumn CreateRandomModifyObjectColumn(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            ObjectColumn randomObjectColumn = CreateRandomObjectColumn(dateTimeOffset);
+
+            randomObjectColumn.CreatedDate =
+                randomObjectColumn.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomObjectColumn;
+        }
+
+        private static IQueryable<ObjectColumn> CreateRandomObjectColumns()
+        {
+            return CreateObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
 
         private static ObjectColumn CreateRandomObjectColumn() =>
             CreateObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();

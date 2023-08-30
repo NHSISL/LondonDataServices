@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
     public partial class ObjectColumnService
     {
         private delegate ValueTask<ObjectColumn> ReturningObjectColumnFunction();
+        private delegate IQueryable<ObjectColumn> ReturningObjectColumnsFunction();
 
         private async ValueTask<ObjectColumn> TryCatch(ReturningObjectColumnFunction returningObjectColumnFunction)
         {
@@ -36,6 +38,10 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
                 throw CreateAndLogCriticalDependencyException(failedObjectColumnStorageException);
             }
+            catch (NotFoundObjectColumnException notFoundObjectColumnException)
+            {
+                throw CreateAndLogValidationException(notFoundObjectColumnException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsObjectColumnException =
@@ -54,6 +60,15 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
                 throw CreateAndLogDependencyValidationException(invalidObjectColumnReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedObjectColumnException = 
+                    new LockedObjectColumnException(
+                        message: "Locked objectColumn record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedObjectColumnException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedObjectColumnStorageException =
@@ -62,6 +77,32 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                         innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedObjectColumnStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedObjectColumnServiceException =
+                    new FailedObjectColumnServiceException(
+                        message: "Failed objectColumn service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedObjectColumnServiceException);
+            }
+        }
+
+        private IQueryable<ObjectColumn> TryCatch(ReturningObjectColumnsFunction returningObjectColumnsFunction)
+        {
+            try
+            {
+                return returningObjectColumnsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedObjectColumnStorageException =
+                    new FailedObjectColumnStorageException(
+                        message: "Failed objectColumn storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedObjectColumnStorageException);
             }
             catch (Exception exception)
             {

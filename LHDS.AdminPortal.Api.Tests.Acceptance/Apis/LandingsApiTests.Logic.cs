@@ -24,7 +24,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             List<Document> retrievedDocuments = 
                 await this.apiBroker.downloadService.RetrieveListOfDocumentsToProcessAsync();
 
+            byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
+            byte[] encryptedData = await this.apiBroker.cryptographyProvider.EncryptAsync(documentData);
             Document retrievedDocument = retrievedDocuments[0];
+            retrievedDocument.DocumentData = encryptedData;
 
             await this.apiBroker.documentService.AddDocumentAsync(retrievedDocument);
 
@@ -48,7 +51,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
 
             await this.apiBroker.DeleteIngestionTrackingByIdAsync(landingIngestionTracking.Id);
 
-            foreach(var audit in ingestionTrackingAudits)
+            foreach(var audit in ingestionTrackingAudits) 
             { 
                 await this.apiBroker.DeleteAuditByIdAsync(audit.Id);
             }

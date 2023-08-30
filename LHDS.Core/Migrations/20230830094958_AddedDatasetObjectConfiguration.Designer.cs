@@ -4,6 +4,7 @@ using LHDS.Core.Brokers.Storages.Sql;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LHDS.Core.Migrations
 {
     [DbContext(typeof(StorageBroker))]
-    partial class StorageBrokerModelSnapshot : ModelSnapshot
+    [Migration("20230830094958_AddedDatasetObjectConfiguration")]
+    partial class AddedDatasetObjectConfiguration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -710,14 +713,14 @@ namespace LHDS.Core.Migrations
                         {
                             Id = new Guid("67680f17-9d0c-4474-8b35-56ca8f9df1f6"),
                             CreatedBy = "System",
-                            CreatedDate = new DateTimeOffset(new DateTime(2023, 8, 30, 11, 24, 6, 317, DateTimeKind.Unspecified).AddTicks(813), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedDate = new DateTimeOffset(new DateTime(2023, 8, 30, 9, 49, 58, 76, DateTimeKind.Unspecified).AddTicks(370), new TimeSpan(0, 0, 0, 0, 0)),
                             DecryptionManualTriggerUrl = "Update this => environment specific",
                             Description = "Emis Supplier",
                             FriendlyName = "EMIS",
                             LandingManualTriggerUrl = "Update this => environment specific",
                             Name = "EMIS",
                             UpdatedBy = "System",
-                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 8, 30, 11, 24, 6, 317, DateTimeKind.Unspecified).AddTicks(831), new TimeSpan(0, 0, 0, 0, 0))
+                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 8, 30, 9, 49, 58, 76, DateTimeKind.Unspecified).AddTicks(378), new TimeSpan(0, 0, 0, 0, 0))
                         });
                 });
 

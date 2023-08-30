@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using LHDS.Core.Models.Foundations.DataSetObjects;
 using LHDS.Core.Models.Foundations.DataSetObjects.Exceptions;
@@ -12,13 +16,38 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
 
             Validate(
                 (Rule: IsInvalid(dataSetObject.Id), Parameter: nameof(DataSetObject.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(dataSetObject.DataSetSpecificationId), Parameter: nameof(dataSetObject.DataSetSpecificationId)),
+                (Rule: IsInvalid(dataSetObject.SupplierObjectName), Parameter: nameof(dataSetObject.SupplierObjectName)),
+                (Rule: IsInvalid(dataSetObject.OurObjectName), Parameter: nameof(dataSetObject.OurObjectName)),
+                (Rule: IsInvalid(dataSetObject.PushOrPull), Parameter: nameof(dataSetObject.PushOrPull)),
                 (Rule: IsInvalid(dataSetObject.CreatedDate), Parameter: nameof(DataSetObject.CreatedDate)),
                 (Rule: IsInvalid(dataSetObject.CreatedBy), Parameter: nameof(DataSetObject.CreatedBy)),
                 (Rule: IsInvalid(dataSetObject.UpdatedDate), Parameter: nameof(DataSetObject.UpdatedDate)),
                 (Rule: IsInvalid(dataSetObject.UpdatedBy), Parameter: nameof(DataSetObject.UpdatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataSetObject.SupplierObjectName, 255), Parameter: nameof(dataSetObject.SupplierObjectName)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataSetObject.OurObjectName, 255), Parameter: nameof(dataSetObject.OurObjectName)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataSetObject.ObjectDescription, 500), Parameter: nameof(dataSetObject.ObjectDescription)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataSetObject.InterchangeProtocol, 255), Parameter: nameof(dataSetObject.InterchangeProtocol)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataSetObject.PushOrPull, 10), Parameter: nameof(dataSetObject.PushOrPull)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataSetObject.DeletionHandling, 255), Parameter: nameof(dataSetObject.DeletionHandling)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataSetObject.CreatedBy, 255), Parameter: nameof(dataSetObject.CreatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataSetObject.UpdatedBy, 255), Parameter: nameof(dataSetObject.UpdatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: dataSetObject.UpdatedDate,
@@ -117,6 +146,12 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
             Message = "Date is required"
         };
 
+        private static dynamic IsEqualOrSmallerThan(string text, int maxLength) => new
+        {
+            Condition = (text ?? string.Empty).Length > maxLength,
+            Message = "Text is exceeding max length"
+        };
+
         private static dynamic IsSame(
             DateTimeOffset firstDate,
             DateTimeOffset secondDate,
@@ -172,7 +207,7 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidDataSetObjectException = 
+            var invalidDataSetObjectException =
                 new InvalidDataSetObjectException(
                     message: "Invalid dataSetObject. Please correct the errors and try again.");
 

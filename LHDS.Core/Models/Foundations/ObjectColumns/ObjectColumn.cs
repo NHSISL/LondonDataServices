@@ -6,7 +6,7 @@ using System;
 using LHDS.Core.Models.Bases;
 using LHDS.Core.Models.Foundations.DataSetObjects;
 
-namespace LHDS.Core.Models.Foundations.ColumnDefinitions
+namespace LHDS.Core.Models.Foundations.ObjectColumns
 {
     public class ObjectColumn : IKey, IAudit
     {

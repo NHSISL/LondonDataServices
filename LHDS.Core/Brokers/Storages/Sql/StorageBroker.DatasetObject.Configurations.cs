@@ -15,8 +15,12 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .ToTable(columnDefinition => columnDefinition.IsTemporal());
 
             modelBuilder.Entity<DataSetObject>()
-              .Property(objectColumn => objectColumn.DataSetSpecificationId)
-              .IsRequired();
+                .Property(objectColumn => objectColumn.Id)
+                .IsRequired();
+
+            modelBuilder.Entity<DataSetObject>()
+                .Property(objectColumn => objectColumn.DataSetSpecificationId)
+                .IsRequired();
 
             modelBuilder.Entity<DataSetObject>()
                 .Property(objectColumn => objectColumn.SupplierObjectName)
@@ -34,34 +38,34 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired(false);
 
             modelBuilder.Entity<DataSetObject>()
-               .Property(objectColumn => objectColumn.InterchangeProtocol)
-               .HasMaxLength(255)
-               .IsRequired(false);
+                .Property(objectColumn => objectColumn.InterchangeProtocol)
+                .HasMaxLength(255)
+                .IsRequired(false);
 
             modelBuilder.Entity<DataSetObject>()
-               .Property(objectColumn => objectColumn.PushOrPull)
-               .HasMaxLength(10)
-               .IsRequired();
+                .Property(objectColumn => objectColumn.PushOrPull)
+                .HasMaxLength(10)
+                .IsRequired();
 
             modelBuilder.Entity<DataSetObject>()
-              .Property(objectColumn => objectColumn.DeletionHandling)
-              .HasMaxLength(255)
-              .IsRequired(false);
+                .Property(objectColumn => objectColumn.DeletionHandling)
+                .HasMaxLength(255)
+                .IsRequired(false);
 
             modelBuilder.Entity<DataSetObject>()
-               .Property(objectColumn => objectColumn.IsSubmissionHeaderObject)
-               .HasDefaultValue(false)
-               .IsRequired();
+                .Property(objectColumn => objectColumn.IsSubmissionHeaderObject)
+                .HasDefaultValue(false)
+                .IsRequired();
 
             modelBuilder.Entity<DataSetObject>()
-               .Property(objectColumn => objectColumn.IsTransactionLog)
-               .HasDefaultValue(false)
-               .IsRequired();
+                .Property(objectColumn => objectColumn.IsTransactionLog)
+                .HasDefaultValue(false)
+                .IsRequired();
 
             modelBuilder.Entity<DataSetObject>()
-               .Property(objectColumn => objectColumn.CreatedBy)
-               .HasMaxLength(255)
-               .IsRequired();
+                .Property(objectColumn => objectColumn.CreatedBy)
+                .HasMaxLength(255)
+                .IsRequired();
 
             modelBuilder.Entity<DataSetObject>()
                 .Property(objectColumn => objectColumn.CreatedDate)

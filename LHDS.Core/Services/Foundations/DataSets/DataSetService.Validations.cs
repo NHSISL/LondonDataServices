@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSets.Exceptions;
@@ -12,9 +16,11 @@ namespace LHDS.Core.Services.Foundations.DataSets
 
             Validate(
                 (Rule: IsInvalid(dataSet.Id), Parameter: nameof(DataSet.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(dataSet.DataSetName), Parameter: nameof(DataSet.DataSetName)),
+                (Rule: IsInvalid(dataSet.DataSetAliasses), Parameter: nameof(DataSet.DataSetAliasses)),
+                (Rule: IsInvalid(dataSet.DataSetSupplier), Parameter: nameof(DataSet.DataSetSupplier)),
+                (Rule: IsInvalid(dataSet.DataSetAuthor), Parameter: nameof(DataSet.DataSetAuthor)),
+                (Rule: IsInvalid(dataSet.DataSourceType), Parameter: nameof(DataSet.DataSourceType)),
                 (Rule: IsInvalid(dataSet.CreatedDate), Parameter: nameof(DataSet.CreatedDate)),
                 (Rule: IsInvalid(dataSet.CreatedBy), Parameter: nameof(DataSet.CreatedBy)),
                 (Rule: IsInvalid(dataSet.UpdatedDate), Parameter: nameof(DataSet.UpdatedDate)),
@@ -172,7 +178,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidDataSetException = 
+            var invalidDataSetException =
                 new InvalidDataSetException(
                     message: "Invalid dataSet. Please correct the errors and try again.");
 

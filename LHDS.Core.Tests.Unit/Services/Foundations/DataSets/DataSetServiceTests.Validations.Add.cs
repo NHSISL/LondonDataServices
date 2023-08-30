@@ -1,9 +1,13 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSets.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
@@ -55,7 +59,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             // given
             var invalidDataSet = new DataSet
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                DataSetName = invalidText,
+                DataSetAliasses = invalidText,
+                DataSetSupplier = invalidText,
+                DataSetAuthor = invalidText,
+                DataSourceType = invalidText,
             };
 
             var invalidDataSetException =
@@ -66,11 +74,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 key: nameof(DataSet.Id),
                 values: "Id is required");
 
-            //invalidDataSetException.AddData(
-            //    key: nameof(DataSet.Name),
-            //    values: "Text is required");
+            invalidDataSetException.AddData(
+               key: nameof(DataSet.DataSetName),
+               values: "Text is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the DataSet model
+            invalidDataSetException.AddData(
+               key: nameof(DataSet.DataSetAliasses),
+               values: "Text is required");
+
+            invalidDataSetException.AddData(
+               key: nameof(DataSet.DataSetSupplier),
+               values: "Text is required");
+
+            invalidDataSetException.AddData(
+               key: nameof(DataSet.DataSetAuthor),
+               values: "Text is required");
+
+            invalidDataSetException.AddData(
+               key: nameof(DataSet.DataSourceType),
+               values: "Text is required");
 
             invalidDataSetException.AddData(
                 key: nameof(DataSet.CreatedDate),
@@ -135,7 +157,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             invalidDataSet.UpdatedDate =
                 invalidDataSet.CreatedDate.AddDays(randomNumber);
 
-            var invalidDataSetException = 
+            var invalidDataSetException =
                 new InvalidDataSetException(
                     message: "Invalid dataSet. Please correct the errors and try again.");
 

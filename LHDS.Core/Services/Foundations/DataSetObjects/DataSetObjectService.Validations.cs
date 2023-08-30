@@ -70,9 +70,10 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
 
             Validate(
                 (Rule: IsInvalid(dataSetObject.Id), Parameter: nameof(DataSetObject.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(dataSetObject.DataSetSpecificationId), Parameter: nameof(dataSetObject.DataSetSpecificationId)),
+                (Rule: IsInvalid(dataSetObject.SupplierObjectName), Parameter: nameof(dataSetObject.SupplierObjectName)),
+                (Rule: IsInvalid(dataSetObject.OurObjectName), Parameter: nameof(dataSetObject.OurObjectName)),
+                (Rule: IsInvalid(dataSetObject.PushOrPull), Parameter: nameof(dataSetObject.PushOrPull)),
                 (Rule: IsInvalid(dataSetObject.CreatedDate), Parameter: nameof(DataSetObject.CreatedDate)),
                 (Rule: IsInvalid(dataSetObject.CreatedBy), Parameter: nameof(DataSetObject.CreatedBy)),
                 (Rule: IsInvalid(dataSetObject.UpdatedDate), Parameter: nameof(DataSetObject.UpdatedDate)),

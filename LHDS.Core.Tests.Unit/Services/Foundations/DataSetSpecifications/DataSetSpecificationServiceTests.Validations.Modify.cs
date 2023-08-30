@@ -68,6 +68,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             var invalidDataSetSpecification = new DataSetSpecification
             {
                 SupplierSpecificationVersion = invalidText,
+                OurSpecificationVersion = invalidText,
                 CreatedBy = invalidText,
                 UpdatedBy = invalidText
             };
@@ -86,6 +87,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
             invalidDataSetSpecificationException.AddData(
                 key: nameof(DataSetSpecification.SupplierSpecificationVersion),
+                values: "Text is required");
+
+            invalidDataSetSpecificationException.AddData(
+                key: nameof(DataSetSpecification.OurSpecificationVersion),
                 values: "Text is required");
 
             invalidDataSetSpecificationException.AddData(

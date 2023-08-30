@@ -155,7 +155,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            DataSetObject invalidDataSetObject = CreateRandomDataSetObject(randomDateTimeOffset);
+            DataSetObject invalidDataSetObject = CreateRandomModifyDataSetObject(randomDateTimeOffset);
             invalidDataSetObject.SupplierObjectName = GetRandomString(256);
             invalidDataSetObject.OurObjectName = GetRandomString(256);
             invalidDataSetObject.ObjectDescription = GetRandomString(501);
@@ -211,12 +211,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     .Returns(randomDateTimeOffset);
 
             // when
-            ValueTask<DataSetObject> addDataSetObjectTask =
+            ValueTask<DataSetObject> modifyDataSetObjectTask =
                 this.dataSetObjectService.ModifyDataSetObjectAsync(invalidDataSetObject);
 
             DataSetObjectValidationException actualDataSetObjectValidationException =
                 await Assert.ThrowsAsync<DataSetObjectValidationException>(() =>
-                    addDataSetObjectTask.AsTask());
+                    modifyDataSetObjectTask.AsTask());
 
             // then
             actualDataSetObjectValidationException.Should()
@@ -232,7 +232,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.InsertDataSetObjectAsync(It.IsAny<DataSetObject>()),
+                broker.UpdateDataSetObjectAsync(It.IsAny<DataSetObject>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

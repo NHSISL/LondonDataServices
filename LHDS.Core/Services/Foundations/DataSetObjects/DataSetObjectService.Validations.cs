@@ -79,6 +79,30 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
                 (Rule: IsInvalid(dataSetObject.UpdatedDate), Parameter: nameof(DataSetObject.UpdatedDate)),
                 (Rule: IsInvalid(dataSetObject.UpdatedBy), Parameter: nameof(DataSetObject.UpdatedBy)),
 
+                (Rule: IsEqualOrSmallerThan(
+                    dataSetObject.SupplierObjectName, 255), Parameter: nameof(dataSetObject.SupplierObjectName)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataSetObject.OurObjectName, 255), Parameter: nameof(dataSetObject.OurObjectName)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataSetObject.ObjectDescription, 500), Parameter: nameof(dataSetObject.ObjectDescription)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataSetObject.InterchangeProtocol, 255), Parameter: nameof(dataSetObject.InterchangeProtocol)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataSetObject.PushOrPull, 10), Parameter: nameof(dataSetObject.PushOrPull)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataSetObject.DeletionHandling, 255), Parameter: nameof(dataSetObject.DeletionHandling)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataSetObject.CreatedBy, 255), Parameter: nameof(dataSetObject.CreatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataSetObject.UpdatedBy, 255), Parameter: nameof(dataSetObject.UpdatedBy)),
+
                 (Rule: IsSame(
                     firstDate: dataSetObject.UpdatedDate,
                     secondDate: dataSetObject.CreatedDate,

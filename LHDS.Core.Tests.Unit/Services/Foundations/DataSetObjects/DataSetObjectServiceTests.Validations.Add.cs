@@ -147,7 +147,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
             DataSetObject invalidDataSetObject = CreateRandomDataSetObject(randomDateTimeOffset);
             invalidDataSetObject.SupplierObjectName = GetRandomString(256);
             invalidDataSetObject.OurObjectName = GetRandomString(256);
+            invalidDataSetObject.ObjectDescription = GetRandomString(501);
+            invalidDataSetObject.InterchangeProtocol = GetRandomString(256);
             invalidDataSetObject.PushOrPull = GetRandomString(11);
+            invalidDataSetObject.DeletionHandling = GetRandomString(256);
             invalidDataSetObject.CreatedBy = GetRandomString(256);
             invalidDataSetObject.UpdatedBy = invalidDataSetObject.CreatedBy;
 
@@ -160,12 +163,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                 values: "Text is exceeding max length");
 
             invalidDataSetObjectException.AddData(
-                 key: nameof(DataSetObject.OurObjectName),
-                 values: "Text is exceeding max length");
+                key: nameof(DataSetObject.OurObjectName),
+                values: "Text is exceeding max length");
 
             invalidDataSetObjectException.AddData(
-                 key: nameof(DataSetObject.PushOrPull),
-                 values: "Text is exceeding max length");
+                key: nameof(DataSetObject.ObjectDescription),
+                values: "Text is exceeding max length");
+
+            invalidDataSetObjectException.AddData(
+                key: nameof(DataSetObject.InterchangeProtocol),
+                values: "Text is exceeding max length");
+
+            invalidDataSetObjectException.AddData(
+                key: nameof(DataSetObject.PushOrPull),
+                values: "Text is exceeding max length");
+
+            invalidDataSetObjectException.AddData(
+                key: nameof(DataSetObject.DeletionHandling),
+                values: "Text is exceeding max length");
 
             invalidDataSetObjectException.AddData(
                 key: nameof(DataSetObject.CreatedBy),

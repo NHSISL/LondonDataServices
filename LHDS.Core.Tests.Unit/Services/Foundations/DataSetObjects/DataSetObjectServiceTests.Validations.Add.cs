@@ -1,9 +1,13 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.DataSetObjects;
 using LHDS.Core.Models.Foundations.DataSetObjects.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
@@ -55,7 +59,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
             // given
             var invalidDataSetObject = new DataSetObject
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                SupplierObjectName = invalidText,
+                OurObjectName = invalidText,
+                PushOrPull = invalidText,
             };
 
             var invalidDataSetObjectException =
@@ -66,11 +72,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                 key: nameof(DataSetObject.Id),
                 values: "Id is required");
 
-            //invalidDataSetObjectException.AddData(
-            //    key: nameof(DataSetObject.Name),
-            //    values: "Text is required");
+            invalidDataSetObjectException.AddData(
+               key: nameof(DataSetObject.DataSetSpecificationId),
+               values: "Id is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the DataSetObject model
+            invalidDataSetObjectException.AddData(
+               key: nameof(DataSetObject.SupplierObjectName),
+               values: "Text is required");
+
+            invalidDataSetObjectException.AddData(
+               key: nameof(DataSetObject.OurObjectName),
+               values: "Text is required");
+
+            invalidDataSetObjectException.AddData(
+               key: nameof(DataSetObject.PushOrPull),
+               values: "Text is required");
 
             invalidDataSetObjectException.AddData(
                 key: nameof(DataSetObject.CreatedDate),
@@ -135,7 +151,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
             invalidDataSetObject.UpdatedDate =
                 invalidDataSetObject.CreatedDate.AddDays(randomNumber);
 
-            var invalidDataSetObjectException = 
+            var invalidDataSetObjectException =
                 new InvalidDataSetObjectException(
                     message: "Invalid dataSetObject. Please correct the errors and try again.");
 

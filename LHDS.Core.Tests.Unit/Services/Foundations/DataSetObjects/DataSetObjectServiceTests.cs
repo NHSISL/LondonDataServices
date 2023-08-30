@@ -86,15 +86,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
 
         private static Filler<DataSetObject> CreateDataSetObjectFiller(DateTimeOffset dateTimeOffset)
         {
-            string user = Guid.NewGuid().ToString();
+            string user = GetRandomString(255);
             var filler = new Filler<DataSetObject>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(dataSetObject => dataSetObject.SupplierObjectName).Use(GetRandomString(255))
+                .OnProperty(dataSetObject => dataSetObject.OurObjectName).Use(GetRandomString(255))
+                .OnProperty(dataSetObject => dataSetObject.PushOrPull).Use(GetRandomString(10))
+                .OnProperty(dataSetObject => dataSetObject.ObjectDescription).Use(GetRandomString(500))
+                .OnProperty(dataSetObject => dataSetObject.InterchangeProtocol).Use(GetRandomString(255))
+                .OnProperty(dataSetObject => dataSetObject.DeletionHandling).Use(GetRandomString(255))
                 .OnProperty(dataSetObject => dataSetObject.CreatedBy).Use(user)
-                .OnProperty(dataSetObject => dataSetObject.UpdatedBy).Use(user);
-
-            // TODO: Complete the filler setup e.g. ignore related properties etc...
+                .OnProperty(dataSetObject => dataSetObject.UpdatedBy).Use(user)
+                .OnProperty(dataSetObject => dataSetObject.DataSetObjects).IgnoreIt()
+                .OnProperty(dataSetObject => dataSetObject.DataSetSpecification).IgnoreIt();
 
             return filler;
         }

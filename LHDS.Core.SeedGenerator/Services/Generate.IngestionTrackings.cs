@@ -39,6 +39,7 @@ namespace LHDS.Core.SeedGenerator.Services
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(ingestionTracking => ingestionTracking.Id).Use(id)
                 .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(GetRandomString(maxCharacters: 450))
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplier.Id)

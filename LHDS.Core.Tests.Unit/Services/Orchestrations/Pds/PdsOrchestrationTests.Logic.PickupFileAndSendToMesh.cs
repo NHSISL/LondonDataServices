@@ -50,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 contentEncoding,
                 accept);
 
-            outputMessage.MessageId = Guid.NewGuid().ToString();
+            outputMessage.MessageId = identifier.ToString();
 
             PdsAudit randomPdsAudit =
                 GetRandomPdsAudit(identifier, identifier, fileName, randomDate, outputMessage.MessageId);
@@ -113,7 +113,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.identifierBrokerMock.Verify(broker =>
                 broker.GetIdentifier(),
-                    Times.Exactly(3));
+                    Times.Exactly(2));
 
             this.pdsAuditServiceMock.Verify(service =>
               service.AddPdsAuditAsync(It.Is(SamePdsAuditAs(outputPdsAudit))),

@@ -14,18 +14,18 @@ namespace LHDS.Core.Brokers.Storages.Sql
     {
         public DbSet<DataSetObject> DataSetObjects { get; set; }
 
-        public async ValueTask<DataSetObject> InsertDataSetObjectAsync(DataSetObject datasetObject) =>
-            await InsertAsync(datasetObject);
+        public async ValueTask<DataSetObject> InsertDataSetObjectAsync(DataSetObject dataSetObject) =>
+            await InsertAsync(dataSetObject);
 
         public IQueryable<DataSetObject> SelectAllDataSetObjects() => ReadAll<DataSetObject>();
 
-        public async ValueTask<DataSetObject> SelectDataSetObjectByIdAsync(Guid datasetObjectId) =>
-            await ReadAsync<DataSetObject>(datasetObjectId);
+        public async ValueTask<DataSetObject> SelectDataSetObjectByIdAsync(Guid dataSetObjectId) =>
+            await ReadAsync<DataSetObject>(dataSetObjectId);
 
-        public async ValueTask<DataSetObject> UpdateDataSetObjectAsync(DataSetObject datasetObject) =>
-            await UpdateAsync(datasetObject);
+        public async ValueTask<DataSetObject> UpdateDataSetObjectAsync(DataSetObject dataSetObject) =>
+            await UpdateAsync(dataSetObject);
 
-        public async ValueTask<DataSetObject> DeleteDataSetObjectAsync(DataSetObject datasetObject) =>
-            await DeleteAsync(datasetObject);
+        public async ValueTask<DataSetObject> DeleteDataSetObjectAsync(DataSetObject dataSetObject) =>
+            await DeleteAsync(dataSetObject);
     }
 }

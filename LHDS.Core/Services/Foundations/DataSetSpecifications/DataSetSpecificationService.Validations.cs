@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
@@ -12,8 +16,10 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
 
             Validate(
                 (Rule: IsInvalid(dataSetSpecification.Id), Parameter: nameof(DataSetSpecification.Id)),
+                (Rule: IsInvalid(dataSetSpecification.DataSetId), Parameter: nameof(DataSetSpecification.DataSetId)),
 
-                // TODO: Add any other required validation rules
+                (Rule: IsInvalid(dataSetSpecification.SupplierSpecificationVersion),
+                    Parameter: nameof(DataSetSpecification.SupplierSpecificationVersion)),
 
                 (Rule: IsInvalid(dataSetSpecification.CreatedDate), Parameter: nameof(DataSetSpecification.CreatedDate)),
                 (Rule: IsInvalid(dataSetSpecification.CreatedBy), Parameter: nameof(DataSetSpecification.CreatedBy)),
@@ -107,7 +113,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidDataSetSpecificationException = 
+            var invalidDataSetSpecificationException =
                 new InvalidDataSetSpecificationException(
                     message: "Invalid dataSetSpecification. Please correct the errors and try again.");
 

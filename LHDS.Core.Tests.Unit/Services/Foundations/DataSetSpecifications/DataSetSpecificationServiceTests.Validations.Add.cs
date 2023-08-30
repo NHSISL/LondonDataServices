@@ -54,7 +54,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnAddIfDataSetSpecificationIsInvalidAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnAddIfDataSetSpecificationIsInvalidAndLogItAsync(
+            string invalidText)
         {
             // given
             var invalidDataSetSpecification = new DataSetSpecification

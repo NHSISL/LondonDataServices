@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
     public partial class DataSetObjectService
     {
         private delegate ValueTask<DataSetObject> ReturningDataSetObjectFunction();
+        private delegate IQueryable<DataSetObject> ReturningDataSetObjectsFunction();
 
         private async ValueTask<DataSetObject> TryCatch(ReturningDataSetObjectFunction returningDataSetObjectFunction)
         {
@@ -74,6 +76,32 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
             }
         }
 
+        private IQueryable<DataSetObject> TryCatch(ReturningDataSetObjectsFunction returningDataSetObjectsFunction)
+        {
+            try
+            {
+                return returningDataSetObjectsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedDataSetObjectStorageException =
+                    new FailedDataSetObjectStorageException(
+                        message: "Failed dataSetObject storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedDataSetObjectStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedDataSetObjectServiceException =
+                    new FailedDataSetObjectServiceException(
+                        message: "Failed dataSetObject service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedDataSetObjectServiceException);
+            }
+        }
+
         private DataSetObjectValidationException CreateAndLogValidationException(Xeption exception)
         {
             var dataSetObjectValidationException =
@@ -91,7 +119,7 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
             var dataSetObjectDependencyException = 
                 new DataSetObjectDependencyException(
                     message: "DataSetObject dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(dataSetObjectDependencyException);
 
@@ -116,7 +144,7 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
             var dataSetObjectDependencyException = 
                 new DataSetObjectDependencyException(
                     message: "DataSetObject dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(dataSetObjectDependencyException);
 

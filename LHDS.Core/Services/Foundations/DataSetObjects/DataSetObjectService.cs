@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -29,5 +30,8 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
 
                 return await this.storageBroker.InsertDataSetObjectAsync(dataSetObject);
             });
+
+        public IQueryable<DataSetObject> RetrieveAllDataSetObjects() =>
+            TryCatch(() => this.storageBroker.SelectAllDataSetObjects());
     }
 }

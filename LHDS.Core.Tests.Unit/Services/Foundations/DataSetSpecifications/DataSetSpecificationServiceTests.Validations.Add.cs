@@ -1,9 +1,13 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
@@ -50,12 +54,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnAddIfDataSetSpecificationIsInvalidAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnAddIfDataSetSpecificationIsInvalidAndLogItAsync(
+            string invalidText)
         {
             // given
             var invalidDataSetSpecification = new DataSetSpecification
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                SupplierSpecificationVersion = invalidText,
+                CreatedBy = invalidText,
+                UpdatedBy = invalidText
             };
 
             var invalidDataSetSpecificationException =
@@ -66,11 +73,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 key: nameof(DataSetSpecification.Id),
                 values: "Id is required");
 
-            //invalidDataSetSpecificationException.AddData(
-            //    key: nameof(DataSetSpecification.Name),
-            //    values: "Text is required");
+            invalidDataSetSpecificationException.AddData(
+                key: nameof(DataSetSpecification.DataSetId),
+                values: "Id is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the DataSetSpecification model
+            invalidDataSetSpecificationException.AddData(
+                key: nameof(DataSetSpecification.SupplierSpecificationVersion),
+                values: "Text is required");
 
             invalidDataSetSpecificationException.AddData(
                 key: nameof(DataSetSpecification.CreatedDate),
@@ -135,7 +144,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             invalidDataSetSpecification.UpdatedDate =
                 invalidDataSetSpecification.CreatedDate.AddDays(randomNumber);
 
-            var invalidDataSetSpecificationException = 
+            var invalidDataSetSpecificationException =
                 new InvalidDataSetSpecificationException(
                     message: "Invalid dataSetSpecification. Please correct the errors and try again.");
 

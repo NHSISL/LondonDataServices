@@ -54,133 +54,6 @@ namespace LHDS.Core.Migrations
                     b.ToTable("Audits");
                 });
 
-            modelBuilder.Entity("LHDS.Core.Models.Foundations.ColumnDefinitions.ObjectColumn", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CodeSystem")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ColumnDescription")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("DataTypeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("DatasetObjectId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("FhirDataType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsAuthorCode")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleteFlag")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsEntityBusinessKey")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsMutable")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsPersonConfidentialData")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsRecordBusinessKey")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsSenderCode")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsSensitiveRecordMarker")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsSequencing")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsWatermark")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("Length")
-                        .HasColumnType("int");
-
-                    b.Property<string>("MaskingMethod")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("OrdinalPosition")
-                        .HasColumnType("int");
-
-                    b.Property<string>("OurColumnName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PartitionColumnLevel")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("PeriodEnd")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("PeriodEnd");
-
-                    b.Property<DateTime>("PeriodStart")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("PeriodStart");
-
-                    b.Property<string>("PopulatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("Precision")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Scale")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SqlDataType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SupplierColumnName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SupplierDateFormat")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TypeOfPersonConfidentialData")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("UpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DatasetObjectId");
-
-                    b.ToTable("ColumnDefinitions");
-
-                    b.ToTable(tb => tb.IsTemporal(ttb =>
-                            {
-                                ttb.UseHistoryTable("ColumnDefinitionsHistory");
-                                ttb
-                                    .HasPeriodStart("PeriodStart")
-                                    .HasColumnName("PeriodStart");
-                                ttb
-                                    .HasPeriodEnd("PeriodEnd")
-                                    .HasColumnName("PeriodEnd");
-                            }));
-                });
-
             modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSetObjects.DataSetObject", b =>
                 {
                     b.Property<Guid>("Id")
@@ -188,7 +61,9 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetimeoffset");
@@ -197,22 +72,31 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("DeletionHandling")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("InterchangeProtocol")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<bool>("IsSubmissionHeaderObject")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsTransactionLog")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("ObjectDescription")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("OurObjectName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime>("PeriodEnd")
                         .ValueGeneratedOnAddOrUpdate()
@@ -225,13 +109,19 @@ namespace LHDS.Core.Migrations
                         .HasColumnName("PeriodStart");
 
                     b.Property<string>("PushOrPull")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("SupplierObjectName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTimeOffset>("UpdatedDate")
                         .HasColumnType("datetimeoffset");
@@ -240,11 +130,116 @@ namespace LHDS.Core.Migrations
 
                     b.HasIndex("DataSetSpecificationId");
 
-                    b.ToTable("DatasetObjects");
+                    b.ToTable("DataSetObjects");
 
                     b.ToTable(tb => tb.IsTemporal(ttb =>
                             {
-                                ttb.UseHistoryTable("DatasetObjectsHistory");
+                                ttb.UseHistoryTable("DataSetObjectsHistory");
+                                ttb
+                                    .HasPeriodStart("PeriodStart")
+                                    .HasColumnName("PeriodStart");
+                                ttb
+                                    .HasPeriodEnd("PeriodEnd")
+                                    .HasColumnName("PeriodEnd");
+                            }));
+                });
+
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSetSpecifications.DataSetSpecification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("ActiveFrom")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("ActiveTo")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("DataSetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("DateImplemented")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("DateReleased")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("DateSuperseded")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("EntityChangeSynchronisation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsMultiSender")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsPublished")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OurSpecificationVersion")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime>("PeriodEnd")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("PeriodEnd");
+
+                    b.Property<DateTime>("PeriodStart")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("PeriodStart");
+
+                    b.Property<string>("PresededBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("SupersededBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SupplierSpecificationVersion")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTimeOffset>("UpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DataSetId");
+
+                    b.ToTable("DataSetSpecifications");
+
+                    b.ToTable(tb => tb.IsTemporal(ttb =>
+                            {
+                                ttb.UseHistoryTable("DataSetSpecificationsHistory");
                                 ttb
                                     .HasPeriodStart("PeriodStart")
                                     .HasColumnName("PeriodStart");
@@ -305,102 +300,11 @@ namespace LHDS.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Datasets");
+                    b.ToTable("DataSets");
 
                     b.ToTable(tb => tb.IsTemporal(ttb =>
                             {
-                                ttb.UseHistoryTable("DatasetsHistory");
-                                ttb
-                                    .HasPeriodStart("PeriodStart")
-                                    .HasColumnName("PeriodStart");
-                                ttb
-                                    .HasPeriodEnd("PeriodEnd")
-                                    .HasColumnName("PeriodEnd");
-                            }));
-                });
-
-            modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSets.DataSetSpecification", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("ActiveFrom")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset>("ActiveTo")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("DataSetId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("DateImplemented")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset>("DateReleased")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset>("DateSuperceeded")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("EntityChangeSynchronisation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsMultiSender")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsPublished")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OurSpecificationVersion")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("PeriodEnd")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("PeriodEnd");
-
-                    b.Property<DateTime>("PeriodStart")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("PeriodStart");
-
-                    b.Property<string>("PreceededBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SuperseededBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SupplierSpecificationVersion")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("UpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DataSetId");
-
-                    b.ToTable("DatasetSpecifications");
-
-                    b.ToTable(tb => tb.IsTemporal(ttb =>
-                            {
-                                ttb.UseHistoryTable("DatasetSpecificationsHistory");
+                                ttb.UseHistoryTable("DataSetsHistory");
                                 ttb
                                     .HasPeriodStart("PeriodStart")
                                     .HasColumnName("PeriodStart");
@@ -521,6 +425,172 @@ namespace LHDS.Core.Migrations
                     b.HasIndex("SupplierId");
 
                     b.ToTable("IngestionTrackings");
+                });
+
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.ObjectColumns.ObjectColumn", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CodeSystem")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("ColumnDescription")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("DataSetObjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("DataTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FhirDataType")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("IsAuthorCode")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsDeleteFlag")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsEntityBusinessKey")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsMutable")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsPersonConfidentialData")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsRecordBusinessKey")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsSenderCode")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsSensitiveRecordMarker")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsSequencing")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsWatermark")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int?>("Length")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MaskingMethod")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("OrdinalPosition")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OurColumnName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("PartitionColumnLevel")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("PeriodEnd")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("PeriodEnd");
+
+                    b.Property<DateTime>("PeriodStart")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("PeriodStart");
+
+                    b.Property<string>("PopulatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int?>("Precision")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Scale")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SqlDataType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("SupplierColumnName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("SupplierDateFormat")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("TypeOfPersonConfidentialData")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTimeOffset>("UpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DataSetObjectId");
+
+                    b.ToTable("ObjectColumns");
+
+                    b.ToTable(tb => tb.IsTemporal(ttb =>
+                            {
+                                ttb.UseHistoryTable("ObjectColumnsHistory");
+                                ttb
+                                    .HasPeriodStart("PeriodStart")
+                                    .HasColumnName("PeriodStart");
+                                ttb
+                                    .HasPeriodEnd("PeriodEnd")
+                                    .HasColumnName("PeriodEnd");
+                            }));
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.OptOuts.OptOut", b =>
@@ -654,14 +724,14 @@ namespace LHDS.Core.Migrations
                         {
                             Id = new Guid("67680f17-9d0c-4474-8b35-56ca8f9df1f6"),
                             CreatedBy = "System",
-                            CreatedDate = new DateTimeOffset(new DateTime(2023, 8, 25, 11, 44, 37, 617, DateTimeKind.Unspecified).AddTicks(5312), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedDate = new DateTimeOffset(new DateTime(2023, 8, 30, 12, 14, 29, 352, DateTimeKind.Unspecified).AddTicks(1362), new TimeSpan(0, 0, 0, 0, 0)),
                             DecryptionManualTriggerUrl = "Update this => environment specific",
                             Description = "Emis Supplier",
                             FriendlyName = "EMIS",
                             LandingManualTriggerUrl = "Update this => environment specific",
                             Name = "EMIS",
                             UpdatedBy = "System",
-                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 8, 25, 11, 44, 37, 617, DateTimeKind.Unspecified).AddTicks(5324), new TimeSpan(0, 0, 0, 0, 0))
+                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 8, 30, 12, 14, 29, 352, DateTimeKind.Unspecified).AddTicks(1369), new TimeSpan(0, 0, 0, 0, 0))
                         });
                 });
 
@@ -676,20 +746,9 @@ namespace LHDS.Core.Migrations
                     b.Navigation("IngestionTracking");
                 });
 
-            modelBuilder.Entity("LHDS.Core.Models.Foundations.ColumnDefinitions.ObjectColumn", b =>
-                {
-                    b.HasOne("LHDS.Core.Models.Foundations.DataSetObjects.DataSetObject", "DatasetObject")
-                        .WithMany("DataSetObjects")
-                        .HasForeignKey("DatasetObjectId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("DatasetObject");
-                });
-
             modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSetObjects.DataSetObject", b =>
                 {
-                    b.HasOne("LHDS.Core.Models.Foundations.DataSets.DataSetSpecification", "DataSetSpecification")
+                    b.HasOne("LHDS.Core.Models.Foundations.DataSetSpecifications.DataSetSpecification", "DataSetSpecification")
                         .WithMany("DataSetObjects")
                         .HasForeignKey("DataSetSpecificationId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -698,10 +757,10 @@ namespace LHDS.Core.Migrations
                     b.Navigation("DataSetSpecification");
                 });
 
-            modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSets.DataSetSpecification", b =>
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSetSpecifications.DataSetSpecification", b =>
                 {
                     b.HasOne("LHDS.Core.Models.Foundations.DataSets.DataSet", "DataSet")
-                        .WithMany("DatasetSpecifications")
+                        .WithMany("DataSetSpecifications")
                         .HasForeignKey("DataSetId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -720,19 +779,30 @@ namespace LHDS.Core.Migrations
                     b.Navigation("Supplier");
                 });
 
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.ObjectColumns.ObjectColumn", b =>
+                {
+                    b.HasOne("LHDS.Core.Models.Foundations.DataSetObjects.DataSetObject", "DataSetObject")
+                        .WithMany("DataSetObjects")
+                        .HasForeignKey("DataSetObjectId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("DataSetObject");
+                });
+
             modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSetObjects.DataSetObject", b =>
+                {
+                    b.Navigation("DataSetObjects");
+                });
+
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSetSpecifications.DataSetSpecification", b =>
                 {
                     b.Navigation("DataSetObjects");
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSets.DataSet", b =>
                 {
-                    b.Navigation("DatasetSpecifications");
-                });
-
-            modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSets.DataSetSpecification", b =>
-                {
-                    b.Navigation("DataSetObjects");
+                    b.Navigation("DataSetSpecifications");
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.IngestionTrackings.IngestionTracking", b =>

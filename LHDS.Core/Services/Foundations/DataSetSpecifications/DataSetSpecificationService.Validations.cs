@@ -24,10 +24,34 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                 (Rule: IsInvalid(dataSetSpecification.OurSpecificationVersion),
                     Parameter: nameof(DataSetSpecification.OurSpecificationVersion)),
 
+                (Rule: IsInvalid(dataSetSpecification.SupersededBy),
+                    Parameter: nameof(DataSetSpecification.SupersededBy)),
+
+                (Rule: IsInvalid(dataSetSpecification.PresededBy),
+                    Parameter: nameof(DataSetSpecification.PresededBy)),
+
                 (Rule: IsInvalid(dataSetSpecification.CreatedDate), Parameter: nameof(DataSetSpecification.CreatedDate)),
                 (Rule: IsInvalid(dataSetSpecification.CreatedBy), Parameter: nameof(DataSetSpecification.CreatedBy)),
                 (Rule: IsInvalid(dataSetSpecification.UpdatedDate), Parameter: nameof(DataSetSpecification.UpdatedDate)),
                 (Rule: IsInvalid(dataSetSpecification.UpdatedBy), Parameter: nameof(DataSetSpecification.UpdatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(dataSetSpecification.SupplierSpecificationVersion, 10),
+                    Parameter: nameof(dataSetSpecification.SupplierSpecificationVersion)),
+
+                (Rule: IsEqualOrSmallerThan(dataSetSpecification.OurSpecificationVersion, 10),
+                    Parameter: nameof(dataSetSpecification.OurSpecificationVersion)),
+
+                (Rule: IsEqualOrSmallerThan(dataSetSpecification.SupersededBy, 255),
+                    Parameter: nameof(dataSetSpecification.SupersededBy)),
+
+                (Rule: IsEqualOrSmallerThan(dataSetSpecification.PresededBy, 255),
+                    Parameter: nameof(dataSetSpecification.PresededBy)),
+
+                (Rule: IsEqualOrSmallerThan(dataSetSpecification.CreatedBy, 255),
+                    Parameter: nameof(dataSetSpecification.CreatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(dataSetSpecification.UpdatedBy, 255),
+                    Parameter: nameof(dataSetSpecification.UpdatedBy)),
 
                 (Rule: IsNotSame(
                     firstDate: dataSetSpecification.UpdatedDate,
@@ -68,6 +92,12 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
         {
             Condition = date == default,
             Message = "Date is required"
+        };
+
+        private static dynamic IsEqualOrSmallerThan(string text, int maxLength) => new
+        {
+            Condition = (text ?? string.Empty).Length > maxLength,
+            Message = "Text is exceeding max length"
         };
 
         private static dynamic IsNotSame(

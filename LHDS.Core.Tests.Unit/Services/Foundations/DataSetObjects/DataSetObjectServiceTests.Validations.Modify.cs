@@ -1,10 +1,14 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using Moq;
 using LHDS.Core.Models.Foundations.DataSetObjects;
 using LHDS.Core.Models.Foundations.DataSetObjects.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
@@ -62,10 +66,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
             // given 
             var invalidDataSetObject = new DataSetObject
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                SupplierObjectName = invalidText,
+                OurObjectName = invalidText,
+                PushOrPull = invalidText,
             };
 
-            var invalidDataSetObjectException = 
+            var invalidDataSetObjectException =
                 new InvalidDataSetObjectException(
                     message: "Invalid dataSetObject. Please correct the errors and try again.");
 
@@ -73,11 +79,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                 key: nameof(DataSetObject.Id),
                 values: "Id is required");
 
-            //invalidDataSetObjectException.AddData(
-            //    key: nameof(DataSetObject.Name),
-            //    values: "Text is required");
+            invalidDataSetObjectException.AddData(
+                key: nameof(DataSetObject.DataSetSpecificationId),
+                values: "Id is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the DataSetObject model
+            invalidDataSetObjectException.AddData(
+                key: nameof(DataSetObject.SupplierObjectName),
+                values: "Text is required");
+
+            invalidDataSetObjectException.AddData(
+                key: nameof(DataSetObject.OurObjectName),
+                values: "Text is required");
+
+            invalidDataSetObjectException.AddData(
+                key: nameof(DataSetObject.PushOrPull),
+                values: "Text is required");
 
             invalidDataSetObjectException.AddData(
                 key: nameof(DataSetObject.CreatedDate),
@@ -135,14 +151,104 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
         }
 
         [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfDataSetObjectIsInvalidLengthAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DataSetObject invalidDataSetObject = CreateRandomModifyDataSetObject(randomDateTimeOffset);
+            invalidDataSetObject.SupplierObjectName = GetRandomString(256);
+            invalidDataSetObject.OurObjectName = GetRandomString(256);
+            invalidDataSetObject.ObjectDescription = GetRandomString(501);
+            invalidDataSetObject.InterchangeProtocol = GetRandomString(256);
+            invalidDataSetObject.PushOrPull = GetRandomString(11);
+            invalidDataSetObject.DeletionHandling = GetRandomString(256);
+            invalidDataSetObject.CreatedBy = GetRandomString(256);
+            invalidDataSetObject.UpdatedBy = invalidDataSetObject.CreatedBy;
+
+            var invalidDataSetObjectException =
+                new InvalidDataSetObjectException(
+                    message: "Invalid dataSetObject. Please correct the errors and try again.");
+
+            invalidDataSetObjectException.AddData(
+                key: nameof(DataSetObject.SupplierObjectName),
+                values: "Text is exceeding max length");
+
+            invalidDataSetObjectException.AddData(
+                key: nameof(DataSetObject.OurObjectName),
+                values: "Text is exceeding max length");
+
+            invalidDataSetObjectException.AddData(
+                key: nameof(DataSetObject.ObjectDescription),
+                values: "Text is exceeding max length");
+
+            invalidDataSetObjectException.AddData(
+                key: nameof(DataSetObject.InterchangeProtocol),
+                values: "Text is exceeding max length");
+
+            invalidDataSetObjectException.AddData(
+                key: nameof(DataSetObject.PushOrPull),
+                values: "Text is exceeding max length");
+
+            invalidDataSetObjectException.AddData(
+                key: nameof(DataSetObject.DeletionHandling),
+                values: "Text is exceeding max length");
+
+            invalidDataSetObjectException.AddData(
+                key: nameof(DataSetObject.CreatedBy),
+                values: "Text is exceeding max length");
+
+            invalidDataSetObjectException.AddData(
+                key: nameof(DataSetObject.UpdatedBy),
+                values: "Text is exceeding max length");
+
+            var expectedDataSetObjectValidationException =
+                new DataSetObjectValidationException(
+                    message: "DataSetObject validation errors occurred, please try again.",
+                    innerException: invalidDataSetObjectException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<DataSetObject> modifyDataSetObjectTask =
+                this.dataSetObjectService.ModifyDataSetObjectAsync(invalidDataSetObject);
+
+            DataSetObjectValidationException actualDataSetObjectValidationException =
+                await Assert.ThrowsAsync<DataSetObjectValidationException>(() =>
+                    modifyDataSetObjectTask.AsTask());
+
+            // then
+            actualDataSetObjectValidationException.Should()
+                .BeEquivalentTo(expectedDataSetObjectValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetObjectValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateDataSetObjectAsync(It.IsAny<DataSetObject>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
         public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             DataSetObject randomDataSetObject = CreateRandomDataSetObject(randomDateTimeOffset);
             DataSetObject invalidDataSetObject = randomDataSetObject;
-            
-            var invalidDataSetObjectException = 
+
+            var invalidDataSetObjectException =
                 new InvalidDataSetObjectException(
                     message: "Invalid dataSetObject. Please correct the errors and try again.");
 
@@ -198,7 +304,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
             DataSetObject randomDataSetObject = CreateRandomDataSetObject(randomDateTimeOffset);
             randomDataSetObject.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var invalidDataSetObjectException = 
+            var invalidDataSetObjectException =
                 new InvalidDataSetObjectException(
                     message: "Invalid dataSetObject. Please correct the errors and try again.");
 
@@ -312,8 +418,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
             DataSetObject storageDataSetObject = invalidDataSetObject.DeepClone();
             storageDataSetObject.CreatedDate = storageDataSetObject.CreatedDate.AddMinutes(randomMinutes);
             storageDataSetObject.UpdatedDate = storageDataSetObject.UpdatedDate.AddMinutes(randomMinutes);
-            
-            var invalidDataSetObjectException = 
+
+            var invalidDataSetObjectException =
                 new InvalidDataSetObjectException(
                     message: "Invalid dataSetObject. Please correct the errors and try again.");
 
@@ -375,7 +481,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
             invalidDataSetObject.CreatedBy = Guid.NewGuid().ToString();
             storageDataSetObject.UpdatedDate = storageDataSetObject.CreatedDate;
 
-            var invalidDataSetObjectException = 
+            var invalidDataSetObjectException =
                 new InvalidDataSetObjectException(
                     message: "Invalid dataSetObject. Please correct the errors and try again.");
 
@@ -434,7 +540,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
             DataSetObject invalidDataSetObject = randomDataSetObject;
             DataSetObject storageDataSetObject = randomDataSetObject.DeepClone();
 
-            var invalidDataSetObjectException = 
+            var invalidDataSetObjectException =
                 new InvalidDataSetObjectException(
                     message: "Invalid dataSetObject. Please correct the errors and try again.");
 

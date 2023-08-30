@@ -5,27 +5,27 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.ColumnDefinitions;
+using LHDS.Core.Models.Foundations.ObjectColumns;
 using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.Core.Brokers.Storages.Sql
 {
     public partial class StorageBroker
     {
-        public DbSet<ObjectColumn> ColumnDefinitions { get; set; }
+        public DbSet<ObjectColumn> ObjectColumns { get; set; }
 
-        public async ValueTask<ObjectColumn> InsertColumnDefinitionAsync(ObjectColumn columnDefinition) =>
-            await InsertAsync(columnDefinition);
+        public async ValueTask<ObjectColumn> InsertObjectColumnAsync(ObjectColumn objectColumn) =>
+            await InsertAsync(objectColumn);
 
-        public IQueryable<ObjectColumn> SelectAllColumnDefinitions() => ReadAll<ObjectColumn>();
+        public IQueryable<ObjectColumn> SelectAllObjectColumns() => ReadAll<ObjectColumn>();
 
-        public async ValueTask<ObjectColumn> SelectColumnDefinitionByIdAsync(Guid columnDefinitionId) =>
-            await ReadAsync<ObjectColumn>(columnDefinitionId);
+        public async ValueTask<ObjectColumn> SelectObjectColumnByIdAsync(Guid objectColumnId) =>
+            await ReadAsync<ObjectColumn>(objectColumnId);
 
-        public async ValueTask<ObjectColumn> UpdateColumnDefinitionAsync(ObjectColumn columnDefinition) =>
-            await UpdateAsync(columnDefinition);
+        public async ValueTask<ObjectColumn> UpdateObjectColumnAsync(ObjectColumn objectColumn) =>
+            await UpdateAsync(objectColumn);
 
-        public async ValueTask<ObjectColumn> DeleteColumnDefinitionAsync(ObjectColumn columnDefinition) =>
-            await DeleteAsync(columnDefinition);
+        public async ValueTask<ObjectColumn> DeleteObjectColumnAsync(ObjectColumn objectColumn) =>
+            await DeleteAsync(objectColumn);
     }
 }

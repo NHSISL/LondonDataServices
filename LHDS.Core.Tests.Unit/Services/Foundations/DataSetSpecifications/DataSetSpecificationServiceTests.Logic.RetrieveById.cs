@@ -1,8 +1,12 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using Moq;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
@@ -24,7 +28,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
             // when
             DataSetSpecification actualDataSetSpecification =
-                await this.dataSetSpecificationService.RetrieveDataSetSpecificationByIdAsync(inputDataSetSpecification.Id);
+                await this.dataSetSpecificationService.RetrieveDataSetSpecificationByIdAsync(
+                    inputDataSetSpecification.Id);
 
             // then
             actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification);

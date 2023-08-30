@@ -61,6 +61,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             var invalidDataSetSpecification = new DataSetSpecification
             {
                 SupplierSpecificationVersion = invalidText,
+                OurSpecificationVersion = invalidText,
                 CreatedBy = invalidText,
                 UpdatedBy = invalidText
             };
@@ -79,6 +80,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
             invalidDataSetSpecificationException.AddData(
                 key: nameof(DataSetSpecification.SupplierSpecificationVersion),
+                values: "Text is required");
+
+            invalidDataSetSpecificationException.AddData(
+                key: nameof(DataSetSpecification.OurSpecificationVersion),
                 values: "Text is required");
 
             invalidDataSetSpecificationException.AddData(
@@ -101,6 +106,86 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 new DataSetSpecificationValidationException(
                     message: "DataSetSpecification validation errors occurred, please try again.",
                     innerException: invalidDataSetSpecificationException);
+
+            // when
+            ValueTask<DataSetSpecification> addDataSetSpecificationTask =
+                this.dataSetSpecificationService.AddDataSetSpecificationAsync(invalidDataSetSpecification);
+
+            DataSetSpecificationValidationException actualDataSetSpecificationValidationException =
+                await Assert.ThrowsAsync<DataSetSpecificationValidationException>(() =>
+                    addDataSetSpecificationTask.AsTask());
+
+            // then
+            actualDataSetSpecificationValidationException.Should()
+                .BeEquivalentTo(expectedDataSetSpecificationValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetSpecificationValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDataSetSpecificationAsync(It.IsAny<DataSetSpecification>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfDataSetSpecificationIsInvalidLengthAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DataSetSpecification invalidDataSetSpecification = CreateRandomDataSetSpecification(randomDateTimeOffset);
+            invalidDataSetSpecification.SupplierSpecificationVersion = GetRandomString(11);
+            invalidDataSetSpecification.OurSpecificationVersion = GetRandomString(11);
+            invalidDataSetSpecification.SupersededBy = GetRandomString(256);
+            invalidDataSetSpecification.PresededBy = GetRandomString(256);
+            invalidDataSetSpecification.CreatedBy = GetRandomString(256);
+            invalidDataSetSpecification.UpdatedBy = invalidDataSetSpecification.CreatedBy;
+
+            var invalidDataSetSpecificationException =
+                new InvalidDataSetSpecificationException(
+                    message: "Invalid dataSetSpecification. Please correct the errors and try again.");
+
+            invalidDataSetSpecificationException.AddData(
+                key: nameof(DataSetSpecification.SupplierSpecificationVersion),
+                values: "Text is exceeding max length");
+
+            invalidDataSetSpecificationException.AddData(
+                key: nameof(DataSetSpecification.OurSpecificationVersion),
+                values: "Text is exceeding max length");
+
+            invalidDataSetSpecificationException.AddData(
+                key: nameof(DataSetSpecification.SupersededBy),
+                values: "Text is exceeding max length");
+
+            invalidDataSetSpecificationException.AddData(
+                key: nameof(DataSetSpecification.PresededBy),
+                values: "Text is exceeding max length");
+
+            invalidDataSetSpecificationException.AddData(
+                key: nameof(DataSetSpecification.CreatedBy),
+                values: "Text is exceeding max length");
+
+            invalidDataSetSpecificationException.AddData(
+                key: nameof(DataSetSpecification.UpdatedBy),
+                values: "Text is exceeding max length");
+
+            var expectedDataSetSpecificationValidationException =
+                new DataSetSpecificationValidationException(
+                    message: "DataSetSpecification validation errors occurred, please try again.",
+                    innerException: invalidDataSetSpecificationException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
 
             // when
             ValueTask<DataSetSpecification> addDataSetSpecificationTask =

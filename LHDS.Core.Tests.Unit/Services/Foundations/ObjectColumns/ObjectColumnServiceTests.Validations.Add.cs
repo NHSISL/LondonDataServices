@@ -152,8 +152,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             ObjectColumn invalidObjectColumn = CreateRandomObjectColumn(randomDateTimeOffset);
             invalidObjectColumn.SupplierColumnName = GetRandomString(256);
             invalidObjectColumn.OurColumnName = GetRandomString(256);
+            invalidObjectColumn.ColumnDescription = GetRandomString(501);
+            invalidObjectColumn.PopulatedBy = GetRandomString(256);
             invalidObjectColumn.SqlDataType = GetRandomString(51);
+            invalidObjectColumn.FhirDataType = GetRandomString(256);
+            invalidObjectColumn.SupplierDateFormat = GetRandomString(256);
+            invalidObjectColumn.TypeOfPersonConfidentialData = GetRandomString(256);
+            invalidObjectColumn.MaskingMethod = GetRandomString(256);
             invalidObjectColumn.CodeSystem = GetRandomString(256);
+            invalidObjectColumn.PartitionColumnLevel = GetRandomString(256);
             invalidObjectColumn.CreatedBy = GetRandomString(256);
             invalidObjectColumn.UpdatedBy = invalidObjectColumn.CreatedBy;
 
@@ -170,11 +177,39 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 values: "Text is exceeding max length");
 
             invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.ColumnDescription),
+                values: "Text is exceeding max length");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.PopulatedBy),
+                values: "Text is exceeding max length");
+
+            invalidObjectColumnException.AddData(
                 key: nameof(ObjectColumn.SqlDataType),
                 values: "Text is exceeding max length");
 
             invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.FhirDataType),
+                values: "Text is exceeding max length");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.SupplierDateFormat),
+                values: "Text is exceeding max length");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.TypeOfPersonConfidentialData),
+                values: "Text is exceeding max length");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.MaskingMethod),
+                values: "Text is exceeding max length");
+
+            invalidObjectColumnException.AddData(
                 key: nameof(ObjectColumn.CodeSystem),
+                values: "Text is exceeding max length");
+
+            invalidObjectColumnException.AddData(
+                key: nameof(ObjectColumn.PartitionColumnLevel),
                 values: "Text is exceeding max length");
 
             invalidObjectColumnException.AddData(

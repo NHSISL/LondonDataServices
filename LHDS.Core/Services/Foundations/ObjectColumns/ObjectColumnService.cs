@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -28,6 +30,49 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                 ValidateObjectColumnOnAdd(objectColumn);
 
                 return await this.storageBroker.InsertObjectColumnAsync(objectColumn);
+            });
+
+        public IQueryable<ObjectColumn> RetrieveAllObjectColumns() =>
+            TryCatch(() => this.storageBroker.SelectAllObjectColumns());
+
+        public ValueTask<ObjectColumn> RetrieveObjectColumnByIdAsync(Guid objectColumnId) =>
+            TryCatch(async () =>
+            {
+                ValidateObjectColumnId(objectColumnId);
+
+                ObjectColumn maybeObjectColumn = await this.storageBroker
+                    .SelectObjectColumnByIdAsync(objectColumnId);
+
+                ValidateStorageObjectColumn(maybeObjectColumn, objectColumnId);
+
+                return maybeObjectColumn;
+            });
+
+        public ValueTask<ObjectColumn> ModifyObjectColumnAsync(ObjectColumn objectColumn) =>
+            TryCatch(async () =>
+            {
+                ValidateObjectColumnOnModify(objectColumn);
+
+                ObjectColumn maybeObjectColumn =
+                    await this.storageBroker.SelectObjectColumnByIdAsync(objectColumn.Id);
+
+                ValidateStorageObjectColumn(maybeObjectColumn, objectColumn.Id);
+                ValidateAgainstStorageObjectColumnOnModify(inputObjectColumn: objectColumn, storageObjectColumn: maybeObjectColumn);
+
+                return await this.storageBroker.UpdateObjectColumnAsync(objectColumn);
+            });
+
+        public ValueTask<ObjectColumn> RemoveObjectColumnByIdAsync(Guid objectColumnId) =>
+            TryCatch(async () =>
+            {
+                ValidateObjectColumnId(objectColumnId);
+
+                ObjectColumn maybeObjectColumn = await this.storageBroker
+                    .SelectObjectColumnByIdAsync(objectColumnId);
+
+                ValidateStorageObjectColumn(maybeObjectColumn, objectColumnId);
+
+                return await this.storageBroker.DeleteObjectColumnAsync(maybeObjectColumn);
             });
     }
 }

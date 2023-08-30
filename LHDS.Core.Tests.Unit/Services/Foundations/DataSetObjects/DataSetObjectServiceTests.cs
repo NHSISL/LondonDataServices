@@ -91,6 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(dataSetObject => dataSetObject.SupplierObjectName).Use(GetRandomString(255))
                 .OnProperty(dataSetObject => dataSetObject.OurObjectName).Use(GetRandomString(255))
                 .OnProperty(dataSetObject => dataSetObject.PushOrPull).Use(GetRandomString(10))

@@ -83,6 +83,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.DataSet).IgnoreIt()

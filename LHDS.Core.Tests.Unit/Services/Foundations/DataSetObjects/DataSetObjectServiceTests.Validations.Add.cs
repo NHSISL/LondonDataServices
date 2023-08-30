@@ -140,7 +140,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnAddIfDataSetObjectIsInvalidLenghtAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnAddIfDataSetObjectIsInvalidLengthAndLogItAsync()
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();

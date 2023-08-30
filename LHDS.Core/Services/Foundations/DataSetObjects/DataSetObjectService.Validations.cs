@@ -25,15 +25,6 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
                 (Rule: IsInvalid(dataSetObject.UpdatedDate), Parameter: nameof(DataSetObject.UpdatedDate)),
                 (Rule: IsInvalid(dataSetObject.UpdatedBy), Parameter: nameof(DataSetObject.UpdatedBy)),
 
-                (Rule: IsEqualOrSmallerThan(
-                    dataSetObject.SupplierObjectName, 255), Parameter: nameof(dataSetObject.SupplierObjectName)),
-
-                (Rule: IsEqualOrSmallerThan(
-                    dataSetObject.OurObjectName, 255), Parameter: nameof(dataSetObject.OurObjectName)),
-
-                (Rule: IsEqualOrSmallerThan(
-                    dataSetObject.PushOrPull, 255), Parameter: nameof(dataSetObject.PushOrPull)),
-
                 (Rule: IsNotSame(
                     firstDate: dataSetObject.UpdatedDate,
                     secondDate: dataSetObject.CreatedDate,

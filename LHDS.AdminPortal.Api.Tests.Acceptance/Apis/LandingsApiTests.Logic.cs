@@ -73,5 +73,45 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
                 await this.apiBroker.DeleteAuditByIdAsync(audit.Id);
             }
         }
+
+        [Fact]
+        public async Task ShouldGetLandingDocumentNotOnFTPByFileNameAsync()
+        {
+            // given
+            List<Document> retrievedDocuments =
+                await this.apiBroker.downloadService.RetrieveListOfDocumentsToProcessAsync();
+
+            byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
+            byte[] encryptedData = await this.apiBroker.cryptographyProvider.EncryptAsync(documentData);
+            Document retrievedDocument = retrievedDocuments[0];
+            retrievedDocument.DocumentData = encryptedData;
+            //var retrievedFileName = retrievedDocument.FileName.Split("/".ToCharArray());
+            //retrievedDocument.FileName = retrievedFileName[retrievedFileName.Length - 1];
+
+            // when
+            ActionResult<IngestionTracking> result =
+                await this.apiBroker.GetLandingDocumentByFileNameAsync(retrievedDocument.FileName);
+
+            List<IngestionTracking> retrievedIngestionTrackings = await this.apiBroker.GetAllIngestionTrackingsAsync();
+
+            IngestionTracking landingIngestionTracking =
+                retrievedIngestionTrackings.FirstOrDefault(it => it.FileName == retrievedDocument.FileName);
+
+            List<Audit> retrievedAudits = await this.apiBroker.GetAllAuditsAsync();
+
+            List<Audit> ingestionTrackingAudits =
+                retrievedAudits.Where(audit => audit.IngestionTrackingId == landingIngestionTracking.Id).ToList();
+
+            //Then
+            Assert.NotNull(result);
+            Assert.IsType<OkObjectResult>(result.Result);
+
+            await this.apiBroker.DeleteIngestionTrackingByIdAsync(landingIngestionTracking.Id);
+
+            foreach (var audit in ingestionTrackingAudits)
+            {
+                await this.apiBroker.DeleteAuditByIdAsync(audit.Id);
+            }
+        }
     }
 }

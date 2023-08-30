@@ -35,6 +35,29 @@ namespace LHDS.Core.Services.Foundations.DataSets
                 (Rule: IsNotRecent(dataSet.CreatedDate), Parameter: nameof(DataSet.CreatedDate)));
         }
 
+        private void ValidateDataSetOnModify(DataSet dataSet)
+        {
+            ValidateDataSetIsNotNull(dataSet);
+
+            Validate(
+                (Rule: IsInvalid(dataSet.Id), Parameter: nameof(DataSet.Id)),
+
+                // TODO: Add any other required validation rules
+
+                (Rule: IsInvalid(dataSet.CreatedDate), Parameter: nameof(DataSet.CreatedDate)),
+                (Rule: IsInvalid(dataSet.CreatedBy), Parameter: nameof(DataSet.CreatedBy)),
+                (Rule: IsInvalid(dataSet.UpdatedDate), Parameter: nameof(DataSet.UpdatedDate)),
+                (Rule: IsInvalid(dataSet.UpdatedBy), Parameter: nameof(DataSet.UpdatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: dataSet.UpdatedDate,
+                    secondDate: dataSet.CreatedDate,
+                    secondDateName: nameof(DataSet.CreatedDate)),
+                Parameter: nameof(DataSet.UpdatedDate)),
+
+                (Rule: IsNotRecent(dataSet.UpdatedDate), Parameter: nameof(dataSet.UpdatedDate)));
+        }
+
         public void ValidateDataSetId(Guid dataSetId) =>
             Validate((Rule: IsInvalid(dataSetId), Parameter: nameof(DataSet.Id)));
 
@@ -54,6 +77,28 @@ namespace LHDS.Core.Services.Foundations.DataSets
             }
         }
 
+        private static void ValidateAgainstStorageDataSetOnModify(DataSet inputDataSet, DataSet storageDataSet)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputDataSet.CreatedDate,
+                    secondDate: storageDataSet.CreatedDate,
+                    secondDateName: nameof(DataSet.CreatedDate)),
+                Parameter: nameof(DataSet.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    first: inputDataSet.CreatedBy,
+                    second: storageDataSet.CreatedBy,
+                    secondName: nameof(DataSet.CreatedBy)),
+                Parameter: nameof(DataSet.CreatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: inputDataSet.UpdatedDate,
+                    secondDate: storageDataSet.UpdatedDate,
+                    secondDateName: nameof(DataSet.UpdatedDate)),
+                Parameter: nameof(DataSet.UpdatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
@@ -71,6 +116,15 @@ namespace LHDS.Core.Services.Foundations.DataSets
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,

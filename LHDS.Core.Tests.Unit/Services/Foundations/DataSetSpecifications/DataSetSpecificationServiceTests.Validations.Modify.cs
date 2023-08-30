@@ -187,9 +187,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                     message: "DataSetSpecification validation errors occurred, please try again.",
                     innerException: invalidDataSetSpecificationException);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Once);
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
 
             // when
             ValueTask<DataSetSpecification> modifyDataSetSpecificationTask =

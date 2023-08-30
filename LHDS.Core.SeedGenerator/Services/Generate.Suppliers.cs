@@ -24,6 +24,7 @@ namespace LHDS.Core.SeedGenerator.Services
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(supplier => supplier.Id).Use(id)
                 .OnProperty(supplier => supplier.Name).Use(GetRandomString(maxCharacters: 450))
                 .OnProperty(supplier => supplier.FriendlyName).Use(GetRandomString(maxCharacters: 450))

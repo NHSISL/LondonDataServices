@@ -5,8 +5,8 @@
 using System;
 using System.Collections.Generic;
 using LHDS.Core.Models.Bases;
-using LHDS.Core.Models.Foundations.ColumnDefinitions;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
+using LHDS.Core.Models.Foundations.ObjectColumns;
 
 namespace LHDS.Core.Models.Foundations.DataSetObjects
 {

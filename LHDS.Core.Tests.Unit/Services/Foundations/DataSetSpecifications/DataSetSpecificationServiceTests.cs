@@ -78,12 +78,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
         private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(DateTimeOffset dateTimeOffset)
         {
-            string user = Guid.NewGuid().ToString();
+            string user = GetRandomString(255);
             var filler = new Filler<DataSetSpecification>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupplierSpecificationVersion)
+                    .Use(GetRandomString(10))
+
+                .OnProperty(dataSetSpecification => dataSetSpecification.OurSpecificationVersion)
+                    .Use(GetRandomString(10))
+
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededBy)
+                    .Use(GetRandomString(255))
+
+                .OnProperty(dataSetSpecification => dataSetSpecification.PresededBy)
+                    .Use(GetRandomString(255))
+
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.DataSet).IgnoreIt()

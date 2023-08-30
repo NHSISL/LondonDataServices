@@ -24,12 +24,6 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                 (Rule: IsInvalid(dataSetSpecification.OurSpecificationVersion),
                     Parameter: nameof(DataSetSpecification.OurSpecificationVersion)),
 
-                (Rule: IsInvalid(dataSetSpecification.SupersededBy),
-                    Parameter: nameof(DataSetSpecification.SupersededBy)),
-
-                (Rule: IsInvalid(dataSetSpecification.PresededBy),
-                    Parameter: nameof(DataSetSpecification.PresededBy)),
-
                 (Rule: IsInvalid(dataSetSpecification.CreatedDate), Parameter: nameof(DataSetSpecification.CreatedDate)),
                 (Rule: IsInvalid(dataSetSpecification.CreatedBy), Parameter: nameof(DataSetSpecification.CreatedBy)),
                 (Rule: IsInvalid(dataSetSpecification.UpdatedDate), Parameter: nameof(DataSetSpecification.UpdatedDate)),

@@ -71,6 +71,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static DataSetObject CreateRandomModifyDataSetObject(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            DataSetObject randomDataSetObject = CreateRandomDataSetObject(dateTimeOffset);
+
+            randomDataSetObject.CreatedDate =
+                randomDataSetObject.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomDataSetObject;
+        }
+
         private static IQueryable<DataSetObject> CreateRandomDataSetObjects()
         {
             return CreateDataSetObjectFiller(dateTimeOffset: GetRandomDateTimeOffset())

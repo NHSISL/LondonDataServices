@@ -97,7 +97,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
         private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(DateTimeOffset dateTimeOffset)
         {
-            string user = Guid.NewGuid().ToString();
+            string user = GetRandomString(255);
             var filler = new Filler<DataSetSpecification>();
 
             filler.Setup()

@@ -24,12 +24,6 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                 (Rule: IsInvalid(dataSetSpecification.OurSpecificationVersion),
                     Parameter: nameof(DataSetSpecification.OurSpecificationVersion)),
 
-                (Rule: IsInvalid(dataSetSpecification.SupersededBy),
-                    Parameter: nameof(DataSetSpecification.SupersededBy)),
-
-                (Rule: IsInvalid(dataSetSpecification.PresededBy),
-                    Parameter: nameof(DataSetSpecification.PresededBy)),
-
                 (Rule: IsInvalid(dataSetSpecification.CreatedDate), Parameter: nameof(DataSetSpecification.CreatedDate)),
                 (Rule: IsInvalid(dataSetSpecification.CreatedBy), Parameter: nameof(DataSetSpecification.CreatedBy)),
                 (Rule: IsInvalid(dataSetSpecification.UpdatedDate), Parameter: nameof(DataSetSpecification.UpdatedDate)),
@@ -107,9 +101,14 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
 
         private static dynamic IsEqualOrSmallerThan(string text, int maxLength) => new
         {
-            Condition = (text ?? string.Empty).Length > maxLength,
+            Condition = LengthIsEqualOrSmallerThan(text, maxLength),
             Message = "Text is exceeding max length"
         };
+
+        private static bool LengthIsEqualOrSmallerThan(string text, int maxLength)
+        {
+            return (text ?? string.Empty).Length > maxLength;
+        }
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,

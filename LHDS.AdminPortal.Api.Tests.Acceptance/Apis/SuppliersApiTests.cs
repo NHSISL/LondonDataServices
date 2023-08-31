@@ -73,6 +73,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(supplier => supplier.CreatedDate).Use(now)
                 .OnProperty(supplier => supplier.CreatedBy).Use(userId)
                 .OnProperty(supplier => supplier.UpdatedDate).Use(now)

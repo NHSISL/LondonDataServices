@@ -3,36 +3,35 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
-using LHDS.Core.Models.Foundations.ObjectColumns;
-using LHDS.Core.Services.Foundations.ObjectColumns;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
+using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using Microsoft.Data.SqlClient;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
+namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 {
-    public partial class ObjectColumnServiceTests
+    public partial class DataSetSpecificationServiceTests
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
-        private readonly IObjectColumnService objectColumnService;
+        private readonly IDataSetSpecificationService dataSetSpecificationService;
 
-        public ObjectColumnServiceTests()
+        public DataSetSpecificationServiceTests()
         {
             this.storageBrokerMock = new Mock<IStorageBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
-            this.objectColumnService = new ObjectColumnService(
+            this.dataSetSpecificationService = new DataSetSpecificationService(
                 storageBroker: this.storageBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
@@ -71,40 +70,37 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static ObjectColumn CreateRandomModifyObjectColumn(DateTimeOffset dateTimeOffset)
+        private static DataSetSpecification CreateRandomDataSetSpecification() =>
+            CreateDataSetSpecificationFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+
+        private static DataSetSpecification CreateRandomDataSetSpecification(DateTimeOffset dateTimeOffset) =>
+            CreateDataSetSpecificationFiller(dateTimeOffset).Create();
+
+        private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(DateTimeOffset dateTimeOffset)
         {
-            int randomDaysInPast = GetRandomNegativeNumber();
-            ObjectColumn randomObjectColumn = CreateRandomObjectColumn(dateTimeOffset);
-
-            randomObjectColumn.CreatedDate =
-                randomObjectColumn.CreatedDate.AddDays(randomDaysInPast);
-
-            return randomObjectColumn;
-        }
-
-        private static IQueryable<ObjectColumn> CreateRandomObjectColumns()
-        {
-            return CreateObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber())
-                    .AsQueryable();
-        }
-
-        private static ObjectColumn CreateRandomObjectColumn() =>
-            CreateObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
-
-        private static ObjectColumn CreateRandomObjectColumn(DateTimeOffset dateTimeOffset) =>
-            CreateObjectColumnFiller(dateTimeOffset).Create();
-
-        private static Filler<ObjectColumn> CreateObjectColumnFiller(DateTimeOffset dateTimeOffset)
-        {
-            string user = Guid.NewGuid().ToString();
-            var filler = new Filler<ObjectColumn>();
+            string user = GetRandomString(255);
+            var filler = new Filler<DataSetSpecification>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(objectColumn => objectColumn.CreatedBy).Use(user)
-                .OnProperty(objectColumn => objectColumn.UpdatedBy).Use(user);
+
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupplierSpecificationVersion)
+                    .Use(GetRandomString(10))
+
+                .OnProperty(dataSetSpecification => dataSetSpecification.OurSpecificationVersion)
+                    .Use(GetRandomString(10))
+
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededBy)
+                    .Use(GetRandomString(255))
+
+                .OnProperty(dataSetSpecification => dataSetSpecification.PresededBy)
+                    .Use(GetRandomString(255))
+
+                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
+                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user)
+                .OnProperty(dataSetSpecification => dataSetSpecification.DataSet).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.DataSetObjects).IgnoreIt();
 
             return filler;
         }

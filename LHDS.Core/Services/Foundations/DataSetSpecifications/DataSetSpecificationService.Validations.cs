@@ -62,12 +62,91 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                 (Rule: IsNotRecent(dataSetSpecification.CreatedDate), Parameter: nameof(DataSetSpecification.CreatedDate)));
         }
 
+        private void ValidateDataSetSpecificationOnModify(DataSetSpecification dataSetSpecification)
+        {
+            ValidateDataSetSpecificationIsNotNull(dataSetSpecification);
+
+            Validate(
+                (Rule: IsInvalid(dataSetSpecification.Id), Parameter: nameof(DataSetSpecification.Id)),
+                (Rule: IsInvalid(dataSetSpecification.DataSetId), Parameter: nameof(DataSetSpecification.DataSetId)),
+
+                (Rule: IsInvalid(dataSetSpecification.SupplierSpecificationVersion),
+                    Parameter: nameof(DataSetSpecification.SupplierSpecificationVersion)),
+
+                (Rule: IsInvalid(dataSetSpecification.OurSpecificationVersion),
+                    Parameter: nameof(DataSetSpecification.OurSpecificationVersion)),
+
+                (Rule: IsInvalid(dataSetSpecification.CreatedDate), Parameter: nameof(DataSetSpecification.CreatedDate)),
+                (Rule: IsInvalid(dataSetSpecification.CreatedBy), Parameter: nameof(DataSetSpecification.CreatedBy)),
+                (Rule: IsInvalid(dataSetSpecification.UpdatedDate), Parameter: nameof(DataSetSpecification.UpdatedDate)),
+                (Rule: IsInvalid(dataSetSpecification.UpdatedBy), Parameter: nameof(DataSetSpecification.UpdatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(dataSetSpecification.SupplierSpecificationVersion, 10),
+                    Parameter: nameof(dataSetSpecification.SupplierSpecificationVersion)),
+
+                (Rule: IsEqualOrSmallerThan(dataSetSpecification.OurSpecificationVersion, 10),
+                    Parameter: nameof(dataSetSpecification.OurSpecificationVersion)),
+
+                (Rule: IsEqualOrSmallerThan(dataSetSpecification.SupersededBy, 255),
+                    Parameter: nameof(dataSetSpecification.SupersededBy)),
+
+                (Rule: IsEqualOrSmallerThan(dataSetSpecification.PresededBy, 255),
+                    Parameter: nameof(dataSetSpecification.PresededBy)),
+
+                (Rule: IsEqualOrSmallerThan(dataSetSpecification.CreatedBy, 255),
+                    Parameter: nameof(dataSetSpecification.CreatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(dataSetSpecification.UpdatedBy, 255),
+                    Parameter: nameof(dataSetSpecification.UpdatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: dataSetSpecification.UpdatedDate,
+                    secondDate: dataSetSpecification.CreatedDate,
+                    secondDateName: nameof(DataSetSpecification.CreatedDate)),
+                Parameter: nameof(DataSetSpecification.UpdatedDate)),
+
+                (Rule: IsNotRecent(dataSetSpecification.UpdatedDate), Parameter: nameof(dataSetSpecification.UpdatedDate)));
+        }
+
+        public void ValidateDataSetSpecificationId(Guid dataSetSpecificationId) =>
+            Validate((Rule: IsInvalid(dataSetSpecificationId), Parameter: nameof(DataSetSpecification.Id)));
+
+        private static void ValidateStorageDataSetSpecification(DataSetSpecification maybeDataSetSpecification, Guid dataSetSpecificationId)
+        {
+            if (maybeDataSetSpecification is null)
+            {
+                throw new NotFoundDataSetSpecificationException(dataSetSpecificationId);
+            }
+        }
+
         private static void ValidateDataSetSpecificationIsNotNull(DataSetSpecification dataSetSpecification)
         {
             if (dataSetSpecification is null)
             {
                 throw new NullDataSetSpecificationException(message: "DataSetSpecification is null.");
             }
+        }
+
+        private static void ValidateAgainstStorageDataSetSpecificationOnModify(DataSetSpecification inputDataSetSpecification, DataSetSpecification storageDataSetSpecification)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputDataSetSpecification.CreatedDate,
+                    secondDate: storageDataSetSpecification.CreatedDate,
+                    secondDateName: nameof(DataSetSpecification.CreatedDate)),
+                Parameter: nameof(DataSetSpecification.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    first: inputDataSetSpecification.CreatedBy,
+                    second: storageDataSetSpecification.CreatedBy,
+                    secondName: nameof(DataSetSpecification.CreatedBy)),
+                Parameter: nameof(DataSetSpecification.CreatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: inputDataSetSpecification.UpdatedDate,
+                    secondDate: storageDataSetSpecification.UpdatedDate,
+                    secondDateName: nameof(DataSetSpecification.UpdatedDate)),
+                Parameter: nameof(DataSetSpecification.UpdatedDate)));
         }
 
         private static dynamic IsInvalid(Guid id) => new
@@ -90,9 +169,23 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
 
         private static dynamic IsEqualOrSmallerThan(string text, int maxLength) => new
         {
-            Condition = (text ?? string.Empty).Length > maxLength,
+            Condition = LengthIsEqualOrSmallerThan(text, maxLength),
             Message = "Text is exceeding max length"
         };
+
+        private static bool LengthIsEqualOrSmallerThan(string text, int maxLength)
+        {
+            return (text ?? string.Empty).Length > maxLength;
+        }
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,

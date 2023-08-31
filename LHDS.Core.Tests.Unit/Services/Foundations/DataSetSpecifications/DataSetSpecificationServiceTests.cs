@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using LHDS.Core.Brokers.DateTimes;
@@ -69,6 +70,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static DataSetSpecification CreateRandomModifyDataSetSpecification(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            DataSetSpecification randomDataSetSpecification = CreateRandomDataSetSpecification(dateTimeOffset);
+
+            randomDataSetSpecification.CreatedDate =
+                randomDataSetSpecification.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomDataSetSpecification;
+        }
+
+        private static IQueryable<DataSetSpecification> CreateRandomDataSetSpecifications()
+        {
+            return CreateDataSetSpecificationFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
 
         private static DataSetSpecification CreateRandomDataSetSpecification() =>
             CreateDataSetSpecificationFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();

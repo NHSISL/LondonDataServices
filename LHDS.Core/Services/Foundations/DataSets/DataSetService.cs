@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -28,6 +30,49 @@ namespace LHDS.Core.Services.Foundations.DataSets
                 ValidateDataSetOnAdd(dataSet);
 
                 return await this.storageBroker.InsertDataSetAsync(dataSet);
+            });
+
+        public IQueryable<DataSet> RetrieveAllDataSets() =>
+            TryCatch(() => this.storageBroker.SelectAllDataSets());
+
+        public ValueTask<DataSet> RetrieveDataSetByIdAsync(Guid dataSetId) =>
+            TryCatch(async () =>
+            {
+                ValidateDataSetId(dataSetId);
+
+                DataSet maybeDataSet = await this.storageBroker
+                    .SelectDataSetByIdAsync(dataSetId);
+
+                ValidateStorageDataSet(maybeDataSet, dataSetId);
+
+                return maybeDataSet;
+            });
+
+        public ValueTask<DataSet> ModifyDataSetAsync(DataSet dataSet) =>
+            TryCatch(async () =>
+            {
+                ValidateDataSetOnModify(dataSet);
+
+                DataSet maybeDataSet =
+                    await this.storageBroker.SelectDataSetByIdAsync(dataSet.Id);
+
+                ValidateStorageDataSet(maybeDataSet, dataSet.Id);
+                ValidateAgainstStorageDataSetOnModify(inputDataSet: dataSet, storageDataSet: maybeDataSet);
+
+                return await this.storageBroker.UpdateDataSetAsync(dataSet);
+            });
+
+        public ValueTask<DataSet> RemoveDataSetByIdAsync(Guid dataSetId) =>
+            TryCatch(async () =>
+            {
+                ValidateDataSetId(dataSetId);
+
+                DataSet maybeDataSet = await this.storageBroker
+                    .SelectDataSetByIdAsync(dataSetId);
+
+                ValidateStorageDataSet(maybeDataSet, dataSetId);
+
+                return await this.storageBroker.DeleteDataSetAsync(maybeDataSet);
             });
     }
 }

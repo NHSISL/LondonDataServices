@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
     public partial class DataSetService
     {
         private delegate ValueTask<DataSet> ReturningDataSetFunction();
+        private delegate IQueryable<DataSet> ReturningDataSetsFunction();
 
         private async ValueTask<DataSet> TryCatch(ReturningDataSetFunction returningDataSetFunction)
         {
@@ -36,6 +38,10 @@ namespace LHDS.Core.Services.Foundations.DataSets
 
                 throw CreateAndLogCriticalDependencyException(failedDataSetStorageException);
             }
+            catch (NotFoundDataSetException notFoundDataSetException)
+            {
+                throw CreateAndLogValidationException(notFoundDataSetException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsDataSetException =
@@ -54,6 +60,15 @@ namespace LHDS.Core.Services.Foundations.DataSets
 
                 throw CreateAndLogDependencyValidationException(invalidDataSetReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedDataSetException = 
+                    new LockedDataSetException(
+                        message: "Locked dataSet record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedDataSetException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedDataSetStorageException =
@@ -62,6 +77,32 @@ namespace LHDS.Core.Services.Foundations.DataSets
                         innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedDataSetStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedDataSetServiceException =
+                    new FailedDataSetServiceException(
+                        message: "Failed dataSet service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedDataSetServiceException);
+            }
+        }
+
+        private IQueryable<DataSet> TryCatch(ReturningDataSetsFunction returningDataSetsFunction)
+        {
+            try
+            {
+                return returningDataSetsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedDataSetStorageException =
+                    new FailedDataSetStorageException(
+                        message: "Failed dataSet storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedDataSetStorageException);
             }
             catch (Exception exception)
             {

@@ -78,7 +78,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
         private static Filler<DataSet> CreateDataSetFiller(DateTimeOffset dateTimeOffset)
         {
-            string user = Guid.NewGuid().ToString();
+            string user = GetRandomString(255);
             var filler = new Filler<DataSet>();
 
             filler.Setup()

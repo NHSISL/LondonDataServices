@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,34 @@ namespace LHDS.AdminPortal.Api.Controllers
                     this.dataSetSpecificationService.RetrieveAllDataSetSpecifications();
 
                 return Ok(retrievedDataSetSpecifications);
+            }
+            catch (DataSetSpecificationDependencyException dataSetSpecificationDependencyException)
+            {
+                return InternalServerError(dataSetSpecificationDependencyException);
+            }
+            catch (DataSetSpecificationServiceException dataSetSpecificationServiceException)
+            {
+                return InternalServerError(dataSetSpecificationServiceException);
+            }
+        }
+
+        [HttpGet("{dataSetSpecificationId}")]
+        public async ValueTask<ActionResult<DataSetSpecification>> GetDataSetSpecificationByIdAsync(Guid dataSetSpecificationId)
+        {
+            try
+            {
+                DataSetSpecification dataSetSpecification = await this.dataSetSpecificationService.RetrieveDataSetSpecificationByIdAsync(dataSetSpecificationId);
+
+                return Ok(dataSetSpecification);
+            }
+            catch (DataSetSpecificationValidationException dataSetSpecificationValidationException)
+                when (dataSetSpecificationValidationException.InnerException is NotFoundDataSetSpecificationException)
+            {
+                return NotFound(dataSetSpecificationValidationException.InnerException);
+            }
+            catch (DataSetSpecificationValidationException dataSetSpecificationValidationException)
+            {
+                return BadRequest(dataSetSpecificationValidationException.InnerException);
             }
             catch (DataSetSpecificationDependencyException dataSetSpecificationDependencyException)
             {

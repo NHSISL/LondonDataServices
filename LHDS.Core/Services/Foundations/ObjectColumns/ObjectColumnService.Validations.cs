@@ -33,10 +33,32 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                     objectColumn.OurColumnName, 255), Parameter: nameof(objectColumn.OurColumnName)),
 
                 (Rule: IsEqualOrSmallerThan(
+                    objectColumn.ColumnDescription, 500), Parameter: nameof(objectColumn.ColumnDescription)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.PopulatedBy, 255), Parameter: nameof(objectColumn.PopulatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
                     objectColumn.SqlDataType, 50), Parameter: nameof(objectColumn.SqlDataType)),
 
                 (Rule: IsEqualOrSmallerThan(
+                    objectColumn.FhirDataType, 255), Parameter: nameof(objectColumn.FhirDataType)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.SupplierDateFormat, 255), Parameter: nameof(objectColumn.SupplierDateFormat)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.TypeOfPersonConfidentialData, 255),
+                Parameter: nameof(objectColumn.TypeOfPersonConfidentialData)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.MaskingMethod, 255), Parameter: nameof(objectColumn.MaskingMethod)),
+
+                (Rule: IsEqualOrSmallerThan(
                     objectColumn.CodeSystem, 255), Parameter: nameof(objectColumn.CodeSystem)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.PartitionColumnLevel, 255), Parameter: nameof(objectColumn.PartitionColumnLevel)),
 
                 (Rule: IsEqualOrSmallerThan(
                     objectColumn.CreatedBy, 255), Parameter: nameof(objectColumn.CreatedBy)),
@@ -82,10 +104,32 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                     objectColumn.OurColumnName, 255), Parameter: nameof(objectColumn.OurColumnName)),
 
                 (Rule: IsEqualOrSmallerThan(
+                    objectColumn.ColumnDescription, 500), Parameter: nameof(objectColumn.ColumnDescription)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.PopulatedBy, 255), Parameter: nameof(objectColumn.PopulatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
                     objectColumn.SqlDataType, 50), Parameter: nameof(objectColumn.SqlDataType)),
 
                 (Rule: IsEqualOrSmallerThan(
+                    objectColumn.FhirDataType, 255), Parameter: nameof(objectColumn.FhirDataType)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.SupplierDateFormat, 255), Parameter: nameof(objectColumn.SupplierDateFormat)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.TypeOfPersonConfidentialData, 255),
+                Parameter: nameof(objectColumn.TypeOfPersonConfidentialData)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.MaskingMethod, 255), Parameter: nameof(objectColumn.MaskingMethod)),
+
+                (Rule: IsEqualOrSmallerThan(
                     objectColumn.CodeSystem, 255), Parameter: nameof(objectColumn.CodeSystem)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    objectColumn.PartitionColumnLevel, 255), Parameter: nameof(objectColumn.PartitionColumnLevel)),
 
                 (Rule: IsEqualOrSmallerThan(
                     objectColumn.CreatedBy, 255), Parameter: nameof(objectColumn.CreatedBy)),

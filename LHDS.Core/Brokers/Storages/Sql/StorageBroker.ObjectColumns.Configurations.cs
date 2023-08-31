@@ -28,14 +28,14 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<ObjectColumn>()
-                .Property(objectColumn => objectColumn.ColumnDescription)
-                .HasMaxLength(500)
-                .IsRequired(false);
-
-            modelBuilder.Entity<ObjectColumn>()
                 .Property(objectColumn => objectColumn.OurColumnName)
                 .HasMaxLength(255)
                 .IsRequired();
+
+            modelBuilder.Entity<ObjectColumn>()
+                .Property(objectColumn => objectColumn.ColumnDescription)
+                .HasMaxLength(500)
+                .IsRequired(false);
 
             modelBuilder.Entity<ObjectColumn>()
                 .Property(objectColumn => objectColumn.PopulatedBy)

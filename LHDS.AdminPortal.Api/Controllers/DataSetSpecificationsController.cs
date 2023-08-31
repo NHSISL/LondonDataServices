@@ -138,5 +138,43 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(dataSetSpecificationServiceException);
             }
         }
+
+        [HttpDelete("{dataSetSpecificationId}")]
+        public async ValueTask<ActionResult<DataSetSpecification>> DeleteDataSetSpecificationByIdAsync(Guid dataSetSpecificationId)
+        {
+            try
+            {
+                DataSetSpecification deletedDataSetSpecification =
+                    await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(dataSetSpecificationId);
+
+                return Ok(deletedDataSetSpecification);
+            }
+            catch (DataSetSpecificationValidationException dataSetSpecificationValidationException)
+                when (dataSetSpecificationValidationException.InnerException is NotFoundDataSetSpecificationException)
+            {
+                return NotFound(dataSetSpecificationValidationException.InnerException);
+            }
+            catch (DataSetSpecificationValidationException dataSetSpecificationValidationException)
+            {
+                return BadRequest(dataSetSpecificationValidationException.InnerException);
+            }
+            catch (DataSetSpecificationDependencyValidationException dataSetSpecificationDependencyValidationException)
+                when (dataSetSpecificationDependencyValidationException.InnerException is LockedDataSetSpecificationException)
+            {
+                return Locked(dataSetSpecificationDependencyValidationException.InnerException);
+            }
+            catch (DataSetSpecificationDependencyValidationException dataSetSpecificationDependencyValidationException)
+            {
+                return BadRequest(dataSetSpecificationDependencyValidationException);
+            }
+            catch (DataSetSpecificationDependencyException dataSetSpecificationDependencyException)
+            {
+                return InternalServerError(dataSetSpecificationDependencyException);
+            }
+            catch (DataSetSpecificationServiceException dataSetSpecificationServiceException)
+            {
+                return InternalServerError(dataSetSpecificationServiceException);
+            }
+        }
     }
 }

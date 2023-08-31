@@ -99,5 +99,44 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(dataSetSpecificationServiceException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<DataSetSpecification>> PutDataSetSpecificationAsync(DataSetSpecification dataSetSpecification)
+        {
+            try
+            {
+                DataSetSpecification modifiedDataSetSpecification =
+                    await this.dataSetSpecificationService.ModifyDataSetSpecificationAsync(dataSetSpecification);
+
+                return Ok(modifiedDataSetSpecification);
+            }
+            catch (DataSetSpecificationValidationException dataSetSpecificationValidationException)
+                when (dataSetSpecificationValidationException.InnerException is NotFoundDataSetSpecificationException)
+            {
+                return NotFound(dataSetSpecificationValidationException.InnerException);
+            }
+            catch (DataSetSpecificationValidationException dataSetSpecificationValidationException)
+            {
+                return BadRequest(dataSetSpecificationValidationException.InnerException);
+            }
+            catch (DataSetSpecificationDependencyValidationException dataSetSpecificationValidationException)
+                when (dataSetSpecificationValidationException.InnerException is InvalidDataSetSpecificationReferenceException)
+            {
+                return FailedDependency(dataSetSpecificationValidationException.InnerException);
+            }
+            catch (DataSetSpecificationDependencyValidationException dataSetSpecificationDependencyValidationException)
+               when (dataSetSpecificationDependencyValidationException.InnerException is AlreadyExistsDataSetSpecificationException)
+            {
+                return Conflict(dataSetSpecificationDependencyValidationException.InnerException);
+            }
+            catch (DataSetSpecificationDependencyException dataSetSpecificationDependencyException)
+            {
+                return InternalServerError(dataSetSpecificationDependencyException);
+            }
+            catch (DataSetSpecificationServiceException dataSetSpecificationServiceException)
+            {
+                return InternalServerError(dataSetSpecificationServiceException);
+            }
+        }
     }
 }

@@ -138,5 +138,43 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(dataSetServiceException);
             }
         }
+
+        [HttpDelete("{dataSetId}")]
+        public async ValueTask<ActionResult<DataSet>> DeleteDataSetByIdAsync(Guid dataSetId)
+        {
+            try
+            {
+                DataSet deletedDataSet =
+                    await this.dataSetService.RemoveDataSetByIdAsync(dataSetId);
+
+                return Ok(deletedDataSet);
+            }
+            catch (DataSetValidationException dataSetValidationException)
+                when (dataSetValidationException.InnerException is NotFoundDataSetException)
+            {
+                return NotFound(dataSetValidationException.InnerException);
+            }
+            catch (DataSetValidationException dataSetValidationException)
+            {
+                return BadRequest(dataSetValidationException.InnerException);
+            }
+            catch (DataSetDependencyValidationException dataSetDependencyValidationException)
+                when (dataSetDependencyValidationException.InnerException is LockedDataSetException)
+            {
+                return Locked(dataSetDependencyValidationException.InnerException);
+            }
+            catch (DataSetDependencyValidationException dataSetDependencyValidationException)
+            {
+                return BadRequest(dataSetDependencyValidationException);
+            }
+            catch (DataSetDependencyException dataSetDependencyException)
+            {
+                return InternalServerError(dataSetDependencyException);
+            }
+            catch (DataSetServiceException dataSetServiceException)
+            {
+                return InternalServerError(dataSetServiceException);
+            }
+        }
     }
 }

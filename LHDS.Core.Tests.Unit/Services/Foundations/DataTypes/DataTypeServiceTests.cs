@@ -102,6 +102,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(dataType => dataType.CreatedBy).Use(user)
                 .OnProperty(dataType => dataType.UpdatedBy).Use(user);
 

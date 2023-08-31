@@ -144,7 +144,7 @@ namespace LHDS.Core.Migrations
                             }));
                 });
 
-            modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSets.DataSet", b =>
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSetSpecifications.DataSetSpecification", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -190,7 +190,27 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsMultiSender")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsPublished")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OurSpecificationVersion")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<DateTime>("PeriodEnd")
                         .ValueGeneratedOnAddOrUpdate()
@@ -207,16 +227,28 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<string>("SupplierSpecificationVersion")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<DateTimeOffset>("UpdatedDate")
                         .HasColumnType("datetimeoffset");
 
                     b.HasKey("Id");
 
-                    b.ToTable("DataSets");
+                    b.HasIndex("DataSetId");
+
+                    b.ToTable("DataSetSpecifications");
 
                     b.ToTable(tb => tb.IsTemporal(ttb =>
                             {
-                                ttb.UseHistoryTable("DataSetsHistory");
+                                ttb.UseHistoryTable("DataSetSpecificationsHistory");
                                 ttb
                                     .HasPeriodStart("PeriodStart")
                                     .HasColumnName("PeriodStart");
@@ -226,7 +258,7 @@ namespace LHDS.Core.Migrations
                             }));
                 });
 
-            modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSets.DataSetSpecification", b =>
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSets.DataSet", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -244,35 +276,20 @@ namespace LHDS.Core.Migrations
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<Guid>("DataSetId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("DataSetAliasses")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTimeOffset>("DateImplemented")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<string>("DataSetAuthor")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTimeOffset>("DateReleased")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<string>("DataSetName")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTimeOffset>("DateSuperceeded")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("EntityChangeSynchronisation")
+                    b.Property<string>("DataSourceType")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
-
-                    b.Property<bool>("IsMultiSender")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsPublished")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OurSpecificationVersion")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("PeriodEnd")
                         .ValueGeneratedOnAddOrUpdate()
@@ -284,15 +301,6 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("PeriodStart");
 
-                    b.Property<string>("PreceededBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SuperseededBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SupplierSpecificationVersion")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -301,13 +309,11 @@ namespace LHDS.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DataSetId");
-
-                    b.ToTable("DataSetSpecifications");
+                    b.ToTable("DataSets");
 
                     b.ToTable(tb => tb.IsTemporal(ttb =>
                             {
-                                ttb.UseHistoryTable("DataSetSpecificationsHistory");
+                                ttb.UseHistoryTable("DataSetsHistory");
                                 ttb
                                     .HasPeriodStart("PeriodStart")
                                     .HasColumnName("PeriodStart");
@@ -751,7 +757,7 @@ namespace LHDS.Core.Migrations
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSetObjects.DataSetObject", b =>
                 {
-                    b.HasOne("LHDS.Core.Models.Foundations.DataSets.DataSetSpecification", "DataSetSpecification")
+                    b.HasOne("LHDS.Core.Models.Foundations.DataSetSpecifications.DataSetSpecification", "DataSetSpecification")
                         .WithMany("DataSetObjects")
                         .HasForeignKey("DataSetSpecificationId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -760,7 +766,7 @@ namespace LHDS.Core.Migrations
                     b.Navigation("DataSetSpecification");
                 });
 
-            modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSets.DataSetSpecification", b =>
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSetSpecifications.DataSetSpecification", b =>
                 {
                     b.HasOne("LHDS.Core.Models.Foundations.DataSets.DataSet", "DataSet")
                         .WithMany("DataSetSpecifications")
@@ -798,14 +804,14 @@ namespace LHDS.Core.Migrations
                     b.Navigation("DataSetObjects");
                 });
 
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSetSpecifications.DataSetSpecification", b =>
+                {
+                    b.Navigation("DataSetObjects");
+                });
+
             modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSets.DataSet", b =>
                 {
                     b.Navigation("DataSetSpecifications");
-                });
-
-            modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSets.DataSetSpecification", b =>
-                {
-                    b.Navigation("DataSetObjects");
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.IngestionTrackings.IngestionTracking", b =>

@@ -4,10 +4,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
@@ -23,15 +21,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
         public async Task ShouldGetExistingLandingDocumentByFileNameAsync()
         {
             // given
-            List<Document> retrievedDocuments = 
+            List<Document> retrievedDocuments =
                 await this.apiBroker.downloadService.RetrieveListOfDocumentsToProcessAsync();
 
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
             byte[] encryptedData = await this.apiBroker.cryptographyProvider.EncryptAsync(documentData);
             Document retrievedDocument = retrievedDocuments[0];
             retrievedDocument.DocumentData = encryptedData;
-            //var retrievedFileName = retrievedDocument.FileName.Split("/".ToCharArray());
-            //retrievedDocument.FileName = retrievedFileName[retrievedFileName.Length - 1];
+            var retrievedFileName = retrievedDocument.FileName.Split("/".ToCharArray());
+            retrievedDocument.FileName = retrievedFileName[retrievedFileName.Length - 1];
 
             // create ingestion tracking
 
@@ -41,8 +39,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
 
             IngestionTracking randomIngestionTracking =
                 await PostRandomIngestionTrackingAsync(
-                    randomSupplier.Id, 
-                    retrievedDocument.FileName, 
+                    randomSupplier.Id,
+                    retrievedDocument.FileName,
                     encryptedFilePath,
                     decryptedFilePath);
 
@@ -51,12 +49,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
 
             // when
             ActionResult<IngestionTracking> result =
-                await this.apiBroker.GetLandingDocumentByFileNameAsync(
-                    HttpUtility.UrlEncode(inputIngestionTracking.EncryptedFileName));
+                await this.apiBroker.GetLandingDocumentByFileNameAsync(retrievedDocument.FileName);
 
             List<Audit> retrievedAudits = await this.apiBroker.GetAllAuditsAsync();
 
-            List<Audit> ingestionTrackingAudits = 
+            List<Audit> ingestionTrackingAudits =
                 retrievedAudits.Where(audit => audit.IngestionTrackingId == inputIngestionTracking.Id).ToList();
 
             //Then
@@ -65,8 +62,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
 
             await this.apiBroker.DeleteIngestionTrackingByIdAsync(inputIngestionTracking.Id);
 
-            foreach(var audit in ingestionTrackingAudits) 
-            { 
+            foreach (var audit in ingestionTrackingAudits)
+            {
                 await this.apiBroker.DeleteAuditByIdAsync(audit.Id);
             }
         }

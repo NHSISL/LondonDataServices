@@ -1,9 +1,13 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSets.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
@@ -55,7 +59,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             // given
             var invalidDataSet = new DataSet
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                DataSetName = invalidText,
+                DataSetAliasses = invalidText,
+                DataSetSupplier = invalidText,
+                DataSetAuthor = invalidText,
+                DataSourceType = invalidText,
             };
 
             var invalidDataSetException =
@@ -66,11 +74,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 key: nameof(DataSet.Id),
                 values: "Id is required");
 
-            //invalidDataSetException.AddData(
-            //    key: nameof(DataSet.Name),
-            //    values: "Text is required");
+            invalidDataSetException.AddData(
+               key: nameof(DataSet.DataSetName),
+               values: "Text is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the DataSet model
+            invalidDataSetException.AddData(
+               key: nameof(DataSet.DataSetAliasses),
+               values: "Text is required");
+
+            invalidDataSetException.AddData(
+               key: nameof(DataSet.DataSetSupplier),
+               values: "Text is required");
+
+            invalidDataSetException.AddData(
+               key: nameof(DataSet.DataSetAuthor),
+               values: "Text is required");
+
+            invalidDataSetException.AddData(
+               key: nameof(DataSet.DataSourceType),
+               values: "Text is required");
 
             invalidDataSetException.AddData(
                 key: nameof(DataSet.CreatedDate),
@@ -124,6 +146,91 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
         }
 
         [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfDataSetIsInvalidLengthAndLogItAsync()
+        {
+            // given 
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DataSet invalidDataSet = CreateRandomDataSet(randomDateTimeOffset);
+            invalidDataSet.DataSetName = GetRandomString(151);
+            invalidDataSet.DataSetAliasses = GetRandomString(251);
+            invalidDataSet.DataSetSupplier = GetRandomString(151);
+            invalidDataSet.DataSetAuthor = GetRandomString(151);
+            invalidDataSet.DataSourceType = GetRandomString(151);
+            invalidDataSet.CreatedBy = GetRandomString(256);
+            invalidDataSet.UpdatedBy = invalidDataSet.CreatedBy;
+
+            var invalidDataSetException =
+                new InvalidDataSetException(
+                    message: "Invalid dataSet. Please correct the errors and try again.");
+
+            invalidDataSetException.AddData(
+                key: nameof(DataSet.DataSetName),
+                values: "Text is exceeding max length");
+
+            invalidDataSetException.AddData(
+                key: nameof(DataSet.DataSetAliasses),
+                values: "Text is exceeding max length");
+
+            invalidDataSetException.AddData(
+                key: nameof(DataSet.DataSetSupplier),
+                values: "Text is exceeding max length");
+
+            invalidDataSetException.AddData(
+                key: nameof(DataSet.DataSetAuthor),
+                values: "Text is exceeding max length");
+
+            invalidDataSetException.AddData(
+                key: nameof(DataSet.DataSourceType),
+                values: "Text is exceeding max length");
+
+            invalidDataSetException.AddData(
+                key: nameof(DataSet.CreatedBy),
+                values: "Text is exceeding max length");
+
+            invalidDataSetException.AddData(
+                key: nameof(DataSet.UpdatedBy),
+                values: "Text is exceeding max length");
+
+            var expectedDataSetValidationException =
+                new DataSetValidationException(
+                    message: "DataSet validation errors occurred, please try again.",
+                    innerException: invalidDataSetException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<DataSet> addDataSetTask =
+                this.dataSetService.AddDataSetAsync(invalidDataSet);
+
+            DataSetValidationException actualDataSetValidationException =
+                await Assert.ThrowsAsync<DataSetValidationException>(
+                    addDataSetTask.AsTask);
+
+            //then
+            actualDataSetValidationException.Should()
+                .BeEquivalentTo(expectedDataSetValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetValidationException))),
+                        Times.Once());
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateDataSetAsync(It.IsAny<DataSet>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
         public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateDatesIsNotSameAndLogItAsync()
         {
             // given
@@ -135,7 +242,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             invalidDataSet.UpdatedDate =
                 invalidDataSet.CreatedDate.AddDays(randomNumber);
 
-            var invalidDataSetException = 
+            var invalidDataSetException =
                 new InvalidDataSetException(
                     message: "Invalid dataSet. Please correct the errors and try again.");
 

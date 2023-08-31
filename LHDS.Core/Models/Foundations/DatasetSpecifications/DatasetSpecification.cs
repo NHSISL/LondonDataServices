@@ -6,8 +6,9 @@ using System;
 using System.Collections.Generic;
 using LHDS.Core.Models.Bases;
 using LHDS.Core.Models.Foundations.DataSetObjects;
+using LHDS.Core.Models.Foundations.DataSets;
 
-namespace LHDS.Core.Models.Foundations.DataSets
+namespace LHDS.Core.Models.Foundations.DataSetSpecifications
 {
     public class DataSetSpecification : IKey, IAudit
     {
@@ -18,11 +19,11 @@ namespace LHDS.Core.Models.Foundations.DataSets
         public string Notes { get; set; }
         public bool IsMultiSender { get; set; }
         public string EntityChangeSynchronisation { get; set; }
-        public DateTimeOffset DateReleased { get; set; }
-        public DateTimeOffset DateImplemented { get; set; }
-        public DateTimeOffset DateSuperceeded { get; set; }
-        public string SuperseededBy { get; set; }
-        public string PreceededBy { get; set; }
+        public DateTimeOffset? DateReleased { get; set; }
+        public DateTimeOffset? DateImplemented { get; set; }
+        public DateTimeOffset? DateSuperseded { get; set; }
+        public string SupersededBy { get; set; }
+        public string PresededBy { get; set; }
         public bool IsPublished { get; set; }
         public bool IsActive { get; set; }
         public DateTimeOffset ActiveFrom { get; set; }

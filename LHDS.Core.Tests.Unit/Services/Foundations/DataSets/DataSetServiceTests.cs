@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using LHDS.Core.Brokers.DateTimes;
@@ -70,6 +71,24 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static DataSet CreateRandomModifyDataSet(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            DataSet randomDataSet = CreateRandomDataSet(dateTimeOffset);
+
+            randomDataSet.CreatedDate =
+                randomDataSet.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomDataSet;
+        }
+
+        private static IQueryable<DataSet> CreateRandomDataSets()
+        {
+            return CreateDataSetFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
+
         private static DataSet CreateRandomDataSet() =>
             CreateDataSetFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
@@ -78,8 +97,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
         private static Filler<DataSet> CreateDataSetFiller(DateTimeOffset dateTimeOffset)
         {
-            string user = GetRandomString(255);
-            var filler = new Filler<DataSet>();
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<Models.Foundations.DataSets.DataSet>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
@@ -102,7 +121,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
                 .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
                 .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.DataSetName).Use(GetRandomString(150))
+                .OnProperty(dataSet => dataSet.DataSetAliasses).Use(GetRandomString(250))
+                .OnProperty(dataSet => dataSet.DataSetSupplier).Use(GetRandomString(150))
+                .OnProperty(dataSet => dataSet.DataSetAuthor).Use(GetRandomString(150))
+                .OnProperty(dataSet => dataSet.DataSourceType).Use(GetRandomString(50))
                 .OnProperty(dataSet => dataSet.DataSetSpecifications).IgnoreIt();
+            // TODO: Complete the filler setup e.g. ignore related properties etc...
 
             return filler;
         }

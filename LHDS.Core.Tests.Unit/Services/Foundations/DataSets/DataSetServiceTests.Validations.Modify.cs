@@ -167,7 +167,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             invalidDataSet.DataSetSupplier = GetRandomString(151);
             invalidDataSet.DataSetAuthor = GetRandomString(151);
             invalidDataSet.DataSourceType = GetRandomString(151);
-            invalidDataSet.CreatedBy = GetRandomString(51);
+            invalidDataSet.CreatedBy = GetRandomString(256);
             invalidDataSet.UpdatedBy = invalidDataSet.CreatedBy;
 
             var invalidDataSetException =

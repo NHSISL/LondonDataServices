@@ -15,58 +15,58 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .ToTable(dataSet => dataSet.IsTemporal());
 
             modelBuilder.Entity<DataSet>()
-               .Property(objectColumn => objectColumn.Id)
+               .Property(dataSet => dataSet.Id)
                .IsRequired();
 
             modelBuilder.Entity<DataSet>()
-                .Property(objectColumn => objectColumn.DataSetName)
+                .Property(dataSet => dataSet.DataSetName)
                 .HasMaxLength(150)
                 .IsRequired();
 
             modelBuilder.Entity<DataSet>()
-                .Property(objectColumn => objectColumn.DataSetAliasses)
+                .Property(dataSet => dataSet.DataSetAliasses)
                 .HasMaxLength(250)
                 .IsRequired();
 
             modelBuilder.Entity<DataSet>()
-                .Property(objectColumn => objectColumn.DataSetSupplier)
+                .Property(dataSet => dataSet.DataSetSupplier)
                 .HasMaxLength(150)
                 .IsRequired();
 
             modelBuilder.Entity<DataSet>()
-                .Property(objectColumn => objectColumn.DataSetAuthor)
+                .Property(dataSet => dataSet.DataSetAuthor)
                 .HasMaxLength(150)
                 .IsRequired();
 
             modelBuilder.Entity<DataSet>()
-                .Property(objectColumn => objectColumn.DataSourceType)
+                .Property(dataSet => dataSet.DataSourceType)
                 .HasMaxLength(50)
                 .IsRequired();
 
             modelBuilder.Entity<DataSet>()
-                .Property(objectColumn => objectColumn.ActiveFrom)
+                .Property(dataSet => dataSet.ActiveFrom)
                 .IsRequired(false);
 
             modelBuilder.Entity<DataSet>()
-                .Property(objectColumn => objectColumn.ActiveTo)
+                .Property(dataSet => dataSet.ActiveTo)
                 .IsRequired(false);
 
             modelBuilder.Entity<DataSet>()
-                .Property(objectColumn => objectColumn.CreatedBy)
+                .Property(dataSet => dataSet.CreatedBy)
                 .HasMaxLength(255)
                 .IsRequired();
 
             modelBuilder.Entity<DataSet>()
-                .Property(objectColumn => objectColumn.CreatedDate)
+                .Property(dataSet => dataSet.CreatedDate)
                 .IsRequired();
 
             modelBuilder.Entity<DataSet>()
-                .Property(objectColumn => objectColumn.UpdatedBy)
+                .Property(dataSet => dataSet.UpdatedBy)
                 .HasMaxLength(255)
                 .IsRequired();
 
             modelBuilder.Entity<DataSet>()
-                .Property(objectColumn => objectColumn.UpdatedDate)
+                .Property(dataSet => dataSet.UpdatedDate)
                 .IsRequired();
         }
     }

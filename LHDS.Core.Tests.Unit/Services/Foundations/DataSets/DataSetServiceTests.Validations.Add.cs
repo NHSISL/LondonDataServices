@@ -146,6 +146,91 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
         }
 
         [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfDataSetIsInvalidLengthAndLogItAsync()
+        {
+            // given 
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            DataSet invalidDataSet = CreateRandomDataSet(randomDateTimeOffset);
+            invalidDataSet.DataSetName = GetRandomString(151);
+            invalidDataSet.DataSetAliasses = GetRandomString(251);
+            invalidDataSet.DataSetSupplier = GetRandomString(151);
+            invalidDataSet.DataSetAuthor = GetRandomString(151);
+            invalidDataSet.DataSourceType = GetRandomString(151);
+            invalidDataSet.CreatedBy = GetRandomString(256);
+            invalidDataSet.UpdatedBy = invalidDataSet.CreatedBy;
+
+            var invalidDataSetException =
+                new InvalidDataSetException(
+                    message: "Invalid dataSet. Please correct the errors and try again.");
+
+            invalidDataSetException.AddData(
+                key: nameof(DataSet.DataSetName),
+                values: "Text is exceeding max length");
+
+            invalidDataSetException.AddData(
+                key: nameof(DataSet.DataSetAliasses),
+                values: "Text is exceeding max length");
+
+            invalidDataSetException.AddData(
+                key: nameof(DataSet.DataSetSupplier),
+                values: "Text is exceeding max length");
+
+            invalidDataSetException.AddData(
+                key: nameof(DataSet.DataSetAuthor),
+                values: "Text is exceeding max length");
+
+            invalidDataSetException.AddData(
+                key: nameof(DataSet.DataSourceType),
+                values: "Text is exceeding max length");
+
+            invalidDataSetException.AddData(
+                key: nameof(DataSet.CreatedBy),
+                values: "Text is exceeding max length");
+
+            invalidDataSetException.AddData(
+                key: nameof(DataSet.UpdatedBy),
+                values: "Text is exceeding max length");
+
+            var expectedDataSetValidationException =
+                new DataSetValidationException(
+                    message: "DataSet validation errors occurred, please try again.",
+                    innerException: invalidDataSetException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<DataSet> addDataSetTask =
+                this.dataSetService.AddDataSetAsync(invalidDataSet);
+
+            DataSetValidationException actualDataSetValidationException =
+                await Assert.ThrowsAsync<DataSetValidationException>(
+                    addDataSetTask.AsTask);
+
+            //then
+            actualDataSetValidationException.Should()
+                .BeEquivalentTo(expectedDataSetValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDataSetValidationException))),
+                        Times.Once());
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateDataSetAsync(It.IsAny<DataSet>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
         public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateDatesIsNotSameAndLogItAsync()
         {
             // given

@@ -26,6 +26,27 @@ namespace LHDS.Core.Services.Foundations.DataSets
                 (Rule: IsInvalid(dataSet.UpdatedDate), Parameter: nameof(DataSet.UpdatedDate)),
                 (Rule: IsInvalid(dataSet.UpdatedBy), Parameter: nameof(DataSet.UpdatedBy)),
 
+                (Rule: IsEqualOrSmallerThan(
+                    dataSet.DataSetName, 150), Parameter: nameof(dataSet.DataSetName)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataSet.DataSetAliasses, 250), Parameter: nameof(dataSet.DataSetAliasses)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataSet.DataSetSupplier, 150), Parameter: nameof(dataSet.DataSetSupplier)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataSet.DataSetAuthor, 150), Parameter: nameof(dataSet.DataSetAuthor)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataSet.DataSourceType, 50), Parameter: nameof(dataSet.DataSourceType)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataSet.CreatedBy, 255), Parameter: nameof(dataSet.CreatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    dataSet.UpdatedBy, 255), Parameter: nameof(dataSet.UpdatedBy)),
+
                 (Rule: IsNotSame(
                     firstDate: dataSet.UpdatedDate,
                     secondDate: dataSet.CreatedDate,
@@ -123,6 +144,12 @@ namespace LHDS.Core.Services.Foundations.DataSets
         {
             Condition = date == default,
             Message = "Date is required"
+        };
+
+        private static dynamic IsEqualOrSmallerThan(string text, int maxLength) => new
+        {
+            Condition = (text ?? string.Empty).Length > maxLength,
+            Message = "Text is exceeding max length"
         };
 
         private static dynamic IsSame(

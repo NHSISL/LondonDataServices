@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using LHDS.Core.Models.Bases;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
 
 namespace LHDS.Core.Models.Foundations.DataSets
 {

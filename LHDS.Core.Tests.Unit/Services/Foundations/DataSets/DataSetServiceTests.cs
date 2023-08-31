@@ -102,6 +102,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+
+                .OnProperty(dataSet => dataSet.DataSetName)
+                    .Use(GetRandomString(150))
+
+                .OnProperty(dataSet => dataSet.DataSetAliasses)
+                    .Use(GetRandomString(250))
+
+                .OnProperty(dataSet => dataSet.DataSetSupplier)
+                    .Use(GetRandomString(150))
+
+                .OnProperty(dataSet => dataSet.DataSetAuthor)
+                    .Use(GetRandomString(150))
+
+                .OnProperty(dataSet => dataSet.DataSourceType)
+                    .Use(GetRandomString(50))
+
                 .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
                 .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)
                 .OnProperty(dataSet => dataSet.DataSetName).Use(GetRandomString(150))

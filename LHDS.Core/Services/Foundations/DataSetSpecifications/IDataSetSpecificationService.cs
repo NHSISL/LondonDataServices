@@ -1,0 +1,16 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
+
+namespace LHDS.Core.Services.Foundations.DataSetSpecifications
+{
+    public interface IDataSetSpecificationService
+    {
+        ValueTask<DataSetSpecification> AddDataSetSpecificationAsync(DataSetSpecification dataSetSpecification);
+        IQueryable<DataSetSpecification> RetrieveAllDataSetSpecifications();
+        ValueTask<DataSetSpecification> RetrieveDataSetSpecificationByIdAsync(Guid dataSetSpecificationId);
+        ValueTask<DataSetSpecification> ModifyDataSetSpecificationAsync(DataSetSpecification dataSetSpecification);
+        ValueTask<DataSetSpecification> RemoveDataSetSpecificationByIdAsync(Guid dataSetSpecificationId);
+    }
+}

@@ -102,10 +102,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(objectColumn => objectColumn.CreatedBy).Use(user)
                 .OnProperty(objectColumn => objectColumn.UpdatedBy).Use(user);
-
-            // TODO: Complete the filler setup e.g. ignore related properties etc...
 
             return filler;
         }

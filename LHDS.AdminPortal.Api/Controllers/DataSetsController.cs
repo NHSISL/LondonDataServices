@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,34 @@ namespace LHDS.AdminPortal.Api.Controllers
                     this.dataSetService.RetrieveAllDataSets();
 
                 return Ok(retrievedDataSets);
+            }
+            catch (DataSetDependencyException dataSetDependencyException)
+            {
+                return InternalServerError(dataSetDependencyException);
+            }
+            catch (DataSetServiceException dataSetServiceException)
+            {
+                return InternalServerError(dataSetServiceException);
+            }
+        }
+
+        [HttpGet("{dataSetId}")]
+        public async ValueTask<ActionResult<DataSet>> GetDataSetByIdAsync(Guid dataSetId)
+        {
+            try
+            {
+                DataSet dataSet = await this.dataSetService.RetrieveDataSetByIdAsync(dataSetId);
+
+                return Ok(dataSet);
+            }
+            catch (DataSetValidationException dataSetValidationException)
+                when (dataSetValidationException.InnerException is NotFoundDataSetException)
+            {
+                return NotFound(dataSetValidationException.InnerException);
+            }
+            catch (DataSetValidationException dataSetValidationException)
+            {
+                return BadRequest(dataSetValidationException.InnerException);
             }
             catch (DataSetDependencyException dataSetDependencyException)
             {

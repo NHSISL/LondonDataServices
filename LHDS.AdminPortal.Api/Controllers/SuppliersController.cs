@@ -6,6 +6,7 @@ using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using LHDS.Core.Services.Foundations.Suppliers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
 #if RELEASE
 using Microsoft.AspNetCore.Authorization;
@@ -60,10 +61,11 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
+        [EnableQuery(PageSize = 50)]
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Suppliers, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public ActionResult<IQueryable<Supplier>> GetAllSuppliers()
+        public ActionResult<IQueryable<Supplier>> Get()
         {
             try
             {

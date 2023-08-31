@@ -99,5 +99,44 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(dataSetServiceException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<DataSet>> PutDataSetAsync(DataSet dataSet)
+        {
+            try
+            {
+                DataSet modifiedDataSet =
+                    await this.dataSetService.ModifyDataSetAsync(dataSet);
+
+                return Ok(modifiedDataSet);
+            }
+            catch (DataSetValidationException dataSetValidationException)
+                when (dataSetValidationException.InnerException is NotFoundDataSetException)
+            {
+                return NotFound(dataSetValidationException.InnerException);
+            }
+            catch (DataSetValidationException dataSetValidationException)
+            {
+                return BadRequest(dataSetValidationException.InnerException);
+            }
+            catch (DataSetDependencyValidationException dataSetValidationException)
+                when (dataSetValidationException.InnerException is InvalidDataSetReferenceException)
+            {
+                return FailedDependency(dataSetValidationException.InnerException);
+            }
+            catch (DataSetDependencyValidationException dataSetDependencyValidationException)
+               when (dataSetDependencyValidationException.InnerException is AlreadyExistsDataSetException)
+            {
+                return Conflict(dataSetDependencyValidationException.InnerException);
+            }
+            catch (DataSetDependencyException dataSetDependencyException)
+            {
+                return InternalServerError(dataSetDependencyException);
+            }
+            catch (DataSetServiceException dataSetServiceException)
+            {
+                return InternalServerError(dataSetServiceException);
+            }
+        }
     }
 }

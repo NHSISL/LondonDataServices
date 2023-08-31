@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
@@ -39,6 +40,26 @@ namespace LHDS.AdminPortal.Api.Controllers
                when (dataSetSpecificationDependencyValidationException.InnerException is AlreadyExistsDataSetSpecificationException)
             {
                 return Conflict(dataSetSpecificationDependencyValidationException.InnerException);
+            }
+            catch (DataSetSpecificationDependencyException dataSetSpecificationDependencyException)
+            {
+                return InternalServerError(dataSetSpecificationDependencyException);
+            }
+            catch (DataSetSpecificationServiceException dataSetSpecificationServiceException)
+            {
+                return InternalServerError(dataSetSpecificationServiceException);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult<IQueryable<DataSetSpecification>> GetAllDataSetSpecifications()
+        {
+            try
+            {
+                IQueryable<DataSetSpecification> retrievedDataSetSpecifications =
+                    this.dataSetSpecificationService.RetrieveAllDataSetSpecifications();
+
+                return Ok(retrievedDataSetSpecifications);
             }
             catch (DataSetSpecificationDependencyException dataSetSpecificationDependencyException)
             {

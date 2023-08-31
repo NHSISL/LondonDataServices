@@ -39,9 +39,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<DataSet>()
-               .Property(objectColumn => objectColumn.DataSourceType)
-               .HasMaxLength(50)
-               .IsRequired();
+                .Property(objectColumn => objectColumn.DataSourceType)
+                .HasMaxLength(50)
+                .IsRequired();
 
             modelBuilder.Entity<DataSet>()
                 .Property(objectColumn => objectColumn.ActiveFrom)

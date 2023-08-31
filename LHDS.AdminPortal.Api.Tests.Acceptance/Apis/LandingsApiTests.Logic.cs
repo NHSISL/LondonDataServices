@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
@@ -49,14 +50,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             IngestionTracking expectedIngestionTracking = inputIngestionTracking;
 
             // when
-            ActionResult<IngestionTracking> result = 
-                await this.apiBroker.GetLandingDocumentByFileNameAsync(inputIngestionTracking.EncryptedFileName);
+            ActionResult<IngestionTracking> result =
+                await this.apiBroker.GetLandingDocumentByFileNameAsync(
+                    HttpUtility.UrlEncode(inputIngestionTracking.EncryptedFileName));
 
-            //List<IngestionTracking> retrievedIngestionTrackings = await this.apiBroker.GetAllIngestionTrackingsAsync();
-
-            //IngestionTracking landingIngestionTracking = 
-            //    retrievedIngestionTrackings.FirstOrDefault(it => it.FileName == retrievedDocument.FileName);
-            
             List<Audit> retrievedAudits = await this.apiBroker.GetAllAuditsAsync();
 
             List<Audit> ingestionTrackingAudits = 

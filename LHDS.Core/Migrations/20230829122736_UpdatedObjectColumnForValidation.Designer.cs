@@ -222,7 +222,7 @@ namespace LHDS.Core.Migrations
                     b.Property<DateTimeOffset>("DateReleased")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTimeOffset>("DateSuperceeded")
+                    b.Property<DateTimeOffset>("DateSuperseded")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("EntityChangeSynchronisation")
@@ -256,7 +256,7 @@ namespace LHDS.Core.Migrations
                     b.Property<string>("PreceededBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SuperseededBy")
+                    b.Property<string>("SupersededBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SupplierSpecificationVersion")

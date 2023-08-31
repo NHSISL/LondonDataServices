@@ -1,13 +1,17 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
-using Microsoft.Data.SqlClient;
-using Moq;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSets;
+using Microsoft.Data.SqlClient;
+using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
@@ -38,6 +42,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+
+        private static string GetRandomString(int length) =>
+            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
         public static TheoryData MinutesBeforeOrAfter()
         {
@@ -76,10 +83,26 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
-                .OnProperty(dataSet => dataSet.UpdatedBy).Use(user);
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
 
-            // TODO: Complete the filler setup e.g. ignore related properties etc...
+                .OnProperty(dataSet => dataSet.DataSetName)
+                    .Use(GetRandomString(150))
+
+                .OnProperty(dataSet => dataSet.DataSetAliasses)
+                    .Use(GetRandomString(250))
+
+                .OnProperty(dataSet => dataSet.DataSetSupplier)
+                    .Use(GetRandomString(150))
+
+                .OnProperty(dataSet => dataSet.DataSetAuthor)
+                    .Use(GetRandomString(150))
+
+                .OnProperty(dataSet => dataSet.DataSourceType)
+                    .Use(GetRandomString(50))
+
+                .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.DataSetSpecifications).IgnoreIt();
 
             return filler;
         }

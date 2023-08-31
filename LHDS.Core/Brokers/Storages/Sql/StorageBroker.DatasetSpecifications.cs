@@ -5,7 +5,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.DataSets;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.Core.Brokers.Storages.Sql
@@ -15,17 +15,17 @@ namespace LHDS.Core.Brokers.Storages.Sql
         public DbSet<DataSetSpecification> DataSetSpecifications { get; set; }
 
         public async ValueTask<DataSetSpecification> InsertDataSetSpecificationAsync(
-            DataSetSpecification datasetSpecification) => await InsertAsync(datasetSpecification);
+            DataSetSpecification dataSetSpecification) => await InsertAsync(dataSetSpecification);
 
         public IQueryable<DataSetSpecification> SelectAllDataSetSpecifications() => ReadAll<DataSetSpecification>();
 
         public async ValueTask<DataSetSpecification> SelectDataSetSpecificationByIdAsync(
-            Guid datasetSpecificationId) => await ReadAsync<DataSetSpecification>(datasetSpecificationId);
+            Guid dataSetSpecificationId) => await ReadAsync<DataSetSpecification>(dataSetSpecificationId);
 
         public async ValueTask<DataSetSpecification> UpdateDataSetSpecificationAsync(
-            DataSetSpecification datasetSpecification) => await UpdateAsync(datasetSpecification);
+            DataSetSpecification dataSetSpecification) => await UpdateAsync(dataSetSpecification);
 
         public async ValueTask<DataSetSpecification> DeleteDataSetSpecificationAsync(
-            DataSetSpecification datasetSpecification) => await DeleteAsync(datasetSpecification);
+            DataSetSpecification dataSetSpecification) => await DeleteAsync(dataSetSpecification);
     }
 }

@@ -99,6 +99,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(pdsAudit => pdsAudit.CreatedBy).Use(user)
                 .OnProperty(pdsAudit => pdsAudit.UpdatedBy).Use(user);
 

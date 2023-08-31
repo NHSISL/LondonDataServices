@@ -17,15 +17,20 @@ using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.ObjectColumns;
+using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Providers.Downloads.Extensions;
 using LHDS.Core.Services.Foundations.Audits;
+using LHDS.Core.Services.Foundations.DataSetObjects;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataTypes;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.ObjectColumns;
 using LHDS.Core.Services.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.PdsAudits;
 using LHDS.Core.Services.Foundations.Suppliers;
@@ -172,7 +177,10 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IOptOutService, OptOutService>();
             services.AddTransient<IPdsAuditService, PdsAuditService>();
+            services.AddTransient<IDataSetService, DataSetService>();
+            services.AddTransient<IDataSetObjectService, DataSetObjectService>();
             services.AddTransient<IDataTypeService, DataTypeService>();
+            services.AddTransient<IObjectColumnService, ObjectColumnService>();
             services.AddTransient<IDataSetService, DataSetService>();
 
             var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
@@ -245,10 +253,13 @@ namespace LHDS.AdminPortal.Api
             ODataConventionModelBuilder builder =
                new ODataConventionModelBuilder();
 
-            builder.EntitySet<IngestionTracking>("IngestionTrackings");
-            builder.EntitySet<Supplier>("Suppliers");
             builder.EntitySet<Audit>("Audits");
+            builder.EntitySet<DataType>("DataTypes");
+            builder.EntitySet<IngestionTracking>("IngestionTrackings");
+            builder.EntitySet<ObjectColumn>("ObjectColumns");
+            builder.EntitySet<OptOut>("OptOuts");
             builder.EntitySet<PdsAudit>("PdsAudits");
+            builder.EntitySet<Supplier>("Suppliers");
             builder.EnableLowerCamelCase();
 
             return builder.GetEdmModel();

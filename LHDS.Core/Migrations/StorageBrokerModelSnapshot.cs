@@ -255,29 +255,44 @@ namespace LHDS.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset>("ActiveFrom")
+                    b.Property<DateTimeOffset?>("ActiveFrom")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTimeOffset>("ActiveTo")
+                    b.Property<DateTimeOffset?>("ActiveTo")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("DataSetAliasses")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("DataSetAuthor")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<string>("DataSetName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("DataSetSupplier")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<string>("DataSourceType")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -293,7 +308,9 @@ namespace LHDS.Core.Migrations
                         .HasColumnName("PeriodStart");
 
                     b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTimeOffset>("UpdatedDate")
                         .HasColumnType("datetimeoffset");
@@ -724,14 +741,14 @@ namespace LHDS.Core.Migrations
                         {
                             Id = new Guid("67680f17-9d0c-4474-8b35-56ca8f9df1f6"),
                             CreatedBy = "System",
-                            CreatedDate = new DateTimeOffset(new DateTime(2023, 8, 30, 21, 37, 28, 557, DateTimeKind.Unspecified).AddTicks(898), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedDate = new DateTimeOffset(new DateTime(2023, 8, 31, 12, 39, 24, 763, DateTimeKind.Unspecified).AddTicks(7195), new TimeSpan(0, 0, 0, 0, 0)),
                             DecryptionManualTriggerUrl = "Update this => environment specific",
                             Description = "Emis Supplier",
                             FriendlyName = "EMIS",
                             LandingManualTriggerUrl = "Update this => environment specific",
                             Name = "EMIS",
                             UpdatedBy = "System",
-                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 8, 30, 21, 37, 28, 557, DateTimeKind.Unspecified).AddTicks(909), new TimeSpan(0, 0, 0, 0, 0))
+                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 8, 31, 12, 39, 24, 763, DateTimeKind.Unspecified).AddTicks(7204), new TimeSpan(0, 0, 0, 0, 0))
                         });
                 });
 

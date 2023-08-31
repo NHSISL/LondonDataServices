@@ -99,5 +99,44 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(dataSetObjectServiceException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<DataSetObject>> PutDataSetObjectAsync(DataSetObject dataSetObject)
+        {
+            try
+            {
+                DataSetObject modifiedDataSetObject =
+                    await this.dataSetObjectService.ModifyDataSetObjectAsync(dataSetObject);
+
+                return Ok(modifiedDataSetObject);
+            }
+            catch (DataSetObjectValidationException dataSetObjectValidationException)
+                when (dataSetObjectValidationException.InnerException is NotFoundDataSetObjectException)
+            {
+                return NotFound(dataSetObjectValidationException.InnerException);
+            }
+            catch (DataSetObjectValidationException dataSetObjectValidationException)
+            {
+                return BadRequest(dataSetObjectValidationException.InnerException);
+            }
+            catch (DataSetObjectDependencyValidationException dataSetObjectValidationException)
+                when (dataSetObjectValidationException.InnerException is InvalidDataSetObjectReferenceException)
+            {
+                return FailedDependency(dataSetObjectValidationException.InnerException);
+            }
+            catch (DataSetObjectDependencyValidationException dataSetObjectDependencyValidationException)
+               when (dataSetObjectDependencyValidationException.InnerException is AlreadyExistsDataSetObjectException)
+            {
+                return Conflict(dataSetObjectDependencyValidationException.InnerException);
+            }
+            catch (DataSetObjectDependencyException dataSetObjectDependencyException)
+            {
+                return InternalServerError(dataSetObjectDependencyException);
+            }
+            catch (DataSetObjectServiceException dataSetObjectServiceException)
+            {
+                return InternalServerError(dataSetObjectServiceException);
+            }
+        }
     }
 }

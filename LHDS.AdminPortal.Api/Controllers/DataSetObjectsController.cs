@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
@@ -39,6 +40,26 @@ namespace LHDS.AdminPortal.Api.Controllers
                when (dataSetObjectDependencyValidationException.InnerException is AlreadyExistsDataSetObjectException)
             {
                 return Conflict(dataSetObjectDependencyValidationException.InnerException);
+            }
+            catch (DataSetObjectDependencyException dataSetObjectDependencyException)
+            {
+                return InternalServerError(dataSetObjectDependencyException);
+            }
+            catch (DataSetObjectServiceException dataSetObjectServiceException)
+            {
+                return InternalServerError(dataSetObjectServiceException);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult<IQueryable<DataSetObject>> GetAllDataSetObjects()
+        {
+            try
+            {
+                IQueryable<DataSetObject> retrievedDataSetObjects =
+                    this.dataSetObjectService.RetrieveAllDataSetObjects();
+
+                return Ok(retrievedDataSetObjects);
             }
             catch (DataSetObjectDependencyException dataSetObjectDependencyException)
             {

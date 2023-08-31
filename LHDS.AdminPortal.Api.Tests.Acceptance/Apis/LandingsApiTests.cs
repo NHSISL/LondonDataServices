@@ -71,10 +71,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
                 .OnProperty(ingestionTracking => ingestionTracking.FileName).Use($"{fileName}.doc")
 
                 .OnProperty(ingestionTracking =>
-                    ingestionTracking.EncryptedFileName).Use($"/{encryptedFilePath}{fileName}.doc")
+                    ingestionTracking.EncryptedFileName).Use($"/{encryptedFilePath}/{fileName}.doc")
 
                 .OnProperty(ingestionTracking =>
-                    ingestionTracking.DecryptedFileName).Use($"/{decryptedFilePath}{fileName}.doc")
+                    ingestionTracking.DecryptedFileName).Use($"/{decryptedFilePath}/{fileName}.doc")
 
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedDate).Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)

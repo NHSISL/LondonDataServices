@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -32,6 +34,49 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                 ValidateDataSetSpecificationOnAdd(dataSetSpecification);
 
                 return await this.storageBroker.InsertDataSetSpecificationAsync(dataSetSpecification);
+            });
+
+        public IQueryable<DataSetSpecification> RetrieveAllDataSetSpecifications() =>
+            TryCatch(() => this.storageBroker.SelectAllDataSetSpecifications());
+
+        public ValueTask<DataSetSpecification> RetrieveDataSetSpecificationByIdAsync(Guid dataSetSpecificationId) =>
+            TryCatch(async () =>
+            {
+                ValidateDataSetSpecificationId(dataSetSpecificationId);
+
+                DataSetSpecification maybeDataSetSpecification = await this.storageBroker
+                    .SelectDataSetSpecificationByIdAsync(dataSetSpecificationId);
+
+                ValidateStorageDataSetSpecification(maybeDataSetSpecification, dataSetSpecificationId);
+
+                return maybeDataSetSpecification;
+            });
+
+        public ValueTask<DataSetSpecification> ModifyDataSetSpecificationAsync(DataSetSpecification dataSetSpecification) =>
+            TryCatch(async () =>
+            {
+                ValidateDataSetSpecificationOnModify(dataSetSpecification);
+
+                DataSetSpecification maybeDataSetSpecification =
+                    await this.storageBroker.SelectDataSetSpecificationByIdAsync(dataSetSpecification.Id);
+
+                ValidateStorageDataSetSpecification(maybeDataSetSpecification, dataSetSpecification.Id);
+                ValidateAgainstStorageDataSetSpecificationOnModify(inputDataSetSpecification: dataSetSpecification, storageDataSetSpecification: maybeDataSetSpecification);
+
+                return await this.storageBroker.UpdateDataSetSpecificationAsync(dataSetSpecification);
+            });
+
+        public ValueTask<DataSetSpecification> RemoveDataSetSpecificationByIdAsync(Guid dataSetSpecificationId) =>
+            TryCatch(async () =>
+            {
+                ValidateDataSetSpecificationId(dataSetSpecificationId);
+
+                DataSetSpecification maybeDataSetSpecification = await this.storageBroker
+                    .SelectDataSetSpecificationByIdAsync(dataSetSpecificationId);
+
+                ValidateStorageDataSetSpecification(maybeDataSetSpecification, dataSetSpecificationId);
+
+                return await this.storageBroker.DeleteDataSetSpecificationAsync(maybeDataSetSpecification);
             });
     }
 }

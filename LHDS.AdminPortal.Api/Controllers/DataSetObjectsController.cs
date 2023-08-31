@@ -1,0 +1,53 @@
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using RESTFulSense.Controllers;
+using LHDS.AdminPortal.Api.Models.Foundations.DataSetObjects;
+using LHDS.AdminPortal.Api.Models.Foundations.DataSetObjects.Exceptions;
+using LHDS.AdminPortal.Api.Services.Foundations.DataSetObjects;
+
+namespace LHDS.AdminPortal.Api.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class DataSetObjectsController : RESTFulController
+    {
+        private readonly IDataSetObjectService dataSetObjectService;
+
+        public DataSetObjectsController(IDataSetObjectService dataSetObjectService) =>
+            this.dataSetObjectService = dataSetObjectService;
+
+        [HttpPost]
+        public async ValueTask<ActionResult<DataSetObject>> PostDataSetObjectAsync(DataSetObject dataSetObject)
+        {
+            try
+            {
+                DataSetObject addedDataSetObject =
+                    await this.dataSetObjectService.AddDataSetObjectAsync(dataSetObject);
+
+                return Created(addedDataSetObject);
+            }
+            catch (DataSetObjectValidationException dataSetObjectValidationException)
+            {
+                return BadRequest(dataSetObjectValidationException.InnerException);
+            }
+            catch (DataSetObjectDependencyValidationException dataSetObjectValidationException)
+                when (dataSetObjectValidationException.InnerException is InvalidDataSetObjectReferenceException)
+            {
+                return FailedDependency(dataSetObjectValidationException.InnerException);
+            }
+            catch (DataSetObjectDependencyValidationException dataSetObjectDependencyValidationException)
+               when (dataSetObjectDependencyValidationException.InnerException is AlreadyExistsDataSetObjectException)
+            {
+                return Conflict(dataSetObjectDependencyValidationException.InnerException);
+            }
+            catch (DataSetObjectDependencyException dataSetObjectDependencyException)
+            {
+                return InternalServerError(dataSetObjectDependencyException);
+            }
+            catch (DataSetObjectServiceException dataSetObjectServiceException)
+            {
+                return InternalServerError(dataSetObjectServiceException);
+            }
+        }
+    }
+}

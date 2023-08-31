@@ -265,7 +265,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     Times.Once);
 
             this.documentServiceMock.Verify(service =>
-                service.RemoveDocumentByFileNameAsync(externalIngestionTracking.FileName),
+                service.RemoveDocumentByFileNameAsync(externalIngestionTracking.EncryptedFileName),
                     Times.Once);
 
             Document newBlobDocument = new Document

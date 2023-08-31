@@ -3,11 +3,9 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -28,7 +26,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
             new IntRange(min: 2, max: 10).GetValue();
 
         private static string GetRandomString() =>
-            new MnemonicString(wordCount: 1, wordMinLength: 2,wordMaxLength: GetRandomNumber()).GetValue();
+            new MnemonicString(wordCount: 1, wordMinLength: 2, wordMaxLength: GetRandomNumber()).GetValue();
 
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
@@ -116,6 +114,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(optOut => optOut.NhsNumber).Use(GenerateValidNhsNumber())
                 .OnProperty(optOut => optOut.Status).Use(GetRandomString())
                 .OnProperty(optOut => optOut.CreatedBy).Use(user)
@@ -151,6 +150,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedDate).Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
@@ -179,6 +179,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(supplier => supplier.CreatedDate).Use(now)
                 .OnProperty(supplier => supplier.CreatedBy).Use(userId)
                 .OnProperty(supplier => supplier.UpdatedDate).Use(now)

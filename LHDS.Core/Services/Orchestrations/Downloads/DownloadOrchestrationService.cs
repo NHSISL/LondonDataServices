@@ -191,7 +191,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     maybeIngestionTracking.UpdatedDate = currentDateTime;
                     maybeIngestionTracking.LastSeen = currentDateTime;
                     maybeIngestionTracking.EncryptedFileSize = externalDocument.DocumentData.Length;
-                    await this.documentService.RemoveDocumentByFileNameAsync(fileName);
+                    await this.documentService.RemoveDocumentByFileNameAsync(maybeIngestionTracking.EncryptedFileName);
 
                     Document newBlobDocument = new Document
                     {

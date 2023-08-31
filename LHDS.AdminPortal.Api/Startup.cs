@@ -26,6 +26,7 @@ using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Providers.Downloads.Extensions;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.DataSetObjects;
+using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.DataTypes;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
@@ -177,6 +178,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IOptOutService, OptOutService>();
             services.AddTransient<IPdsAuditService, PdsAuditService>();
             services.AddTransient<IDataSetObjectService, DataSetObjectService>();
+            services.AddTransient<IDataSetSpecificationService, DataSetSpecificationService>();
             services.AddTransient<IDataTypeService, DataTypeService>();
             services.AddTransient<IObjectColumnService, ObjectColumnService>();
 

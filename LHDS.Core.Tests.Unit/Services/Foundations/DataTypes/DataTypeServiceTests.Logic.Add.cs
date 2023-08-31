@@ -1,0 +1,53 @@
+using System;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Force.DeepCloner;
+using Moq;
+using LHDS.Core.Models.Foundations.DataTypes;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
+{
+    public partial class DataTypeServiceTests
+    {
+        [Fact]
+        public async Task ShouldAddDataTypeAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset =
+                GetRandomDateTimeOffset();
+
+            DataType randomDataType = CreateRandomDataType(randomDateTimeOffset);
+            DataType inputDataType = randomDataType;
+            DataType storageDataType = inputDataType;
+            DataType expectedDataType = storageDataType.DeepClone();
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.InsertDataTypeAsync(inputDataType))
+                    .ReturnsAsync(storageDataType);
+
+            // when
+            DataType actualDataType = await this.dataTypeService
+                .AddDataTypeAsync(inputDataType);
+
+            // then
+            actualDataType.Should().BeEquivalentTo(expectedDataType);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertDataTypeAsync(inputDataType),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

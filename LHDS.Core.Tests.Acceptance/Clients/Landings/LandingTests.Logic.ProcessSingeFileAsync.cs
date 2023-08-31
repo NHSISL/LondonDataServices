@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,7 +12,6 @@ using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
 using Xunit;
-using Xunit.Sdk;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 {
@@ -54,7 +52,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 broker.InsertFileAsync(encryptedFileName, It.IsAny<Stream>()),
                     Times.Once());
 
-            IngestionTracking retrievedInestionTracking = 
+            IngestionTracking retrievedInestionTracking =
                 await this.ingestionTrackingService.RetrieveIngestionTrackingByFileNameAsync(fileName);
 
             retrievedInestionTracking.CreatedDate.Should().Be(retrievedInestionTracking.UpdatedDate);
@@ -126,7 +124,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             modifiedIngestionTracking.UpdatedDate.Should().BeAfter(ingestionTracking.UpdatedDate);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.DeleteFileAsync(fileName),
+                broker.DeleteFileAsync(ingestionTracking.EncryptedFileName),
                     Times.Once());
 
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);

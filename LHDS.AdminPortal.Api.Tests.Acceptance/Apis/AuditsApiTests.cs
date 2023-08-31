@@ -75,6 +75,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(audit => audit.IngestionTrackingId).Use(ingestionTrackingId)
                 .OnProperty(audit => audit.CreatedDate).Use(now)
                 .OnProperty(audit => audit.CreatedBy).Use(user)
@@ -103,6 +104,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedDate).Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
@@ -131,6 +133,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(supplier => supplier.CreatedDate).Use(now)
                 .OnProperty(supplier => supplier.CreatedBy).Use(userId)
                 .OnProperty(supplier => supplier.UpdatedDate).Use(now)

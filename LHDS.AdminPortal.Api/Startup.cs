@@ -183,6 +183,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IDataSetSpecificationService, DataSetSpecificationService>();
             services.AddTransient<IDataTypeService, DataTypeService>();
             services.AddTransient<IObjectColumnService, ObjectColumnService>();
+            services.AddTransient<IDataSetService, DataSetService>();
 
             var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
             ValidateBlobStorageSettings(blobStorageSettings);

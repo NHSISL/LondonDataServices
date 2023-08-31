@@ -28,6 +28,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
+        private static string GetRandomString(int length) =>
+            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
@@ -58,7 +61,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             string encryptedFilePath,
             string decryptedFilePath)
         {
-            string user = Guid.NewGuid().ToString();
+            string user = GetRandomString(255);
             DateTime now = DateTime.UtcNow;
             var filler = new Filler<IngestionTracking>();
 
@@ -68,10 +71,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
                 .OnProperty(ingestionTracking => ingestionTracking.FileName).Use($"{fileName}.doc")
 
                 .OnProperty(ingestionTracking =>
-                    ingestionTracking.EncryptedFileName).Use($"/{encryptedFilePath}/{fileName}.doc")
+                    ingestionTracking.EncryptedFileName).Use($"/{encryptedFilePath}{fileName}.doc")
 
                 .OnProperty(ingestionTracking =>
-                    ingestionTracking.DecryptedFileName).Use($"/{decryptedFilePath}/{fileName}.doc")
+                    ingestionTracking.DecryptedFileName).Use($"/{decryptedFilePath}{fileName}.doc")
 
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedDate).Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)

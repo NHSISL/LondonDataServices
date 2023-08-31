@@ -16,6 +16,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         private const string LandingsRelativeUrl = "api/landings";
 
         public async ValueTask<ActionResult<IngestionTracking>> GetLandingDocumentByFileNameAsync(string fileName) =>
-            await this.apiFactoryClient.GetContentAsync<ActionResult<IngestionTracking>>($"{LandingsRelativeUrl}/{fileName}");
+            await this.apiFactoryClient.GetContentAsync<ActionResult<IngestionTracking>>($"{LandingsRelativeUrl}{fileName}");
     }
 }

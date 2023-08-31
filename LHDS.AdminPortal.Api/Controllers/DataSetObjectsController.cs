@@ -138,5 +138,43 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(dataSetObjectServiceException);
             }
         }
+
+        [HttpDelete("{dataSetObjectId}")]
+        public async ValueTask<ActionResult<DataSetObject>> DeleteDataSetObjectByIdAsync(Guid dataSetObjectId)
+        {
+            try
+            {
+                DataSetObject deletedDataSetObject =
+                    await this.dataSetObjectService.RemoveDataSetObjectByIdAsync(dataSetObjectId);
+
+                return Ok(deletedDataSetObject);
+            }
+            catch (DataSetObjectValidationException dataSetObjectValidationException)
+                when (dataSetObjectValidationException.InnerException is NotFoundDataSetObjectException)
+            {
+                return NotFound(dataSetObjectValidationException.InnerException);
+            }
+            catch (DataSetObjectValidationException dataSetObjectValidationException)
+            {
+                return BadRequest(dataSetObjectValidationException.InnerException);
+            }
+            catch (DataSetObjectDependencyValidationException dataSetObjectDependencyValidationException)
+                when (dataSetObjectDependencyValidationException.InnerException is LockedDataSetObjectException)
+            {
+                return Locked(dataSetObjectDependencyValidationException.InnerException);
+            }
+            catch (DataSetObjectDependencyValidationException dataSetObjectDependencyValidationException)
+            {
+                return BadRequest(dataSetObjectDependencyValidationException);
+            }
+            catch (DataSetObjectDependencyException dataSetObjectDependencyException)
+            {
+                return InternalServerError(dataSetObjectDependencyException);
+            }
+            catch (DataSetObjectServiceException dataSetObjectServiceException)
+            {
+                return InternalServerError(dataSetObjectServiceException);
+            }
+        }
     }
 }

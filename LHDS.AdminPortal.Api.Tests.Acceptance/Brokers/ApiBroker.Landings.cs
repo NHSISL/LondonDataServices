@@ -4,7 +4,7 @@
 
 using System.Threading.Tasks;
 using System.Web;
-using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 {
@@ -12,8 +12,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
     {
         private const string LandingsRelativeUrl = "api/landings";
 
-        public async ValueTask<string> GetLandingDocumentByFileNameAsync(string fileName) =>
-            await this.apiFactoryClient.GetContentAsync<string>(
-                $"{LandingsRelativeUrl}/{HttpUtility.UrlEncode(fileName)}");
+        public async ValueTask<string> GetLandingDocumentByFileNameAsync(string fileName)
+        {
+            var jsonResponse = await this.apiFactoryClient.GetContentAsync<string>(
+                        $"{LandingsRelativeUrl}/{HttpUtility.UrlEncode(fileName)}");
+
+            var responseObject = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
+            return responseObject.path;
+        }
     }
 }

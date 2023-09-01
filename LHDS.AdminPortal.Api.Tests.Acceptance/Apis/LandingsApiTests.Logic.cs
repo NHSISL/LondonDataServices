@@ -20,9 +20,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
     public partial class LandingsApiTests
     {
         [Fact]
-        public async Task ShouldGetExistingLandingDocumentByFileNameAsync()
+        public async Task ShouldLandDocumentByFileNameForExistingIngestionTrackingAsync()
         {
-            // given
+            //Given
             List<Document> retrievedDocuments =
                 await this.apiBroker.downloadService.RetrieveListOfDocumentsToProcessAsync();
 
@@ -30,13 +30,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             byte[] encryptedData = await this.apiBroker.cryptographyProvider.EncryptAsync(documentData);
             Document retrievedDocument = retrievedDocuments[0];
             retrievedDocument.DocumentData = encryptedData;
-
-            // create ingestion tracking
-
             Supplier randomSupplier = await PostRandomSupplierAsync();
             string encryptedFilePath = "encrypted";
             string decryptedFilePath = "decrypted";
-
             await CleanupTask(retrievedDocument.FileName);
 
             IngestionTracking randomIngestionTracking =
@@ -49,18 +45,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             IngestionTracking inputIngestionTracking = randomIngestionTracking;
             IngestionTracking expectedIngestionTracking = inputIngestionTracking;
 
-            // when
+            //When
             string actualDecryptedFileName =
                 await this.apiBroker.GetLandingDocumentByFileNameAsync(retrievedDocument.FileName);
 
-            List<Audit> retrievedAudits = await this.apiBroker.GetAllAuditsAsync();
-
-            List<Audit> ingestionTrackingAudits =
-                retrievedAudits.Where(audit => audit.IngestionTrackingId == inputIngestionTracking.Id).ToList();
-
             //Then
             actualDecryptedFileName.Should().BeEquivalentTo(expectedIngestionTracking.DecryptedFileName);
-
             await CleanupTask(expectedIngestionTracking.Id);
         }
 
@@ -103,7 +93,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
         }
 
         [Fact]
-        public async Task ShouldGetLandingDocumentNotOnFTPByFileNameAsync()
+        public async Task ShouldLandDocumentByFileNameForNewIngestionTrackingAsync()
         {
             // given
             List<Document> retrievedDocuments =

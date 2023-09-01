@@ -68,13 +68,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
-                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use($"{fileName}.doc")
+                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use($"{fileName}")
 
                 .OnProperty(ingestionTracking =>
-                    ingestionTracking.EncryptedFileName).Use($"/{encryptedFilePath}/{fileName}.doc")
+                    ingestionTracking.EncryptedFileName).Use($"/{encryptedFilePath}{fileName}")
 
                 .OnProperty(ingestionTracking =>
-                    ingestionTracking.DecryptedFileName).Use($"/{decryptedFilePath}/{fileName}.doc")
+                    ingestionTracking.DecryptedFileName).Use($"/{decryptedFilePath}{fileName}")
 
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedDate).Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)

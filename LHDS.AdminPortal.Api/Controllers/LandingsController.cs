@@ -2,12 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Net;
 using System.Web;
 using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using RESTFulSense.Controllers;
 #if RELEASE
 using Microsoft.AspNetCore.Authorization;
@@ -35,7 +33,7 @@ namespace LHDS.AdminPortal.Api.Controllers
                 var returnFilePath = await this.downloadOrchestrationService
                     .ProcessAsync(HttpUtility.UrlDecode(fileName));
 
-                return Ok(new StringContent(returnFilePath, System.Text.Encoding.UTF8, "application/json"));
+                return Ok(returnFilePath);
             }
             catch (DownloadOrchestrationValidationException downloadOrchestrationValidationException)
             {

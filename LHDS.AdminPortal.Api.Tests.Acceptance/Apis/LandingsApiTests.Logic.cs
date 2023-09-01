@@ -8,11 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using LHDS.Core.Models.Foundations.Documents;
-using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
@@ -95,41 +93,27 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
         [Fact]
         public async Task ShouldLandDocumentByFileNameForNewIngestionTrackingAsync()
         {
-            // given
+            //Given
             List<Document> retrievedDocuments =
                 await this.apiBroker.downloadService.RetrieveListOfDocumentsToProcessAsync();
 
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
             byte[] encryptedData = await this.apiBroker.cryptographyProvider.EncryptAsync(documentData);
-            Document retrievedDocument = retrievedDocuments[0];
+            Document retrievedDocument = retrievedDocuments[1];
             retrievedDocument.DocumentData = encryptedData;
-            //var retrievedFileName = retrievedDocument.FileName.Split("/".ToCharArray());
-            //retrievedDocument.FileName = retrievedFileName[retrievedFileName.Length - 1];
+            Supplier randomSupplier = await PostRandomSupplierAsync();
+            string decryptedFilePath = "decrypted";
+            await CleanupTask(retrievedDocument.FileName);
 
-            // when
-            ActionResult<string> result =
+            string expectedDecryptedFileName = $"/{decryptedFilePath}{retrievedDocument.FileName}";
+
+            //When
+            string actualDecryptedFileName =
                 await this.apiBroker.GetLandingDocumentByFileNameAsync(retrievedDocument.FileName);
 
-            List<IngestionTracking> retrievedIngestionTrackings = await this.apiBroker.GetAllIngestionTrackingsAsync();
-
-            IngestionTracking landingIngestionTracking =
-                retrievedIngestionTrackings.FirstOrDefault(it => it.FileName == retrievedDocument.FileName);
-
-            List<Audit> retrievedAudits = await this.apiBroker.GetAllAuditsAsync();
-
-            List<Audit> ingestionTrackingAudits =
-                retrievedAudits.Where(audit => audit.IngestionTrackingId == landingIngestionTracking.Id).ToList();
-
             //Then
-            Assert.NotNull(result);
-            Assert.IsType<OkObjectResult>(result.Result);
-
-            await this.apiBroker.DeleteIngestionTrackingByIdAsync(landingIngestionTracking.Id);
-
-            foreach (var audit in ingestionTrackingAudits)
-            {
-                await this.apiBroker.DeleteAuditByIdAsync(audit.Id);
-            }
+            actualDecryptedFileName.Should().BeEquivalentTo(expectedDecryptedFileName);
+            await CleanupTask(retrievedDocument.FileName);
         }
     }
 }

@@ -174,6 +174,28 @@ steps:
       modifyOutputPath: false
 
   - task: DotNetCoreCLI@2
+    displayName: "Dotnet Publish Frontend (idev)"
+    condition: ne(variables['Build.Reason'], 'PullRequest')
+    inputs:
+      command: "publish"
+      publishWebProjects: false
+      projects: "**/LHDS.AdminPortal.Web.csproj"
+      arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_idev_frontend_website --configuration idev"
+      zipAfterPublish: true
+      modifyOutputPath: false
+
+  - task: DotNetCoreCLI@2
+    displayName: "Dotnet Publish Frontend (Development)"
+    condition: ne(variables['Build.Reason'], 'PullRequest')
+    inputs:
+      command: "publish"
+      publishWebProjects: false
+      projects: "**/LHDS.AdminPortal.Web.csproj"
+      arguments: "-o $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_odev_frontend_website --configuration odev"
+      zipAfterPublish: true
+      modifyOutputPath: false
+
+  - task: DotNetCoreCLI@2
     displayName: "Dotnet Publish Frontend (Test)"
     condition: ne(variables['Build.Reason'], 'PullRequest')
     inputs:
@@ -295,6 +317,16 @@ steps:
     condition: ne(variables['Build.Reason'], 'PullRequest')  
     displayName: 'Publish Artifact - Frontend (Development)'
     artifact: drop-frontend-development
+
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_idev_frontend_website
+    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    displayName: 'Publish Artifact - Frontend (idev)'
+    artifact: drop-frontend-idev
+
+  - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_odev_frontend_website
+    condition: ne(variables['Build.Reason'], 'PullRequest')  
+    displayName: 'Publish Artifact - Frontend (odev)'
+    artifact: drop-frontend-odev
 
   - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_test_frontend_website
     condition: ne(variables['Build.Reason'], 'PullRequest')  

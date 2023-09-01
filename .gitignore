@@ -370,3 +370,5 @@ local.settings.json
 local.appsettings.json
 */local.settings.json
 */local.appsettings.json
+/LHDS.Core/appsettings.Development.json
+/LHDS.Core/appsettings.json

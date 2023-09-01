@@ -10,6 +10,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Services.Foundations.Audits;
@@ -191,7 +192,18 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     maybeIngestionTracking.UpdatedDate = currentDateTime;
                     maybeIngestionTracking.LastSeen = currentDateTime;
                     maybeIngestionTracking.EncryptedFileSize = externalDocument.DocumentData.Length;
-                    await this.documentService.RemoveDocumentByFileNameAsync(maybeIngestionTracking.EncryptedFileName);
+
+                    try
+                    {
+                        await this.documentService.RemoveDocumentByFileNameAsync(
+                            maybeIngestionTracking.EncryptedFileName);
+                    }
+                    catch (DocumentDependencyException documentDependencyException)
+                        when (documentDependencyException.InnerException is FailedDocumentRequestException
+                            && documentDependencyException.InnerException.InnerException.Message
+                                .StartsWith("The specified blob does not exist.")
+                        )
+                    { }
 
                     Document newBlobDocument = new Document
                     {

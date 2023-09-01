@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
@@ -28,8 +29,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             byte[] encryptedData = await this.apiBroker.cryptographyProvider.EncryptAsync(documentData);
             Document retrievedDocument = retrievedDocuments[0];
             retrievedDocument.DocumentData = encryptedData;
-            var retrievedFileName = retrievedDocument.FileName.Split("/".ToCharArray());
-            retrievedDocument.FileName = retrievedFileName[retrievedFileName.Length - 1];
 
             // create ingestion tracking
 
@@ -48,7 +47,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             IngestionTracking expectedIngestionTracking = inputIngestionTracking;
 
             // when
-            ActionResult<IngestionTracking> result =
+            string actualDecryptedFileName =
                 await this.apiBroker.GetLandingDocumentByFileNameAsync(retrievedDocument.FileName);
 
             List<Audit> retrievedAudits = await this.apiBroker.GetAllAuditsAsync();
@@ -57,8 +56,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
                 retrievedAudits.Where(audit => audit.IngestionTrackingId == inputIngestionTracking.Id).ToList();
 
             //Then
-            Assert.NotNull(result);
-            Assert.IsType<OkObjectResult>(result.Result);
+            actualDecryptedFileName.Should().BeEquivalentTo(expectedIngestionTracking.DecryptedFileName);
 
             await this.apiBroker.DeleteIngestionTrackingByIdAsync(inputIngestionTracking.Id);
 
@@ -83,7 +81,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             //retrievedDocument.FileName = retrievedFileName[retrievedFileName.Length - 1];
 
             // when
-            ActionResult<IngestionTracking> result =
+            ActionResult<string> result =
                 await this.apiBroker.GetLandingDocumentByFileNameAsync(retrievedDocument.FileName);
 
             List<IngestionTracking> retrievedIngestionTrackings = await this.apiBroker.GetAllIngestionTrackingsAsync();

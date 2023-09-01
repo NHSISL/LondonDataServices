@@ -32,9 +32,10 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                var returnFilePath = await this.downloadOrchestrationService.ProcessAsync(HttpUtility.UrlDecode(fileName));
-                string jsonContent = JsonConvert.SerializeObject(new { path = returnFilePath });
-                return jsonContent;
+                var returnFilePath = await this.downloadOrchestrationService
+                    .ProcessAsync(HttpUtility.UrlDecode(fileName));
+
+                return Ok(new StringContent(returnFilePath, System.Text.Encoding.UTF8, "application/json"));
             }
             catch (DownloadOrchestrationValidationException downloadOrchestrationValidationException)
             {

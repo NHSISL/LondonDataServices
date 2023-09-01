@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,6 +37,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             string encryptedFilePath = "encrypted";
             string decryptedFilePath = "decrypted";
 
+            await CleanupTask(retrievedDocument.FileName);
+
             IngestionTracking randomIngestionTracking =
                 await PostRandomIngestionTrackingAsync(
                     randomSupplier.Id,
@@ -58,11 +61,44 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             //Then
             actualDecryptedFileName.Should().BeEquivalentTo(expectedIngestionTracking.DecryptedFileName);
 
-            await this.apiBroker.DeleteIngestionTrackingByIdAsync(inputIngestionTracking.Id);
+            await CleanupTask(expectedIngestionTracking.Id);
+        }
 
-            foreach (var audit in ingestionTrackingAudits)
+        private async ValueTask CleanupTask(string fileName)
+        {
+            var maybeIngestionTracking = await this.apiBroker.ingestionTrackingService
+                .RetrieveIngestionTrackingByFileNameAsync(fileName);
+
+            if (maybeIngestionTracking != null)
             {
-                await this.apiBroker.DeleteAuditByIdAsync(audit.Id);
+                var audits = this.apiBroker.auditService.RetrieveAllAudits()
+                .Where(audit => audit.IngestionTrackingId == maybeIngestionTracking.Id);
+
+                foreach (var audit in audits)
+                {
+                    await this.apiBroker.auditService.RemoveAuditByIdAsync(audit.Id);
+                }
+
+                await this.apiBroker.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(maybeIngestionTracking.Id);
+            }
+        }
+
+        private async ValueTask CleanupTask(Guid ingestionTrackingId)
+        {
+            var maybeIngestionTracking = await this.apiBroker.ingestionTrackingService
+                .RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
+
+            if (maybeIngestionTracking != null)
+            {
+                var audits = this.apiBroker.auditService.RetrieveAllAudits()
+                    .Where(audit => audit.IngestionTrackingId == ingestionTrackingId);
+
+                foreach (var audit in audits)
+                {
+                    await this.apiBroker.auditService.RemoveAuditByIdAsync(audit.Id);
+                }
+
+                await this.apiBroker.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTrackingId);
             }
         }
 

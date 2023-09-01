@@ -13,18 +13,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 
         public async ValueTask<string> GetLandingDocumentByFileNameAsync(string fileName)
         {
-            try
-            {
-                var response = await this.apiFactoryClient.GetContentAsync<object>(
-                            $"{LandingsRelativeUrl}/{HttpUtility.UrlEncode(fileName)}");
-
-                return "test";
-            }
-            catch (System.Exception ex)
-            {
-                throw ex;
-            }
-
+            return await this.apiFactoryClient.GetContentStringAsync(
+                $"{LandingsRelativeUrl}/{HttpUtility.UrlEncode(fileName)}");
         }
     }
 }

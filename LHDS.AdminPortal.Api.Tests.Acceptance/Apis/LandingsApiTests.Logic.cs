@@ -13,7 +13,7 @@ using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using LHDS.Core.Models.Foundations.Documents;
 using Xunit;
 
-namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
+namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 {
     public partial class LandingsApiTests
     {
@@ -29,8 +29,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             Document retrievedDocument = retrievedDocuments[0];
             retrievedDocument.DocumentData = encryptedData;
             Supplier randomSupplier = await PostRandomSupplierAsync();
-            string encryptedFilePath = "encrypted";
-            string decryptedFilePath = "decrypted";
+            string encryptedFilePath = encryptedFolder;
+            string decryptedFilePath = decryptedFolder;
             await CleanupTask(retrievedDocument.FileName);
 
             IngestionTracking randomIngestionTracking =
@@ -101,17 +101,20 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             byte[] encryptedData = await this.apiBroker.cryptographyProvider.EncryptAsync(documentData);
             Document retrievedDocument = retrievedDocuments[1];
             retrievedDocument.DocumentData = encryptedData;
-            Supplier randomSupplier = await PostRandomSupplierAsync();
-            string decryptedFilePath = "decrypted";
+            string decryptedFilePath = decryptedFolder;
+            Guid landingSupplierId = supplierId;
             await CleanupTask(retrievedDocument.FileName);
-
-            string expectedDecryptedFileName = $"/{decryptedFilePath}{retrievedDocument.FileName}";
+            await this.apiBroker.DeleteSupplierByIdAsync(landingSupplierId);
+            await PostLandingSupplierAsync(landingSupplierId);
+            string expectedDecryptedFileName = 
+                $"/{decryptedFilePath}" +
+                $"{retrievedDocument.FileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
             //When
             string actualDecryptedFileName =
                 await this.apiBroker.GetLandingDocumentByFileNameAsync(retrievedDocument.FileName);
 
-            //Then
+            //Then 
             actualDecryptedFileName.Should().BeEquivalentTo(expectedDecryptedFileName);
             await CleanupTask(retrievedDocument.FileName);
         }

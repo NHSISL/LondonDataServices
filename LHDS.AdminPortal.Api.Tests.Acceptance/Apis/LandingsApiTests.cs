@@ -3,24 +3,36 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
+using LHDS.Core.Models.Orchestrations.Downloads;
+using Microsoft.Extensions.Options;
 using Tynamix.ObjectFiller;
 using Xunit;
 
-namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
+namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 {
     [Collection(nameof(ApiTestCollection))]
     public partial class LandingsApiTests
     {
         private readonly ApiBroker apiBroker;
+        private readonly string encryptedFolder;
+        private readonly string decryptedFolder;
+        private readonly Guid supplierId;
+        private readonly LandingConfiguration landingConfiguration;
 
-        public LandingsApiTests(ApiBroker apiBroker) =>
+        public LandingsApiTests(
+            ApiBroker apiBroker,
+            LandingConfigurationFixture landingConfigurationFixture)
+        {
             this.apiBroker = apiBroker;
+            this.landingConfiguration = landingConfigurationFixture.LandingConfigOptions.Value;
+            this.supplierId = landingConfiguration.LandingSupplierId;
+            this.encryptedFolder = landingConfiguration.EncryptedFolder;
+            this.decryptedFolder = landingConfiguration.DecryptedFolder;
+        }
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
@@ -53,7 +65,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
             string fileName,
             string encryptedFilePath,
             string decryptedFilePath) =>
-            CreateRandomIngestionTrackingFiller(supplierId, fileName,  encryptedFilePath, decryptedFilePath).Create();
+            CreateRandomIngestionTrackingFiller(supplierId, fileName, encryptedFilePath, decryptedFilePath).Create();
 
         private static Filler<IngestionTracking> CreateRandomIngestionTrackingFiller(
             Guid supplierId,
@@ -102,6 +114,34 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
+                .OnProperty(supplier => supplier.CreatedDate).Use(now)
+                .OnProperty(supplier => supplier.CreatedBy).Use(userId)
+                .OnProperty(supplier => supplier.UpdatedDate).Use(now)
+                .OnProperty(supplier => supplier.UpdatedBy).Use(userId);
+
+            return filler;
+        }
+
+        private async ValueTask<Supplier> PostLandingSupplierAsync(Guid supplierId)
+        {
+            Supplier landingsSupplier = CreateLandingSupplier(supplierId);
+            await this.apiBroker.PostSupplierAsync(landingsSupplier);
+
+            return landingsSupplier;
+        }
+
+        private static Supplier CreateLandingSupplier(Guid supplierId) =>
+            CreateLandingSupplierFiller(supplierId).Create();
+
+        private static Filler<Supplier> CreateLandingSupplierFiller(Guid supplierId)
+        {
+            string userId = Guid.NewGuid().ToString();
+            DateTime now = DateTime.UtcNow;
+            var filler = new Filler<Supplier>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnProperty(supplier => supplier.Id).Use(supplierId)
                 .OnProperty(supplier => supplier.CreatedDate).Use(now)
                 .OnProperty(supplier => supplier.CreatedBy).Use(userId)
                 .OnProperty(supplier => supplier.UpdatedDate).Use(now)

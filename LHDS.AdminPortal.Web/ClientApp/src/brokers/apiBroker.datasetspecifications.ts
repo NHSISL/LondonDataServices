@@ -47,6 +47,11 @@ class DataSetSpecificationBroker {
         return await this.apiBroker.GetAsync(url)
             .then(result => new DataSetSpecification(result.data));
     }
+
+    async PutDataSetSpecificationAsync(dataSetSpecification: DataSetSpecification) {
+        return await this.apiBroker.PutAsync(this.relativeDataSetSpecificationUrl, dataSetSpecification)
+            .then(result => new DataSetSpecification(result.data));
+    }
 }
 
 export default DataSetSpecificationBroker;

@@ -24,4 +24,13 @@ export const Service = {
                 }
             });
     },
+
+    useRetrieveAllObjectColumn: (query: string) => {
+        const broker = new ObjectColumnBroker();
+
+        return useQuery(
+            ["ObjectColumnGetAll", { query: query }],
+            () => broker.GetAllObjectColumnsAsync(query),
+            { staleTime: Infinity });
+    },
 }

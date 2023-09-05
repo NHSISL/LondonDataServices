@@ -17,6 +17,8 @@ import { PdsSearch } from './pages/PdsSearch';
 import { PdsUpload } from './pages/PdsUpload';
 import { SecuredRoute } from './components/SecuredRoute';
 import securityPoints from './SecurityMatrix';
+import { DataTypesPage } from './pages/configuration/dataTypesPage';
+import { DataSetsPage } from './pages/configuration/dataSetsPage';
 
 const App = ({ msalInstance }: any) => {
     return (
@@ -32,6 +34,8 @@ const App = ({ msalInstance }: any) => {
                         <Route path="/optOutUpload" element={<SecuredRoute allowedRoles={securityPoints.optOut.view}><OptOutUpload /></SecuredRoute>} />
                         <Route path="/configuration" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><ConfigHomePage/></SecuredRoute>} />
                         <Route path="/configuration/suppliers" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><SuppliersPage /></SecuredRoute >} />
+                        <Route path="/configuration/dataTypes" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataTypesPage /></SecuredRoute >} />
+                        <Route path="/configuration/dataSets" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetsPage /></SecuredRoute >} />
                         <Route path="/pds" element={<SecuredRoute allowedRoles={securityPoints.pds.view}>< PdsSearch /></SecuredRoute >} />
                         <Route path="/pdsUpload" element={<SecuredRoute allowedRoles={securityPoints.pds.view}>< PdsUpload /></SecuredRoute >} />
                     </Routes>

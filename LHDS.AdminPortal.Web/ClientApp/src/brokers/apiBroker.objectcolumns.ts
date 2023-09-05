@@ -52,6 +52,13 @@ class ObjectColumnBroker {
         return await this.apiBroker.PutAsync(this.relativeObjectColumnUrl, objectColumn)
             .then(result => new ObjectColumn(result.data));
     }
+
+    async DeleteObjectColumnByIdAsync(id: Guid) {
+        const url = `${this.relativeObjectColumnUrl}/${id}`;
+
+        return await this.apiBroker.DeleteAsync(url)
+            .then(result => new ObjectColumn(result.data));
+    }
 }
 
 export default ObjectColumnBroker;

@@ -40,6 +40,13 @@ class DataSetSpecificationBroker {
     async GetDataSetSpecificationSubsequentPagesAsync(absoluteUri: string) {
         return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
+
+    async GetDataSetSpecificationByIdAsync(id: Guid) {
+        const url = `${this.relativeDataSetSpecificationUrl}/${id}`;
+
+        return await this.apiBroker.GetAsync(url)
+            .then(result => new DataSetSpecification(result.data));
+    }
 }
 
 export default DataSetSpecificationBroker;

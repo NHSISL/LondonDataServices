@@ -52,6 +52,13 @@ class DataSetObjectBroker {
         return await this.apiBroker.PutAsync(this.relativeDataSetObjectUrl, dataSetObject)
             .then(result => new DataSetObject(result.data));
     }
+
+    async DeleteDataSetObjectByIdAsync(id: Guid) {
+        const url = `${this.relativeDataSetObjectUrl}/${id}`;
+
+        return await this.apiBroker.DeleteAsync(url)
+            .then(result => new DataSetObject(result.data));
+    }
 }
 
 export default DataSetObjectBroker;

@@ -47,6 +47,11 @@ class ObjectColumnBroker {
         return await this.apiBroker.GetAsync(url)
             .then(result => new ObjectColumn(result.data));
     }
+
+    async PutObjectColumnAsync(objectColumn: ObjectColumn) {
+        return await this.apiBroker.PutAsync(this.relativeObjectColumnUrl, objectColumn)
+            .then(result => new ObjectColumn(result.data));
+    }
 }
 
 export default ObjectColumnBroker;

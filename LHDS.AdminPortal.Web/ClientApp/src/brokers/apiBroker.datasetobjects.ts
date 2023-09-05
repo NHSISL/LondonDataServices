@@ -47,6 +47,11 @@ class DataSetObjectBroker {
         return await this.apiBroker.GetAsync(url)
             .then(result => new DataSetObject(result.data));
     }
+
+    async PutDataSetObjectAsync(dataSetObject: DataSetObject) {
+        return await this.apiBroker.PutAsync(this.relativeDataSetObjectUrl, dataSetObject)
+            .then(result => new DataSetObject(result.data));
+    }
 }
 
 export default DataSetObjectBroker;

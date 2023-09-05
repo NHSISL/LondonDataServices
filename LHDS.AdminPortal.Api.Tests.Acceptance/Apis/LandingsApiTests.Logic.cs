@@ -52,6 +52,36 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             await CleanupTask(expectedIngestionTracking.Id);
         }
 
+        [Fact]
+        public async Task ShouldLandDocumentByFileNameForNewIngestionTrackingAsync()
+        {
+            //Given
+            List<Document> retrievedDocuments =
+                await this.apiBroker.downloadService.RetrieveListOfDocumentsToProcessAsync();
+
+            byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
+            byte[] encryptedData = await this.apiBroker.cryptographyProvider.EncryptAsync(documentData);
+            Document retrievedDocument = retrievedDocuments[1];
+            retrievedDocument.DocumentData = encryptedData;
+            string decryptedFilePath = decryptedFolder;
+            Guid landingSupplierId = supplierId;
+            await CleanupTask(retrievedDocument.FileName);
+            await this.apiBroker.DeleteSupplierByIdAsync(landingSupplierId);
+            await PostLandingSupplierAsync(landingSupplierId);
+
+            string expectedDecryptedFileName = 
+                $"/{decryptedFilePath}" +
+                $"{retrievedDocument.FileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+
+            //When
+            string actualDecryptedFileName =
+                await this.apiBroker.GetLandingDocumentByFileNameAsync(retrievedDocument.FileName);
+
+            //Then 
+            actualDecryptedFileName.Should().BeEquivalentTo(expectedDecryptedFileName);
+            await CleanupTask(retrievedDocument.FileName);
+        }
+
         private async ValueTask CleanupTask(string fileName)
         {
             var maybeIngestionTracking = await this.apiBroker.ingestionTrackingService
@@ -88,35 +118,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
                 await this.apiBroker.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTrackingId);
             }
-        }
-
-        [Fact]
-        public async Task ShouldLandDocumentByFileNameForNewIngestionTrackingAsync()
-        {
-            //Given
-            List<Document> retrievedDocuments =
-                await this.apiBroker.downloadService.RetrieveListOfDocumentsToProcessAsync();
-
-            byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
-            byte[] encryptedData = await this.apiBroker.cryptographyProvider.EncryptAsync(documentData);
-            Document retrievedDocument = retrievedDocuments[1];
-            retrievedDocument.DocumentData = encryptedData;
-            string decryptedFilePath = decryptedFolder;
-            Guid landingSupplierId = supplierId;
-            await CleanupTask(retrievedDocument.FileName);
-            await this.apiBroker.DeleteSupplierByIdAsync(landingSupplierId);
-            await PostLandingSupplierAsync(landingSupplierId);
-            string expectedDecryptedFileName = 
-                $"/{decryptedFilePath}" +
-                $"{retrievedDocument.FileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
-
-            //When
-            string actualDecryptedFileName =
-                await this.apiBroker.GetLandingDocumentByFileNameAsync(retrievedDocument.FileName);
-
-            //Then 
-            actualDecryptedFileName.Should().BeEquivalentTo(expectedDecryptedFileName);
-            await CleanupTask(retrievedDocument.FileName);
         }
     }
 }

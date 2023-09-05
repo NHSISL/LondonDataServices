@@ -1,11 +1,20 @@
 import { Guid } from "guid-typescript";
 import { DataSet } from "../models/dataSets/dataSet";
 import ApiBroker from "./apiBroker";
+import { AxiosResponse } from "axios";
 
 class DataSetBroker {
-    relativeDataSetUrl = '/api/DataSets';
+    relativeDataSetUrl = '/api/dataSets';
+    relativeDataSetOdataUrl = '/odata/dataSets'
 
     private apiBroker: ApiBroker = new ApiBroker();
+
+    private processOdataResult = (result: AxiosResponse) => {
+        const data = result.data.value.map((dataSet: any) => new DataSet(dataSet));
+
+        const nextPage = result.data['@odata.nextLink'];
+        return { data, nextPage }
+    }
 
     async PostDataSetAsync(dataSet: DataSet) {
         return await this.apiBroker.PostAsync(this.relativeDataSetUrl, dataSet)
@@ -18,9 +27,14 @@ class DataSetBroker {
         if (queryString === "/") {
             return undefined;
         }
-        
+
         return await this.apiBroker.GetAsync(url)
             .then(result => result.data.map((optOut: any) => new DataSet(optOut)));
+    }
+
+    async GetDataSetFirstPagesAsync(query: string) {
+        var url = this.relativeDataSetOdataUrl + query;
+        return this.processOdataResult(await this.apiBroker.GetAsync(url));
     }
 }
 

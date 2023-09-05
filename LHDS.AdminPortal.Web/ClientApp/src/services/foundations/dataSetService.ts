@@ -25,7 +25,7 @@ export const Service = {
             });
     },
 
-    useRetrieveAllDataSet: (query: string) => {
+    useGetAllDataSet: (query: string) => {
         const Broker = new DataSetBroker();
 
         return useQuery(
@@ -34,7 +34,7 @@ export const Service = {
             { staleTime: Infinity });
     },
 
-    useRetrieveAllDataSetPages: (query: string) => {
+    useGetAllDataSetPages: (query: string) => {
         const Broker = new DataSetBroker();
 
         return useInfiniteQuery(
@@ -51,7 +51,7 @@ export const Service = {
             });
     },
 
-    useModifyDataSet: () => {
+    useUpdateDataSet: () => {
         const Broker = new DataSetBroker();
         const queryClient = useQueryClient();
         const msal = useMsal();
@@ -62,6 +62,21 @@ export const Service = {
             .updatedBy = msal.accounts[0].username;
 
             return Broker.PutDataSetAsync();
+        },
+            {
+                onSuccess: (data) => {
+                    queryClient.invalidateQueries("DataSetGetAll");
+                    queryClient.invalidateQueries(["DataSetGetById", { id: data.id }]);
+                }
+            });
+    },
+
+    useRemoveDataSet: () => {
+        const Broker = new DataSetBroker();
+        const queryClient = useQueryClient();
+
+        return useMutation((id: Guid) => {
+            return Broker.DeleteDataSetByIdAsync(id);
         },
             {
                 onSuccess: (data) => {

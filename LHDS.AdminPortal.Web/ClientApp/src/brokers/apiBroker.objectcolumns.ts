@@ -11,6 +11,17 @@ class ObjectColumnBroker {
         return await this.apiBroker.PostAsync(this.relativeObjectColumnUrl, objectColumn)
             .then(result => new ObjectColumn(result.data));
     }
+
+    async GetAllObjectColumnsAsync(queryString: string) {
+        const url = this.relativeObjectColumnUrl + queryString;
+        
+        if (queryString === "/") {
+            return undefined;
+        }
+        
+        return await this.apiBroker.GetAsync(url)
+            .then(result => result.data.map((optOut: any) => new ObjectColumn(optOut)));
+    }
 }
 
 export default ObjectColumnBroker;

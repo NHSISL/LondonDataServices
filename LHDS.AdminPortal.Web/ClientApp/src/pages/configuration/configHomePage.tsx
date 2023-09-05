@@ -37,6 +37,36 @@ export const ConfigHomePage = () => {
                                 </Card.Content>
                             </Card>
                         </Card.GroupItem>
+
+                        <Card.GroupItem width="one-half">
+                            <Card clickable>
+                                <Card.Content>
+                                    <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
+                                        <Link to={'/configuration/dataTypes'}>
+                                            Data Types
+                                        </Link>
+                                    </Card.Heading>
+                                    <Card.Description>
+                                        View, add, edit and remove Data Types.
+                                    </Card.Description>
+                                </Card.Content>
+                            </Card>
+                        </Card.GroupItem>
+
+                        <Card.GroupItem width="one-half">
+                            <Card clickable>
+                                <Card.Content>
+                                    <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
+                                        <Link to={'/configuration/suppliers'}>
+                                            Data Sets
+                                        </Link>
+                                    </Card.Heading>
+                                    <Card.Description>
+                                        View, add, edit and remove Data Sets.
+                                    </Card.Description>
+                                </Card.Content>
+                            </Card>
+                        </Card.GroupItem>
                     </Card.Group>
                 </Container>
             </section>

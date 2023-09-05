@@ -50,4 +50,24 @@ export const Service = {
                 staleTime: Infinity
             });
     },
+
+    useModifyDataType: () => {
+        const Broker = new DataTypeBroker();
+        const queryClient = useQueryClient();
+        const msal = useMsal();
+
+        return useMutation((: DataType) => {
+            const date = new Date();
+            .updatedDate = date;
+            .updatedBy = msal.accounts[0].username;
+
+            return Broker.PutDataTypeAsync();
+        },
+            {
+                onSuccess: (data) => {
+                    queryClient.invalidateQueries("DataTypeGetAll");
+                    queryClient.invalidateQueries(["DataTypeGetById", { id: data.id }]);
+                }
+            });
+    },
 }

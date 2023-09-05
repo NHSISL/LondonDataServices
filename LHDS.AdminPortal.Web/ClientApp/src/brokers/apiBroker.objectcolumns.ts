@@ -40,6 +40,13 @@ class ObjectColumnBroker {
     async GetObjectColumnSubsequentPagesAsync(absoluteUri: string) {
         return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
+
+    async GetObjectColumnByIdAsync(id: Guid) {
+        const url = `${this.relativeObjectColumnUrl}/${id}`;
+
+        return await this.apiBroker.GetAsync(url)
+            .then(result => new ObjectColumn(result.data));
+    }
 }
 
 export default ObjectColumnBroker;

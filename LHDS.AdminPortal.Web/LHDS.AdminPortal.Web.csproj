@@ -88,6 +88,7 @@
     <TypeScriptCompile Remove="ClientApp\src\hooks\validationProcessor.ts" />
     <TypeScriptCompile Remove="ClientApp\src\index.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\models\audits\audit.ts" />
+    <TypeScriptCompile Remove="clientapp\src\models\datatypes\dataType.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\documents\document.ts" />
     <TypeScriptCompile Remove="clientapp\src\models\features\feature.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\ingestionTrackings\ingestionTracking.ts" />
@@ -137,6 +138,7 @@
     <Folder Include="ClientApp\cypress\videos\" />
     <Folder Include="ClientApp\dependencies\guid-typescript\node_modules\%40types\" />
     <Folder Include="ClientApp\src\models\features\" />
+    <Folder Include="ClientApp\src\models\dataTypes\" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

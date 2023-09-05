@@ -38,6 +38,13 @@ class DataTypeBroker {
     async GetDataTypeSubsequentPagesAsync(absoluteUri: string) {
         return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
+
+    async GetDataTypeByIdAsync(id: Guid) {
+        const url = `${this.relativeDataTypeUrl}/${id}`;
+
+        return await this.apiBroker.GetAsync(url)
+            .then(result => new DataType(result.data));
+    }
 }
 
 export default DataTypeBroker;

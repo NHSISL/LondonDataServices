@@ -50,4 +50,24 @@ export const Service = {
                 staleTime: Infinity
             });
     },
+
+    useModifyObjectColumn: () => {
+        const broker = new ObjectColumnBroker();
+        const queryClient = useQueryClient();
+        const msal = useMsal();
+
+        return useMutation((objectColumn: ObjectColumn) => {
+            const date = new Date();
+            objectColumn.updatedDate = date;
+            objectColumn.updatedBy = msal.accounts[0].username;
+
+            return broker.PutObjectColumnAsync();
+        },
+            {
+                onSuccess: (data) => {
+                    queryClient.invalidateQueries("ObjectColumnGetAll");
+                    queryClient.invalidateQueries(["ObjectColumnGetById", { id: data.id }]);
+                }
+            });
+    },
 }

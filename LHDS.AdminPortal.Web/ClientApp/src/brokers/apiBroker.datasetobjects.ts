@@ -27,7 +27,7 @@ class DataSetObjectBroker {
         if (queryString === "/") {
             return undefined;
         }
-
+        
         return await this.apiBroker.GetAsync(url)
             .then(result => result.data.map((optOut: any) => new DataSetObject(optOut)));
     }
@@ -35,6 +35,10 @@ class DataSetObjectBroker {
     async GetDataSetObjectFirstPagesAsync(query: string) {
         var url = this.relativeDataSetObjectOdataUrl + query;
         return this.processOdataResult(await this.apiBroker.GetAsync(url));
+    }
+
+    async GetDataSetObjectSubsequentPagesAsync(absoluteUri: string) {
+        return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
 }
 

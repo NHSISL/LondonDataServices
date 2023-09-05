@@ -17,7 +17,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         private readonly HttpClient httpClient;
         private readonly IRESTFulApiFactoryClient apiFactoryClient;
         internal IAuditService auditService;
-        internal IDataSetService dataSetService;
 
         public ApiBroker()
         {
@@ -25,7 +24,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
             this.auditService = (AuditService)webApplicationFactory.Services.GetService<IAuditService>();
             this.httpClient = this.webApplicationFactory.CreateClient();
             this.apiFactoryClient = new RESTFulApiFactoryClient(this.httpClient);
-            this.dataSetService = (DataSetService)webApplicationFactory.Services.GetService<IDataSetService>();
         }
     }
 }

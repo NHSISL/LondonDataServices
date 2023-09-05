@@ -37,6 +37,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="ClientApp\src\models\dataTypes\dataTypes.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <TypeScriptCompile Remove="ClientApp\cypress.config.ts" />
     <TypeScriptCompile Remove="ClientApp\src\App.test.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.audits.ts" />

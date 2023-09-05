@@ -13,11 +13,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
     {
         private const string DataTypesRelativeUrl = "api/dataTypes";
 
-        public async ValueTask<ActionResult<DataType>> PostDataTypeAsync(DataType dataType) =>
+        public async ValueTask<DataType> PostDataTypeAsync(DataType dataType) =>
             await this.apiFactoryClient.PostContentAsync(DataTypesRelativeUrl, dataType);
 
-        public async ValueTask<ActionResult<DataType>> DeleteDataTypeByIdAsync(Guid dataTypeId) =>
-            await this.apiFactoryClient.DeleteContentAsync<ActionResult<DataType>>(
+        public async ValueTask<DataType> DeleteDataTypeByIdAsync(Guid dataTypeId) =>
+            await this.apiFactoryClient.DeleteContentAsync<DataType>(
                 $"{DataTypesRelativeUrl}/{dataTypeId}");
     }
 }

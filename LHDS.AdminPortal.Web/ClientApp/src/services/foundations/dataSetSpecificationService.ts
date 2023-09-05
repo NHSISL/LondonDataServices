@@ -61,7 +61,22 @@ export const Service = {
             dataSetSpecification.updatedDate = date;
             dataSetSpecification.updatedBy = msal.accounts[0].username;
 
-            return broker.PutDataSetSpecificationAsync();
+            return broker.PutDataSetSpecificationAsync(dataSetSpecification);
+        },
+            {
+                onSuccess: (data) => {
+                    queryClient.invalidateQueries("DataSetSpecificationGetAll");
+                    queryClient.invalidateQueries(["DataSetSpecificationGetById", { id: data.id }]);
+                }
+            });
+    },
+
+    useRemoveDataSetSpecification: () => {
+        const broker = new DataSetSpecificationBroker();
+        const queryClient = useQueryClient();
+
+        return useMutation((id: Guid) => {
+            return broker.DeleteDataSetSpecificationByIdAsync(id);
         },
             {
                 onSuccess: (data) => {

@@ -24,4 +24,13 @@ export const Service = {
                 }
             });
     },
+
+    useRetrieveAllDataSetObject: (query: string) => {
+        const broker = new DataSetObjectBroker();
+
+        return useQuery(
+            ["DataSetObjectGetAll", { query: query }],
+            () => broker.GetAllDataSetObjectsAsync(query),
+            { staleTime: Infinity });
+    },
 }

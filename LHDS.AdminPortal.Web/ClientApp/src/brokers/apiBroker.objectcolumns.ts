@@ -27,7 +27,7 @@ class ObjectColumnBroker {
         if (queryString === "/") {
             return undefined;
         }
-
+        
         return await this.apiBroker.GetAsync(url)
             .then(result => result.data.map((optOut: any) => new ObjectColumn(optOut)));
     }
@@ -35,6 +35,10 @@ class ObjectColumnBroker {
     async GetObjectColumnFirstPagesAsync(query: string) {
         var url = this.relativeObjectColumnOdataUrl + query;
         return this.processOdataResult(await this.apiBroker.GetAsync(url));
+    }
+
+    async GetObjectColumnSubsequentPagesAsync(absoluteUri: string) {
+        return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
 }
 

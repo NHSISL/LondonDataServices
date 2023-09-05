@@ -1,11 +1,20 @@
 import { Guid } from "guid-typescript";
 import { ObjectColumn } from "../models/objectColumns/objectColumn";
 import ApiBroker from "./apiBroker";
+import { AxiosResponse } from "axios";
 
 class ObjectColumnBroker {
-    relativeObjectColumnUrl = '/api/ObjectColumns';
+    relativeObjectColumnUrl = '/api/objectColumns';
+    relativeObjectColumnOdataUrl = '/odata/objectColumns'
 
     private apiBroker: ApiBroker = new ApiBroker();
+
+    private processOdataResult = (result: AxiosResponse) => {
+        const data = result.data.value.map((objectColumn: any) => new ObjectColumn(objectColumn));
+
+        const nextPage = result.data['@odata.nextLink'];
+        return { data, nextPage }
+    }
 
     async PostObjectColumnAsync(objectColumn: ObjectColumn) {
         return await this.apiBroker.PostAsync(this.relativeObjectColumnUrl, objectColumn)
@@ -18,9 +27,14 @@ class ObjectColumnBroker {
         if (queryString === "/") {
             return undefined;
         }
-        
+
         return await this.apiBroker.GetAsync(url)
             .then(result => result.data.map((optOut: any) => new ObjectColumn(optOut)));
+    }
+
+    async GetObjectColumnFirstPagesAsync(query: string) {
+        var url = this.relativeObjectColumnOdataUrl + query;
+        return this.processOdataResult(await this.apiBroker.GetAsync(url));
     }
 }
 

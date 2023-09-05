@@ -61,7 +61,22 @@ export const Service = {
             dataType.updatedDate = date;
             dataType.updatedBy = msal.accounts[0].username;
 
-            return broker.PutdataTypeAsync();
+            return broker.PutdataTypeAsync(dataType);
+        },
+            {
+                onSuccess: (data) => {
+                    queryClient.invalidateQueries("dataTypeGetAll");
+                    queryClient.invalidateQueries(["dataTypeGetById", { id: data.id }]);
+                }
+            });
+    },
+
+    useRemovedataType: () => {
+        const broker = new dataTypeBroker();
+        const queryClient = useQueryClient();
+
+        return useMutation((id: Guid) => {
+            return broker.DeletedataTypeByIdAsync(id);
         },
             {
                 onSuccess: (data) => {

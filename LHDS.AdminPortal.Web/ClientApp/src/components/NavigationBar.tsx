@@ -41,7 +41,7 @@ export const NavigationBar = () => {
                         <Nav className="ms-auto">
                             <Form className="d-flex">
                                 <SecuredComponents allowedRoles={securityPoints.configuration.view}>
-                                    <SecuredLink to="/configuration">Admin Configuration</SecuredLink>
+                                    <SecuredLink to="/configuration">Configuration</SecuredLink>
                                 </SecuredComponents>
                             </Form>
                         </Nav>

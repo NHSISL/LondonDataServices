@@ -11,6 +11,7 @@ using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using LHDS.Core.Models.Foundations.Documents;
+using Microsoft.OData.ModelBuilder;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
@@ -66,8 +67,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             string decryptedFilePath = decryptedFolder;
             Guid landingSupplierId = supplierId;
             await CleanupTask(retrievedDocument.FileName);
-            await this.apiBroker.DeleteSupplierByIdAsync(landingSupplierId);
-            await PostLandingSupplierAsync(landingSupplierId);
+            List<Supplier> exisitingSuppliers = await this.apiBroker.FindSupplierByIdAsync(landingSupplierId);
+
+            if (!exisitingSuppliers.Any())
+            {
+                await PostLandingSupplierAsync(landingSupplierId);
+            }
 
             string expectedDecryptedFileName = 
                 $"/{decryptedFilePath}" +

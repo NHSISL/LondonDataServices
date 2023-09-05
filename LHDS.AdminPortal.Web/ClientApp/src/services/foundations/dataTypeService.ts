@@ -25,7 +25,7 @@ export const Service = {
             });
     },
 
-    useRetrieveAllDataType: (query: string) => {
+    useGetAllDataType: (query: string) => {
         const Broker = new DataTypeBroker();
 
         return useQuery(
@@ -34,7 +34,7 @@ export const Service = {
             { staleTime: Infinity });
     },
 
-    useRetrieveAllDataTypePages: (query: string) => {
+    useGetAllDataTypePages: (query: string) => {
         const Broker = new DataTypeBroker();
 
         return useInfiniteQuery(
@@ -51,7 +51,7 @@ export const Service = {
             });
     },
 
-    useModifyDataType: () => {
+    useUpdateDataType: () => {
         const Broker = new DataTypeBroker();
         const queryClient = useQueryClient();
         const msal = useMsal();
@@ -62,6 +62,21 @@ export const Service = {
             .updatedBy = msal.accounts[0].username;
 
             return Broker.PutDataTypeAsync();
+        },
+            {
+                onSuccess: (data) => {
+                    queryClient.invalidateQueries("DataTypeGetAll");
+                    queryClient.invalidateQueries(["DataTypeGetById", { id: data.id }]);
+                }
+            });
+    },
+
+    useRemoveDataType: () => {
+        const Broker = new DataTypeBroker();
+        const queryClient = useQueryClient();
+
+        return useMutation((id: Guid) => {
+            return Broker.DeleteDataTypeByIdAsync(id);
         },
             {
                 onSuccess: (data) => {

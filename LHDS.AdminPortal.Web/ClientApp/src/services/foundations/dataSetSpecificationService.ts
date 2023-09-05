@@ -50,4 +50,24 @@ export const Service = {
                 staleTime: Infinity
             });
     },
+
+    useModifyDataSetSpecification: () => {
+        const broker = new DataSetSpecificationBroker();
+        const queryClient = useQueryClient();
+        const msal = useMsal();
+
+        return useMutation((dataSetSpecification: DataSetSpecification) => {
+            const date = new Date();
+            dataSetSpecification.updatedDate = date;
+            dataSetSpecification.updatedBy = msal.accounts[0].username;
+
+            return broker.PutDataSetSpecificationAsync();
+        },
+            {
+                onSuccess: (data) => {
+                    queryClient.invalidateQueries("DataSetSpecificationGetAll");
+                    queryClient.invalidateQueries(["DataSetSpecificationGetById", { id: data.id }]);
+                }
+            });
+    },
 }

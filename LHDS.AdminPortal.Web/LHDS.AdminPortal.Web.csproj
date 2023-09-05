@@ -90,6 +90,7 @@
     <TypeScriptCompile Remove="ClientApp\src\hooks\validationProcessor.ts" />
     <TypeScriptCompile Remove="ClientApp\src\index.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\models\audits\audit.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\dataTypes\dataType.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\documents\document.ts" />
     <TypeScriptCompile Remove="clientapp\src\models\features\feature.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\ingestionTrackings\ingestionTracking.ts" />
@@ -99,6 +100,7 @@
     <TypeScriptCompile Remove="ClientApp\src\models\pds\pdsHomeView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\suppliers\supplier.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\audit\auditView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\views\components\dataTypes\dataTypeView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\documents\documentView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\ingestionTracking\ingestionTrackingView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\lookups\lookupView.ts" />

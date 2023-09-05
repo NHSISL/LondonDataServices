@@ -56,5 +56,25 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
                 await this.apiBroker.DeleteDataSetByIdAsync(inputDataSet.Id);
             }
         }
+
+        [Fact]
+        public async Task ShouldGetDataSetByIdAsync()
+        {
+            // Given
+            DataSet randomDataSet = CreateRandomDataSet();
+            DataSet inputDataSet = randomDataSet;
+            DataSet expectedDataSet = inputDataSet;
+            await this.apiBroker.PostDataSetAsync(inputDataSet);
+
+            // When
+            DataSet actualDataSet =
+                await this.apiBroker.GetDataSetByIdAsync(inputDataSet.Id);
+
+            // Then
+            actualDataSet.Should().BeEquivalentTo(expectedDataSet);
+
+            // Cleanup
+            await this.apiBroker.DeleteDataSetByIdAsync(inputDataSet.Id);
+        }
     }
 }

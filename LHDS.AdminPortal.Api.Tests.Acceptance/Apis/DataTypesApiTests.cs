@@ -24,17 +24,18 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataTypes
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static DataType CreateRandomDataType(DateTimeOffset dateTimeOffset) =>
-           CreateDataTypeFiller(dateTimeOffset).Create();
+        private static DataType CreateRandomDataType() =>
+           CreateDataTypeFiller().Create();
 
-        private static Filler<DataType> CreateDataTypeFiller(DateTimeOffset dateTimeOffset)
+        private static Filler<DataType> CreateDataTypeFiller()
         {
             string user = Guid.NewGuid().ToString();
+            DateTimeOffset now = DateTimeOffset.UtcNow;
             var filler = new Filler<DataType>();
 
             filler.Setup()
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(dataType => dataType.CreatedBy).Use(user)
                 .OnProperty(dataType => dataType.UpdatedBy).Use(user);
 

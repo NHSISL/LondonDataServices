@@ -17,7 +17,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         {
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("local.appsettings.json")
+                .AddJsonFile("appsettings.Development.json")
                 .Build();
 
             var landingConfig = configuration.GetSection("landingSettings").Get<LandingConfiguration>();

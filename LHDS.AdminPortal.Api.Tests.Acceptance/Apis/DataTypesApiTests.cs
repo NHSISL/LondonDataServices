@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataType;
 using Tynamix.ObjectFiller;
@@ -23,6 +24,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataTypes
 
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static IQueryable<DataType> CreateRandomDataTypes()
+        {
+            return CreateDataTypeFiller()
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
 
         private static DataType CreateRandomDataType() =>
            CreateDataTypeFiller().Create();

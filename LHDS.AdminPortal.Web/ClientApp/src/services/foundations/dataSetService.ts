@@ -61,7 +61,22 @@ export const Service = {
             dataSet.updatedDate = date;
             dataSet.updatedBy = msal.accounts[0].username;
 
-            return broker.PutDataSetAsync();
+            return broker.PutDataSetAsync(dataSet);
+        },
+            {
+                onSuccess: (data) => {
+                    queryClient.invalidateQueries("DataSetGetAll");
+                    queryClient.invalidateQueries(["DataSetGetById", { id: data.id }]);
+                }
+            });
+    },
+
+    useRemoveDataSet: () => {
+        const broker = new DataSetBroker();
+        const queryClient = useQueryClient();
+
+        return useMutation((id: Guid) => {
+            return broker.DeleteDataSetByIdAsync(id);
         },
             {
                 onSuccess: (data) => {

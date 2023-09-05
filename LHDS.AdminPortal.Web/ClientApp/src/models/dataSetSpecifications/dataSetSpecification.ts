@@ -39,7 +39,6 @@ export class DataSetSpecification {
         this.isActive = dataSetSpecification.isActive;
         this.activeFrom = dataSetSpecification.activeFrom;
         this.activeTo = dataSetSpecification.activeTo;
-        this.createdDate = dataSetSpecification.createdDate;
         this.createdBy = dataSetSpecification.createdBy;
         this.createdDate = new Date(dataSetSpecification.createdDate);
         this.updatedBy = dataSetSpecification.updatedBy;

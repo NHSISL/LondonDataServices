@@ -98,6 +98,7 @@
     <TypeScriptCompile Remove="clientapp\src\models\features\feature.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\ingestionTrackings\ingestionTracking.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\ingestionTrackings\ingestionTrackingHomeView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\objectColumns\objectColumn.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\optout\optout.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\pds\pds.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\pds\pdsHomeView.ts" />
@@ -110,6 +111,7 @@
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\documents\documentView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\ingestionTracking\ingestionTrackingView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\lookups\lookupView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\views\components\objectColumns\objectColumnView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\optOuts\optOutView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\pds\pdsView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\suppliers\supplierView.ts" />

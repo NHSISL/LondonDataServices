@@ -2,15 +2,15 @@ import React from "react";
 import 'nhsuk-frontend/dist/nhsuk.min'
 import 'nhsuk-frontend/packages/polyfills';
 import { Container } from 'nhsuk-react-components'
-import DataSetTable from "../../components/dataSets/dataSetTable";
+import DataTypeTable from "../../components/dataTypes/dataTypeTable";
 
-export const DataSetsPage = () => {
+export const DataTypesPage = () => {
     return <div>
         <section >
             <Container>
                 <main id="maincontent" className="NELTopPadding" role="main">
                     <>
-                        <DataSetTable allowedToAdd={true} allowedToEdit={true} allowedToDelete={true} />
+                        <DataTypeTable allowedToAdd={true} allowedToEdit={true} allowedToDelete={true} />
                     </>
                 </main>
             </Container>

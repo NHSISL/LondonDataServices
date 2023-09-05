@@ -57,7 +57,7 @@ export const ConfigHomePage = () => {
                             <Card clickable>
                                 <Card.Content>
                                     <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
-                                        <Link to={'/configuration/suppliers'}>
+                                        <Link to={'/configuration/dataSets'}>
                                             Data Sets
                                         </Link>
                                     </Card.Heading>

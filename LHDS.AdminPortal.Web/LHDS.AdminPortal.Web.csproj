@@ -51,6 +51,7 @@
     <TypeScriptCompile Remove="ClientApp\src\components\audit\auditRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\audit\auditRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\bases\ingestionTrackingTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeTable.tsx" />
     <TypeScriptCompile Remove="clientapp\src\components\FeatureSwitch.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetail.tsx" />
@@ -106,6 +107,7 @@
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\suppliers\supplierView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\configHomePage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetsPage.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataTypesPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\IngestionTrackingHomepage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\ingestionTrackingPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\OptOutSearch.tsx" />

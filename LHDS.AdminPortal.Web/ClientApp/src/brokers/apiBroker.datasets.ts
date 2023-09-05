@@ -52,6 +52,13 @@ class DataSetBroker {
         return await this.apiBroker.PutAsync(this.relativeDataSetUrl, dataSet)
             .then(result => new DataSet(result.data));
     }
+
+    async DeleteDataSetByIdAsync(id: Guid) {
+        const url = `${this.relativeDataSetUrl}/${id}`;
+
+        return await this.apiBroker.DeleteAsync(url)
+            .then(result => new DataSet(result.data));
+    }
 }
 
 export default DataSetBroker;

@@ -33,4 +33,21 @@ export const Service = {
             () => Broker.GetAllDataSetAsync(query),
             { staleTime: Infinity });
     },
+
+    useRetrieveAllDataSetPages: (query: string) => {
+        const Broker = new DataSetBroker();
+
+        return useInfiniteQuery(
+            ["DataSetGetAll", { query: query }],
+            ({ pageParam }) => {
+                if (!pageParam) {
+                    return Broker.GetDataSetFirstPagesAsync(query)
+                }
+                return Broker.GetDataSetSubsequentPagesAsync(pageParam)
+            },
+            {
+                getNextPageParam: (lastPage) => lastPage.nextPage,
+                staleTime: Infinity
+            });
+    },
 }

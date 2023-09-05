@@ -61,7 +61,22 @@ export const Service = {
             objectColumn.updatedDate = date;
             objectColumn.updatedBy = msal.accounts[0].username;
 
-            return broker.PutObjectColumnAsync();
+            return broker.PutObjectColumnAsync(objectColumn);
+        },
+            {
+                onSuccess: (data) => {
+                    queryClient.invalidateQueries("ObjectColumnGetAll");
+                    queryClient.invalidateQueries(["ObjectColumnGetById", { id: data.id }]);
+                }
+            });
+    },
+
+    useRemoveObjectColumn: () => {
+        const broker = new ObjectColumnBroker();
+        const queryClient = useQueryClient();
+
+        return useMutation((id: Guid) => {
+            return broker.DeleteObjectColumnByIdAsync(id);
         },
             {
                 onSuccess: (data) => {

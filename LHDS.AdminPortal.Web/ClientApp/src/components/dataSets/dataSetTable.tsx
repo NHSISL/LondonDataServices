@@ -6,7 +6,7 @@ type DataTypeTableProps = {
     allowedToDelete: boolean;
 }
 
-const DataTypeTable: FunctionComponent<DataTypeTableProps> = (props) => {
+const DataSetTable: FunctionComponent<DataTypeTableProps> = (props) => {
     const {
         allowedToAdd,
         allowedToEdit,
@@ -15,10 +15,10 @@ const DataTypeTable: FunctionComponent<DataTypeTableProps> = (props) => {
 
     return (
         <>
-            <h1>TODO: Data Types Table Screen</h1>
-            {allowedToAdd}{allowedToEdit}{allowedToDelete}
+           {allowedToAdd}{allowedToEdit}{allowedToDelete}
+           <h1>TODO: Data Sets Table Screen</h1>
         </>
     );
 }
 
-export default DataTypeTable;
+export default DataSetTable;

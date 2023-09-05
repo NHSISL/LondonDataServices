@@ -19,6 +19,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         public async ValueTask<List<DataSet>> GetAllDataSetsAsync() =>
           await this.apiFactoryClient.GetContentAsync<List<DataSet>>($"{DataSetsRelativeUrl}/");
 
+        public async ValueTask<DataSet> GetDataSetByIdAsync(Guid ingestionTrackingId) =>
+            await this.apiFactoryClient.GetContentAsync<DataSet>($"{DataSetsRelativeUrl}/{ingestionTrackingId}");
+
         public async ValueTask<DataSet> DeleteDataSetByIdAsync(Guid dataSetId) =>
             await this.apiFactoryClient.DeleteContentAsync<DataSet>($"{DataSetsRelativeUrl}/{dataSetId}");
     }

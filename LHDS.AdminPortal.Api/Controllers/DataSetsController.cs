@@ -6,6 +6,7 @@ using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 using LHDS.Core.Services.Foundations.DataSets;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Controllers
@@ -54,7 +55,8 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IQueryable<DataSet>> GetAllDataSets()
+        [EnableQuery(PageSize = 50)]
+        public ActionResult<IQueryable<DataSet>> Get()
         {
             try
             {

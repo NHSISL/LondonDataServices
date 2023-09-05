@@ -6,6 +6,7 @@ using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
 using LHDS.Core.Services.Foundations.DataTypes;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Controllers
@@ -54,7 +55,8 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IQueryable<DataType>> GetAllDataTypes()
+        [EnableQuery(PageSize = 50)]
+        public ActionResult<IQueryable<DataType>> Get()
         {
             try
             {

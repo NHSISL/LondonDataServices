@@ -52,6 +52,13 @@ class DataSetSpecificationBroker {
         return await this.apiBroker.PutAsync(this.relativeDataSetSpecificationUrl, dataSetSpecification)
             .then(result => new DataSetSpecification(result.data));
     }
+
+    async DeleteDataSetSpecificationByIdAsync(id: Guid) {
+        const url = `${this.relativeDataSetSpecificationUrl}/${id}`;
+
+        return await this.apiBroker.DeleteAsync(url)
+            .then(result => new DataSetSpecification(result.data));
+    }
 }
 
 export default DataSetSpecificationBroker;

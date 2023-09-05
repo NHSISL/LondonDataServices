@@ -50,4 +50,24 @@ export const Service = {
                 staleTime: Infinity
             });
     },
+
+    useModifyDataSet: () => {
+        const Broker = new DataSetBroker();
+        const queryClient = useQueryClient();
+        const msal = useMsal();
+
+        return useMutation((: DataSet) => {
+            const date = new Date();
+            .updatedDate = date;
+            .updatedBy = msal.accounts[0].username;
+
+            return Broker.PutDataSetAsync();
+        },
+            {
+                onSuccess: (data) => {
+                    queryClient.invalidateQueries("DataSetGetAll");
+                    queryClient.invalidateQueries(["DataSetGetById", { id: data.id }]);
+                }
+            });
+    },
 }

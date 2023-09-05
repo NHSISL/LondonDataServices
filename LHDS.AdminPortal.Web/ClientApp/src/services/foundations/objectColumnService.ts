@@ -33,4 +33,21 @@ export const Service = {
             () => broker.GetAllObjectColumnsAsync(query),
             { staleTime: Infinity });
     },
+
+    useRetrieveAllObjectColumnPages: (query: string) => {
+        const broker = new ObjectColumnBroker();
+
+        return useInfiniteQuery(
+            ["ObjectColumnGetAll", { query: query }],
+            ({ pageParam }) => {
+                if (!pageParam) {
+                    return broker.GetObjectColumnFirstPagesAsync(query)
+                }
+                return broker.GetObjectColumnSubsequentPagesAsync(pageParam)
+            },
+            {
+                getNextPageParam: (lastPage) => lastPage.nextPage,
+                staleTime: Infinity
+            });
+    },
 }

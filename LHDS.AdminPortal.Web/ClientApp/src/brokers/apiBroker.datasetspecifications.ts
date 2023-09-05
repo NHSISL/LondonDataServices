@@ -11,6 +11,17 @@ class DataSetSpecificationBroker {
         return await this.apiBroker.PostAsync(this.relativeDataSetSpecificationUrl, dataSetSpecification)
             .then(result => new DataSetSpecification(result.data));
     }
+
+    async GetAllDataSetSpecificationsAsync(queryString: string) {
+        const url = this.relativeDataSetSpecificationUrl + queryString;
+        
+        if (queryString === "/") {
+            return undefined;
+        }
+        
+        return await this.apiBroker.GetAsync(url)
+            .then(result => result.data.map((optOut: any) => new DataSetSpecification(optOut)));
+    }
 }
 
 export default DataSetSpecificationBroker;

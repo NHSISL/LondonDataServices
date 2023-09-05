@@ -47,6 +47,11 @@ class DataTypeBroker {
         return await this.apiBroker.GetAsync(url)
             .then(result => new DataType(result.data));
     }
+
+    async PutDataTypeAsync(dataType: DataType) {
+        return await this.apiBroker.PutAsync(this.relativeDataTypeUrl, dataType)
+            .then(result => new DataType(result.data));
+    }
 }
 
 export default DataTypeBroker;

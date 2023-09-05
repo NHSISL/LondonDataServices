@@ -25,7 +25,7 @@ class DataTypeBroker {
         if (queryString === "/") {
             return undefined;
         }
-
+        
         return await this.apiBroker.GetAsync(url)
             .then(result => result.data.map((optOut: any) => new DataType(optOut)));
     }
@@ -33,6 +33,10 @@ class DataTypeBroker {
     async GetDataTypeFirstPagesAsync(query: string) {
         var url = this.relativeDataTypeOdataUrl + query;
         return this.processOdataResult(await this.apiBroker.GetAsync(url));
+    }
+
+    async GetDataTypeSubsequentPagesAsync(absoluteUri: string) {
+        return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
 }
 

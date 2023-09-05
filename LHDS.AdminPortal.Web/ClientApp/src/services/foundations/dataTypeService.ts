@@ -24,4 +24,13 @@ export const Service = {
                 }
             });
     },
+
+    useRetrieveAlldataType: (query: string) => {
+        const broker = new dataTypeBroker();
+
+        return useQuery(
+            ["dataTypeGetAll", { query: query }],
+            () => broker.GetAlldataTypesAsync(query),
+            { staleTime: Infinity });
+    },
 }

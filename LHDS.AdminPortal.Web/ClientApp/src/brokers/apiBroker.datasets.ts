@@ -40,6 +40,13 @@ class DataSetBroker {
     async GetDataSetSubsequentPagesAsync(absoluteUri: string) {
         return this.processOdataResult(await this.apiBroker.GetAsyncAbsolute(absoluteUri));
     }
+
+    async GetDataSetByIdAsync(id: Guid) {
+        const url = `${this.relativeDataSetUrl}/${id}`;
+
+        return await this.apiBroker.GetAsync(url)
+            .then(result => new DataSet(result.data));
+    }
 }
 
 export default DataSetBroker;

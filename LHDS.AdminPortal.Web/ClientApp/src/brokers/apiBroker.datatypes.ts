@@ -52,6 +52,13 @@ class DataTypeBroker {
         return await this.apiBroker.PutAsync(this.relativeDataTypeUrl, dataType)
             .then(result => new DataType(result.data));
     }
+
+    async DeleteDataTypeByIdAsync(id: Guid) {
+        const url = `${this.relativeDataTypeUrl}/${id}`;
+
+        return await this.apiBroker.DeleteAsync(url)
+            .then(result => new DataType(result.data));
+    }
 }
 
 export default DataTypeBroker;

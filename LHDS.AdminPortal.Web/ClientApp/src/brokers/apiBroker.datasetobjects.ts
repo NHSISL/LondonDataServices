@@ -11,6 +11,17 @@ class DataSetObjectBroker {
         return await this.apiBroker.PostAsync(this.relativeDataSetObjectUrl, dataSetObject)
             .then(result => new DataSetObject(result.data));
     }
+
+    async GetAllDataSetObjectsAsync(queryString: string) {
+        const url = this.relativeDataSetObjectUrl + queryString;
+        
+        if (queryString === "/") {
+            return undefined;
+        }
+        
+        return await this.apiBroker.GetAsync(url)
+            .then(result => result.data.map((optOut: any) => new DataSetObject(optOut)));
+    }
 }
 
 export default DataSetObjectBroker;

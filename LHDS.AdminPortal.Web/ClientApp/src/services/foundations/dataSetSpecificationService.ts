@@ -24,4 +24,13 @@ export const Service = {
                 }
             });
     },
+
+    useRetrieveAllDataSetSpecification: (query: string) => {
+        const broker = new DataSetSpecificationBroker();
+
+        return useQuery(
+            ["DataSetSpecificationGetAll", { query: query }],
+            () => broker.GetAllDataSetSpecificationsAsync(query),
+            { staleTime: Infinity });
+    },
 }

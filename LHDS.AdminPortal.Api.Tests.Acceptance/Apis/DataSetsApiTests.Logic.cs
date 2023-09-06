@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
+using RESTFulSense.Exceptions;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
@@ -94,6 +95,29 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
 
             // Cleanup
             await this.apiBroker.DeleteDataSetByIdAsync(inputDataSet.Id);
+        }
+
+        [Fact]
+        public async Task ShouldDeleteDataSetAsync()
+        {
+            // given
+            DataSet randomDataSet = CreateRandomDataSet();
+            DataSet inputDataSet = randomDataSet;
+            DataSet expectedDataSet = inputDataSet;
+            await this.apiBroker.PostDataSetAsync(inputDataSet);
+
+            // when
+            DataSet deletedDataSet =
+                await this.apiBroker.DeleteDataSetByIdAsync(inputDataSet.Id);
+
+            ValueTask<DataSet> getDataSetbyIdTask =
+                this.apiBroker.GetDataSetByIdAsync(inputDataSet.Id);
+
+            // then
+            deletedDataSet.Should().BeEquivalentTo(expectedDataSet);
+
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
+                getDataSetbyIdTask.AsTask());
         }
     }
 }

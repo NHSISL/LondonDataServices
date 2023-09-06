@@ -1,4 +1,6 @@
 import { Guid } from 'guid-typescript';
+import { DataSetObject } from '../dataSetObjects/dataSetObject';
+import { DataType } from '../dataTypes/dataType';
 
 export class ObjectColumn {
     public id: Guid;
@@ -33,6 +35,8 @@ export class ObjectColumn {
     public createdDate?: Date;
     public updatedBy?: string;
     public updatedDate?: Date;
+    public dataType?: DataType;
+    public dataSetObject?: DataSetObject;
 
     constructor(objectColumn: any) {
         this.id = objectColumn.id ? Guid.parse(objectColumn.id) : Guid.parse(Guid.EMPTY);
@@ -67,5 +71,13 @@ export class ObjectColumn {
         this.createdDate = new Date(objectColumn.createdDate);
         this.updatedBy = objectColumn.updatedBy;
         this.updatedDate = new Date(objectColumn.updatedDate);
+
+        if (objectColumn.dataType !== undefined && objectColumn.dataType !== null) {
+            this.dataType = new DataType(objectColumn.dataType);
+        }
+
+        if (objectColumn.dataSetObject !== undefined && objectColumn.dataSetObject !== null) {
+            this.dataSetObject = new DataSetObject(objectColumn.dataSetObject);
+        }
     }
 }

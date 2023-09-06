@@ -32,7 +32,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataTypes
         }
 
         [Fact]
-        public async Task ShouldGetAllPdsAuditsAsync()
+        public async Task ShouldGetAllDataTypesAsync()
         {
             // Given
             IQueryable<DataType> randomDataTypes = CreateRandomDataTypes();
@@ -48,12 +48,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataTypes
             List<DataType> actualDataTypes = await this.apiBroker.GetAllDataTypesAsync();
 
             // Then
-            actualDataTypes.Should().BeEquivalentTo(expectedDataTypes);
-
-            // Cleanup
-            foreach (DataType inputDataType in expectedDataTypes)
+            foreach (DataType expectedDataType in expectedDataTypes)
             {
-                await this.apiBroker.DeleteDataTypeByIdAsync(inputDataType.Id);
+                DataType actualDataType = actualDataTypes.Single(approval => approval.Id == expectedDataType.Id);
+                actualDataType.Should().BeEquivalentTo(expectedDataType);
+                await this.apiBroker.DeleteDataTypeByIdAsync(actualDataType.Id);
             }
         }
 

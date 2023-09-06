@@ -133,6 +133,7 @@
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\pdsService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\supplierService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\auditViewService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\DataTypes\dataTypeViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\Documents\DocumentViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\ingestionTrackingHomeViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\ingestionTrackingViewService.ts" />

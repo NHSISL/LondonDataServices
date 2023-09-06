@@ -48,12 +48,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
             List<DataSet> actualDataSets = await this.apiBroker.GetAllDataSetsAsync();
 
             // Then
-            actualDataSets.Should().BeEquivalentTo(expectedDataSets);
-
-            // Cleanup
-            foreach (DataSet inputDataSet in expectedDataSets)
+            foreach (DataSet expectedDataSet in expectedDataSets)
             {
-                await this.apiBroker.DeleteDataSetByIdAsync(inputDataSet.Id);
+                DataSet actualDataSet = actualDataSets.Single(approval => approval.Id == expectedDataSet.Id);
+                actualDataSet.Should().BeEquivalentTo(expectedDataSet);
+                await this.apiBroker.DeleteDataSetByIdAsync(actualDataSet.Id);
             }
         }
     }

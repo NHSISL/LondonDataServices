@@ -28,6 +28,21 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataTypes
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static DataType UpdateDataTypeWithRandomValues(DataType inputDataType)
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            var filler = new Filler<DataType>();
+
+            filler.Setup()
+                .OnProperty(DataType => DataType.Id).Use(inputDataType.Id)
+                .OnProperty(DataType => DataType.CreatedBy).Use(inputDataType.CreatedBy)
+                .OnProperty(DataType => DataType.CreatedDate).Use(inputDataType.CreatedDate)
+                .OnProperty(DataType => DataType.UpdatedDate).Use(now)
+                .OnType<DateTimeOffset>().Use(GetRandomDateTime());
+
+            return filler.Create();
+        }
+      
         private static IQueryable<DataType> CreateRandomDataTypes()
         {
             return CreateDataTypeFiller()

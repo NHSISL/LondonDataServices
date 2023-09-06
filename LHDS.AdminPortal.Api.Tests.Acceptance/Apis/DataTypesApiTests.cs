@@ -21,6 +21,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataTypes
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
+
         private static string GetRandomString(int length) =>
             new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 

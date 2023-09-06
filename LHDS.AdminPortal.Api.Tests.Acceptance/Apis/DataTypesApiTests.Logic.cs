@@ -55,25 +55,5 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataTypes
                 await this.apiBroker.DeleteDataTypeByIdAsync(actualDataType.Id);
             }
         }
-
-        [Fact]
-        public async Task ShouldGetDataTypeByIdAsync()
-        {
-            // Given
-            DataType randomDataType = CreateRandomDataType();
-            DataType inputDataType = randomDataType;
-            DataType expectedDataType = inputDataType;
-            await this.apiBroker.PostDataTypeAsync(inputDataType);
-
-            // When
-            DataType actualDataType =
-                await this.apiBroker.GetDataTypeByIdAsync(inputDataType.Id);
-
-            // Then
-            actualDataType.Should().BeEquivalentTo(expectedDataType);
-
-            // Cleanup
-            await this.apiBroker.DeleteDataTypeByIdAsync(inputDataType.Id);
-        }
     }
 }

@@ -2,11 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataType;
-using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataTypes
@@ -29,6 +29,31 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataTypes
 
             // Cleanup
             await this.apiBroker.DeleteDataTypeByIdAsync(inputDataType.Id);
+        }
+
+        [Fact]
+        public async Task ShouldGetAllDataTypesAsync()
+        {
+            // Given
+            IQueryable<DataType> randomDataTypes = CreateRandomDataTypes();
+            IQueryable<DataType> inputDataTypes = randomDataTypes;
+            IQueryable<DataType> expectedDataTypes = inputDataTypes;
+
+            foreach (DataType inputDataType in inputDataTypes)
+            {
+                await this.apiBroker.PostDataTypeAsync(inputDataType);
+            }
+
+            // When
+            List<DataType> actualDataTypes = await this.apiBroker.GetAllDataTypesAsync();
+
+            // Then
+            foreach (DataType expectedDataType in expectedDataTypes)
+            {
+                DataType actualDataType = actualDataTypes.Single(approval => approval.Id == expectedDataType.Id);
+                actualDataType.Should().BeEquivalentTo(expectedDataType);
+                await this.apiBroker.DeleteDataTypeByIdAsync(actualDataType.Id);
+            }
         }
     }
 }

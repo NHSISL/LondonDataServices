@@ -4,8 +4,8 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "react-q
 import DataTypeBroker from "../../brokers/apiBroker.datatypes";
 import { DataType } from "../../models/dataTypes/dataType";
 
-export const Service = {
-    useCreatedataType: () => {
+export const dataTypeService = {
+    useCreateDataType: () => {
         const broker = new DataTypeBroker();
         const queryClient = useQueryClient();
         const msal = useMsal();
@@ -34,7 +34,7 @@ export const Service = {
             { staleTime: Infinity });
     },
 
-    useRetrieveAlldataTypePages: (query: string) => {
+    useRetrieveAllDataTypePages: (query: string) => {
         const broker = new DataTypeBroker();
 
         return useInfiniteQuery(
@@ -52,7 +52,7 @@ export const Service = {
             });
     },
 
-    useModifydataType: () => {
+    useModifyDataType: () => {
         const broker = new DataTypeBroker();
         const queryClient = useQueryClient();
         const msal = useMsal();
@@ -72,7 +72,7 @@ export const Service = {
             });
     },
 
-    useRemovedataType: () => {
+    useRemoveDataType: () => {
         const broker = new DataTypeBroker();
         const queryClient = useQueryClient();
 

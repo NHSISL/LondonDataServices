@@ -113,7 +113,7 @@ const DataTypeTable: FunctionComponent<DataTypeTableProps> = (props) => {
                                 {dataTypesRetrieved?.map((dataType: DataTypeView) =>
                                     <DataTypeRow
                                         key={dataType.id?.toString()}
-                                        dataType={dataType}
+                                        supplier={dataType}
                                         allowedToEdit={allowedToEdit}
                                         allowedToDelete={allowedToDelete}
                                         onUpdate={handleUpdate}

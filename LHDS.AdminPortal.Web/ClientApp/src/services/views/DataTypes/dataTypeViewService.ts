@@ -1,13 +1,13 @@
 import { Guid } from "guid-typescript";
 import { useEffect, useState } from "react";
-import { DataTypeService } from "../../foundations/dataTypeService";
 import { DataTypeView } from "../../../models/views/components/dataTypes/dataTypeView";
 import { DataType } from "../../../models/dataTypes/dataType";
+import { dataTypeService } from "../../foundations/dataTypeService";
 
-export const DataTypeViewService = {
+export const dataTypeViewService = {
 
     useCreateDataType: () => {
-        return DataTypeService.useCreateDataType();
+        return dataTypeService.useCreateDataType();
     },
 
     useGetAllDataTypes: (searchTerm?: string) => {
@@ -18,7 +18,7 @@ export const DataTypeViewService = {
                 query = query + `&$filter=contains(name,'${searchTerm}')`;
             }
 
-            const response = DataTypeService.useRetrieveAlldataType(query);
+            const response = dataTypeService.useRetrieveAllDataType(query);
             const [mappedDataTypes, setMappedDataTypes] = useState<Array<DataTypeView>>([]);
 
             useEffect(() => {
@@ -46,10 +46,10 @@ export const DataTypeViewService = {
     },
 
     useUpdateDataType: () => {
-        return DataTypeService.useModifyDataType();
+        return dataTypeService.useModifyDataType();
     },
 
     useRemoveDataType: () => {
-        return DataTypeService.useRemoveDataType();
+        return dataTypeService.useRemoveDataType();
     },
 }

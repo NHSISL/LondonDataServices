@@ -5,7 +5,7 @@ import DataTypeBroker from "../../brokers/apiBroker.datatypes";
 import { DataType } from "../../models/dataTypes/dataType";
 
 export const dataTypeService = {
-    useCreatedataType: () => {
+    useCreateDataType: () => {
         const broker = new DataTypeBroker();
         const queryClient = useQueryClient();
         const msal = useMsal();
@@ -25,7 +25,7 @@ export const dataTypeService = {
             });
     },
 
-    useRetrieveAlldataType: (query: string) => {
+    useRetrieveAllDataType: (query: string) => {
         const broker = new DataTypeBroker();
 
         return useQuery(

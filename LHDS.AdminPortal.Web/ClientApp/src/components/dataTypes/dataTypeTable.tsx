@@ -1,5 +1,4 @@
 import React, { FunctionComponent, useMemo, useState} from "react";
-import { dataTypeViewService } from "../../services/views/DataTypes/dataTypeViewService";
 import { DataTypeView } from "../../models/views/components/dataTypes/dataTypeView";
 import { debounce } from "lodash";
 import SearchBase from "../bases/inputs/SearchBase";
@@ -16,6 +15,7 @@ import TableBaseTbody from "../bases/components/Table/TableBase.Tbody";
 import DataTypeRowNew from "./dataTypeRowNew";
 import DataTypeRowAdd from "./dataTypeRowAdd";
 import DataTypeRow from "./dataTypeRow";
+import { dataTypeViewService } from "../../services/views/DataTypes/dataTypeViewService";
 
 type DataTypeTableProps = {
     allowedToAdd: boolean;
@@ -113,7 +113,7 @@ const DataTypeTable: FunctionComponent<DataTypeTableProps> = (props) => {
                                 {dataTypesRetrieved?.map((dataType: DataTypeView) =>
                                     <DataTypeRow
                                         key={dataType.id?.toString()}
-                                        supplier={dataType}
+                                        dataType={dataType}
                                         allowedToEdit={allowedToEdit}
                                         allowedToDelete={allowedToDelete}
                                         onUpdate={handleUpdate}

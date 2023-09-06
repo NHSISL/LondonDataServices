@@ -25,7 +25,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 
         public async ValueTask<DataType> PutDataTypeAsync(DataType ingestionTracking) =>
             await this.apiFactoryClient.PutContentAsync(DataTypesRelativeUrl, ingestionTracking);
-
+      
         public async ValueTask<DataType> DeleteDataTypeByIdAsync(Guid dataTypeId) =>
             await this.apiFactoryClient.DeleteContentAsync<DataType>(
                 $"{DataTypesRelativeUrl}/{dataTypeId}");

@@ -4,7 +4,7 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "react-q
 import DataSetObjectBroker from "../../brokers/apiBroker.datasetobjects";
 import { DataSetObject } from "../../models/dataSetObjects/dataSetObject";
 
-export const Service = {
+export const dataSetObjectService = {
     useCreateDataSetObject: () => {
         const broker = new DataSetObjectBroker();
         const queryClient = useQueryClient();

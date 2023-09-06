@@ -52,7 +52,15 @@
     <TypeScriptCompile Remove="ClientApp\src\components\audit\auditRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\bases\ingestionTrackingTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeErrors.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRow.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRowAdd.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRowDelete.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRowEdit.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRowNew.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeValidations.tsx" />
     <TypeScriptCompile Remove="clientapp\src\components\FeatureSwitch.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetailCard.tsx" />

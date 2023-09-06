@@ -1,4 +1,3 @@
-import { Guid } from "guid-typescript";
 import { useEffect, useState } from "react";
 import { DataTypeView } from "../../../models/views/components/dataTypes/dataTypeView";
 import { DataType } from "../../../models/dataTypes/dataType";

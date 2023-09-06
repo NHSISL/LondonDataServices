@@ -2,7 +2,7 @@ import { Guid } from 'guid-typescript';
 
 export class DataTypeView {
     public id: Guid;
-    public name?: string;
+    public name: string;
     public createdBy?: string;
     public createdDate?: Date;
     public updatedBy?: string;
@@ -10,7 +10,7 @@ export class DataTypeView {
 
     constructor(
         id: Guid,
-        name?: string,
+        name: string,
         createdBy?: string,
         createdDate?: Date,
         updatedBy?: string,
@@ -18,7 +18,7 @@ export class DataTypeView {
 
     ) {
         this.id = id;
-        this.name = name || "";
+        this.name = name;
         this.createdBy = createdBy || "";
         this.createdDate = createdDate ;
         this.updatedBy = updatedBy || "";

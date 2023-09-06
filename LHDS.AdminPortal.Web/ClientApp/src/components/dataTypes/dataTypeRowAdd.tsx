@@ -22,7 +22,7 @@ const DataTypeRowAdd: FunctionComponent<DataTypeRowAddProps> = (props) => {
         apiError
     } = props;
 
-    const [dataType, setDataType] = useState<DataTypeView>(new DataTypeView(Guid.create()));
+    const [dataType, setDataType] = useState<DataTypeView>(new DataTypeView(Guid.create(),""));
 
     const { errors, processApiErrors, enableValidationMessages, validate } =
         useValidation(dataTypeErrors, dataTypeValidations, dataType);

@@ -5,7 +5,7 @@ import DataTypeBroker from "../../brokers/apiBroker.datatypes";
 import { DataType } from "../../models/dataTypes/dataType";
 
 export const dataTypeService = {
-    useCreatedataType: () => {
+    useCreateDataType: () => {
         const broker = new DataTypeBroker();
         const queryClient = useQueryClient();
         const msal = useMsal();
@@ -25,7 +25,7 @@ export const dataTypeService = {
             });
     },
 
-    useRetrieveAlldataType: (query: string) => {
+    useRetrieveAllDataType: (query: string) => {
         const broker = new DataTypeBroker();
 
         return useQuery(
@@ -34,7 +34,7 @@ export const dataTypeService = {
             { staleTime: Infinity });
     },
 
-    useRetrieveAlldataTypePages: (query: string) => {
+    useRetrieveAllDataTypePages: (query: string) => {
         const broker = new DataTypeBroker();
 
         return useInfiniteQuery(
@@ -52,7 +52,7 @@ export const dataTypeService = {
             });
     },
 
-    useModifydataType: () => {
+    useModifyDataType: () => {
         const broker = new DataTypeBroker();
         const queryClient = useQueryClient();
         const msal = useMsal();
@@ -72,7 +72,7 @@ export const dataTypeService = {
             });
     },
 
-    useRemovedataType: () => {
+    useRemoveDataType: () => {
         const broker = new DataTypeBroker();
         const queryClient = useQueryClient();
 

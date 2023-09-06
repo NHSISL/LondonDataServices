@@ -4,7 +4,7 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "react-q
 import DataSetSpecificationBroker from "../../brokers/apiBroker.datasetspecifications";
 import { DataSetSpecification } from "../../models/dataSetSpecifications/dataSetSpecification";
 
-export const Service = {
+export const dataSetSpecificationService = {
     useCreateDataSetSpecification: () => {
         const broker = new DataSetSpecificationBroker();
         const queryClient = useQueryClient();

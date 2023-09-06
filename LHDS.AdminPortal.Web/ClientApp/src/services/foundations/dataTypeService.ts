@@ -4,7 +4,7 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "react-q
 import DataTypeBroker from "../../brokers/apiBroker.datatypes";
 import { DataType } from "../../models/dataTypes/dataType";
 
-export const Service = {
+export const dataTypeService = {
     useCreatedataType: () => {
         const broker = new DataTypeBroker();
         const queryClient = useQueryClient();

@@ -4,7 +4,6 @@
 
 using System.Net.Http;
 using LHDS.Core.Services.Foundations.Audits;
-using LHDS.Core.Services.Foundations.DataSets;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using RESTFulSense.Clients;

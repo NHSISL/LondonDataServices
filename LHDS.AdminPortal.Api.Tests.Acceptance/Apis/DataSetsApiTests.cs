@@ -38,6 +38,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
                 .OnProperty(DataSet => DataSet.Id).Use(inputDataSet.Id)
                 .OnProperty(DataSet => DataSet.CreatedBy).Use(inputDataSet.CreatedBy)
                 .OnProperty(DataSet => DataSet.CreatedDate).Use(inputDataSet.CreatedDate)
+                .OnProperty(DataSet => DataSet.ActiveFrom).Use(inputDataSet.ActiveFrom)
+                .OnProperty(DataSet => DataSet.ActiveTo).Use(inputDataSet.ActiveTo)
                 .OnProperty(DataSet => DataSet.UpdatedDate).Use(now)
                 .OnType<DateTimeOffset>().Use(GetRandomDateTime());
 

@@ -1,12 +1,12 @@
 import { useMsal } from "@azure/msal-react";
 import { Guid } from "guid-typescript";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "react-query";
-import dataTypeBroker from "../../brokers/apiBroker.datatypes";
+import DataTypeBroker from "../../brokers/apiBroker.datatypes";
 import { DataType } from "../../models/dataTypes/dataType";
 
-export const dataTypeService = {
-    useCreateDataType: () => {
-        const broker = new dataTypeBroker();
+export const Service = {
+    useCreatedataType: () => {
+        const broker = new DataTypeBroker();
         const queryClient = useQueryClient();
         const msal = useMsal();
 
@@ -26,7 +26,7 @@ export const dataTypeService = {
     },
 
     useRetrieveAlldataType: (query: string) => {
-        const broker = new dataTypeBroker();
+        const broker = new DataTypeBroker();
 
         return useQuery(
             ["dataTypeGetAll", { query: query }],
@@ -35,7 +35,7 @@ export const dataTypeService = {
     },
 
     useRetrieveAlldataTypePages: (query: string) => {
-        const broker = new dataTypeBroker();
+        const broker = new DataTypeBroker();
 
         return useInfiniteQuery(
             ["dataTypeGetAll", { query: query }],
@@ -43,6 +43,7 @@ export const dataTypeService = {
                 if (!pageParam) {
                     return broker.GetDataTypeFirstPagesAsync(query)
                 }
+
                 return broker.GetDataTypeSubsequentPagesAsync(pageParam)
             },
             {
@@ -52,7 +53,7 @@ export const dataTypeService = {
     },
 
     useModifydataType: () => {
-        const broker = new dataTypeBroker();
+        const broker = new DataTypeBroker();
         const queryClient = useQueryClient();
         const msal = useMsal();
 
@@ -72,7 +73,7 @@ export const dataTypeService = {
     },
 
     useRemovedataType: () => {
-        const broker = new dataTypeBroker();
+        const broker = new DataTypeBroker();
         const queryClient = useQueryClient();
 
         return useMutation((id: Guid) => {

@@ -2,7 +2,7 @@ import { Guid } from 'guid-typescript';
 
 export class DataType {
     public id: Guid;
-    public name?: string;
+    public name: string;
     public createdBy?: string;
     public createdDate?: Date;
     public updatedBy?: string;

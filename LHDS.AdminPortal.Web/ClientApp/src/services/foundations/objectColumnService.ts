@@ -4,7 +4,7 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "react-q
 import ObjectColumnBroker from "../../brokers/apiBroker.objectcolumns";
 import { ObjectColumn } from "../../models/objectColumns/objectColumn";
 
-export const Service = {
+export const objectColumnService = {
     useCreateObjectColumn: () => {
         const broker = new ObjectColumnBroker();
         const queryClient = useQueryClient();

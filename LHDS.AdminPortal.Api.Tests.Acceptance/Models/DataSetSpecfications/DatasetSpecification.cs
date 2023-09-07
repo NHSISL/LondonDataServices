@@ -10,11 +10,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications
     {
         public Guid Id { get; set; }
         public Guid DataSetId { get; set; }
-        public string SupplierSpecificationVersion { get; set; }
-        public string OurSpecificationVersion { get; set; }
-        public string Notes { get; set; }
+        public string SupplierSpecificationVersion { get; set; } = string.Empty;
+        public string OurSpecificationVersion { get; set; } = string.Empty;
+        public string Notes { get; set; } = string.Empty;
         public bool IsMultiAuthorPerBatch { get; set; }
-        public string EntityChangeSynchronisation { get; set; }
+        public string EntityChangeSynchronisation { get; set; } = string.Empty;
         public DateTimeOffset? DateReleased { get; set; }
         public DateTimeOffset? DateImplemented { get; set; }
         public DateTimeOffset? DateSuperseded { get; set; }
@@ -24,8 +24,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications
         public bool IsActive { get; set; }
         public DateTimeOffset ActiveFrom { get; set; }
         public DateTimeOffset ActiveTo { get; set; }
-        public string CreatedBy { get; set; }
-        public string UpdatedBy { get; set; }
+        public string CreatedBy { get; set; } = string.Empty;
+        public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
     }

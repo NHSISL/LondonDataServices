@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using LHDS.Core.Models.Bases;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.ObjectColumns;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace LHDS.Core.Models.Foundations.SpecificationObjects
 {
@@ -14,21 +15,24 @@ namespace LHDS.Core.Models.Foundations.SpecificationObjects
     {
         public Guid Id { get; set; }
         public Guid DataSetSpecificationId { get; set; }
-        public string SupplierObjectName { get; set; }
-        public string OurObjectName { get; set; }
-        public string ObjectDescription { get; set; }
-        public string InterchangeProtocol { get; set; }
+        public string SupplierObjectName { get; set; } = string.Empty;
+        public string OurObjectName { get; set; } = string.Empty;
+        public string ObjectDescription { get; set; } = string.Empty;
+        public string InterchangeProtocol { get; set; } = string.Empty;
         public bool IsPushedToUs { get; set; }
         public bool IsPulledByUs { get; set; }
-        public string DeletionHandling { get; set; }
+        public string DeletionHandling { get; set; } = string.Empty;
         public bool IsSubmissionHeaderObject { get; set; }
         public bool IsTransactionLog { get; set; }
-        public string CreatedBy { get; set; }
-        public string UpdatedBy { get; set; }
+        public string CreatedBy { get; set; } = string.Empty;
+        public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
 
-        public DataSetSpecification DataSetSpecification { get; set; }
+        [BindNever]
+        public DataSetSpecification? DataSetSpecification { get; set; } = null!;
+
+        [BindNever]
         public List<ObjectColumn> DataSetObjects { get; set; } = new List<ObjectColumn>();
 
     }

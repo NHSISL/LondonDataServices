@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using LHDS.Core.Models.Bases;
 using LHDS.Core.Models.Foundations.DataSetObjects;
 using LHDS.Core.Models.Foundations.DataSets;
+using Newtonsoft.Json;
 
 namespace LHDS.Core.Models.Foundations.DataSetSpecifications
 {
@@ -33,7 +34,9 @@ namespace LHDS.Core.Models.Foundations.DataSetSpecifications
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
 
+        [JsonIgnore]
         public DataSet DataSet { get; set; }
+        [JsonIgnore]
         public List<DataSetObject> DataSetObjects { get; set; } = new List<DataSetObject>();
     }
 }

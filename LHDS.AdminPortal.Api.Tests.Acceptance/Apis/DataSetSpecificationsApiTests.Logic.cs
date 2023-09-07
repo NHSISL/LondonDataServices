@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
+using LHDS.Core.Extensions.Exceptions;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
@@ -25,7 +26,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             DataSetSpecification expectedDataSetSpecification = inputDataSetSpecification;
 
             // When
-            DataSetSpecification actualDataSetSpecification = 
+            DataSetSpecification actualDataSetSpecification =
                 await this.apiBroker.PostDataSetSpecificationAsync(inputDataSetSpecification);
 
             // Then

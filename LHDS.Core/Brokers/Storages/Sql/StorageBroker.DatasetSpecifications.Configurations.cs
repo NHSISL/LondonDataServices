@@ -72,6 +72,11 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<DataSetSpecification>()
+                .Property(dataSetSpecification => dataSetSpecification.CreatedBy)
+                .HasMaxLength(255)
+                .IsRequired();
+
+            modelBuilder.Entity<DataSetSpecification>()
                 .Property(dataSetSpecification => dataSetSpecification.UpdatedBy)
                 .HasMaxLength(255)
                 .IsRequired();

@@ -20,6 +20,24 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .Property(pdsAudit => pdsAudit.FileName)
                 .HasMaxLength(500)
                 .IsRequired();
+
+            modelBuilder.Entity<PdsAudit>()
+                .Property(pdsAudit => pdsAudit.CreatedBy)
+                .HasMaxLength(255)
+                .IsRequired();
+
+            modelBuilder.Entity<PdsAudit>()
+                .Property(pdsAudit => pdsAudit.CreatedDate)
+                .IsRequired();
+
+            modelBuilder.Entity<PdsAudit>()
+                .Property(pdsAudit => pdsAudit.UpdatedBy)
+                .HasMaxLength(255)
+                .IsRequired();
+
+            modelBuilder.Entity<PdsAudit>()
+                .Property(pdsAudit => pdsAudit.UpdatedDate)
+                .IsRequired();
         }
     }
 }

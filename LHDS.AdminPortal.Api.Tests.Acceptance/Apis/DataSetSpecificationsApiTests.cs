@@ -53,8 +53,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
                 .OnProperty(DataSetSpecification => 
                     DataSetSpecification.SupplierSpecificationVersion).Use(GetRandomString(10))
 
-                .OnProperty(DataSetSpecification => DataSetSpecification.SupersededBy).Use(GetRandomString(255))
-                .OnProperty(DataSetSpecification => DataSetSpecification.PresededBy).Use(GetRandomString(255))
+                .OnProperty(DataSetSpecification => DataSetSpecification.PresededById).IgnoreIt()
+                .OnProperty(DataSetSpecification => DataSetSpecification.SupersededById).IgnoreIt()
+                .OnProperty(DataSetSpecification => DataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(DataSetSpecification => DataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(DataSetSpecification => DataSetSpecification.UpdatedBy).Use(user);
 

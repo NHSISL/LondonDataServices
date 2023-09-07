@@ -98,7 +98,6 @@
     <TypeScriptCompile Remove="ClientApp\src\hooks\validationProcessor.ts" />
     <TypeScriptCompile Remove="ClientApp\src\index.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\models\audits\audit.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\dataSetObjects\dataSetObject.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\dataSetSpecifications\dataSetSpecification.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\dataSets\dataSet.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\dataTypes\dataType.ts" />
@@ -110,6 +109,7 @@
     <TypeScriptCompile Remove="ClientApp\src\models\optout\optout.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\pds\pds.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\pds\pdsHomeView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\specificationObjects\specificationObject.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\suppliers\supplier.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\audit\auditView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\dataSetObjects\dataSetObjectView.ts" />

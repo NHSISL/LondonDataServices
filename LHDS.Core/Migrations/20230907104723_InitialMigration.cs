@@ -45,6 +45,30 @@ namespace LHDS.Core.Migrations
                         .Annotation("SqlServer:TemporalHistoryTableSchema", null)
                         .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
                         .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
+                    SpecifiedBy = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false)
+                        .Annotation("SqlServer:IsTemporal", true)
+                        .Annotation("SqlServer:TemporalHistoryTableName", "DataSetsHistory")
+                        .Annotation("SqlServer:TemporalHistoryTableSchema", null)
+                        .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
+                        .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
+                    IsNationallySpecified = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                        .Annotation("SqlServer:IsTemporal", true)
+                        .Annotation("SqlServer:TemporalHistoryTableName", "DataSetsHistory")
+                        .Annotation("SqlServer:TemporalHistoryTableSchema", null)
+                        .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
+                        .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
+                    CollectedBy = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false)
+                        .Annotation("SqlServer:IsTemporal", true)
+                        .Annotation("SqlServer:TemporalHistoryTableName", "DataSetsHistory")
+                        .Annotation("SqlServer:TemporalHistoryTableSchema", null)
+                        .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
+                        .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
+                    IsNationallyCollected = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                        .Annotation("SqlServer:IsTemporal", true)
+                        .Annotation("SqlServer:TemporalHistoryTableName", "DataSetsHistory")
+                        .Annotation("SqlServer:TemporalHistoryTableSchema", null)
+                        .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
+                        .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
                     DataSourceType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                         .Annotation("SqlServer:IsTemporal", true)
                         .Annotation("SqlServer:TemporalHistoryTableName", "DataSetsHistory")
@@ -273,7 +297,7 @@ namespace LHDS.Core.Migrations
                         .Annotation("SqlServer:TemporalHistoryTableSchema", null)
                         .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
                         .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
-                    IsMultiSender = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                    IsMultiAuthorPerBatch = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                         .Annotation("SqlServer:IsTemporal", true)
                         .Annotation("SqlServer:TemporalHistoryTableName", "DataSetSpecificationsHistory")
                         .Annotation("SqlServer:TemporalHistoryTableSchema", null)
@@ -303,13 +327,13 @@ namespace LHDS.Core.Migrations
                         .Annotation("SqlServer:TemporalHistoryTableSchema", null)
                         .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
                         .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
-                    SupersededBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    SupersededById = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                         .Annotation("SqlServer:IsTemporal", true)
                         .Annotation("SqlServer:TemporalHistoryTableName", "DataSetSpecificationsHistory")
                         .Annotation("SqlServer:TemporalHistoryTableSchema", null)
                         .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
                         .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
-                    PresededBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                    PresededById = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                         .Annotation("SqlServer:IsTemporal", true)
                         .Annotation("SqlServer:TemporalHistoryTableName", "DataSetSpecificationsHistory")
                         .Annotation("SqlServer:TemporalHistoryTableSchema", null)
@@ -379,6 +403,16 @@ namespace LHDS.Core.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DataSetSpecifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DataSetSpecifications_DataSetSpecifications_PresededById",
+                        column: x => x.PresededById,
+                        principalTable: "DataSetSpecifications",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_DataSetSpecifications_DataSetSpecifications_SupersededById",
+                        column: x => x.SupersededById,
+                        principalTable: "DataSetSpecifications",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_DataSetSpecifications_DataSets_DataSetId",
                         column: x => x.DataSetId,
@@ -461,7 +495,13 @@ namespace LHDS.Core.Migrations
                         .Annotation("SqlServer:TemporalHistoryTableSchema", null)
                         .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
                         .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
-                    PushOrPull = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
+                    IsPushedToUs = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                        .Annotation("SqlServer:IsTemporal", true)
+                        .Annotation("SqlServer:TemporalHistoryTableName", "DataSetObjectsHistory")
+                        .Annotation("SqlServer:TemporalHistoryTableSchema", null)
+                        .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
+                        .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
+                    IsPulledByUs = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                         .Annotation("SqlServer:IsTemporal", true)
                         .Annotation("SqlServer:TemporalHistoryTableName", "DataSetObjectsHistory")
                         .Annotation("SqlServer:TemporalHistoryTableSchema", null)
@@ -569,7 +609,7 @@ namespace LHDS.Core.Migrations
                         .Annotation("SqlServer:TemporalHistoryTableSchema", null)
                         .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
                         .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
-                    DataSetObjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    SpecificationObjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                         .Annotation("SqlServer:IsTemporal", true)
                         .Annotation("SqlServer:TemporalHistoryTableName", "ObjectColumnsHistory")
                         .Annotation("SqlServer:TemporalHistoryTableSchema", null)
@@ -605,6 +645,12 @@ namespace LHDS.Core.Migrations
                         .Annotation("SqlServer:TemporalHistoryTableSchema", null)
                         .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
                         .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
+                    FhirDataType = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
+                        .Annotation("SqlServer:IsTemporal", true)
+                        .Annotation("SqlServer:TemporalHistoryTableName", "ObjectColumnsHistory")
+                        .Annotation("SqlServer:TemporalHistoryTableSchema", null)
+                        .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
+                        .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
                     SqlDataType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                         .Annotation("SqlServer:IsTemporal", true)
                         .Annotation("SqlServer:TemporalHistoryTableName", "ObjectColumnsHistory")
@@ -624,12 +670,6 @@ namespace LHDS.Core.Migrations
                         .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
                         .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
                     Scale = table.Column<int>(type: "int", nullable: true)
-                        .Annotation("SqlServer:IsTemporal", true)
-                        .Annotation("SqlServer:TemporalHistoryTableName", "ObjectColumnsHistory")
-                        .Annotation("SqlServer:TemporalHistoryTableSchema", null)
-                        .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
-                        .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
-                    FhirDataType = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
                         .Annotation("SqlServer:IsTemporal", true)
                         .Annotation("SqlServer:TemporalHistoryTableName", "ObjectColumnsHistory")
                         .Annotation("SqlServer:TemporalHistoryTableSchema", null)
@@ -665,7 +705,7 @@ namespace LHDS.Core.Migrations
                         .Annotation("SqlServer:TemporalHistoryTableSchema", null)
                         .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
                         .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
-                    IsMutable = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                    IsVersionHashElement = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                         .Annotation("SqlServer:IsTemporal", true)
                         .Annotation("SqlServer:TemporalHistoryTableName", "ObjectColumnsHistory")
                         .Annotation("SqlServer:TemporalHistoryTableSchema", null)
@@ -683,7 +723,19 @@ namespace LHDS.Core.Migrations
                         .Annotation("SqlServer:TemporalHistoryTableSchema", null)
                         .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
                         .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
+                    IsRelatedOrganisationId = table.Column<bool>(type: "bit", nullable: false)
+                        .Annotation("SqlServer:IsTemporal", true)
+                        .Annotation("SqlServer:TemporalHistoryTableName", "ObjectColumnsHistory")
+                        .Annotation("SqlServer:TemporalHistoryTableSchema", null)
+                        .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
+                        .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
                     IsDeleteFlag = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                        .Annotation("SqlServer:IsTemporal", true)
+                        .Annotation("SqlServer:TemporalHistoryTableName", "ObjectColumnsHistory")
+                        .Annotation("SqlServer:TemporalHistoryTableSchema", null)
+                        .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
+                        .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
+                    IsSensitiveRecordMarker = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                         .Annotation("SqlServer:IsTemporal", true)
                         .Annotation("SqlServer:TemporalHistoryTableName", "ObjectColumnsHistory")
                         .Annotation("SqlServer:TemporalHistoryTableSchema", null)
@@ -695,19 +747,13 @@ namespace LHDS.Core.Migrations
                         .Annotation("SqlServer:TemporalHistoryTableSchema", null)
                         .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
                         .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
-                    TypeOfPersonConfidentialData = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
+                    PersonConfidentialDataType = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
                         .Annotation("SqlServer:IsTemporal", true)
                         .Annotation("SqlServer:TemporalHistoryTableName", "ObjectColumnsHistory")
                         .Annotation("SqlServer:TemporalHistoryTableSchema", null)
                         .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
                         .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
                     MaskingMethod = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
-                        .Annotation("SqlServer:IsTemporal", true)
-                        .Annotation("SqlServer:TemporalHistoryTableName", "ObjectColumnsHistory")
-                        .Annotation("SqlServer:TemporalHistoryTableSchema", null)
-                        .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
-                        .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
-                    IsSensitiveRecordMarker = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                         .Annotation("SqlServer:IsTemporal", true)
                         .Annotation("SqlServer:TemporalHistoryTableName", "ObjectColumnsHistory")
                         .Annotation("SqlServer:TemporalHistoryTableSchema", null)
@@ -772,8 +818,8 @@ namespace LHDS.Core.Migrations
                 {
                     table.PrimaryKey("PK_ObjectColumns", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ObjectColumns_DataSetObjects_DataSetObjectId",
-                        column: x => x.DataSetObjectId,
+                        name: "FK_ObjectColumns_DataSetObjects_SpecificationObjectId",
+                        column: x => x.SpecificationObjectId,
                         principalTable: "DataSetObjects",
                         principalColumn: "Id");
                 })
@@ -786,7 +832,7 @@ namespace LHDS.Core.Migrations
             migrationBuilder.InsertData(
                 table: "Suppliers",
                 columns: new[] { "Id", "CreatedBy", "CreatedDate", "DecryptionManualTriggerUrl", "Description", "FriendlyName", "LandingManualTriggerUrl", "Name", "UpdatedBy", "UpdatedDate" },
-                values: new object[] { new Guid("67680f17-9d0c-4474-8b35-56ca8f9df1f6"), "System", new DateTimeOffset(new DateTime(2023, 8, 31, 10, 25, 57, 99, DateTimeKind.Unspecified).AddTicks(246), new TimeSpan(0, 0, 0, 0, 0)), "Update this => environment specific", "Emis Supplier", "EMIS", "Update this => environment specific", "EMIS", "System", new DateTimeOffset(new DateTime(2023, 8, 31, 10, 25, 57, 99, DateTimeKind.Unspecified).AddTicks(255), new TimeSpan(0, 0, 0, 0, 0)) });
+                values: new object[] { new Guid("67680f17-9d0c-4474-8b35-56ca8f9df1f6"), "System", new DateTimeOffset(new DateTime(2023, 9, 7, 10, 47, 23, 271, DateTimeKind.Unspecified).AddTicks(2541), new TimeSpan(0, 0, 0, 0, 0)), "Update this => environment specific", "Emis Supplier", "EMIS", "Update this => environment specific", "EMIS", "System", new DateTimeOffset(new DateTime(2023, 9, 7, 10, 47, 23, 271, DateTimeKind.Unspecified).AddTicks(2564), new TimeSpan(0, 0, 0, 0, 0)) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Audits_IngestionTrackingId",
@@ -804,6 +850,16 @@ namespace LHDS.Core.Migrations
                 column: "DataSetId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DataSetSpecifications_PresededById",
+                table: "DataSetSpecifications",
+                column: "PresededById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DataSetSpecifications_SupersededById",
+                table: "DataSetSpecifications",
+                column: "SupersededById");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_IngestionTrackings_FileName",
                 table: "IngestionTrackings",
                 column: "FileName",
@@ -815,9 +871,9 @@ namespace LHDS.Core.Migrations
                 column: "SupplierId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ObjectColumns_DataSetObjectId",
+                name: "IX_ObjectColumns_SpecificationObjectId",
                 table: "ObjectColumns",
-                column: "DataSetObjectId");
+                column: "SpecificationObjectId");
         }
 
         /// <inheritdoc />

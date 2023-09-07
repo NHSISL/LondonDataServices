@@ -20,6 +20,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         public async ValueTask<List<DataType>> GetAllDataTypesAsync() =>
             await this.apiFactoryClient.GetContentAsync<List<DataType>>($"{DataTypesRelativeUrl}/");
 
+        public async ValueTask<DataType> GetDataTypeByIdAsync(Guid dataTypeId) =>
+            await this.apiFactoryClient.GetContentAsync<DataType>($"{DataTypesRelativeUrl}/{dataTypeId}");
+
+        public async ValueTask<DataType> PutDataTypeAsync(DataType ingestionTracking) =>
+            await this.apiFactoryClient.PutContentAsync(DataTypesRelativeUrl, ingestionTracking);
+      
         public async ValueTask<DataType> DeleteDataTypeByIdAsync(Guid dataTypeId) =>
             await this.apiFactoryClient.DeleteContentAsync<DataType>(
                 $"{DataTypesRelativeUrl}/{dataTypeId}");

@@ -5,16 +5,16 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.DataSetObjects;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
 
 namespace LHDS.Core.Brokers.Storages.Sql
 {
     public partial interface IStorageBroker
     {
-        ValueTask<DataSetObject> InsertDataSetObjectAsync(DataSetObject dataSetObject);
-        IQueryable<DataSetObject> SelectAllDataSetObjects();
-        ValueTask<DataSetObject> SelectDataSetObjectByIdAsync(Guid dataSetObjectId);
-        ValueTask<DataSetObject> UpdateDataSetObjectAsync(DataSetObject dataSetObject);
-        ValueTask<DataSetObject> DeleteDataSetObjectAsync(DataSetObject dataSetObject);
+        ValueTask<SpecificationObject> InsertDataSetObjectAsync(SpecificationObject dataSetObject);
+        IQueryable<SpecificationObject> SelectAllDataSetObjects();
+        ValueTask<SpecificationObject> SelectDataSetObjectByIdAsync(Guid dataSetObjectId);
+        ValueTask<SpecificationObject> UpdateDataSetObjectAsync(SpecificationObject dataSetObject);
+        ValueTask<SpecificationObject> DeleteDataSetObjectAsync(SpecificationObject dataSetObject);
     }
 }

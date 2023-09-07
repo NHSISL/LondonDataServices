@@ -3,14 +3,10 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using LHDS.Core.Models.Bases;
-using LHDS.Core.Models.Foundations.DataSets;
-using LHDS.Core.Models.Foundations.SpecificationObjects;
 
-namespace LHDS.Core.Models.Foundations.DataSetSpecifications
+namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications
 {
-    public class DataSetSpecification : IKey, IAudit
+    public class DataSetSpecification
     {
         public Guid Id { get; set; }
         public Guid DataSetId { get; set; }
@@ -32,10 +28,5 @@ namespace LHDS.Core.Models.Foundations.DataSetSpecifications
         public string UpdatedBy { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
-
-        public DataSet DataSet { get; set; }
-        public List<SpecificationObject> SpecificationObjects { get; set; } = new List<SpecificationObject>();
-        public List<DataSetSpecification> SupersededBy { get; set; } = new List<DataSetSpecification>();
-        public List<DataSetSpecification> PresededBy { get; set; } = new List<DataSetSpecification>();
     }
 }

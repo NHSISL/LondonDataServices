@@ -8,6 +8,16 @@ export class DataSet {
     public dataSetAuthor?: string;
     public dataSourceType?: string;
     public isActive?: boolean;
+    public dataSetName: string;
+    public dataSetAliasses: string;
+    public dataSetSupplier: string;
+    public dataSetAuthor: string;
+    public specifiedBy: string;
+    public isNationallySpecified: boolean;
+    public collectedBy: string;
+    public isNationallyCollected: boolean;
+    public dataSourceType: string;
+    public isActive: boolean;
     public activeFrom?: Date;
     public activeTo?: Date;
     public createdBy?: string;
@@ -21,6 +31,10 @@ export class DataSet {
         this.dataSetAliasses = dataSet.dataSetAliasses;
         this.dataSetSupplier = dataSet.dataSetSupplier;
         this.dataSetAuthor = dataSet.dataSetAuthor;
+        this.specifiedBy = dataSet.specifiedBy;
+        this.isNationallySpecified = dataSet.isNationallySpecified;
+        this.collectedBy = dataSet.collectedBy;
+        this.isNationallyCollected = dataSet.isNationallyCollected;
         this.dataSourceType = dataSet.dataSourceType;
         this.isActive = dataSet.isActive;
         this.activeTo = dataSet.activeTo;

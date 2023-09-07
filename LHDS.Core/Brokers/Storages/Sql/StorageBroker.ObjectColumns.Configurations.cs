@@ -19,7 +19,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<ObjectColumn>()
-                .Property(objectColumn => objectColumn.DataSetObjectId)
+                .Property(objectColumn => objectColumn.SpecificationObjectId)
                 .IsRequired();
 
             modelBuilder.Entity<ObjectColumn>()
@@ -78,7 +78,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<ObjectColumn>()
-                .Property(objectColumn => objectColumn.IsMutable)
+                .Property(objectColumn => objectColumn.IsVersionHashElement)
                 .HasDefaultValue(false)
                 .IsRequired();
 
@@ -103,7 +103,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<ObjectColumn>()
-                .Property(objectColumn => objectColumn.TypeOfPersonConfidentialData)
+                .Property(objectColumn => objectColumn.PersonConfidentialDataType)
                 .HasMaxLength(255)
                 .IsRequired(false);
 
@@ -146,9 +146,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<ObjectColumn>()
-                .HasOne(columnDefinition => columnDefinition.DataSetObject)
+                .HasOne(columnDefinition => columnDefinition.SpecificationObjects)
                 .WithMany(schemaDefinition => schemaDefinition.DataSetObjects)
-                .HasForeignKey(columnDefinition => columnDefinition.DataSetObjectId)
+                .HasForeignKey(columnDefinition => columnDefinition.SpecificationObjectId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
     }

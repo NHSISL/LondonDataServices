@@ -39,6 +39,26 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.SpecifiedBy)
+                .HasMaxLength(150)
+                .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.IsNationallySpecified)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.CollectedBy)
+                .HasMaxLength(150)
+                .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.IsNationallyCollected)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
                 .Property(dataSet => dataSet.DataSourceType)
                 .HasMaxLength(50)
                 .IsRequired();

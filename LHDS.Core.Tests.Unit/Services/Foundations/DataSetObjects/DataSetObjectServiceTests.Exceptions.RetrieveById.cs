@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
-using LHDS.Core.Models.Foundations.DataSetObjects;
-using LHDS.Core.Models.Foundations.DataSetObjects.Exceptions;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
+using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     .ThrowsAsync(sqlException);
 
             // when
-            ValueTask<DataSetObject> retrieveDataSetObjectByIdTask =
+            ValueTask<SpecificationObject> retrieveDataSetObjectByIdTask =
                 this.dataSetObjectService.RetrieveDataSetObjectByIdAsync(someId);
 
             DataSetObjectDependencyException actualDataSetObjectDependencyException =
@@ -80,7 +80,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<DataSetObject> retrieveDataSetObjectByIdTask =
+            ValueTask<SpecificationObject> retrieveDataSetObjectByIdTask =
                 this.dataSetObjectService.RetrieveDataSetObjectByIdAsync(someId);
 
             DataSetObjectServiceException actualDataSetObjectServiceException =

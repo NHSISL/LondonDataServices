@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using Moq;
-using LHDS.Core.Models.Foundations.DataSetObjects;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
@@ -15,12 +15,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            DataSetObject randomDataSetObject = CreateRandomModifyDataSetObject(randomDateTimeOffset);
-            DataSetObject inputDataSetObject = randomDataSetObject;
-            DataSetObject storageDataSetObject = inputDataSetObject.DeepClone();
+            SpecificationObject randomDataSetObject = CreateRandomModifyDataSetObject(randomDateTimeOffset);
+            SpecificationObject inputDataSetObject = randomDataSetObject;
+            SpecificationObject storageDataSetObject = inputDataSetObject.DeepClone();
             storageDataSetObject.UpdatedDate = randomDataSetObject.CreatedDate;
-            DataSetObject updatedDataSetObject = inputDataSetObject;
-            DataSetObject expectedDataSetObject = updatedDataSetObject.DeepClone();
+            SpecificationObject updatedDataSetObject = inputDataSetObject;
+            SpecificationObject expectedDataSetObject = updatedDataSetObject.DeepClone();
             Guid dataSetObjectId = inputDataSetObject.Id;
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     .ReturnsAsync(updatedDataSetObject);
 
             // when
-            DataSetObject actualDataSetObject =
+            SpecificationObject actualDataSetObject =
                 await this.dataSetObjectService.ModifyDataSetObjectAsync(inputDataSetObject);
 
             // then

@@ -2,8 +2,8 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
-using LHDS.Core.Models.Foundations.DataSetObjects;
-using LHDS.Core.Models.Foundations.DataSetObjects.Exceptions;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
+using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     message: "Invalid dataSetObject. Please correct the errors and try again.");
 
             invalidDataSetObjectException.AddData(
-                key: nameof(DataSetObject.Id),
+                key: nameof(SpecificationObject.Id),
                 values: "Id is required");
 
             var expectedDataSetObjectValidationException =
@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     innerException: invalidDataSetObjectException);
 
             // when
-            ValueTask<DataSetObject> retrieveDataSetObjectByIdTask =
+            ValueTask<SpecificationObject> retrieveDataSetObjectByIdTask =
                 this.dataSetObjectService.RetrieveDataSetObjectByIdAsync(invalidDataSetObjectId);
 
             DataSetObjectValidationException actualDataSetObjectValidationException =
@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
         {
             //given
             Guid someDataSetObjectId = Guid.NewGuid();
-            DataSetObject noDataSetObject = null;
+            SpecificationObject noDataSetObject = null;
 
             var notFoundDataSetObjectException =
                 new NotFoundDataSetObjectException(someDataSetObjectId);
@@ -75,7 +75,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     .ReturnsAsync(noDataSetObject);
 
             //when
-            ValueTask<DataSetObject> retrieveDataSetObjectByIdTask =
+            ValueTask<SpecificationObject> retrieveDataSetObjectByIdTask =
                 this.dataSetObjectService.RetrieveDataSetObjectByIdAsync(someDataSetObjectId);
 
             DataSetObjectValidationException actualDataSetObjectValidationException =

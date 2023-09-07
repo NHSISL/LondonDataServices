@@ -2,8 +2,8 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
-using LHDS.Core.Models.Foundations.DataSetObjects;
-using LHDS.Core.Models.Foundations.DataSetObjects.Exceptions;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
+using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     message: "Invalid dataSetObject. Please correct the errors and try again.");
 
             invalidDataSetObjectException.AddData(
-                key: nameof(DataSetObject.Id),
+                key: nameof(SpecificationObject.Id),
                 values: "Id is required");
 
             var expectedDataSetObjectValidationException =
@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     innerException: invalidDataSetObjectException);
 
             // when
-            ValueTask<DataSetObject> removeDataSetObjectByIdTask =
+            ValueTask<SpecificationObject> removeDataSetObjectByIdTask =
                 this.dataSetObjectService.RemoveDataSetObjectByIdAsync(invalidDataSetObjectId);
 
             DataSetObjectValidationException actualDataSetObjectValidationException =
@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.DeleteDataSetObjectAsync(It.IsAny<DataSetObject>()),
+                broker.DeleteDataSetObjectAsync(It.IsAny<SpecificationObject>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

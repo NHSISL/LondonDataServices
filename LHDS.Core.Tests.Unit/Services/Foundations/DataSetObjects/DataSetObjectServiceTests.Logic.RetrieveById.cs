@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using Moq;
-using LHDS.Core.Models.Foundations.DataSetObjects;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
@@ -13,17 +13,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
         public async Task ShouldRetrieveDataSetObjectByIdAsync()
         {
             // given
-            DataSetObject randomDataSetObject = CreateRandomDataSetObject();
-            DataSetObject inputDataSetObject = randomDataSetObject;
-            DataSetObject storageDataSetObject = randomDataSetObject;
-            DataSetObject expectedDataSetObject = storageDataSetObject.DeepClone();
+            SpecificationObject randomDataSetObject = CreateRandomDataSetObject();
+            SpecificationObject inputDataSetObject = randomDataSetObject;
+            SpecificationObject storageDataSetObject = randomDataSetObject;
+            SpecificationObject expectedDataSetObject = storageDataSetObject.DeepClone();
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectDataSetObjectByIdAsync(inputDataSetObject.Id))
                     .ReturnsAsync(storageDataSetObject);
 
             // when
-            DataSetObject actualDataSetObject =
+            SpecificationObject actualDataSetObject =
                 await this.dataSetObjectService.RetrieveDataSetObjectByIdAsync(inputDataSetObject.Id);
 
             // then

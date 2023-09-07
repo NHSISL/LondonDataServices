@@ -110,16 +110,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
                 .OnProperty(dataSetSpecification => dataSetSpecification.OurSpecificationVersion)
                     .Use(GetRandomString(10))
 
-                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededBy)
-                    .Use(GetRandomString(255))
-
-                .OnProperty(dataSetSpecification => dataSetSpecification.PresededBy)
-                    .Use(GetRandomString(255))
-
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.DataSet).IgnoreIt()
-                .OnProperty(dataSetSpecification => dataSetSpecification.DataSetObjects).IgnoreIt();
+                .OnProperty(dataSetSpecification => dataSetSpecification.SpecificationObjects).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById).UseDefault()
+                .OnProperty(dataSetSpecification => dataSetSpecification.PresededById).UseDefault()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededBy).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.PresededBy).IgnoreIt();
 
             return filler;
         }

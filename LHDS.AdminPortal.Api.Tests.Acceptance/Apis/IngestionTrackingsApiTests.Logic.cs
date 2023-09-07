@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
+using LHDS.Core.Extensions.Exceptions;
 using RESTFulSense.Exceptions;
 using Xunit;
 
@@ -18,23 +19,31 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
         [Fact]
         public async Task ShouldPostIngestionTrackingAsync()
         {
-            // given
-            Supplier randomSupplier = await PostRandomSupplierAsync();
-            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomSupplier.Id);
-            IngestionTracking inputIngestionTracking = randomIngestionTracking;
-            IngestionTracking expectedIngestionTracking = inputIngestionTracking;
+            try
+            {
+                // given
+                Supplier randomSupplier = await PostRandomSupplierAsync();
+                IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomSupplier.Id);
+                IngestionTracking inputIngestionTracking = randomIngestionTracking;
+                IngestionTracking expectedIngestionTracking = inputIngestionTracking;
 
-            // when 
-            await this.apiBroker.PostIngestionTrackingAsync(inputIngestionTracking);
+                // when 
+                await this.apiBroker.PostIngestionTrackingAsync(inputIngestionTracking);
 
-            IngestionTracking actualIngestionTracking =
-                await this.apiBroker.GetIngestionTrackingByIdAsync(inputIngestionTracking.Id);
+                IngestionTracking actualIngestionTracking =
+                    await this.apiBroker.GetIngestionTrackingByIdAsync(inputIngestionTracking.Id);
 
-            // then
-            actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
-            await DeleteAuditRecordsAsync(actualIngestionTracking);
-            await this.apiBroker.DeleteIngestionTrackingByIdAsync(actualIngestionTracking.Id);
-            await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
+                // then
+                actualIngestionTracking.Should().BeEquivalentTo(expectedIngestionTracking);
+                await DeleteAuditRecordsAsync(actualIngestionTracking);
+                await this.apiBroker.DeleteIngestionTrackingByIdAsync(actualIngestionTracking.Id);
+                await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
+            }
+            catch (System.Exception ex)
+            {
+                output.WriteLine($"Error: {ex.Message}, Validation: {ex.GetValidationSummary()}");
+                throw;
+            }
         }
 
         [Fact]

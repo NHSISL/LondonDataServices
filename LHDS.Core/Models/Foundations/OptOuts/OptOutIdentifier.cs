@@ -11,10 +11,10 @@ namespace LHDS.Core.Models.Foundations.OptOuts
     public class OptOutIdentifier
     {
         [Name("UniqueReference")]
-        public string UniqueReference { get; set; }
+        public string UniqueReference { get; set; } = string.Empty;
 
         [Name("NHSNo")]
-        public string NhsNumber { get; set; }
+        public string NhsNumber { get; set; } = string.Empty;
 
         [Name("Status")]
         public string Status { get; set; } = "Unknown";

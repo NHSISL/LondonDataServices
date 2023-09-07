@@ -2,6 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using LHDS.Core.Services.Foundations.Suppliers;

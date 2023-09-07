@@ -2,12 +2,12 @@ import { Guid } from 'guid-typescript';
 
 export class DataSet {
     public id: Guid;
-    public dataSetName: string;
-    public dataSetAliasses: string;
-    public dataSetSupplier: string;
-    public dataSetAuthor: string;
-    public dataSourceType: string;
-    public isActive: boolean;
+    public dataSetName?: string;
+    public dataSetAliasses?: string;
+    public dataSetSupplier?: string;
+    public dataSetAuthor?: string;
+    public dataSourceType?: string;
+    public isActive?: boolean;
     public activeFrom?: Date;
     public activeTo?: Date;
     public createdBy?: string;
@@ -17,7 +17,7 @@ export class DataSet {
 
     constructor(dataSet: any) {
         this.id = dataSet.id ? Guid.parse(dataSet.id) : Guid.parse(Guid.EMPTY);
-        this.dataSetName = dataSet.name;
+        this.dataSetName = dataSet.dataSetName;
         this.dataSetAliasses = dataSet.dataSetAliasses;
         this.dataSetSupplier = dataSet.dataSetSupplier;
         this.dataSetAuthor = dataSet.dataSetAuthor;

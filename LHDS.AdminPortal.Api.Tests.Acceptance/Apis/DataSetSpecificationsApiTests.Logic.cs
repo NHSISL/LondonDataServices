@@ -17,12 +17,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
         public async Task ShouldPostDataSetSpecificationAsync()
         {
             // Given
-            DataSetSpecification randomDataSetSpecification = CreateRandomDataSetSpecification();
             DataSet randomDataSet = CreateRandomDataSet();
-            DataSet inputDataSet = randomDataSet;
-            await this.apiBroker.PostDataSetAsync(inputDataSet);
+            await this.apiBroker.PostDataSetAsync(randomDataSet);
+
+            DataSetSpecification randomDataSetSpecification 
+                = CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
+
             DataSetSpecification inputDataSetSpecification = randomDataSetSpecification;
-            inputDataSetSpecification.DataSetId = inputDataSet.Id;
             DataSetSpecification expectedDataSetSpecification = inputDataSetSpecification;
 
             // When
@@ -34,7 +35,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
 
             // Cleanup
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(inputDataSetSpecification.Id);
-            await this.apiBroker.DeleteDataSetByIdAsync(inputDataSet.Id);
+            await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
         }
     }
 }

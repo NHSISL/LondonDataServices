@@ -145,8 +145,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             DataSetSpecification invalidDataSetSpecification = CreateRandomDataSetSpecification(randomDateTimeOffset);
             invalidDataSetSpecification.SupplierSpecificationVersion = GetRandomString(11);
             invalidDataSetSpecification.OurSpecificationVersion = GetRandomString(11);
-            invalidDataSetSpecification.SupersededBy = GetRandomString(256);
-            invalidDataSetSpecification.PresededBy = GetRandomString(256);
             invalidDataSetSpecification.CreatedBy = GetRandomString(256);
             invalidDataSetSpecification.UpdatedBy = invalidDataSetSpecification.CreatedBy;
 
@@ -160,14 +158,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
             invalidDataSetSpecificationException.AddData(
                 key: nameof(DataSetSpecification.OurSpecificationVersion),
-                values: "Text is exceeding max length");
-
-            invalidDataSetSpecificationException.AddData(
-                key: nameof(DataSetSpecification.SupersededBy),
-                values: "Text is exceeding max length");
-
-            invalidDataSetSpecificationException.AddData(
-                key: nameof(DataSetSpecification.PresededBy),
                 values: "Text is exceeding max length");
 
             invalidDataSetSpecificationException.AddData(

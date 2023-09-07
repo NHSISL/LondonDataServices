@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using LHDS.Core.Models.Foundations.DataSetObjects;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.Core.Brokers.Storages.Sql
@@ -11,78 +11,83 @@ namespace LHDS.Core.Brokers.Storages.Sql
     {
         private static void AddDataSetObjectConfigurations(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<DataSetObject>()
+            modelBuilder.Entity<SpecificationObject>()
                 .ToTable(columnDefinition => columnDefinition.IsTemporal());
 
-            modelBuilder.Entity<DataSetObject>()
+            modelBuilder.Entity<SpecificationObject>()
                 .Property(objectColumn => objectColumn.Id)
                 .IsRequired();
 
-            modelBuilder.Entity<DataSetObject>()
+            modelBuilder.Entity<SpecificationObject>()
                 .Property(objectColumn => objectColumn.DataSetSpecificationId)
                 .IsRequired();
 
-            modelBuilder.Entity<DataSetObject>()
+            modelBuilder.Entity<SpecificationObject>()
                 .Property(objectColumn => objectColumn.SupplierObjectName)
                 .HasMaxLength(255)
                 .IsRequired();
 
-            modelBuilder.Entity<DataSetObject>()
+            modelBuilder.Entity<SpecificationObject>()
                 .Property(objectColumn => objectColumn.OurObjectName)
                 .HasMaxLength(255)
                 .IsRequired();
 
-            modelBuilder.Entity<DataSetObject>()
+            modelBuilder.Entity<SpecificationObject>()
                 .Property(objectColumn => objectColumn.ObjectDescription)
                 .HasMaxLength(500)
                 .IsRequired(false);
 
-            modelBuilder.Entity<DataSetObject>()
+            modelBuilder.Entity<SpecificationObject>()
                 .Property(objectColumn => objectColumn.InterchangeProtocol)
                 .HasMaxLength(255)
                 .IsRequired(false);
 
-            modelBuilder.Entity<DataSetObject>()
-                .Property(objectColumn => objectColumn.PushOrPull)
-                .HasMaxLength(10)
+            modelBuilder.Entity<SpecificationObject>()
+                .Property(objectColumn => objectColumn.IsPushedToUs)
+                .HasDefaultValue(false)
                 .IsRequired();
 
-            modelBuilder.Entity<DataSetObject>()
+            modelBuilder.Entity<SpecificationObject>()
+                .Property(objectColumn => objectColumn.IsPulledByUs)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            modelBuilder.Entity<SpecificationObject>()
                 .Property(objectColumn => objectColumn.DeletionHandling)
                 .HasMaxLength(255)
                 .IsRequired(false);
 
-            modelBuilder.Entity<DataSetObject>()
+            modelBuilder.Entity<SpecificationObject>()
                 .Property(objectColumn => objectColumn.IsSubmissionHeaderObject)
                 .HasDefaultValue(false)
                 .IsRequired();
 
-            modelBuilder.Entity<DataSetObject>()
+            modelBuilder.Entity<SpecificationObject>()
                 .Property(objectColumn => objectColumn.IsTransactionLog)
                 .HasDefaultValue(false)
                 .IsRequired();
 
-            modelBuilder.Entity<DataSetObject>()
+            modelBuilder.Entity<SpecificationObject>()
                 .Property(objectColumn => objectColumn.CreatedBy)
                 .HasMaxLength(255)
                 .IsRequired();
 
-            modelBuilder.Entity<DataSetObject>()
+            modelBuilder.Entity<SpecificationObject>()
                 .Property(objectColumn => objectColumn.CreatedDate)
                 .IsRequired();
 
-            modelBuilder.Entity<DataSetObject>()
+            modelBuilder.Entity<SpecificationObject>()
                 .Property(objectColumn => objectColumn.UpdatedBy)
                 .HasMaxLength(255)
                 .IsRequired();
 
-            modelBuilder.Entity<DataSetObject>()
+            modelBuilder.Entity<SpecificationObject>()
                 .Property(objectColumn => objectColumn.UpdatedDate)
                 .IsRequired();
 
-            modelBuilder.Entity<DataSetObject>()
+            modelBuilder.Entity<SpecificationObject>()
                 .HasOne(columnDefinition => columnDefinition.DataSetSpecification)
-                .WithMany(schemaDefinition => schemaDefinition.DataSetObjects)
+                .WithMany(schemaDefinition => schemaDefinition.SpecificationObjects)
                 .HasForeignKey(columnDefinition => columnDefinition.DataSetSpecificationId)
                 .OnDelete(DeleteBehavior.NoAction);
         }

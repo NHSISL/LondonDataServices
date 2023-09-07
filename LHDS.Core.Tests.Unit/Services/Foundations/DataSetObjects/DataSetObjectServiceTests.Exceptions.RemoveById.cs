@@ -4,8 +4,8 @@ using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using LHDS.Core.Models.Foundations.DataSetObjects;
-using LHDS.Core.Models.Foundations.DataSetObjects.Exceptions;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
+using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
         public async Task ShouldThrowCriticalDependencyExceptionOnRemoveIfSqlErrorOccursAndLogItAsync()
         {
             // given
-            DataSetObject randomDataSetObject = CreateRandomDataSetObject();
+            SpecificationObject randomDataSetObject = CreateRandomDataSetObject();
             SqlException sqlException = GetSqlException();
 
             var failedDataSetObjectStorageException =
@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     .Throws(sqlException);
 
             // when
-            ValueTask<DataSetObject> addDataSetObjectTask =
+            ValueTask<SpecificationObject> addDataSetObjectTask =
                 this.dataSetObjectService.RemoveDataSetObjectByIdAsync(randomDataSetObject.Id);
 
             DataSetObjectDependencyException actualDataSetObjectDependencyException =
@@ -55,7 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.DeleteDataSetObjectAsync(It.IsAny<DataSetObject>()),
+                broker.DeleteDataSetObjectAsync(It.IsAny<SpecificationObject>()),
                     Times.Never);
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -91,7 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     .ThrowsAsync(databaseUpdateConcurrencyException);
 
             // when
-            ValueTask<DataSetObject> removeDataSetObjectByIdTask =
+            ValueTask<SpecificationObject> removeDataSetObjectByIdTask =
                 this.dataSetObjectService.RemoveDataSetObjectByIdAsync(someDataSetObjectId);
 
             DataSetObjectDependencyValidationException actualDataSetObjectDependencyValidationException =
@@ -112,7 +112,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.DeleteDataSetObjectAsync(It.IsAny<DataSetObject>()),
+                broker.DeleteDataSetObjectAsync(It.IsAny<SpecificationObject>()),
                     Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
@@ -142,7 +142,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     .ThrowsAsync(sqlException);
 
             // when
-            ValueTask<DataSetObject> deleteDataSetObjectTask =
+            ValueTask<SpecificationObject> deleteDataSetObjectTask =
                 this.dataSetObjectService.RemoveDataSetObjectByIdAsync(someDataSetObjectId);
 
             DataSetObjectDependencyException actualDataSetObjectDependencyException =
@@ -189,7 +189,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<DataSetObject> removeDataSetObjectByIdTask =
+            ValueTask<SpecificationObject> removeDataSetObjectByIdTask =
                 this.dataSetObjectService.RemoveDataSetObjectByIdAsync(someDataSetObjectId);
 
             DataSetObjectServiceException actualDataSetObjectServiceException =

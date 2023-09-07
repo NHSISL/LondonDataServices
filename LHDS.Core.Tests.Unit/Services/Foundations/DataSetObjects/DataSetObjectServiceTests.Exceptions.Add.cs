@@ -5,8 +5,8 @@ using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using LHDS.Core.Models.Foundations.DataSetObjects;
-using LHDS.Core.Models.Foundations.DataSetObjects.Exceptions;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
+using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
         public async Task ShouldThrowCriticalDependencyExceptionOnAddIfSqlErrorOccursAndLogItAsync()
         {
             // given
-            DataSetObject someDataSetObject = CreateRandomDataSetObject();
+            SpecificationObject someDataSetObject = CreateRandomDataSetObject();
             SqlException sqlException = GetSqlException();
 
             var failedDataSetObjectStorageException =
@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     .Throws(sqlException);
 
             // when
-            ValueTask<DataSetObject> addDataSetObjectTask =
+            ValueTask<SpecificationObject> addDataSetObjectTask =
                 this.dataSetObjectService.AddDataSetObjectAsync(someDataSetObject);
 
             DataSetObjectDependencyException actualDataSetObjectDependencyException =
@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.InsertDataSetObjectAsync(It.IsAny<DataSetObject>()),
+                broker.InsertDataSetObjectAsync(It.IsAny<SpecificationObject>()),
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -68,8 +68,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
         public async Task ShouldThrowDependencyValidationExceptionOnAddIfDataSetObjectAlreadyExsitsAndLogItAsync()
         {
             // given
-            DataSetObject randomDataSetObject = CreateRandomDataSetObject();
-            DataSetObject alreadyExistsDataSetObject = randomDataSetObject;
+            SpecificationObject randomDataSetObject = CreateRandomDataSetObject();
+            SpecificationObject alreadyExistsDataSetObject = randomDataSetObject;
             string randomMessage = GetRandomString();
 
             var duplicateKeyException =
@@ -90,7 +90,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     .Throws(duplicateKeyException);
 
             // when
-            ValueTask<DataSetObject> addDataSetObjectTask =
+            ValueTask<SpecificationObject> addDataSetObjectTask =
                 this.dataSetObjectService.AddDataSetObjectAsync(alreadyExistsDataSetObject);
 
             // then
@@ -106,7 +106,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.InsertDataSetObjectAsync(It.IsAny<DataSetObject>()),
+                broker.InsertDataSetObjectAsync(It.IsAny<SpecificationObject>()),
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -123,7 +123,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
         public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
         {
             // given
-            DataSetObject someDataSetObject = CreateRandomDataSetObject();
+            SpecificationObject someDataSetObject = CreateRandomDataSetObject();
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
 
@@ -145,7 +145,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     .Throws(foreignKeyConstraintConflictException);
 
             // when
-            ValueTask<DataSetObject> addDataSetObjectTask =
+            ValueTask<SpecificationObject> addDataSetObjectTask =
                 this.dataSetObjectService.AddDataSetObjectAsync(someDataSetObject);
 
             // then
@@ -178,7 +178,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
         public async Task ShouldThrowDependencyExceptionOnAddIfDatabaseUpdateErrorOccursAndLogItAsync()
         {
             // given
-            DataSetObject someDataSetObject = CreateRandomDataSetObject();
+            SpecificationObject someDataSetObject = CreateRandomDataSetObject();
 
             var databaseUpdateException =
                 new DbUpdateException();
@@ -198,7 +198,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     .Throws(databaseUpdateException);
 
             // when
-            ValueTask<DataSetObject> addDataSetObjectTask =
+            ValueTask<SpecificationObject> addDataSetObjectTask =
                 this.dataSetObjectService.AddDataSetObjectAsync(someDataSetObject);
 
             DataSetObjectDependencyException actualDataSetObjectDependencyException =
@@ -214,7 +214,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.InsertDataSetObjectAsync(It.IsAny<DataSetObject>()),
+                broker.InsertDataSetObjectAsync(It.IsAny<SpecificationObject>()),
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -231,7 +231,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
         public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            DataSetObject someDataSetObject = CreateRandomDataSetObject();
+            SpecificationObject someDataSetObject = CreateRandomDataSetObject();
             var serviceException = new Exception();
 
             var failedDataSetObjectServiceException =
@@ -249,7 +249,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     .Throws(serviceException);
 
             // when
-            ValueTask<DataSetObject> addDataSetObjectTask =
+            ValueTask<SpecificationObject> addDataSetObjectTask =
                 this.dataSetObjectService.AddDataSetObjectAsync(someDataSetObject);
 
             DataSetObjectServiceException actualDataSetObjectServiceException =
@@ -265,7 +265,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.InsertDataSetObjectAsync(It.IsAny<DataSetObject>()),
+                broker.InsertDataSetObjectAsync(It.IsAny<SpecificationObject>()),
                     Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>

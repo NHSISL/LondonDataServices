@@ -11,6 +11,7 @@ using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using Tynamix.ObjectFiller;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
 {
@@ -18,9 +19,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
     public partial class AuditsApiTests
     {
         private readonly ApiBroker apiBroker;
+        private readonly ITestOutputHelper output;
 
-        public AuditsApiTests(ApiBroker apiBroker) =>
+        public AuditsApiTests(ApiBroker apiBroker, ITestOutputHelper output)
+        {
             this.apiBroker = apiBroker;
+            this.output = output;
+        }
 
         private int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();

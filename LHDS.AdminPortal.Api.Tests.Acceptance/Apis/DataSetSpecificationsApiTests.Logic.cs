@@ -23,6 +23,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             IQueryable<DataSetSpecification> inputDataSetSpecifications = randomDataSetSpecifications;
             DataSet randomDataSet = CreateRandomDataSet();
             DataSet inputDataSet = randomDataSet;
+            await this.apiBroker.PostDataSetAsync(inputDataSet);
             IQueryable<DataSetSpecification> expectedDataSetSpecifications = inputDataSetSpecifications;
 
             foreach (DataSetSpecification inputDataSetSpecification in inputDataSetSpecifications)
@@ -44,6 +45,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
                 actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification);
                 await this.apiBroker.DeleteDataSetSpecificationByIdAsync(actualDataSetSpecification.Id);
             }
+
+            await this.apiBroker.DeleteDataSetByIdAsync(inputDataSet.Id);
         }
     }
 }

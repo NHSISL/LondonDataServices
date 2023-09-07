@@ -1,0 +1,81 @@
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { Guid } from 'guid-typescript';
+import { DataSetView } from "../../models/views/components/dataSets/dataSetView";
+import { dataSetViewService } from "../../services/views/DataSets/dataSetViewService";
+import DataSetDetailCard from "./dataSetDetailCard";
+
+interface DataSetDetailProps {
+    dataSetId?: string;
+    children?: React.ReactNode;
+}
+
+const DataSetDetail: FunctionComponent<DataSetDetailProps> = (props) => {
+    const {
+        dataSetId,
+        children
+    } = props;
+
+    let dataSetRetrieved: DataSetView | undefined
+
+    if (dataSetId !== "" && dataSetId !== undefined) {
+        let { mappedDataSet } = dataSetViewService.useGetDataSetById(Guid.parse(dataSetId ?? Guid.EMPTY));
+        dataSetRetrieved = mappedDataSet;
+    }
+
+    const [dataSet, setDataSet] = useState<DataSetView>();
+    const [mode, setMode] = useState<string>('VIEW');
+    const addDataSet = dataSetViewService.useCreateDataSet();
+
+    const handleAdd = (dataSet: DataSetView) => {
+        return addDataSet.mutate(dataSet);
+    }
+
+    const updateDataSet = dataSetViewService.useUpdateDataSet();
+
+    const handleUpdate = async (dataSet: DataSetView) => {
+        return updateDataSet.mutateAsync(dataSet);
+    }
+
+    const handleDelete = async (dataSet: DataSetView) => {
+        dataSet.isActive = false;
+        return updateDataSet.mutateAsync(dataSet);
+    }
+
+    useEffect(() => {
+        if (dataSetId !== "" && dataSetRetrieved !== undefined) {
+            setDataSet(dataSetRetrieved);
+            setMode('VIEW');
+        }
+        if (dataSetId === "" || dataSetId === undefined) {
+            setDataSet(new DataSetView(Guid.create()))
+            setMode('ADD');
+        }
+    }, [dataSetId, dataSetRetrieved]);
+
+    return (
+        <div>
+            {dataSet !== undefined && (
+                <div>
+                    <DataSetDetailCard
+                        key={dataSet.id.toString()}
+                        dataSet={dataSet}
+                        mode={mode}
+                        onAdd={handleAdd}
+                        onUpdate={handleUpdate}
+                        onDelete={handleDelete}
+                    >
+                        {children}
+                    </DataSetDetailCard>
+
+                    {mode !== "ADD" && (
+                        <>
+                            
+                        </>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+}
+
+export default DataSetDetail;

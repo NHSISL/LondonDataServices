@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {

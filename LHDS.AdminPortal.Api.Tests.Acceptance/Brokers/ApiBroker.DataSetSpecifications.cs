@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
 
@@ -15,7 +16,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         public async ValueTask<DataSetSpecification> PostDataSetSpecificationAsync(DataSetSpecification ingestionTracking) =>
             await this.apiFactoryClient.PostContentAsync(DataSetSpecificationsRelativeUrl, ingestionTracking);
 
-        public async ValueTask<DataSetSpecification> DeleteDataSetSpecificationByIdAsync(Guid ingestionTrackingId) =>
-            await this.apiFactoryClient.DeleteContentAsync<DataSetSpecification>($"{DataSetSpecificationsRelativeUrl}/{ingestionTrackingId}");
+        public async ValueTask<List<DataSetSpecification>> GetAllDataSetSpecificationsAsync() =>
+           await this.apiFactoryClient.GetContentAsync<List<DataSetSpecification>>($"{DataSetSpecificationsRelativeUrl}/");
+
+        public async ValueTask<DataSetSpecification> DeleteDataSetSpecificationByIdAsync(Guid DataSetSpecificationId) =>
+            await this.apiFactoryClient.DeleteContentAsync<DataSetSpecification>($"{DataSetSpecificationsRelativeUrl}/{DataSetSpecificationId}");
     }
 }

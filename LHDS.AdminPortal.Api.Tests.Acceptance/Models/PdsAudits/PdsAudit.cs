@@ -10,11 +10,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.PdsAudits
     {
         public Guid Id { get; set; }
         public Guid CorrelationId { get; set; }
-        public string FileName { get; set; }
-        public string Message { get; set; }
-        public string MessageId { get; set; }
-        public string CreatedBy { get; set; }
-        public string UpdatedBy { get; set; }
+        public string FileName { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+        public string MessageId { get; set; } = string.Empty;
+        public string CreatedBy { get; set; } = string.Empty;
+        public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
     }

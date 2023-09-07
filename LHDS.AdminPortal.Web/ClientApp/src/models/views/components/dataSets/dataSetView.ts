@@ -3,7 +3,7 @@ import { Guid } from 'guid-typescript';
 export class DataSetView {
     public id: Guid;
     public dataSetName: string;
-    public dataSetAliasses: string;
+    public dataSetAliases: string;
     public dataSetSupplier: string;
     public dataSetAuthor: string;
     public dataSourceType: string;
@@ -18,7 +18,7 @@ export class DataSetView {
     constructor(
         id: Guid,
         dataSetName: string,
-        dataSetAliasses: string,
+        dataSetAliases: string,
         dataSetSupplier: string,
         dataSetAuthor: string,
         dataSourceType: string,
@@ -32,7 +32,7 @@ export class DataSetView {
     ) {
         this.id = id;
         this.dataSetName = dataSetName
-        this.dataSetAliasses = dataSetAliasses
+        this.dataSetAliases = dataSetAliases
         this.dataSetSupplier = dataSetSupplier
         this.dataSetAuthor = dataSetAuthor
         this.dataSourceType = dataSourceType

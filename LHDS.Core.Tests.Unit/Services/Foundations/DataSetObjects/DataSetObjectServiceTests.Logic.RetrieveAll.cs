@@ -1,7 +1,7 @@
 using System.Linq;
 using FluentAssertions;
 using Moq;
-using LHDS.Core.Models.Foundations.DataSetObjects;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
@@ -12,16 +12,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
         public void ShouldReturnDataSetObjects()
         {
             // given
-            IQueryable<DataSetObject> randomDataSetObjects = CreateRandomDataSetObjects();
-            IQueryable<DataSetObject> storageDataSetObjects = randomDataSetObjects;
-            IQueryable<DataSetObject> expectedDataSetObjects = storageDataSetObjects;
+            IQueryable<SpecificationObject> randomDataSetObjects = CreateRandomDataSetObjects();
+            IQueryable<SpecificationObject> storageDataSetObjects = randomDataSetObjects;
+            IQueryable<SpecificationObject> expectedDataSetObjects = storageDataSetObjects;
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllDataSetObjects())
                     .Returns(storageDataSetObjects);
 
             // when
-            IQueryable<DataSetObject> actualDataSetObjects =
+            IQueryable<SpecificationObject> actualDataSetObjects =
                 this.dataSetObjectService.RetrieveAllDataSetObjects();
 
             // then

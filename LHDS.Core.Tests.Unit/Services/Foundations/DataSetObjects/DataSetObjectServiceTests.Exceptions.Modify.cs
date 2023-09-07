@@ -5,8 +5,8 @@ using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using LHDS.Core.Models.Foundations.DataSetObjects;
-using LHDS.Core.Models.Foundations.DataSetObjects.Exceptions;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
+using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
         public async Task ShouldThrowCriticalDependencyExceptionOnModifyIfSqlErrorOccursAndLogItAsync()
         {
             // given
-            DataSetObject randomDataSetObject = CreateRandomDataSetObject();
+            SpecificationObject randomDataSetObject = CreateRandomDataSetObject();
             SqlException sqlException = GetSqlException();
 
             var failedDataSetObjectStorageException =
@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     .Throws(sqlException);
 
             // when
-            ValueTask<DataSetObject> modifyDataSetObjectTask =
+            ValueTask<SpecificationObject> modifyDataSetObjectTask =
                 this.dataSetObjectService.ModifyDataSetObjectAsync(randomDataSetObject);
 
             DataSetObjectDependencyException actualDataSetObjectDependencyException =
@@ -72,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
         public async void ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
         {
             // given
-            DataSetObject someDataSetObject = CreateRandomDataSetObject();
+            SpecificationObject someDataSetObject = CreateRandomDataSetObject();
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
 
@@ -94,7 +94,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     .Throws(foreignKeyConstraintConflictException);
 
             // when
-            ValueTask<DataSetObject> modifyDataSetObjectTask =
+            ValueTask<SpecificationObject> modifyDataSetObjectTask =
                 this.dataSetObjectService.ModifyDataSetObjectAsync(someDataSetObject);
 
             DataSetObjectDependencyValidationException actualDataSetObjectDependencyValidationException =
@@ -130,7 +130,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
         public async Task ShouldThrowDependencyExceptionOnModifyIfDatabaseUpdateExceptionOccursAndLogItAsync()
         {
             // given
-            DataSetObject randomDataSetObject = CreateRandomDataSetObject();
+            SpecificationObject randomDataSetObject = CreateRandomDataSetObject();
             var databaseUpdateException = new DbUpdateException();
 
             var failedDataSetObjectStorageException =
@@ -148,7 +148,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     .Throws(databaseUpdateException);
 
             // when
-            ValueTask<DataSetObject> modifyDataSetObjectTask =
+            ValueTask<SpecificationObject> modifyDataSetObjectTask =
                 this.dataSetObjectService.ModifyDataSetObjectAsync(randomDataSetObject);
 
             DataSetObjectDependencyException actualDataSetObjectDependencyException =
@@ -185,7 +185,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
         public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyErrorOccursAndLogAsync()
         {
             // given
-            DataSetObject randomDataSetObject = CreateRandomDataSetObject();
+            SpecificationObject randomDataSetObject = CreateRandomDataSetObject();
             var databaseUpdateConcurrencyException = new DbUpdateConcurrencyException();
 
             var lockedDataSetObjectException =
@@ -203,7 +203,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     .Throws(databaseUpdateConcurrencyException);
 
             // when
-            ValueTask<DataSetObject> modifyDataSetObjectTask =
+            ValueTask<SpecificationObject> modifyDataSetObjectTask =
                 this.dataSetObjectService.ModifyDataSetObjectAsync(randomDataSetObject);
 
             DataSetObjectDependencyValidationException actualDataSetObjectDependencyValidationException =
@@ -240,7 +240,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
         public async Task ShouldThrowServiceExceptionOnModifyIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            DataSetObject randomDataSetObject = CreateRandomDataSetObject();
+            SpecificationObject randomDataSetObject = CreateRandomDataSetObject();
             var serviceException = new Exception();
 
             var failedDataSetObjectServiceException =
@@ -258,7 +258,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
                     .Throws(serviceException);
 
             // when
-            ValueTask<DataSetObject> modifyDataSetObjectTask =
+            ValueTask<SpecificationObject> modifyDataSetObjectTask =
                 this.dataSetObjectService.ModifyDataSetObjectAsync(randomDataSetObject);
 
             DataSetObjectServiceException actualDataSetObjectServiceException =

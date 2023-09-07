@@ -2,7 +2,7 @@ import { Guid } from 'guid-typescript';
 
 export class ObjectColumn {
     public id: Guid;
-    public dataSetObjectId: Guid;
+    public specificationObjectId: Guid;
     public supplierColumnName: string;
     public ourColumnName: string;
     public columnDescription: string;
@@ -36,7 +36,7 @@ export class ObjectColumn {
 
     constructor(objectColumn: any) {
         this.id = objectColumn.id ? Guid.parse(objectColumn.id) : Guid.parse(Guid.EMPTY);
-        this.dataSetObjectId = objectColumn.dataSetObjectId;
+        this.specificationObjectId = objectColumn.specificationObjectId;
         this.supplierColumnName = objectColumn.supplierColumnName;
         this.ourColumnName = objectColumn.ourColumnName;
         this.columnDescription = objectColumn.columnDescription;

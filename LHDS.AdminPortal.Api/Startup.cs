@@ -17,7 +17,7 @@ using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Foundations.Audits;
-using LHDS.Core.Models.Foundations.DataSetObjects;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataTypes;
@@ -261,7 +261,7 @@ namespace LHDS.AdminPortal.Api
             builder.EntitySet<Audit>("Audits");
             builder.EntitySet<DataSet>("DataSets");
             builder.EntitySet<DataSetSpecification>("DataSetSpecifications");
-            builder.EntitySet<DataSetObject>("DataSetObjects");
+            builder.EntitySet<SpecificationObject>("DataSetObjects");
             builder.EntitySet<DataType>("DataTypes");
             builder.EntitySet<IngestionTracking>("IngestionTrackings");
             builder.EntitySet<ObjectColumn>("ObjectColumns");

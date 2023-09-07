@@ -24,9 +24,14 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                 (Rule: IsInvalid(dataSetSpecification.OurSpecificationVersion),
                     Parameter: nameof(DataSetSpecification.OurSpecificationVersion)),
 
-                (Rule: IsInvalid(dataSetSpecification.CreatedDate), Parameter: nameof(DataSetSpecification.CreatedDate)),
+                (Rule: IsInvalid(dataSetSpecification.CreatedDate),
+                    Parameter: nameof(DataSetSpecification.CreatedDate)),
+
                 (Rule: IsInvalid(dataSetSpecification.CreatedBy), Parameter: nameof(DataSetSpecification.CreatedBy)),
-                (Rule: IsInvalid(dataSetSpecification.UpdatedDate), Parameter: nameof(DataSetSpecification.UpdatedDate)),
+
+                (Rule: IsInvalid(dataSetSpecification.UpdatedDate),
+                    Parameter: nameof(DataSetSpecification.UpdatedDate)),
+
                 (Rule: IsInvalid(dataSetSpecification.UpdatedBy), Parameter: nameof(DataSetSpecification.UpdatedBy)),
 
                 (Rule: IsEqualOrSmallerThan(dataSetSpecification.SupplierSpecificationVersion, 10),
@@ -34,12 +39,6 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
 
                 (Rule: IsEqualOrSmallerThan(dataSetSpecification.OurSpecificationVersion, 10),
                     Parameter: nameof(dataSetSpecification.OurSpecificationVersion)),
-
-                (Rule: IsEqualOrSmallerThan(dataSetSpecification.SupersededBy, 255),
-                    Parameter: nameof(dataSetSpecification.SupersededBy)),
-
-                (Rule: IsEqualOrSmallerThan(dataSetSpecification.PresededBy, 255),
-                    Parameter: nameof(dataSetSpecification.PresededBy)),
 
                 (Rule: IsEqualOrSmallerThan(dataSetSpecification.CreatedBy, 255),
                     Parameter: nameof(dataSetSpecification.CreatedBy)),
@@ -59,7 +58,8 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                     secondName: nameof(DataSetSpecification.CreatedBy)),
                 Parameter: nameof(DataSetSpecification.UpdatedBy)),
 
-                (Rule: IsNotRecent(dataSetSpecification.CreatedDate), Parameter: nameof(DataSetSpecification.CreatedDate)));
+                (Rule: IsNotRecent(dataSetSpecification.CreatedDate),
+                    Parameter: nameof(DataSetSpecification.CreatedDate)));
         }
 
         private void ValidateDataSetSpecificationOnModify(DataSetSpecification dataSetSpecification)
@@ -76,9 +76,14 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                 (Rule: IsInvalid(dataSetSpecification.OurSpecificationVersion),
                     Parameter: nameof(DataSetSpecification.OurSpecificationVersion)),
 
-                (Rule: IsInvalid(dataSetSpecification.CreatedDate), Parameter: nameof(DataSetSpecification.CreatedDate)),
+                (Rule: IsInvalid(dataSetSpecification.CreatedDate),
+                    Parameter: nameof(DataSetSpecification.CreatedDate)),
+
                 (Rule: IsInvalid(dataSetSpecification.CreatedBy), Parameter: nameof(DataSetSpecification.CreatedBy)),
-                (Rule: IsInvalid(dataSetSpecification.UpdatedDate), Parameter: nameof(DataSetSpecification.UpdatedDate)),
+
+                (Rule: IsInvalid(dataSetSpecification.UpdatedDate),
+                    Parameter: nameof(DataSetSpecification.UpdatedDate)),
+
                 (Rule: IsInvalid(dataSetSpecification.UpdatedBy), Parameter: nameof(DataSetSpecification.UpdatedBy)),
 
                 (Rule: IsEqualOrSmallerThan(dataSetSpecification.SupplierSpecificationVersion, 10),
@@ -86,12 +91,6 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
 
                 (Rule: IsEqualOrSmallerThan(dataSetSpecification.OurSpecificationVersion, 10),
                     Parameter: nameof(dataSetSpecification.OurSpecificationVersion)),
-
-                (Rule: IsEqualOrSmallerThan(dataSetSpecification.SupersededBy, 255),
-                    Parameter: nameof(dataSetSpecification.SupersededBy)),
-
-                (Rule: IsEqualOrSmallerThan(dataSetSpecification.PresededBy, 255),
-                    Parameter: nameof(dataSetSpecification.PresededBy)),
 
                 (Rule: IsEqualOrSmallerThan(dataSetSpecification.CreatedBy, 255),
                     Parameter: nameof(dataSetSpecification.CreatedBy)),
@@ -103,15 +102,18 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
                     firstDate: dataSetSpecification.UpdatedDate,
                     secondDate: dataSetSpecification.CreatedDate,
                     secondDateName: nameof(DataSetSpecification.CreatedDate)),
-                Parameter: nameof(DataSetSpecification.UpdatedDate)),
+                        Parameter: nameof(DataSetSpecification.UpdatedDate)),
 
-                (Rule: IsNotRecent(dataSetSpecification.UpdatedDate), Parameter: nameof(dataSetSpecification.UpdatedDate)));
+                (Rule: IsNotRecent(dataSetSpecification.UpdatedDate),
+                    Parameter: nameof(dataSetSpecification.UpdatedDate)));
         }
 
         public void ValidateDataSetSpecificationId(Guid dataSetSpecificationId) =>
             Validate((Rule: IsInvalid(dataSetSpecificationId), Parameter: nameof(DataSetSpecification.Id)));
 
-        private static void ValidateStorageDataSetSpecification(DataSetSpecification maybeDataSetSpecification, Guid dataSetSpecificationId)
+        private static void ValidateStorageDataSetSpecification(
+            DataSetSpecification maybeDataSetSpecification,
+            Guid dataSetSpecificationId)
         {
             if (maybeDataSetSpecification is null)
             {
@@ -127,7 +129,9 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             }
         }
 
-        private static void ValidateAgainstStorageDataSetSpecificationOnModify(DataSetSpecification inputDataSetSpecification, DataSetSpecification storageDataSetSpecification)
+        private static void ValidateAgainstStorageDataSetSpecificationOnModify(
+            DataSetSpecification inputDataSetSpecification,
+            DataSetSpecification storageDataSetSpecification)
         {
             Validate(
                 (Rule: IsNotSame(

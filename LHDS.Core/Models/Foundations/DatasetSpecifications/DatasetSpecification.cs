@@ -34,10 +34,7 @@ namespace LHDS.Core.Models.Foundations.DataSetSpecifications
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
 
-        [JsonIgnore]
         public DataSet DataSet { get; set; }
-        [JsonIgnore]
-        public List<DataSetObject> DataSetObjects { get; set; } = new List<DataSetObject>();
         public List<SpecificationObject> SpecificationObjects { get; set; } = new List<SpecificationObject>();
         public List<DataSetSpecification> SupersededBy { get; set; } = new List<DataSetSpecification>();
         public List<DataSetSpecification> PresededBy { get; set; } = new List<DataSetSpecification>();

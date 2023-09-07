@@ -6,6 +6,10 @@ export class DataSetView {
     public dataSetAliasses?: string;
     public dataSetSupplier?: string;
     public dataSetAuthor?: string;
+    public specifiedBy?: string;
+    public isNationallySpecified?: boolean;
+    public collectedBy?: string;
+    public isNationallyCollected?: boolean;
     public dataSourceType?: string;
     public isActive: boolean;
     public activeFrom?: Date;
@@ -21,6 +25,10 @@ export class DataSetView {
         dataSetAliasses?: string,
         dataSetSupplier?: string,
         dataSetAuthor?: string,
+        specifiedBy?: string,
+        isNationallySpecified?: boolean,
+        collectedBy?: string,
+        isNationallyCollected?: boolean,
         dataSourceType?: string,
         isActive?: boolean,
         activeFrom?: Date,
@@ -28,13 +36,17 @@ export class DataSetView {
         createdBy?: string,
         createdDate?: Date,
         updatedBy?: string,
-        updatedDate?: Date
+        updatedDate?: Date,
     ) {
         this.id = id;
         this.dataSetName = dataSetName || "";
         this.dataSetAliasses = dataSetAliasses || "";
         this.dataSetSupplier = dataSetSupplier || "";
         this.dataSetAuthor = dataSetAuthor || "";
+        this.specifiedBy = specifiedBy;
+        this.isNationallySpecified = isNationallySpecified === false ? false : true;
+        this.collectedBy = collectedBy;
+        this.isNationallyCollected = isNationallyCollected === false ? false : true;
         this.dataSourceType = dataSourceType || "";
         this.isActive = isActive === false ? false : true;
         this.activeFrom = activeFrom !== undefined ? new Date(activeFrom) : undefined;

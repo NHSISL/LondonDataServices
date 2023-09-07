@@ -145,6 +145,64 @@ const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (pr
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
+                    <SummaryListBaseKey>specified By</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        <TextInputBase
+                            id="specifiedBy"
+                            name="specifiedBy"
+                            placeholder="Specified By"
+                            value={editDataSet.specifiedBy}
+                            error={errors.specifiedBy}
+                            onChange={handleChange} />
+                    </SummaryListBaseValue>
+                    <SummaryListBaseAction> </SummaryListBaseAction>
+                </SummaryListBaseRow>
+
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Is Nationally Specified</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        <CheckboxBase
+                            id="isNationallySpecified"
+                            name="isNationallySpecified"
+                            label=""
+                            checked={editDataSet.isNationallySpecified}
+                            error={errors.isNationallySpecified}
+                            onChange={handleChange}
+                        />
+                    </SummaryListBaseValue>
+                    <SummaryListBaseAction></SummaryListBaseAction>
+                </SummaryListBaseRow>
+
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Collected By</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        <TextInputBase
+                            id="collectedBy"
+                            name="collectedBy"
+                            placeholder="Collected By"
+                            value={editDataSet.collectedBy}
+                            error={errors.collectedBy}
+                            onChange={handleChange} />
+                    </SummaryListBaseValue>
+                    <SummaryListBaseAction> </SummaryListBaseAction>
+                </SummaryListBaseRow>
+
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Is Nationally Collected</SummaryListBaseKey>
+                    <SummaryListBaseValue>
+                        <CheckboxBase
+                            id="isNationallyCollected"
+                            name="isNationallyCollected"
+                            label=""
+                            checked={editDataSet.isNationallyCollected}
+                            error={errors.isNationallyCollected}
+                            onChange={handleChange}
+                        />
+                    </SummaryListBaseValue>
+                    <SummaryListBaseAction></SummaryListBaseAction>
+                </SummaryListBaseRow>
+
+                <SummaryListBaseRow>
                     <SummaryListBaseKey>Data Source Type</SummaryListBaseKey>
                     <SummaryListBaseValue>
                         <TextInputBase

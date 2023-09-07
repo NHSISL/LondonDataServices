@@ -9,6 +9,10 @@ export interface DataSetErrors extends ErrorBase {
     isActive: string;
     activeFrom: string;
     activeTo: string;
+    specifiedBy: string;
+    isNationallySpecified: string;
+    collectedBy: string;
+    isNationallyCollected: string
 }
 
 export const dataSetErrors: DataSetErrors = {
@@ -20,5 +24,9 @@ export const dataSetErrors: DataSetErrors = {
     dataSourceType: "",
     isActive: "",
     activeFrom: "",
-    activeTo: ""
+    activeTo: "",
+    specifiedBy: "",
+    isNationallySpecified: "",
+    collectedBy: "",
+    isNationallyCollected: ""
 }

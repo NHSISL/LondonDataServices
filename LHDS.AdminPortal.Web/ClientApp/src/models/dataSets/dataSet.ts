@@ -3,7 +3,7 @@ import { Guid } from 'guid-typescript';
 export class DataSet {
     public id: Guid;
     public dataSetName: string;
-    public dataSetAliasses: string;
+    public dataSetAliases: string;
     public dataSetSupplier: string;
     public dataSetAuthor: string;
     public specifiedBy: string;
@@ -22,7 +22,7 @@ export class DataSet {
     constructor(dataSet: any) {
         this.id = dataSet.id ? Guid.parse(dataSet.id) : Guid.parse(Guid.EMPTY);
         this.dataSetName = dataSet.name;
-        this.dataSetAliasses = dataSet.dataSetAliasses;
+        this.dataSetAliases = dataSet.dataSetAliases;
         this.dataSetSupplier = dataSet.dataSetSupplier;
         this.dataSetAuthor = dataSet.dataSetAuthor;
         this.specifiedBy = dataSet.specifiedBy;

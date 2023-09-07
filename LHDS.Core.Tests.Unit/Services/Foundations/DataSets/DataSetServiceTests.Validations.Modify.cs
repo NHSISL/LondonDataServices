@@ -67,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             var invalidDataSet = new DataSet
             {
                 DataSetName = invalidText,
-                DataSetAliasses = invalidText,
+                DataSetAliases = invalidText,
                 DataSetSupplier = invalidText,
                 DataSetAuthor = invalidText,
                 SpecifiedBy = invalidText,
@@ -88,7 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                values: "Text is required");
 
             invalidDataSetException.AddData(
-               key: nameof(DataSet.DataSetAliasses),
+               key: nameof(DataSet.DataSetAliases),
                values: "Text is required");
 
             invalidDataSetException.AddData(
@@ -173,7 +173,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             DataSet invalidDataSet = CreateRandomModifyDataSet(randomDateTimeOffset);
             invalidDataSet.DataSetName = GetRandomString(151);
-            invalidDataSet.DataSetAliasses = GetRandomString(251);
+            invalidDataSet.DataSetAliases = GetRandomString(251);
             invalidDataSet.DataSetSupplier = GetRandomString(151);
             invalidDataSet.DataSetAuthor = GetRandomString(151);
             invalidDataSet.DataSourceType = GetRandomString(151);
@@ -189,7 +189,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 values: "Text is exceeding max length");
 
             invalidDataSetException.AddData(
-                key: nameof(DataSet.DataSetAliasses),
+                key: nameof(DataSet.DataSetAliases),
                 values: "Text is exceeding max length");
 
             invalidDataSetException.AddData(

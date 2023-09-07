@@ -24,7 +24,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<DataSet>()
-                .Property(dataSet => dataSet.DataSetAliasses)
+                .Property(dataSet => dataSet.DataSetAliases)
                 .HasMaxLength(250)
                 .IsRequired();
 

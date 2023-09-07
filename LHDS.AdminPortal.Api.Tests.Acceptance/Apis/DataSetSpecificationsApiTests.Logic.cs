@@ -4,6 +4,7 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
 using Xunit;
 
@@ -16,7 +17,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
         {
             // Given
             DataSetSpecification randomDataSetSpecification = CreateRandomDataSetSpecification();
+            DataSet randomDataSet = CreateRandomDataSet();
+            DataSet inputDataSet = randomDataSet;
+            await this.apiBroker.PostDataSetAsync(inputDataSet);
             DataSetSpecification inputDataSetSpecification = randomDataSetSpecification;
+            inputDataSetSpecification.DataSetId = inputDataSet.Id;
             DataSetSpecification expectedDataSetSpecification = inputDataSetSpecification;
 
             // When
@@ -28,6 +33,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
 
             // Cleanup
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(inputDataSetSpecification.Id);
+            await this.apiBroker.DeleteDataSetByIdAsync(inputDataSet.Id);
         }
     }
 }

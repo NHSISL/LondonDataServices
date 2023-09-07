@@ -18,7 +18,7 @@ export class DataTypeView {
 
     ) {
         this.id = id;
-        this.name = name
+        this.name = name;
         this.createdBy = createdBy || "";
         this.createdDate = createdDate ;
         this.updatedBy = updatedBy || "";

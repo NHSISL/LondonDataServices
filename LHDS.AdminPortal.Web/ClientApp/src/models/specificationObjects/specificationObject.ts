@@ -1,4 +1,5 @@
 import { Guid } from 'guid-typescript';
+import { DataSetSpecification } from '../dataSetSpecifications/dataSetSpecification';
 
 export class SpecificationObject {
     public id: Guid;
@@ -15,6 +16,7 @@ export class SpecificationObject {
     public createdDate?: Date;
     public updatedBy?: string;
     public updatedDate?: Date;
+    public dataSetSpecification?: DataSetSpecification;
 
     constructor(dataSetObjects: any) {
         this.id = dataSetObjects.id ? Guid.parse(dataSetObjects.id) : Guid.parse(Guid.EMPTY);
@@ -32,5 +34,9 @@ export class SpecificationObject {
         this.createdDate = new Date(dataSetObjects.createdDate);
         this.updatedBy = dataSetObjects.updatedBy;
         this.updatedDate = new Date(dataSetObjects.updatedDate);
+
+        if (dataSetObjects.dataSetSpecification !== undefined && dataSetObjects.dataSetSpecification !== null) {
+            this.dataSetSpecification = new DataSetSpecification(dataSetObjects.dataSetSpecification);
+        }
     }
 }

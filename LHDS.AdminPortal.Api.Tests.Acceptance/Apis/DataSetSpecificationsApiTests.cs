@@ -3,7 +3,9 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
 using Tynamix.ObjectFiller;
 using Xunit;
@@ -41,6 +43,32 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
                 .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(DataSetSpecification => DataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(DataSetSpecification => DataSetSpecification.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static IQueryable<DataSet> CreateRandomDataSets()
+        {
+            return CreateDataSetFiller()
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
+
+        private static DataSet CreateRandomDataSet() =>
+            CreateDataSetFiller().Create();
+
+        private static Filler<DataSet> CreateDataSetFiller()
+        {
+            string user = GetRandomString(255);
+            var filler = new Filler<DataSet>();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(DataSet => DataSet.CreatedBy).Use(user)
+                .OnProperty(DataSet => DataSet.UpdatedBy).Use(user)
+                .OnProperty(DataSet => DataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()));
 
             return filler;
         }

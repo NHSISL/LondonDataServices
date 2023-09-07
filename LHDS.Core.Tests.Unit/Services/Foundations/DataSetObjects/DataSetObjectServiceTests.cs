@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
-using LHDS.Core.Models.Foundations.DataSetObjects;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.DataSetObjects;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -71,10 +71,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static DataSetObject CreateRandomModifyDataSetObject(DateTimeOffset dateTimeOffset)
+        private static SpecificationObject CreateRandomModifyDataSetObject(DateTimeOffset dateTimeOffset)
         {
             int randomDaysInPast = GetRandomNegativeNumber();
-            DataSetObject randomDataSetObject = CreateRandomDataSetObject(dateTimeOffset);
+            SpecificationObject randomDataSetObject = CreateRandomDataSetObject(dateTimeOffset);
 
             randomDataSetObject.CreatedDate =
                 randomDataSetObject.CreatedDate.AddDays(randomDaysInPast);
@@ -82,30 +82,29 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetObjects
             return randomDataSetObject;
         }
 
-        private static IQueryable<DataSetObject> CreateRandomDataSetObjects()
+        private static IQueryable<SpecificationObject> CreateRandomDataSetObjects()
         {
             return CreateDataSetObjectFiller(dateTimeOffset: GetRandomDateTimeOffset())
                 .Create(count: GetRandomNumber())
                     .AsQueryable();
         }
 
-        private static DataSetObject CreateRandomDataSetObject() =>
+        private static SpecificationObject CreateRandomDataSetObject() =>
             CreateDataSetObjectFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
-        private static DataSetObject CreateRandomDataSetObject(DateTimeOffset dateTimeOffset) =>
+        private static SpecificationObject CreateRandomDataSetObject(DateTimeOffset dateTimeOffset) =>
             CreateDataSetObjectFiller(dateTimeOffset).Create();
 
-        private static Filler<DataSetObject> CreateDataSetObjectFiller(DateTimeOffset dateTimeOffset)
+        private static Filler<SpecificationObject> CreateDataSetObjectFiller(DateTimeOffset dateTimeOffset)
         {
             string user = GetRandomString(255);
-            var filler = new Filler<DataSetObject>();
+            var filler = new Filler<SpecificationObject>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(dataSetObject => dataSetObject.SupplierObjectName).Use(GetRandomString(255))
                 .OnProperty(dataSetObject => dataSetObject.OurObjectName).Use(GetRandomString(255))
-                .OnProperty(dataSetObject => dataSetObject.PushOrPull).Use(GetRandomString(10))
                 .OnProperty(dataSetObject => dataSetObject.ObjectDescription).Use(GetRandomString(500))
                 .OnProperty(dataSetObject => dataSetObject.InterchangeProtocol).Use(GetRandomString(255))
                 .OnProperty(dataSetObject => dataSetObject.DeletionHandling).Use(GetRandomString(255))

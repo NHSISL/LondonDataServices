@@ -2,8 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using LHDS.Core.Models.Foundations.DataSetObjects;
-using LHDS.Core.Models.Foundations.DataSetObjects.Exceptions;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
+using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 using LHDS.Core.Services.Foundations.DataSetObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -21,11 +21,11 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.dataSetObjectService = dataSetObjectService;
 
         [HttpPost]
-        public async ValueTask<ActionResult<DataSetObject>> PostDataSetObjectAsync(DataSetObject dataSetObject)
+        public async ValueTask<ActionResult<SpecificationObject>> PostDataSetObjectAsync(SpecificationObject dataSetObject)
         {
             try
             {
-                DataSetObject addedDataSetObject =
+                SpecificationObject addedDataSetObject =
                     await this.dataSetObjectService.AddDataSetObjectAsync(dataSetObject);
 
                 return Created(addedDataSetObject);
@@ -56,11 +56,11 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [HttpGet]
         [EnableQuery(PageSize = 50)]
-        public ActionResult<IQueryable<DataSetObject>> Get()
+        public ActionResult<IQueryable<SpecificationObject>> Get()
         {
             try
             {
-                IQueryable<DataSetObject> retrievedDataSetObjects =
+                IQueryable<SpecificationObject> retrievedDataSetObjects =
                     this.dataSetObjectService.RetrieveAllDataSetObjects();
 
                 return Ok(retrievedDataSetObjects);
@@ -76,11 +76,11 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet("{dataSetObjectId}")]
-        public async ValueTask<ActionResult<DataSetObject>> GetDataSetObjectByIdAsync(Guid dataSetObjectId)
+        public async ValueTask<ActionResult<SpecificationObject>> GetDataSetObjectByIdAsync(Guid dataSetObjectId)
         {
             try
             {
-                DataSetObject dataSetObject = await this.dataSetObjectService.RetrieveDataSetObjectByIdAsync(dataSetObjectId);
+                SpecificationObject dataSetObject = await this.dataSetObjectService.RetrieveDataSetObjectByIdAsync(dataSetObjectId);
 
                 return Ok(dataSetObject);
             }
@@ -104,11 +104,11 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpPut]
-        public async ValueTask<ActionResult<DataSetObject>> PutDataSetObjectAsync(DataSetObject dataSetObject)
+        public async ValueTask<ActionResult<SpecificationObject>> PutDataSetObjectAsync(SpecificationObject dataSetObject)
         {
             try
             {
-                DataSetObject modifiedDataSetObject =
+                SpecificationObject modifiedDataSetObject =
                     await this.dataSetObjectService.ModifyDataSetObjectAsync(dataSetObject);
 
                 return Ok(modifiedDataSetObject);
@@ -143,11 +143,11 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpDelete("{dataSetObjectId}")]
-        public async ValueTask<ActionResult<DataSetObject>> DeleteDataSetObjectByIdAsync(Guid dataSetObjectId)
+        public async ValueTask<ActionResult<SpecificationObject>> DeleteDataSetObjectByIdAsync(Guid dataSetObjectId)
         {
             try
             {
-                DataSetObject deletedDataSetObject =
+                SpecificationObject deletedDataSetObject =
                     await this.dataSetObjectService.RemoveDataSetObjectByIdAsync(dataSetObjectId);
 
                 return Ok(deletedDataSetObject);

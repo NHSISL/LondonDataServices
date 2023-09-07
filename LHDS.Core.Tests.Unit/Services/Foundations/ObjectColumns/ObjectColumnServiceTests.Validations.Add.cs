@@ -74,7 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 values: "Id is required");
 
             invalidObjectColumnException.AddData(
-                key: nameof(ObjectColumn.DataSetObjectId),
+                key: nameof(ObjectColumn.SpecificationObjectId),
                 values: "Id is required");
 
             invalidObjectColumnException.AddData(
@@ -157,7 +157,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             invalidObjectColumn.SqlDataType = GetRandomString(51);
             invalidObjectColumn.FhirDataType = GetRandomString(256);
             invalidObjectColumn.SupplierDateFormat = GetRandomString(256);
-            invalidObjectColumn.TypeOfPersonConfidentialData = GetRandomString(256);
+            invalidObjectColumn.PersonConfidentialDataType = GetRandomString(256);
             invalidObjectColumn.MaskingMethod = GetRandomString(256);
             invalidObjectColumn.CodeSystem = GetRandomString(256);
             invalidObjectColumn.PartitionColumnLevel = GetRandomString(256);
@@ -197,7 +197,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
                 values: "Text is exceeding max length");
 
             invalidObjectColumnException.AddData(
-                key: nameof(ObjectColumn.TypeOfPersonConfidentialData),
+                key: nameof(ObjectColumn.PersonConfidentialDataType),
                 values: "Text is exceeding max length");
 
             invalidObjectColumnException.AddData(

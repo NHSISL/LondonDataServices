@@ -3,27 +3,26 @@
 // ---------------------------------------------------------------
 
 using System;
-using LHDS.Core.Models.Foundations.DataSetObjects;
-using LHDS.Core.Models.Foundations.DataSetObjects.Exceptions;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
+using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 
 namespace LHDS.Core.Services.Foundations.DataSetObjects
 {
     public partial class DataSetObjectService
     {
-        private void ValidateDataSetObjectOnAdd(DataSetObject dataSetObject)
+        private void ValidateDataSetObjectOnAdd(SpecificationObject dataSetObject)
         {
             ValidateDataSetObjectIsNotNull(dataSetObject);
 
             Validate(
-                (Rule: IsInvalid(dataSetObject.Id), Parameter: nameof(DataSetObject.Id)),
+                (Rule: IsInvalid(dataSetObject.Id), Parameter: nameof(SpecificationObject.Id)),
                 (Rule: IsInvalid(dataSetObject.DataSetSpecificationId), Parameter: nameof(dataSetObject.DataSetSpecificationId)),
                 (Rule: IsInvalid(dataSetObject.SupplierObjectName), Parameter: nameof(dataSetObject.SupplierObjectName)),
                 (Rule: IsInvalid(dataSetObject.OurObjectName), Parameter: nameof(dataSetObject.OurObjectName)),
-                (Rule: IsInvalid(dataSetObject.PushOrPull), Parameter: nameof(dataSetObject.PushOrPull)),
-                (Rule: IsInvalid(dataSetObject.CreatedDate), Parameter: nameof(DataSetObject.CreatedDate)),
-                (Rule: IsInvalid(dataSetObject.CreatedBy), Parameter: nameof(DataSetObject.CreatedBy)),
-                (Rule: IsInvalid(dataSetObject.UpdatedDate), Parameter: nameof(DataSetObject.UpdatedDate)),
-                (Rule: IsInvalid(dataSetObject.UpdatedBy), Parameter: nameof(DataSetObject.UpdatedBy)),
+                (Rule: IsInvalid(dataSetObject.CreatedDate), Parameter: nameof(SpecificationObject.CreatedDate)),
+                (Rule: IsInvalid(dataSetObject.CreatedBy), Parameter: nameof(SpecificationObject.CreatedBy)),
+                (Rule: IsInvalid(dataSetObject.UpdatedDate), Parameter: nameof(SpecificationObject.UpdatedDate)),
+                (Rule: IsInvalid(dataSetObject.UpdatedBy), Parameter: nameof(SpecificationObject.UpdatedBy)),
 
                 (Rule: IsEqualOrSmallerThan(
                     dataSetObject.SupplierObjectName, 255), Parameter: nameof(dataSetObject.SupplierObjectName)),
@@ -36,9 +35,6 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
 
                 (Rule: IsEqualOrSmallerThan(
                     dataSetObject.InterchangeProtocol, 255), Parameter: nameof(dataSetObject.InterchangeProtocol)),
-
-                (Rule: IsEqualOrSmallerThan(
-                    dataSetObject.PushOrPull, 10), Parameter: nameof(dataSetObject.PushOrPull)),
 
                 (Rule: IsEqualOrSmallerThan(
                     dataSetObject.DeletionHandling, 255), Parameter: nameof(dataSetObject.DeletionHandling)),
@@ -52,32 +48,31 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
                 (Rule: IsNotSame(
                     firstDate: dataSetObject.UpdatedDate,
                     secondDate: dataSetObject.CreatedDate,
-                    secondDateName: nameof(DataSetObject.CreatedDate)),
-                Parameter: nameof(DataSetObject.UpdatedDate)),
+                    secondDateName: nameof(SpecificationObject.CreatedDate)),
+                Parameter: nameof(SpecificationObject.UpdatedDate)),
 
                 (Rule: IsNotSame(
                     first: dataSetObject.UpdatedBy,
                     second: dataSetObject.CreatedBy,
-                    secondName: nameof(DataSetObject.CreatedBy)),
-                Parameter: nameof(DataSetObject.UpdatedBy)),
+                    secondName: nameof(SpecificationObject.CreatedBy)),
+                Parameter: nameof(SpecificationObject.UpdatedBy)),
 
-                (Rule: IsNotRecent(dataSetObject.CreatedDate), Parameter: nameof(DataSetObject.CreatedDate)));
+                (Rule: IsNotRecent(dataSetObject.CreatedDate), Parameter: nameof(SpecificationObject.CreatedDate)));
         }
 
-        private void ValidateDataSetObjectOnModify(DataSetObject dataSetObject)
+        private void ValidateDataSetObjectOnModify(SpecificationObject dataSetObject)
         {
             ValidateDataSetObjectIsNotNull(dataSetObject);
 
             Validate(
-                (Rule: IsInvalid(dataSetObject.Id), Parameter: nameof(DataSetObject.Id)),
+                (Rule: IsInvalid(dataSetObject.Id), Parameter: nameof(SpecificationObject.Id)),
                 (Rule: IsInvalid(dataSetObject.DataSetSpecificationId), Parameter: nameof(dataSetObject.DataSetSpecificationId)),
                 (Rule: IsInvalid(dataSetObject.SupplierObjectName), Parameter: nameof(dataSetObject.SupplierObjectName)),
                 (Rule: IsInvalid(dataSetObject.OurObjectName), Parameter: nameof(dataSetObject.OurObjectName)),
-                (Rule: IsInvalid(dataSetObject.PushOrPull), Parameter: nameof(dataSetObject.PushOrPull)),
-                (Rule: IsInvalid(dataSetObject.CreatedDate), Parameter: nameof(DataSetObject.CreatedDate)),
-                (Rule: IsInvalid(dataSetObject.CreatedBy), Parameter: nameof(DataSetObject.CreatedBy)),
-                (Rule: IsInvalid(dataSetObject.UpdatedDate), Parameter: nameof(DataSetObject.UpdatedDate)),
-                (Rule: IsInvalid(dataSetObject.UpdatedBy), Parameter: nameof(DataSetObject.UpdatedBy)),
+                (Rule: IsInvalid(dataSetObject.CreatedDate), Parameter: nameof(SpecificationObject.CreatedDate)),
+                (Rule: IsInvalid(dataSetObject.CreatedBy), Parameter: nameof(SpecificationObject.CreatedBy)),
+                (Rule: IsInvalid(dataSetObject.UpdatedDate), Parameter: nameof(SpecificationObject.UpdatedDate)),
+                (Rule: IsInvalid(dataSetObject.UpdatedBy), Parameter: nameof(SpecificationObject.UpdatedBy)),
 
                 (Rule: IsEqualOrSmallerThan(
                     dataSetObject.SupplierObjectName, 255), Parameter: nameof(dataSetObject.SupplierObjectName)),
@@ -90,9 +85,6 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
 
                 (Rule: IsEqualOrSmallerThan(
                     dataSetObject.InterchangeProtocol, 255), Parameter: nameof(dataSetObject.InterchangeProtocol)),
-
-                (Rule: IsEqualOrSmallerThan(
-                    dataSetObject.PushOrPull, 10), Parameter: nameof(dataSetObject.PushOrPull)),
 
                 (Rule: IsEqualOrSmallerThan(
                     dataSetObject.DeletionHandling, 255), Parameter: nameof(dataSetObject.DeletionHandling)),
@@ -106,16 +98,16 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
                 (Rule: IsSame(
                     firstDate: dataSetObject.UpdatedDate,
                     secondDate: dataSetObject.CreatedDate,
-                    secondDateName: nameof(DataSetObject.CreatedDate)),
-                Parameter: nameof(DataSetObject.UpdatedDate)),
+                    secondDateName: nameof(SpecificationObject.CreatedDate)),
+                Parameter: nameof(SpecificationObject.UpdatedDate)),
 
                 (Rule: IsNotRecent(dataSetObject.UpdatedDate), Parameter: nameof(dataSetObject.UpdatedDate)));
         }
 
         public void ValidateDataSetObjectId(Guid dataSetObjectId) =>
-            Validate((Rule: IsInvalid(dataSetObjectId), Parameter: nameof(DataSetObject.Id)));
+            Validate((Rule: IsInvalid(dataSetObjectId), Parameter: nameof(SpecificationObject.Id)));
 
-        private static void ValidateStorageDataSetObject(DataSetObject maybeDataSetObject, Guid dataSetObjectId)
+        private static void ValidateStorageDataSetObject(SpecificationObject maybeDataSetObject, Guid dataSetObjectId)
         {
             if (maybeDataSetObject is null)
             {
@@ -123,7 +115,7 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
             }
         }
 
-        private static void ValidateDataSetObjectIsNotNull(DataSetObject dataSetObject)
+        private static void ValidateDataSetObjectIsNotNull(SpecificationObject dataSetObject)
         {
             if (dataSetObject is null)
             {
@@ -131,26 +123,26 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
             }
         }
 
-        private static void ValidateAgainstStorageDataSetObjectOnModify(DataSetObject inputDataSetObject, DataSetObject storageDataSetObject)
+        private static void ValidateAgainstStorageDataSetObjectOnModify(SpecificationObject inputDataSetObject, SpecificationObject storageDataSetObject)
         {
             Validate(
                 (Rule: IsNotSame(
                     firstDate: inputDataSetObject.CreatedDate,
                     secondDate: storageDataSetObject.CreatedDate,
-                    secondDateName: nameof(DataSetObject.CreatedDate)),
-                Parameter: nameof(DataSetObject.CreatedDate)),
+                    secondDateName: nameof(SpecificationObject.CreatedDate)),
+                Parameter: nameof(SpecificationObject.CreatedDate)),
 
                 (Rule: IsNotSame(
                     first: inputDataSetObject.CreatedBy,
                     second: storageDataSetObject.CreatedBy,
-                    secondName: nameof(DataSetObject.CreatedBy)),
-                Parameter: nameof(DataSetObject.CreatedBy)),
+                    secondName: nameof(SpecificationObject.CreatedBy)),
+                Parameter: nameof(SpecificationObject.CreatedBy)),
 
                 (Rule: IsSame(
                     firstDate: inputDataSetObject.UpdatedDate,
                     secondDate: storageDataSetObject.UpdatedDate,
-                    secondDateName: nameof(DataSetObject.UpdatedDate)),
-                Parameter: nameof(DataSetObject.UpdatedDate)));
+                    secondDateName: nameof(SpecificationObject.UpdatedDate)),
+                Parameter: nameof(SpecificationObject.UpdatedDate)));
         }
 
         private static dynamic IsInvalid(Guid id) => new

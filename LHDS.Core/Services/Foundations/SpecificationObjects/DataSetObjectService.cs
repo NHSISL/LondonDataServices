@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
-using LHDS.Core.Models.Foundations.DataSetObjects;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
 
 namespace LHDS.Core.Services.Foundations.DataSetObjects
 {
@@ -24,7 +24,7 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<DataSetObject> AddDataSetObjectAsync(DataSetObject dataSetObject) =>
+        public ValueTask<SpecificationObject> AddDataSetObjectAsync(SpecificationObject dataSetObject) =>
             TryCatch(async () =>
             {
                 ValidateDataSetObjectOnAdd(dataSetObject);
@@ -32,15 +32,15 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
                 return await this.storageBroker.InsertDataSetObjectAsync(dataSetObject);
             });
 
-        public IQueryable<DataSetObject> RetrieveAllDataSetObjects() =>
+        public IQueryable<SpecificationObject> RetrieveAllDataSetObjects() =>
             TryCatch(() => this.storageBroker.SelectAllDataSetObjects());
 
-        public ValueTask<DataSetObject> RetrieveDataSetObjectByIdAsync(Guid dataSetObjectId) =>
+        public ValueTask<SpecificationObject> RetrieveDataSetObjectByIdAsync(Guid dataSetObjectId) =>
             TryCatch(async () =>
             {
                 ValidateDataSetObjectId(dataSetObjectId);
 
-                DataSetObject maybeDataSetObject = await this.storageBroker
+                SpecificationObject maybeDataSetObject = await this.storageBroker
                     .SelectDataSetObjectByIdAsync(dataSetObjectId);
 
                 ValidateStorageDataSetObject(maybeDataSetObject, dataSetObjectId);
@@ -48,12 +48,12 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
                 return maybeDataSetObject;
             });
 
-        public ValueTask<DataSetObject> ModifyDataSetObjectAsync(DataSetObject dataSetObject) =>
+        public ValueTask<SpecificationObject> ModifyDataSetObjectAsync(SpecificationObject dataSetObject) =>
             TryCatch(async () =>
             {
                 ValidateDataSetObjectOnModify(dataSetObject);
 
-                DataSetObject maybeDataSetObject =
+                SpecificationObject maybeDataSetObject =
                     await this.storageBroker.SelectDataSetObjectByIdAsync(dataSetObject.Id);
 
                 ValidateStorageDataSetObject(maybeDataSetObject, dataSetObject.Id);
@@ -62,12 +62,12 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
                 return await this.storageBroker.UpdateDataSetObjectAsync(dataSetObject);
             });
 
-        public ValueTask<DataSetObject> RemoveDataSetObjectByIdAsync(Guid dataSetObjectId) =>
+        public ValueTask<SpecificationObject> RemoveDataSetObjectByIdAsync(Guid dataSetObjectId) =>
             TryCatch(async () =>
             {
                 ValidateDataSetObjectId(dataSetObjectId);
 
-                DataSetObject maybeDataSetObject = await this.storageBroker
+                SpecificationObject maybeDataSetObject = await this.storageBroker
                     .SelectDataSetObjectByIdAsync(dataSetObjectId);
 
                 ValidateStorageDataSetObject(maybeDataSetObject, dataSetObjectId);

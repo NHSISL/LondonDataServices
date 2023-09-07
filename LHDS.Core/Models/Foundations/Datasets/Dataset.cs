@@ -16,6 +16,10 @@ namespace LHDS.Core.Models.Foundations.DataSets
         public string DataSetAliasses { get; set; }
         public string DataSetSupplier { get; set; }
         public string DataSetAuthor { get; set; }
+        public string SpecifiedBy { get; set; }
+        public bool IsNationallySpecified { get; set; }
+        public string CollectedBy { get; set; }
+        public bool IsNationallyCollected { get; set; }
         public string DataSourceType { get; set; }
         public bool IsActive { get; set; }
         public DateTimeOffset? ActiveFrom { get; set; }

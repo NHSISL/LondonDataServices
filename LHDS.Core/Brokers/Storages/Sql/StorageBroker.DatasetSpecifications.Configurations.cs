@@ -33,7 +33,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<DataSetSpecification>()
-                .Property(dataSetSpecification => dataSetSpecification.IsMultiSender)
+                .Property(dataSetSpecification => dataSetSpecification.IsMultiAuthorPerBatch)
                 .HasDefaultValue(false)
                 .IsRequired();
 
@@ -50,13 +50,12 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired(false);
 
             modelBuilder.Entity<DataSetSpecification>()
-                .Property(dataSetSpecification => dataSetSpecification.SupersededBy)
+                .Property(dataSetSpecification => dataSetSpecification.SupersededById)
                 .IsRequired(false);
 
             modelBuilder.Entity<DataSetSpecification>()
-                .Property(dataSetSpecification => dataSetSpecification.PresededBy)
-                .HasMaxLength(255)
-                .IsRequired();
+                .Property(dataSetSpecification => dataSetSpecification.PresededById)
+                .IsRequired(false);
 
             modelBuilder.Entity<DataSetSpecification>()
                 .Property(dataSetSpecification => dataSetSpecification.IsPublished)
@@ -86,6 +85,26 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .WithMany(schemaDefinition => schemaDefinition.DataSetSpecifications)
                 .HasForeignKey(columnDefinition => columnDefinition.DataSetId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<DataSetSpecification>()
+                .HasIndex(ds => ds.SupersededById)
+                .IsUnique(false);
+
+            modelBuilder.Entity<DataSetSpecification>()
+                .HasIndex(ds => ds.PresededById)
+                .IsUnique(false);
+
+            modelBuilder.Entity<DataSetSpecification>()
+                .HasMany(ds => ds.SupersededBy)
+                .WithOne()
+                .HasForeignKey(ds => ds.SupersededById)
+                .IsRequired(false);
+
+            modelBuilder.Entity<DataSetSpecification>()
+                .HasMany(ds => ds.PresededBy)
+                .WithOne()
+                .HasForeignKey(ds => ds.PresededById)
+                .IsRequired(false);
         }
     }
 }

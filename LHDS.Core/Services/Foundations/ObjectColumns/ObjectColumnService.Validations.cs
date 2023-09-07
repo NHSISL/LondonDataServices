@@ -16,7 +16,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
             Validate(
                 (Rule: IsInvalid(objectColumn.Id), Parameter: nameof(ObjectColumn.Id)),
-                (Rule: IsInvalid(objectColumn.DataSetObjectId), Parameter: nameof(ObjectColumn.DataSetObjectId)),
+                (Rule: IsInvalid(objectColumn.SpecificationObjectId), Parameter: nameof(ObjectColumn.SpecificationObjectId)),
                 (Rule: IsInvalid(objectColumn.SupplierColumnName), Parameter: nameof(ObjectColumn.SupplierColumnName)),
                 (Rule: IsInvalid(objectColumn.OurColumnName), Parameter: nameof(ObjectColumn.OurColumnName)),
                 (Rule: IsInvalid(objectColumn.SqlDataType), Parameter: nameof(ObjectColumn.SqlDataType)),
@@ -48,8 +48,8 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                     objectColumn.SupplierDateFormat, 255), Parameter: nameof(objectColumn.SupplierDateFormat)),
 
                 (Rule: IsEqualOrSmallerThan(
-                    objectColumn.TypeOfPersonConfidentialData, 255),
-                Parameter: nameof(objectColumn.TypeOfPersonConfidentialData)),
+                    objectColumn.PersonConfidentialDataType, 255),
+                Parameter: nameof(objectColumn.PersonConfidentialDataType)),
 
                 (Rule: IsEqualOrSmallerThan(
                     objectColumn.MaskingMethod, 255), Parameter: nameof(objectColumn.MaskingMethod)),
@@ -87,7 +87,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
             Validate(
                 (Rule: IsInvalid(objectColumn.Id), Parameter: nameof(ObjectColumn.Id)),
-                (Rule: IsInvalid(objectColumn.DataSetObjectId), Parameter: nameof(ObjectColumn.DataSetObjectId)),
+                (Rule: IsInvalid(objectColumn.SpecificationObjectId), Parameter: nameof(ObjectColumn.SpecificationObjectId)),
                 (Rule: IsInvalid(objectColumn.SupplierColumnName), Parameter: nameof(ObjectColumn.SupplierColumnName)),
                 (Rule: IsInvalid(objectColumn.OurColumnName), Parameter: nameof(ObjectColumn.OurColumnName)),
                 (Rule: IsInvalid(objectColumn.SqlDataType), Parameter: nameof(ObjectColumn.SqlDataType)),
@@ -119,8 +119,8 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
                     objectColumn.SupplierDateFormat, 255), Parameter: nameof(objectColumn.SupplierDateFormat)),
 
                 (Rule: IsEqualOrSmallerThan(
-                    objectColumn.TypeOfPersonConfidentialData, 255),
-                Parameter: nameof(objectColumn.TypeOfPersonConfidentialData)),
+                    objectColumn.PersonConfidentialDataType, 255),
+                Parameter: nameof(objectColumn.PersonConfidentialDataType)),
 
                 (Rule: IsEqualOrSmallerThan(
                     objectColumn.MaskingMethod, 255), Parameter: nameof(objectColumn.MaskingMethod)),

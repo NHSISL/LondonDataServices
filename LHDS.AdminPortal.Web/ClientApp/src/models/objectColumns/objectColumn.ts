@@ -1,6 +1,6 @@
 import { Guid } from 'guid-typescript';
-import { DataSetObject } from '../dataSetObjects/dataSetObject';
 import { DataType } from '../dataTypes/dataType';
+import { SpecificationObject } from '../specificationObjects/specificationObject';
 
 export class ObjectColumn {
     public id: Guid;
@@ -10,22 +10,23 @@ export class ObjectColumn {
     public columnDescription: string;
     public ordinalPosition: number;
     public populatedBy: string;
+    public fhirDataType: string;
     public sqlDataType: string;
     public length: number;
     public precision: number;
     public scale: number;
-    public fhirDataType: string;
     public supplierDateFormat: string;
     public isWatermark: boolean;
     public isSequencing: boolean;
     public isEntityBusinessKey: boolean;
     public isRecordBusinessKey: boolean;
-    public isMutable: boolean;
+    public isVersionHashElement: boolean;
     public isSenderCode: boolean;
     public isAuthorCode: boolean;
+    public isRelatedOrganisationId: boolean;
     public isDeleteFlag: boolean;
     public isPersonConfidentialData: boolean;
-    public typeOfPersonConfidentialData: string;
+    public personConfidentialDataType: string;
     public maskingMethod: string;
     public isSensitiveRecordMarker: boolean;
     public codeSystem: string;
@@ -36,7 +37,7 @@ export class ObjectColumn {
     public updatedBy?: string;
     public updatedDate?: Date;
     public dataType?: DataType;
-    public dataSetObject?: DataSetObject;
+    public specificationObject?: SpecificationObject;
 
     constructor(objectColumn: any) {
         this.id = objectColumn.id ? Guid.parse(objectColumn.id) : Guid.parse(Guid.EMPTY);
@@ -56,14 +57,15 @@ export class ObjectColumn {
         this.isSequencing = objectColumn.isSequencing;
         this.isEntityBusinessKey = objectColumn.isEntityBusinessKey;
         this.isRecordBusinessKey = objectColumn.isRecordBusinessKey;
-        this.isMutable = objectColumn.isMutable;
+        this.isVersionHashElement = objectColumn.isVersionHashElement;
         this.isSenderCode = objectColumn.isSenderCode;
         this.isAuthorCode = objectColumn.isAuthorCode;
+        this.isRelatedOrganisationId = objectColumn.isRelatedOrganisationId;
         this.isDeleteFlag = objectColumn.isDeleteFlag;
-        this.isPersonConfidentialData = objectColumn.isPersonConfidentialData;
-        this.typeOfPersonConfidentialData = objectColumn.typeOfPersonConfidentialData;
-        this.maskingMethod = objectColumn.maskingMethod;
         this.isSensitiveRecordMarker = objectColumn.isSensitiveRecordMarker;
+        this.isPersonConfidentialData = objectColumn.isPersonConfidentialData;
+        this.personConfidentialDataType = objectColumn.personConfidentialDataType;
+        this.maskingMethod = objectColumn.maskingMethod;
         this.codeSystem = objectColumn.codeSystem;
         this.partitionColumnLevel = objectColumn.partitionColumnLevel;
         this.dataTypeId = objectColumn.dataTypeId;;
@@ -77,7 +79,7 @@ export class ObjectColumn {
         }
 
         if (objectColumn.dataSetObject !== undefined && objectColumn.dataSetObject !== null) {
-            this.dataSetObject = new DataSetObject(objectColumn.dataSetObject);
+            this.specificationObject = new SpecificationObject(objectColumn.specificationObject);
         }
     }
 }

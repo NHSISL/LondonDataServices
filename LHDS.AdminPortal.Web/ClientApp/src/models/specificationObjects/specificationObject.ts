@@ -4,14 +4,15 @@ import { DataSetSpecification } from '../dataSetSpecifications/dataSetSpecificat
 export class SpecificationObject {
     public id: Guid;
     public dataSetSpecificationId: Guid;
-    public SupplierObjectName: string;
-    public OurObjectName: string;
-    public ObjectDescription: string;
-    public InterchangeProtocol: boolean;
-    public PushOrPull: string;
-    public DeletionHandling: string;
-    public IsSubmissionHeaderObject: boolean;
-    public IsTransactionLog: boolean
+    public supplierObjectName: string;
+    public ourObjectName: string;
+    public objectDescription: string;
+    public interchangeProtocol: boolean;
+    public isPushedToUs: boolean;
+    public isPulledByUs: boolean;
+    public deletionHandling: string;
+    public isSubmissionHeaderObject: boolean;
+    public isTransactionLog: boolean
     public createdBy?: string;
     public createdDate?: Date;
     public updatedBy?: string;
@@ -21,14 +22,15 @@ export class SpecificationObject {
     constructor(dataSetObjects: any) {
         this.id = dataSetObjects.id ? Guid.parse(dataSetObjects.id) : Guid.parse(Guid.EMPTY);
         this.dataSetSpecificationId = dataSetObjects.dataSetSpecificationId;
-        this.SupplierObjectName = dataSetObjects.SupplierObjectName;
-        this.OurObjectName = dataSetObjects.ourSpecificationVersion;
-        this.ObjectDescription = dataSetObjects.ObjectDescription;
-        this.InterchangeProtocol = dataSetObjects.InterchangeProtocol;
-        this.PushOrPull = dataSetObjects.PushOrPull;
-        this.DeletionHandling = dataSetObjects.DeletionHandling;
-        this.IsSubmissionHeaderObject = dataSetObjects.IsSubmissionHeaderObject;
-        this.IsTransactionLog = dataSetObjects.IsTransactionLog;
+        this.supplierObjectName = dataSetObjects.supplierObjectName;
+        this.ourObjectName = dataSetObjects.ourObjectName;
+        this.objectDescription = dataSetObjects.objectDescription;
+        this.interchangeProtocol = dataSetObjects.interchangeProtocol;
+        this.isPushedToUs = dataSetObjects.isPushedToUs;
+        this.isPulledByUs = dataSetObjects.isPulledByUs;
+        this.deletionHandling = dataSetObjects.deletionHandling;
+        this.isSubmissionHeaderObject = dataSetObjects.isSubmissionHeaderObject;
+        this.isTransactionLog = dataSetObjects.isTransactionLog;
         this.createdDate = dataSetObjects.createdDate;
         this.createdBy = dataSetObjects.createdBy;
         this.createdDate = new Date(dataSetObjects.createdDate);

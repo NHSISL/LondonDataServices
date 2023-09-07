@@ -70,6 +70,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 DataSetAliasses = invalidText,
                 DataSetSupplier = invalidText,
                 DataSetAuthor = invalidText,
+                SpecifiedBy = invalidText,
+                CollectedBy = invalidText,
                 DataSourceType = invalidText,
             };
 
@@ -95,6 +97,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             invalidDataSetException.AddData(
                key: nameof(DataSet.DataSetAuthor),
+               values: "Text is required");
+
+            invalidDataSetException.AddData(
+               key: nameof(DataSet.SpecifiedBy),
+               values: "Text is required");
+
+            invalidDataSetException.AddData(
+               key: nameof(DataSet.CollectedBy),
                values: "Text is required");
 
             invalidDataSetException.AddData(

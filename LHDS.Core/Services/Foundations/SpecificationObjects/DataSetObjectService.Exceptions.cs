@@ -4,18 +4,18 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using LHDS.Core.Models.Foundations.DataSetObjects;
-using LHDS.Core.Models.Foundations.DataSetObjects.Exceptions;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
+using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.DataSetObjects
 {
     public partial class DataSetObjectService
     {
-        private delegate ValueTask<DataSetObject> ReturningDataSetObjectFunction();
-        private delegate IQueryable<DataSetObject> ReturningDataSetObjectsFunction();
+        private delegate ValueTask<SpecificationObject> ReturningDataSetObjectFunction();
+        private delegate IQueryable<SpecificationObject> ReturningDataSetObjectsFunction();
 
-        private async ValueTask<DataSetObject> TryCatch(ReturningDataSetObjectFunction returningDataSetObjectFunction)
+        private async ValueTask<SpecificationObject> TryCatch(ReturningDataSetObjectFunction returningDataSetObjectFunction)
         {
             try
             {
@@ -89,7 +89,7 @@ namespace LHDS.Core.Services.Foundations.DataSetObjects
             }
         }
 
-        private IQueryable<DataSetObject> TryCatch(ReturningDataSetObjectsFunction returningDataSetObjectsFunction)
+        private IQueryable<SpecificationObject> TryCatch(ReturningDataSetObjectsFunction returningDataSetObjectsFunction)
         {
             try
             {

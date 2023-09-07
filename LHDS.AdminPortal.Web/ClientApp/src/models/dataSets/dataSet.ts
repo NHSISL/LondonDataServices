@@ -6,12 +6,6 @@ export class DataSet {
     public dataSetAliasses?: string;
     public dataSetSupplier?: string;
     public dataSetAuthor?: string;
-    public dataSourceType?: string;
-    public isActive?: boolean;
-    public dataSetName: string;
-    public dataSetAliasses: string;
-    public dataSetSupplier: string;
-    public dataSetAuthor: string;
     public specifiedBy: string;
     public isNationallySpecified: boolean;
     public collectedBy: string;

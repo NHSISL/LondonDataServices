@@ -18,6 +18,24 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .Property(dataType => dataType.Name)
                 .HasMaxLength(50)
                 .IsRequired();
+
+            modelBuilder.Entity<DataType>()
+                .Property(dataType => dataType.CreatedDate)
+                .IsRequired();
+
+            modelBuilder.Entity<DataType>()
+                .Property(dataType => dataType.CreatedBy)
+                .HasMaxLength(255)
+                .IsRequired();
+
+            modelBuilder.Entity<DataType>()
+                .Property(dataType => dataType.UpdatedBy)
+                .HasMaxLength(255)
+                .IsRequired();
+
+            modelBuilder.Entity<DataType>()
+                .Property(dataType => dataType.UpdatedDate)
+                .IsRequired();
         }
     }
 }

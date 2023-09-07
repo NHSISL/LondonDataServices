@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using LHDS.Core.Models.Bases;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
-using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace LHDS.Core.Models.Foundations.DataSetSpecifications
 {
@@ -15,11 +15,11 @@ namespace LHDS.Core.Models.Foundations.DataSetSpecifications
     {
         public Guid Id { get; set; }
         public Guid DataSetId { get; set; }
-        public string SupplierSpecificationVersion { get; set; }
-        public string OurSpecificationVersion { get; set; }
-        public string Notes { get; set; }
+        public string SupplierSpecificationVersion { get; set; } = string.Empty;
+        public string OurSpecificationVersion { get; set; } = string.Empty;
+        public string Notes { get; set; } = string.Empty;
         public bool IsMultiAuthorPerBatch { get; set; }
-        public string EntityChangeSynchronisation { get; set; }
+        public string EntityChangeSynchronisation { get; set; } = string.Empty;
         public DateTimeOffset? DateReleased { get; set; }
         public DateTimeOffset? DateImplemented { get; set; }
         public DateTimeOffset? DateSuperseded { get; set; }
@@ -29,20 +29,20 @@ namespace LHDS.Core.Models.Foundations.DataSetSpecifications
         public bool IsActive { get; set; }
         public DateTimeOffset ActiveFrom { get; set; }
         public DateTimeOffset ActiveTo { get; set; }
-        public string CreatedBy { get; set; }
-        public string UpdatedBy { get; set; }
+        public string CreatedBy { get; set; } = string.Empty;
+        public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
 
         [BindNever]
-        public DataSet DataSet { get; set; }
+        public DataSet? DataSet { get; set; } = null!;
 
         [BindNever]
         public List<SpecificationObject> SpecificationObjects { get; set; } = new List<SpecificationObject>();
-        
+
         [BindNever]
         public List<DataSetSpecification> SupersededBy { get; set; } = new List<DataSetSpecification>();
-        
+
         [BindNever]
         public List<DataSetSpecification> PresededBy { get; set; } = new List<DataSetSpecification>();
     }

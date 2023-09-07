@@ -4,9 +4,13 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.PdsAudits;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using Tynamix.ObjectFiller;
 using Xunit;
 using Xunit.Abstractions;
@@ -29,10 +33,17 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             new IntRange(min: 2, max: 10).GetValue();
 
         private static string GetRandomString(int length) =>
-            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+           new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static IQueryable<DataSetSpecification> CreateRandomDataSetSpecifications(Guid dataSetId)
+        {
+            return CreateDataSetSpecificationFiller(dataSetId)
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
 
         private static DataSetSpecification CreateRandomDataSetSpecification(Guid dataSetId) =>
             CreateDataSetSpecificationFiller(dataSetId).Create();
@@ -42,7 +53,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             string user = GetRandomString(255);
             var filler = new Filler<DataSetSpecification>();
             var now = DateTimeOffset.UtcNow;
-            
+
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
@@ -61,7 +72,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
-                
+
             return filler;
         }
 

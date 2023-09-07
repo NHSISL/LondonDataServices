@@ -12,8 +12,8 @@ export class DataSetSpecification {
     public dateReleased?: Date;
     public dateImplemented?: Date;
     public dateSuperseded?: Date;
-    public presededById?: string;
-    public supersededById?: string;
+    public presededById?: Guid;
+    public supersededById?: Guid;
     public isPublished: boolean;
     public isActive: boolean;
     public activeFrom: Date;

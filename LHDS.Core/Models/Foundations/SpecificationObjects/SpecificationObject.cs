@@ -8,9 +8,9 @@ using LHDS.Core.Models.Bases;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 
-namespace LHDS.Core.Models.Foundations.DataSetObjects
+namespace LHDS.Core.Models.Foundations.SpecificationObjects
 {
-    public class DataSetObject : IKey, IAudit
+    public class SpecificationObject : IKey, IAudit
     {
         public Guid Id { get; set; }
         public Guid DataSetSpecificationId { get; set; }
@@ -18,7 +18,8 @@ namespace LHDS.Core.Models.Foundations.DataSetObjects
         public string OurObjectName { get; set; }
         public string ObjectDescription { get; set; }
         public string InterchangeProtocol { get; set; }
-        public string PushOrPull { get; set; }
+        public bool IsPushedToUs { get; set; }
+        public bool IsPulledByUs { get; set; }
         public string DeletionHandling { get; set; }
         public bool IsSubmissionHeaderObject { get; set; }
         public bool IsTransactionLog { get; set; }

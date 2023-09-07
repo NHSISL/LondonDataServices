@@ -36,9 +36,14 @@ namespace LHDS.Core.Models.Foundations.DataSetSpecifications
 
         [JsonIgnore]
         public DataSet DataSet { get; set; }
+
         [JsonIgnore]
         public List<SpecificationObject> SpecificationObjects { get; set; } = new List<SpecificationObject>();
+        
+        [JsonIgnore]
         public List<DataSetSpecification> SupersededBy { get; set; } = new List<DataSetSpecification>();
+        
+        [JsonIgnore]
         public List<DataSetSpecification> PresededBy { get; set; } = new List<DataSetSpecification>();
     }
 }

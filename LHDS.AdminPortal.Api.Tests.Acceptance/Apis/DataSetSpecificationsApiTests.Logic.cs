@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
-using RESTFulSense.Exceptions;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
@@ -16,13 +15,38 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
     public partial class DataSetSpecificationsApiTests
     {
         [Fact]
+        public async Task ShouldPostDataSetSpecificationAsync()
+        {
+            // Given
+            DataSet randomDataSet = CreateRandomDataSet();
+            await this.apiBroker.PostDataSetAsync(randomDataSet);
+
+            DataSetSpecification randomDataSetSpecification
+                = CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
+
+            DataSetSpecification inputDataSetSpecification = randomDataSetSpecification;
+            DataSetSpecification expectedDataSetSpecification = inputDataSetSpecification;
+
+            // When
+            DataSetSpecification actualDataSetSpecification =
+                await this.apiBroker.PostDataSetSpecificationAsync(inputDataSetSpecification);
+
+            // Then
+            actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification);
+
+            // Cleanup
+            await this.apiBroker.DeleteDataSetSpecificationByIdAsync(inputDataSetSpecification.Id);
+            await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
+        }
+
+        [Fact]
         public async Task ShouldGetAllDataSetSpecificationsAsync()
         {
             // Given
             DataSet randomDataSet = CreateRandomDataSet();
             await this.apiBroker.PostDataSetAsync(randomDataSet);
 
-            IQueryable<DataSetSpecification> randomDataSetSpecifications = 
+            IQueryable<DataSetSpecification> randomDataSetSpecifications =
                 CreateRandomDataSetSpecifications(dataSetId: randomDataSet.Id);
 
             IQueryable<DataSetSpecification> inputDataSetSpecifications = randomDataSetSpecifications;
@@ -34,19 +58,45 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             }
 
             // When
-            List<DataSetSpecification> actualDataSetSpecifications = 
+            List<DataSetSpecification> actualDataSetSpecifications =
                 await this.apiBroker.GetAllDataSetSpecificationsAsync();
 
             // Then
             foreach (DataSetSpecification expectedDataSetSpecification in expectedDataSetSpecifications)
             {
-                DataSetSpecification actualDataSetSpecification = 
+                DataSetSpecification actualDataSetSpecification =
                     actualDataSetSpecifications.Single(approval => approval.Id == expectedDataSetSpecification.Id);
 
                 actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification);
                 await this.apiBroker.DeleteDataSetSpecificationByIdAsync(actualDataSetSpecification.Id);
             }
 
+            await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
+        }
+
+        [Fact]
+        public async Task ShouldGetDataSetSpecificationByIdAsync()
+        {
+            // Given
+            DataSet randomDataSet = CreateRandomDataSet();
+            await this.apiBroker.PostDataSetAsync(randomDataSet);
+
+            DataSetSpecification randomDataSetSpecification =
+                CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
+
+            DataSetSpecification inputDataSetSpecification = randomDataSetSpecification;
+            DataSetSpecification expectedDataSetSpecification = inputDataSetSpecification;
+            await this.apiBroker.PostDataSetSpecificationAsync(inputDataSetSpecification);
+
+            // When
+            DataSetSpecification actualDataSetSpecification =
+                await this.apiBroker.GetDataSetSpecificationByIdAsync(inputDataSetSpecification.Id);
+
+            // Then
+            actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification);
+
+            // Cleanup
+            await this.apiBroker.DeleteDataSetSpecificationByIdAsync(inputDataSetSpecification.Id);
             await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
         }
     }

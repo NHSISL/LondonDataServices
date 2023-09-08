@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Clients.Pds.Exceptions
+namespace LHDS.Core.Models.Clients.PdsClient.Exceptions
 {
     public class PdsClientServiceException : Xeption
     {

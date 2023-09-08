@@ -7,7 +7,7 @@ export class DataSet {
     public dataSetSupplier: string;
     public dataSetAuthor: string;
     public specifiedBy: string;
-    public isNationallySpecified: boolean;
+    public IsNationallySpecified: boolean;
     public collectedBy: string;
     public isNationallyCollected: boolean;
     public dataSourceType: string;
@@ -21,16 +21,17 @@ export class DataSet {
 
     constructor(dataSet: any) {
         this.id = dataSet.id ? Guid.parse(dataSet.id) : Guid.parse(Guid.EMPTY);
-        this.dataSetName = dataSet.name;
-        this.dataSetAliases = dataSet.dataSetAliases;
-        this.dataSetSupplier = dataSet.dataSetSupplier;
-        this.dataSetAuthor = dataSet.dataSetAuthor;
-        this.specifiedBy = dataSet.specifiedBy;
-        this.isNationallySpecified = dataSet.isNationallySpecified;
-        this.collectedBy = dataSet.collectedBy;
-        this.isNationallyCollected = dataSet.isNationallyCollected;
-        this.dataSourceType = dataSet.dataSourceType;
-        this.isActive = dataSet.isActive;
+        this.dataSetName = dataSet.dataSetName || "";
+        this.dataSetAliases = dataSet.dataSetAliases || "";
+        this.dataSetSupplier = dataSet.dataSetSupplier || "";
+        this.dataSetAuthor = dataSet.dataSetAuthor || "";
+        this.specifiedBy = dataSet.specifiedBy || "";
+        this.IsNationallySpecified = dataSet.IsNationallySpecified === true ? true : false;
+        this.collectedBy = dataSet.collectedBy || "";
+        this.isNationallyCollected = dataSet.isNationallyCollected === true ? true : false;
+        this.dataSourceType = dataSet.dataSourceType || "";
+        this.isActive = dataSet.isActive === true ? true : false;
+        this.activeFrom = dataSet.activeFrom;
         this.activeTo = dataSet.activeTo;
         this.createdDate = dataSet.createdDate;
         this.createdBy = dataSet.createdBy;

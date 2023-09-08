@@ -51,7 +51,16 @@
     <TypeScriptCompile Remove="ClientApp\src\components\audit\auditRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\audit\auditRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\bases\ingestionTrackingTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetDetail.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetDetailCard.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetDetailCardEdit.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetDetailCardView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetErrors.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetRow.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetValidation.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeErrors.ts" />
     <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRowAdd.tsx" />
@@ -112,7 +121,6 @@
     <TypeScriptCompile Remove="ClientApp\src\models\specificationObjects\specificationObject.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\suppliers\supplier.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\audit\auditView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\views\components\dataSetObjects\dataSetObjectView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\dataSetSpecifications\dataSetSpecificationView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\dataSets\dataSetView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\dataTypes\dataTypeView.ts" />
@@ -122,9 +130,11 @@
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\objectColumns\objectColumnView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\optOuts\optOutView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\pds\pdsView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\views\components\specificationObjects\specificationObjectView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\suppliers\supplierView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\configHomePage.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetsPage.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetPage.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetsListPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataTypesPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\IngestionTrackingHomepage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\ingestionTrackingPage.tsx" />
@@ -141,6 +151,7 @@
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\pdsService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\supplierService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\auditViewService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\DataSets\dataSetViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\DataTypes\dataTypeViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\Documents\DocumentViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\ingestionTrackingHomeViewService.ts" />

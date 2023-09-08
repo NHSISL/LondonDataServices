@@ -2,15 +2,15 @@ import { Guid } from 'guid-typescript';
 
 export class DataSetView {
     public id: Guid;
-    public dataSetName?: string;
-    public dataSetAliases?: string;
-    public dataSetSupplier?: string;
-    public dataSetAuthor?: string;
-    public specifiedBy?: string;
+    public dataSetName: string;
+    public dataSetAliases: string;
+    public dataSetSupplier: string;
+    public dataSetAuthor: string;
+    public specifiedBy: string;
     public IsNationallySpecified: boolean;
-    public collectedBy?: string;
+    public collectedBy: string;
     public isNationallyCollected: boolean;
-    public dataSourceType?: string;
+    public dataSourceType: string;
     public isActive: boolean;
     public activeFrom?: Date;
     public activeTo?: Date;
@@ -21,16 +21,16 @@ export class DataSetView {
 
     constructor(
         id: Guid,
-        dataSetName?: string,
-        dataSetAliases?: string,
-        dataSetSupplier?: string,
-        dataSetAuthor?: string,
-        specifiedBy?: string,
-        IsNationallySpecified?: boolean,
-        collectedBy?: string,
-        isNationallyCollected?: boolean,
-        dataSourceType?: string,
-        isActive?: boolean,
+        dataSetName: string,
+        dataSetAliases: string,
+        dataSetSupplier: string,
+        dataSetAuthor: string,
+        specifiedBy: string,
+        IsNationallySpecified: boolean,
+        collectedBy: string,
+        isNationallyCollected: boolean,
+        dataSourceType: string,
+        isActive: boolean,
         activeFrom?: Date,
         activeTo?: Date,
         createdBy?: string,
@@ -43,12 +43,12 @@ export class DataSetView {
         this.dataSetAliases = dataSetAliases || "";
         this.dataSetSupplier = dataSetSupplier || "";
         this.dataSetAuthor = dataSetAuthor || "";
-        this.specifiedBy = specifiedBy;
-        this.IsNationallySpecified = IsNationallySpecified === false ? false : true;
-        this.collectedBy = collectedBy;
-        this.isNationallyCollected = isNationallyCollected === false ? false : true;
+        this.specifiedBy = specifiedBy || "";
+        this.IsNationallySpecified = IsNationallySpecified === true ? true : false;
+        this.collectedBy = collectedBy || "";
+        this.isNationallyCollected = isNationallyCollected === true ? true : false;
         this.dataSourceType = dataSourceType || "";
-        this.isActive = isActive === false ? false : true;
+        this.isActive = isActive === true ? true : false;
         this.activeFrom = activeFrom !== undefined ? new Date(activeFrom) : undefined;
         this.activeTo = activeTo !== undefined ? new Date(activeTo) : undefined;
         this.createdBy = createdBy || "";

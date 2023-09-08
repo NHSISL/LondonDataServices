@@ -94,7 +94,6 @@ const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (pr
                             error={errors.dataSetName}
                             onChange={handleChange}/>
                     </SummaryListBaseValue>
-                    <SummaryListBaseAction> </SummaryListBaseAction>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
@@ -110,7 +109,6 @@ const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (pr
                             onChange={handleChange}
                         />
                     </SummaryListBaseValue>
-                    <SummaryListBaseAction> </SummaryListBaseAction>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
@@ -126,7 +124,6 @@ const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (pr
                             onChange={handleChange}
                         />
                     </SummaryListBaseValue>
-                    <SummaryListBaseAction> </SummaryListBaseAction>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
@@ -142,7 +139,6 @@ const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (pr
                             onChange={handleChange}
                         />
                     </SummaryListBaseValue>
-                    <SummaryListBaseAction> </SummaryListBaseAction>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
@@ -157,7 +153,6 @@ const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (pr
                             error={errors.specifiedBy}
                             onChange={handleChange} />
                     </SummaryListBaseValue>
-                    <SummaryListBaseAction> </SummaryListBaseAction>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
@@ -172,7 +167,6 @@ const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (pr
                             onChange={handleChange}
                         />
                     </SummaryListBaseValue>
-                    <SummaryListBaseAction></SummaryListBaseAction>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
@@ -187,7 +181,6 @@ const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (pr
                             error={errors.collectedBy}
                             onChange={handleChange} />
                     </SummaryListBaseValue>
-                    <SummaryListBaseAction> </SummaryListBaseAction>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
@@ -202,7 +195,6 @@ const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (pr
                             onChange={handleChange}
                         />
                     </SummaryListBaseValue>
-                    <SummaryListBaseAction></SummaryListBaseAction>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
@@ -218,7 +210,6 @@ const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (pr
                             onChange={handleChange}
                         />
                     </SummaryListBaseValue>
-                    <SummaryListBaseAction> </SummaryListBaseAction>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
@@ -233,7 +224,6 @@ const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (pr
                             onChange={handleChange}
                         />
                     </SummaryListBaseValue>
-                    <SummaryListBaseAction></SummaryListBaseAction>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
@@ -249,7 +239,6 @@ const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (pr
                             type="date"
                             onChange={handleChange} />
                     </SummaryListBaseValue>
-                    <SummaryListBaseAction></SummaryListBaseAction>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
@@ -265,7 +254,6 @@ const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (pr
                             type="date"
                             onChange={handleChange} />
                     </SummaryListBaseValue>
-                    <SummaryListBaseAction></SummaryListBaseAction>
                 </SummaryListBaseRow>
             </SummaryListBase>
 

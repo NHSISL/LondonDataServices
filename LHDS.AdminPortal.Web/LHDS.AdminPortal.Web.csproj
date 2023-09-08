@@ -60,6 +60,7 @@
     <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetValidation.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeErrors.ts" />
     <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeRowAdd.tsx" />

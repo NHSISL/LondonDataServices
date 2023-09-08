@@ -3,6 +3,7 @@ import { Guid } from 'guid-typescript';
 import { DataSetView } from "../../models/views/components/dataSets/dataSetView";
 import { dataSetViewService } from "../../services/views/DataSets/dataSetViewService";
 import DataSetDetailCard from "./dataSetDetailCard";
+import DataSetSpecificationTable from "../dataSetSpecifications/dataSetSpecificationTable";
 
 interface DataSetDetailProps {
     dataSetId?: string;
@@ -47,7 +48,7 @@ const DataSetDetail: FunctionComponent<DataSetDetailProps> = (props) => {
             setMode('VIEW');
         }
         if (dataSetId === "" || dataSetId === undefined) {
-            setDataSet(new DataSetView(Guid.create()))
+            setDataSet(new DataSetView(Guid.create(),"","","","","",false,"",false,"",true,new Date(), new Date()))
             setMode('ADD');
         }
     }, [dataSetId, dataSetRetrieved]);
@@ -69,7 +70,7 @@ const DataSetDetail: FunctionComponent<DataSetDetailProps> = (props) => {
 
                     {mode !== "ADD" && (
                         <>
-                            
+                            <DataSetSpecificationTable></DataSetSpecificationTable>
                         </>
                     )}
                 </div>

@@ -45,6 +45,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             var filler = new Filler<DataSetSpecification>();
 
             filler.Setup()
+                .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(dataSetSpecification => dataSetSpecification.Id).Use(inputDataSetSpecification.Id)
 
                 .OnProperty(dataSetSpecification => 
@@ -55,15 +56,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
 
                 .OnProperty(dataSetSpecification => 
                     dataSetSpecification.CreatedDate).Use(inputDataSetSpecification.CreatedDate)
-
-                .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.DateImplemented).Use(inputDataSetSpecification.DateImplemented)
-
-                .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.DateReleased).Use(inputDataSetSpecification.DateReleased)
-
-                .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.DateSuperseded).Use(inputDataSetSpecification.DateSuperseded)
 
                 .OnProperty(dataSetSpecification =>
                     dataSetSpecification.OurSpecificationVersion).Use(GetRandomString(10))

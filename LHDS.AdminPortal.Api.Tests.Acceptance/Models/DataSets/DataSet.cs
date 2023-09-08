@@ -25,6 +25,5 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
-
     }
 }

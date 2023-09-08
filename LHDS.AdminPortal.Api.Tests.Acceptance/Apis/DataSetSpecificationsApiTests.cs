@@ -13,6 +13,7 @@ using LHDS.AdminPortal.Api.Tests.Acceptance.Models.PdsAudits;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using Tynamix.ObjectFiller;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
 {
@@ -20,9 +21,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
     public partial class DataSetSpecificationsApiTests
     {
         private readonly ApiBroker apiBroker;
+        private readonly ITestOutputHelper output;
 
-        public DataSetSpecificationsApiTests(ApiBroker apiBroker) =>
+        public DataSetSpecificationsApiTests(ApiBroker apiBroker, ITestOutputHelper output)
+        {
             this.apiBroker = apiBroker;
+            this.output = output;
+        }
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
@@ -71,12 +76,19 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             return filler;
         }
 
+        private static IQueryable<DataSet> CreateRandomDataSets()
+        {
+            return CreateDataSetFiller()
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
+
         private static DataSet CreateRandomDataSet() =>
             CreateDataSetFiller().Create();
 
         private static Filler<DataSet> CreateDataSetFiller()
         {
-            string user = Guid.NewGuid().ToString();
+            string user = GetRandomString(255);
             var filler = new Filler<DataSet>();
             var now = DateTimeOffset.UtcNow;
 

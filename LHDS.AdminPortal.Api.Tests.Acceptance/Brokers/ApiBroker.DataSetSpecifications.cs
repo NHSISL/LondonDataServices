@@ -14,8 +14,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         private const string DataSetSpecificationsRelativeUrl = "api/DataSetSpecifications";
 
         public async ValueTask<DataSetSpecification> PostDataSetSpecificationAsync(
-            DataSetSpecification ingestionTracking) =>
-                await this.apiFactoryClient.PostContentAsync(DataSetSpecificationsRelativeUrl, ingestionTracking);
+            DataSetSpecification dataSetSpecification) =>
+                await this.apiFactoryClient.PostContentAsync(DataSetSpecificationsRelativeUrl, dataSetSpecification);
 
         public async ValueTask<List<DataSetSpecification>> GetAllDataSetSpecificationsAsync() =>
            await this.apiFactoryClient.GetContentAsync<List<DataSetSpecification>>(

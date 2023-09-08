@@ -8,8 +8,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
-using LHDS.Core.Extensions.Exceptions;
-using RESTFulSense.Exceptions;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
@@ -73,6 +71,32 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
                 await this.apiBroker.DeleteDataSetSpecificationByIdAsync(actualDataSetSpecification.Id);
             }
 
+            await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
+        }
+
+        [Fact]
+        public async Task ShouldGetDataSetSpecificationByIdAsync()
+        {
+            // Given
+            DataSet randomDataSet = CreateRandomDataSet();
+            await this.apiBroker.PostDataSetAsync(randomDataSet);
+
+            DataSetSpecification randomDataSetSpecification =
+                CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
+
+            DataSetSpecification inputDataSetSpecification = randomDataSetSpecification;
+            DataSetSpecification expectedDataSetSpecification = inputDataSetSpecification;
+            await this.apiBroker.PostDataSetSpecificationAsync(inputDataSetSpecification);
+
+            // When
+            DataSetSpecification actualDataSetSpecification =
+                await this.apiBroker.GetDataSetSpecificationByIdAsync(inputDataSetSpecification.Id);
+
+            // Then
+            actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification);
+
+            // Cleanup
+            await this.apiBroker.DeleteDataSetSpecificationByIdAsync(inputDataSetSpecification.Id);
             await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
         }
     }

@@ -13,16 +13,20 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
     {
         private const string DataSetSpecificationsRelativeUrl = "api/DataSetSpecifications";
 
-        public async ValueTask<DataSetSpecification> PostDataSetSpecificationAsync(DataSetSpecification DataSetSpecification) =>
-            await this.apiFactoryClient.PostContentAsync(DataSetSpecificationsRelativeUrl, DataSetSpecification);
-
-        public async ValueTask<DataSetSpecification> GetDataSetSpecificationByIdAsync(Guid DataSetSpecificationId) =>
-            await this.apiFactoryClient.GetContentAsync<DataSetSpecification>($"{DataSetSpecificationsRelativeUrl}/{DataSetSpecificationId}");
+        public async ValueTask<DataSetSpecification> PostDataSetSpecificationAsync(
+            DataSetSpecification DataSetSpecification) =>
+                await this.apiFactoryClient.PostContentAsync(DataSetSpecificationsRelativeUrl, DataSetSpecification);
 
         public async ValueTask<List<DataSetSpecification>> GetAllDataSetSpecificationsAsync() =>
-           await this.apiFactoryClient.GetContentAsync<List<DataSetSpecification>>($"{DataSetSpecificationsRelativeUrl}/");
+           await this.apiFactoryClient.GetContentAsync<List<DataSetSpecification>>(
+               $"{DataSetSpecificationsRelativeUrl}/");
+
+        public async ValueTask<DataSetSpecification> GetDataSetSpecificationByIdAsync(Guid DataSetSpecificationId) =>
+            await this.apiFactoryClient.GetContentAsync<DataSetSpecification>(
+                $"{DataSetSpecificationsRelativeUrl}/{DataSetSpecificationId}");
 
         public async ValueTask<DataSetSpecification> DeleteDataSetSpecificationByIdAsync(Guid DataSetSpecificationId) =>
-            await this.apiFactoryClient.DeleteContentAsync<DataSetSpecification>($"{DataSetSpecificationsRelativeUrl}/{DataSetSpecificationId}");
+            await this.apiFactoryClient.DeleteContentAsync<DataSetSpecification>(
+                $"{DataSetSpecificationsRelativeUrl}/{DataSetSpecificationId}");
     }
 }

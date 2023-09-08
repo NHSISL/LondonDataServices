@@ -4,7 +4,6 @@ import SummaryListBase from "../bases/components/SummaryList/SummaryListBase";
 import SummaryListBaseRow from "../bases/components/SummaryList/SummaryListBase.Row";
 import SummaryListBaseKey from "../bases/components/SummaryList/SummaryListBase.Key";
 import SummaryListBaseValue from "../bases/components/SummaryList/SummaryListBase.Value";
-import SummaryListBaseAction from "../bases/components/SummaryList/SummaryListBase.Action";
 import { SecuredComponents } from "../Links";
 import securityPoints from "../../SecurityMatrix";
 import { useValidation } from "../../hooks/useValidation";

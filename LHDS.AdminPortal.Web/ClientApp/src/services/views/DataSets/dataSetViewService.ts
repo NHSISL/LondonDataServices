@@ -91,7 +91,7 @@ export const dataSetViewService = {
                     const dataSet = new DataSetView(
                         response.data[0].id,
                         response.data[0].dataSetName,
-                        response.data[0].dataSetAliasses,
+                        response.data[0].dataSetAliases,
                         response.data[0].dataSetSupplier,
                         response.data[0].dataSetAuthor,
                         response.data[0].specifiedBy,

@@ -10,7 +10,7 @@ type DataSetRowProps = {
     dataSet: DataSet;
 }
 
-const DataSetRow: FunctionComponent<DataSetRowProps> = (props) => {
+const DataSetRowView: FunctionComponent<DataSetRowProps> = (props) => {
     const {
         dataSet
     } = props;
@@ -37,4 +37,4 @@ const DataSetRow: FunctionComponent<DataSetRowProps> = (props) => {
     );
 }
 
-export default DataSetRow;
+export default DataSetRowView;

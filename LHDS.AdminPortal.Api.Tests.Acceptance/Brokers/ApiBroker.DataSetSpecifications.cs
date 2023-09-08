@@ -6,12 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 {
     public partial class ApiBroker
     {
-        private const string DataSetSpecificationsRelativeUrl = "api/DataSetSpecifications";
+        private const string DataSetSpecificationsRelativeUrl = "api/dataSetSpecifications";
 
         public async ValueTask<DataSetSpecification> PostDataSetSpecificationAsync(
             DataSetSpecification dataSetSpecification) =>
@@ -21,16 +22,16 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
            await this.apiFactoryClient.GetContentAsync<List<DataSetSpecification>>(
                $"{DataSetSpecificationsRelativeUrl}/");
 
-        public async ValueTask<DataSetSpecification> GetDataSetSpecificationByIdAsync(Guid DataSetSpecificationId) =>
+        public async ValueTask<DataSetSpecification> GetDataSetSpecificationByIdAsync(Guid dataSetSpecificationId) =>
             await this.apiFactoryClient.GetContentAsync<DataSetSpecification>(
-                $"{DataSetSpecificationsRelativeUrl}/{DataSetSpecificationId}");
+                $"{DataSetSpecificationsRelativeUrl}/{dataSetSpecificationId}");
 
         public async ValueTask<DataSetSpecification> PutDataSetSpecificationAsync(
-            DataSetSpecification DataSetSpecificationId) =>
-                await this.apiFactoryClient.PutContentAsync(DataSetSpecificationsRelativeUrl, DataSetSpecificationId);
+        DataSetSpecification dataSetSpecification) =>
+                await this.apiFactoryClient.PutContentAsync(DataSetSpecificationsRelativeUrl, dataSetSpecification);
 
-        public async ValueTask<DataSetSpecification> DeleteDataSetSpecificationByIdAsync(Guid DataSetSpecificationId) =>
+        public async ValueTask<DataSetSpecification> DeleteDataSetSpecificationByIdAsync(Guid dataSetSpecificationId) =>
             await this.apiFactoryClient.DeleteContentAsync<DataSetSpecification>(
-                $"{DataSetSpecificationsRelativeUrl}/{DataSetSpecificationId}");
+                $"{DataSetSpecificationsRelativeUrl}/{dataSetSpecificationId}");
     }
 }

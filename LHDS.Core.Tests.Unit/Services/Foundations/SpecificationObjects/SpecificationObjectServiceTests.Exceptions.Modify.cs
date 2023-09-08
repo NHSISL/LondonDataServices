@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             var failedSpecificationObjectStorageException =
                 new FailedSpecificationObjectStorageException(
-                    message: "Failed dataSetObject storage error occurred, contact support.",
+                    message: "Failed specificationObject storage error occurred, contact support.",
                     innerException: sqlException);
 
             var expectedSpecificationObjectDependencyException =
@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             // when
             ValueTask<SpecificationObject> modifySpecificationObjectTask =
-                this.dataSetObjectService.ModifySpecificationObjectAsync(randomSpecificationObject);
+                this.specificationObjectService.ModifySpecificationObjectAsync(randomSpecificationObject);
 
             SpecificationObjectDependencyException actualSpecificationObjectDependencyException =
                 await Assert.ThrowsAsync<SpecificationObjectDependencyException>(
@@ -81,7 +81,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             var invalidSpecificationObjectReferenceException =
                 new InvalidSpecificationObjectReferenceException(
-                    message: "Invalid dataSetObject reference error occurred.", 
+                    message: "Invalid specificationObject reference error occurred.", 
                     innerException: foreignKeyConstraintConflictException);
 
             SpecificationObjectDependencyValidationException expectedSpecificationObjectDependencyValidationException =
@@ -95,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             // when
             ValueTask<SpecificationObject> modifySpecificationObjectTask =
-                this.dataSetObjectService.ModifySpecificationObjectAsync(someSpecificationObject);
+                this.specificationObjectService.ModifySpecificationObjectAsync(someSpecificationObject);
 
             SpecificationObjectDependencyValidationException actualSpecificationObjectDependencyValidationException =
                 await Assert.ThrowsAsync<SpecificationObjectDependencyValidationException>(
@@ -135,7 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             var failedSpecificationObjectStorageException =
                 new FailedSpecificationObjectStorageException(
-                    message: "Failed dataSetObject storage error occurred, contact support.",
+                    message: "Failed specificationObject storage error occurred, contact support.",
                     innerException: databaseUpdateException);
 
             var expectedSpecificationObjectDependencyException =
@@ -149,7 +149,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             // when
             ValueTask<SpecificationObject> modifySpecificationObjectTask =
-                this.dataSetObjectService.ModifySpecificationObjectAsync(randomSpecificationObject);
+                this.specificationObjectService.ModifySpecificationObjectAsync(randomSpecificationObject);
 
             SpecificationObjectDependencyException actualSpecificationObjectDependencyException =
                 await Assert.ThrowsAsync<SpecificationObjectDependencyException>(
@@ -190,7 +190,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             var lockedSpecificationObjectException =
                 new LockedSpecificationObjectException(
-                    message: "Locked dataSetObject record exception, please try again later",
+                    message: "Locked specificationObject record exception, please try again later",
                     innerException: databaseUpdateConcurrencyException);
 
             var expectedSpecificationObjectDependencyValidationException =
@@ -204,7 +204,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             // when
             ValueTask<SpecificationObject> modifySpecificationObjectTask =
-                this.dataSetObjectService.ModifySpecificationObjectAsync(randomSpecificationObject);
+                this.specificationObjectService.ModifySpecificationObjectAsync(randomSpecificationObject);
 
             SpecificationObjectDependencyValidationException actualSpecificationObjectDependencyValidationException =
                 await Assert.ThrowsAsync<SpecificationObjectDependencyValidationException>(
@@ -245,7 +245,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             var failedSpecificationObjectServiceException =
                 new FailedSpecificationObjectServiceException(
-                    message: "Failed dataSetObject service occurred, please contact support", 
+                    message: "Failed specificationObject service occurred, please contact support", 
                     innerException: serviceException);
 
             var expectedSpecificationObjectServiceException =
@@ -259,7 +259,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             // when
             ValueTask<SpecificationObject> modifySpecificationObjectTask =
-                this.dataSetObjectService.ModifySpecificationObjectAsync(randomSpecificationObject);
+                this.specificationObjectService.ModifySpecificationObjectAsync(randomSpecificationObject);
 
             SpecificationObjectServiceException actualSpecificationObjectServiceException =
                 await Assert.ThrowsAsync<SpecificationObjectServiceException>(

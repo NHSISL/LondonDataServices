@@ -147,7 +147,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
             modelBuilder.Entity<ObjectColumn>()
                 .HasOne(columnDefinition => columnDefinition.SpecificationObjects)
-                .WithMany(schemaDefinition => schemaDefinition.DataSetObjects)
                 .HasForeignKey(columnDefinition => columnDefinition.SpecificationObjectId)
                 .OnDelete(DeleteBehavior.NoAction);
         }

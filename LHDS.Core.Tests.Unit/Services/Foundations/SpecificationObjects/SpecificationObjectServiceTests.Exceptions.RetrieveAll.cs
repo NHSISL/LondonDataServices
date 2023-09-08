@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             var failedSpecificationObjectStorageException =
                 new FailedSpecificationObjectStorageException(
-                    message: "Failed dataSetObject storage error occurred, contact support.",
+                    message: "Failed specificationObject storage error occurred, contact support.",
                     innerException: sqlException);
 
             var expectedSpecificationObjectDependencyException =
@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             // when
             Action retrieveAllSpecificationObjectsAction = () =>
-                this.dataSetObjectService.RetrieveAllSpecificationObjects();
+                this.specificationObjectService.RetrieveAllSpecificationObjects();
 
             SpecificationObjectDependencyException actualSpecificationObjectDependencyException =
                 Assert.Throws<SpecificationObjectDependencyException>(retrieveAllSpecificationObjectsAction);
@@ -63,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             var failedSpecificationObjectServiceException =
                 new FailedSpecificationObjectServiceException(
-                    message: "Failed dataSetObject service occurred, please contact support", 
+                    message: "Failed specificationObject service occurred, please contact support", 
                     innerException: serviceException);
 
             var expectedSpecificationObjectServiceException =
@@ -77,7 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             // when
             Action retrieveAllSpecificationObjectsAction = () =>
-                this.dataSetObjectService.RetrieveAllSpecificationObjects();
+                this.specificationObjectService.RetrieveAllSpecificationObjects();
 
             SpecificationObjectServiceException actualSpecificationObjectServiceException =
                 Assert.Throws<SpecificationObjectServiceException>(retrieveAllSpecificationObjectsAction);

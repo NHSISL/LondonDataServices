@@ -1,4 +1,4 @@
-﻿import { ErrorBase } from "../../types/ErrorBase";
+import { ErrorBase } from "../../types/ErrorBase";
 
 export interface DataSetErrors extends ErrorBase {
     dataSetName: string;

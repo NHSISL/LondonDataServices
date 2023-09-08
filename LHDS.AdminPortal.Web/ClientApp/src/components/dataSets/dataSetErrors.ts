@@ -2,7 +2,7 @@
 
 export interface DataSetErrors extends ErrorBase {
     dataSetName: string;
-    dataSetAliasses: string;
+    dataSetAliases: string;
     dataSetSupplier: string;
     dataSetAuthor: string;
     dataSourceType: string;
@@ -10,7 +10,7 @@ export interface DataSetErrors extends ErrorBase {
     activeFrom: string;
     activeTo: string;
     specifiedBy: string;
-    isNationallySpecified: string;
+    IsNationallySpecified: string;
     collectedBy: string;
     isNationallyCollected: string
 }
@@ -18,7 +18,7 @@ export interface DataSetErrors extends ErrorBase {
 export const dataSetErrors: DataSetErrors = {
     hasErrors: false,
     dataSetName: "",
-    dataSetAliasses: "",
+    dataSetAliases: "",
     dataSetSupplier: "",
     dataSetAuthor: "",
     dataSourceType: "",
@@ -26,7 +26,7 @@ export const dataSetErrors: DataSetErrors = {
     activeFrom: "",
     activeTo: "",
     specifiedBy: "",
-    isNationallySpecified: "",
+    IsNationallySpecified: "",
     collectedBy: "",
     isNationallyCollected: ""
 }

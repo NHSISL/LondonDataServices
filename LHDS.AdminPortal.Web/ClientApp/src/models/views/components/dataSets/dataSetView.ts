@@ -3,13 +3,13 @@ import { Guid } from 'guid-typescript';
 export class DataSetView {
     public id: Guid;
     public dataSetName?: string;
-    public dataSetAliasses?: string;
+    public dataSetAliases?: string;
     public dataSetSupplier?: string;
     public dataSetAuthor?: string;
     public specifiedBy?: string;
-    public isNationallySpecified?: boolean;
+    public IsNationallySpecified: boolean;
     public collectedBy?: string;
-    public isNationallyCollected?: boolean;
+    public isNationallyCollected: boolean;
     public dataSourceType?: string;
     public isActive: boolean;
     public activeFrom?: Date;
@@ -22,11 +22,11 @@ export class DataSetView {
     constructor(
         id: Guid,
         dataSetName?: string,
-        dataSetAliasses?: string,
+        dataSetAliases?: string,
         dataSetSupplier?: string,
         dataSetAuthor?: string,
         specifiedBy?: string,
-        isNationallySpecified?: boolean,
+        IsNationallySpecified?: boolean,
         collectedBy?: string,
         isNationallyCollected?: boolean,
         dataSourceType?: string,
@@ -40,11 +40,11 @@ export class DataSetView {
     ) {
         this.id = id;
         this.dataSetName = dataSetName || "";
-        this.dataSetAliasses = dataSetAliasses || "";
+        this.dataSetAliases = dataSetAliases || "";
         this.dataSetSupplier = dataSetSupplier || "";
         this.dataSetAuthor = dataSetAuthor || "";
         this.specifiedBy = specifiedBy;
-        this.isNationallySpecified = isNationallySpecified === false ? false : true;
+        this.IsNationallySpecified = IsNationallySpecified === false ? false : true;
         this.collectedBy = collectedBy;
         this.isNationallyCollected = isNationallyCollected === false ? false : true;
         this.dataSourceType = dataSourceType || "";

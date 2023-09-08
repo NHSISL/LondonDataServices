@@ -1,8 +1,14 @@
-﻿import { Validation } from "../../models/validations/validation";
+import { Validation } from "../../models/validations/validation";
 
 export const dataSetValidation: Array<Validation> = [{
     property: "dataSetName",
     friendlyName: "Name",
+    isRequired: true,
+    minLength: 3,
+    maxLength: 255
+}, {
+    property: "dataSetAliases",
+    friendlyName: "Aliases",
     isRequired: true,
     minLength: 3,
     maxLength: 255
@@ -19,6 +25,18 @@ export const dataSetValidation: Array<Validation> = [{
     minLength: 3,
     maxLength: 255
 }, {
+//    property: "specifiedBy",
+//    friendlyName: "Specified By",
+//    isRequired: true,
+//    minLength: 3,
+//    maxLength: 255
+//}, {
+//    property: "collectedBy",
+//    friendlyName: "collectedBy",
+//    isRequired: true,
+//    minLength: 3,
+//    maxLength: 255
+//}, {
     property: "dataSourceType",
     friendlyName: "Data Source Type",
     isRequired: true,
@@ -33,4 +51,4 @@ export const dataSetValidation: Array<Validation> = [{
     property: "activeTo",
     friendlyName: "Active To",
     isRequired: true
-},]
+}]

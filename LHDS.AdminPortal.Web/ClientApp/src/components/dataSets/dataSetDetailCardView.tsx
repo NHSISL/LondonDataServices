@@ -1,4 +1,4 @@
-﻿import React, { FunctionComponent } from "react";
+import React, { FunctionComponent } from "react";
 import ButtonBase from "../bases/buttons/ButtonBase";
 import SummaryListBase from "../bases/components/SummaryList/SummaryListBase";
 import SummaryListBaseRow from "../bases/components/SummaryList/SummaryListBase.Row";
@@ -36,7 +36,7 @@ const DataSetDetailCardView: FunctionComponent<DataSetDetailCardViewProps> = (pr
 
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>DataSet Aliases</SummaryListBaseKey>
-                    <SummaryListBaseValue>{dataSet.dataSetAliasses}</SummaryListBaseValue>
+                    <SummaryListBaseValue>{dataSet.dataSetAliases}</SummaryListBaseValue>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
@@ -47,6 +47,26 @@ const DataSetDetailCardView: FunctionComponent<DataSetDetailCardViewProps> = (pr
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>DataSet Author</SummaryListBaseKey>
                     <SummaryListBaseValue>{dataSet.dataSetAuthor}</SummaryListBaseValue>
+                </SummaryListBaseRow>
+
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Specified By</SummaryListBaseKey>
+                    <SummaryListBaseValue>{dataSet.specifiedBy}</SummaryListBaseValue>
+                </SummaryListBaseRow>
+
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Is Nationally Specified</SummaryListBaseKey>
+                    <SummaryListBaseValue>{dataSet.IsNationallySpecified ? <FontAwesomeIcon icon={faCheck} className="text-success" /> : <FontAwesomeIcon icon={faTimes} className="text-danger" />}</SummaryListBaseValue>
+                </SummaryListBaseRow>
+
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Collected By</SummaryListBaseKey>
+                    <SummaryListBaseValue>{dataSet.collectedBy}</SummaryListBaseValue>
+                </SummaryListBaseRow>
+
+                <SummaryListBaseRow>
+                    <SummaryListBaseKey>Is Nationally Collected</SummaryListBaseKey>
+                    <SummaryListBaseValue>{dataSet.isNationallyCollected ? <FontAwesomeIcon icon={faCheck} className="text-success" /> : <FontAwesomeIcon icon={faTimes} className="text-danger" />}</SummaryListBaseValue>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>

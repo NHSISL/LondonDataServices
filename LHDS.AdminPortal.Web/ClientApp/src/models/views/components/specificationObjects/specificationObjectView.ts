@@ -1,7 +1,7 @@
 import { Guid } from 'guid-typescript';
 import { DataSetSpecification } from '../../../dataSetSpecifications/dataSetSpecification';
 
-export class DataSetObjectView {
+export class SpecificationObjectView {
     public id: Guid;
     public dataSetSpecificationId: Guid;
     public SupplierObjectName: string;

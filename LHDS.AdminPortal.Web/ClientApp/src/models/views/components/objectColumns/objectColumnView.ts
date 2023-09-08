@@ -1,5 +1,5 @@
 import { Guid } from 'guid-typescript';
-import { DataSetObject } from '../../../dataSetObjects/dataSetObject';
+import { SpecificationObject } from '../../../specificationObjects/specificationObject';
 
 export class ObjectColumnView {
     public id: Guid;
@@ -34,7 +34,7 @@ export class ObjectColumnView {
     public createdDate?: Date;
     public updatedBy?: string;
     public updatedDate?: Date;
-    dataSetObject?: DataSetObject
+    specificationObject?: SpecificationObject
 
     constructor(
         id: Guid,
@@ -69,7 +69,7 @@ export class ObjectColumnView {
         createdDate?: Date,
         updatedBy?: string,
         updatedDate?: Date,
-        dataSetObject?: DataSetObject
+        specificationObject?: SpecificationObject
     ) {
         this.id = id
         this.dataSetObjectId = dataSetObjectId;
@@ -103,6 +103,6 @@ export class ObjectColumnView {
         this.createdDate = createdDate ;
         this.updatedBy = updatedBy || "";
         this.updatedDate = updatedDate;
-        this.dataSetObject = dataSetObject;
+        this.specificationObject = specificationObject;
     }
 }

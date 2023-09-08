@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
-using LHDS.Core.Models.Foundations.DataSetSpecifications;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 {

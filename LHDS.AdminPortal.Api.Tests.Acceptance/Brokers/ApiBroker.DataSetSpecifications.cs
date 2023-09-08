@@ -12,26 +12,26 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 {
     public partial class ApiBroker
     {
-        private const string DataSetSpecificationsRelativeUrl = "api/dataSetSpecifications";
+        private const string dataSetSpecificationsRelativeUrl = "api/dataSetSpecifications";
 
         public async ValueTask<DataSetSpecification> PostDataSetSpecificationAsync(
             DataSetSpecification dataSetSpecification) =>
-                await this.apiFactoryClient.PostContentAsync(DataSetSpecificationsRelativeUrl, dataSetSpecification);
+                await this.apiFactoryClient.PostContentAsync(dataSetSpecificationsRelativeUrl, dataSetSpecification);
 
         public async ValueTask<List<DataSetSpecification>> GetAllDataSetSpecificationsAsync() =>
            await this.apiFactoryClient.GetContentAsync<List<DataSetSpecification>>(
-               $"{DataSetSpecificationsRelativeUrl}/");
+               $"{dataSetSpecificationsRelativeUrl}/");
 
         public async ValueTask<DataSetSpecification> GetDataSetSpecificationByIdAsync(Guid dataSetSpecificationId) =>
             await this.apiFactoryClient.GetContentAsync<DataSetSpecification>(
-                $"{DataSetSpecificationsRelativeUrl}/{dataSetSpecificationId}");
+                $"{dataSetSpecificationsRelativeUrl}/{dataSetSpecificationId}");
 
         public async ValueTask<DataSetSpecification> PutDataSetSpecificationAsync(
         DataSetSpecification dataSetSpecification) =>
-                await this.apiFactoryClient.PutContentAsync(DataSetSpecificationsRelativeUrl, dataSetSpecification);
+                await this.apiFactoryClient.PutContentAsync(dataSetSpecificationsRelativeUrl, dataSetSpecification);
 
         public async ValueTask<DataSetSpecification> DeleteDataSetSpecificationByIdAsync(Guid dataSetSpecificationId) =>
             await this.apiFactoryClient.DeleteContentAsync<DataSetSpecification>(
-                $"{DataSetSpecificationsRelativeUrl}/{dataSetSpecificationId}");
+                $"{dataSetSpecificationsRelativeUrl}/{dataSetSpecificationId}");
     }
 }

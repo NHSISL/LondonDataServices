@@ -38,6 +38,43 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static DataSetSpecification UpdateDataSetSpecificationWithRandomValues(
+            DataSetSpecification inputDataSetSpecification)
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            var filler = new Filler<DataSetSpecification>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(dataSetSpecification => dataSetSpecification.Id).Use(inputDataSetSpecification.Id)
+
+                .OnProperty(dataSetSpecification => 
+                    dataSetSpecification.DataSetId).Use(inputDataSetSpecification.DataSetId)
+                
+                .OnProperty(dataSetSpecification => 
+                    dataSetSpecification.CreatedBy).Use(inputDataSetSpecification.CreatedBy)
+
+                .OnProperty(dataSetSpecification => 
+                    dataSetSpecification.CreatedDate).Use(inputDataSetSpecification.CreatedDate)
+
+                .OnProperty(dataSetSpecification =>
+                    dataSetSpecification.OurSpecificationVersion).Use(GetRandomString(10))
+
+                .OnProperty(dataSetSpecification =>
+                    dataSetSpecification.SupplierSpecificationVersion).Use(GetRandomString(10))
+
+                .OnProperty(dataSetSpecification => 
+                    dataSetSpecification.PresededById).Use(inputDataSetSpecification.PresededById)
+
+                .OnProperty(dataSetSpecification => 
+                    dataSetSpecification.SupersededById).Use(inputDataSetSpecification.SupersededById)
+
+                .OnProperty(DataSet => DataSet.UpdatedDate).Use(now)
+                .OnType<DateTimeOffset>().Use(GetRandomDateTime());
+
+            return filler.Create();
+        }
+
         private static IQueryable<DataSetSpecification> CreateRandomDataSetSpecifications(Guid dataSetId)
         {
             return CreateDataSetSpecificationFiller(dataSetId)

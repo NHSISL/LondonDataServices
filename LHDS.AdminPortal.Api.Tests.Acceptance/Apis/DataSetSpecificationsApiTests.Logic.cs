@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
+using RESTFulSense.Exceptions;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
@@ -97,6 +98,36 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
 
             // Cleanup
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(inputDataSetSpecification.Id);
+            await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
+        }
+
+        [Fact]
+        public async Task ShouldDeleteDataSetSpecificationAsync()
+        {
+            // given
+            DataSet randomDataSet = CreateRandomDataSet();
+            await this.apiBroker.PostDataSetAsync(randomDataSet);
+
+            DataSetSpecification randomDataSetSpecification =
+                CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
+
+            DataSetSpecification inputDataSetSpecification = randomDataSetSpecification;
+            DataSetSpecification expectedDataSetSpecification = inputDataSetSpecification;
+            await this.apiBroker.PostDataSetSpecificationAsync(inputDataSetSpecification);
+
+            // when
+            DataSetSpecification deletedDataSetSpecification =
+                await this.apiBroker.DeleteDataSetSpecificationByIdAsync(inputDataSetSpecification.Id);
+
+            ValueTask<DataSetSpecification> getDataSetSpecificationbyIdTask =
+                this.apiBroker.GetDataSetSpecificationByIdAsync(inputDataSetSpecification.Id);
+
+            // then
+            deletedDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification);
+
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
+                getDataSetSpecificationbyIdTask.AsTask());
+
             await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
         }
     }

@@ -1,5 +1,4 @@
-﻿import React, { FunctionComponent, ChangeEvent, useState, useEffect } from "react";
-import SelectInputBase from "../bases/inputs/SelectInputBase";
+import React, { FunctionComponent, ChangeEvent, useState, useEffect } from "react";
 import ButtonBase from "../bases/buttons/ButtonBase";
 import SummaryListBase from "../bases/components/SummaryList/SummaryListBase";
 import SummaryListBaseRow from "../bases/components/SummaryList/SummaryListBase.Row";
@@ -90,12 +89,11 @@ const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (pr
                             id="dataSetName"
                             name="dataSetName"
                             placeholder="DataSet Name"
+                            required={true}
                             value={editDataSet.dataSetName}
                             error={errors.dataSetName}
-                            onChange={handleChange}
-                        />
+                            onChange={handleChange}/>
                     </SummaryListBaseValue>
-
                     <SummaryListBaseAction> </SummaryListBaseAction>
                 </SummaryListBaseRow>
 
@@ -103,11 +101,12 @@ const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (pr
                     <SummaryListBaseKey>DataSet Aliases</SummaryListBaseKey>
                     <SummaryListBaseValue>
                         <TextInputBase
-                            id="DataSetAliasses"
-                            name="dataSetAliasses"
-                            placeholder="DataSet Aliasses"
-                            value={editDataSet.dataSetAliasses}
-                            error={errors.dataSetAliasses}
+                            id="DataSetAliases"
+                            name="dataSetAliases"
+                            placeholder="DataSet Aliases"
+                            value={editDataSet.dataSetAliases}
+                            required={true}
+                            error={errors.dataSetAliases}
                             onChange={handleChange}
                         />
                     </SummaryListBaseValue>
@@ -122,6 +121,7 @@ const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (pr
                             name="dataSetSupplier"
                             placeholder="DataSet Supplier"
                             value={editDataSet.dataSetSupplier}
+                            required={true}
                             error={errors.dataSetSupplier}
                             onChange={handleChange}
                         />
@@ -137,6 +137,7 @@ const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (pr
                             name="dataSetAuthor"
                             placeholder="DataSet Author"
                             value={editDataSet.dataSetAuthor}
+                            required={true}
                             error={errors.dataSetAuthor}
                             onChange={handleChange}
                         />
@@ -145,13 +146,14 @@ const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (pr
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
-                    <SummaryListBaseKey>specified By</SummaryListBaseKey>
+                    <SummaryListBaseKey>Specified By</SummaryListBaseKey>
                     <SummaryListBaseValue>
                         <TextInputBase
                             id="specifiedBy"
                             name="specifiedBy"
                             placeholder="Specified By"
                             value={editDataSet.specifiedBy}
+                            required={true}
                             error={errors.specifiedBy}
                             onChange={handleChange} />
                     </SummaryListBaseValue>
@@ -162,11 +164,11 @@ const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (pr
                     <SummaryListBaseKey>Is Nationally Specified</SummaryListBaseKey>
                     <SummaryListBaseValue>
                         <CheckboxBase
-                            id="isNationallySpecified"
-                            name="isNationallySpecified"
+                            id="IsNationallySpecified"
+                            name="IsNationallySpecified"
                             label=""
-                            checked={editDataSet.isNationallySpecified}
-                            error={errors.isNationallySpecified}
+                            checked={editDataSet.IsNationallySpecified}
+                            error={errors.IsNationallySpecified}
                             onChange={handleChange}
                         />
                     </SummaryListBaseValue>
@@ -181,6 +183,7 @@ const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (pr
                             name="collectedBy"
                             placeholder="Collected By"
                             value={editDataSet.collectedBy}
+                            required={true}
                             error={errors.collectedBy}
                             onChange={handleChange} />
                     </SummaryListBaseValue>
@@ -210,6 +213,7 @@ const DataSetDetailCardEdit: FunctionComponent<DataSetDetailCardEditProps> = (pr
                             name="dataSourceType"
                             placeholder="Data Source Type"
                             value={editDataSet.dataSourceType}
+                            required={true}
                             error={errors.dataSourceType}
                             onChange={handleChange}
                         />

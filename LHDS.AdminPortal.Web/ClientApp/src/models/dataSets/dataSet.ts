@@ -3,13 +3,13 @@ import { Guid } from 'guid-typescript';
 export class DataSet {
     public id: Guid;
     public dataSetName?: string;
-    public dataSetAliasses?: string;
+    public dataSetAliases?: string;
     public dataSetSupplier?: string;
     public dataSetAuthor?: string;
     public specifiedBy?: string;
-    public isNationallySpecified?: boolean;
+    public IsNationallySpecified: boolean;
     public collectedBy?: string;
-    public isNationallyCollected?: boolean;
+    public isNationallyCollected: boolean;
     public dataSourceType?: string;
     public isActive: boolean;
     public activeFrom?: Date;
@@ -22,15 +22,16 @@ export class DataSet {
     constructor(dataSet: any) {
         this.id = dataSet.id ? Guid.parse(dataSet.id) : Guid.parse(Guid.EMPTY);
         this.dataSetName = dataSet.dataSetName;
-        this.dataSetAliasses = dataSet.dataSetAliasses;
+        this.dataSetAliases = dataSet.dataSetAliases;
         this.dataSetSupplier = dataSet.dataSetSupplier;
         this.dataSetAuthor = dataSet.dataSetAuthor;
         this.specifiedBy = dataSet.specifiedBy;
-        this.isNationallySpecified = dataSet.isNationallySpecified;
+        this.IsNationallySpecified = dataSet.IsNationallySpecified;
         this.collectedBy = dataSet.collectedBy;
         this.isNationallyCollected = dataSet.isNationallyCollected;
         this.dataSourceType = dataSet.dataSourceType;
         this.isActive = dataSet.isActive;
+        this.activeFrom = dataSet.activeFrom;
         this.activeTo = dataSet.activeTo;
         this.createdDate = dataSet.createdDate;
         this.createdBy = dataSet.createdBy;

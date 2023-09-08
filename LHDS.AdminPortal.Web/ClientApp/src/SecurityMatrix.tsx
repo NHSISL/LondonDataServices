@@ -21,6 +21,12 @@ const securityPoints = {
     ingestionTracking: {
         view: ["ISL.LDS.AdminSpa.IngestionTracking", "ISL.LDS.AdminSpa.Administrators", "ISL.LDS.AdminSpa.ReadOnly"]
     },
+    dataSets: {
+        view: ["ISL.LDS.AdminSpa.IngestionTracking", "ISL.LDS.AdminSpa.Administrators", "ISL.LDS.AdminSpa.ReadOnly"],
+        add: ["ISL.LDS.AdminSpa.Administrators"],
+        delete: ["ISL.LDS.AdminSpa.Administrators"],
+        edit: ["ISL.LDS.AdminSpa.Administrators"],
+    },
 }
 
 export default securityPoints

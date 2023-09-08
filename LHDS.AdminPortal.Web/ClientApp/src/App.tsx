@@ -18,7 +18,8 @@ import { PdsUpload } from './pages/PdsUpload';
 import { SecuredRoute } from './components/SecuredRoute';
 import securityPoints from './SecurityMatrix';
 import { DataTypesPage } from './pages/configuration/dataTypesPage';
-import { DataSetsPage } from './pages/configuration/dataSetsPage';
+import { DataSetsListPage } from './pages/configuration/dataSetsListPage';
+import { DataSetPage } from './pages/configuration/dataSetPage';
 
 const App = ({ msalInstance }: any) => {
     return (
@@ -35,7 +36,9 @@ const App = ({ msalInstance }: any) => {
                         <Route path="/configuration" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><ConfigHomePage/></SecuredRoute>} />
                         <Route path="/configuration/suppliers" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><SuppliersPage /></SecuredRoute >} />
                         <Route path="/configuration/dataTypes" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataTypesPage /></SecuredRoute >} />
-                        <Route path="/configuration/dataSets" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetsPage /></SecuredRoute >} />
+                        <Route path="/configuration/dataSets" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetsListPage /></SecuredRoute >} />
+                        <Route path="/configuration/dataSet" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetPage /></SecuredRoute >} />
+                        <Route path="/configuration/dataSet/:dataSetId" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetPage /></SecuredRoute>} />
                         <Route path="/pds" element={<SecuredRoute allowedRoles={securityPoints.pds.view}>< PdsSearch /></SecuredRoute >} />
                         <Route path="/pdsUpload" element={<SecuredRoute allowedRoles={securityPoints.pds.view}>< PdsUpload /></SecuredRoute >} />
                     </Routes>

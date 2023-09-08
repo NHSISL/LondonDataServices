@@ -3,31 +3,22 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Linq;
-using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.PdsAudits;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SpecificationObjects;
 using Tynamix.ObjectFiller;
 using Xunit;
-using Xunit.Abstractions;
 
-namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
+namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetObjects
 {
     [Collection(nameof(ApiTestCollection))]
-    public partial class DataSetSpecificationsApiTests
+    public partial class DataSetObjectsApiTests
     {
         private readonly ApiBroker apiBroker;
-        private readonly ITestOutputHelper output;
 
-        public DataSetSpecificationsApiTests(ApiBroker apiBroker, ITestOutputHelper output)
-        {
+        public DataSetObjectsApiTests(ApiBroker apiBroker) =>
             this.apiBroker = apiBroker;
-            this.output = output;
-        }
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
@@ -38,48 +29,25 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static DataSetSpecification UpdateDataSetSpecificationWithRandomValues(
-            DataSetSpecification inputDataSetSpecification)
+        private static SpecificationObject CreateRandomDataSetObject(Guid dataSetSpecificationId) =>
+            CreateDataSetObjectFiller(dataSetSpecificationId).Create();
+
+        private static Filler<SpecificationObject> CreateDataSetObjectFiller(Guid dataSetSpecificationId)
         {
-            DateTimeOffset now = DateTimeOffset.UtcNow;
-            var filler = new Filler<DataSetSpecification>();
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<SpecificationObject>();
+            var now = DateTimeOffset.UtcNow;
 
             filler.Setup()
-                .OnType<DateTimeOffset?>().Use(now)
-                .OnProperty(dataSetSpecification => dataSetSpecification.Id).Use(inputDataSetSpecification.Id)
+                .OnType<DateTimeOffset>().Use(now)
 
-                .OnProperty(dataSetSpecification => 
-                    dataSetSpecification.DataSetId).Use(inputDataSetSpecification.DataSetId)
-                
-                .OnProperty(dataSetSpecification => 
-                    dataSetSpecification.CreatedBy).Use(inputDataSetSpecification.CreatedBy)
+                .OnProperty(SpecificationObject => 
+                    SpecificationObject.DataSetSpecificationId).Use(dataSetSpecificationId)
 
-                .OnProperty(dataSetSpecification => 
-                    dataSetSpecification.CreatedDate).Use(inputDataSetSpecification.CreatedDate)
+                .OnProperty(SpecificationObject => SpecificationObject.CreatedBy).Use(user)
+                .OnProperty(SpecificationObject => SpecificationObject.UpdatedBy).Use(user);
 
-                .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.OurSpecificationVersion).Use(GetRandomString(10))
-
-                .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.SupplierSpecificationVersion).Use(GetRandomString(10))
-
-                .OnProperty(dataSetSpecification => 
-                    dataSetSpecification.PresededById).Use(inputDataSetSpecification.PresededById)
-
-                .OnProperty(dataSetSpecification => 
-                    dataSetSpecification.SupersededById).Use(inputDataSetSpecification.SupersededById)
-
-                .OnProperty(DataSet => DataSet.UpdatedDate).Use(now)
-                .OnType<DateTimeOffset>().Use(GetRandomDateTime());
-
-            return filler.Create();
-        }
-
-        private static IQueryable<DataSetSpecification> CreateRandomDataSetSpecifications(Guid dataSetId)
-        {
-            return CreateDataSetSpecificationFiller(dataSetId)
-                .Create(count: GetRandomNumber())
-                    .AsQueryable();
+            return filler;
         }
 
         private static DataSetSpecification CreateRandomDataSetSpecification(Guid dataSetId) =>
@@ -113,13 +81,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             return filler;
         }
 
-        private static IQueryable<DataSet> CreateRandomDataSets()
-        {
-            return CreateDataSetFiller()
-                .Create(count: GetRandomNumber())
-                    .AsQueryable();
-        }
-
         private static DataSet CreateRandomDataSet() =>
             CreateDataSetFiller().Create();
 
@@ -132,9 +93,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
-                .OnProperty(DataSet => DataSet.CreatedBy).Use(user)
-                .OnProperty(DataSet => DataSet.UpdatedBy).Use(user)
-                .OnProperty(DataSet => DataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()));
+                .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()));
 
             return filler;
         }

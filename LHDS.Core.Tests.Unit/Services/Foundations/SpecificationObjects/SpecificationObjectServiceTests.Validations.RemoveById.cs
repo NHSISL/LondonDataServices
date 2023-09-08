@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             // when
             ValueTask<SpecificationObject> removeSpecificationObjectByIdTask =
-                this.SpecificationObjectService.RemoveSpecificationObjectByIdAsync(invalidSpecificationObjectId);
+                this.specificationObjectService.RemoveSpecificationObjectByIdAsync(invalidSpecificationObjectId);
 
             SpecificationObjectValidationException actualSpecificationObjectValidationException =
                 await Assert.ThrowsAsync<SpecificationObjectValidationException>(

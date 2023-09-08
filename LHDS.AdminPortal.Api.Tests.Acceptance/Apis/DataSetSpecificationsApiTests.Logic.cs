@@ -23,7 +23,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             DataSet randomDataSet = CreateRandomDataSet();
             await this.apiBroker.PostDataSetAsync(randomDataSet);
 
-            DataSetSpecification randomDataSetSpecification 
+            DataSetSpecification randomDataSetSpecification
                 = CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
 
             DataSetSpecification inputDataSetSpecification = randomDataSetSpecification;
@@ -32,21 +32,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             // When
             DataSetSpecification actualDataSetSpecification =
                 await this.apiBroker.PostDataSetSpecificationAsync(inputDataSetSpecification);
-            }
-
-            // When
-            List<DataSetSpecification> actualDataSetSpecifications = 
-                await this.apiBroker.GetAllDataSetSpecificationsAsync();
 
             // Then
-            foreach (DataSetSpecification expectedDataSetSpecification in expectedDataSetSpecifications)
-            {
-                DataSetSpecification actualDataSetSpecification = 
-                    actualDataSetSpecifications.Single(approval => approval.Id == expectedDataSetSpecification.Id);
-
-                actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification);
-                await this.apiBroker.DeleteDataSetSpecificationByIdAsync(actualDataSetSpecification.Id);
-            }
+            actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification);
 
             // Cleanup
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(inputDataSetSpecification.Id);

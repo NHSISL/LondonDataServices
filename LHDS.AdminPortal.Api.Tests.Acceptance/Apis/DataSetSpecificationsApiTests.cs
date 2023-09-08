@@ -4,9 +4,13 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.PdsAudits;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using Tynamix.ObjectFiller;
 using Xunit;
 
@@ -28,6 +32,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
 
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static IQueryable<DataSetSpecification> CreateRandomDataSetSpecifications(Guid dataSetId)
+        {
+            return CreateDataSetSpecificationFiller(dataSetId)
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
 
         private static DataSetSpecification CreateRandomDataSetSpecification(Guid dataSetId) =>
             CreateDataSetSpecificationFiller(dataSetId).Create();

@@ -1,7 +1,6 @@
 import { Guid } from 'guid-typescript';
 import { SpecificationObject } from '../../../specificationObjects/specificationObject';
 
-
 export class ObjectColumnView {
     public id: Guid;
     public dataSetObjectId: Guid;

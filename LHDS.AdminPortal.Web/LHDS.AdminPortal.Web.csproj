@@ -77,6 +77,8 @@
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnErrors.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnValidations.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetailCard.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetailCardView.tsx" />
@@ -156,6 +158,7 @@
     <TypeScriptCompile Remove="ClientApp\src\services\views\Documents\DocumentViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\ingestionTrackingHomeViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\ingestionTrackingViewService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\objectColumns\objectColumnViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\OptOuts\optoutViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\Pds\pdsHomeViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\Pds\pdsViewService.ts" />

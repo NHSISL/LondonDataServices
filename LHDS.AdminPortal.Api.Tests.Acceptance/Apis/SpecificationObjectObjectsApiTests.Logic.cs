@@ -47,7 +47,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
         }
 
         [Fact]
-        public async Task ShouldGetAllDataSetSpecificationsAsync()
+        public async Task ShouldGetAllSpecificationObjectsAsync()
         {
             // Given
             DataSet randomDataSet = CreateRandomDataSet();

@@ -1,5 +1,4 @@
 import { Guid } from 'guid-typescript';
-import { DataType } from '../dataTypes/dataType';
 import { SpecificationObject } from '../specificationObjects/specificationObject';
 
 export class ObjectColumn {

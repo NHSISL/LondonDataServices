@@ -66,7 +66,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
 
             foreach (SpecificationObject inputSpecificationObject in inputSpecificationObjects) 
             { 
-            
                 await this.apiBroker.PostSpecificationObjectAsync(inputSpecificationObject);
             }
 

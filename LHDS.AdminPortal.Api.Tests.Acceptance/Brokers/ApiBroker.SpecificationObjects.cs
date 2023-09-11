@@ -21,7 +21,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
            await this.apiFactoryClient.GetContentAsync<List<SpecificationObject>>(
                $"{specificationObjectsRelativeUrl}/");
 
-        public async ValueTask<SpecificationObject> GetSpecificationObjectByIdAsync(Guid specificationObject) =>
+        public async ValueTask<SpecificationObject> GetSpecificationObjectByIdAsync(Guid specificationObjectId) =>
             await this.apiFactoryClient.GetContentAsync<SpecificationObject>(
                 $"{specificationObjectsRelativeUrl}/{specificationObjectId}");
 

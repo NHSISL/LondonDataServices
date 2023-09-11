@@ -26,7 +26,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
                 $"{dataSetSpecificationsRelativeUrl}/{dataSetSpecificationId}");
 
         public async ValueTask<DataSetSpecification> PutDataSetSpecificationAsync(
-        DataSetSpecification dataSetSpecification) =>
+            DataSetSpecification dataSetSpecification) =>
                 await this.apiFactoryClient.PutContentAsync(dataSetSpecificationsRelativeUrl, dataSetSpecification);
 
         public async ValueTask<DataSetSpecification> DeleteDataSetSpecificationByIdAsync(Guid dataSetSpecificationId) =>

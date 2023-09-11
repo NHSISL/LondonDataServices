@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.SpecificationObjects;
 
@@ -16,9 +17,17 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
             SpecificationObject specificationObject) =>
                 await this.apiFactoryClient.PostContentAsync(specificationObjectsRelativeUrl, specificationObject);
 
+        public async ValueTask<List<SpecificationObject>> GetAllSpecificationObjectsAsync() =>
+           await this.apiFactoryClient.GetContentAsync<List<SpecificationObject>>(
+               $"{specificationObjectsRelativeUrl}/");
+
         public async ValueTask<SpecificationObject> GetSpecificationObjectByIdAsync(Guid specificationObjectId) =>
             await this.apiFactoryClient.GetContentAsync<SpecificationObject>(
                 $"{specificationObjectsRelativeUrl}/{specificationObjectId}");
+
+        public async ValueTask<SpecificationObject> PutSpecificationObjectAsync(
+            SpecificationObject specificationObject) =>
+                await this.apiFactoryClient.PutContentAsync(specificationObjectsRelativeUrl, specificationObject);
 
         public async ValueTask<SpecificationObject> DeleteSpecificationObjectByIdAsync(
             Guid specificationObjectId) =>

@@ -21,6 +21,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
            await this.apiFactoryClient.GetContentAsync<List<SpecificationObject>>(
                $"{specificationObjectsRelativeUrl}/");
 
+        public async ValueTask<SpecificationObject> GetSpecificationObjectByIdAsync(Guid specificationObject) =>
+            await this.apiFactoryClient.GetContentAsync<SpecificationObject>(
+                $"{specificationObjectsRelativeUrl}/{specificationObject}");
+
         public async ValueTask<SpecificationObject> DeleteSpecificationObjectByIdAsync(
             Guid specificationObjectId) =>
                 await this.apiFactoryClient.DeleteContentAsync<SpecificationObject>(

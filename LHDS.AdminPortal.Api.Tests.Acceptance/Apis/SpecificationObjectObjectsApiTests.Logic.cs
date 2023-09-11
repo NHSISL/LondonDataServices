@@ -27,8 +27,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
 
             await this.apiBroker.PostDataSetSpecificationAsync(randomDataSetSpecification);
 
-            SpecificationObject randomSpecificationObject 
-                = CreateRandomSpecificationObject(dataSetSpecificationId: randomDataSetSpecification.Id);
+            SpecificationObject randomSpecificationObject = 
+                CreateRandomSpecificationObject(dataSetSpecificationId: randomDataSetSpecification.Id);
 
             SpecificationObject inputSpecificationObject = randomSpecificationObject;
             SpecificationObject expectedSpecificationObject = inputSpecificationObject;

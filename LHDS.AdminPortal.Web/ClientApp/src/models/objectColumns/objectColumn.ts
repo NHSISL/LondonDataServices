@@ -1,5 +1,4 @@
 import { Guid } from 'guid-typescript';
-import { DataType } from '../dataTypes/dataType';
 import { SpecificationObject } from '../specificationObjects/specificationObject';
 
 export class ObjectColumn {
@@ -31,12 +30,10 @@ export class ObjectColumn {
     public isSensitiveRecordMarker: boolean;
     public codeSystem: string;
     public partitionColumnLevel: string;
-    public dataTypeId: Guid;
     public createdBy?: string;
     public createdDate?: Date;
     public updatedBy?: string;
     public updatedDate?: Date;
-    public dataType?: DataType;
     public specificationObject?: SpecificationObject;
 
     constructor(objectColumn: any) {
@@ -68,17 +65,12 @@ export class ObjectColumn {
         this.maskingMethod = objectColumn.maskingMethod;
         this.codeSystem = objectColumn.codeSystem;
         this.partitionColumnLevel = objectColumn.partitionColumnLevel;
-        this.dataTypeId = objectColumn.dataTypeId;;
         this.createdBy = objectColumn.createdBy;
         this.createdDate = new Date(objectColumn.createdDate);
         this.updatedBy = objectColumn.updatedBy;
         this.updatedDate = new Date(objectColumn.updatedDate);
 
-        if (objectColumn.dataType !== undefined && objectColumn.dataType !== null) {
-            this.dataType = new DataType(objectColumn.dataType);
-        }
-
-        if (objectColumn.dataSetObject !== undefined && objectColumn.dataSetObject !== null) {
+        if (objectColumn.specificationObject !== undefined && objectColumn.specificationObject !== null) {
             this.specificationObject = new SpecificationObject(objectColumn.specificationObject);
         }
     }

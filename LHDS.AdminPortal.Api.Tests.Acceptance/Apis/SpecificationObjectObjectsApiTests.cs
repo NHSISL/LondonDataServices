@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
@@ -28,6 +29,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
 
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static IQueryable<SpecificationObject> CreateRandomSpecificationObjects(Guid dataSetSpecificationId)
+        {
+            return CreateSpecificationObjectFiller(dataSetSpecificationId)
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
 
         private static SpecificationObject UpdateSpecificationObjectWithRandomValues(
             SpecificationObject inputSpecificationObject)

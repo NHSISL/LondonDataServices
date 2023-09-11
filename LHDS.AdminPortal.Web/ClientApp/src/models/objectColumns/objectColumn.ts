@@ -36,7 +36,6 @@ export class ObjectColumn {
     public createdDate?: Date;
     public updatedBy?: string;
     public updatedDate?: Date;
-    public dataType?: DataType;
     public specificationObject?: SpecificationObject;
 
     constructor(objectColumn: any) {

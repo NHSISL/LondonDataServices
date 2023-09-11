@@ -4,7 +4,7 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "react-q
 import SpecificationObjectBroker from "../../brokers/apiBroker.specificationobjects";
 import { SpecificationObject } from "../../models/specificationObjects/specificationObject";
 
-export const Service = {
+export const specificationObjectService = {
     useCreateSpecificationObject: () => {
         const broker = new SpecificationObjectBroker();
         const queryClient = useQueryClient();

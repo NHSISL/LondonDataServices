@@ -190,7 +190,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IOptOutService, OptOutService>();
             services.AddTransient<IPdsAuditService, PdsAuditService>();
             services.AddTransient<IDataSetService, DataSetService>();
-            services.AddTransient<ISpecificationObjectService, DataSetObjectService>();
+            services.AddTransient<ISpecificationObjectService, SpecificationObjectService>();
             services.AddTransient<IDataSetSpecificationService, DataSetSpecificationService>();
             services.AddTransient<IDataTypeService, DataTypeService>();
             services.AddTransient<IObjectColumnService, ObjectColumnService>();

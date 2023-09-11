@@ -153,6 +153,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
 
             // then
             deletedDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification);
+            await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
 
             await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
                 getDataSetSpecificationbyIdTask.AsTask());

@@ -51,7 +51,6 @@ export const objectColumnViewService = {
                             objectColumn.isSensitiveRecordMarker,
                             objectColumn.codeSystem,
                             objectColumn.partitionColumnLevel,
-                            objectColumn.dataTypeId,
                             objectColumn.createdBy,
                             objectColumn.createdDate,
                             objectColumn.updatedBy,

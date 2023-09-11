@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             var invalidSpecificationObjectException = 
                 new InvalidSpecificationObjectException(
-                    message: "Invalid SpecificationObject. Please correct the errors and try again.");
+                    message: "Invalid specificationObject. Please correct the errors and try again.");
 
             invalidSpecificationObjectException.AddData(
                 key: nameof(SpecificationObject.Id),

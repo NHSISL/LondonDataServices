@@ -33,7 +33,7 @@ namespace LHDS.Core.Models.Foundations.SpecificationObjects
         public DataSetSpecification? DataSetSpecification { get; set; } = null!;
 
         [BindNever]
-        public List<ObjectColumn> SpecificaitonObjects { get; set; } = new List<ObjectColumn>();
+        public List<ObjectColumn> ObjectColumns { get; set; } = new List<ObjectColumn>();
 
     }
 }

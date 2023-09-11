@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
@@ -40,6 +42,48 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
 
             // Cleanup
             await this.apiBroker.DeleteSpecificationObjectByIdAsync(inputSpecificationObject.Id);
+            await this.apiBroker.DeleteDataSetSpecificationByIdAsync(randomDataSetSpecification.Id);
+            await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
+        }
+
+        [Fact]
+        public async Task ShouldGetAllDataSetSpecificationsAsync()
+        {
+            // Given
+            DataSet randomDataSet = CreateRandomDataSet();
+            await this.apiBroker.PostDataSetAsync(randomDataSet);
+
+            DataSetSpecification randomDataSetSpecification
+                = CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
+
+            await this.apiBroker.PostDataSetSpecificationAsync(randomDataSetSpecification);
+
+            IQueryable<SpecificationObject> randomSpecificationObjects =
+                CreateRandomSpecificationObjects(dataSetSpecificationId: randomDataSetSpecification.Id);
+
+            IQueryable<SpecificationObject> inputSpecificationObjects = randomSpecificationObjects;
+            IQueryable<SpecificationObject> expectedSpecificationObjects = inputSpecificationObjects;
+
+            foreach (SpecificationObject inputSpecificationObject in inputSpecificationObjects) 
+            { 
+            
+                await this.apiBroker.PostSpecificationObjectAsync(inputSpecificationObject);
+            }
+
+            // When
+            List<SpecificationObject> actualSpecificationObjects =
+                await this.apiBroker.GetAllSpecificationObjectsAsync();
+
+            // Then
+            foreach (SpecificationObject expectedSpecificationObject in expectedSpecificationObjects)
+            {
+                SpecificationObject actualSpecificationObject =
+                    actualSpecificationObjects.Single(approval => approval.Id == expectedSpecificationObject.Id);
+
+                actualSpecificationObject.Should().BeEquivalentTo(expectedSpecificationObject);
+                await this.apiBroker.DeleteSpecificationObjectByIdAsync(actualSpecificationObject.Id);
+            }
+
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(randomDataSetSpecification.Id);
             await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
         }

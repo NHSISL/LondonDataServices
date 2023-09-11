@@ -37,6 +37,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
 
             filler.Setup()
                 .OnType<DateTimeOffset?>().Use(now)
+                .OnType<DateTimeOffset>().Use(GetRandomDateTime())
                 .OnProperty(SpecificationObject => SpecificationObject.Id).Use(inputSpecificationObject.Id)
 
                 .OnProperty(SpecificationObject =>
@@ -48,8 +49,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
                 .OnProperty(SpecificationObject =>
                     SpecificationObject.CreatedDate).Use(inputSpecificationObject.CreatedDate)
 
-                .OnProperty(DataSet => DataSet.UpdatedDate).Use(now)
-                .OnType<DateTimeOffset>().Use(GetRandomDateTime());
+                .OnProperty(DataSet => DataSet.UpdatedDate).Use(now);
 
             return filler.Create();
         }

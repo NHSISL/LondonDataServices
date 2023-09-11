@@ -22,13 +22,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
             DataSet randomDataSet = CreateRandomDataSet();
             await this.apiBroker.PostDataSetAsync(randomDataSet);
 
-            DataSetSpecification randomDataSetSpecification
-                = CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
+            DataSetSpecification randomDataSetSpecification = 
+                CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
 
             await this.apiBroker.PostDataSetSpecificationAsync(randomDataSetSpecification);
 
-            SpecificationObject randomSpecificationObject
-                = CreateRandomSpecificationObject(dataSetSpecificationId: randomDataSetSpecification.Id);
+            SpecificationObject randomSpecificationObject = 
+                CreateRandomSpecificationObject(dataSetSpecificationId: randomDataSetSpecification.Id);
 
             SpecificationObject inputSpecificationObject = randomSpecificationObject;
             SpecificationObject expectedSpecificationObject = inputSpecificationObject;

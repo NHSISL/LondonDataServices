@@ -36,7 +36,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
             AddSupplierSeedData(modelBuilder);
             AddDataTypeConfigurations(modelBuilder);
             AddObjectColumnConfigurations(modelBuilder);
-            AddDataSetObjectConfigurations(modelBuilder);
+            AddSpecificationObjectConfigurations(modelBuilder);
             AddDataSetSpecificationConfigurations(modelBuilder);
             AddDataSetConfigurations(modelBuilder);
         }

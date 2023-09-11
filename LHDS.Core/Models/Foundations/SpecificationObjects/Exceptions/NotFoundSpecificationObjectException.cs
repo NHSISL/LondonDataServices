@@ -5,8 +5,8 @@ namespace LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions
 {
     public class NotFoundSpecificationObjectException : Xeption
     {
-        public NotFoundSpecificationObjectException(Guid dataSetObjectId)
-            : base(message: $"Couldn't find dataSetObject with dataSetObjectId: {dataSetObjectId}.")
+        public NotFoundSpecificationObjectException(Guid specificationObjectId)
+            : base(message: $"Couldn't find specificationObject with specificationObjectId: {specificationObjectId}.")
         { }
     }
 }

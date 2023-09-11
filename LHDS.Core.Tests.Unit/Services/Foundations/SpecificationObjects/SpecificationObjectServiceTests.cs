@@ -110,7 +110,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
                 .OnProperty(specificationObject => specificationObject.DeletionHandling).Use(GetRandomString(255))
                 .OnProperty(specificationObject => specificationObject.CreatedBy).Use(user)
                 .OnProperty(specificationObject => specificationObject.UpdatedBy).Use(user)
-                .OnProperty(specificationObject => specificationObject.SpecificationObjects).IgnoreIt()
+                .OnProperty(specificationObject => specificationObject.ObjectColumns).IgnoreIt()
                 .OnProperty(specificationObject => specificationObject.DataSetSpecification).IgnoreIt();
 
             return filler;

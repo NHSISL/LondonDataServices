@@ -10,15 +10,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 {
     public partial class ApiBroker
     {
-        private const string dataSetObjectsRelativeUrl = "api/dataSetObjects";
+        private const string specificationObjectsRelativeUrl = "api/specificationObjects";
 
         public async ValueTask<SpecificationObject> PostSpecificationObjectAsync(
             SpecificationObject specificationObject) =>
-                await this.apiFactoryClient.PostContentAsync(dataSetObjectsRelativeUrl, specificationObject);
+                await this.apiFactoryClient.PostContentAsync(specificationObjectsRelativeUrl, specificationObject);
 
         public async ValueTask<SpecificationObject> DeleteSpecificationObjectByIdAsync(
             Guid specificationObjectId) =>
                 await this.apiFactoryClient.DeleteContentAsync<SpecificationObject>(
-                    $"{dataSetObjectsRelativeUrl}/{specificationObjectId}");
+                    $"{specificationObjectsRelativeUrl}/{specificationObjectId}");
     }
 }

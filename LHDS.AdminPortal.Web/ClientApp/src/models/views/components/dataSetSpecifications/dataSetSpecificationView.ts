@@ -7,17 +7,17 @@ export class DataSetSpecificationView {
     public supplierSpecificationVersion: string;
     public ourSpecificationVersion: string;
     public notes: string;
-    public isMultiSender: boolean;
+    public isMultiAuthorPerBatch: boolean;
     public entityChangeSynchronisation: string;
     public dateReleased?: Date;
     public dateImplemented?: Date;
     public dateSuperseded?: Date;
-    public presededBy: string
-    public supersededBy: string;
+    public presededById?: Guid
+    public supersededById?: Guid;
     public isPublished: boolean;
     public isActive: boolean;
-    public activeFrom: Date;
-    public activeTo: Date;
+    public activeFrom?: Date;
+    public activeTo?: Date;
     public createdBy?: string;
     public createdDate?: Date;
     public updatedBy?: string;
@@ -27,17 +27,17 @@ export class DataSetSpecificationView {
     constructor(
         id: Guid,
         dataSetId: Guid,
-        supplierSpecificationVersion: string,
-        ourSpecificationVersion: string,
-        notes: string,
-        isMultiSender: boolean,
-        entityChangeSynchronisation: string,
-        presededBy: string,
-        supersededBy: string,
-        isPublished: boolean,
-        isActive: boolean,
-        activeFrom: Date,
-        activeTo: Date,
+        supplierSpecificationVersion?: string,
+        ourSpecificationVersion?: string,
+        notes?: string,
+        isMultiAuthorPerBatch?: boolean,
+        entityChangeSynchronisation?: string,
+        presededById?: Guid,
+        supersededById?: Guid,
+        isPublished?: boolean,
+        isActive?: boolean,
+        activeFrom?: Date,
+        activeTo?: Date,
         dateReleased?: Date,
         dateImplemented?: Date,
         dateSuperseded?: Date,
@@ -49,15 +49,15 @@ export class DataSetSpecificationView {
     ) {
         this.id = id;
         this.dataSetId = dataSetId;
-        this.supplierSpecificationVersion = supplierSpecificationVersion;
-        this.ourSpecificationVersion = ourSpecificationVersion;
-        this.notes = notes;
-        this.isMultiSender = isMultiSender;
-        this.entityChangeSynchronisation = entityChangeSynchronisation;
-        this.presededBy = presededBy;
-        this.supersededBy = supersededBy;
-        this.isPublished = isPublished;
-        this.isActive = isActive;
+        this.supplierSpecificationVersion = supplierSpecificationVersion || "";
+        this.ourSpecificationVersion = ourSpecificationVersion || "";
+        this.notes = notes || "";
+        this.isMultiAuthorPerBatch = isMultiAuthorPerBatch = false;
+        this.entityChangeSynchronisation = entityChangeSynchronisation || "";
+        this.presededById = presededById;
+        this.supersededById = supersededById;
+        this.isPublished = isPublished || false;
+        this.isActive = isActive || false;
         this.activeFrom = activeFrom;
         this.activeTo = activeTo;
         this.dateReleased = dateReleased;

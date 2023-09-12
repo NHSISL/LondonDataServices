@@ -53,7 +53,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
 
         private async ValueTask<List<ObjectColumn>> CreateRandomObjectColumns()
         {
-            SpecificationObject randomSpecificationObject = await PostRandomSpecificationObject();
 
             return CreateObjectColumnFiller(randomSpecificationObject.Id)
                 .Create(count: GetRandomNumber())
@@ -65,14 +64,14 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
             SpecificationObject retrievedSpecificationObject =
                 await this.apiBroker.GetSpecificationObjectByIdAsync(objectColumn.SpecificationObjectId);
 
-            await this.apiBroker.DeleteSpecificationObjectByIdAsync(objectColumn.SpecificationObjectId);
-
             DataSetSpecification retrievedDataSetSpecification =
                 await this.apiBroker.GetDataSetSpecificationByIdAsync(
                     retrievedSpecificationObject.DataSetSpecificationId);
 
+            await this.apiBroker.DeleteSpecificationObjectByIdAsync(objectColumn.SpecificationObjectId);
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(retrievedDataSetSpecification.Id);
             await this.apiBroker.DeleteDataSetByIdAsync(retrievedDataSetSpecification.DataSetId);
+            await this.apiBroker.DeleteObjectColumnByIdAsync(objectColumn.Id);
         }
 
         private async ValueTask<ObjectColumn> CreateRandomObjectColumnAsync()

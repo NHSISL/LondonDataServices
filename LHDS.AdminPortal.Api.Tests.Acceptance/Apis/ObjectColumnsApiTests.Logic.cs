@@ -29,7 +29,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
             actualObjectColumn.Should().BeEquivalentTo(expectedObjectColumn);
 
             // Cleanup
-            await this.apiBroker.DeleteObjectColumnByIdAsync(actualObjectColumn.Id);
             await CleanupTask(actualObjectColumn);
         }
 
@@ -57,11 +56,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
                     actualObjectColumns.Single(approval => approval.Id == expectedObjectColumn.Id);
 
                 actualObjectColumn.Should().BeEquivalentTo(expectedObjectColumn);
-                await this.apiBroker.DeleteObjectColumnByIdAsync(expectedObjectColumn.Id);
+                await CleanupTask(actualObjectColumn);
             }
-
-            ObjectColumn firstObjectColumn = expectedObjectColumns.First();
-            await CleanupTask(firstObjectColumn);
         }
     }
 }

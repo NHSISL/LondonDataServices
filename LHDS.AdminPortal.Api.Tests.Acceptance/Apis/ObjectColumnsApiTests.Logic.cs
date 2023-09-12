@@ -37,9 +37,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
         public async Task ShouldGetAllObjectColumnsAsync()
         {
             // Given
-            IQueryable<ObjectColumn> randomObjectColumns = await CreateRandomObjectColumns();
-            IQueryable<ObjectColumn> inputObjectColumns = randomObjectColumns;
-            IQueryable<ObjectColumn> expectedObjectColumns = inputObjectColumns;
+            List<ObjectColumn> randomObjectColumns = await CreateRandomObjectColumns();
+            List<ObjectColumn> inputObjectColumns = randomObjectColumns;
+            List<ObjectColumn> expectedObjectColumns = inputObjectColumns;
 
             foreach (ObjectColumn inputObjectColumn in inputObjectColumns)
             {
@@ -57,12 +57,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
                     actualObjectColumns.Single(approval => approval.Id == expectedObjectColumn.Id);
 
                 actualObjectColumn.Should().BeEquivalentTo(expectedObjectColumn);
-                await this.apiBroker.DeleteObjectColumnByIdAsync(actualObjectColumn.Id);
+                await this.apiBroker.DeleteObjectColumnByIdAsync(expectedObjectColumn.Id);
             }
 
-            ObjectColumn firstObjectColumn = actualObjectColumns.FirstOrDefault();
+            ObjectColumn firstObjectColumn = expectedObjectColumns.First();
             await CleanupTask(firstObjectColumn);
-
         }
     }
 }

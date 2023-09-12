@@ -53,10 +53,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
 
         private async ValueTask<List<ObjectColumn>> CreateRandomObjectColumns()
         {
+            var result = await Task.WhenAll(
+                Enumerable.Range(start: 1, count: GetRandomNumber())
+                    .Select(async _ => await CreateRandomObjectColumnAsync()));
 
-            return CreateObjectColumnFiller(randomSpecificationObject.Id)
-                .Create(count: GetRandomNumber())
-                    .ToList();
+            return result.ToList();
         }
 
         private async ValueTask CleanupTask(ObjectColumn objectColumn)

@@ -5,14 +5,14 @@ export class DataSetSpecificationView {
     public id: Guid;
     public dataSetId: Guid;
     public supplierSpecificationVersion: string;
-    public ourSpecificationVersion: string;
-    public notes: string;
+    public ourSpecificationVersion?: string;
+    public notes?: string;
     public isMultiAuthorPerBatch: boolean;
-    public entityChangeSynchronisation: string;
+    public entityChangeSynchronisation?: string;
     public dateReleased?: Date;
-    public dateImplemented?: Date;
+    public dateImplementation?: Date;
     public dateSuperseded?: Date;
-    public presededById?: Guid
+    public presededById?: Guid;
     public supersededById?: Guid;
     public isPublished: boolean;
     public isActive: boolean;
@@ -28,19 +28,19 @@ export class DataSetSpecificationView {
         id: Guid,
         dataSetId: Guid,
         supplierSpecificationVersion?: string,
+        isPublished?: boolean,
+        isMultiAuthorPerBatch?: boolean,
+        isActive?: boolean,
         ourSpecificationVersion?: string,
         notes?: string,
-        isMultiAuthorPerBatch?: boolean,
         entityChangeSynchronisation?: string,
-        presededById?: Guid,
+        dateReleased?: Date,
+        dateImplementation?: Date,
+        dateSuperseded?: Date,
         supersededById?: Guid,
-        isPublished?: boolean,
-        isActive?: boolean,
+        presededById?: Guid,
         activeFrom?: Date,
         activeTo?: Date,
-        dateReleased?: Date,
-        dateImplemented?: Date,
-        dateSuperseded?: Date,
         createdBy?: string,
         createdDate?: Date,
         updatedBy?: string,
@@ -50,18 +50,18 @@ export class DataSetSpecificationView {
         this.id = id;
         this.dataSetId = dataSetId;
         this.supplierSpecificationVersion = supplierSpecificationVersion || "";
+        this.isPublished = isPublished || false;
+        this.isMultiAuthorPerBatch = isMultiAuthorPerBatch || false;;
+        this.isActive = isActive || false;
         this.ourSpecificationVersion = ourSpecificationVersion || "";
         this.notes = notes || "";
-        this.isMultiAuthorPerBatch = isMultiAuthorPerBatch = false;
         this.entityChangeSynchronisation = entityChangeSynchronisation || "";
         this.presededById = presededById;
         this.supersededById = supersededById;
-        this.isPublished = isPublished || false;
-        this.isActive = isActive || false;
         this.activeFrom = activeFrom;
         this.activeTo = activeTo;
         this.dateReleased = dateReleased;
-        this.dateImplemented = dateImplemented;
+        this.dateImplementation = dateImplementation;
         this.dateSuperseded = dateSuperseded;
         this.createdBy = createdBy || "";
         this.createdDate = createdDate ;

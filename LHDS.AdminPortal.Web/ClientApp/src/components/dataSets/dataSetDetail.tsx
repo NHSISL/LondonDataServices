@@ -48,7 +48,7 @@ const DataSetDetail: FunctionComponent<DataSetDetailProps> = (props) => {
             setMode('VIEW');
         }
         if (dataSetId === "" || dataSetId === undefined) {
-            setDataSet(new DataSetView(Guid.create(),"","","","","",false,"",false,"",true,new Date(), new Date()))
+            setDataSet(new DataSetView(Guid.create(), "", "", "", "", "", false, "", false, "", true, new Date(), new Date()))
             setMode('ADD');
         }
     }, [dataSetId, dataSetRetrieved]);
@@ -70,7 +70,10 @@ const DataSetDetail: FunctionComponent<DataSetDetailProps> = (props) => {
 
                     {mode !== "ADD" && (
                         <>
-                            <DataSetSpecificationTable></DataSetSpecificationTable>
+                            <DataSetSpecificationTable
+                                key={dataSet.id.toString()}
+                                dataSetId={dataSet.id.toString()}                            >
+                            </DataSetSpecificationTable>
                         </>
                     )}
                 </div>

@@ -69,10 +69,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
                 await this.apiBroker.GetDataSetSpecificationByIdAsync(
                     retrievedSpecificationObject.DataSetSpecificationId);
 
+            await this.apiBroker.DeleteObjectColumnByIdAsync(objectColumn.Id);
             await this.apiBroker.DeleteSpecificationObjectByIdAsync(objectColumn.SpecificationObjectId);
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(retrievedDataSetSpecification.Id);
             await this.apiBroker.DeleteDataSetByIdAsync(retrievedDataSetSpecification.DataSetId);
-            await this.apiBroker.DeleteObjectColumnByIdAsync(objectColumn.Id);
         }
 
         private async ValueTask<ObjectColumn> CreateRandomObjectColumnAsync()

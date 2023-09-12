@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "LHDS.AdminPortal.Web.Tests.Acceptance": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

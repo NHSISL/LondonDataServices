@@ -20,6 +20,7 @@ import securityPoints from './SecurityMatrix';
 import { DataTypesPage } from './pages/configuration/dataTypesPage';
 import { DataSetsListPage } from './pages/configuration/dataSetsListPage';
 import { DataSetPage } from './pages/configuration/dataSetPage';
+import { DataSetSpecificationPage } from './pages/configuration/dataSetSpecificationPage';
 
 const App = ({ msalInstance }: any) => {
     return (
@@ -39,6 +40,9 @@ const App = ({ msalInstance }: any) => {
                         <Route path="/configuration/dataSets" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetsListPage /></SecuredRoute >} />
                         <Route path="/configuration/dataSet" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetPage /></SecuredRoute >} />
                         <Route path="/configuration/dataSet/:dataSetId" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetPage /></SecuredRoute>} />
+                        <Route path="/configuration/dataSetSpecification" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetSpecificationPage /></SecuredRoute >} />
+                        <Route path="/configuration/dataSetSpecification/:dataSetId" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetSpecificationPage /></SecuredRoute>} />
+                        <Route path="/configuration/dataSetSpecification/:dataSetId/:dataSetSpecificationId" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetSpecificationPage /></SecuredRoute>} />
                         <Route path="/pds" element={<SecuredRoute allowedRoles={securityPoints.pds.view}>< PdsSearch /></SecuredRoute >} />
                         <Route path="/pdsUpload" element={<SecuredRoute allowedRoles={securityPoints.pds.view}>< PdsUpload /></SecuredRoute >} />
                     </Routes>

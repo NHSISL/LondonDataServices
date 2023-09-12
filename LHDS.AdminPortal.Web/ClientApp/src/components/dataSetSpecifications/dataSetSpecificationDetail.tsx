@@ -1,0 +1,100 @@
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { Guid } from 'guid-typescript';
+import { DataSetSpecificationView } from "../../models/views/components/dataSetSpecifications/dataSetSpecificationView";
+import { dataSetSpecificationViewService } from "../../services/views/DataSetSpecification/dataSetSpecificationViewService";
+import DataSetSpecificationDetailCard from "./dataSetSpecificationDetailCard";
+
+interface DataSetSpecificationDetailProps {
+    dataSetId?: string;
+    dataSetSpecificationId?: string;
+    children?: React.ReactNode;
+}
+
+const DataSetSpecificationDetail: FunctionComponent<DataSetSpecificationDetailProps> = (props) => {
+    const {
+        dataSetId,
+        dataSetSpecificationId,
+        children
+    } = props;
+
+    let dataSetSpecificationRetrieved: DataSetSpecificationView | undefined
+
+    if (dataSetSpecificationId !== "" && dataSetSpecificationId !== undefined) {
+        let { mappedDataSetSpecification } = dataSetSpecificationViewService.useGetDataSetSpecificationById(Guid.parse(dataSetSpecificationId));
+        dataSetSpecificationRetrieved = mappedDataSetSpecification;
+    }
+
+    const [dataSetSpecification, setDataSetSpecification] = useState<DataSetSpecificationView>();
+    const [mode, setMode] = useState<string>('VIEW');
+    const addDataSetSpecification = dataSetSpecificationViewService.useCreateDataSetSpecification();
+
+    const handleAdd = (dataSetSpecification: DataSetSpecificationView) => {
+        return addDataSetSpecification.mutate(dataSetSpecification);
+    }
+
+    const updateDataSetSpecification = dataSetSpecificationViewService.useUpdateDataSetSpecification();
+
+    const handleUpdate = async (dataSetSpecification: DataSetSpecificationView) => {
+        return updateDataSetSpecification.mutateAsync(dataSetSpecification);
+    }
+
+    const handleDelete = async (dataSetSpecification: DataSetSpecificationView) => {
+        dataSetSpecification.isActive = false;
+        return updateDataSetSpecification.mutateAsync(dataSetSpecification);
+    }
+
+    useEffect(() => {
+        if (dataSetSpecificationId !== "" && dataSetSpecificationId !== undefined) {
+            setDataSetSpecification(dataSetSpecificationRetrieved);
+            setMode('VIEW');
+        }
+        if (dataSetSpecificationId === "" || dataSetSpecificationId === undefined) {
+            setDataSetSpecification(new DataSetSpecificationView(
+                Guid.create(),
+                Guid.parse(dataSetId!),
+                "",
+                false,
+                false,
+                false,
+                "",
+                "",
+                "",
+                new Date(),
+                new Date(),
+                new Date(),
+                Guid.createEmpty(),
+                Guid.createEmpty(),
+                new Date(),
+                new Date()
+            ));
+            setMode('ADD');
+        }
+    }, [dataSetSpecificationId, dataSetSpecificationRetrieved, dataSetId]);
+
+    return (
+        <div>
+            {dataSetSpecification !== undefined && (
+                <div>
+                    <DataSetSpecificationDetailCard
+                        key={dataSetSpecification.id.toString()}
+                        dataSetSpecification={dataSetSpecification}
+                        dataSetId={dataSetId!.toString()}
+                        mode={mode}
+                        onAdd={handleAdd}
+                        onUpdate={handleUpdate}
+                        onDelete={handleDelete}
+                    >
+                        {children}
+                    </DataSetSpecificationDetailCard>
+
+                    {mode !== "ADD" && (
+                        <>
+                        </>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+}
+
+export default DataSetSpecificationDetail;

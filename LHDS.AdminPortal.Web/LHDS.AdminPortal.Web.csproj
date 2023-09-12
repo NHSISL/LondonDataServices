@@ -51,6 +51,14 @@
     <TypeScriptCompile Remove="ClientApp\src\components\audit\auditRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\audit\auditRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\bases\ingestionTrackingTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationDetail.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationDetailCard.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationDetailCardEdit.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationDetailCardView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationErrors.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationRow.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationRowView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationValidation.ts" />
     <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetDetailCard.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\dataSets\dataSetDetailCardEdit.tsx" />
@@ -139,6 +147,7 @@
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\configHomePage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetsListPage.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetSpecificationPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataTypesPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\IngestionTrackingHomepage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\ingestionTrackingPage.tsx" />
@@ -155,6 +164,7 @@
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\pdsService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\supplierService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\auditViewService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\DataSetSpecification\dataSetSpecificationViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\DataSets\dataSetViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\DataTypes\dataTypeViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\Documents\DocumentViewService.ts" />

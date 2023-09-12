@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.ObjectColumns;
 
@@ -15,6 +16,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         public async ValueTask<ObjectColumn> PostObjectColumnAsync(
             ObjectColumn objectColumn) =>
                 await this.apiFactoryClient.PostContentAsync(objectColumnsRelativeUrl, objectColumn);
+
+        public async ValueTask<List<ObjectColumn>> GetAllObjectColumnsAsync() =>
+           await this.apiFactoryClient.GetContentAsync<List<ObjectColumn>>(
+               $"{objectColumnsRelativeUrl}/");
 
         public async ValueTask<ObjectColumn> DeleteObjectColumnByIdAsync(
             Guid objectColumnId) =>

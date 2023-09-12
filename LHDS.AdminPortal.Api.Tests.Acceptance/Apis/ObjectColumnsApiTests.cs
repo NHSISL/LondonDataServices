@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
@@ -31,8 +32,54 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static ObjectColumn CreateRandomObjectColumn(Guid specificationObjectId) =>
-            CreateObjectColumnFiller(specificationObjectId).Create();
+        private async ValueTask<SpecificationObject> PostRandomSpecificationObject()
+        {
+            DataSet randomDataSet = CreateRandomDataSet();
+            await this.apiBroker.PostDataSetAsync(randomDataSet);
+
+            DataSetSpecification randomDataSetSpecification =
+                CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
+
+            await this.apiBroker.PostDataSetSpecificationAsync(randomDataSetSpecification);
+
+            SpecificationObject randomSpecificationObject =
+                CreateRandomSpecificationObject(dataSetSpecificationId: randomDataSetSpecification.Id);
+
+            await this.apiBroker.PostSpecificationObjectAsync(randomSpecificationObject);
+
+            return randomSpecificationObject;
+        }
+
+        private async ValueTask<IQueryable<ObjectColumn>> CreateRandomObjectColumns()
+        {
+            SpecificationObject randomSpecificationObject = await PostRandomSpecificationObject();
+
+            return CreateObjectColumnFiller(randomSpecificationObject.Id)
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
+
+        private async ValueTask CleanupTask(ObjectColumn objectColumn)
+        {
+            SpecificationObject retrievedSpecificationObject =
+                await this.apiBroker.GetSpecificationObjectByIdAsync(objectColumn.SpecificationObjectId);
+
+            await this.apiBroker.DeleteSpecificationObjectByIdAsync(objectColumn.SpecificationObjectId);
+
+            DataSetSpecification retrievedDataSetSpecification =
+                await this.apiBroker.GetDataSetSpecificationByIdAsync(
+                    retrievedSpecificationObject.DataSetSpecificationId);
+
+            await this.apiBroker.DeleteDataSetSpecificationByIdAsync(retrievedDataSetSpecification.Id);
+            await this.apiBroker.DeleteDataSetByIdAsync(retrievedDataSetSpecification.DataSetId);
+        }
+
+        private async ValueTask<ObjectColumn> CreateRandomObjectColumnAsync()
+        {
+            SpecificationObject randomSpecificationObject = await PostRandomSpecificationObject();
+
+            return CreateObjectColumnFiller(randomSpecificationObject.Id).Create();
+        }
 
         private static Filler<ObjectColumn> CreateObjectColumnFiller(Guid specificationObjectId)
         {
@@ -64,7 +111,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
 
-                .OnProperty(SpecificationObject => 
+                .OnProperty(SpecificationObject =>
                     SpecificationObject.DataSetSpecificationId).Use(dataSetSpecificationId)
 
                 .OnProperty(SpecificationObject => SpecificationObject.CreatedBy).Use(user)

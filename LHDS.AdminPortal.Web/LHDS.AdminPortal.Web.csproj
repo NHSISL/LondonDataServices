@@ -85,6 +85,8 @@
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnErrors.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnValidations.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetailCard.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetailCardView.tsx" />
@@ -100,6 +102,8 @@
     <TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetailCard.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetailCardView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectErrors.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectValidations.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierErrors.ts" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowAdd.tsx" />
@@ -166,9 +170,11 @@
     <TypeScriptCompile Remove="ClientApp\src\services\views\Documents\DocumentViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\ingestionTrackingHomeViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\ingestionTrackingViewService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\objectColumns\objectColumnViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\OptOuts\optoutViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\Pds\pdsHomeViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\Pds\pdsViewService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\specificationObjects\specificationObjectViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\supplierViewService .ts" />
   </ItemGroup>
 

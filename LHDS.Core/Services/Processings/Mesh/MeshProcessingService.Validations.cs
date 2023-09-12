@@ -4,7 +4,6 @@
 
 using System;
 using LHDS.Core.Models.Foundations.Mesh;
-using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using Xeptions;
 

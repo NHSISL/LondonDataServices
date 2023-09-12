@@ -46,6 +46,6 @@ namespace LHDS.Core.Models.Foundations.ObjectColumns
         public DateTimeOffset CreatedDate { get; set; }
 
         [BindNever]
-        public SpecificationObject? SpecificationObjects { get; set; } = null!;
+        public SpecificationObject? SpecificationObject { get; set; } = null!;
     }
 }

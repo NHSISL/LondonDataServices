@@ -737,11 +737,11 @@ namespace LHDS.Core.Migrations
 
                     b.HasIndex("DataSetSpecificationId");
 
-                    b.ToTable("DataSetObjects");
+                    b.ToTable("SpecificationObjects");
 
                     b.ToTable(tb => tb.IsTemporal(ttb =>
                             {
-                                ttb.UseHistoryTable("DataSetObjectsHistory");
+                                ttb.UseHistoryTable("SpecificationObjectsHistory");
                                 ttb
                                     .HasPeriodStart("PeriodStart")
                                     .HasColumnName("PeriodStart");
@@ -805,14 +805,14 @@ namespace LHDS.Core.Migrations
                         {
                             Id = new Guid("67680f17-9d0c-4474-8b35-56ca8f9df1f6"),
                             CreatedBy = "System",
-                            CreatedDate = new DateTimeOffset(new DateTime(2023, 9, 7, 13, 47, 8, 844, DateTimeKind.Unspecified).AddTicks(7263), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedDate = new DateTimeOffset(new DateTime(2023, 9, 11, 9, 50, 56, 592, DateTimeKind.Unspecified).AddTicks(7418), new TimeSpan(0, 0, 0, 0, 0)),
                             DecryptionManualTriggerUrl = "Update this => environment specific",
                             Description = "Emis Supplier",
                             FriendlyName = "EMIS",
                             LandingManualTriggerUrl = "Update this => environment specific",
                             Name = "EMIS",
                             UpdatedBy = "System",
-                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 9, 7, 13, 47, 8, 844, DateTimeKind.Unspecified).AddTicks(7272), new TimeSpan(0, 0, 0, 0, 0))
+                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 9, 11, 9, 50, 56, 592, DateTimeKind.Unspecified).AddTicks(7430), new TimeSpan(0, 0, 0, 0, 0))
                         });
                 });
 
@@ -859,13 +859,13 @@ namespace LHDS.Core.Migrations
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.ObjectColumns.ObjectColumn", b =>
                 {
-                    b.HasOne("LHDS.Core.Models.Foundations.SpecificationObjects.SpecificationObject", "SpecificationObjects")
-                        .WithMany("DataSetObjects")
+                    b.HasOne("LHDS.Core.Models.Foundations.SpecificationObjects.SpecificationObject", "SpecificationObject")
+                        .WithMany("ObjectColumns")
                         .HasForeignKey("SpecificationObjectId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("SpecificationObjects");
+                    b.Navigation("SpecificationObject");
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.SpecificationObjects.SpecificationObject", b =>
@@ -900,7 +900,7 @@ namespace LHDS.Core.Migrations
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.SpecificationObjects.SpecificationObject", b =>
                 {
-                    b.Navigation("DataSetObjects");
+                    b.Navigation("ObjectColumns");
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.Suppliers.Supplier", b =>

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
@@ -50,13 +51,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
             return randomSpecificationObject;
         }
 
-        private async ValueTask<IQueryable<ObjectColumn>> CreateRandomObjectColumns()
+        private async ValueTask<List<ObjectColumn>> CreateRandomObjectColumns()
         {
             SpecificationObject randomSpecificationObject = await PostRandomSpecificationObject();
 
             return CreateObjectColumnFiller(randomSpecificationObject.Id)
                 .Create(count: GetRandomNumber())
-                    .AsQueryable();
+                    .ToList();
         }
 
         private async ValueTask CleanupTask(ObjectColumn objectColumn)

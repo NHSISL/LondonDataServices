@@ -27,10 +27,10 @@ export class DataSetSpecificationView {
     constructor(
         id: Guid,
         dataSetId: Guid,
-        supplierSpecificationVersion: string,
-        isPublished: boolean,
-        isMultiAuthorPerBatch: boolean,
-        isActive: boolean,
+        supplierSpecificationVersion?: string,
+        isPublished?: boolean,
+        isMultiAuthorPerBatch?: boolean,
+        isActive?: boolean,
         ourSpecificationVersion?: string,
         notes?: string,
         entityChangeSynchronisation?: string,
@@ -49,13 +49,13 @@ export class DataSetSpecificationView {
     ) {
         this.id = id;
         this.dataSetId = dataSetId;
-        this.supplierSpecificationVersion = supplierSpecificationVersion;
-        this.isPublished = isPublished;
-        this.isMultiAuthorPerBatch = isMultiAuthorPerBatch;
-        this.isActive = isActive;
-        this.ourSpecificationVersion = ourSpecificationVersion;
-        this.notes = notes;
-        this.entityChangeSynchronisation = entityChangeSynchronisation;
+        this.supplierSpecificationVersion = supplierSpecificationVersion || "";
+        this.isPublished = isPublished || false;
+        this.isMultiAuthorPerBatch = isMultiAuthorPerBatch || false;;
+        this.isActive = isActive || false;
+        this.ourSpecificationVersion = ourSpecificationVersion || "";
+        this.notes = notes || "";
+        this.entityChangeSynchronisation = entityChangeSynchronisation || "";
         this.presededById = presededById;
         this.supersededById = supersededById;
         this.activeFrom = activeFrom;

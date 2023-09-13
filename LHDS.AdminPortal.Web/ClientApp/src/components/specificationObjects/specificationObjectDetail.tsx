@@ -63,8 +63,7 @@ const SpecificationObjectDetail: FunctionComponent<SpecificationObjectDetailProp
                         mode={mode}
                         onAdd={handleAdd}
                         onUpdate={handleUpdate}
-                        onDelete={handleDelete}
-                    >
+                        onDelete={handleDelete}>
                         {children}
                     </SpecificationObjectDetailCard>
 

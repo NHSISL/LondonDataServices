@@ -145,8 +145,7 @@ const SpecificationObjectDetailCardEdit: FunctionComponent<SpecificationObjectDe
                             label=""
                             checked={editSpecificationObject.isPushedToUs}
                             error={errors.isPushedToUs}
-                            onChange={handleChange}
-                        />
+                            onChange={handleChange} />
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
 
@@ -160,8 +159,7 @@ const SpecificationObjectDetailCardEdit: FunctionComponent<SpecificationObjectDe
                             label=""
                             checked={editSpecificationObject.isPulledByUs}
                             error={errors.isPulledByUs}
-                            onChange={handleChange}
-                        />
+                            onChange={handleChange} />
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
 
@@ -188,8 +186,7 @@ const SpecificationObjectDetailCardEdit: FunctionComponent<SpecificationObjectDe
                             required={true}
                             checked={editSpecificationObject.isSubmissionHeaderObject}
                             error={errors.isSubmissionHeaderObject}
-                            onChange={handleChange}
-                        />
+                            onChange={handleChange} />
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
 
@@ -203,8 +200,7 @@ const SpecificationObjectDetailCardEdit: FunctionComponent<SpecificationObjectDe
                             required={true}
                             checked={editSpecificationObject.isTransactionLog}
                             error={errors.isTransactionLog}
-                            onChange={handleChange}
-                        />
+                            onChange={handleChange} />
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
 

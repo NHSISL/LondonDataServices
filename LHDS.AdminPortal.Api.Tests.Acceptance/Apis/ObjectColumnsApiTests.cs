@@ -85,7 +85,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
             return result.ToList();
         }
 
-        private async ValueTask CleanupTask(ObjectColumn objectColumn)
+        private async ValueTask CleanupTask(ObjectColumn objectColumn, bool isObjectColumnDeleted = false)
         {
             SpecificationObject retrievedSpecificationObject =
                 await this.apiBroker.GetSpecificationObjectByIdAsync(objectColumn.SpecificationObjectId);
@@ -94,7 +94,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
                 await this.apiBroker.GetDataSetSpecificationByIdAsync(
                     retrievedSpecificationObject.DataSetSpecificationId);
 
-            await this.apiBroker.DeleteObjectColumnByIdAsync(objectColumn.Id);
+            if (!isObjectColumnDeleted)
+            {
+                await this.apiBroker.DeleteObjectColumnByIdAsync(objectColumn.Id);
+            }
+
             await this.apiBroker.DeleteSpecificationObjectByIdAsync(objectColumn.SpecificationObjectId);
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(retrievedDataSetSpecification.Id);
             await this.apiBroker.DeleteDataSetByIdAsync(retrievedDataSetSpecification.DataSetId);

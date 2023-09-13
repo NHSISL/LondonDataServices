@@ -10,6 +10,7 @@ using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using Tynamix.ObjectFiller;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
 {
@@ -17,9 +18,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
     public partial class IngestionTrackingsApiTests
     {
         private readonly ApiBroker apiBroker;
+        private readonly ITestOutputHelper output;
 
-        public IngestionTrackingsApiTests(ApiBroker apiBroker) =>
+        public IngestionTrackingsApiTests(ApiBroker apiBroker, ITestOutputHelper output)
+        {
             this.apiBroker = apiBroker;
+            this.output = output;
+        }
 
         private int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
@@ -76,6 +81,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedDate).Use(now)
                 .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
@@ -104,6 +110,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(supplier => supplier.CreatedDate).Use(now)
                 .OnProperty(supplier => supplier.CreatedBy).Use(userId)
                 .OnProperty(supplier => supplier.UpdatedDate).Use(now)

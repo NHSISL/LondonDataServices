@@ -2,6 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Text.Json;
 using Azure.Core.Extensions;
 using Azure.Core.Pipeline;
@@ -17,21 +20,37 @@ using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.DataSets;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
+using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.ObjectColumns;
+using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.PdsAudits;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Providers.Downloads.Extensions;
 using LHDS.Core.Services.Foundations.Audits;
+using LHDS.Core.Services.Foundations.DataSets;
+using LHDS.Core.Services.Foundations.DataSetSpecifications;
+using LHDS.Core.Services.Foundations.DataTypes;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.ObjectColumns;
 using LHDS.Core.Services.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.PdsAudits;
+using LHDS.Core.Services.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Processings.OptOuts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.Azure;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.OData.Edm;
@@ -170,6 +189,12 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IOptOutService, OptOutService>();
             services.AddTransient<IPdsAuditService, PdsAuditService>();
+            services.AddTransient<IDataSetService, DataSetService>();
+            services.AddTransient<ISpecificationObjectService, SpecificationObjectService>();
+            services.AddTransient<IDataSetSpecificationService, DataSetSpecificationService>();
+            services.AddTransient<IDataTypeService, DataTypeService>();
+            services.AddTransient<IObjectColumnService, ObjectColumnService>();
+            services.AddTransient<IDataSetService, DataSetService>();
 
             var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
             ValidateBlobStorageSettings(blobStorageSettings);
@@ -241,10 +266,16 @@ namespace LHDS.AdminPortal.Api
             ODataConventionModelBuilder builder =
                new ODataConventionModelBuilder();
 
-            builder.EntitySet<IngestionTracking>("IngestionTrackings");
-            builder.EntitySet<Supplier>("Suppliers");
             builder.EntitySet<Audit>("Audits");
+            builder.EntitySet<DataSet>("DataSets");
+            builder.EntitySet<DataSetSpecification>("DataSetSpecifications");
+            builder.EntitySet<SpecificationObject>("SpecificationObjects");
+            builder.EntitySet<DataType>("DataTypes");
+            builder.EntitySet<IngestionTracking>("IngestionTrackings");
+            builder.EntitySet<ObjectColumn>("ObjectColumns");
+            builder.EntitySet<OptOut>("OptOuts");
             builder.EntitySet<PdsAudit>("PdsAudits");
+            builder.EntitySet<Supplier>("Suppliers");
             builder.EnableLowerCamelCase();
 
             return builder.GetEdmModel();

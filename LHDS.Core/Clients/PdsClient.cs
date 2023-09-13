@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Clients.Pds.Exceptions;
+using LHDS.Core.Models.Clients.PdsClient.Exceptions;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Orchestrations.Pds.Exceptions;
 using LHDS.Core.Services.Orchestrations.Pds;

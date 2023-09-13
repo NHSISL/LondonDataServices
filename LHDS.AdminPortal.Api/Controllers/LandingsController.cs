@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Threading.Tasks;
+using System.Web;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
 using LHDS.Core.Services.Orchestrations.Downloads;
@@ -30,7 +32,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                await this.downloadOrchestrationService.ProcessAsync(fileName);
+                await this.downloadOrchestrationService.ProcessAsync(HttpUtility.UrlDecode(fileName));
 
                 return Ok();
             }

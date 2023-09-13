@@ -2,6 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
@@ -47,7 +50,8 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return FailedDependency(ingestionTrackingValidationException.InnerException);
             }
             catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
-               when (ingestionTrackingDependencyValidationException.InnerException is AlreadyExistsIngestionTrackingException)
+                when (ingestionTrackingDependencyValidationException.InnerException
+                    is AlreadyExistsIngestionTrackingException)
             {
                 return Conflict(ingestionTrackingDependencyValidationException.InnerException);
             }
@@ -62,7 +66,12 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
+#if !DEBUG
         [EnableQuery(PageSize = 50)]
+#endif
+#if DEBUG
+        [EnableQuery(PageSize = 5000)]
+#endif
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
 #endif

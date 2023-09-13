@@ -10,7 +10,7 @@ export class DataTypeView {
 
     constructor(
         id: Guid,
-        name: string,
+        name?: string,
         createdBy?: string,
         createdDate?: Date,
         updatedBy?: string,
@@ -18,7 +18,7 @@ export class DataTypeView {
 
     ) {
         this.id = id;
-        this.name = name;
+        this.name = name || "";
         this.createdBy = createdBy || "";
         this.createdDate = createdDate ;
         this.updatedBy = updatedBy || "";

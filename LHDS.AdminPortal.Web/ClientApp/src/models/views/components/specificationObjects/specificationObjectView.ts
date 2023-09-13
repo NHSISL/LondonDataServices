@@ -4,14 +4,15 @@ import { DataSetSpecification } from '../../../dataSetSpecifications/dataSetSpec
 export class SpecificationObjectView {
     public id: Guid;
     public dataSetSpecificationId: Guid;
-    public SupplierObjectName: string;
-    public OurObjectName: string;
-    public ObjectDescription: string;
-    public InterchangeProtocol: boolean;
-    public PushOrPull: string;
-    public DeletionHandling: string;
-    public IsSubmissionHeaderObject: boolean;
-    public IsTransactionLog: boolean
+    public supplierObjectName: string;
+    public ourObjectName: string;
+    public objectDescription: string;
+    public interchangeProtocol: string;
+    public isPushedToUs: boolean;
+    public isPulledByUs: boolean;
+    public deletionHandling: string;
+    public isSubmissionHeaderObject: boolean;
+    public isTransactionLog: boolean
     public createdBy?: string;
     public createdDate?: Date;
     public updatedBy?: string;
@@ -21,14 +22,15 @@ export class SpecificationObjectView {
     constructor(
         id: Guid,
         dataSetSpecificationId: Guid,
-        SupplierObjectName: string,
-        OurObjectName: string,
-        ObjectDescription: string,
-        InterchangeProtocol: boolean,
-        PushOrPull: string,
-        DeletionHandling: string,
-        IsSubmissionHeaderObject: boolean,
-        IsTransactionLog: boolean,
+        supplierObjectName?: string,
+        ourObjectName?: string,
+        objectDescription?: string,
+        interchangeProtocol?: string,
+        isPushedToUs?: boolean,
+        isPulledByUs?: boolean,
+        deletionHandling?: string,
+        isSubmissionHeaderObject?: boolean,
+        isTransactionLog?: boolean,
         createdBy?: string,
         createdDate?: Date,
         updatedBy?: string,
@@ -37,14 +39,15 @@ export class SpecificationObjectView {
     ) {
         this.id = id;
         this.dataSetSpecificationId = dataSetSpecificationId;
-        this.SupplierObjectName = SupplierObjectName;
-        this.OurObjectName = OurObjectName;
-        this.ObjectDescription = ObjectDescription;
-        this.InterchangeProtocol = InterchangeProtocol;
-        this.PushOrPull = PushOrPull;
-        this.DeletionHandling = DeletionHandling;
-        this.IsSubmissionHeaderObject = IsSubmissionHeaderObject;
-        this.IsTransactionLog = IsTransactionLog;
+        this.supplierObjectName = supplierObjectName || "";
+        this.ourObjectName = ourObjectName || "";
+        this.objectDescription = objectDescription || "";
+        this.interchangeProtocol = interchangeProtocol || "";
+        this.isPushedToUs = isPushedToUs || false;
+        this.isPulledByUs = isPulledByUs || false;
+        this.deletionHandling = deletionHandling || "";
+        this.isSubmissionHeaderObject = isSubmissionHeaderObject || false;
+        this.isTransactionLog = isTransactionLog || false;
         this.createdBy = createdBy || "";
         this.createdDate = createdDate ;
         this.updatedBy = updatedBy || "";

@@ -43,7 +43,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LHDS.Functions.Pds", "LHDS.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LHDS.Core.Tests.Integration.Pds", "LHDS.Core.Tests.Integration.Pds\LHDS.Core.Tests.Integration.Pds.csproj", "{1EDBC329-C214-42F0-BA1E-7AFDDE3117BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LHDS.AdminPortal.Web.Tests.Acceptance", "LHDS.AdminPortal.Web.Tests.Acceptance\LHDS.AdminPortal.Web.Tests.Acceptance.csproj", "{C51198B6-4419-4556-B7E7-5BA5F5800466}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LHDS.AdminPortal.Web.Tests.Acceptance", "LHDS.AdminPortal.Web.Tests.Acceptance\LHDS.AdminPortal.Web.Tests.Acceptance.csproj", "{C51198B6-4419-4556-B7E7-5BA5F5800466}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

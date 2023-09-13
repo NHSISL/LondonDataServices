@@ -2,15 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
-using System.Net;
-using System.Net.Sockets;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Playwright;
-using Xunit;
-
 namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
 {
     public class WebServerBroker : IAsyncLifetime, IDisposable
@@ -31,7 +22,6 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
                     //webBuilder.UseStartup<Api.Startup>();
                     webBuilder.UseUrls(ApiBaseUrl);
                 })
-                .ConfigureServices(configure => { })
                 .Build();
 
             frontendHost = Web.Program
@@ -41,7 +31,6 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
                     webBuilder.UseStartup<Web.Startup>();
                     webBuilder.UseUrls(FrontendBaseUrl);
                 })
-                .ConfigureServices(configure => { })
                 .Build();
         }
 

@@ -22,6 +22,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
            await this.apiFactoryClient.GetContentAsync<List<ObjectColumn>>(
                $"{objectColumnsRelativeUrl}/");
 
+        public async ValueTask<ObjectColumn> PutObjectColumnAsync(ObjectColumn objectColumn) => 
+            await this.apiFactoryClient.PutContentAsync(objectColumnsRelativeUrl, objectColumn);
+
         public async ValueTask<ObjectColumn> DeleteObjectColumnByIdAsync(
             Guid objectColumnId) =>
                 await this.apiFactoryClient.DeleteContentAsync<ObjectColumn>(

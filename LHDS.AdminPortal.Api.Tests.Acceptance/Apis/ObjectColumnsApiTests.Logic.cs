@@ -79,5 +79,27 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
             // Cleanup
             await CleanupTask(actualObjectColumn);
         }
+
+        [Fact]
+        public async Task ShouldPutObjectColumnAsync()
+        {
+            // Given
+            ObjectColumn randomObjectColumn = await CreateRandomObjectColumnAsync();
+            ObjectColumn inputObjectColumn = randomObjectColumn;
+            await this.apiBroker.PostObjectColumnAsync(inputObjectColumn);
+
+            ObjectColumn modifiedObjectColumn =
+                UpdateObjectColumnWithRandomValues(inputObjectColumn);
+
+            // When
+            ObjectColumn actualObjectColumn =
+                await this.apiBroker.PutObjectColumnAsync(modifiedObjectColumn);
+
+            // Then
+            actualObjectColumn.Should().BeEquivalentTo(modifiedObjectColumn);
+
+            // Cleanup
+            await CleanupTask(actualObjectColumn);
+        }
     }
 }

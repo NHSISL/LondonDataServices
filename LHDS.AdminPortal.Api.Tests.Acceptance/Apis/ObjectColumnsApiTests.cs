@@ -33,6 +33,31 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static ObjectColumn UpdateObjectColumnWithRandomValues(
+            ObjectColumn inputObjectColumn)
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            var filler = new Filler<ObjectColumn>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnType<DateTimeOffset>().Use(GetRandomDateTime())
+                .OnProperty(ObjectColumn => ObjectColumn.Id).Use(inputObjectColumn.Id)
+
+                .OnProperty(ObjectColumn =>
+                    ObjectColumn.SpecificationObjectId).Use(inputObjectColumn.SpecificationObjectId)
+
+                .OnProperty(ObjectColumn =>
+                    ObjectColumn.CreatedBy).Use(inputObjectColumn.CreatedBy)
+
+                .OnProperty(ObjectColumn =>
+                    ObjectColumn.CreatedDate).Use(inputObjectColumn.CreatedDate)
+
+                .OnProperty(DataSet => DataSet.UpdatedDate).Use(now);
+
+            return filler.Create();
+        }
+
         private async ValueTask<SpecificationObject> PostRandomSpecificationObject()
         {
             DataSet randomDataSet = CreateRandomDataSet();

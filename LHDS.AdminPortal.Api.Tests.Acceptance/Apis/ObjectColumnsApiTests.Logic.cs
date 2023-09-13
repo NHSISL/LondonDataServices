@@ -24,13 +24,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
 
             // When
             ObjectColumn actualObjectColumn =
-                await this.apiBroker.PostObjectColumnAsync(inputObjectColumn);
+                await this.apiBroker.PostObjectColumnAsync(objectColumn: inputObjectColumn);
 
             // Then
             actualObjectColumn.Should().BeEquivalentTo(expectedObjectColumn);
 
             // Cleanup
-            await CleanupTask(actualObjectColumn, false);
+            await CleanupTask(objectColumn: actualObjectColumn);
         }
 
         [Fact]
@@ -43,7 +43,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
 
             foreach (ObjectColumn inputObjectColumn in inputObjectColumns)
             {
-                await this.apiBroker.PostObjectColumnAsync(inputObjectColumn);
+                await this.apiBroker.PostObjectColumnAsync(objectColumn: inputObjectColumn);
             }
 
             // When
@@ -57,7 +57,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
                     actualObjectColumns.Single(approval => approval.Id == expectedObjectColumn.Id);
 
                 actualObjectColumn.Should().BeEquivalentTo(expectedObjectColumn);
-                await CleanupTask(actualObjectColumn, false);
+                await CleanupTask(objectColumn: actualObjectColumn);
             }
         }
 
@@ -68,7 +68,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
             ObjectColumn randomObjectColumn = await CreateRandomObjectColumnAsync();
             ObjectColumn inputObjectColumn = randomObjectColumn;
             ObjectColumn expectedObjectColumn = inputObjectColumn;
-            await this.apiBroker.PostObjectColumnAsync(inputObjectColumn);
+            await this.apiBroker.PostObjectColumnAsync(objectColumn: inputObjectColumn);
 
             // When
             ObjectColumn actualObjectColumn =
@@ -78,7 +78,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
             actualObjectColumn.Should().BeEquivalentTo(expectedObjectColumn);
 
             // Cleanup
-            await CleanupTask(actualObjectColumn, false);
+            await CleanupTask(objectColumn: actualObjectColumn);
         }
 
         [Fact]
@@ -87,7 +87,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
             // Given
             ObjectColumn randomObjectColumn = await CreateRandomObjectColumnAsync();
             ObjectColumn inputObjectColumn = randomObjectColumn;
-            await this.apiBroker.PostObjectColumnAsync(inputObjectColumn);
+            await this.apiBroker.PostObjectColumnAsync(objectColumn: inputObjectColumn);
 
             ObjectColumn modifiedObjectColumn =
                 UpdateObjectColumnWithRandomValues(inputObjectColumn);
@@ -100,7 +100,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
             actualObjectColumn.Should().BeEquivalentTo(modifiedObjectColumn);
 
             // Cleanup
-            await CleanupTask(actualObjectColumn, false);
+            await CleanupTask(objectColumn: actualObjectColumn);
         }
 
         [Fact]
@@ -110,14 +110,14 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
             ObjectColumn randomObjectColumn = await CreateRandomObjectColumnAsync();
             ObjectColumn inputObjectColumn = randomObjectColumn;
             ObjectColumn expectedObjectColumn = inputObjectColumn;
-            await this.apiBroker.PostObjectColumnAsync(inputObjectColumn);
+            await this.apiBroker.PostObjectColumnAsync(objectColumn: inputObjectColumn);
 
             // when
             ObjectColumn deletedObjectColumn =
-                await this.apiBroker.DeleteObjectColumnByIdAsync(inputObjectColumn.Id);
+                await this.apiBroker.DeleteObjectColumnByIdAsync(objectColumnId: inputObjectColumn.Id);
 
             ValueTask<ObjectColumn> getObjectColumnbyIdTask =
-                this.apiBroker.GetObjectColumnByIdAsync(inputObjectColumn.Id);
+                this.apiBroker.GetObjectColumnByIdAsync(objectColumnId: inputObjectColumn.Id);
 
             // then
             deletedObjectColumn.Should().BeEquivalentTo(expectedObjectColumn);
@@ -126,7 +126,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
                 getObjectColumnbyIdTask.AsTask());
 
             // Cleanup
-            await CleanupTask(expectedObjectColumn, true);
+            await CleanupTask(objectColumn: deletedObjectColumn, isObjectColumnDeleted: true);
         }
     }
 }

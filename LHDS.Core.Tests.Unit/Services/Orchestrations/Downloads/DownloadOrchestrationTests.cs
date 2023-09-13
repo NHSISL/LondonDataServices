@@ -181,7 +181,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(DateTimeOffset dateTimeOffset)
         {
             var filler = new Filler<IngestionTracking>();
-            filler.Setup().OnType<DateTimeOffset>().Use(dateTimeOffset);
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
 
             return filler;
         }
@@ -190,9 +193,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             DateTimeOffset dateTimeOffset, string id)
         {
             var filler = new Filler<IngestionTracking>();
+
             filler.Setup()
                 .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(id)
-                .OnType<DateTimeOffset>().Use(dateTimeOffset);
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
 
             return filler;
         }

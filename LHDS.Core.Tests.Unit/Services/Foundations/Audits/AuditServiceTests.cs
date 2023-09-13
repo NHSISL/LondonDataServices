@@ -99,6 +99,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(audit => audit.CreatedBy).Use(user)
                 .OnProperty(audit => audit.UpdatedBy).Use(user)
                 .OnProperty(audit => audit.IngestionTracking).IgnoreIt();

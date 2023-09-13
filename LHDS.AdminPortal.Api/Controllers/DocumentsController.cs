@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Net;
+using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Services.Foundations.Documents;

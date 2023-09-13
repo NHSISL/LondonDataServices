@@ -7,7 +7,7 @@ export class SpecificationObject {
     public supplierObjectName: string;
     public ourObjectName: string;
     public objectDescription: string;
-    public interchangeProtocol: boolean;
+    public interchangeProtocol: string;
     public isPushedToUs: boolean;
     public isPulledByUs: boolean;
     public deletionHandling: string;

@@ -13,7 +13,7 @@ import moment from "moment";
 
 interface DataSetSpecificationDetailCardViewProps {
     dataSetSpecification: DataSetSpecificationView;
-    onDelete: (dataSet: DataSetSpecificationView) => void;
+    onDelete: (dataSetSpecification: DataSetSpecificationView) => void;
     mode: string;
     onModeChange: (value: string) => void;
 }

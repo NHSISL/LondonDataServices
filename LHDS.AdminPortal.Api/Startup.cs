@@ -269,7 +269,7 @@ namespace LHDS.AdminPortal.Api
             builder.EntitySet<Audit>("Audits");
             builder.EntitySet<DataSet>("DataSets");
             builder.EntitySet<DataSetSpecification>("DataSetSpecifications");
-            builder.EntitySet<SpecificationObject>("DataSetObjects");
+            builder.EntitySet<SpecificationObject>("SpecificationObjects");
             builder.EntitySet<DataType>("DataTypes");
             builder.EntitySet<IngestionTracking>("IngestionTrackings");
             builder.EntitySet<ObjectColumn>("ObjectColumns");

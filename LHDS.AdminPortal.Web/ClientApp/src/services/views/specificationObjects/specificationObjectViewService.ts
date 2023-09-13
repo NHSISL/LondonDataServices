@@ -6,7 +6,7 @@ import { Guid } from "guid-typescript";
 
 
 type SpecificationObjectViewServiceResponse = {
-    SappedspecificationObjects: SpecificationObjectView[] | undefined;
+    mappedSpecificationObjects: SpecificationObjectView[] | undefined;
     pages: any;
     isLoading: boolean;
     fetchNextPage: () => void;
@@ -17,20 +17,20 @@ type SpecificationObjectViewServiceResponse = {
 }
 
 export const specificationObjectViewService = {
-    useCreatespecificationObject: () => {
+    useCreateSpecificationObject: () => {
         return specificationObjectService.useCreateSpecificationObject();
     },
 
-    useGetAllspecificationObjects: (searchTerm?: string): SpecificationObjectViewServiceResponse => {
+    useGetAllSpecificationObjects: (dataSetSpecificationId: string, searchTerm?: string): SpecificationObjectViewServiceResponse => {
         try {
-            let query = `?$orderby=createdDate desc`;
+            let query = `?$filter=dataSetSpecificationId eq ${dataSetSpecificationId}&$expand=dataSetSpecification&$orderby=createdDate desc`;
 
             if (searchTerm) {
                 query = query + `&$filter=contains(specificationObjectName,'${searchTerm}')`;
             }
 
             const response = specificationObjectService.useRetrieveAllSpecificationObjectPages(query);
-            const [SappedspecificationObjects, SetMappedspecificationObjects] = useState<Array<SpecificationObjectView>>();
+            const [mappedSpecificationObjects, SetMappedSpecificationObjects] = useState<Array<SpecificationObjectView>>();
             const [pages, setPages] = useState<any>([]);
 
             useEffect(() => {
@@ -39,7 +39,6 @@ export const specificationObjectViewService = {
                     response.data.pages.forEach(x => {
                         x.data.forEach((specificationObject: SpecificationObject) => {
                             specificationObjects.push(new SpecificationObjectView(
-
                                 specificationObject.id,
                                 specificationObject.dataSetSpecificationId,
                                 specificationObject.supplierObjectName,
@@ -60,13 +59,13 @@ export const specificationObjectViewService = {
                         });
                     });
 
-                    SetMappedspecificationObjects(specificationObjects);
+                    SetMappedSpecificationObjects(specificationObjects);
                     setPages(response.data.pages);
                 }
             }, [response.data]);
 
             return {
-                SappedspecificationObjects,
+                mappedSpecificationObjects,
                 pages,
                 isLoading: response.isLoading,
                 fetchNextPage: response.fetchNextPage,
@@ -80,18 +79,18 @@ export const specificationObjectViewService = {
         }
     },
 
-    useGetspecificationObjectById: (id: Guid) => {
+    useGetSpecificationObjectById: (id: Guid) => {
         try {
             const query = `?$filter=id eq ${id}`
             const response = specificationObjectService.useRetrieveAllSpecificationObject(query)
-            const [SappedspecificationObject, SetMappedspecificationObject] = useState<SpecificationObjectView>();
+            const [mappedSpecificationObject, SetMappedSpecificationObject] = useState<SpecificationObjectView>();
 
             useEffect(() => {
                 if (response.data && response.data[0]) {
                     const specificationObject = new SpecificationObjectView(
                         response.data[0].id,
                         response.data[0].dataSetSpecificationId,
-                        response.data[0].SupplierObjectName,
+                        response.data[0].supplierObjectName,
                         response.data[0].ourObjectName,
                         response.data[0].objectDescription,
                         response.data[0].interchangeProtocol,
@@ -106,23 +105,23 @@ export const specificationObjectViewService = {
                         response.data[0].updatedDate,
                         response.data[0].dataSetSpecification);
 
-                    SetMappedspecificationObject(specificationObject);
+                    SetMappedSpecificationObject(specificationObject);
                 }
             }, [response.data]);
 
             return {
-                SappedspecificationObject, ...response
+                mappedSpecificationObject, ...response
             }
         } catch (err) {
             throw err;
         }
     },
 
-    useUpdatespecificationObject: () => {
+    useUpdateSpecificationObject: () => {
         return specificationObjectService.useModifySpecificationObject();
     },
 
-    useRemovespecificationObject: () => {
+    useRemoveSpecificationObject: () => {
         return specificationObjectService.useRemoveSpecificationObject();
     },
 };

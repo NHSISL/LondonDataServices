@@ -7,7 +7,7 @@ export class SpecificationObjectView {
     public supplierObjectName: string;
     public ourObjectName: string;
     public objectDescription: string;
-    public interchangeProtocol: boolean;
+    public interchangeProtocol: string;
     public isPushedToUs: boolean;
     public isPulledByUs: boolean;
     public deletionHandling: string;
@@ -25,7 +25,7 @@ export class SpecificationObjectView {
         supplierObjectName?: string,
         ourObjectName?: string,
         objectDescription?: string,
-        interchangeProtocol?: boolean,
+        interchangeProtocol?: string,
         isPushedToUs?: boolean,
         isPulledByUs?: boolean,
         deletionHandling?: string,
@@ -39,13 +39,13 @@ export class SpecificationObjectView {
     ) {
         this.id = id;
         this.dataSetSpecificationId = dataSetSpecificationId;
-        this.supplierObjectName = supplierObjectName = "";
-        this.ourObjectName = ourObjectName = "";
-        this.objectDescription = objectDescription = "";
-        this.interchangeProtocol = interchangeProtocol = false;
+        this.supplierObjectName = supplierObjectName || "";
+        this.ourObjectName = ourObjectName || "";
+        this.objectDescription = objectDescription || "";
+        this.interchangeProtocol = interchangeProtocol || "";
         this.isPushedToUs = isPushedToUs || false;
         this.isPulledByUs = isPulledByUs || false;
-        this.deletionHandling = deletionHandling = "";
+        this.deletionHandling = deletionHandling || "";
         this.isSubmissionHeaderObject = isSubmissionHeaderObject || false;
         this.isTransactionLog = isTransactionLog || false;
         this.createdBy = createdBy || "";

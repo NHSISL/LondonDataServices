@@ -3,14 +3,14 @@ import { Validation } from "../../models/validations/validation";
 export const specificationObjectValidations: Array<Validation> = [
     {
         property: "supplierObjectName",
-        friendlyName: "supplierObjectName",
+        friendlyName: "Supplier Object Name",
         isRequired: true,
         minLength: 3,
         maxLength: 255,
     },
     {
         property: "ourObjectName",
-        friendlyName: "ourObjectName",
+        friendlyName: "Our Object Name",
         isRequired: true,
         minLength: 3,
         maxLength: 255,

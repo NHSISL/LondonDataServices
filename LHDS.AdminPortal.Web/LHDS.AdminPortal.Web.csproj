@@ -102,7 +102,14 @@
     <TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetailCard.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\pds\upload\pdsUploadDetailCardView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectDetail.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectDetailCard.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectDetailCardEdit.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectDetailCardView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectErrors.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectRow.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectRowView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\specificationObjects\specificationObjectValidations.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierErrors.ts" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRow.tsx" />
@@ -149,6 +156,7 @@
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetsListPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetSpecificationPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataTypesPage.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\configuration\specificationObjectPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\IngestionTrackingHomepage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\ingestionTrackingPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\OptOutSearch.tsx" />

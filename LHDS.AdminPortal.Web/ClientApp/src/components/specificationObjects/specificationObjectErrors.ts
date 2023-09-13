@@ -2,10 +2,26 @@ import { ErrorBase } from "../../types/ErrorBase";
 
 export interface ISpecificationObjectErrors extends ErrorBase {
     hasErrors: boolean;
-    name: string;
+    supplierObjectName: string;
+    ourObjectName: string;
+    objectDescription: string;
+    interchangeProtocol: string;
+    isPushedToUs: string;
+    isPulledByUs: string;
+    deletionHandling: string;
+    isSubmissionHeaderObject: string;
+    isTransactionLog: string;
 }
 
-export const objectColumnErrors: ISpecificationObjectErrors = {
+export const specificationObjectErrors: ISpecificationObjectErrors = {
     hasErrors: false,
-    name: ""
+    supplierObjectName: "",
+    ourObjectName: "",
+    objectDescription: "",
+    interchangeProtocol: "",
+    isPushedToUs: "",
+    isPulledByUs: "",
+    deletionHandling: "",
+    isSubmissionHeaderObject: "",
+    isTransactionLog: "",
 };

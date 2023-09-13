@@ -12,6 +12,24 @@ namespace LHDS.Core.Brokers.Storages.Sql
         private static void AddAuditConfigurations(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Audit>()
+                .Property(audit => audit.CreatedBy)
+                .HasMaxLength(255)
+                .IsRequired();
+
+            modelBuilder.Entity<Audit>()
+                .Property(audit => audit.CreatedDate)
+                .IsRequired();
+
+            modelBuilder.Entity<Audit>()
+                .Property(audit => audit.UpdatedBy)
+                .HasMaxLength(255)
+                .IsRequired();
+
+            modelBuilder.Entity<Audit>()
+                .Property(audit => audit.UpdatedDate)
+                .IsRequired();
+
+            modelBuilder.Entity<Audit>()
                 .Property(audit => audit.IngestionTrackingId)
                 .HasMaxLength(450)
                 .IsRequired();

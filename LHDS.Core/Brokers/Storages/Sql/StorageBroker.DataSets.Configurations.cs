@@ -13,6 +13,81 @@ namespace LHDS.Core.Brokers.Storages.Sql
         {
             modelBuilder.Entity<DataSet>()
                 .ToTable(dataSet => dataSet.IsTemporal());
+
+            modelBuilder.Entity<DataSet>()
+               .Property(dataSet => dataSet.Id)
+               .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.DataSetName)
+                .HasMaxLength(150)
+                .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.DataSetAliases)
+                .HasMaxLength(250)
+                .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.DataSetSupplier)
+                .HasMaxLength(150)
+                .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.DataSetAuthor)
+                .HasMaxLength(150)
+                .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.SpecifiedBy)
+                .HasMaxLength(150)
+                .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.IsNationallySpecified)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.CollectedBy)
+                .HasMaxLength(150)
+                .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.IsNationallyCollected)
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.DataSourceType)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.ActiveFrom)
+                .IsRequired(false);
+
+            modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.ActiveTo)
+                .IsRequired(false);
+
+            modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.CreatedBy)
+                .HasMaxLength(255)
+                .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.CreatedDate)
+                .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.UpdatedBy)
+                .HasMaxLength(255)
+                .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.UpdatedDate)
+                .IsRequired();
         }
     }
 }

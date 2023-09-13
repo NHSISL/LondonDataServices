@@ -17,6 +17,11 @@ import { PdsSearch } from './pages/PdsSearch';
 import { PdsUpload } from './pages/PdsUpload';
 import { SecuredRoute } from './components/SecuredRoute';
 import securityPoints from './SecurityMatrix';
+import { DataTypesPage } from './pages/configuration/dataTypesPage';
+import { DataSetsListPage } from './pages/configuration/dataSetsListPage';
+import { DataSetPage } from './pages/configuration/dataSetPage';
+import { DataSetSpecificationPage } from './pages/configuration/dataSetSpecificationPage';
+import { SpecificationObjectPage } from './pages/configuration/specificationObjectPage';
 
 const App = ({ msalInstance }: any) => {
     return (
@@ -32,6 +37,15 @@ const App = ({ msalInstance }: any) => {
                         <Route path="/optOutUpload" element={<SecuredRoute allowedRoles={securityPoints.optOut.view}><OptOutUpload /></SecuredRoute>} />
                         <Route path="/configuration" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><ConfigHomePage/></SecuredRoute>} />
                         <Route path="/configuration/suppliers" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><SuppliersPage /></SecuredRoute >} />
+                        <Route path="/configuration/dataTypes" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataTypesPage /></SecuredRoute >} />
+                        <Route path="/configuration/dataSets" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetsListPage /></SecuredRoute >} />
+                        <Route path="/configuration/dataSet" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetPage /></SecuredRoute >} />
+                        <Route path="/configuration/dataSet/:dataSetId" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetPage /></SecuredRoute>} />
+                        <Route path="/configuration/dataSetSpecification" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetSpecificationPage /></SecuredRoute >} />
+                        <Route path="/configuration/dataSetSpecification/:dataSetId" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetSpecificationPage /></SecuredRoute>} />
+                        <Route path="/configuration/dataSetSpecification/:dataSetId/:dataSetSpecificationId" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetSpecificationPage /></SecuredRoute>} />
+                        <Route path="/configuration/SpecificationObject/:dataSetSpecificationId" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><SpecificationObjectPage /></SecuredRoute>} />
+                        <Route path="/configuration/SpecificationObject/:specificationObjectId/:dataSetSpecificationId/" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><SpecificationObjectPage /></SecuredRoute>} />
                         <Route path="/pds" element={<SecuredRoute allowedRoles={securityPoints.pds.view}>< PdsSearch /></SecuredRoute >} />
                         <Route path="/pdsUpload" element={<SecuredRoute allowedRoles={securityPoints.pds.view}>< PdsUpload /></SecuredRoute >} />
                     </Routes>

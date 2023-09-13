@@ -27,7 +27,7 @@
 }
 
 .summaryListValue {
-    width: 50%;
+    width: 100%;
     word-wrap: break-word;
    
     display: table-cell;

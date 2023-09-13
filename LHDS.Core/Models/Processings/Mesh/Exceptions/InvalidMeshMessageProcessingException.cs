@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Foundations.Mesh.Exceptions
+namespace LHDS.Core.Models.Processings.Mesh.Exceptions
 {
     public class InvalidMeshMessageProcessingException : Xeption
     {

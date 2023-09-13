@@ -1,0 +1,31 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
+using Microsoft.EntityFrameworkCore;
+
+namespace LHDS.Core.Brokers.Storages.Sql
+{
+    public partial class StorageBroker
+    {
+        public DbSet<SpecificationObject> SpecificationObjects { get; set; }
+
+        public async ValueTask<SpecificationObject> InsertSpecificationObjectAsync(
+            SpecificationObject specificationObject) => await InsertAsync(specificationObject);
+
+        public IQueryable<SpecificationObject> SelectAllSpecificationObjects() => ReadAll<SpecificationObject>();
+
+        public async ValueTask<SpecificationObject> SelectSpecificationObjectByIdAsync(Guid specificationObjectId) =>
+            await ReadAsync<SpecificationObject>(specificationObjectId);
+
+        public async ValueTask<SpecificationObject> UpdateSpecificationObjectAsync(
+            SpecificationObject specificationObject) => await UpdateAsync(specificationObject);
+
+        public async ValueTask<SpecificationObject> DeleteSpecificationObjectAsync(
+            SpecificationObject specificationObject) => await DeleteAsync(specificationObject);
+    }
+}

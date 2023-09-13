@@ -43,15 +43,15 @@ namespace LHDS.Core.Clients
             {
                 loggingBroker.LogInformation($"file:{fileName}, size:{stream.Length}, container:{container}");
                 var blobClient = blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
-                var streamLenght = stream.Length;
+                var streamLength = stream.Length;
 
                 var options = new BlobUploadOptions
                 {
                     ProgressHandler = new Progress<long>(progress =>
                     {
                         Console.WriteLine(
-                            $"file: {fileName}, progress: {progress}/{streamLenght}, " +
-                            $"percent:{Math.Round(progress / (double)streamLenght * 100.0, 2)}");
+                            $"file: {fileName}, progress: {progress}/{streamLength}, " +
+                            $"percent:{Math.Round(progress / (double)streamLength * 100.0, 2)}");
                     }),
                     TransferOptions = new Azure.Storage.StorageTransferOptions()
                     {

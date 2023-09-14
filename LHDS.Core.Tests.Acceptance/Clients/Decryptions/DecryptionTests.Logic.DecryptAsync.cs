@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -54,6 +53,16 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             ingestionTracking.Should().NotBeNull();
 
+            IngestionTracking decryptedIngestionTracking =
+                await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id);
+
+            this.blobStorageBrokerMock.Verify(broker =>
+                broker.InsertFileAsync(decryptedIngestionTracking.DecryptedFileName, It.IsAny<Stream>()),
+                    Times.Once());
+
+            this.downloadBrokerMock.VerifyNoOtherCalls();
+            this.blobStorageBrokerMock.VerifyNoOtherCalls();
+
             var audits = this.auditService.RetrieveAllAudits()
                 .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
 
@@ -62,17 +71,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 await this.auditService.RemoveAuditByIdAsync(audit.Id);
             }
 
-            IngestionTracking decryptedIngestionTracking =
-                await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id);
-
-            this.blobStorageBrokerMock.Verify(broker =>
-                broker.InsertFileAsync(decryptedIngestionTracking.DecryptedFileName, It.IsAny<Stream>()),
-                    Times.Once());
-
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
-
-            this.downloadBrokerMock.VerifyNoOtherCalls();
-            this.blobStorageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

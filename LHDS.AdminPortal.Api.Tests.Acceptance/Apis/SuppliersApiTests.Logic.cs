@@ -133,6 +133,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
         public async Task ShouldGetAllSuppliersOrderAsync()
         {
             //Given
+            List<Supplier> existingSuppliers = await this.apiBroker.GetAllSuppliersAsync();
             List<Supplier> randomSuppliers = await PostRandomSuppliersAsync();
             List<Supplier> expectedSuppliers = randomSuppliers;
 
@@ -140,7 +141,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
             List<Supplier> actualSuppliers = await this.apiBroker.GetAllSuppliersOrderedDescendingAsync();
 
             //Then
-            actualSuppliers.Count.Should().Be(expectedSuppliers.Count);
+            actualSuppliers.Count.Should().Be(expectedSuppliers.Count + existingSuppliers.Count);
 
             for (int i = 1; i < actualSuppliers.Count; i++)
             {

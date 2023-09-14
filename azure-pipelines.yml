@@ -41,52 +41,52 @@ steps:
       projects: '**/*.Tests.Unit.csproj'
     continueOnError: false  # Set this option to false to make the task fail the build on error.
 
-  - task: Bash@3
-    enabled: true
-    displayName: Install Docker
-    inputs:
-      targetType: inline
-      script: >-
-        sudo apt update
+  # - task: Bash@3
+  #   enabled: true
+  #   displayName: Install Docker
+  #   inputs:
+  #     targetType: inline
+  #     script: >-
+  #       sudo apt update
           
-        sudo apt install apt-transport-https ca-certificates curl
-        software-properties-common -y
+  #       sudo apt install apt-transport-https ca-certificates curl
+  #       software-properties-common -y
         
-        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo
-        apt-key add -
+  #       curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo
+  #       apt-key add -
         
-        sudo add-apt-repository "deb [arch=amd64]
-        https://download.docker.com/linux/ubuntu bionic stable"
+  #       sudo add-apt-repository "deb [arch=amd64]
+  #       https://download.docker.com/linux/ubuntu bionic stable"
         
-        sudo add-apt-repository "deb [arch=amd64]
-        https://download.docker.com/linux/ubuntu bionic stable"
+  #       sudo add-apt-repository "deb [arch=amd64]
+  #       https://download.docker.com/linux/ubuntu bionic stable"
         
-        sudo apt update
+  #       sudo apt update
         
-        apt-cache policy docker-ce
+  #       apt-cache policy docker-ce
         
-        sudo apt install docker-ce -y
+  #       sudo apt install docker-ce -y
         
-        sudo systemctl start docker
+  #       sudo systemctl start docker
 
-  - task: Bash@3
-    enabled: true
-    displayName: Pulling Required Docker Images for SQL Server
-    inputs:
-      targetType: inline
-      script: |-
-        sudo docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=1Password" \
-            -p 1433:1433 --name sql1 --hostname sql1 \
-            -d \
-            mcr.microsoft.com/mssql/server:2022-latest
+  # - task: Bash@3
+  #   enabled: true
+  #   displayName: Pulling Required Docker Images for SQL Server
+  #   inputs:
+  #     targetType: inline
+  #     script: |-
+  #       sudo docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=1Password" \
+  #           -p 1433:1433 --name sql1 --hostname sql1 \
+  #           -d \
+  #           mcr.microsoft.com/mssql/server:2022-latest
 
   - task: DotNetCoreCLI@2
     displayName: C# Acceptance Tests
     inputs:
       command: 'test'
       projects: '**/*.Tests.Acceptance.csproj'
-      arguments: '--environment ASPNETCORE_ENVIRONMENT=ContinuousIntegration'
-      envVars: 'ASPNETCORE_ENVIRONMENT=ContinuousIntegration'
+      arguments: '--environment ASPNETCORE_ENVIRONMENT=Development'
+      envVars: 'ASPNETCORE_ENVIRONMENT=Development'
       environmentVariables: |
         MESHCONFIGURATION__MAILBOXID=$(MESHCONFIGURATION__MAILBOXID)
         MESHCONFIGURATION__PASSWORD=$(MESHCONFIGURATION__PASSWORD)

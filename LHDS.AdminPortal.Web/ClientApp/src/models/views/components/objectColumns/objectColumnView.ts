@@ -2,7 +2,7 @@ import { Guid } from 'guid-typescript';
 import { SpecificationObject } from '../../../specificationObjects/specificationObject';
 
 export class ObjectColumnView {
-    public id?: Guid;
+    public id: Guid;
     public specificationObjectId: Guid;
     public supplierColumnName: string;
     public ourColumnName: string;
@@ -22,6 +22,7 @@ export class ObjectColumnView {
     public isVersionHashElement: boolean;
     public isSenderCode: boolean;
     public isAuthorCode: boolean;
+    public isRelatedOrganisationId: boolean;
     public isDeleteFlag: boolean;
     public isPersonConfidentialData: boolean;
     public personConfidentialDataType: string;
@@ -56,6 +57,7 @@ export class ObjectColumnView {
         isVersionHashElement?: boolean,
         isSenderCode?: boolean,
         isAuthorCode?: boolean,
+        isRelatedOrganisationId?: boolean,
         isDeleteFlag?: boolean,
         isPersonConfidentialData?: boolean,
         personConfidentialDataType?: string,
@@ -89,6 +91,7 @@ export class ObjectColumnView {
         this.isVersionHashElement = isVersionHashElement || false;
         this.isSenderCode = isSenderCode || false;
         this.isAuthorCode = isAuthorCode || false;
+        this.isRelatedOrganisationId = isRelatedOrganisationId || false;
         this.isDeleteFlag = isDeleteFlag || false;
         this.isPersonConfidentialData = isPersonConfidentialData || false;
         this.personConfidentialDataType = personConfidentialDataType || "";

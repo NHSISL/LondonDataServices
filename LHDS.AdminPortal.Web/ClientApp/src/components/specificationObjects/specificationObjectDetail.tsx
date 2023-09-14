@@ -3,6 +3,7 @@ import { Guid } from 'guid-typescript';
 import { SpecificationObjectView } from "../../models/views/components/specificationObjects/specificationObjectView";
 import { specificationObjectViewService } from "../../services/views/specificationObjects/specificationObjectViewService";
 import SpecificationObjectDetailCard from "./specificationObjectDetailCard";
+import ObjectColumnTable from "../objectColumns/objectColumnTable";
 
 interface SpecificationObjectDetailProps {
     dataSetSpecificationId?: string;
@@ -69,6 +70,11 @@ const SpecificationObjectDetail: FunctionComponent<SpecificationObjectDetailProp
 
                     {mode !== "ADD" && (
                         <>
+                            <ObjectColumnTable
+                                key={specificationObject.id.toString()}
+                                specificationObjectId={specificationObject.id.toString()}>
+                            </ObjectColumnTable>
+
                         </>
                     )}
                 </div>

@@ -49,15 +49,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
             return randomSupplier;
         }
 
-        private async ValueTask<Supplier> PostNamedSupplierAsync(string supplierName)
-        {
-            Supplier randomSupplier = CreateRandomSupplier();
-            randomSupplier.Name = supplierName;
-            await this.apiBroker.PostSupplierAsync(randomSupplier);
-
-            return randomSupplier;
-        }
-
         private async ValueTask<List<Supplier>> PostRandomSuppliersAsync()
         {
             int randomNumber = GetRandomNumber();
@@ -69,19 +60,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
             }
 
             return randomSuppliers;
-        }
-
-        private async ValueTask<List<Supplier>> PostNamedSuppliersAsync()
-        {
-            List<string> supplierNames = new List<string> { "Emis", "TPP", "Vision", "Test", "NHS", "NEL" };
-            var namedSuppliers = new List<Supplier>();
-
-            foreach (string supplierName in supplierNames)
-            {
-                namedSuppliers.Add(await PostNamedSupplierAsync(supplierName));
-            }
-
-            return namedSuppliers;
         }
 
         private static Supplier CreateRandomSupplier() =>

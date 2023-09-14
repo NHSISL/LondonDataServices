@@ -104,5 +104,22 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
             await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
                 getSupplierbyIdTask.AsTask());
         }
+
+        [Fact]
+        public async Task ShouldFilterSuppliersAsync()
+        {
+            // given
+            await PostNamedSuppliersAsync();
+            string expectedSupplierName = "Emis";
+
+            // when
+            List<Supplier> actualSuppliers =
+                await this.apiBroker.FilterSuppliersAsync(supplierName: expectedSupplierName);
+
+            // then
+            actualSuppliers.Count.Should().Be(1);
+            Supplier actualSupplier = actualSuppliers.First();
+            actualSupplier.Name.Should().Be(expectedSupplierName);
+        }
     }
 }

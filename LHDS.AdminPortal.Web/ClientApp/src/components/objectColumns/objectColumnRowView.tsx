@@ -26,9 +26,6 @@ const ObjectColumnRowView: FunctionComponent<ObjectColumnRowProps> = (props) => 
                 {objectColumn.supplierColumnName}
             </TableBaseData>
             <TableBaseData>
-                {objectColumn.supplierColumnName}
-            </TableBaseData>
-            <TableBaseData>
                 {objectColumn.createdBy}
             </TableBaseData>
             <TableBaseData>

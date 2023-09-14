@@ -11,21 +11,26 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 {
     public partial class ApiBroker
     {
-        private const string SuppliersRelativeUrl = "api/suppliers";
+        private const string suppliersRelativeUrl = "api/suppliers";
+        private const string suppliersRelativeOdataUrl = "odata/suppliers";
 
         public async ValueTask<Supplier> PostSupplierAsync(Supplier supplier) =>
-            await this.apiFactoryClient.PostContentAsync(SuppliersRelativeUrl, supplier);
+            await this.apiFactoryClient.PostContentAsync(suppliersRelativeUrl, supplier);
 
         public async ValueTask<Supplier> GetSupplierByIdAsync(Guid supplierId) =>
-            await this.apiFactoryClient.GetContentAsync<Supplier>($"{SuppliersRelativeUrl}/{supplierId}");
+            await this.apiFactoryClient.GetContentAsync<Supplier>($"{suppliersRelativeUrl}/{supplierId}");
 
         public async ValueTask<List<Supplier>> GetAllSuppliersAsync() =>
-          await this.apiFactoryClient.GetContentAsync<List<Supplier>>($"{SuppliersRelativeUrl}/");
+            await this.apiFactoryClient.GetContentAsync<List<Supplier>>($"{suppliersRelativeUrl}/");
+
+        public async ValueTask<List<Supplier>> FilterSuppliersAsync(string supplierName) =>
+            await this.apiFactoryClient.GetContentAsync<List<Supplier>>(
+                $"{suppliersRelativeUrl}/?$filter=name eq '{supplierName}'");
 
         public async ValueTask<Supplier> PutSupplierAsync(Supplier supplier) =>
-            await this.apiFactoryClient.PutContentAsync(SuppliersRelativeUrl, supplier);
+            await this.apiFactoryClient.PutContentAsync(suppliersRelativeUrl, supplier);
 
         public async ValueTask<Supplier> DeleteSupplierByIdAsync(Guid supplierId) =>
-            await this.apiFactoryClient.DeleteContentAsync<Supplier>($"{SuppliersRelativeUrl}/{supplierId}");
+            await this.apiFactoryClient.DeleteContentAsync<Supplier>($"{suppliersRelativeUrl}/{supplierId}");
     }
 }

@@ -9,18 +9,24 @@ import ObjectColumnDetail from "../../components/objectColumns/objectColumnDetai
 
 export const ObjectColumnPage = () => {
 
-    const { objectColumnId, specificationObjectId } = useParams();
+    const { dataSetSpecificationId, objectColumnId, specificationObjectId } = useParams();
 
     return <div>
         <section >
             <Container>
                 <main id="maincontent" className="NELTopPadding" role="main">
-                    {/*<Link to={'/configuration/SpecificationObject/' + specificationObjectId }>*/}
-                    {/*    <FontAwesomeIcon icon={faChevronLeft} size="1x" />Back to Specifications Object*/}
-                    {/*</Link>*/}
+
+                    <Link to={'/configuration/SpecificationObject/' + specificationObjectId 
+                        + '/' + dataSetSpecificationId
+                    }>
+
+                        <FontAwesomeIcon icon={faChevronLeft} size="1x" />Back to Specifications Object
+                    </Link>
                     <ObjectColumnDetail
-                        specificationObjectId={specificationObjectId }
-                        objectColumnId={objectColumnId}/>
+                        specificationObjectId={specificationObjectId}
+                        objectColumnId={objectColumnId}
+                        dataSetSpecificationId={dataSetSpecificationId!.toString()}
+                    />
                 </main>
             </Container>
         </section>

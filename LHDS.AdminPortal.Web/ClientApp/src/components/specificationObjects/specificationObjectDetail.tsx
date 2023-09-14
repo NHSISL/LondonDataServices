@@ -8,6 +8,7 @@ import ObjectColumnTable from "../objectColumns/objectColumnTable";
 interface SpecificationObjectDetailProps {
     dataSetSpecificationId?: string;
     specificationObjectId?: string;
+    dataSetId: string
     children?: React.ReactNode;
 }
 
@@ -15,6 +16,7 @@ const SpecificationObjectDetail: FunctionComponent<SpecificationObjectDetailProp
     const {
         dataSetSpecificationId,
         specificationObjectId,
+        dataSetId,
         children
     } = props;
 
@@ -30,6 +32,7 @@ const SpecificationObjectDetail: FunctionComponent<SpecificationObjectDetailProp
     const addSpecificationObject = specificationObjectViewService.useCreateSpecificationObject();
 
     const handleAdd = (specificationObject: SpecificationObjectView) => {
+        specificationObject.dataSetSpecificationId = Guid.parse(dataSetSpecificationId!);
         return addSpecificationObject.mutate(specificationObject);
     }
 
@@ -61,6 +64,7 @@ const SpecificationObjectDetail: FunctionComponent<SpecificationObjectDetailProp
                     <SpecificationObjectDetailCard
                         key={specificationObject.id.toString()}
                         specificationObject={specificationObject}
+                        dataSetId={dataSetId}
                         mode={mode}
                         onAdd={handleAdd}
                         onUpdate={handleUpdate}
@@ -72,7 +76,9 @@ const SpecificationObjectDetail: FunctionComponent<SpecificationObjectDetailProp
                         <>
                             <ObjectColumnTable
                                 key={specificationObject.id.toString()}
-                                specificationObjectId={specificationObject.id.toString()}>
+                                specificationObjectId={specificationObject.id.toString()}
+                                dataSetSpecificationId={dataSetSpecificationId!}
+                            >
                             </ObjectColumnTable>
 
                         </>

@@ -7,6 +7,7 @@ import ObjectColumnDetailCard from "./objectColumnDetailCard";
 interface ObjectColumnDetailProps {
     specificationObjectId?: string;
     objectColumnId?: string;
+    dataSetSpecificationId: string;
     children?: React.ReactNode;
 }
 
@@ -14,6 +15,7 @@ const ObjectColumnDetail: FunctionComponent<ObjectColumnDetailProps> = (props) =
     const {
         specificationObjectId,
         objectColumnId,
+        dataSetSpecificationId,
         children
     } = props;
 
@@ -60,6 +62,8 @@ const ObjectColumnDetail: FunctionComponent<ObjectColumnDetailProps> = (props) =
                     <ObjectColumnDetailCard
                         key={objectColumn.id.toString()}
                         objectColumn={objectColumn}
+                        specificationObjectId={specificationObjectId!.toString()}
+                        dataSetSpecificationId={dataSetSpecificationId}
                         mode={mode}
                         onAdd={handleAdd}
                         onUpdate={handleUpdate}

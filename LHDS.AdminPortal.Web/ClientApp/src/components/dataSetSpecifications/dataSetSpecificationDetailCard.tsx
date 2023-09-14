@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { DataSetSpecificationView } from "../../models/views/components/dataSetSpecifications/dataSetSpecificationView";
 import DataSetSpecificationDetailCardView from "./dataSetSpecificationDetailCardView";
 import DataSetSpecificationDetailCardEdit from "./dataSetSpecificationDetailCardEdit";
+import { Guid } from "guid-typescript";
 
 interface DataSetSpecificationDetailCardProps {
     dataSetSpecification: DataSetSpecificationView;
@@ -40,8 +41,9 @@ const DataSetSpecificationDetailCard: FunctionComponent<DataSetSpecificationDeta
 
     const handleAdd = async (dataSetSpecification: DataSetSpecificationView) => {
         try {
-            await onAdd(dataSetSpecification);
-            navigate('/configuration/dataSetSpecification');
+            dataSetSpecification.dataSetId = Guid.parse(dataSetId!);
+            onAdd(dataSetSpecification);
+            navigate('/configuration/dataSet/' + dataSetId);
         } catch (error) {
             setDisplayMode('EDIT');
         }
@@ -49,7 +51,8 @@ const DataSetSpecificationDetailCard: FunctionComponent<DataSetSpecificationDeta
 
     const handleUpdate = async (dataSetSpecification: DataSetSpecificationView) => {
         try {
-            await onUpdate(dataSetSpecification);
+            dataSetSpecification.dataSetId = Guid.parse(dataSetId!);
+            onUpdate(dataSetSpecification);
             setDisplayMode('VIEW');
         } catch (error) {
             setApiError(error);
@@ -71,7 +74,9 @@ const DataSetSpecificationDetailCard: FunctionComponent<DataSetSpecificationDeta
             <CardBase>
                 <CardBaseBody>
                     <CardBaseTitle>
-                        {displayMode === "ADD" ? "New DataSet Specification" : dataSetSpecification.ourSpecificationVersion}
+                        {displayMode === "ADD"
+                            ? "New DataSet Specification"
+                            : "DataSet Specification (" + dataSetSpecification.ourSpecificationVersion + ")"}
                     </CardBaseTitle>
 
                     <CardBaseContent>

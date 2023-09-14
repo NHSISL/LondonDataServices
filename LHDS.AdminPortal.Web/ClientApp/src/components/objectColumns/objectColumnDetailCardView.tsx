@@ -95,7 +95,7 @@ const ObjectColumnDetailCardView: FunctionComponent<ObjectColumnDetailCardViewPr
 
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Is Entity Business Key</SummaryListBaseKey>
-                <SummaryListBaseValue>{objectColumn.isEntityBusinessKey}</SummaryListBaseValue>
+                    <SummaryListBaseValue>{objectColumn.isEntityBusinessKey ? <FontAwesomeIcon icon={faCheck} className="text-success" /> : <FontAwesomeIcon icon={faTimes} className="text-danger" />}</SummaryListBaseValue>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>

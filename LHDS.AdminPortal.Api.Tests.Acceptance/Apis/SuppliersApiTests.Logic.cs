@@ -114,21 +114,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
             List<Supplier> expectedSuppliers = randomSuppliers;
 
             //When
-            List<Supplier> actualSuppliers = await this.apiBroker.GetAllSuppliersOrderedAsync();
+            List<Supplier> actualSuppliers = await this.apiBroker.GetAllSuppliersOrderedDescendingAsync();
 
             //Then
-            bool areSuppliersOrderedCorrectly = true;
+            actualSuppliers.Count.Should().Be(expectedSuppliers.Count);
 
-            for (int i = 0; i < expectedSuppliers.Count; i++)
+            for (int i = 1; i < actualSuppliers.Count; i++)
             {
-                if (expectedSuppliers[i].Id != actualSuppliers[i].Id)
-                {
-                    areSuppliersOrderedCorrectly = false;
-                    break;
-                }
+                (actualSuppliers[i - 1].CreatedDate >= actualSuppliers[i].CreatedDate).Should().BeTrue();
             }
-
-            areSuppliersOrderedCorrectly.Should().BeTrue();
 
             foreach (Supplier expectedSupplier in expectedSuppliers)
             {

@@ -12,7 +12,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
     public partial class ApiBroker
     {
         private const string suppliersRelativeUrl = "api/suppliers";
-        private const string suppliersRelativeOdataUrl = "odata/suppliers";
 
         public async ValueTask<Supplier> PostSupplierAsync(Supplier supplier) =>
             await this.apiFactoryClient.PostContentAsync(suppliersRelativeUrl, supplier);
@@ -26,6 +25,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         public async ValueTask<List<Supplier>> FilterSuppliersAsync(string supplierName) =>
             await this.apiFactoryClient.GetContentAsync<List<Supplier>>(
                 $"{suppliersRelativeUrl}/?$filter=name eq '{supplierName}'");
+
+        public async ValueTask<List<Supplier>> GetAllSuppliersOrderedDescendingAsync() =>
+            await this.apiFactoryClient.GetContentAsync<List<Supplier>>(
+                $"{suppliersRelativeUrl}/?$orderby=createddate desc");
 
         public async ValueTask<Supplier> PutSupplierAsync(Supplier supplier) =>
             await this.apiFactoryClient.PutContentAsync(suppliersRelativeUrl, supplier);

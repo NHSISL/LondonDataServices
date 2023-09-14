@@ -107,6 +107,29 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
         }
 
         [Fact]
+        public async Task ShouldFilterSuppliersAsync()
+        {
+            // given
+            List<Supplier> namedSuppliers = await PostRandomSuppliersAsync();
+            Supplier expectedSupplier = namedSuppliers.First();
+
+            // when
+            List<Supplier> actualSuppliers =
+                await this.apiBroker.FilterSuppliersAsync(supplierName: expectedSupplier.Name);
+
+            Supplier actualSupplier = actualSuppliers.First();
+
+            // then
+            actualSupplier.Should().BeEquivalentTo(expectedSupplier);
+
+            // cleanup
+            foreach (Supplier supplier in namedSuppliers) 
+            {
+                await this.apiBroker.DeleteSupplierByIdAsync(supplier.Id);
+            }
+        }
+
+        [Fact]
         public async Task ShouldGetAllSuppliersOrderAsync()
         {
             //Given

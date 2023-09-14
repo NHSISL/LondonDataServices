@@ -16,7 +16,6 @@ variables:
     value: 'LHDS.AdminPortal.Web'
 
 pool: selfhosted-vmss-linux-lds-dev
-    vmImage: 'ubuntu-latest'
 
 steps:
 

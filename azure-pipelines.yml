@@ -74,6 +74,12 @@ steps:
     inputs:
       targetType: inline
       script: |-
+        sudo docker ps -a | grep sql1
+      
+        sudo docker stop sql1
+
+        sudo docker rm sql1
+
         sudo docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=1Password" \
             -p 1433:1433 --name sql1 --hostname sql1 \
             -d \

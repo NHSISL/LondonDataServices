@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
+using Microsoft.AspNetCore.Http;
 using RESTFulSense.Exceptions;
 using Xunit;
 
@@ -103,6 +104,36 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
 
             await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
                 getSupplierbyIdTask.AsTask());
+        }
+
+        [Fact]
+        public async Task ShouldGetAllSuppliersOrderAsync()
+        {
+            //Given
+            List<Supplier> randomSuppliers = await PostRandomSuppliersAsync();
+            List<Supplier> expectedSuppliers = randomSuppliers;
+
+            //When
+            List<Supplier> actualSuppliers = await this.apiBroker.GetAllSuppliersOrderedAsync();
+
+            //Then
+            bool areSuppliersOrderedCorrectly = true;
+
+            for (int i = 0; i < expectedSuppliers.Count; i++)
+            {
+                if (expectedSuppliers[i].Id != actualSuppliers[i].Id)
+                {
+                    areSuppliersOrderedCorrectly = false;
+                    break;
+                }
+            }
+
+            areSuppliersOrderedCorrectly.Should().BeTrue();
+
+            foreach (Supplier expectedSupplier in expectedSuppliers)
+            {
+                await this.apiBroker.DeleteSupplierByIdAsync(expectedSupplier.Id);
+            }
         }
     }
 }

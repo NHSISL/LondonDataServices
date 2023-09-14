@@ -109,7 +109,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
         public async Task ShouldFilterSuppliersAsync()
         {
             // given
-            await PostNamedSuppliersAsync();
+            List<Supplier> namedSuppliers = await PostNamedSuppliersAsync();
             string expectedSupplierName = "Emis";
 
             // when
@@ -120,6 +120,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
             actualSuppliers.Count.Should().Be(1);
             Supplier actualSupplier = actualSuppliers.First();
             actualSupplier.Name.Should().Be(expectedSupplierName);
+
+            // cleanup
+            foreach (Supplier supplier in namedSuppliers) 
+            {
+                await this.apiBroker.DeleteSupplierByIdAsync(supplier.Id);
+            }
         }
     }
 }

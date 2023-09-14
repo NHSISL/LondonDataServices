@@ -71,6 +71,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
                 await this.auditService.RemoveAuditByIdAsync(audit.Id);
             }
 
+            audits = this.auditService.RetrieveAllAudits()
+                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+
+            audits.Count().Should().Be(0);
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
         }
     }

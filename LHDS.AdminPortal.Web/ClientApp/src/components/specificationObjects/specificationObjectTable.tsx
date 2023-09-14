@@ -26,12 +26,14 @@ import SpecificationObjectRow from "./specificationObjectRow";
 
 type SpecificationObjectTableProps = {
     dataSetSpecificationId: string;
+    dataSetId: string;
     children?: React.ReactNode;
 };
 
 const SpecificationObjectTable: FunctionComponent<SpecificationObjectTableProps> = (props) => {
     const {
-        dataSetSpecificationId
+        dataSetSpecificationId,
+        dataSetId
     } = props;
 
     const [searchTerm, setSearchTerm] = useState<string>("");
@@ -88,7 +90,7 @@ const SpecificationObjectTable: FunctionComponent<SpecificationObjectTableProps>
                                 <Col style={{ textAlign: "right" }}>
                                     <SecuredComponents allowedRoles={securityPoints.dataSets.add}>
                                         <>
-                                            <Link to={'/configuration/SpecificationObject/' + dataSetSpecificationId}>
+                                            <Link to={'/configuration/SpecificationObjectAdd/' + dataSetSpecificationId + '/' + dataSetId}>
                                                 <ButtonBase onClick={() => { }} add>&nbsp;Add Specification Object</ButtonBase>
                                             </Link>
                                         </>
@@ -101,7 +103,7 @@ const SpecificationObjectTable: FunctionComponent<SpecificationObjectTableProps>
                                     <div className="filter-item">
                                         <SearchBase
                                             id="search"
-                                            label="Search DataSets Specifications"
+                                            label="Search Specification Objects"
                                             value={searchTerm}
                                             onChange={(e) => {
                                                 handleSearchChange(e.currentTarget.value);

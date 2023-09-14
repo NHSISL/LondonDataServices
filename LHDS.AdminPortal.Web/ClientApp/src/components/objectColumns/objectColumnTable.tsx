@@ -26,12 +26,14 @@ import ObjectColumnRow from "./objectColumnRow";
 
 type ObjectColumnTableProps = {
     specificationObjectId: string;
+    dataSetSpecificationId: string;
     children?: React.ReactNode;
 };
 
 const ObjectColumnTable: FunctionComponent<ObjectColumnTableProps> = (props) => {
     const {
-        specificationObjectId
+        specificationObjectId,
+        dataSetSpecificationId
     } = props;
 
     const [searchTerm, setSearchTerm] = useState<string>("");
@@ -88,7 +90,7 @@ const ObjectColumnTable: FunctionComponent<ObjectColumnTableProps> = (props) => 
                                 <Col style={{ textAlign: "right" }}>
                                     <SecuredComponents allowedRoles={securityPoints.dataSets.add}>
                                         <>
-                                            <Link to={'/configuration/objectColumn/' + specificationObjectId}>
+                                            <Link to={'/configuration/objectColumn/' + dataSetSpecificationId + "/" + specificationObjectId}>
                                                 <ButtonBase onClick={() => { }} add>&nbsp;Add Object Column</ButtonBase>
                                             </Link>
                                         </>
@@ -145,7 +147,9 @@ const ObjectColumnTable: FunctionComponent<ObjectColumnTableProps> = (props) => 
                                                 (objectColumnView: ObjectColumnView) => (
                                                     <ObjectColumnRow
                                                         key={objectColumnView.id.toString()}
-                                                        objectColumn={objectColumnView} />
+                                                        objectColumn={objectColumnView}
+                                                        dataSetSpecificationId={dataSetSpecificationId}
+                                                    />
                                                 )
                                             )}
                                             <tr>

@@ -4,17 +4,21 @@ import ObjectColumnRowView from "./objectColumnRowView";
 
 type ObjectColumnRowProps = {
     objectColumn: ObjectColumn;
+    dataSetSpecificationId: string;
 };
 
 const ObjectColumnRow: FunctionComponent<ObjectColumnRowProps> = (props) => {
     const {
-        objectColumn
+        objectColumn,
+        dataSetSpecificationId
     } = props;
 
     return (
         <ObjectColumnRowView
             key={objectColumn.id.toString()}
-            objectColumn={objectColumn} />
+            objectColumn={objectColumn}
+            dataSetSpecificationId={dataSetSpecificationId}
+        />
     );
 };
 

@@ -8,11 +8,13 @@ import { ObjectColumn } from "../../models/objectColumns/objectColumn";
 
 type ObjectColumnRowProps = {
     objectColumn: ObjectColumn;
+    dataSetSpecificationId: string;
 }
 
 const ObjectColumnRowView: FunctionComponent<ObjectColumnRowProps> = (props) => {
     const {
-        objectColumn
+        objectColumn,
+        dataSetSpecificationId
     } = props;
 
     return (
@@ -33,7 +35,7 @@ const ObjectColumnRowView: FunctionComponent<ObjectColumnRowProps> = (props) => 
                 {moment(objectColumn.createdDate?.toString()).format("Do-MMM-yyyy HH:mm")}
             </TableBaseData>
             <TableBaseData>
-                <Link to={'/configuration/ObjectColumn/' + objectColumn?.id?.toString() + '/' + objectColumn.specificationObject!.toString()}>
+                <Link to={'/configuration/ObjectColumn/' + dataSetSpecificationId + '/' + objectColumn?.id?.toString() + '/' + objectColumn.specificationObjectId.toString()}>
                     <ButtonBase onClick={() => { }} add>
                         View/Edit
                     </ButtonBase>

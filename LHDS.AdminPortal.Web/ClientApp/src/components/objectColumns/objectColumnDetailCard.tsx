@@ -7,9 +7,12 @@ import { useNavigate } from "react-router-dom";
 import { ObjectColumnView } from "../../models/views/components/objectColumns/objectColumnView";
 import ObjectColumnDetailCardView from "./objectColumnDetailCardView";
 import ObjectColumnDetailCardEdit from "./objectColumnDetailCardEdit";
+import { Guid } from "guid-typescript";
 
 interface ObjectColumnViewDetailCardProps {
     objectColumn: ObjectColumnView;
+    specificationObjectId: string;
+    dataSetSpecificationId: string;
     mode: string;
     onAdd: (objectColumn: ObjectColumnView) => void;
     onUpdate: (objectColumn: ObjectColumnView) => void;
@@ -20,6 +23,8 @@ interface ObjectColumnViewDetailCardProps {
 const ObjectColumnViewDetailCard: FunctionComponent<ObjectColumnViewDetailCardProps> = (props) => {
     const {
         objectColumn,
+        specificationObjectId,
+        dataSetSpecificationId,
         mode,
         onAdd,
         onUpdate,
@@ -38,8 +43,9 @@ const ObjectColumnViewDetailCard: FunctionComponent<ObjectColumnViewDetailCardPr
 
     const handleAdd = async (objectColumn: ObjectColumnView) => {
         try {
-            await onAdd(objectColumn);
-            navigate('/configuration/dataSetSpecification');
+            objectColumn.specificationObjectId = Guid.parse(specificationObjectId);
+            onAdd(objectColumn);
+            navigate('/configuration/SpecificationObject/' + specificationObjectId + '/' + dataSetSpecificationId);
         } catch (error) {
             setDisplayMode('EDIT');
         }
@@ -47,7 +53,9 @@ const ObjectColumnViewDetailCard: FunctionComponent<ObjectColumnViewDetailCardPr
 
     const handleUpdate = async (objectColumn: ObjectColumnView) => {
         try {
-            await onUpdate(objectColumn);
+            objectColumn.specificationObjectId = Guid.parse(specificationObjectId);
+            onAdd(objectColumn);
+            onUpdate(objectColumn);
             setDisplayMode('VIEW');
         } catch (error) {
             setApiError(error);
@@ -69,7 +77,7 @@ const ObjectColumnViewDetailCard: FunctionComponent<ObjectColumnViewDetailCardPr
             <CardBase>
                 <CardBaseBody>
                     <CardBaseTitle>
-                        {displayMode === "ADD" ? "New Object Column" : objectColumn.ourColumnName}
+                        {displayMode === "ADD" ? "New Object Column" : "Object Column (" + objectColumn.ourColumnName + ")"}
                     </CardBaseTitle>
 
                     <CardBaseContent>

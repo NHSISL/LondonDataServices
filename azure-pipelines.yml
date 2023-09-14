@@ -15,11 +15,9 @@ variables:
   - name: webProjectName
     value: 'LHDS.AdminPortal.Web'
 
-steps:
+pool: selfhosted-vmss-linux-lds-dev
 
-  - powershell: |
-      whoami
-    displayName: 'Check Current User'
+steps:
 
   - task: UseDotNet@2
     displayName: "Install .NET Core SDK"
@@ -41,6 +39,7 @@ steps:
     inputs:
       command: 'test'
       projects: '**/*.Tests.Unit.csproj'
+    continueOnError: false  # Set this option to false to make the task fail the build on error.
 
   - task: Bash@3
     enabled: true
@@ -104,6 +103,7 @@ steps:
         FTPDOWNLOAD__FTPUSERNAME=$(FTPDOWNLOAD__FTPUSERNAME)
         FTPDOWNLOAD__FTPKEY=$(FTPDOWNLOAD__FTPKEY)
         FTPDOWNLOAD__FTPPASSPHRASE=$(FTPDOWNLOAD__FTPPASSPHRASE)
+    continueOnError: false  # Set this option to false to make the task fail the build on error.
 
   - task: Npm@1
     displayName: NPM Install

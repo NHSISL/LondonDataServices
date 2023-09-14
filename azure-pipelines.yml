@@ -15,6 +15,8 @@ variables:
   - name: webProjectName
     value: 'LHDS.AdminPortal.Web'
 
+pool: selfhosted-vmss-linux-lds-dev
+
 steps:
 
   - task: UseDotNet@2

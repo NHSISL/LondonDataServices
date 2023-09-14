@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
+using Microsoft.AspNetCore.Http;
 using RESTFulSense.Exceptions;
 using Xunit;
 
@@ -125,6 +126,31 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
             foreach (Supplier supplier in namedSuppliers) 
             {
                 await this.apiBroker.DeleteSupplierByIdAsync(supplier.Id);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldGetAllSuppliersOrderAsync()
+        {
+            //Given
+            List<Supplier> existingSuppliers = await this.apiBroker.GetAllSuppliersAsync();
+            List<Supplier> randomSuppliers = await PostRandomSuppliersAsync();
+            List<Supplier> expectedSuppliers = randomSuppliers;
+
+            //When
+            List<Supplier> actualSuppliers = await this.apiBroker.GetAllSuppliersOrderedDescendingAsync();
+
+            //Then
+            actualSuppliers.Count.Should().Be(expectedSuppliers.Count + existingSuppliers.Count);
+
+            for (int i = 1; i < actualSuppliers.Count; i++)
+            {
+                (actualSuppliers[i - 1].CreatedDate >= actualSuppliers[i].CreatedDate).Should().BeTrue();
+            }
+
+            foreach (Supplier expectedSupplier in expectedSuppliers)
+            {
+                await this.apiBroker.DeleteSupplierByIdAsync(expectedSupplier.Id);
             }
         }
     }

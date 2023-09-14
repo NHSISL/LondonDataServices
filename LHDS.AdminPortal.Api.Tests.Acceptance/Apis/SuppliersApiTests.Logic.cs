@@ -109,17 +109,17 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
         public async Task ShouldFilterSuppliersAsync()
         {
             // given
-            List<Supplier> namedSuppliers = await PostNamedSuppliersAsync();
-            string expectedSupplierName = "Emis";
+            List<Supplier> namedSuppliers = await PostRandomSuppliersAsync();
+            Supplier expectedSupplier = namedSuppliers.First();
 
             // when
             List<Supplier> actualSuppliers =
-                await this.apiBroker.FilterSuppliersAsync(supplierName: expectedSupplierName);
+                await this.apiBroker.FilterSuppliersAsync(supplierName: expectedSupplier.Name);
+
+            Supplier actualSupplier = actualSuppliers.First();
 
             // then
-            actualSuppliers.Count.Should().Be(1);
-            Supplier actualSupplier = actualSuppliers.First();
-            actualSupplier.Name.Should().Be(expectedSupplierName);
+            actualSupplier.Should().BeEquivalentTo(expectedSupplier);
 
             // cleanup
             foreach (Supplier supplier in namedSuppliers) 

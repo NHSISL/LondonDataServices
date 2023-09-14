@@ -22,9 +22,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         public async ValueTask<List<Supplier>> GetAllSuppliersAsync() =>
             await this.apiFactoryClient.GetContentAsync<List<Supplier>>($"{suppliersRelativeUrl}/");
 
-        public async ValueTask<List<Supplier>> GetAllSuppliersOrderedAsync() =>
+        public async ValueTask<List<Supplier>> GetAllSuppliersOrderedDescendingAsync() =>
             await this.apiFactoryClient.GetContentAsync<List<Supplier>>(
-                $"{suppliersRelativeUrl}/?$orderby=createddate");
+                $"{suppliersRelativeUrl}/?$orderby=createddate desc");
 
         public async ValueTask<Supplier> PutSupplierAsync(Supplier supplier) =>
             await this.apiFactoryClient.PutContentAsync(suppliersRelativeUrl, supplier);

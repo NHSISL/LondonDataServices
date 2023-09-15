@@ -17,16 +17,14 @@ export const ObjectColumnPage = () => {
                 <main id="maincontent" className="NELTopPadding" role="main">
 
                     <Link to={'/configuration/SpecificationObject/' + specificationObjectId 
-                        + '/' + dataSetSpecificationId
-                    }>
+                        + '/' + dataSetSpecificationId}>
 
                         <FontAwesomeIcon icon={faChevronLeft} size="1x" />Back to Specifications Object
                     </Link>
                     <ObjectColumnDetail
                         specificationObjectId={specificationObjectId}
                         objectColumnId={objectColumnId}
-                        dataSetSpecificationId={dataSetSpecificationId!.toString()}
-                    />
+                        dataSetSpecificationId={dataSetSpecificationId!.toString()}/>
                 </main>
             </Container>
         </section>

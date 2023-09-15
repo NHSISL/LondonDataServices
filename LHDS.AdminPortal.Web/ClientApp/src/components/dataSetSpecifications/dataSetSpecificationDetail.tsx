@@ -52,21 +52,7 @@ const DataSetSpecificationDetail: FunctionComponent<DataSetSpecificationDetailPr
         if (dataSetSpecificationId === "" || dataSetSpecificationId === undefined) {
             setDataSetSpecification(new DataSetSpecificationView(
                 Guid.create(),
-                Guid.parse(dataSetId!),
-                "",
-                false,
-                false,
-                false,
-                "",
-                "",
-                "",
-                new Date(),
-                new Date(),
-                new Date(),
-                Guid.createEmpty(),
-                Guid.createEmpty(),
-                new Date(),
-                new Date()
+                Guid.parse(dataSetId!)
             ));
             setMode('ADD');
         }
@@ -92,7 +78,8 @@ const DataSetSpecificationDetail: FunctionComponent<DataSetSpecificationDetailPr
                         <>
                             <SpecificationObjectTable
                                 key={dataSetSpecification.id.toString()}
-                                dataSetSpecificationId={dataSetSpecification.id.toString()}>
+                                dataSetSpecificationId={dataSetSpecification.id.toString()}
+                                dataSetId={dataSetId!.toString()}>
                             </SpecificationObjectTable>
                         </>
                     )}

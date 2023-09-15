@@ -2,27 +2,29 @@ import React from "react";
 import 'nhsuk-frontend/dist/nhsuk.min'
 import 'nhsuk-frontend/packages/polyfills';
 import { Container } from 'nhsuk-react-components'
-import SpecificationObjectDetail from "../../components/specificationObjects/specificationObjectDetail";
 import { Link, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import ObjectColumnDetail from "../../components/objectColumns/objectColumnDetail";
 
-export const SpecificationObjectPage = () => {
+export const ObjectColumnPage = () => {
 
-    const { specificationObjectId, dataSetSpecificationId, dataSetId } = useParams();
+    const { dataSetSpecificationId, objectColumnId, specificationObjectId } = useParams();
 
     return <div>
         <section >
             <Container>
                 <main id="maincontent" className="NELTopPadding" role="main">
-                    <Link to={'/configuration/dataSetSpecification/' + specificationObjectId + '/' + dataSetSpecificationId }>
-                        <FontAwesomeIcon icon={faChevronLeft} size="1x" />Back to DataSet Specifications
+
+                    <Link to={'/configuration/SpecificationObject/' + specificationObjectId 
+                        + '/' + dataSetSpecificationId}>
+
+                        <FontAwesomeIcon icon={faChevronLeft} size="1x" />Back to Specifications Object
                     </Link>
-                    <SpecificationObjectDetail
-                        dataSetSpecificationId={dataSetSpecificationId}
+                    <ObjectColumnDetail
                         specificationObjectId={specificationObjectId}
-                        dataSetId={dataSetId!}
-                    />
+                        objectColumnId={objectColumnId}
+                        dataSetSpecificationId={dataSetSpecificationId!.toString()}/>
                 </main>
             </Container>
         </section>

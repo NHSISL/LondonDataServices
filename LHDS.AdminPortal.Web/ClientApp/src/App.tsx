@@ -22,7 +22,7 @@ import { DataSetsListPage } from './pages/configuration/dataSetsListPage';
 import { DataSetPage } from './pages/configuration/dataSetPage';
 import { DataSetSpecificationPage } from './pages/configuration/dataSetSpecificationPage';
 import { SpecificationObjectPage } from './pages/configuration/specificationObjectPage';
-import { ObjectColumnPage } from './pages/configuration/objectColumPage';
+import { ObjectColumnPage } from './pages/configuration/ObjectColumPage';
 
 const App = ({ msalInstance }: any) => {
     return (

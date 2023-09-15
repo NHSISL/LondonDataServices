@@ -4,24 +4,27 @@ import CardBaseContent from "../bases/components/Card/CardBase.Content";
 import CardBaseBody from "../bases/components/Card/CardBase.Body";
 import CardBaseTitle from "../bases/components/Card/CardBase.Title";
 import { useNavigate } from "react-router-dom";
-import { SpecificationObjectView } from "../../models/views/components/specificationObjects/specificationObjectView";
-import SpecificationObjectDetailCardView from "./specificationObjectDetailCardView";
-import SpecificationObjectDetailCardEdit from "./specificationObjectDetailCardEdit";
+import { ObjectColumnView } from "../../models/views/components/objectColumns/objectColumnView";
+import ObjectColumnDetailCardView from "./objectColumnDetailCardView";
+import ObjectColumnDetailCardEdit from "./objectColumnDetailCardEdit";
+import { Guid } from "guid-typescript";
 
-interface SpecificationObjectDetailCardProps {
-    specificationObject: SpecificationObjectView;
-    dataSetId: string;
+interface ObjectColumnViewDetailCardProps {
+    objectColumn: ObjectColumnView;
+    specificationObjectId: string;
+    dataSetSpecificationId: string;
     mode: string;
-    onAdd: (specificationObject: SpecificationObjectView) => void;
-    onUpdate: (specificationObject: SpecificationObjectView) => void;
-    onDelete: (specificationObject: SpecificationObjectView) => void;
+    onAdd: (objectColumn: ObjectColumnView) => void;
+    onUpdate: (objectColumn: ObjectColumnView) => void;
+    onDelete: (objectColumn: ObjectColumnView) => void;
     children?: React.ReactNode;
 }
 
-const SpecificationObjectDetailCard: FunctionComponent<SpecificationObjectDetailCardProps> = (props) => {
+const ObjectColumnViewDetailCard: FunctionComponent<ObjectColumnViewDetailCardProps> = (props) => {
     const {
-        specificationObject,
-        dataSetId,
+        objectColumn,
+        specificationObjectId,
+        dataSetSpecificationId,
         mode,
         onAdd,
         onUpdate,
@@ -38,18 +41,21 @@ const SpecificationObjectDetailCard: FunctionComponent<SpecificationObjectDetail
 
     const navigate = useNavigate();
 
-    const handleAdd = async (specificationObject: SpecificationObjectView) => {
+    const handleAdd = async (objectColumn: ObjectColumnView) => {
         try {
-            onAdd(specificationObject);
-            navigate('/configuration/dataSetSpecification/' + dataSetId + '' + specificationObject.dataSetSpecificationId);
+            objectColumn.specificationObjectId = Guid.parse(specificationObjectId);
+            onAdd(objectColumn);
+            navigate('/configuration/SpecificationObject/' + specificationObjectId + '/' + dataSetSpecificationId);
         } catch (error) {
             setDisplayMode('EDIT');
         }
     };
 
-    const handleUpdate = async (specificationObject: SpecificationObjectView) => {
+    const handleUpdate = async (objectColumn: ObjectColumnView) => {
         try {
-            onUpdate(specificationObject);
+            objectColumn.specificationObjectId = Guid.parse(specificationObjectId);
+            onAdd(objectColumn);
+            onUpdate(objectColumn);
             setDisplayMode('VIEW');
         } catch (error) {
             setApiError(error);
@@ -57,8 +63,8 @@ const SpecificationObjectDetailCard: FunctionComponent<SpecificationObjectDetail
         }
     };
 
-    const handleDelete = (specificationObject: SpecificationObjectView) => {
-        onDelete(specificationObject);
+    const handleDelete = (objectColumn: ObjectColumnView) => {
+        onDelete(objectColumn);
         setDisplayMode('VIEW');
     };
 
@@ -71,27 +77,25 @@ const SpecificationObjectDetailCard: FunctionComponent<SpecificationObjectDetail
             <CardBase>
                 <CardBaseBody>
                     <CardBaseTitle>
-                        {displayMode === "ADD"
-                            ? "New Specification Object"
-                            : "Specification Object (" + specificationObject.ourObjectName + ")"}
+                        {displayMode === "ADD" ? "New Object Column" : "Object Column (" + objectColumn.ourColumnName + ")"}
                     </CardBaseTitle>
 
                     <CardBaseContent>
                         {(displayMode === "VIEW" || displayMode === "CONFIRMDELETE") && (
-                            <SpecificationObjectDetailCardView
+                            <ObjectColumnDetailCardView
                                 onModeChange={handleModeChange}
-                                specificationObject={specificationObject}
+                                objectColumn={objectColumn}
                                 onDelete={handleDelete}
                                 mode={displayMode}
                             />
                         )}
                         {(displayMode === "EDIT" || displayMode === "ADD") && (
-                            <SpecificationObjectDetailCardEdit
+                            <ObjectColumnDetailCardEdit
                                 onModeChange={handleModeChange}
                                 onAdd={handleAdd}
                                 onUpdate={handleUpdate}
                                 onCancel={handleCancel}
-                                specificationObject={specificationObject}
+                                objectColumn={objectColumn}
                                 mode={displayMode}
                                 apiError={apiError}
                             />
@@ -109,4 +113,4 @@ const SpecificationObjectDetailCard: FunctionComponent<SpecificationObjectDetail
     );
 };
 
-export default SpecificationObjectDetailCard;
+export default ObjectColumnViewDetailCard;

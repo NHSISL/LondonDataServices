@@ -22,6 +22,7 @@ import { DataSetsListPage } from './pages/configuration/dataSetsListPage';
 import { DataSetPage } from './pages/configuration/dataSetPage';
 import { DataSetSpecificationPage } from './pages/configuration/dataSetSpecificationPage';
 import { SpecificationObjectPage } from './pages/configuration/specificationObjectPage';
+import { ObjectColumnPage } from './pages/configuration/ObjectColumPage';
 
 const App = ({ msalInstance }: any) => {
     return (
@@ -44,8 +45,11 @@ const App = ({ msalInstance }: any) => {
                         <Route path="/configuration/dataSetSpecification" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetSpecificationPage /></SecuredRoute >} />
                         <Route path="/configuration/dataSetSpecification/:dataSetId" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetSpecificationPage /></SecuredRoute>} />
                         <Route path="/configuration/dataSetSpecification/:dataSetId/:dataSetSpecificationId" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><DataSetSpecificationPage /></SecuredRoute>} />
-                        <Route path="/configuration/SpecificationObject/:dataSetSpecificationId" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><SpecificationObjectPage /></SecuredRoute>} />
-                        <Route path="/configuration/SpecificationObject/:specificationObjectId/:dataSetSpecificationId/" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><SpecificationObjectPage /></SecuredRoute>} />
+                        <Route path="/configuration/specificationObjectAdd/:dataSetSpecificationId/:dataSetId" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><SpecificationObjectPage /></SecuredRoute>} />
+                        <Route path="/configuration/specificationObject/:specificationObjectId/:dataSetSpecificationId/" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><SpecificationObjectPage /></SecuredRoute>} />
+                        <Route path="/configuration/objectColumn/:dataSetSpecificationId/:specificationObjectId" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><ObjectColumnPage /></SecuredRoute>} />
+                        <Route path="/configuration/objectColumn/:specificationObjectId" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><ObjectColumnPage /></SecuredRoute>} />
+                        <Route path="/configuration/objectColumn/:dataSetSpecificationId/:objectColumnId/:specificationObjectId/" element={<SecuredRoute allowedRoles={securityPoints.configuration.view}><ObjectColumnPage /></SecuredRoute>} />
                         <Route path="/pds" element={<SecuredRoute allowedRoles={securityPoints.pds.view}>< PdsSearch /></SecuredRoute >} />
                         <Route path="/pdsUpload" element={<SecuredRoute allowedRoles={securityPoints.pds.view}>< PdsUpload /></SecuredRoute >} />
                     </Routes>

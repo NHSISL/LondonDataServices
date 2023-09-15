@@ -114,7 +114,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
                 .OnProperty(supplier => supplier.CreatedDate).Use(now)
                 .OnProperty(supplier => supplier.CreatedBy).Use(userId)
                 .OnProperty(supplier => supplier.UpdatedDate).Use(now)
-                .OnProperty(supplier => supplier.UpdatedBy).Use(userId);
+                .OnProperty(supplier => supplier.UpdatedBy).Use(userId)
+                .OnProperty(supplier => supplier.IngestionTrackings).IgnoreIt();
 
             return filler;
         }

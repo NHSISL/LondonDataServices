@@ -16,7 +16,7 @@ export const DataSetSpecificationPage = () => {
             <Container>
                 <main id="maincontent" className="NELTopPadding" role="main">
                     <Link to={'/configuration/dataSet/' + dataSetId + '/'}>
-                        <FontAwesomeIcon icon={faChevronLeft} size="1x" />Back to DataSet Specifications
+                        <FontAwesomeIcon icon={faChevronLeft} size="1x" />Back to DataSet Specification
                     </Link>
                     <DataSetSpecificationDetail
                         dataSetSpecificationId={dataSetSpecificationId}

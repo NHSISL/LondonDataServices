@@ -3,6 +3,8 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json.Converters;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings
 {
@@ -21,7 +23,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings
         public int DecryptedFileSize { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
         public string UpdatedBy { get; set; } = string.Empty;
+
+        [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset UpdatedDate { get; set; }
+
+        [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset CreatedDate { get; set; }
     }
 }

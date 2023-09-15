@@ -3,6 +3,8 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers
 {
@@ -18,5 +20,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers
         public DateTimeOffset CreatedDate { get; set; }
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }
+
+        List<IngestionTracking> IngestionTrackings { get; set; } = new List<IngestionTracking>();
     }
 }

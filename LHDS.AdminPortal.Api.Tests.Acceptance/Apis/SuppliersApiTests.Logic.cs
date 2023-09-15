@@ -153,5 +153,24 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
                 await this.apiBroker.DeleteSupplierByIdAsync(expectedSupplier.Id);
             }
         }
+
+        [Fact]
+        public async Task ShouldGetAllSupplierIngestionTrackingExpandsAsync()
+        {
+            // given
+            List<Supplier> randomSuppliers = await PostRandomSuppliersAsync();
+            List<Supplier> expectedSuppliers = randomSuppliers;
+
+            // when
+            List<Supplier> actualSuppliers = await this.apiBroker.GetAllSupplierIngestionTrackingExpandsAsync();
+
+            // then
+            foreach (Supplier expectedSupplier in expectedSuppliers)
+            {
+                Supplier actualSupplier = actualSuppliers.Single(approval => approval.Id == expectedSupplier.Id);
+                actualSupplier.Should().BeEquivalentTo(expectedSupplier);
+                await this.apiBroker.DeleteSupplierByIdAsync(actualSupplier.Id);
+            }
+        }
     }
 }

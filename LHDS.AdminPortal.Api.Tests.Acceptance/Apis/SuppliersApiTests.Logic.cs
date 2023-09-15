@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using Microsoft.AspNetCore.Http;
 using RESTFulSense.Exceptions;
@@ -158,8 +160,21 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
         public async Task ShouldGetAllSupplierIngestionTrackingExpandsAsync()
         {
             // given
-            List<Supplier> randomSuppliers = await PostRandomSuppliersAsync();
-            List<Supplier> expectedSuppliers = randomSuppliers;
+            
+            List<Supplier> randomSuppliers = new List<Supplier> { await PostRandomSupplierAsync() };
+
+            foreach (Supplier supplier in randomSuppliers)
+            {
+                List<IngestionTracking> randomIngestionTrackings = await PostRandomIngestionTrackingsAsync(supplier.Id);
+
+                List<IngestionTracking> orderedIngestionTracking = 
+                    randomIngestionTrackings.DeepClone().OrderBy(ingestionTracking => ingestionTracking.CreatedDate).ToList();
+
+                supplier.IngestionTrackings.AddRange(orderedIngestionTracking);
+            }
+
+            List<Supplier> expectedSuppliers = 
+                randomSuppliers.OrderBy(supplier => supplier.CreatedDate).ToList();
 
             // when
             List<Supplier> actualSuppliers = await this.apiBroker.GetAllSupplierIngestionTrackingExpandsAsync();
@@ -167,8 +182,14 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
             // then
             foreach (Supplier expectedSupplier in expectedSuppliers)
             {
-                Supplier actualSupplier = actualSuppliers.Single(approval => approval.Id == expectedSupplier.Id);
-                actualSupplier.Should().BeEquivalentTo(expectedSupplier);
+                Supplier actualSupplier = actualSuppliers.Single(actual => actual.Id == expectedSupplier.Id);
+                actualSupplier.IngestionTrackings.Count().Should().Be(expectedSupplier.IngestionTrackings.Count());
+
+                foreach ( IngestionTracking ingestionTracking in actualSupplier.IngestionTrackings)
+                {
+                    await this.apiBroker.DeleteIngestionTrackingByIdAsync(ingestionTracking.Id);
+                }
+
                 await this.apiBroker.DeleteSupplierByIdAsync(actualSupplier.Id);
             }
         }

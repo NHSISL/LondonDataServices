@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.OdataResponses;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
@@ -27,7 +26,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
             OdataResponce<Supplier> response =
                 await this.apiFactoryClient.GetContentAsync<OdataResponce<Supplier>>($"{suppliersRelativeOdataUrl}/");
 
-            return response?.Items?.ToList();
+            return response.Items;
         }
 
         public async ValueTask<List<Supplier>> FilterSuppliersAsync(string supplierName)
@@ -35,7 +34,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
             OdataResponce<Supplier> response = await this.apiFactoryClient.GetContentAsync<OdataResponce<Supplier>>(
                 $"{suppliersRelativeOdataUrl}/?$filter=name eq '{supplierName}'");
 
-            return response?.Items?.ToList();
+            return response.Items;
         }
 
         public async ValueTask<List<Supplier>> GetAllSuppliersOrderedDescendingAsync()
@@ -43,15 +42,16 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
             OdataResponce<Supplier> response = await this.apiFactoryClient.GetContentAsync<OdataResponce<Supplier>>(
                 $"{suppliersRelativeOdataUrl}/?$orderby=createddate desc");
 
-            return response.Items.ToList();
+            return response.Items;
         }
 
         public async ValueTask<List<Supplier>> GetAllSupplierIngestionTrackingExpandsAsync()
         {
             OdataResponce<Supplier> response = await this.apiFactoryClient.GetContentAsync<OdataResponce<Supplier>>(
-                 $"{suppliersRelativeUrl}/?$expand=ingestiontrackings($orderby=CreatedDate asc)&$orderby=createddate asc");
+                $"{suppliersRelativeOdataUrl}/" +
+                    $"?$expand=ingestiontrackings($orderby=CreatedDate asc)&$orderby=createddate asc");
 
-            return response.Items.ToList();
+            return response.Items;
         }
 
         public async ValueTask<Supplier> PutSupplierAsync(Supplier supplier) =>

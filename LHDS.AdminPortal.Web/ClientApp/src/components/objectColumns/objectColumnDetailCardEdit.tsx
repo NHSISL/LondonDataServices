@@ -14,7 +14,6 @@ import { objectColumnErrors } from "./objectColumnErrors";
 import { objectColumnValidations } from "./objectColumnValidations";
 import CheckboxBase from "../bases/inputs/CheckboxBase";
 
-
 interface ObjectColumnDetailCardEditProps {
     objectColumn: ObjectColumnView;
     onAdd: (objectColumn: ObjectColumnView) => void;

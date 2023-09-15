@@ -126,7 +126,15 @@ const DataSetSpecificationTable: FunctionComponent<DataSetSpecificationTableProp
                                 <TableBaseThead>
                                     <TableBaseRow>
                                         <TableBaseData><strong>Data Set Name</strong></TableBaseData>
-                                        <TableBaseData><strong>LHD Specification Version</strong></TableBaseData>
+
+                                        <TableBaseData classes="text-center">
+                                            <strong>Our Specification Version</strong>
+                                        </TableBaseData>
+
+                                        <TableBaseData classes="text-center">
+                                            <strong>Supplier Specification Version</strong>
+                                        </TableBaseData>
+
                                         <TableBaseData><strong>Created By</strong></TableBaseData>
                                         <TableBaseData><strong>Created When</strong></TableBaseData>
                                         <TableBaseData classes="text-left"></TableBaseData>

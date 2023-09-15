@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using Tynamix.ObjectFiller;
 using Xunit;
@@ -36,7 +37,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
                 .OnType<DateTimeOffset>().Use(GetRandomDateTime())
                 .OnProperty(supplier => supplier.CreatedDate).Use(inputSupplier.CreatedDate)
                 .OnProperty(supplier => supplier.CreatedBy).Use(inputSupplier.CreatedBy)
-                .OnProperty(supplier => supplier.UpdatedDate).Use(now);
+                .OnProperty(supplier => supplier.UpdatedDate).Use(now)
+                .OnProperty(supplier => supplier.IngestionTrackings).IgnoreIt();
 
             return filler.Create();
         }
@@ -77,7 +79,50 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
                 .OnProperty(supplier => supplier.CreatedDate).Use(now)
                 .OnProperty(supplier => supplier.CreatedBy).Use(userId)
                 .OnProperty(supplier => supplier.UpdatedDate).Use(now)
-                .OnProperty(supplier => supplier.UpdatedBy).Use(userId);
+                .OnProperty(supplier => supplier.UpdatedBy).Use(userId)
+                .OnProperty(supplier => supplier.IngestionTrackings).IgnoreIt();
+
+            return filler;
+        }
+
+        private async ValueTask<IngestionTracking> PostRandomIngestionTrackingAsync(Guid supplierId)
+        {
+            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(supplierId);
+            await this.apiBroker.PostIngestionTrackingAsync(randomIngestionTracking);
+
+            return randomIngestionTracking;
+        }
+
+        private async ValueTask<List<IngestionTracking>> PostRandomIngestionTrackingsAsync(Guid supplierId)
+        {
+            int randomNumber = GetRandomNumber();
+            var randomIngestionTrackings = new List<IngestionTracking>();
+
+            for (int i = 0; i < randomNumber; i++)
+            {
+                randomIngestionTrackings.Add(await PostRandomIngestionTrackingAsync(supplierId));
+            }
+
+            return randomIngestionTrackings;
+        }
+
+        private static IngestionTracking CreateRandomIngestionTracking(Guid supplierId) =>
+            CreateRandomIngestionTrackingFiller(supplierId).Create();
+
+        private static Filler<IngestionTracking> CreateRandomIngestionTrackingFiller(Guid supplierId)
+        {
+            string user = Guid.NewGuid().ToString();
+            DateTime now = DateTime.UtcNow;
+            var filler = new Filler<IngestionTracking>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
+                .OnProperty(ingestionTracking => ingestionTracking.CreatedDate).Use(now)
+                .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
+                .OnProperty(ingestionTracking => ingestionTracking.UpdatedDate).Use(now)
+                .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user);
 
             return filler;
         }

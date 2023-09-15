@@ -31,9 +31,9 @@ export class SupplierView {
         this.description = description || "";
         this.landingManualTriggerUrl = landingManualTriggerUrl || "";
         this.decryptionManualTriggerUrl = decryptionManualTriggerUrl || ""
-        this.createdBy = createdBy || "";
+        this.createdBy = createdBy !== undefined ? createdBy : '';
         this.createdDate = createdDate ;
-        this.updatedBy = updatedBy || "";
+        this.updatedBy = updatedBy !== undefined ? updatedBy : ''
         this.updatedDate = updatedDate;
     }
 }

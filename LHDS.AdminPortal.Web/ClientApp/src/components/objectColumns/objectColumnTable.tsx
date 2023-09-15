@@ -20,20 +20,20 @@ import { SecuredComponents } from "../Links";
 import { Link } from "react-router-dom";
 import ButtonBase from "../bases/buttons/ButtonBase";
 import securityPoints from "../../SecurityMatrix";
-import { specificationObjectViewService } from "../../services/views/specificationObjects/specificationObjectViewService";
-import { SpecificationObjectView } from "../../models/views/components/specificationObjects/specificationObjectView";
-import SpecificationObjectRow from "./specificationObjectRow";
+import { ObjectColumnView } from "../../models/views/components/objectColumns/objectColumnView";
+import { objectColumnViewService } from "../../services/views/objectColumns/objectColumnViewService";
+import ObjectColumnRow from "./objectColumnRow";
 
-type SpecificationObjectTableProps = {
+type ObjectColumnTableProps = {
+    specificationObjectId: string;
     dataSetSpecificationId: string;
-    dataSetId: string;
     children?: React.ReactNode;
 };
 
-const SpecificationObjectTable: FunctionComponent<SpecificationObjectTableProps> = (props) => {
+const ObjectColumnTable: FunctionComponent<ObjectColumnTableProps> = (props) => {
     const {
-        dataSetSpecificationId,
-        dataSetId
+        specificationObjectId,
+        dataSetSpecificationId
     } = props;
 
     const [searchTerm, setSearchTerm] = useState<string>("");
@@ -41,15 +41,15 @@ const SpecificationObjectTable: FunctionComponent<SpecificationObjectTableProps>
     const [showSpinner, setShowSpinner] = useState(false);
 
     const {
-        mappedSpecificationObjects: SpecificationObjectsRetrieved,
+        mappedObjectColumns: ObjectColumnsRetrieved,
         isLoading,
         fetchNextPage,
         isFetchingNextPage,
         hasNextPage,
         data,
         refetch
-    } = specificationObjectViewService.useGetAllSpecificationObjects(
-        dataSetSpecificationId, debouncedTerm
+    } = objectColumnViewService.useGetAllObjectColumns(
+        specificationObjectId, debouncedTerm
     );
 
     const handleSearchChange = (value: string) => {
@@ -83,15 +83,15 @@ const SpecificationObjectTable: FunctionComponent<SpecificationObjectTableProps>
         <div className="infiniteScrollContainer">
             <CardBase>
                 <CardBaseBody>
-                    <CardBaseTitle>Specification Objects</CardBaseTitle>
+                    <CardBaseTitle>Object Columns</CardBaseTitle>
                     <CardBaseContent>
                         <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
                             <Row>
                                 <Col style={{ textAlign: "right" }}>
                                     <SecuredComponents allowedRoles={securityPoints.dataSets.add}>
                                         <>
-                                            <Link to={'/configuration/SpecificationObjectAdd/' + dataSetSpecificationId + '/' + dataSetId}>
-                                                <ButtonBase onClick={() => { }} add>&nbsp;Add Specification Object</ButtonBase>
+                                            <Link to={'/configuration/objectColumn/' + dataSetSpecificationId + "/" + specificationObjectId}>
+                                                <ButtonBase onClick={() => { }} add>&nbsp;Add Object Column</ButtonBase>
                                             </Link>
                                         </>
                                     </SecuredComponents>
@@ -103,7 +103,7 @@ const SpecificationObjectTable: FunctionComponent<SpecificationObjectTableProps>
                                     <div className="filter-item">
                                         <SearchBase
                                             id="search"
-                                            label="Search Specification Objects"
+                                            label="Search Object Columns"
                                             value={searchTerm}
                                             onChange={(e) => {
                                                 handleSearchChange(e.currentTarget.value);
@@ -127,8 +127,8 @@ const SpecificationObjectTable: FunctionComponent<SpecificationObjectTableProps>
                             <TableBase>
                                 <TableBaseThead>
                                     <TableBaseRow>
-                                        <TableBaseData><strong>Our Object Name</strong></TableBaseData>
-                                        <TableBaseData><strong>Supplier Object Name</strong></TableBaseData>
+                                        <TableBaseData><strong>Our Column Name</strong></TableBaseData>
+                                        <TableBaseData><strong>Supplier Column Name</strong></TableBaseData>
                                         <TableBaseData><strong>Created By</strong></TableBaseData>
                                         <TableBaseData><strong>Created When</strong></TableBaseData>
                                         <TableBaseData classes="text-left"></TableBaseData>
@@ -143,11 +143,13 @@ const SpecificationObjectTable: FunctionComponent<SpecificationObjectTableProps>
                                         </tr>
                                     ) : (
                                         <>
-                                            {SpecificationObjectsRetrieved?.map(
-                                                (specificationObjectView: SpecificationObjectView) => (
-                                                    <SpecificationObjectRow
-                                                        key={specificationObjectView.id.toString()}
-                                                        specificationObject={specificationObjectView} />
+                                            {ObjectColumnsRetrieved?.map(
+                                                (objectColumnView: ObjectColumnView) => (
+                                                    <ObjectColumnRow
+                                                        key={objectColumnView.id.toString()}
+                                                        objectColumn={objectColumnView}
+                                                        dataSetSpecificationId={dataSetSpecificationId}
+                                                    />
                                                 )
                                             )}
                                             <tr>
@@ -172,4 +174,4 @@ const SpecificationObjectTable: FunctionComponent<SpecificationObjectTableProps>
     );
 };
 
-export default SpecificationObjectTable;
+export default ObjectColumnTable;

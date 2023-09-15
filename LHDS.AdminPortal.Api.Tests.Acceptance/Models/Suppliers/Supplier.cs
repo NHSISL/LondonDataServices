@@ -21,6 +21,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }
 
-        List<IngestionTracking> IngestionTrackings { get; set; } = new List<IngestionTracking>();
+        public List<IngestionTracking> IngestionTrackings { get; set; } = new List<IngestionTracking>();
     }
 }

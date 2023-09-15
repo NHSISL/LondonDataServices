@@ -160,7 +160,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
         public async Task ShouldGetAllSupplierIngestionTrackingExpandsAsync()
         {
             // given
-            
             List<Supplier> randomSuppliers = new List<Supplier> { await PostRandomSupplierAsync() };
 
             foreach (Supplier supplier in randomSuppliers)
@@ -168,7 +167,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
                 List<IngestionTracking> randomIngestionTrackings = await PostRandomIngestionTrackingsAsync(supplier.Id);
 
                 List<IngestionTracking> orderedIngestionTracking = 
-                    randomIngestionTrackings.DeepClone().OrderBy(ingestionTracking => ingestionTracking.CreatedDate).ToList();
+                    randomIngestionTrackings.OrderBy(ingestionTracking => ingestionTracking.CreatedDate).ToList();
 
                 supplier.IngestionTrackings.AddRange(orderedIngestionTracking);
             }

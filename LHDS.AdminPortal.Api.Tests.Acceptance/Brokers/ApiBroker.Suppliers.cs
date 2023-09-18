@@ -23,15 +23,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 
         public async ValueTask<List<Supplier>> GetAllSuppliersAsync()
         {
-            OdataResponce<Supplier> response =
-                await this.apiFactoryClient.GetContentAsync<OdataResponce<Supplier>>($"{suppliersRelativeOdataUrl}/");
+            OdataResponse<Supplier> response =
+                await this.apiFactoryClient.GetContentAsync<OdataResponse<Supplier>>($"{suppliersRelativeOdataUrl}/");
 
             return response.Items;
         }
 
         public async ValueTask<List<Supplier>> FilterSuppliersAsync(string supplierName)
         {
-            OdataResponce<Supplier> response = await this.apiFactoryClient.GetContentAsync<OdataResponce<Supplier>>(
+            OdataResponse<Supplier> response = await this.apiFactoryClient.GetContentAsync<OdataResponse<Supplier>>(
                 $"{suppliersRelativeOdataUrl}/?$filter=name eq '{supplierName}'");
 
             return response.Items;
@@ -39,7 +39,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 
         public async ValueTask<List<Supplier>> GetAllSuppliersOrderedDescendingAsync()
         {
-            OdataResponce<Supplier> response = await this.apiFactoryClient.GetContentAsync<OdataResponce<Supplier>>(
+            OdataResponse<Supplier> response = await this.apiFactoryClient.GetContentAsync<OdataResponse<Supplier>>(
                 $"{suppliersRelativeOdataUrl}/?$orderby=createddate desc");
 
             return response.Items;
@@ -47,7 +47,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 
         public async ValueTask<List<Supplier>> GetAllSupplierIngestionTrackingExpandsAsync()
         {
-            OdataResponce<Supplier> response = await this.apiFactoryClient.GetContentAsync<OdataResponce<Supplier>>(
+            OdataResponse<Supplier> response = await this.apiFactoryClient.GetContentAsync<OdataResponse<Supplier>>(
                 $"{suppliersRelativeOdataUrl}/" +
                     $"?$expand=ingestiontrackings($orderby=CreatedDate asc)&$orderby=createddate asc");
 

@@ -3,6 +3,8 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json.Converters;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits
 {
@@ -13,7 +15,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits
         public string Message { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
+
+        [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset UpdatedDate { get; set; }
+
+        [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset CreatedDate { get; set; }
     }
 }

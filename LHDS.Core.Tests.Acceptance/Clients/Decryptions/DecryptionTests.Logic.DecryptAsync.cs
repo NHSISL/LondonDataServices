@@ -2,14 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
-using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
@@ -19,50 +17,39 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         [Fact]
         public async Task ShouldDecryptNewDocumentsAsync()
         {
-            //Given
-            string fileName = GetRandomString();
+            // Given
+            string fileName = $"{GetRandomString()}.gpg";
+            string encryptedFileName = $"/{landingConfiguration.EncryptedFolder}/{GetRandomString()}.gpg";
+            string decryptedFileName = $"/{landingConfiguration.DecryptedFolder}/{GetRandomString()}";
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
             byte[] encryptedData = await this.cryptographyProvider.EncryptAsync(documentData);
 
             Document document = new Document
             {
                 DocumentData = encryptedData,
-                FileName = fileName
+                FileName = encryptedFileName
             };
+
+            await this.documentService.AddDocumentAsync(document);
 
             IngestionTracking ingestionTracking = CreateRandomIngestionTracking(
                 dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                document,
+                fileName,
+                encryptedFileName,
+                decryptedFileName,
                 supplierId: this.landingConfiguration.LandingSupplierId);
 
-            await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
+            ingestionTracking = await this.ingestionTrackingService.AddIngestionTrackingAsync(ingestionTracking);
 
-            this.blobStorageBrokerMock.Setup(broker =>
-                broker.SelectByFileNameAsync(ingestionTracking.EncryptedFileName))
-                    .ReturnsAsync(encryptedData);
-
-            //When
+            // When
             var actualString = await this.decryptionClient.DecryptAsync(fileName);
 
-            //Then
+            // Then
             actualString.Should().BeEquivalentTo(ingestionTracking.DecryptedFileName);
 
-            this.blobStorageBrokerMock.Verify(broker =>
-                broker.SelectByFileNameAsync(ingestionTracking.EncryptedFileName),
-                    Times.Once);
-
-            ingestionTracking.Should().NotBeNull();
-
-            IngestionTracking decryptedIngestionTracking =
-                await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id);
-
-            this.blobStorageBrokerMock.Verify(broker =>
-                broker.InsertFileAsync(decryptedIngestionTracking.DecryptedFileName, It.IsAny<Stream>()),
-                    Times.Once());
-
-            this.downloadBrokerMock.VerifyNoOtherCalls();
-            this.blobStorageBrokerMock.VerifyNoOtherCalls();
             await DeleteAudits(ingestionTracking);
+            await this.documentService.RemoveDocumentByFileNameAsync(ingestionTracking.DecryptedFileName);
+            await this.documentService.RemoveDocumentByFileNameAsync(ingestionTracking.EncryptedFileName);
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
         }
 

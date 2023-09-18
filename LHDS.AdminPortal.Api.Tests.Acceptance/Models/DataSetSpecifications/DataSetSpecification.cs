@@ -26,6 +26,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications
 
         [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset? DateSuperseded { get; set; }
+
         public Guid? SupersededById { get; set; }
         public Guid? PresededById { get; set; }
         public bool IsPublished { get; set; }
@@ -36,6 +37,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications
 
         [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset ActiveTo { get; set; }
+
         public string CreatedBy { get; set; } = string.Empty;
         public string UpdatedBy { get; set; } = string.Empty;
 

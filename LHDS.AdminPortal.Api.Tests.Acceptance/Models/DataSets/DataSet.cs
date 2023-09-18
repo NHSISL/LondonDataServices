@@ -3,6 +3,8 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json.Converters;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets
 {
@@ -19,11 +21,19 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets
         public bool IsNationallyCollected { get; set; }
         public string DataSourceType { get; set; } = string.Empty;
         public bool IsActive { get; set; }
+
+        [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset? ActiveFrom { get; set; }
+
+        [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset? ActiveTo { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
         public string UpdatedBy { get; set; } = string.Empty;
+
+        [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset UpdatedDate { get; set; }
+
+        [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset CreatedDate { get; set; }
     }
 }

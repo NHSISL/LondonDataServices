@@ -4,8 +4,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers

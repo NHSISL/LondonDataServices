@@ -3,7 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.SpecificationObjects

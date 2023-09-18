@@ -3,8 +3,8 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Text.Json.Serialization;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits
 {

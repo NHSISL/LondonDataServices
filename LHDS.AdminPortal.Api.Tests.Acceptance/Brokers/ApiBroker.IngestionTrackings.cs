@@ -12,29 +12,29 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 {
     public partial class ApiBroker
     {
-        private const string IngestionTrackingsRelativeUrl = "api/ingestionTrackings";
-        private const string IngestionTrackingsRelativeOdataUrl = "odata/ingestionTrackings";
+        private const string ingestionTrackingsRelativeUrl = "api/ingestionTrackings";
+        private const string ingestionTrackingsRelativeOdataUrl = "odata/ingestionTrackings";
 
         public async ValueTask<IngestionTracking> PostIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
-            await this.apiFactoryClient.PostContentAsync(IngestionTrackingsRelativeUrl, ingestionTracking);
+            await this.apiFactoryClient.PostContentAsync(ingestionTrackingsRelativeUrl, ingestionTracking);
 
         public async ValueTask<IngestionTracking> GetIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
             await this.apiFactoryClient.GetContentAsync<IngestionTracking>(
-                $"{IngestionTrackingsRelativeUrl}/{ingestionTrackingId}");
+                $"{ingestionTrackingsRelativeUrl}/{ingestionTrackingId}");
 
         public async ValueTask<List<IngestionTracking>> GetAllIngestionTrackingsAsync()
         {
             OdataResponse<IngestionTracking> response =
-                await this.apiFactoryClient.GetContentAsync<OdataResponse<IngestionTracking>>($"{IngestionTrackingsRelativeOdataUrl}/");
+                await this.apiFactoryClient.GetContentAsync<OdataResponse<IngestionTracking>>($"{ingestionTrackingsRelativeOdataUrl}/");
 
             return response.Items;
         }
 
         public async ValueTask<IngestionTracking> PutIngestionTrackingAsync(IngestionTracking ingestionTracking) =>
-            await this.apiFactoryClient.PutContentAsync(IngestionTrackingsRelativeUrl, ingestionTracking);
+            await this.apiFactoryClient.PutContentAsync(ingestionTrackingsRelativeUrl, ingestionTracking);
 
         public async ValueTask<IngestionTracking> DeleteIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
             await this.apiFactoryClient.DeleteContentAsync<IngestionTracking>(
-                $"{IngestionTrackingsRelativeUrl}/{ingestionTrackingId}");
+                $"{ingestionTrackingsRelativeUrl}/{ingestionTrackingId}");
     }
 }

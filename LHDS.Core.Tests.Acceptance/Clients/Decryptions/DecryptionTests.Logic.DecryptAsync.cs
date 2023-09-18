@@ -62,20 +62,27 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             this.downloadBrokerMock.VerifyNoOtherCalls();
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
+            await DeleteAudits(ingestionTracking);
+            await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+        }
 
-            var audits = this.auditService.RetrieveAllAudits()
-                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+        private async Task DeleteAudits(IngestionTracking ingestionTracking)
+        {
+            var auditIds = this.auditService.RetrieveAllAudits()
+                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id)
+                .Select(ingestionTracking => ingestionTracking.Id)
+                .ToList();
 
-            foreach (var audit in audits)
+            foreach (var id in auditIds)
             {
-                await this.auditService.RemoveAuditByIdAsync(audit.Id);
+                await this.auditService.RemoveAuditByIdAsync(id);
             }
 
-            audits = this.auditService.RetrieveAllAudits()
-                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
-
-            audits.Count().Should().Be(0);
-            await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+            if (this.auditService.RetrieveAllAudits()
+                .Any(audit => audit.IngestionTrackingId == ingestionTracking.Id))
+            {
+                await DeleteAudits(ingestionTracking);
+            }
         }
     }
 }

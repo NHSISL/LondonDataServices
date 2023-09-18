@@ -52,7 +52,7 @@
     "@types/react-dom": "^18.0.6",
     "ajv": "^8.11.0",
     "cross-env": "^7.0.3",
-    "cypress": "12.6.0",
+    "cypress": "13.2.0",
     "env-cmd": "10.1.0",
     "eslint": "^8.24.0",
     "eslint-config-react-app": "^7.0.1",

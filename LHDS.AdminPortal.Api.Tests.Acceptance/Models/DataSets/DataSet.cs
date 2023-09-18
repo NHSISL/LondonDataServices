@@ -25,8 +25,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets
         [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset? ActiveFrom { get; set; }
 
+
         [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset? ActiveTo { get; set; }
+
         public string CreatedBy { get; set; } = string.Empty;
         public string UpdatedBy { get; set; } = string.Empty;
 

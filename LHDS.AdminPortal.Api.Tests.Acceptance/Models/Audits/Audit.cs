@@ -19,6 +19,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits
         [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset UpdatedDate { get; set; }
 
+
         [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset CreatedDate { get; set; }
     }

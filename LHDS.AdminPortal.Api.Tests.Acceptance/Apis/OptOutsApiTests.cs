@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
@@ -98,9 +99,20 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
 
         private static IQueryable<OptOut> CreateRandomOptOuts()
         {
-            return CreateOptOutFiller(dateTimeOffset: GetRandomDateTime())
-                .Create(count: GetRandomNumber())
-                    .AsQueryable();
+            List<OptOut> randomOptOuts = new List<OptOut>();
+            int randomNumber = GetRandomNumber();
+
+            for (int i = 0; i < randomNumber; i++)
+            {
+                OptOut optOut = CreateRandomOptOut();
+
+                if (!randomOptOuts.Any(o => o.NhsNumber == optOut.NhsNumber))
+                {
+                    randomOptOuts.Add(optOut);
+                }
+            }
+
+            return randomOptOuts.AsQueryable();
         }
 
         private static OptOut CreateRandomOptOut() =>

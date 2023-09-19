@@ -3,6 +3,8 @@
 // ---------------------------------------------------------------
 
 using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.SpecificationObjects
 {
@@ -21,7 +23,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.SpecificationObjects
         public bool IsTransactionLog { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
         public string UpdatedBy { get; set; } = string.Empty;
+
+        [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset UpdatedDate { get; set; }
+
+        [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset CreatedDate { get; set; }
     }
 }

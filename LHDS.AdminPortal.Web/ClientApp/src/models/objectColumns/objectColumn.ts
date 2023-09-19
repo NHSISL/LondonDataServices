@@ -17,8 +17,8 @@ export class ObjectColumn {
     public supplierDateFormat: string;
     public isWatermark: boolean;
     public isSequencing: boolean;
-    public isEntityBusinessKey: boolean;
-    public isRecordBusinessKey: boolean;
+    public isBusinessKey: boolean;
+    public isUniqueRecordKey: boolean;
     public isVersionHashElement: boolean;
     public isSenderCode: boolean;
     public isAuthorCode: boolean;
@@ -52,8 +52,8 @@ export class ObjectColumn {
         this.supplierDateFormat = objectColumn.supplierDateFormat;
         this.isWatermark = objectColumn.isWatermark;
         this.isSequencing = objectColumn.isSequencing;
-        this.isEntityBusinessKey = objectColumn.isEntityBusinessKey;
-        this.isRecordBusinessKey = objectColumn.isRecordBusinessKey;
+        this.isBusinessKey = objectColumn.isBusinessKey;
+        this.isUniqueRecordKey = objectColumn.isUniqueRecordKey;
         this.isVersionHashElement = objectColumn.isVersionHashElement;
         this.isSenderCode = objectColumn.isSenderCode;
         this.isAuthorCode = objectColumn.isAuthorCode;

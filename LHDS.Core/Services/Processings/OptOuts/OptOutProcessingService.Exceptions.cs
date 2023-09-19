@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
@@ -16,6 +17,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
     {
         private delegate ValueTask<OptOut> ReturningOptOutFunction();
         private delegate ValueTask<List<OptOut>> ReturningOptOutListFunction();
+        private delegate IQueryable<OptOut> ReturningOptOutListsFunction();
 
         private async ValueTask<OptOut> TryCatch(ReturningOptOutFunction returningOptOutFunction)
         {
@@ -61,6 +63,41 @@ namespace LHDS.Core.Services.Processings.OptOuts
             try
             {
                 return await returningOptOutListFunction();
+            }
+            catch (InvalidArgumentOptOutProcessingException invalidArgumentOptOutProcessingException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentOptOutProcessingException);
+            }
+            catch (OptOutDependencyValidationException optOutDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(optOutDependencyValidationException);
+            }
+            catch (OptOutValidationException optOutValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(optOutValidationException);
+            }
+            catch (OptOutDependencyException optOutDependencyException)
+            {
+                throw CreateAndLogDependencyException(optOutDependencyException);
+            }
+            catch (OptOutServiceException optOutServiceException)
+            {
+                throw CreateAndLogDependencyException(optOutServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedOptOutProcessingServiceException =
+                    new FailedOptOutProcessingServiceException(exception);
+
+                throw CreateAndLogServiceException(failedOptOutProcessingServiceException);
+            }
+        }
+
+        private IQueryable<OptOut> TryCatch(ReturningOptOutListsFunction returningOptOutListsFunction)
+        {
+            try
+            {
+                return returningOptOutListsFunction();
             }
             catch (InvalidArgumentOptOutProcessingException invalidArgumentOptOutProcessingException)
             {

@@ -83,8 +83,6 @@ const DataSetSpecificationDetailCardEdit: FunctionComponent<DataSetSpecification
     return (
         <>
             <SummaryListBase>
-                <strong>DataSetId - </strong>{dataSetId}
-                <br /><br />
                 <SummaryListBaseRow>
                     <SummaryListBaseKey>Supplier Specification Version</SummaryListBaseKey>
                     <SummaryListBaseValue>

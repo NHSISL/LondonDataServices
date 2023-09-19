@@ -27,7 +27,7 @@ export class DataSetSpecification {
     constructor(dataSetSpecification: any) {
         this.id = dataSetSpecification.id ? Guid.parse(dataSetSpecification.id) : Guid.parse(Guid.EMPTY);
         this.dataSetId = dataSetSpecification.dataSetId;
-        this.supplierSpecificationVersion = dataSetSpecification.name;
+        this.supplierSpecificationVersion = dataSetSpecification.supplierSpecificationVersion;
         this.ourSpecificationVersion = dataSetSpecification.ourSpecificationVersion;
         this.notes = dataSetSpecification.notes;
         this.isMultiAuthorPerBatch = dataSetSpecification.isMultiAuthorPerBatch;

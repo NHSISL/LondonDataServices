@@ -39,7 +39,7 @@ const DataSetDetailCard: FunctionComponent<DataSetDetailCardProps> = (props) => 
     const handleAdd = async (dataSet: DataSetView) => {
         try {
             await onAdd(dataSet);
-            navigate('/configuration/dataSet');
+            navigate('/configuration/dataSets');
         } catch (error) {
             setDisplayMode('EDIT');
         }

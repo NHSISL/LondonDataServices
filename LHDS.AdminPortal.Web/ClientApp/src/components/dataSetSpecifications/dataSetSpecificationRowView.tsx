@@ -17,11 +17,14 @@ const DataSetSpecificationRowView: FunctionComponent<DataSetSpecificationRowProp
 
     return (
         <TableBaseRow>
-            <TableBaseData>
+            <TableBaseData >
                 {dataSetSpecification.dataSet?.dataSetName}
             </TableBaseData>
-            <TableBaseData>
+            <TableBaseData classes="text-center">
                 {dataSetSpecification.ourSpecificationVersion}
+            </TableBaseData>
+            <TableBaseData classes="text-center">
+                {dataSetSpecification.supplierSpecificationVersion}
             </TableBaseData>
             <TableBaseData>
                 {dataSetSpecification.createdBy}

@@ -29,8 +29,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     .Returns(retrievedOptOuts);
 
             // when
-            List<OptOut> actualOptOuts =
-                await this.optOutProcessingService.RetrieveAllOptOutsAsync();
+            IQueryable<OptOut> actualOptOuts =
+                this.optOutProcessingService.RetrieveAllOptOutsAsync();
 
             // then
             actualOptOuts.Should().BeEquivalentTo(expectedOptOuts);

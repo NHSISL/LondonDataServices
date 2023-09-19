@@ -3,7 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings
@@ -16,7 +16,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings
         public string EncryptedFileName { get; set; } = string.Empty;
         public string DecryptedFileName { get; set; } = string.Empty;
         public bool Decrypted { get; set; }
+
+        [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset LastSeen { get; set; }
+
         public bool FileDeleted { get; set; }
         public int RecordCount { get; set; }
         public int EncryptedFileSize { get; set; }

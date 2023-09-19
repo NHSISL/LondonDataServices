@@ -257,26 +257,26 @@ const SpecificationObjectDetailCardEdit: FunctionComponent<ObjectColumnDetailCar
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
-                    <SummaryListBaseKey>Is Entity Business Key</SummaryListBaseKey>
+                    <SummaryListBaseKey>Is Business Key</SummaryListBaseKey>
                     <SummaryListBaseValue>
                         <CheckboxBase
-                            id="isEntityBusinessKey"
-                            name="isEntityBusinessKey"
+                            id="isBusinessKey"
+                            name="isBusinessKey"
                             label=""
-                            checked={editObjectColumn.isEntityBusinessKey}
-                            error={errors.isEntityBusinessKey}
+                            checked={editObjectColumn.isBusinessKey}
+                            error={errors.isBusinessKey}
                             onChange={handleChange} />
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
-                    <SummaryListBaseKey>Is Record Business Key</SummaryListBaseKey>
+                    <SummaryListBaseKey>Is Unique Record Key</SummaryListBaseKey>
                     <SummaryListBaseValue>
                         <CheckboxBase
-                            id="isRecordBusinessKey"
-                            name="isRecordBusinessKey"
+                            id="isUniqueRecordKey"
+                            name="isUniqueRecordKey"
                             label=""
-                            checked={editObjectColumn.isRecordBusinessKey}
+                            checked={editObjectColumn.isUniqueRecordKey}
                             onChange={handleChange} />
                     </SummaryListBaseValue>
                 </SummaryListBaseRow>

@@ -85,7 +85,14 @@
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnDetail.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnDetailCard.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnDetailCardEdit.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnDetailCardView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnErrors.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnRow.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnRowView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnValidations.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\optOut\optOutDetailCard.tsx" />
@@ -156,6 +163,7 @@
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetsListPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetSpecificationPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataTypesPage.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\configuration\ObjectColumPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\specificationObjectPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\IngestionTrackingHomepage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\ingestionTrackingPage.tsx" />

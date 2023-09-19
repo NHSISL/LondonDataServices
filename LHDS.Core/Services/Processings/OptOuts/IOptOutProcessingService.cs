@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.OptOuts;
 
@@ -11,7 +12,7 @@ namespace LHDS.Core.Services.Processings.OptOuts
 {
     public interface IOptOutProcessingService
     {
-        ValueTask<List<OptOut>> RetrieveAllOptOutsAsync();
+        IQueryable<OptOut> RetrieveAllOptOutsAsync();
         ValueTask<OptOut> RetrieveOrAddOptOutAsync(OptOut optOut);
         ValueTask<OptOut> AddOrModifyOptOutAsync(OptOut optOut);
         ValueTask<OptOut> RemoveOptOutByIdAsync(Guid optOutId);

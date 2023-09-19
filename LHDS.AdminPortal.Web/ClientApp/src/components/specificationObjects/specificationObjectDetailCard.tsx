@@ -10,6 +10,7 @@ import SpecificationObjectDetailCardEdit from "./specificationObjectDetailCardEd
 
 interface SpecificationObjectDetailCardProps {
     specificationObject: SpecificationObjectView;
+    dataSetId: string;
     mode: string;
     onAdd: (specificationObject: SpecificationObjectView) => void;
     onUpdate: (specificationObject: SpecificationObjectView) => void;
@@ -20,6 +21,7 @@ interface SpecificationObjectDetailCardProps {
 const SpecificationObjectDetailCard: FunctionComponent<SpecificationObjectDetailCardProps> = (props) => {
     const {
         specificationObject,
+        dataSetId,
         mode,
         onAdd,
         onUpdate,
@@ -38,8 +40,8 @@ const SpecificationObjectDetailCard: FunctionComponent<SpecificationObjectDetail
 
     const handleAdd = async (specificationObject: SpecificationObjectView) => {
         try {
-            await onAdd(specificationObject);
-            navigate('/configuration/dataSetSpecification');
+            onAdd(specificationObject);
+            navigate('/configuration/dataSetSpecification/' + dataSetId + '' + specificationObject.dataSetSpecificationId);
         } catch (error) {
             setDisplayMode('EDIT');
         }
@@ -47,7 +49,7 @@ const SpecificationObjectDetailCard: FunctionComponent<SpecificationObjectDetail
 
     const handleUpdate = async (specificationObject: SpecificationObjectView) => {
         try {
-            await onUpdate(specificationObject);
+            onUpdate(specificationObject);
             setDisplayMode('VIEW');
         } catch (error) {
             setApiError(error);
@@ -69,7 +71,9 @@ const SpecificationObjectDetailCard: FunctionComponent<SpecificationObjectDetail
             <CardBase>
                 <CardBaseBody>
                     <CardBaseTitle>
-                        {displayMode === "ADD" ? "New Specification Object" : specificationObject.ourObjectName}
+                        {displayMode === "ADD"
+                            ? "New Specification Object"
+                            : "Specification Object (" + specificationObject.ourObjectName + ")"}
                     </CardBaseTitle>
 
                     <CardBaseContent>

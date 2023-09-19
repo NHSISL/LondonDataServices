@@ -38,7 +38,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                ValueTask<List<OptOut>> retrievedOptOuts =
+                IQueryable<OptOut> retrievedOptOuts =
                     this.optOutProcessingService.RetrieveAllOptOutsAsync();
 
                 return Ok(retrievedOptOuts);

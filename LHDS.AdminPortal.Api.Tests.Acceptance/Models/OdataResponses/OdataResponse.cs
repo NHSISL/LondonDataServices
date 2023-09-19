@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.OdataResponses
 {
-    public class OdataResponce<TItem>
+    public class OdataResponse<TItem>
     {
         [JsonProperty("@odata.context")]
         public string ContextUrl { get; set; } = null!;

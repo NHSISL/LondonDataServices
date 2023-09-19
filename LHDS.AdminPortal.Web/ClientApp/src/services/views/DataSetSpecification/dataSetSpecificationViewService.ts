@@ -112,9 +112,9 @@ export const dataSetSpecificationViewService = {
                         response.data[0].presededById,
                         response.data[0].activeFrom,
                         response.data[0].activeTo,
-                        response.data[0].createdByUser,
+                        response.data[0].createdBy,
                         response.data[0].createdDate,
-                        response.data[0].updatedByUser,
+                        response.data[0].updatedBy,
                         response.data[0].updatedDate);
 
                     setMappedDataSetSpecification(dataSetSpecification);

@@ -51,9 +51,9 @@ export class DataSetView {
         this.isActive = isActive === true ? true : false;
         this.activeFrom = activeFrom !== undefined ? new Date(activeFrom) : undefined;
         this.activeTo = activeTo !== undefined ? new Date(activeTo) : undefined;
-        this.createdBy = createdBy || "";
+        this.createdBy = createdBy !== undefined ? createdBy : '';
         this.createdDate = createdDate ;
-        this.updatedBy = updatedBy || "";
+        this.updatedBy = updatedBy !== undefined ? updatedBy : '';
         this.updatedDate = updatedDate;
     }
 }

@@ -3,6 +3,10 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers
 {
@@ -14,9 +18,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers
         public string Description { get; set; } = string.Empty;
         public string LandingManualTriggerUrl { get; set; } = string.Empty;
         public string DecryptionManualTriggerUrl { get; set; } = string.Empty;
-        public string CreatedBy { get; set; } = string.Empty;
-        public DateTimeOffset CreatedDate { get; set; }
         public string UpdatedBy { get; set; } = string.Empty;
+        public string CreatedBy { get; set; } = string.Empty;
+
+        [JsonConverter(typeof(IsoDateTimeConverter))]
+        public DateTimeOffset CreatedDate { get; set; }
+
+        [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset UpdatedDate { get; set; }
+
+        public List<IngestionTracking> IngestionTrackings { get; set; } = new List<IngestionTracking>();
     }
 }

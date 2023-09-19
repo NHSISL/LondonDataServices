@@ -7,20 +7,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.ObjectColumns;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.OdataResponses;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 {
     public partial class ApiBroker
     {
         private const string objectColumnsRelativeUrl = "api/objectColumns";
+        private const string objectColumnsRelativeOdataUrl = "odata/objectColumns";
 
         public async ValueTask<ObjectColumn> PostObjectColumnAsync(
             ObjectColumn objectColumn) =>
                 await this.apiFactoryClient.PostContentAsync(objectColumnsRelativeUrl, objectColumn);
 
-        public async ValueTask<List<ObjectColumn>> GetAllObjectColumnsAsync() =>
-           await this.apiFactoryClient.GetContentAsync<List<ObjectColumn>>(
-               $"{objectColumnsRelativeUrl}/");
+        public async ValueTask<List<ObjectColumn>> GetAllObjectColumnsAsync()
+        {
+            OdataResponse<ObjectColumn> response =
+                await this.apiFactoryClient.GetContentAsync<OdataResponse<ObjectColumn>>($"{objectColumnsRelativeOdataUrl}/");
+
+            return response.Items;
+        }
 
         public async ValueTask<ObjectColumn> GetObjectColumnByIdAsync(Guid objectColumnId) =>
             await this.apiFactoryClient.GetContentAsync<ObjectColumn>(

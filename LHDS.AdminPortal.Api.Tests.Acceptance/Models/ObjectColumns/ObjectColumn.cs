@@ -3,6 +3,8 @@
 // ---------------------------------------------------------------
 
 using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.ObjectColumns
 {
@@ -23,8 +25,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.ObjectColumns
         public string SupplierDateFormat { get; set; } = string.Empty;
         public bool IsWatermark { get; set; }
         public bool IsSequencing { get; set; }
-        public bool IsEntityBusinessKey { get; set; }
-        public bool IsRecordBusinessKey { get; set; }
+        public bool IsBusinessKey { get; set; }
+        public bool IsUniqueRecordKey { get; set; }
         public bool IsVersionHashElement { get; set; }
         public bool IsSenderCode { get; set; }
         public bool IsAuthorCode { get; set; }
@@ -39,7 +41,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.ObjectColumns
         public Guid DataTypeId { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
         public string UpdatedBy { get; set; } = string.Empty;
+
+        [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset UpdatedDate { get; set; }
+
+        [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset CreatedDate { get; set; }
     }
 }

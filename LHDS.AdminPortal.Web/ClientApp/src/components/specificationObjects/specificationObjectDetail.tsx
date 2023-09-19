@@ -3,10 +3,12 @@ import { Guid } from 'guid-typescript';
 import { SpecificationObjectView } from "../../models/views/components/specificationObjects/specificationObjectView";
 import { specificationObjectViewService } from "../../services/views/specificationObjects/specificationObjectViewService";
 import SpecificationObjectDetailCard from "./specificationObjectDetailCard";
+import ObjectColumnTable from "../objectColumns/objectColumnTable";
 
 interface SpecificationObjectDetailProps {
     dataSetSpecificationId?: string;
     specificationObjectId?: string;
+    dataSetId: string
     children?: React.ReactNode;
 }
 
@@ -14,6 +16,7 @@ const SpecificationObjectDetail: FunctionComponent<SpecificationObjectDetailProp
     const {
         dataSetSpecificationId,
         specificationObjectId,
+        dataSetId,
         children
     } = props;
 
@@ -29,6 +32,7 @@ const SpecificationObjectDetail: FunctionComponent<SpecificationObjectDetailProp
     const addSpecificationObject = specificationObjectViewService.useCreateSpecificationObject();
 
     const handleAdd = (specificationObject: SpecificationObjectView) => {
+        specificationObject.dataSetSpecificationId = Guid.parse(dataSetSpecificationId!);
         return addSpecificationObject.mutate(specificationObject);
     }
 
@@ -60,6 +64,7 @@ const SpecificationObjectDetail: FunctionComponent<SpecificationObjectDetailProp
                     <SpecificationObjectDetailCard
                         key={specificationObject.id.toString()}
                         specificationObject={specificationObject}
+                        dataSetId={dataSetId}
                         mode={mode}
                         onAdd={handleAdd}
                         onUpdate={handleUpdate}
@@ -69,6 +74,13 @@ const SpecificationObjectDetail: FunctionComponent<SpecificationObjectDetailProp
 
                     {mode !== "ADD" && (
                         <>
+                            <ObjectColumnTable
+                                key={specificationObject.id.toString()}
+                                specificationObjectId={specificationObject.id.toString()}
+                                dataSetSpecificationId={dataSetSpecificationId!}
+                            >
+                            </ObjectColumnTable>
+
                         </>
                     )}
                 </div>

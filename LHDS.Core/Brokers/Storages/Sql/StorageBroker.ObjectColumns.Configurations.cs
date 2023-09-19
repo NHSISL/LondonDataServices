@@ -68,12 +68,12 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<ObjectColumn>()
-                .Property(objectColumn => objectColumn.IsEntityBusinessKey)
+                .Property(objectColumn => objectColumn.IsBusinessKey)
                 .HasDefaultValue(false)
                 .IsRequired();
 
             modelBuilder.Entity<ObjectColumn>()
-                .Property(objectColumn => objectColumn.IsRecordBusinessKey)
+                .Property(objectColumn => objectColumn.IsUniqueRecordKey)
                 .HasDefaultValue(false)
                 .IsRequired();
 

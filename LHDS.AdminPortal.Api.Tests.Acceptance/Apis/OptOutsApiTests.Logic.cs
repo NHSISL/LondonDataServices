@@ -60,7 +60,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.OptOuts
 
             foreach (OptOut inputOptOut in inputOptOuts)
             {
-                var x = await this.apiBroker.PostOptOutAsync(inputOptOut);
+                await this.apiBroker.PostOptOutAsync(inputOptOut);
             }
 
             // When

@@ -55,13 +55,13 @@ export const objectColumnValidations: Array<Validation> = [
     //    isRequired: true,
     //},
     //{
-    //    property: "isEntityBusinessKey",
-    //    friendlyName: "isEntityBusinessKey",
+    //    property: "isBusinessKey",
+    //    friendlyName: "isBusinessKey",
     //    isRequired: true,
     //},
     //{
-    //    property: "isRecordBusinessKey",
-    //    friendlyName: "isRecordBusinessKey",
+    //    property: "isUniqueRecordKey",
+    //    friendlyName: "isUniqueRecordKey",
     //    isRequired: true,
     //},
     //{

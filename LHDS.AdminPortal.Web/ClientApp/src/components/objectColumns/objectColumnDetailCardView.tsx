@@ -94,13 +94,13 @@ const ObjectColumnDetailCardView: FunctionComponent<ObjectColumnDetailCardViewPr
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
-                    <SummaryListBaseKey>Is Entity Business Key</SummaryListBaseKey>
-                    <SummaryListBaseValue>{objectColumn.isEntityBusinessKey ? <FontAwesomeIcon icon={faCheck} className="text-success" /> : <FontAwesomeIcon icon={faTimes} className="text-danger" />}</SummaryListBaseValue>
+                    <SummaryListBaseKey>Is Business Key</SummaryListBaseKey>
+                    <SummaryListBaseValue>{objectColumn.isBusinessKey ? <FontAwesomeIcon icon={faCheck} className="text-success" /> : <FontAwesomeIcon icon={faTimes} className="text-danger" />}</SummaryListBaseValue>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>
-                    <SummaryListBaseKey>Is Record Business Key</SummaryListBaseKey>
-                    <SummaryListBaseValue>{objectColumn.isRecordBusinessKey ? <FontAwesomeIcon icon={faCheck} className="text-success" /> : <FontAwesomeIcon icon={faTimes} className="text-danger" />}</SummaryListBaseValue>
+                    <SummaryListBaseKey>Is Unique Record Key</SummaryListBaseKey>
+                    <SummaryListBaseValue>{objectColumn.isUniqueRecordKey ? <FontAwesomeIcon icon={faCheck} className="text-success" /> : <FontAwesomeIcon icon={faTimes} className="text-danger" />}</SummaryListBaseValue>
                 </SummaryListBaseRow>
 
                 <SummaryListBaseRow>

@@ -8,7 +8,6 @@ using LHDS.Core.Services.Foundations.Documents;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using RESTFulSense.Clients;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 {

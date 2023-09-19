@@ -2,16 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using LHDS.Core.Models.Foundations.Documents;
-using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
@@ -26,10 +23,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
             string encryptedFilePath = "encrypted";
             string decryptedFilePath = "decrypted";
 
-            IngestionTracking randomIngestionTracking = 
+            IngestionTracking randomIngestionTracking =
                 await PostRandomIngestionTrackingAsync(randomSupplier.Id, encryptedFilePath, decryptedFilePath);
 
-            string inputFileName = randomIngestionTracking.EncryptedFileName;
+            string inputFileName = randomIngestionTracking.DecryptedFileName;
             byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
 
             Document document = new Document
@@ -43,15 +40,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
             await this.apiBroker.documentService.AddDocumentAsync(document);
 
             // when
-            Document actualDocument = await this.apiBroker.GetDownloadLinkAsync(inputFileName);
+            Document actualDocument = await this.apiBroker.GetDownloadLinkAsync(WebUtility.UrlEncode(inputFileName));
 
             // then
             actualDocument.Should().BeEquivalentTo(expectedDocument);
 
             IngestionTracking retrievedIngestionTracking =
                 await this.apiBroker.GetIngestionTrackingByIdAsync(randomIngestionTracking.Id);
-
-            //Document returnedDocument = ((OkObjectResult)documentResult.Result).Value as Document;
 
             actualDocument.FileName.Should().Be(expectedDocument.FileName);
             actualDocument.DocumentData.Should().BeEquivalentTo(expectedDocument.DocumentData);

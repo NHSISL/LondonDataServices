@@ -17,8 +17,8 @@ export class ObjectColumnView {
     public supplierDateFormat: string;
     public isWatermark: boolean;
     public isSequencing: boolean;
-    public isEntityBusinessKey: boolean;
-    public isRecordBusinessKey: boolean;
+    public isBusinessKey: boolean;
+    public isUniqueRecordKey: boolean;
     public isVersionHashElement: boolean;
     public isSenderCode: boolean;
     public isAuthorCode: boolean;
@@ -52,8 +52,8 @@ export class ObjectColumnView {
         supplierDateFormat?: string,
         isWatermark?: boolean,
         isSequencing?: boolean,
-        isEntityBusinessKey?: boolean,
-        isRecordBusinessKey?: boolean,
+        isBusinessKey?: boolean,
+        isUniqueRecordKey?: boolean,
         isVersionHashElement?: boolean,
         isSenderCode?: boolean,
         isAuthorCode?: boolean,
@@ -86,8 +86,8 @@ export class ObjectColumnView {
         this.supplierDateFormat = supplierDateFormat || "";
         this.isWatermark = isWatermark || false;
         this.isSequencing = isSequencing || false;
-        this.isEntityBusinessKey = isEntityBusinessKey || false;
-        this.isRecordBusinessKey = isRecordBusinessKey || false;
+        this.isBusinessKey = isBusinessKey || false;
+        this.isUniqueRecordKey = isUniqueRecordKey || false;
         this.isVersionHashElement = isVersionHashElement || false;
         this.isSenderCode = isSenderCode || false;
         this.isAuthorCode = isAuthorCode || false;

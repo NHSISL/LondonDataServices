@@ -23,8 +23,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.ObjectColumns
         public string SupplierDateFormat { get; set; } = string.Empty;
         public bool IsWatermark { get; set; }
         public bool IsSequencing { get; set; }
-        public bool IsEntityBusinessKey { get; set; }
-        public bool IsRecordBusinessKey { get; set; }
+        public bool IsBusinessKey { get; set; }
+        public bool IsUniqueRecordKey { get; set; }
         public bool IsVersionHashElement { get; set; }
         public bool IsSenderCode { get; set; }
         public bool IsAuthorCode { get; set; }

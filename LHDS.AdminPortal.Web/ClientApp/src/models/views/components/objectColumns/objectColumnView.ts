@@ -2,7 +2,7 @@ import { Guid } from 'guid-typescript';
 import { SpecificationObject } from '../../../specificationObjects/specificationObject';
 
 export class ObjectColumnView {
-    public id?: Guid;
+    public id: Guid;
     public specificationObjectId: Guid;
     public supplierColumnName: string;
     public ourColumnName: string;
@@ -17,11 +17,12 @@ export class ObjectColumnView {
     public supplierDateFormat: string;
     public isWatermark: boolean;
     public isSequencing: boolean;
-    public isEntityBusinessKey: boolean;
-    public isRecordBusinessKey: boolean;
+    public isBusinessKey: boolean;
+    public isUniqueRecordKey: boolean;
     public isVersionHashElement: boolean;
     public isSenderCode: boolean;
     public isAuthorCode: boolean;
+    public isRelatedOrganisationId: boolean;
     public isDeleteFlag: boolean;
     public isPersonConfidentialData: boolean;
     public personConfidentialDataType: string;
@@ -51,11 +52,12 @@ export class ObjectColumnView {
         supplierDateFormat?: string,
         isWatermark?: boolean,
         isSequencing?: boolean,
-        isEntityBusinessKey?: boolean,
-        isRecordBusinessKey?: boolean,
+        isBusinessKey?: boolean,
+        isUniqueRecordKey?: boolean,
         isVersionHashElement?: boolean,
         isSenderCode?: boolean,
         isAuthorCode?: boolean,
+        isRelatedOrganisationId?: boolean,
         isDeleteFlag?: boolean,
         isPersonConfidentialData?: boolean,
         personConfidentialDataType?: string,
@@ -84,11 +86,12 @@ export class ObjectColumnView {
         this.supplierDateFormat = supplierDateFormat || "";
         this.isWatermark = isWatermark || false;
         this.isSequencing = isSequencing || false;
-        this.isEntityBusinessKey = isEntityBusinessKey || false;
-        this.isRecordBusinessKey = isRecordBusinessKey || false;
+        this.isBusinessKey = isBusinessKey || false;
+        this.isUniqueRecordKey = isUniqueRecordKey || false;
         this.isVersionHashElement = isVersionHashElement || false;
         this.isSenderCode = isSenderCode || false;
         this.isAuthorCode = isAuthorCode || false;
+        this.isRelatedOrganisationId = isRelatedOrganisationId || false;
         this.isDeleteFlag = isDeleteFlag || false;
         this.isPersonConfidentialData = isPersonConfidentialData || false;
         this.personConfidentialDataType = personConfidentialDataType || "";

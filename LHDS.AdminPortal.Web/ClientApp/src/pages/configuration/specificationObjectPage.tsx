@@ -9,7 +9,7 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 
 export const SpecificationObjectPage = () => {
 
-    const { specificationObjectId, dataSetSpecificationId } = useParams();
+    const { specificationObjectId, dataSetSpecificationId, dataSetId } = useParams();
 
     return <div>
         <section >
@@ -19,8 +19,10 @@ export const SpecificationObjectPage = () => {
                         <FontAwesomeIcon icon={faChevronLeft} size="1x" />Back to DataSet Specifications
                     </Link>
                     <SpecificationObjectDetail
-                        dataSetSpecificationId={dataSetSpecificationId }
-                        specificationObjectId={specificationObjectId}/>
+                        dataSetSpecificationId={dataSetSpecificationId}
+                        specificationObjectId={specificationObjectId}
+                        dataSetId={dataSetId!}
+                    />
                 </main>
             </Container>
         </section>

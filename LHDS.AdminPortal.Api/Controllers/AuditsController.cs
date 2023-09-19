@@ -68,7 +68,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
 #endif
         [EnableQuery(PageSize = 50)]
-        public ActionResult<IQueryable<Audit>> GetAllAudits()
+        public ActionResult<IQueryable<Audit>> Get()
         {
             try
             {

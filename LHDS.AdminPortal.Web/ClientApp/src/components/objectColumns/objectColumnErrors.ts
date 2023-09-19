@@ -8,7 +8,7 @@ export interface IObjectColumnErrors extends ErrorBase {
     fhirDataType: string;
     isWatermark: string;
     isSequencing: string;
-    isEntityBusinessKey: string;
+    isBusinessKey: string;
     isVersionHashElement: string;
     isSenderCode: string;
     isAuthorCode: string;
@@ -24,7 +24,7 @@ export const objectColumnErrors: IObjectColumnErrors = {
     fhirDataType: "",
     isWatermark: "",
     isSequencing: "",
-    isEntityBusinessKey: "",
+    isBusinessKey: "",
     isVersionHashElement: "",
     isSenderCode: "",
     isAuthorCode: "",

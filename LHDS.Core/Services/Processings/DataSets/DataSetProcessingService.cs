@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Processings.DataSets
             });
 
         public IQueryable<DataSet> RetrieveAllDataSets() =>
-            throw new System.NotImplementedException();
+            this.dataSetService.RetrieveAllDataSets();
     }
 }

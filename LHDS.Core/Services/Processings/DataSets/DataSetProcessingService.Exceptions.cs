@@ -76,6 +76,15 @@ namespace LHDS.Core.Services.Processings.DataSets
             {
                 throw CreateAndLogDependencyException(dataSetServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedDataSetProcessingServiceException =
+                    new FailedDataSetProcessingServiceException(
+                        message: "Failed DataSet processing service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedDataSetProcessingServiceException);
+            }
         }
 
 

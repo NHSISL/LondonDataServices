@@ -89,5 +89,48 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
             this.dataSetServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
+        {
+            // given
+            var serviceException = new Exception();
+
+            var failedDataSetProcessingServiceException =
+                new FailedDataSetProcessingServiceException(
+                    message: "Failed DataSet processing service error occurred, contact support.",
+                    innerException: serviceException);
+
+            var expectedDataSetProcessingServiveException =
+                new DataSetProcessingServiceException(
+                    message: "DataSet processing service error occurred, contact support.",
+                    innerException: failedDataSetProcessingServiceException);
+
+            this.dataSetServiceMock.Setup(service =>
+                service.RetrieveAllDataSets())
+                    .Throws(serviceException);
+
+            // when
+            Action dataSetRetrieveAction = () =>
+                this.dataSetProcessingService.RetrieveAllDataSets();
+
+            DataSetProcessingServiceException actualException =
+                Assert.Throws<DataSetProcessingServiceException>(dataSetRetrieveAction);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDataSetProcessingServiveException);
+
+            this.dataSetServiceMock.Verify(service =>
+                service.RetrieveAllDataSets(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedDataSetProcessingServiveException))),
+                         Times.Once);
+
+            this.dataSetServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
 
             var expectedDataSetProcessingValidationException =
                 new DataSetProcessingValidationException(
-                    message: "DataSet processing validation errors occurred, please try again.",
+                    message: "DataSet processing validation error occurred, please try again.",
                     innerException: nullDataSetProcessingException);
 
             // when

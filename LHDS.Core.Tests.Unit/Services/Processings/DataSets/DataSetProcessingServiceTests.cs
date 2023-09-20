@@ -3,26 +3,32 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq.Expressions;
+using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Processings.DataSets;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
 {
     public partial class DataSetProcessingServiceTests
     {
-        private readonly Mock<IDataSetService> dataSetServiceMock;
+        private readonly Mock<IDataSetService> dataSetServiceMock = new Mock<IDataSetService>();
+        private readonly Mock<ILoggingBroker> loggingBrokerMock = new Mock<ILoggingBroker>();
         private readonly IDataSetProcessingService dataSetProcessingService;
 
         public DataSetProcessingServiceTests()
         {
-            dataSetServiceMock = new Mock<IDataSetService>();
-
             dataSetProcessingService = new DataSetProcessingService(
-                               dataSetService: dataSetServiceMock.Object);
+                dataSetService: dataSetServiceMock.Object,
+                loggingBroker: loggingBrokerMock.Object);
         }
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();

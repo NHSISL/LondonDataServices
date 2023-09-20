@@ -45,6 +45,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
             };
         }
 
+        public static TheoryData DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DataSetDependencyException(
+                    message: "DataSet validation errors occurred, please try again.", innerException),
+
+                new DataSetServiceException(
+                    message : "DataSet service error occurred, contact support.", innerException)
+            };
+        }
+
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 

@@ -68,6 +68,14 @@ namespace LHDS.Core.Services.Processings.DataSets
             {
                 throw CreateAndLogDependencyValidationException(dataSetDependencyValidationException);
             }
+            catch (DataSetDependencyException dataSetDependencyException)
+            {
+                throw CreateAndLogDependencyException(dataSetDependencyException);
+            }
+            catch (DataSetServiceException dataSetServiceException)
+            {
+                throw CreateAndLogDependencyException(dataSetServiceException);
+            }
         }
 
 

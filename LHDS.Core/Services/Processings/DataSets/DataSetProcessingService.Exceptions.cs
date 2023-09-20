@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSets.Exceptions;
@@ -40,6 +41,15 @@ namespace LHDS.Core.Services.Processings.DataSets
             {
                 throw CreateAndLogDependencyException(dataSetServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedDataSetProcessingServiceException =
+                    new FailedDataSetProcessingServiceException(
+                        message: "Failed DataSet processing service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedDataSetProcessingServiceException);
+            }
         }
 
         private DataSetProcessingValidationException CreateAndLogValidationException(Xeption exception)
@@ -77,6 +87,18 @@ namespace LHDS.Core.Services.Processings.DataSets
             this.loggingBroker.LogError(dataSetProcessingDependencyException);
 
             throw dataSetProcessingDependencyException;
+        }
+
+        private DataSetProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var dataSetProcessingServiceException = new
+                DataSetProcessingServiceException(
+                    message: "DataSet processing service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(dataSetProcessingServiceException);
+
+            return dataSetProcessingServiceException;
         }
     }
 }

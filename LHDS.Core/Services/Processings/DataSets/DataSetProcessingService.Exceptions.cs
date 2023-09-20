@@ -4,6 +4,7 @@
 
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.DataSets;
+using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 using LHDS.Core.Models.Processings.DataSets.Exceptions;
 using Xeptions;
 
@@ -19,9 +20,17 @@ namespace LHDS.Core.Services.Processings.DataSets
             {
                 return await returningDataSetProcessingFunction();
             }
-            catch (NullDataSetProcessingException nullDocumentException)
+            catch (NullDataSetProcessingException nullDataSetException)
             {
-                throw CreateAndLogValidationException(nullDocumentException);
+                throw CreateAndLogValidationException(nullDataSetException);
+            }
+            catch (DataSetValidationException dataSetValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(dataSetValidationException);
+            }
+            catch (DataSetDependencyValidationException dataSetDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(dataSetDependencyValidationException);
             }
         }
 
@@ -35,6 +44,19 @@ namespace LHDS.Core.Services.Processings.DataSets
             this.loggingBroker.LogError(dataSetProcessingValidationExceptionn);
 
             return dataSetProcessingValidationExceptionn;
+        }
+
+        private DataSetProcessingDependencyValidationException CreateAndLogDependencyValidationException(
+            Xeption exception)
+        {
+            var dataSetProcessingDependencyValidationException =
+                new DataSetProcessingDependencyValidationException(
+                    message: "DataSet processing dependency validation occurred, please try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(dataSetProcessingDependencyValidationException);
+
+            return dataSetProcessingDependencyValidationException;
         }
     }
 }

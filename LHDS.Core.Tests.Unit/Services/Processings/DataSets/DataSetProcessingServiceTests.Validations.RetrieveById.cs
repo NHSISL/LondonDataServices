@@ -20,18 +20,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
             // given
             Guid invalidId = Guid.Empty;
 
-            var invalidDataSetProcessingFileNameException =
-                new InvalidDataSetProcessingException(
-                    message: "Invalid dataSet. Please correct the errors and try again.");
+            var invalidArgumentDataSetProcessingException =
+                new InvalidArgumentDataSetProcessingException(
+                    message: "Invalid argument(s). Please correct the errors and try again.");
 
-            invalidDataSetProcessingFileNameException.AddData(
+            invalidArgumentDataSetProcessingException.AddData(
                 key: "Id",
                 values: "Id is required");
 
             var expectedDataSetProcessingValidationException =
                 new DataSetProcessingValidationException(
                     message: "DataSet processing validation error occurred, please try again.",
-                    innerException: invalidDataSetProcessingFileNameException);
+                    innerException: invalidArgumentDataSetProcessingException);
 
             // when
             ValueTask<DataSet> RetrieveDataSetTask =

@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
 
             var expectedDataSetProcessingDependencyValidationException =
                 new DataSetProcessingDependencyValidationException(
-                    message: "DataSet processing dependency validation occurred, please try again.",
+                    message: "DataSet processing dependency validation error occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.dataSetServiceMock.Setup(service =>
@@ -67,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
 
             var expectedDataSetProcessingDependencyException =
                 new DataSetProcessingDependencyException(
-                    message: "DataSet processing dependency occurred, please try again.",
+                    message: "DataSet processing dependency error occurred, please try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
             this.dataSetServiceMock.Setup(service =>

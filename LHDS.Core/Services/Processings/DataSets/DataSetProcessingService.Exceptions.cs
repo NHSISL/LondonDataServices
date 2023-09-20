@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSets.Exceptions;
@@ -14,6 +15,7 @@ namespace LHDS.Core.Services.Processings.DataSets
     public partial class DataSetProcessingService : IDataSetProcessingService
     {
         private delegate ValueTask<DataSet> ReturningDataSetProcessingFunction();
+        private delegate IQueryable<DataSet> ReturningDataSetsFunction();
 
         private async ValueTask<DataSet> TryCatch(ReturningDataSetProcessingFunction returningDataSetProcessingFunction)
         {
@@ -51,6 +53,23 @@ namespace LHDS.Core.Services.Processings.DataSets
                 throw CreateAndLogServiceException(failedDataSetProcessingServiceException);
             }
         }
+
+        private IQueryable<DataSet> TryCatch(ReturningDataSetsFunction returningDataSetsFunction)
+        {
+            try
+            {
+                return returningDataSetsFunction();
+            }
+            catch (DataSetValidationException dataSetValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(dataSetValidationException);
+            }
+            catch (DataSetDependencyValidationException dataSetDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(dataSetDependencyValidationException);
+            }
+        }
+
 
         private DataSetProcessingValidationException CreateAndLogValidationException(Xeption exception)
         {

@@ -89,6 +89,7 @@ steps:
   - task: DotNetCoreCLI@2
     displayName: C# Acceptance Tests
     inputs:
+      azureSubscription: '$(azureServiceConnectionDev)'
       command: 'test'
       projects: '**/*.Tests.Acceptance.csproj'
       arguments: '--environment ASPNETCORE_ENVIRONMENT=ContinuousIntegration'

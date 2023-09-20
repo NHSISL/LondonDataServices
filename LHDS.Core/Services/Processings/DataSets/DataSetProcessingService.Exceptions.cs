@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 using LHDS.Core.Models.Processings.DataSets.Exceptions;
-using LHDS.Core.Models.Processings.Documents.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Processings.DataSets

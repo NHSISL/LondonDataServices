@@ -2,11 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Processings.DataSets.Exceptions;
-using LHDS.Core.Models.Processings.Documents.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -91,6 +91,52 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedDataSetProcessingDependencyException))),
+                         Times.Once);
+
+            this.dataSetServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAsync()
+        {
+            // given
+            DataSet someDataSet = CreateRandomDataSet();
+            DataSet inputDataSet = someDataSet;
+
+            var serviceException = new Exception();
+
+            var failedDataSetProcessingServiceException =
+                new FailedDataSetProcessingServiceException(
+                    message: "Failed DataSet processing service error occurred, contact support.",
+                    innerException: serviceException);
+
+            var expectedDataSetProcessingServiveException =
+                new DataSetProcessingServiceException(
+                    message: "DataSet processing service error occurred, contact support.",
+                    innerException: failedDataSetProcessingServiceException);
+
+            this.dataSetServiceMock.Setup(service =>
+                service.AddDataSetAsync(inputDataSet))
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<DataSet> addDataSetTask =
+                this.dataSetProcessingService.AddDataSetAsync(inputDataSet);
+
+            DataSetProcessingServiceException actualException =
+                await Assert.ThrowsAsync<DataSetProcessingServiceException>(addDataSetTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDataSetProcessingServiveException);
+
+            this.dataSetServiceMock.Verify(service =>
+                service.AddDataSetAsync(inputDataSet),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedDataSetProcessingServiveException))),
                          Times.Once);
 
             this.dataSetServiceMock.VerifyNoOtherCalls();

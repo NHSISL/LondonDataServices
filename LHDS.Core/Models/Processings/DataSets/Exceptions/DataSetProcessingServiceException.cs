@@ -6,10 +6,10 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Processings.DataSets.Exceptions
 {
-    public class DataSetProcessingDependencyException : Xeption
+    public class DataSetProcessingServiceException : Xeption
     {
-        public DataSetProcessingDependencyException(string message, Xeption innerException) :
-            base(message, innerException)
+        public DataSetProcessingServiceException(string message, Xeption innerException)
+          : base(message, innerException)
         { }
     }
 }

@@ -34,6 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     Times.Once);
 
             this.dataSetServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

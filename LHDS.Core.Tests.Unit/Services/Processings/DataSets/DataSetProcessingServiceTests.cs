@@ -6,11 +6,13 @@ using System;
 using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.DataSets;
+using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Processings.DataSets;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
 {
@@ -27,11 +29,30 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                 loggingBroker: loggingBrokerMock.Object);
         }
 
+        public static TheoryData DependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DataSetValidationException(
+                    message: "DataSet validation errors occurred, please try again.", innerException),
+
+                new DataSetDependencyValidationException(
+                    message: "DataSet dependency validation occurred, please try again.", innerException)
+            };
+        }
+
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
 
         private static string GetRandomString(int length) =>
             new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();

@@ -13,7 +13,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
     public partial class DocumentProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldAddFileAsync()
+        public async Task ShouldAddDataSetAsync()
         {
             // Given
             var randomFileName = GetRandomString();

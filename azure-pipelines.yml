@@ -17,6 +17,9 @@ variables:
 
 pool: selfhosted-vmss-linux-lds-dev
 
+workspace:
+  clean: all
+
 steps:
 
   - task: UseDotNet@2
@@ -86,6 +89,7 @@ steps:
   - task: DotNetCoreCLI@2
     displayName: C# Acceptance Tests
     inputs:
+      azureSubscription: '$(azureServiceConnectionDev)'
       command: 'test'
       projects: '**/*.Tests.Acceptance.csproj'
       arguments: '--environment ASPNETCORE_ENVIRONMENT=ContinuousIntegration'

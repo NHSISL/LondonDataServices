@@ -14,5 +14,6 @@ namespace LHDS.Core.Services.Processings.DataSets
         ValueTask<DataSet> AddDataSetAsync(DataSet dataSet);
         IQueryable<DataSet> RetrieveAllDataSets();
         ValueTask<DataSet> RetrieveDataSetByIdAsync(Guid dataSetId);
+        ValueTask<DataSet> RetrieveOrAddDataSetAsync(DataSet dataSet);
     }
 }

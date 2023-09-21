@@ -27,6 +27,10 @@ namespace LHDS.Core.Services.Processings.DataSets
             {
                 throw CreateAndLogValidationException(nullDataSetException);
             }
+            catch (InvalidArgumentDataSetProcessingException invalidArgumentDataSetProcessingException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentDataSetProcessingException);
+            }
             catch (DataSetValidationException dataSetValidationException)
             {
                 throw CreateAndLogDependencyValidationException(dataSetValidationException);

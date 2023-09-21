@@ -70,7 +70,12 @@ namespace LHDS.Core.Services.Processings.DataSets
                 }
             });
 
-        public async ValueTask<DataSet> ModifyDataSetAsync(DataSet dataSet) =>
-            await this.dataSetService.ModifyDataSetAsync(dataSet);
+        public ValueTask<DataSet> ModifyDataSetAsync(DataSet dataSet) =>
+            TryCatch(async () =>
+            {
+                ValidateDataSet(dataSet);
+
+                return await this.dataSetService.ModifyDataSetAsync(dataSet);
+            });
     }
 }

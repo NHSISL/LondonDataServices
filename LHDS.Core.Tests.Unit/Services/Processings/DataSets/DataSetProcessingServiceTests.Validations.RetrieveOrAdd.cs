@@ -14,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
     public partial class DataSetProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionsOnModifyOrAddIfDataSetProcessingIsNullAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionsOnRetrieveOrAddIfDataSetProcessingIsNullAndLogItAsync()
         {
             // given
             DataSet nullDataSet = null;
@@ -29,46 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
 
             // when
             ValueTask<DataSet> AddDataSetTask =
-                this.dataSetProcessingService.ModifyOrAddDataSetAsync(nullDataSet);
-
-            DataSetProcessingValidationException actualDataSetProcessingValidationException =
-                await Assert.ThrowsAsync<DataSetProcessingValidationException>(AddDataSetTask.AsTask);
-
-            //then
-            actualDataSetProcessingValidationException.Should()
-                .BeEquivalentTo(expectedDataSetProcessingValidationException);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedDataSetProcessingValidationException))),
-                        Times.Once);
-
-            this.dataSetServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task ShouldThrowValidationExceptionsOnModifyOrAddIfDataSetDoesNotHaveValidIdAndLogItAsync()
-        {
-            // given
-            DataSet emptyDataSet = new DataSet();
-
-            var invalidArgumentDataSetProcessingException =
-                new InvalidArgumentDataSetProcessingException(
-                    message: "Invalid argument(s). Please correct the errors and try again.");
-
-            invalidArgumentDataSetProcessingException.AddData(
-                key: "Id",
-                values: "Id is required");
-
-            var expectedDataSetProcessingValidationException =
-                new DataSetProcessingValidationException(
-                    message: "DataSet processing validation error occurred, please try again.",
-                    innerException: invalidArgumentDataSetProcessingException);
-
-            // when
-            ValueTask<DataSet> AddDataSetTask =
-                this.dataSetProcessingService.ModifyOrAddDataSetAsync(emptyDataSet);
+                this.dataSetProcessingService.RetrieveOrAddDataSetAsync(nullDataSet);
 
             DataSetProcessingValidationException actualDataSetProcessingValidationException =
                 await Assert.ThrowsAsync<DataSetProcessingValidationException>(AddDataSetTask.AsTask);

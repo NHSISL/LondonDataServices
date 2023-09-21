@@ -53,7 +53,18 @@ namespace LHDS.Core.Services.Processings.DataSets
                     await this.dataSetService.AddDataSetAsync(dataSet);
             });
 
-        public ValueTask<DataSet> ModifyOrAddDataSetAsync(DataSet dataSet) =>
-            throw new NotImplementedException();
+        public async ValueTask<DataSet> ModifyOrAddDataSetAsync(DataSet dataSet)
+        {
+            var maybeDataSet = await this.dataSetService.RetrieveDataSetByIdAsync(dataSet.Id);
+
+            if (maybeDataSet != null)
+            {
+                return await this.dataSetService.ModifyDataSetAsync(dataSet);
+            }
+            else
+            {
+                return await this.dataSetService.AddDataSetAsync(dataSet);
+            }
+        }
     }
 }

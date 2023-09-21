@@ -14,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
     public partial class DataSetProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionsOnModifyOrAddIfDataSetProcessingIsNullAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionsOnRetrieveOrAddIfDataSetProcessingIsNullAndLogItAsync()
         {
             // given
             DataSet nullDataSet = null;
@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
 
             // when
             ValueTask<DataSet> AddDataSetTask =
-                this.dataSetProcessingService.ModifyOrAddDataSetAsync(nullDataSet);
+                this.dataSetProcessingService.RetrieveOrAddDataSetAsync(nullDataSet);
 
             DataSetProcessingValidationException actualDataSetProcessingValidationException =
                 await Assert.ThrowsAsync<DataSetProcessingValidationException>(AddDataSetTask.AsTask);

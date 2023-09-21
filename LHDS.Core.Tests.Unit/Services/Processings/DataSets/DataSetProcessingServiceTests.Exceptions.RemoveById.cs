@@ -55,5 +55,45 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
             this.dataSetServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyOnRemoveByIdIfDependencyErrorOccursAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+
+            var expectedDataSetProcessingDependencyException =
+                new DataSetProcessingDependencyException(
+                    message: "DataSet processing dependency error occurred, please try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.dataSetServiceMock.Setup(service =>
+                service.RemoveDataSetByIdAsync(someId))
+                    .Throws(dependencyException);
+
+            // when
+            ValueTask<DataSet> dataSetRemoveByIdTask =
+                this.dataSetProcessingService.RemoveDataSetByIdAsync(someId);
+
+            DataSetProcessingDependencyException actualException =
+                await Assert.ThrowsAsync<DataSetProcessingDependencyException>(dataSetRemoveByIdTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDataSetProcessingDependencyException);
+
+            this.dataSetServiceMock.Verify(service =>
+                service.RemoveDataSetByIdAsync(someId),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedDataSetProcessingDependencyException))),
+                         Times.Once);
+
+            this.dataSetServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

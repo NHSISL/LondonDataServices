@@ -52,5 +52,8 @@ namespace LHDS.Core.Services.Processings.DataSets
                 return await this.dataSetService.RetrieveDataSetByIdAsync(dataSet.Id) ??
                     await this.dataSetService.AddDataSetAsync(dataSet);
             });
+
+        public ValueTask<DataSet> ModifyOrAddDataSetAsync(DataSet dataSet) =>
+            throw new NotImplementedException();
     }
 }

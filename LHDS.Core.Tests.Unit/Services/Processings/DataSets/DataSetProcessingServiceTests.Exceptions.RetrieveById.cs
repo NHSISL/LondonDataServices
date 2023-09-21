@@ -97,7 +97,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnRetieveByIdIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAsync()
         {
             // given
             Guid someId = Guid.NewGuid();

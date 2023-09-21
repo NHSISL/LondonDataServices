@@ -57,6 +57,7 @@ namespace LHDS.Core.Services.Processings.DataSets
             TryCatch(async () =>
             {
                 ValidateDataSet(dataSet);
+                ValidateDataSetId(dataSet.Id);
                 var maybeDataSet = await this.dataSetService.RetrieveDataSetByIdAsync(dataSet.Id);
 
                 if (maybeDataSet != null)

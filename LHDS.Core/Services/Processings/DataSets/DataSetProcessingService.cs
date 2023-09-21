@@ -40,8 +40,7 @@ namespace LHDS.Core.Services.Processings.DataSets
             {
                 ValidateDataSetId(dataSetId);
 
-                return await this.dataSetService
-                    .RetrieveDataSetByIdAsync(dataSetId);
+                return await this.dataSetService.RetrieveDataSetByIdAsync(dataSetId);
             });
 
         public ValueTask<DataSet> RetrieveOrAddDataSetAsync(DataSet dataSet) =>
@@ -78,7 +77,12 @@ namespace LHDS.Core.Services.Processings.DataSets
                 return await this.dataSetService.ModifyDataSetAsync(dataSet);
             });
 
-        public async ValueTask<DataSet> RemoveDataSetByIdAsync(Guid dataSetId) =>
-            await this.dataSetService.RemoveDataSetByIdAsync(dataSetId);
+        public ValueTask<DataSet> RemoveDataSetByIdAsync(Guid dataSetId) =>
+            TryCatch(async () =>
+            {
+                ValidateDataSetId(dataSetId);
+
+                return await this.dataSetService.RemoveDataSetByIdAsync(dataSetId);
+            });
     }
 }

@@ -11,7 +11,7 @@ namespace LHDS.Core.Services.Processings.DataSets
 {
     public partial class DataSetProcessingService : IDataSetProcessingService
     {
-        private void ValidateDataSetOnAdd(DataSet dataSet)
+        private void ValidateDataSet(DataSet dataSet)
         {
             ValidateDataSetIsNotNull(dataSet);
         }

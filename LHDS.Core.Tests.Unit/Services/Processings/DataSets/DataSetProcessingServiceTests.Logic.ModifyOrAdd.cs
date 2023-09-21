@@ -50,5 +50,42 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
             this.dataSetServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldAddDataSetIfDataSetDoesNotExistsAsync()
+        {
+            // Given
+            DataSet randomDataSet = CreateRandomDataSet();
+            DataSet inputDataSet = randomDataSet;
+            DataSet storageDataSet = inputDataSet.DeepClone();
+            DataSet expectedDataSet = storageDataSet;
+
+            this.dataSetServiceMock.Setup(service =>
+                service.RetrieveDataSetByIdAsync(inputDataSet.Id))
+                    .ReturnsAsync(value: null);
+
+            this.dataSetServiceMock.Setup(service =>
+                service.AddDataSetAsync(inputDataSet))
+                    .ReturnsAsync(value: storageDataSet);
+
+            // When
+            await this.dataSetProcessingService.ModifyOrAddDataSetAsync(inputDataSet);
+
+            // Then
+            this.dataSetServiceMock.Verify(service =>
+                service.RetrieveDataSetByIdAsync(inputDataSet.Id),
+                    Times.Once);
+
+            this.dataSetServiceMock.Verify(service =>
+            service.AddDataSetAsync(inputDataSet),
+            Times.Once);
+
+            this.dataSetServiceMock.Verify(service =>
+                service.ModifyDataSetAsync(inputDataSet),
+                    Times.Never);
+
+            this.dataSetServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

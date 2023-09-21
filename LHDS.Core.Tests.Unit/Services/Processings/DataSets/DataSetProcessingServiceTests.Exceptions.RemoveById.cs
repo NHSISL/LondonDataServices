@@ -95,5 +95,50 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
             this.dataSetServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRemoveByIdIfServiceErrorOccursAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+
+            var serviceException = new Exception();
+
+            var failedDataSetProcessingServiceException =
+                new FailedDataSetProcessingServiceException(
+                    message: "Failed DataSet processing service error occurred, contact support.",
+                    innerException: serviceException);
+
+            var expectedDataSetProcessingServiveException =
+                new DataSetProcessingServiceException(
+                    message: "DataSet processing service error occurred, contact support.",
+                    innerException: failedDataSetProcessingServiceException);
+
+            this.dataSetServiceMock.Setup(service =>
+                service.RemoveDataSetByIdAsync(someId))
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<DataSet> addDataSetTask =
+                this.dataSetProcessingService.RemoveDataSetByIdAsync(someId);
+
+            DataSetProcessingServiceException actualException =
+                await Assert.ThrowsAsync<DataSetProcessingServiceException>(addDataSetTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDataSetProcessingServiveException);
+
+            this.dataSetServiceMock.Verify(service =>
+                service.RemoveDataSetByIdAsync(someId),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedDataSetProcessingServiveException))),
+                         Times.Once);
+
+            this.dataSetServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

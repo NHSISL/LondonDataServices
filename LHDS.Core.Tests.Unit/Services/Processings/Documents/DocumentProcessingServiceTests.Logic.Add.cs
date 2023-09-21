@@ -4,6 +4,7 @@
 
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 using LHDS.Core.Models.Foundations.Documents;
 using Moq;
 using Xunit;
@@ -25,10 +26,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                 DocumentData = randomfileData
             };
 
+            string expectedDocumentFileName = document.FileName;
+
             // When
-            await this.documentProcessingService.AddDocumentAsync(document);
+            string actualDocumentFileName = await this.documentProcessingService.AddDocumentAsync(document);
 
             // Then
+            actualDocumentFileName.Should().BeEquivalentTo(expectedDocumentFileName);
+
             this.documentServiceMock.Verify(service =>
                 service.AddDocumentAsync(It.Is<Document>(doc =>
                     doc.FileName == randomFileName && doc.DocumentData == randomfileData)),

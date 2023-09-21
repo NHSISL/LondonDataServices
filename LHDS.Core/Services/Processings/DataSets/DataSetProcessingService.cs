@@ -78,7 +78,7 @@ namespace LHDS.Core.Services.Processings.DataSets
                 return await this.dataSetService.ModifyDataSetAsync(dataSet);
             });
 
-        public ValueTask<DataSet> RemoveDataSetByIdAsync(Guid dataSetId) =>
-            throw new NotImplementedException();
+        public async ValueTask<DataSet> RemoveDataSetByIdAsync(Guid dataSetId) =>
+            await this.dataSetService.RemoveDataSetByIdAsync(dataSetId);
     }
 }

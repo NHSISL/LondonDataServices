@@ -27,7 +27,7 @@ namespace LHDS.Core.Services.Processings.DataSets
         public ValueTask<DataSet> AddDataSetAsync(DataSet dataSet) =>
             TryCatch(async () =>
             {
-                ValidateDataSetOnAdd(dataSet);
+                ValidateDataSet(dataSet);
 
                 return await this.dataSetService.AddDataSetAsync(dataSet);
             });
@@ -47,24 +47,26 @@ namespace LHDS.Core.Services.Processings.DataSets
         public ValueTask<DataSet> RetrieveOrAddDataSetAsync(DataSet dataSet) =>
             TryCatch(async () =>
             {
-                ValidateDataSetOnAdd(dataSet);
+                ValidateDataSet(dataSet);
 
                 return await this.dataSetService.RetrieveDataSetByIdAsync(dataSet.Id) ??
                     await this.dataSetService.AddDataSetAsync(dataSet);
             });
 
-        public async ValueTask<DataSet> ModifyOrAddDataSetAsync(DataSet dataSet)
-        {
-            var maybeDataSet = await this.dataSetService.RetrieveDataSetByIdAsync(dataSet.Id);
+        public ValueTask<DataSet> ModifyOrAddDataSetAsync(DataSet dataSet) =>
+            TryCatch(async () =>
+            {
+                ValidateDataSet(dataSet);
+                var maybeDataSet = await this.dataSetService.RetrieveDataSetByIdAsync(dataSet.Id);
 
-            if (maybeDataSet != null)
-            {
-                return await this.dataSetService.ModifyDataSetAsync(dataSet);
-            }
-            else
-            {
-                return await this.dataSetService.AddDataSetAsync(dataSet);
-            }
-        }
+                if (maybeDataSet != null)
+                {
+                    return await this.dataSetService.ModifyDataSetAsync(dataSet);
+                }
+                else
+                {
+                    return await this.dataSetService.AddDataSetAsync(dataSet);
+                }
+            });
     }
 }

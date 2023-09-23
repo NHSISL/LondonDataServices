@@ -81,7 +81,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 
             var expectedDocumentProcessingDependencyException =
                 new DocumentProcessingDependencyException(
-                    dependencyException.InnerException as Xeption);
+                    message: "Document processing dependency error occurred, please try again.",
+                    innerException: dependencyException.InnerException as Xeption);
 
             this.documentServiceMock.Setup(service =>
                 service.AddDocumentAsync(inputDocument))

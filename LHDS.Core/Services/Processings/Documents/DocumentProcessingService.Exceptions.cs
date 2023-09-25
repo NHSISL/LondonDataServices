@@ -174,7 +174,9 @@ namespace LHDS.Core.Services.Processings.Documents
         private DocumentProcessingServiceException CreateAndLogServiceException(Xeption exception)
         {
             var documentProcessingServiceException = new
-                DocumentProcessingServiceException(exception);
+                DocumentProcessingServiceException(
+                message: "Document processing service error occurred, contact support.",
+                exception);
 
             this.loggingBroker.LogError(documentProcessingServiceException);
 

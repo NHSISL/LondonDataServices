@@ -519,7 +519,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 new OptOutProcessingDependencyException(innerException),
                 new OptOutProcessingServiceException(innerException),
                 new DocumentProcessingDependencyException(exceptionMessage, innerException),
-                new DocumentProcessingServiceException(innerException),
+
+                new DocumentProcessingServiceException(
+                    message: "Document processing service error occurred, contact support.",
+                    innerException),
+
                 new MeshProcessingDependencyException(innerException),
                 new MeshProcessingServiceException(innerException),
                 new CsvMapperProcessingDependencyException(innerException),

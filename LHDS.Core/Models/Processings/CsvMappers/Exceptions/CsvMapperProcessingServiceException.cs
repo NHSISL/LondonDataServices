@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Processings.CsvMappers.Exceptions
 {
     public class CsvMapperProcessingServiceException : Xeption
     {
-        public CsvMapperProcessingServiceException(Xeption innerException)
+        public CsvMapperProcessingServiceException(string message, Xeption innerException)
           : base(message: "Csv Mapper processing service error occurred, contact support.",
                 innerException)
         { }

@@ -99,6 +99,7 @@ namespace LHDS.Core.Services.Processings.CsvMappers
         {
             var csvMapperProcessingDependencyValidationException =
                 new CsvMapperProcessingDependencyValidationException(
+                    message: "Csv Mapper processing dependency validation occurred, please try again.",
                     exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(csvMapperProcessingDependencyValidationException);
@@ -110,7 +111,9 @@ namespace LHDS.Core.Services.Processings.CsvMappers
             CreateAndLogDependencyException(Xeption exception)
         {
             var csvMapperProcessingDependencyException =
-                new CsvMapperProcessingDependencyException(exception.InnerException as Xeption);
+                new CsvMapperProcessingDependencyException(
+                    message: "Csv Mapper processing dependency validation occurred, please try again.",
+                    exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(csvMapperProcessingDependencyException);
 
@@ -119,7 +122,10 @@ namespace LHDS.Core.Services.Processings.CsvMappers
 
         private CsvMapperProcessingServiceException CreateAndLogServiceException(Xeption exception)
         {
-            var csvMapperProcessingServiceException = new CsvMapperProcessingServiceException(exception);
+            var csvMapperProcessingServiceException = new CsvMapperProcessingServiceException(
+                message: "Csv Mapper processing service error occurred, contact support.", 
+                exception);
+
             this.loggingBroker.LogError(csvMapperProcessingServiceException);
 
             return csvMapperProcessingServiceException;

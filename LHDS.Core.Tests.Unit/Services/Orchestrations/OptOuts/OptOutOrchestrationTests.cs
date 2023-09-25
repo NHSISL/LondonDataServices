@@ -484,7 +484,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException),
 
                 new CsvMapperProcessingValidationException(innerException),
-                new CsvMapperProcessingDependencyValidationException(innerException),
+
+                new CsvMapperProcessingDependencyValidationException(
+                    message: "Csv Mapper processing dependency validation occurred, please try again.",
+                    innerException),
             };
         }
 
@@ -541,8 +544,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     message: "Mesh processing service error occurred, contact support.",
                     innerException),
 
-                new CsvMapperProcessingDependencyException(innerException),
-                new CsvMapperProcessingServiceException(innerException)
+                new CsvMapperProcessingDependencyException(
+                    message: "Csv Mapper processing dependency validation occurred, please try again.",
+                    innerException),
+
+                new CsvMapperProcessingServiceException(
+                    message: "Csv Mapper processing service error occurred, contact support.",
+                    innerException)
             };
         }
 

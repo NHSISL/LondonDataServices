@@ -34,7 +34,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             string accept = invalidText;
 
             var invalidMeshProcessingArgumentException =
-            new InvalidMeshProcessingArgumentException();
+                new InvalidMeshProcessingArgumentException(
+                        message: "Invalid mesh processing argument. Please correct the errors and try again.");
 
             invalidMeshProcessingArgumentException.AddData(
                 key: "MexTo",
@@ -46,6 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             var expectedMeshProcessingValidationException =
             new MeshProcessingValidationException(
+                message: "Mesh processing validation errors occured, please try again",
                 innerException: invalidMeshProcessingArgumentException);
 
             // when
@@ -112,7 +114,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             string accept = "text/plain";
 
             var invalidMeshProcessingArgumentException =
-            new InvalidMeshProcessingArgumentException();
+            new InvalidMeshProcessingArgumentException(
+                    message: "Invalid mesh processing argument. Please correct the errors and try again.");
 
             invalidMeshProcessingArgumentException.AddData(
                 key: nameof(MeshMessage.FileContent),
@@ -120,6 +123,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             var expectedMeshProcessingValidationException =
             new MeshProcessingValidationException(
+                message: "Mesh processing validation errors occured, please try again",
                 innerException: invalidMeshProcessingArgumentException);
 
             // when
@@ -198,10 +202,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             MeshMessage nullTrackingMessage = null;
 
             var nullMeshProcessingException =
-               new NullMeshMessageProcessingException();
+               new NullMeshMessageProcessingException(
+                   message: "Mesh processing service exception. Message is Null.");
 
             var expectedMeshProcessingValidationException =
-                new MeshProcessingValidationException(nullMeshProcessingException);
+                new MeshProcessingValidationException(
+                    message: "Mesh processing validation errors occured, please try again",
+                    nullMeshProcessingException);
 
             this.meshServiceMock.Setup(service =>
                 service.SendMessageAsync(

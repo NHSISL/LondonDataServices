@@ -8,8 +8,8 @@ namespace LHDS.Core.Models.Processings.Mesh.Exceptions
 {
     public class MeshProcessingDependencyValidationException : Xeption
     {
-        public MeshProcessingDependencyValidationException(Xeption innerException)
-           : base(message: "Mesh processing dependency validation occurred, please try again.", innerException)
+        public MeshProcessingDependencyValidationException(string message, Xeption innerException)
+           : base(message, innerException)
         { }
     }
 }

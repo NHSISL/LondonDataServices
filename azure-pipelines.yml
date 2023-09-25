@@ -42,6 +42,7 @@ steps:
       script: |
         az login --service-principal --username $(ServicePrincipalId) --password $(ServicePrincipalKey)  --tenant $(TenantId)
         az account set --subscription "ISL-RandD"
+        az account show --output table
 
   - task: UseDotNet@2
     displayName: "Install .NET Core SDK"

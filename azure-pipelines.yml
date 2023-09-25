@@ -17,7 +17,32 @@ variables:
 
 pool: selfhosted-vmss-linux-lds-dev
 
+workspace:
+  clean: all
+
 steps:
+
+  - task: AzureCLI@2
+    displayName: "Add Service Connection to Environment"
+    inputs:
+      azureSubscription: '$(azureServiceConnectionDev)'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      addSpnToEnvironment: true
+      inlineScript: |
+        echo "##vso[task.setvariable variable=ServicePrincipalId;]$env:servicePrincipalId"
+        echo "##vso[task.setvariable variable=ServicePrincipalKey;]$env:servicePrincipalKey"
+        echo "##vso[task.setvariable variable=TenantId;]$env:tenantId"
+
+  - task: Bash@3
+    enabled: true
+    displayName: Azure Login
+    inputs:
+      targetType: inline
+      script: |
+        az login --service-principal --username $(ServicePrincipalId) --password $(ServicePrincipalKey)  --tenant $(TenantId)
+        az account set --subscription "ISL-RandD"
+        az account show --output table
 
   - task: UseDotNet@2
     displayName: "Install .NET Core SDK"
@@ -82,10 +107,58 @@ steps:
             -p 1433:1433 --name sql1 --hostname sql1 \
             -d \
             mcr.microsoft.com/mssql/server:2022-latest
-
+            
+  - task: Bash@3
+    enabled: true
+    displayName: Docker SQL Connection Test
+    inputs:
+      targetType: inline
+      script: |
+        CONTAINER_NAME="sql1"
+        # Set the maximum number of retries
+        MAX_RETRIES=10
+        # Set the retry interval in seconds
+        RETRY_INTERVAL=5
+        # Initialize the retry counter
+        RETRY_COUNT=0
+        
+        while [[ $RETRY_COUNT -lt $MAX_RETRIES ]]; do
+        
+          # Check if the SQL container is running
+          container_status=$(sudo docker inspect -f '{{.State.Status}}' $CONTAINER_NAME)
+        
+          if [[ $container_status != "running" ]]; then
+            # The SQL container is not running
+            echo "SQL Server container is not running. Retrying...(retry $RETRY_COUNT/$MAX_RETRIES)"
+            sleep $RETRY_INTERVAL
+            ((RETRY_COUNT++))
+            continue
+          fi
+        
+          # The SQL container is running
+        
+          # Wait for the SQL container to be ready
+          if [[ "$(sudo docker logs $CONTAINER_NAME | grep 'SQL Server is now ready for client connections' | wc -l)" -eq 0 ]]; then
+            echo "Waiting for SQL Server log entry stating its ready for connections...(retry $RETRY_COUNT/$MAX_RETRIES)"
+            sleep $RETRY_INTERVAL
+            ((RETRY_COUNT++))
+          else
+            # The SQL container is ready
+            echo "SQL Server container is ready!"
+            break
+          fi
+        
+        done
+        
+        # If the retry counter is equal to the maximum number of retries, then the container failed to start
+        if [[ $RETRY_COUNT -eq $MAX_RETRIES ]]; then
+          echo "SQL Server container is not ready after $MAX_RETRIES retries"
+          exit 1
+        fi
+        
   - task: DotNetCoreCLI@2
     displayName: C# Acceptance Tests
-    inputs:
+    inputs: 
       command: 'test'
       projects: '**/*.Tests.Acceptance.csproj'
       arguments: '--environment ASPNETCORE_ENVIRONMENT=ContinuousIntegration'

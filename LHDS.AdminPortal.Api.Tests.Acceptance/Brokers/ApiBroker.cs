@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Configuration;
 using System.Net.Http;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Cryptography.Gpg;
@@ -10,6 +11,7 @@ using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RESTFulSense.Clients;
 
@@ -25,6 +27,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         internal IIngestionTrackingService ingestionTrackingService;
         internal IDownloadService downloadService;
         internal ICryptographyProvider cryptographyProvider;
+        internal IConfiguration configuration;
 
         public ApiBroker()
         {
@@ -41,6 +44,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 
             this.cryptographyProvider =
                 (GpgCryptographyProvider)webApplicationFactory.Services.GetService<ICryptographyProvider>();
+
+            this.configuration = this.webApplicationFactory.Services.GetService<IConfiguration>();
         }
     }
 }

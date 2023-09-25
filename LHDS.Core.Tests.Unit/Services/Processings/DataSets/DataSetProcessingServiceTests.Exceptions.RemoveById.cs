@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveByIdIfErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnRemoveByIdIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -29,22 +29,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.dataSetServiceMock.Setup(service =>
-                service.RetrieveDataSetByIdAsync(someId))
+                service.RemoveDataSetByIdAsync(someId))
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask<DataSet> dataSetRetrieveByIdTask =
-                this.dataSetProcessingService.RetrieveDataSetByIdAsync(someId);
+            ValueTask<DataSet> dataSetRemoveByIdTask =
+                this.dataSetProcessingService.RemoveDataSetByIdAsync(someId);
 
             DataSetProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<DataSetProcessingDependencyValidationException>(
-                    dataSetRetrieveByIdTask.AsTask);
+                    dataSetRemoveByIdTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetProcessingDependencyValidationException);
 
             this.dataSetServiceMock.Verify(service =>
-                service.RetrieveDataSetByIdAsync(someId),
+                service.RemoveDataSetByIdAsync(someId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyOnRetrieveByIdIfDependencyErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyOnRemoveByIdIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
@@ -70,21 +70,21 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     innerException: dependencyException.InnerException as Xeption);
 
             this.dataSetServiceMock.Setup(service =>
-                service.RetrieveDataSetByIdAsync(someId))
+                service.RemoveDataSetByIdAsync(someId))
                     .Throws(dependencyException);
 
             // when
-            ValueTask<DataSet> dataSetRetrieveByIdTask =
-                this.dataSetProcessingService.RetrieveDataSetByIdAsync(someId);
+            ValueTask<DataSet> dataSetRemoveByIdTask =
+                this.dataSetProcessingService.RemoveDataSetByIdAsync(someId);
 
             DataSetProcessingDependencyException actualException =
-                await Assert.ThrowsAsync<DataSetProcessingDependencyException>(dataSetRetrieveByIdTask.AsTask);
+                await Assert.ThrowsAsync<DataSetProcessingDependencyException>(dataSetRemoveByIdTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetProcessingDependencyException);
 
             this.dataSetServiceMock.Verify(service =>
-                service.RetrieveDataSetByIdAsync(someId),
+                service.RemoveDataSetByIdAsync(someId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -97,7 +97,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnRemoveByIdIfServiceErrorOccursAsync()
         {
             // given
             Guid someId = Guid.NewGuid();
@@ -115,12 +115,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                     innerException: failedDataSetProcessingServiceException);
 
             this.dataSetServiceMock.Setup(service =>
-                service.RetrieveDataSetByIdAsync(someId))
+                service.RemoveDataSetByIdAsync(someId))
                     .Throws(serviceException);
 
             // when
             ValueTask<DataSet> addDataSetTask =
-                this.dataSetProcessingService.RetrieveDataSetByIdAsync(someId);
+                this.dataSetProcessingService.RemoveDataSetByIdAsync(someId);
 
             DataSetProcessingServiceException actualException =
                 await Assert.ThrowsAsync<DataSetProcessingServiceException>(addDataSetTask.AsTask);
@@ -129,7 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
             actualException.Should().BeEquivalentTo(expectedDataSetProcessingServiveException);
 
             this.dataSetServiceMock.Verify(service =>
-                service.RetrieveDataSetByIdAsync(someId),
+                service.RemoveDataSetByIdAsync(someId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

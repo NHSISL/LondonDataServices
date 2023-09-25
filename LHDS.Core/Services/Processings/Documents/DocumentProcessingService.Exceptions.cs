@@ -150,6 +150,7 @@ namespace LHDS.Core.Services.Processings.Documents
         {
             var documentProcessingDependencyValidationException =
                 new DocumentProcessingDependencyValidationException(
+                    message: "Document processing dependency validation occurred, please try again.",
                     exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(documentProcessingDependencyValidationException);
@@ -161,7 +162,9 @@ namespace LHDS.Core.Services.Processings.Documents
             CreateAndLogDependencyException(Xeption exception)
         {
             var documentProcessingDependencyException =
-                new DocumentProcessingDependencyException(exception.InnerException as Xeption);
+                new DocumentProcessingDependencyException(
+                    message: "Document processing dependency error occurred, please try again.",
+                    exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(documentProcessingDependencyException);
 

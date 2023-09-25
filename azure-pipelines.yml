@@ -22,6 +22,18 @@ workspace:
 
 steps:
 
+  - task: AzureCLI@2
+  displayName: "Add Service Connection to Environment"
+  inputs:
+    azureSubscription: '$(azureServiceConnectionDev)'
+    scriptType: pscore
+    scriptLocation: inlineScript
+    addSpnToEnvironment: true
+    inlineScript: |
+      echo "##vso[task.setvariable variable=ServicePrincipalId;]$env:servicePrincipalId"
+      echo "##vso[task.setvariable variable=ServicePrincipalKey;]$env:servicePrincipalKey"
+      echo "##vso[task.setvariable variable=TenantId;]$env:tenantId"
+
   - task: UseDotNet@2
     displayName: "Install .NET Core SDK"
     inputs:
@@ -136,8 +148,7 @@ steps:
         
   - task: DotNetCoreCLI@2
     displayName: C# Acceptance Tests
-    inputs:
-      azureSubscription: '$(azureServiceConnectionDev)'
+    inputs: 
       command: 'test'
       projects: '**/*.Tests.Acceptance.csproj'
       arguments: '--environment ASPNETCORE_ENVIRONMENT=ContinuousIntegration'

@@ -22,15 +22,13 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
         public string ApiBaseUrl { get; } = $"https://localhost:{GetRandomUnusedPort()}";
         public string FrontendBaseUrl { get; } = $"https://localhost:{GetRandomUnusedPort()}";
 
-
-
         public WebServerBroker()
         {
             apiHost = Api.Program
                 .CreateHostBuilder(new string[0])
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Api.Startup>();
+                    //webBuilder.UseStartup<Api.Startup>();
                     webBuilder.UseUrls(ApiBaseUrl);
                 })
                 .ConfigureServices(configure => { })
@@ -50,12 +48,13 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
         public async Task InitializeAsync()
         {
             playwright = await Playwright.CreateAsync();
-            browser = await playwright.Chromium.LaunchAsync();
+            var chrome = playwright.Chromium;
 
-            // Browser = await Playwright.Chromium.LaunchAsync(new LaunchOptions
-            // {
-            //     Headless = false
-            // });
+            //browser = await chrome.LaunchAsync(
+            //    new()
+            //    {
+            //        Headless = false
+            //    });
 
             await Task.WhenAll(apiHost.StartAsync(), frontendHost.StartAsync());
         }

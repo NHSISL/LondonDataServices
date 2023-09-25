@@ -467,7 +467,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 new OptOutProcessingValidationException(innerException),
                 new OptOutProcessingDependencyValidationException(innerException),
                 new DocumentProcessingValidationException(innerException),
-                new DocumentProcessingDependencyValidationException(innerException),
+
+                new DocumentProcessingDependencyValidationException(
+                    message: "Document processing dependency validation occurred, please try again.",
+                    innerException),
+
                 new MeshProcessingValidationException(innerException),
                 new MeshProcessingDependencyValidationException(innerException),
                 new CsvMapperProcessingValidationException(innerException),
@@ -514,7 +518,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             {
                 new OptOutProcessingDependencyException(innerException),
                 new OptOutProcessingServiceException(innerException),
-                new DocumentProcessingDependencyException(innerException),
+                new DocumentProcessingDependencyException(exceptionMessage, innerException),
                 new DocumentProcessingServiceException(innerException),
                 new MeshProcessingDependencyException(innerException),
                 new MeshProcessingServiceException(innerException),

@@ -25,6 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             var expectedMeshProcessingDependencyValidationException =
                 new MeshProcessingDependencyValidationException(
+                    message: "Mesh processing dependency validation occurred, please try again.",
                     dependencyValidationException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>
@@ -64,6 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             var expectedMeshProcessingDependencyException =
                 new MeshProcessingDependencyException(
+                    message: "Mesh processing dependency error occurred, contact support.",
                     dependencyException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>
@@ -102,10 +104,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             var serviceException = new Exception();
 
             var failedMeshProcessingServiceException =
-                new FailedMeshProcessingServiceException(serviceException);
+                new FailedMeshProcessingServiceException(
+                    message: "Failed mesh processing service error occurred, contact support.",
+                    serviceException);
 
             var expectedMeshProcessingServiveException =
                 new MeshProcessingServiceException(
+                    message: "Mesh processing service error occurred, contact support.",
                     failedMeshProcessingServiceException);
 
             this.meshServiceMock.Setup(service =>

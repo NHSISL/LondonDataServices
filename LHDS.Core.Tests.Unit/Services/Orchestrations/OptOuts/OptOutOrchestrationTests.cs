@@ -475,8 +475,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     message: "Document processing dependency validation occurred, please try again.",
                     innerException),
 
-                new MeshProcessingValidationException(innerException),
-                new MeshProcessingDependencyValidationException(innerException),
+                new MeshProcessingValidationException(
+                    message: "Mesh processing validation errors occured, please try again",
+                    innerException),
+
+                new MeshProcessingDependencyValidationException(
+                    message: "Mesh processing dependency validation occurred, please try again.",
+                    innerException),
+
                 new CsvMapperProcessingValidationException(innerException),
                 new CsvMapperProcessingDependencyValidationException(innerException),
             };
@@ -527,8 +533,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     message: "Document processing service error occurred, contact support.",
                     innerException),
 
-                new MeshProcessingDependencyException(innerException),
-                new MeshProcessingServiceException(innerException),
+                new MeshProcessingDependencyException(
+                        message: "Mesh processing dependency error occurred, contact support.",
+                        innerException),
+
+                new MeshProcessingServiceException(
+                    message: "Mesh processing service error occurred, contact support.",
+                    innerException),
+
                 new CsvMapperProcessingDependencyException(innerException),
                 new CsvMapperProcessingServiceException(innerException)
             };

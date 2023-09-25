@@ -25,7 +25,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             randomMessage.MessageId = invalidText;
 
             var invalidMeshProcessingArgumentException =
-                new InvalidMeshProcessingArgumentException();
+                new InvalidMeshProcessingArgumentException(
+                        message: "Invalid mesh processing argument. Please correct the errors and try again.");
 
             invalidMeshProcessingArgumentException.AddData(
                 key: nameof(randomMessage.MessageId),
@@ -33,6 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             var expectedMeshProcessingValidationException =
             new MeshProcessingValidationException(
+                message: "Mesh processing validation errors occured, please try again",
                 innerException: invalidMeshProcessingArgumentException);
 
             // when

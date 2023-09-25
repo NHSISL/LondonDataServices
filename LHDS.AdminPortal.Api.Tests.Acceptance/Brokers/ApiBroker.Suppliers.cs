@@ -56,7 +56,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 
         public async ValueTask<List<Supplier>> FindSupplierByIdAsync(Guid supplierId) =>
           await this.apiFactoryClient.GetContentAsync<List<Supplier>>(
-              $"{SuppliersRelativeUrl}/?$filter=Id eq {supplierId}");
+              $"{suppliersRelativeUrl}/?$filter=Id eq {supplierId}");
 
         public async ValueTask<Supplier> PutSupplierAsync(Supplier supplier) =>
             await this.apiFactoryClient.PutContentAsync(suppliersRelativeUrl, supplier);

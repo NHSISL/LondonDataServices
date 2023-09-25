@@ -466,7 +466,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             {
                 new OptOutProcessingValidationException(innerException),
                 new OptOutProcessingDependencyValidationException(innerException),
-                new DocumentProcessingValidationException(innerException),
+
+                new DocumentProcessingValidationException(
+                    message: "Document processing validation errors occured, please try again",
+                    innerException),
 
                 new DocumentProcessingDependencyValidationException(
                     message: "Document processing dependency validation occurred, please try again.",

@@ -50,7 +50,9 @@ namespace LHDS.Core.Services.Processings.Documents
             catch (Exception exception)
             {
                 var failedDocumentProcessingServiceException =
-                    new FailedDocumentProcessingServiceException(exception);
+                    new FailedDocumentProcessingServiceException(
+                        message: "Failed document processing service error occurred, contact support.",
+                        exception);
 
                 throw CreateAndLogServiceException(failedDocumentProcessingServiceException);
             }
@@ -85,7 +87,9 @@ namespace LHDS.Core.Services.Processings.Documents
             catch (Exception exception)
             {
                 var failedDocumentProcessingServiceException =
-                    new FailedDocumentProcessingServiceException(exception);
+                    new FailedDocumentProcessingServiceException(
+                        message: "Failed document processing service error occurred, contact support.",
+                        exception);
 
                 throw CreateAndLogServiceException(failedDocumentProcessingServiceException);
             }
@@ -128,7 +132,9 @@ namespace LHDS.Core.Services.Processings.Documents
             catch (Exception exception)
             {
                 var failedDocumentProcessingServiceException =
-                    new FailedDocumentProcessingServiceException(exception);
+                    new FailedDocumentProcessingServiceException(
+                        message: "Failed document processing service error occurred, contact support.",
+                        exception);
 
                 throw CreateAndLogServiceException(failedDocumentProcessingServiceException);
             }
@@ -138,7 +144,9 @@ namespace LHDS.Core.Services.Processings.Documents
             CreateAndLogValidationException(Xeption exception)
         {
             var documentProcessingValidationExceptionn =
-                new DocumentProcessingValidationException(exception);
+                new DocumentProcessingValidationException(
+                    message: "Document processing validation errors occured, please try again",
+                    exception);
 
             this.loggingBroker.LogError(documentProcessingValidationExceptionn);
 

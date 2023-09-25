@@ -129,7 +129,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             var serviceException = new Exception();
 
             var failedDocumentProcessingServiceException =
-                new FailedDocumentProcessingServiceException(serviceException);
+                new FailedDocumentProcessingServiceException(
+                    message: "Failed document processing service error occurred, contact support.", 
+                    serviceException);
 
             var expectedDocumentProcessingServiveException =
                 new DocumentProcessingServiceException(

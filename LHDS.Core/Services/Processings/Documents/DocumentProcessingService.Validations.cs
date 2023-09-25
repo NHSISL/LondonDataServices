@@ -36,7 +36,8 @@ namespace LHDS.Core.Services.Processings.Documents
         {
             if (document is null)
             {
-                throw new NullDocumentProcessingException();
+                throw new NullDocumentProcessingException(
+                    message: $"Document processing is Null");
             }
         }
 
@@ -50,13 +51,15 @@ namespace LHDS.Core.Services.Processings.Documents
         {
             if (fileName is null)
             {
-                throw new NullDocumentProcessingFileNameException();
+                throw new NullDocumentProcessingFileNameException(
+                    message: "Null document processing file name. Please correct the errors and try again.");
             }
         }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidDocumentProcessingException = new InvalidDocumentProcessingFileNameException();
+            var invalidDocumentProcessingException = new InvalidDocumentProcessingFileNameException(
+                message: "Invalid document processing file name. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

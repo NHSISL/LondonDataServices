@@ -22,21 +22,13 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages.Home
         public async Task VerifyHomePageTitle()
         {
             // https://github.com/isaacrlevin/.NET-Conf-Demos/blob/56b6519d50124f4f3fe2e24f0fdf8231e292838b/Tests/WebServerTests.cs
-
-            // using var playwright = await Playwright.CreateAsync();
-            //await using var browser = await playwright.Chromium.LaunchAsync();
-            // var context = await browser.NewContextAsync();
-            // var page = await context.NewPageAsync();
-            //await page.GotoAsync("https://playwright.dev/dotnet");
-
             // given
             await using var context = await broker.browser.NewContextAsync(new() { IgnoreHTTPSErrors = true });
             var page = await context.NewPageAsync();
             var expectedTitle = "London Data Service Admin Portal";
 
             //// when
-            await page.GotoAsync(broker.FrontendBaseUrl);
-
+            var response = await page.GotoAsync(broker.FrontendBaseUrl);
             var actualTitle = await page.TitleAsync();
 
             // then

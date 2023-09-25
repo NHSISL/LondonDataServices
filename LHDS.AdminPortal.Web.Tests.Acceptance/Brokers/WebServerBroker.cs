@@ -2,6 +2,15 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Playwright;
+using Xunit;
+
 namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
 {
     public class WebServerBroker : IAsyncLifetime, IDisposable
@@ -37,14 +46,13 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
         public async Task InitializeAsync()
         {
             playwright = await Playwright.CreateAsync();
-            //var chrome = playwright.Chromium;
-            browser = await playwright.Chromium.LaunchAsync();
+            //browser = await playwright.Chromium.LaunchAsync();
 
-            //browser = await chrome.LaunchAsync(
-            //    new()
-            //    {
-            //        Headless = false
-            //    });
+            browser = await playwright.Chromium.LaunchAsync(
+                new()
+                {
+                    Headless = true
+                });
 
             await Task.WhenAll(apiHost.StartAsync(), frontendHost.StartAsync());
         }

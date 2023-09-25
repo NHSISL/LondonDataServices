@@ -20,10 +20,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             Document nullDocument = null;
 
             var nullDocumentProcessingException =
-                new NullDocumentProcessingException();
+                new NullDocumentProcessingException(
+                    message: $"Document processing is Null");
 
             var expectedDocumentProcessingValidationException =
-                new DocumentProcessingValidationException(nullDocumentProcessingException);
+                new DocumentProcessingValidationException(
+                    message: "Document processing validation errors occured, please try again", 
+                    nullDocumentProcessingException);
 
             // when
             ValueTask<string> AddDocumentTask =

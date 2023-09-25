@@ -27,7 +27,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public async ValueTask<ActionResult<StringContent>> GetLandingDocumentByFileNameAsync(string fileName)
+        public async ValueTask<ActionResult<string>> GetLandingDocumentByFileNameAsync(string fileName)
         {
             try
             {

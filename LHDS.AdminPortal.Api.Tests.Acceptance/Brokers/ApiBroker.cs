@@ -4,7 +4,10 @@
 
 using System.Configuration;
 using System.Net.Http;
+using LHDS.Core.Providers.Cryptography;
+using LHDS.Core.Providers.Cryptography.Gpg;
 using LHDS.Core.Services.Foundations.Audits;
+using LHDS.Core.Services.Foundations.Documents;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,14 +21,21 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         private readonly HttpClient httpClient;
         private readonly IRESTFulApiFactoryClient apiFactoryClient;
         internal IAuditService auditService;
+        internal IDocumentService documentService;
+        internal ICryptographyProvider cryptographyProvider;
         internal IConfiguration configuration;
 
         public ApiBroker()
         {
             this.webApplicationFactory = new WebApplicationFactory<Startup>();
             this.auditService = (AuditService)webApplicationFactory.Services.GetService<IAuditService>();
+            this.documentService = (DocumentService)webApplicationFactory.Services.GetService<IDocumentService>();
             this.httpClient = this.webApplicationFactory.CreateClient();
             this.apiFactoryClient = new RESTFulApiFactoryClient(this.httpClient);
+
+            this.cryptographyProvider = 
+                (GpgCryptographyProvider)webApplicationFactory.Services.GetService<ICryptographyProvider>();
+
             this.configuration = this.webApplicationFactory.Services.GetService<IConfiguration>();
         }
     }

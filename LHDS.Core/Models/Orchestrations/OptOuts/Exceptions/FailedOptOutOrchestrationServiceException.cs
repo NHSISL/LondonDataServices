@@ -9,7 +9,8 @@ namespace LHDS.Core.Models.Orchestrations.OptOuts.Exceptions
 {
     public class FailedOptOutOrchestrationServiceException : Xeption
     {
-        public FailedOptOutOrchestrationServiceException(Exception innerException)
-            : base(message: "Failed opt out orchestration service occurred, please contact support", innerException) { }
+        public FailedOptOutOrchestrationServiceException(string message, Exception innerException)
+            : base(message, innerException) 
+        { }
     }
 }

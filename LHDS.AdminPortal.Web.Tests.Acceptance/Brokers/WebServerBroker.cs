@@ -52,7 +52,6 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
                 new()
                 {
                     Headless = false,
-                    Timeout = 50000,
                     SlowMo = 500
                 });
 

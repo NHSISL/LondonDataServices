@@ -59,8 +59,6 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages.Home
                 var response = await page.GotoAsync(broker.FrontendBaseUrl);
                 //var response = await page.GotoAsync("https://localhost:44405/");
 
-                var response1 = await page.WaitForResponseAsync("**/*");
-
                 var actualTitle = await page.TitleAsync();
 
                 // then

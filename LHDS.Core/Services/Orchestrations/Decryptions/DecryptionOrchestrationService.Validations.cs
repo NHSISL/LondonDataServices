@@ -21,7 +21,9 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidArgumentDecryptionOrchestrationException = new InvalidArgumentDecryptionOrchestrationException();
+            var invalidArgumentDecryptionOrchestrationException = 
+                new InvalidArgumentDecryptionOrchestrationException(
+                    message: "Invalid decryption orchestration argument(s), please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

@@ -8,10 +8,8 @@ namespace LHDS.Core.Models.Orchestrations.Downloads.Exceptions
 {
     public class DownloadOrchestrationDependencyException : Xeption
     {
-        public DownloadOrchestrationDependencyException(Xeption innerException)
-         : base(
-                message: "Download orchestration dependency error occurred, fix the errors and try again.",
-                innerException)
+        public DownloadOrchestrationDependencyException(string message, Xeption innerException)
+         : base(message, innerException)
         { }
     }
 }

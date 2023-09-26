@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             var expectedDependencyException =
                 new DecryptionOrchestrationDependencyValidationException(
                     message: "Decryption orchestration dependency validation error occurred, fix the errors and try again.",
-                    dependancyValidationException.InnerException as Xeption);
+                    innerException: dependancyValidationException.InnerException as Xeption);
 
             this.ingestionTrackingServiceMock.Setup(service =>
                service.RetrieveIngestionTrackingByFileNameAsync(randomFileName))
@@ -68,7 +68,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             var expectedDependencyException =
                 new DecryptionOrchestrationDependencyException(
                     message: "Decryption orchestration dependency error occurred, fix the errors and try again.",
-                    dependancyException.InnerException as Xeption);
+                    innerException: dependancyException.InnerException as Xeption);
 
             this.ingestionTrackingServiceMock.Setup(service =>
               service.RetrieveIngestionTrackingByFileNameAsync(randomFileName))
@@ -108,12 +108,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             var failedDecryptionOrchestrationServiceException =
                 new FailedDecryptionOrchestrationServiceException(
                     message: "Failed Decryption orchestration service occurred, please contact support",
-                    serviceException);
+                    innerException: serviceException);
 
             var expectedDecryptionOrchestrationServiceException =
                 new DecryptionOrchestrationServiceException(
                     message: "Decryption orchestration service error occurred, contact support.",
-                    failedDecryptionOrchestrationServiceException);
+                    innerException: failedDecryptionOrchestrationServiceException);
 
             this.ingestionTrackingServiceMock.Setup(service =>
                 service.RetrieveIngestionTrackingByFileNameAsync(randomFileName))

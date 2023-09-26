@@ -96,7 +96,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 var failedDecryptServiceException =
                     new FailedDecryptionOrchestrationServiceException(
                         message: "Failed Decryption orchestration service occurred, please contact support",
-                        exception);
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedDecryptServiceException);
             }
@@ -107,7 +107,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             var decryptionOrchestrationValidationException =
                 new DecryptionOrchestrationValidationException(
                     message: "Decryption orchestration validation errors occurred, please try again.",
-                    exception);
+                    innerException: exception);
 
             this.loggingBroker.LogError(decryptionOrchestrationValidationException);
 
@@ -120,7 +120,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             var decryptionOrchestrationDependencyValidationException =
                 new DecryptionOrchestrationDependencyValidationException(
                     message: "Decryption orchestration dependency validation error occurred, fix the errors and try again.",
-                    exception.InnerException as Xeption);
+                    innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(decryptionOrchestrationDependencyValidationException);
 
@@ -133,7 +133,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             var decryptionOrchestrationDependencyException =
                 new DecryptionOrchestrationDependencyException(
                     message: "Decryption orchestration dependency error occurred, fix the errors and try again.",
-                    exception.InnerException as Xeption);
+                    innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(decryptionOrchestrationDependencyException);
 
@@ -145,7 +145,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             var decryptionServiceException =
                 new DecryptionOrchestrationServiceException(
                     message: "Decryption orchestration service error occurred, contact support.",
-                    exception);
+                    innerException: exception);
 
             this.loggingBroker.LogError(decryptionServiceException);
 

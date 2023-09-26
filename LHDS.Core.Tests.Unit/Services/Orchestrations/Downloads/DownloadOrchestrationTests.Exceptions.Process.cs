@@ -23,6 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             // given
             var expectedDependencyException =
                 new DownloadOrchestrationDependencyValidationException(
+                    message: "Download orchestration dependency validation error occurred, fix the errors and try again.",
                     dependancyValidationException.InnerException as Xeption);
 
             this.downloadServiceMock.Setup(service =>
@@ -61,7 +62,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             // given
             var expectedDependencyException =
                 new DownloadOrchestrationDependencyException(
-                    dependancyException.InnerException as Xeption);
+                    message: "Download orchestration dependency error occurred, fix the errors and try again.",
+                    innerException: dependancyException.InnerException as Xeption);
 
             this.downloadServiceMock.Setup(service =>
               service.RetrieveListOfDocumentsToProcessAsync())
@@ -98,10 +100,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             var serviceException = new Exception();
 
             var failedDownloadOrchestrationServiceException =
-                new FailedDownloadOrchestrationServiceException(serviceException);
+                new FailedDownloadOrchestrationServiceException(
+                    message: "Failed download orchestration service occurred, please contact support",
+                    serviceException);
 
             var expectedDownloadOrchestrationServiceException =
-                new DownloadOrchestrationServiceException(failedDownloadOrchestrationServiceException);
+                new DownloadOrchestrationServiceException(
+                    message: "Download orchestration service error occurred, contact support.",
+                    failedDownloadOrchestrationServiceException);
 
             this.downloadServiceMock.Setup(service =>
                 service.RetrieveListOfDocumentsToProcessAsync())
@@ -141,6 +147,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
             var expectedDependencyException =
                 new DownloadOrchestrationDependencyValidationException(
+                    message: "Download orchestration dependency validation error occurred, fix the errors and try again.",
                     dependancyValidationException.InnerException as Xeption);
 
             this.downloadServiceMock.Setup(service =>
@@ -181,7 +188,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
             var expectedDependencyException =
                 new DownloadOrchestrationDependencyException(
-                    dependancyException.InnerException as Xeption);
+                    message: "Download orchestration dependency error occurred, fix the errors and try again.",
+                    innerException: dependancyException.InnerException as Xeption);
 
             this.downloadServiceMock.Setup(service =>
                 service.RetrieveDownloadByFileNameAsync(fileName))
@@ -220,10 +228,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             var serviceException = new Exception();
 
             var failedDownloadOrchestrationServiceException =
-                new FailedDownloadOrchestrationServiceException(serviceException);
+                new FailedDownloadOrchestrationServiceException(
+                    message: "Failed download orchestration service occurred, please contact support",
+                    serviceException);
 
             var expectedDownloadOrchestrationServiceException =
-                new DownloadOrchestrationServiceException(failedDownloadOrchestrationServiceException);
+                new DownloadOrchestrationServiceException(
+                    message: "Download orchestration service error occurred, contact support.",
+                    failedDownloadOrchestrationServiceException);
 
             this.downloadServiceMock.Setup(service =>
                 service.RetrieveDownloadByFileNameAsync(fileName))

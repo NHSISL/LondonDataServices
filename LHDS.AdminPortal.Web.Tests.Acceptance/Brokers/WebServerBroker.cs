@@ -21,6 +21,8 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
         public IBrowser browser { get; private set; }
         public string ApiBaseUrl { get; } = $"https://localhost:{GetRandomUnusedPort()}";
         public string FrontendBaseUrl { get; } = $"https://localhost:{GetRandomUnusedPort()}";
+        public string FrontendProxyBaseUrl { get; } = $"https://localhost:44405/";
+
 
         public WebServerBroker()
         {
@@ -28,7 +30,7 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
                 .CreateHostBuilder(new string[0])
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    //webBuilder.UseStartup<Api.Startup>();
+                    webBuilder.CaptureStartupErrors(true);
                     webBuilder.UseUrls(ApiBaseUrl);
                 })
                 .Build();
@@ -37,7 +39,7 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
                 .CreateHostBuilder(new string[0])
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Web.Startup>();
+                    webBuilder.CaptureStartupErrors(true);
                     webBuilder.UseUrls(FrontendBaseUrl);
                 })
                 .Build();
@@ -46,8 +48,6 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
         public async Task InitializeAsync()
         {
             playwright = await Playwright.CreateAsync();
-            //browser = await playwright.Chromium.LaunchAsync();
-
             browser = await playwright.Chromium.LaunchAsync(
                 new()
                 {

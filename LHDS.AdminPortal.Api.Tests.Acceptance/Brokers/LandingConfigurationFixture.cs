@@ -24,5 +24,4 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
             LandingConfigOptions = Options.Create(landingConfig);
         }
     }
-
 }

@@ -21,7 +21,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             var randomString = GetRandomString();
 
             var invalidArgumentRetieveOptOutStatusOrchestrationException =
-                new InvalidArgumentOptOutOrchestrationException();
+                new InvalidArgumentOptOutOrchestrationException(
+                    message: "Invalid Retrieve Opt Out Status orchestration argument(s), please correct the errors and try again.");
 
             invalidArgumentRetieveOptOutStatusOrchestrationException.AddData(
                key: "OptOutFile",
@@ -65,7 +66,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             byte[] randomBytes = Encoding.UTF8.GetBytes(randomString);
 
             var invalidArgumentRetieveOptOutStatusOrchestrationException =
-                new InvalidArgumentOptOutOrchestrationException();
+                new InvalidArgumentOptOutOrchestrationException(
+                    message: "Invalid Retrieve Opt Out Status orchestration argument(s), please correct the errors and try again.");
 
             invalidArgumentRetieveOptOutStatusOrchestrationException.AddData(
                key: "RequestId",

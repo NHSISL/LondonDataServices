@@ -122,7 +122,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             var serviceException = new Exception();
 
             var failedOptOutOrchestrationServiceException =
-                new FailedOptOutOrchestrationServiceException(serviceException);
+                new FailedOptOutOrchestrationServiceException(
+                    message: "Failed opt out orchestration service occurred, please contact support",
+                    innerException: serviceException);
 
             var expectedOptOrchestrationServiceException =
                 new OptOutOrchestrationServiceException(failedOptOutOrchestrationServiceException);

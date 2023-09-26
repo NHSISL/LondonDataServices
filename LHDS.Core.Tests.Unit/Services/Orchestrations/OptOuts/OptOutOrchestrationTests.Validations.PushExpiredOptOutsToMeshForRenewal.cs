@@ -33,7 +33,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 meshConfiguration: this.meshConfiguration);
 
             var nullConfigOptOutOrchestrationException =
-                new NullConfigOptOutOrchestrationException();
+                new NullConfigOptOutOrchestrationException(
+                    message: "Null configuration opt out orchestration exception, please correct the errors and try again.");
 
             var expectedPushExpiredOptOutsToMeshIfExpiredOrchestrationOptOutFileValidationException =
                 new OptOutOrchestrationValidationException(
@@ -91,7 +92,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 meshConfiguration: this.meshConfiguration);
 
             var invalidConfigOptOutOrchestrationException =
-                new InvalidConfigOptOutOrchestrationException();
+                new InvalidConfigOptOutOrchestrationException(
+                    message: "Invalid Configuration orchestration error, please correct the errors and try again.");
 
             invalidConfigOptOutOrchestrationException.AddData(
                 key: nameof(OptOutConfiguration.OutputFolder),

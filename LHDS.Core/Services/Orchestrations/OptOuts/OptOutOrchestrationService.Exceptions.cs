@@ -119,7 +119,9 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             catch (Exception exception)
             {
                 var failedOptOutServiceException =
-                    new FailedOptOutOrchestrationServiceException(exception);
+                    new FailedOptOutOrchestrationServiceException(
+                        message: "Failed opt out orchestration service occurred, please contact support",
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedOptOutServiceException);
             }
@@ -222,7 +224,9 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             catch (Exception exception)
             {
                 var failedOptOutServiceException =
-                    new FailedOptOutOrchestrationServiceException(exception);
+                    new FailedOptOutOrchestrationServiceException(
+                        message: "Failed opt out orchestration service occurred, please contact support",
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedOptOutServiceException);
             }
@@ -325,7 +329,9 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             catch (Exception exception)
             {
                 var failedOptOutServiceException =
-                    new FailedOptOutOrchestrationServiceException(exception);
+                    new FailedOptOutOrchestrationServiceException(
+                        message: "Failed opt out orchestration service occurred, please contact support",
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedOptOutServiceException);
             }
@@ -433,7 +439,9 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             catch (Exception exception)
             {
                 var failedOptOutServiceException =
-                    new FailedOptOutOrchestrationServiceException(exception);
+                    new FailedOptOutOrchestrationServiceException(
+                        message: "Failed opt out orchestration service occurred, please contact support",
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedOptOutServiceException);
             }

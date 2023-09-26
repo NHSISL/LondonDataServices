@@ -16,12 +16,16 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
     {
         private static void ValidateOptOutFileIsNotNull(byte[] optOutFile)
         {
-            Validate<InvalidArgumentOptOutOrchestrationException>((Rule: IsInvalid(optOutFile), Parameter: "OptOutFile"));
+            Validate<InvalidArgumentOptOutOrchestrationException>(
+                message: "Invalid Retrieve Opt Out Status orchestration argument(s), please correct the errors and try again.",
+                (Rule: IsInvalid(optOutFile), Parameter: "OptOutFile"));
         }
 
         private static void ValidateRequestIdIsNotNull(string requestId)
         {
-            Validate<InvalidArgumentOptOutOrchestrationException>((Rule: IsInvalid(requestId), Parameter: "RequestId"));
+            Validate<InvalidArgumentOptOutOrchestrationException>(
+                message: "Invalid Retrieve Opt Out Status orchestration argument(s), please correct the errors and try again.",
+                (Rule: IsInvalid(requestId), Parameter: "RequestId"));
         }
 
         private void ValidateConfigurationSettings()
@@ -29,6 +33,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             this.ValidateConfigurationIsNotNull();
 
             Validate<InvalidConfigOptOutOrchestrationException>(
+                message: "Invalid Configuration orchestration error, please correct the errors and try again.",
                 (Rule: IsInvalid(this.optOutConfiguration.OutputFolder),
                     Parameter: nameof(OptOutConfiguration.OutputFolder)),
 
@@ -40,25 +45,29 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         {
             if (this.optOutConfiguration is null)
             {
-                throw new NullConfigOptOutOrchestrationException();
+                throw new NullConfigOptOutOrchestrationException(
+                    message: "Null configuration opt out orchestration exception, please correct the errors and try again.");
             }
         }
 
         private static void ValidateLocalIdHeaderExists(MeshMessage message)
         {
             Validate<InvalidMeshMessageOrchestrationException>(
+                message: "Invalid mesh message orchestration error, please correct the errors and try again.",
                 (Rule: IsInvalidHeader(message, "mex-localid"), Parameter: "mex-localid"));
         }
 
         private static void ValidateBacthReferenceExists(string batchReference)
         {
             Validate<InvalidArgumentOptOutOrchestrationException>(
+                message: "Invalid Retrieve Opt Out Status orchestration argument(s), please correct the errors and try again.",
                 (Rule: IsInvalid(batchReference), Parameter: "BatchReference"));
         }
 
         private static void ValidateDocumentRequirements(string content, string fileName)
         {
             Validate<InvalidArgumentOptOutOrchestrationException>(
+                message: "Invalid Retrieve Opt Out Status orchestration argument(s), please correct the errors and try again.",
                 (Rule: IsInvalid(content), Parameter: "Content"),
                 (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
@@ -120,10 +129,10 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             return String.IsNullOrWhiteSpace(value);
         }
 
-        private static void Validate<T>(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
-            var invalidDataException = (T)Activator.CreateInstance(typeof(T));
+            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
 
             foreach ((dynamic rule, string parameter) in validations)
             {

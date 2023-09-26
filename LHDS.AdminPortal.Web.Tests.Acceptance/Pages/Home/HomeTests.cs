@@ -43,34 +43,56 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages.Home
         [Fact]
         public async Task VerifyHomePageTitle()
         {
-            try
-            {
-                // given
-                await using var context =
-                    await broker.browser.NewContextAsync(new()
-                    {
-                        IgnoreHTTPSErrors = true
-                    });
-
-                var page = await context.NewPageAsync();
-                var expectedTitle = "London Data Service Admin Portal";
-
-                var response = await page.GotoAsync(broker.FrontendProxyBaseUrl,
-                new Microsoft.Playwright.PageGotoOptions
+            // given
+            await using var context =
+                await broker.browser.NewContextAsync(new()
                 {
-                    Timeout = 0,
-                    WaitUntil = Microsoft.Playwright.WaitUntilState.DOMContentLoaded
+                    IgnoreHTTPSErrors = true
                 });
 
-                var actualTitle = await page.TitleAsync();
+            var page = await context.NewPageAsync();
+            var expectedTitle = "London Data Service Admin Portal";
 
-                // then
-                actualTitle.Should().BeEquivalentTo(expectedTitle);
-            }
-            catch (System.Exception ex)
+            var response = await page.GotoAsync(broker.FrontendProxyBaseUrl,
+            new Microsoft.Playwright.PageGotoOptions
             {
-                throw ex;
-            }
+                Timeout = 0,
+                WaitUntil = Microsoft.Playwright.WaitUntilState.DOMContentLoaded
+            });
+
+            var actualTitle = await page.TitleAsync();
+
+            // then
+            actualTitle.Should().BeEquivalentTo(expectedTitle);
+        }
+
+        [Fact]
+        public async Task Login()
+        {
+            // given
+            await using var context =
+                await broker.browser.NewContextAsync(new()
+                {
+                    IgnoreHTTPSErrors = true
+                });
+
+            var page = await context.NewPageAsync();
+            var LoginBtnClass = "#root > header > div > div.nhsuk-header__content > div > div > button";
+
+            await page.GotoAsync(broker.FrontendProxyBaseUrl,
+            new Microsoft.Playwright.PageGotoOptions
+            {
+                Timeout = 0,
+                WaitUntil = Microsoft.Playwright.WaitUntilState.DOMContentLoaded
+            });
+
+            await page.Locator(LoginBtnClass).ClickAsync();
+
+            //await page.PauseAsync();
+
+
+            // then
+            // actualTitle.Should().BeEquivalentTo(expectedTitle);
         }
     }
 }

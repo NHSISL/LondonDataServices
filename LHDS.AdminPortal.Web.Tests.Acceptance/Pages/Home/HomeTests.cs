@@ -19,7 +19,7 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages.Home
         }
 
         [Fact]
-        public async Task VerifyHomePageTitle()
+        public async Task VerifyApiPageTitle()
         {
             // given
             await using var context =
@@ -29,10 +29,10 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages.Home
                 });
 
             var page = await context.NewPageAsync();
-            var expectedTitle = "London Data Service Admin Portal";
+            var expectedTitle = "LDS Management API";
 
             //// when
-            var response = await page.GotoAsync(broker.FrontendBaseUrl);
+            var response = await page.GotoAsync(broker.ApiBaseUrl);
 
             var actualTitle = await page.TitleAsync();
 
@@ -41,12 +41,44 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages.Home
         }
 
         [Fact]
+        public async Task VerifyHomePageTitle()
+        {
+            try
+            {
+                // given
+                await using var context =
+                    await broker.browser.NewContextAsync(new()
+                    {
+                        IgnoreHTTPSErrors = true
+                    });
+
+                var page = await context.NewPageAsync();
+                var expectedTitle = "London Data Service Admin Portal";
+
+                // when
+                var response = await page.GotoAsync(broker.FrontendBaseUrl);
+                //var response = await page.GotoAsync("https://localhost:44405/");
+
+                var response1 = await page.WaitForResponseAsync("**/*");
+
+                var actualTitle = await page.TitleAsync();
+
+                // then
+                actualTitle.Should().BeEquivalentTo(expectedTitle);
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        [Fact]
         public async Task VerifyHomePageTitleTest()
         {
             var page = await broker.browser.NewPageAsync();
 
             await page.GotoAsync(
-                broker.FrontendBaseUrl,
+                broker.ApiBaseUrl,
                 new Microsoft.Playwright.PageGotoOptions
                 {
                     WaitUntil = Microsoft.Playwright.WaitUntilState.Load

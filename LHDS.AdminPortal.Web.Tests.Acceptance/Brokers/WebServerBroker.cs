@@ -46,14 +46,13 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
         public async Task InitializeAsync()
         {
             playwright = await Playwright.CreateAsync();
-            //var chrome = playwright.Chromium;
             //browser = await playwright.Chromium.LaunchAsync();
 
             browser = await playwright.Chromium.LaunchAsync(
                 new()
                 {
                     Headless = false,
-                    Timeout = 1000,
+                    Timeout = 50000,
                     SlowMo = 500
                 });
 

@@ -31,7 +31,6 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
                     //webBuilder.UseStartup<Api.Startup>();
                     webBuilder.UseUrls(ApiBaseUrl);
                 })
-                .ConfigureServices(configure => { })
                 .Build();
 
             frontendHost = Web.Program
@@ -41,7 +40,6 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
                     webBuilder.UseStartup<Web.Startup>();
                     webBuilder.UseUrls(FrontendBaseUrl);
                 })
-                .ConfigureServices(configure => { })
                 .Build();
         }
 

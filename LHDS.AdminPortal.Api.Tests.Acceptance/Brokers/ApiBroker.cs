@@ -10,6 +10,7 @@ using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.Documents;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -15,7 +15,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
     public partial class ObjectColumnProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionsOnRetrieveIfObjectColumnProcessingIsNullAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionsOnRetrieveByIdIfIdIsInvalidAndLogItAsync()
         {
             // given
             Guid invalidId = Guid.Empty;

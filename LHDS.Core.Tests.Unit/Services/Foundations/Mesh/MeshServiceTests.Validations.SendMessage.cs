@@ -34,7 +34,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             string accept = invalidInput;
 
             var invalidMeshMessageException =
-                new InvalidMeshMessageException();
+                new InvalidMeshMessageException(
+                    message: "Invalid mesh message, please correct errors and try again.");
 
             invalidMeshMessageException.AddData(
                 key: "MexTo",
@@ -45,7 +46,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 values: "Text is required");
 
             var expectedMeshValidationException =
-               new MeshValidationException(innerException: invalidMeshMessageException);
+               new MeshValidationException(
+                   message: "Mesh validation errors occurred, please try again.",
+                   innerException: invalidMeshMessageException);
 
             // when
             ValueTask<MeshMessage> sendFileTask =
@@ -111,14 +114,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             string accept = "text/plain";
 
             var invalidMeshMessageException =
-                new InvalidMeshMessageException();
+                new InvalidMeshMessageException(
+                    message: "Invalid mesh message, please correct errors and try again.");
 
             invalidMeshMessageException.AddData(
                 key: nameof(MeshMessage.FileContent),
                 values: "Content is required");
 
             var expectedMeshValidationException =
-                new MeshValidationException(innerException: invalidMeshMessageException);
+                new MeshValidationException(
+                    message: "Mesh validation errors occurred, please try again.",
+                    innerException: invalidMeshMessageException);
 
             // when
             ValueTask<MeshMessage> sendFileTask =

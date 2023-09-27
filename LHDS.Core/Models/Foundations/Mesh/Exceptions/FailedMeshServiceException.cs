@@ -9,8 +9,8 @@ namespace LHDS.Core.Models.Foundations.Mesh.Exceptions
 {
     public class FailedMeshServiceException : Xeption
     {
-        public FailedMeshServiceException(Exception innerException)
-            : base(message: "Failed mesh service occurred, please contact support", innerException)
+        public FailedMeshServiceException(string message, Exception innerException)
+            : base(message, innerException)
         { }
     }
 }

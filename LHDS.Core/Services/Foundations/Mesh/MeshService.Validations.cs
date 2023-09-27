@@ -16,25 +16,29 @@ namespace LHDS.Core.Services.Foundations.Mesh
         public void ValidateMeshArgs(string messageId)
         {
             Validate<InvalidMeshMessageException>(
+                message: "Invalid mesh message, please correct errors and try again.",
                 (Rule: IsInvalid(messageId), Parameter: "MessageId"));
         }
 
         public void ValidateMeshMessageOnSendMessage(string mexTo, string workflowId, byte[] fileContent)
         {
             Validate<InvalidMeshMessageException>(
+                message: "Invalid mesh message, please correct errors and try again.",
                 (Rule: IsInvalid(mexTo), Parameter: "MexTo"),
                 (Rule: IsInvalid(workflowId), Parameter: "MexWorkflowId"),
                 (Rule: IsInvalid(fileContent), Parameter: "FileContent"));
         }
 
         public void ValidateMessageId(string messageId) =>
-            Validate<InvalidArgumentMeshException>((Rule: IsInvalid(messageId), Parameter: "MessageId"));
+            Validate<InvalidArgumentMeshException>(
+                message: "Invalid Mesh argument(s), please correct the errors and try again.",
+                (Rule: IsInvalid(messageId), Parameter: "MessageId"));
 
         public void ValidateMeshMessageIsNotNull(MeshMessage message)
         {
             if (message is null)
             {
-                throw new NullMeshMessageException();
+                throw new NullMeshMessageException(message: "Mesh message is null.");
             }
         }
 
@@ -42,7 +46,7 @@ namespace LHDS.Core.Services.Foundations.Mesh
         {
             if (message.Headers is null)
             {
-                throw new NullHeadersException();
+                throw new NullHeadersException(message: "Mesh message headers dictionary is null.");
             }
         }
 
@@ -84,10 +88,10 @@ namespace LHDS.Core.Services.Foundations.Mesh
             return String.IsNullOrWhiteSpace(value);
         }
 
-        private static void Validate<T>(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
-            var invalidDataException = (T)Activator.CreateInstance(typeof(T));
+            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
 
             foreach ((dynamic rule, string parameter) in validations)
             {

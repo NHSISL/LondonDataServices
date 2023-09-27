@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
@@ -41,6 +42,15 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             {
                 throw CreateAndLogDependencyException(objectColumnServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedObjectColumnProcessingServiceException =
+                    new FailedObjectColumnProcessingServiceException(
+                        message: "Failed ObjectColumn processing service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedObjectColumnProcessingServiceException);
+            }
         }
 
         private ObjectColumnProcessingValidationException CreateAndLogValidationException(Xeption exception)
@@ -78,6 +88,18 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             this.loggingBroker.LogError(objectColumnProcessingDependencyException);
 
             throw objectColumnProcessingDependencyException;
+        }
+
+        private ObjectColumnProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var objectColumnProcessingServiceException = new
+                ObjectColumnProcessingServiceException(
+                    message: "ObjectColumn processing service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(objectColumnProcessingServiceException);
+
+            return objectColumnProcessingServiceException;
         }
     }
 }

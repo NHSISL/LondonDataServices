@@ -200,8 +200,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             return new TheoryData<Xeption>
             {
-                new PdsOrchestrationValidationException(innerException),
-                new PdsOrchestrationDependencyValidationException(innerException),
+                new PdsOrchestrationValidationException(
+                    message: "PDS orchestration validation errors occurred, please try again.",
+                    innerException),
+
+                new PdsOrchestrationDependencyValidationException(
+                    message: "PDS orchestration dependency validation error occurred, fix the errors and try again.",
+                    innerException),
+
                 new DocumentValidationException(innerException),
                 new DocumentDependencyValidationException(innerException),
                 new MeshValidationException(innerException),
@@ -217,8 +223,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             return new TheoryData<Xeption>
             {
-                new PdsOrchestrationDependencyException(innerException),
-                new PdsOrchestrationServiceException(innerException),
+                new PdsOrchestrationDependencyException(
+                    message: "PDS orchestration dependency error occurred, fix the errors and try again.",
+                    innerException),
+
+                new PdsOrchestrationServiceException(
+                    message: "PDS orchestration service error occurred, contact support.",
+                    innerException),
+
                 new DocumentDependencyException(innerException),
                 new DocumentServiceException(innerException),
                 new MeshDependencyException(innerException),

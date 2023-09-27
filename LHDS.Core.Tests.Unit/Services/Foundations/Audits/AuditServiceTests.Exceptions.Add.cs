@@ -28,7 +28,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 new FailedAuditStorageException(sqlException);
 
             var expectedAuditDependencyException =
-                new AuditDependencyException(failedAuditStorageException);
+                new AuditDependencyException(
+                    message: "Audit dependency error occurred, contact support.", 
+                    innerException: failedAuditStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -76,10 +78,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 new DuplicateKeyException(randomMessage);
 
             var alreadyExistsAuditException =
-                new AlreadyExistsAuditException(duplicateKeyException);
+                new AlreadyExistsAuditException(
+                    message: "Audit with the same Id already exists.", 
+                    innerException: duplicateKeyException);
 
             var expectedAuditDependencyValidationException =
-                new AuditDependencyValidationException(alreadyExistsAuditException);
+                new AuditDependencyValidationException(
+                    message: "Audit dependency validation occurred, please try again.", 
+                    innerException: alreadyExistsAuditException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -130,7 +136,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 new InvalidAuditReferenceException(foreignKeyConstraintConflictException);
 
             var expectedAuditValidationException =
-                new AuditDependencyValidationException(invalidAuditReferenceException);
+                new AuditDependencyValidationException(
+                    message: "Audit dependency validation occurred, please try again.", 
+                    innerException: invalidAuditReferenceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -179,7 +187,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 new FailedAuditStorageException(databaseUpdateException);
 
             var expectedAuditDependencyException =
-                new AuditDependencyException(failedAuditStorageException);
+                new AuditDependencyException(
+                    message: "Audit dependency error occurred, contact support.", 
+                    innerException: failedAuditStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -223,10 +233,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             var serviceException = new Exception();
 
             var failedAuditServiceException =
-                new FailedAuditServiceException(serviceException);
+                new FailedAuditServiceException(
+                    message: "Failed audit service occurred, please contact support",
+                    innerException: serviceException);
 
             var expectedAuditServiceException =
-                new AuditServiceException(failedAuditServiceException);
+                new AuditServiceException(
+                    message: "Audit service error occurred, contact support.",
+                    innerException: failedAuditServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())

@@ -47,7 +47,9 @@ namespace LHDS.Core.Services.Foundations.Audits
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsAuditException =
-                    new AlreadyExistsAuditException(duplicateKeyException);
+                    new AlreadyExistsAuditException(
+                        message: "Audit with the same Id already exists.", 
+                        innerException: duplicateKeyException);
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsAuditException);
             }
@@ -74,7 +76,9 @@ namespace LHDS.Core.Services.Foundations.Audits
             catch (Exception exception)
             {
                 var failedAuditServiceException =
-                    new FailedAuditServiceException(exception);
+                    new FailedAuditServiceException(
+                        message: "Failed audit service occurred, please contact support",
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedAuditServiceException);
             }
@@ -95,7 +99,9 @@ namespace LHDS.Core.Services.Foundations.Audits
             catch (Exception exception)
             {
                 var failedAuditServiceException =
-                    new FailedAuditServiceException(exception);
+                    new FailedAuditServiceException(
+                        message: "Failed audit service occurred, please contact support",
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedAuditServiceException);
             }
@@ -103,7 +109,10 @@ namespace LHDS.Core.Services.Foundations.Audits
 
         private AuditValidationException CreateAndLogValidationException(Xeption exception)
         {
-            var auditValidationException = new AuditValidationException(exception);
+            var auditValidationException = new AuditValidationException(
+                message: "Audit validation errors occurred, please try again.",
+                exception);
+
             this.loggingBroker.LogError(auditValidationException);
 
             return auditValidationException;
@@ -111,7 +120,9 @@ namespace LHDS.Core.Services.Foundations.Audits
 
         private AuditDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
-            var auditDependencyException = new AuditDependencyException(exception);
+            var auditDependencyException = new AuditDependencyException(
+                message: "Audit dependency error occurred, contact support.", 
+                innerException: exception);
             this.loggingBroker.LogCritical(auditDependencyException);
 
             return auditDependencyException;
@@ -120,7 +131,9 @@ namespace LHDS.Core.Services.Foundations.Audits
         private AuditDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
         {
             var auditDependencyValidationException =
-                new AuditDependencyValidationException(exception);
+                new AuditDependencyValidationException(
+                    message: "Audit dependency validation occurred, please try again.", 
+                    innerException: exception);
 
             this.loggingBroker.LogError(auditDependencyValidationException);
 
@@ -130,7 +143,10 @@ namespace LHDS.Core.Services.Foundations.Audits
         private AuditDependencyException CreateAndLogDependencyException(
             Xeption exception)
         {
-            var auditDependencyException = new AuditDependencyException(exception);
+            var auditDependencyException = new AuditDependencyException(
+                message: "Audit dependency error occurred, contact support.", 
+                innerException: exception);
+
             this.loggingBroker.LogError(auditDependencyException);
 
             return auditDependencyException;
@@ -139,7 +155,10 @@ namespace LHDS.Core.Services.Foundations.Audits
         private AuditServiceException CreateAndLogServiceException(
             Xeption exception)
         {
-            var auditServiceException = new AuditServiceException(exception);
+            var auditServiceException = new AuditServiceException(
+                message: "Audit service error occurred, contact support.",
+                innerException: exception);
+
             this.loggingBroker.LogError(auditServiceException);
 
             return auditServiceException;

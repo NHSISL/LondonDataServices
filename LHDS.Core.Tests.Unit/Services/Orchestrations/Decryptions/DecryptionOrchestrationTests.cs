@@ -111,8 +111,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 new DecryptionDependencyValidationException(innerException),
                 new IngestionTrackingValidationException(innerException),
                 new IngestionTrackingDependencyValidationException(innerException),
-                new AuditValidationException(innerException),
-                new AuditDependencyValidationException(innerException)
+
+                new AuditValidationException(
+                    message: "Audit validation errors occurred, please try again.",
+                    innerException),
+
+                new AuditDependencyValidationException(
+                    message: "Audit dependency validation occurred, please try again.",
+                    innerException)
             };
         }
 
@@ -130,8 +136,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 new DecryptionServiceException(innerException),
                 new IngestionTrackingDependencyException(innerException),
                 new IngestionTrackingServiceException(innerException),
-                new AuditDependencyException(innerException),
-                new AuditServiceException(innerException)
+
+                new AuditDependencyException(
+                    message: "Audit dependency error occurred, contact support.",
+                    innerException),
+
+                new AuditServiceException(
+                    message: "Audit service error occurred, contact support.",
+                    innerException)
             };
         }
 

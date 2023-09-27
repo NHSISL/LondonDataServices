@@ -79,7 +79,9 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             catch (Exception exception)
             {
                 var failedPdsServiceException =
-                    new FailedPdsOrchestrationServiceException(exception);
+                    new FailedPdsOrchestrationServiceException(
+                        message: "Failed PDS orchestration service occurred, please contact support",
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedPdsServiceException);
             }
@@ -142,7 +144,9 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             catch (Exception exception)
             {
                 var failedPdsServiceException =
-                    new FailedPdsOrchestrationServiceException(exception);
+                    new FailedPdsOrchestrationServiceException(
+                        message: "Failed PDS orchestration service occurred, please contact support",
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedPdsServiceException);
             }
@@ -151,7 +155,9 @@ namespace LHDS.Core.Services.Orchestrations.Pds
         private PdsOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
             var pdsValidationException =
-                new PdsOrchestrationValidationException(exception);
+                new PdsOrchestrationValidationException(
+                    message: "PDS orchestration validation errors occurred, please try again.",
+                    innerException: exception);
 
             this.loggingBroker.LogError(pdsValidationException);
 
@@ -162,7 +168,9 @@ namespace LHDS.Core.Services.Orchestrations.Pds
            CreateAndLogDependencyValidationException(Xeption exception)
         {
             var pdsOrchestrationDependencyValidationException =
-                new PdsOrchestrationDependencyValidationException(exception.InnerException as Xeption);
+                new PdsOrchestrationDependencyValidationException(
+                    message: "PDS orchestration validation errors occurred, please try again.",
+                    exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(pdsOrchestrationDependencyValidationException);
 
@@ -173,7 +181,9 @@ namespace LHDS.Core.Services.Orchestrations.Pds
            CreateAndLogDependencyException(Xeption exception)
         {
             var pdsOrchestrationDependencyException =
-                new PdsOrchestrationDependencyException(exception.InnerException as Xeption);
+                new PdsOrchestrationDependencyException(
+                    message: "PDS orchestration dependency error occurred, fix the errors and try again.",
+                    innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(pdsOrchestrationDependencyException);
 
@@ -184,7 +194,9 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             CreateAndLogServiceException(Xeption exception)
         {
             var pdsOrchestrationServiceException =
-                new PdsOrchestrationServiceException(exception);
+                new PdsOrchestrationServiceException(
+                    message: "PDS orchestration service error occurred, contact support.",
+                    innerException: exception);
 
             this.loggingBroker.LogError(pdsOrchestrationServiceException);
 

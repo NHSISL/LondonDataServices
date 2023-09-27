@@ -23,7 +23,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 new FailedAuditStorageException(sqlException);
 
             var expectedAuditDependencyException =
-                new AuditDependencyException(failedStorageException);
+                new AuditDependencyException(
+                    message: "Audit dependency error occurred, contact support.", 
+                    innerException: failedStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllAudits())
@@ -62,10 +64,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             var serviceException = new Exception(exceptionMessage);
 
             var failedAuditServiceException =
-                new FailedAuditServiceException(serviceException);
+                new FailedAuditServiceException(
+                    message: "Failed audit service occurred, please contact support",
+                    innerException: serviceException);
 
             var expectedAuditServiceException =
-                new AuditServiceException(failedAuditServiceException);
+                new AuditServiceException(
+                    message: "Audit service error occurred, contact support.",
+                    innerException: failedAuditServiceException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllAudits())

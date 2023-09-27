@@ -28,6 +28,10 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             {
                 throw CreateAndLogValidationException(nullObjectColumnException);
             }
+            catch (InvalidArgumentObjectColumnProcessingException invalidArgumentObjectColumnProcessingException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentObjectColumnProcessingException);
+            }
             catch (ObjectColumnValidationException objectColumnValidationException)
             {
                 throw CreateAndLogDependencyValidationException(objectColumnValidationException);

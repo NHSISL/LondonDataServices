@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             });
 
         public IQueryable<ObjectColumn> RetrieveAllObjectColumns() =>
-            this.objectColumnService.RetrieveAllObjectColumns();
+            TryCatch(() => this.objectColumnService.RetrieveAllObjectColumns());
     }
 }

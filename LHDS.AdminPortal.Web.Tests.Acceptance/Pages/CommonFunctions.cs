@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Playwright;
 
 namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages
@@ -12,14 +13,22 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages
         public class Login
         {
             private readonly IPage page;
+            private readonly IConfiguration configuration;
 
             public Login(IPage page)
             {
                 this.page = page;
+
+                configuration = new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json")
+                    .Build();
             }
 
-            public async Task PerformLogin(string username, string password)
+            public async Task PerformLogin()
             {
+                string username = configuration["Login:Email"];
+                string password = configuration["Login:Password"];
+
                 var loginBtnClass = "#root > header > div > div.nhsuk-header__content > div > div > button";
 
                 await page.Locator(loginBtnClass).ClickAsync();
@@ -31,6 +40,8 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages
                 await page.Locator("#idSIButton9").ClickAsync();
                 await page.Locator("input[type='submit']").ClickAsync();
             }
+
+
         }
     }
 }

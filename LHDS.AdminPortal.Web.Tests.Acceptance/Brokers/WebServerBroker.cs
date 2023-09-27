@@ -4,16 +4,18 @@
 
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Playwright;
+using RESTFulSense.Clients;
 using Xunit;
 
 namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
 {
-    public class WebServerBroker : IAsyncLifetime, IDisposable
+    public partial class WebServerBroker : IAsyncLifetime, IDisposable
     {
         private readonly IHost apiHost;
         private readonly IHost frontendHost;
@@ -23,7 +25,8 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
         public string FrontendBaseUrl { get; } = $"https://localhost:{GetRandomUnusedPort()}";
         public string FrontendProxyBaseUrl { get; } = $"https://localhost:44405/";
         public string ApiProxyBaseUrl { get; } = $"https://localhost:7052";
-
+        private readonly HttpClient httpClient;
+        private readonly IRESTFulApiFactoryClient apiFactoryClient;
 
         public WebServerBroker()
         {
@@ -44,6 +47,10 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
                     webBuilder.UseUrls(FrontendBaseUrl);
                 })
                 .Build();
+
+            this.httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri(ApiBaseUrl);
+            this.apiFactoryClient = new RESTFulApiFactoryClient(this.httpClient);
         }
 
         public async Task InitializeAsync()
@@ -52,7 +59,7 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
 
             browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
-                Headless = true,
+                Headless = false,
                 SlowMo = 500
             });
 

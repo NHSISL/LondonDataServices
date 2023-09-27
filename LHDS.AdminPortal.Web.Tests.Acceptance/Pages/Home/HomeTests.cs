@@ -86,10 +86,7 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages.Home
             var loginHandler = new Login(frontendPage);
 
 
-            await loginHandler.PerformLogin(
-                "david.hayes17@nelcsu.nhs.uk",
-                "20q^0K5vl#jjLEsP"
-            );
+            await loginHandler.PerformLogin();
 
             var expectedElement = await frontendPage.IsVisibleAsync("text='London Health Data Services'");
 

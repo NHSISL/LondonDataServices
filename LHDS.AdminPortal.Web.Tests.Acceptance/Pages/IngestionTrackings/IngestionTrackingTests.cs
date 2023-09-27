@@ -6,65 +6,137 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Web.Tests.Acceptance.Brokers;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Playwright;
 using Xunit;
 using static LHDS.AdminPortal.Web.Tests.Acceptance.Pages.CommonFunctions;
 
 namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages.IngestionTrackings
 {
-    public class IngestionTrackingTests : IClassFixture<WebServerBroker>
+    public partial class IngestionTrackingTests : IClassFixture<WebServerBroker>
     {
-        private readonly WebServerBroker broker;
+        private readonly WebServerBroker webServerBroker;
         private readonly IConfiguration configuration;
 
-        public IngestionTrackingTests(WebServerBroker broker)
+        public IngestionTrackingTests(WebServerBroker webServerBroker)
         {
-            this.broker = broker;
+            this.webServerBroker = webServerBroker;
 
             configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .Build();
+               .AddJsonFile("appsettings.json")
+               .Build();
         }
 
         [Fact]
-        public async Task VerifyIngestionPageCardTitle()
+        public async Task VerifyIngestionPageCorrectCardTitle()
         {
             // given
             var expectedCardTitle = "Ingestion Tracking";
+            var navSelector = "#navbarScroll > div.me-auto.my-2.my-lg-0.navbar-nav.navbar-nav-scroll > div:nth-child(2) > a";
+            var cardTitleSelector = $"{".cardBaseTitle"}:has-text(\"{"Ingestion Tracking"}\")";
+
+            IPage page = await InitialiseSetup();
+            await PerformLogin(page);
 
             //When
-            await using var context = await broker.browser.NewContextAsync(new() { IgnoreHTTPSErrors = true });
+            await page
+                .Locator(navSelector)
+                .ClickAsync();
+
+            var element =
+                    await page.QuerySelectorAsync(cardTitleSelector);
+
+            Assert.NotNull(element);
+
+            var actualCardTitle =
+                    await element.TextContentAsync();
+
+            // then
+            actualCardTitle.Should().BeEquivalentTo(expectedCardTitle);
+        }
+
+        [Fact]
+        public async Task VerifyIngestionPageInvlaidSearchReturnsBlank()
+        {
+            // given
+            var navSelector = "#navbarScroll > div.me-auto.my-2.my-lg-0.navbar-nav.navbar-nav-scroll > div:nth-child(2) > a";
+            var expectedTableRowcount = 1;
+
+            //When
+            await using var context = await webServerBroker.browser.NewContextAsync(new() { IgnoreHTTPSErrors = true });
 
             var apiPage = await context.NewPageAsync();
             var page = await context.NewPageAsync();
 
             await Task.WhenAll(
-                apiPage.GotoAsync(broker.ApiProxyBaseUrl),
-                page.GotoAsync(broker.FrontendProxyBaseUrl)
+                apiPage.GotoAsync(webServerBroker.ApiProxyBaseUrl),
+                page.GotoAsync(webServerBroker.FrontendProxyBaseUrl)
                 );
 
             var loginHandler = new Login(page);
-
-            await loginHandler.PerformLogin(
-                configuration["Login:Email"],
-                configuration["Login:Password"]
-                );
+            await loginHandler.PerformLogin();
 
             await page
-                .Locator("#navbarScroll > div.me-auto.my-2.my-lg-0.navbar-nav.navbar-nav-scroll > div:nth-child(2) > a")
+                .Locator(navSelector)
                 .ClickAsync();
 
-            const string className = ".cardBaseTitle";
-            const string searchText = "Ingestion Tracking";
+            await page.TypeAsync("input[type='search']", "RETURNNOTHING");
 
-            var selector = $"{className}:has-text(\"{searchText}\")";
-            var element = await page.QuerySelectorAsync(selector);
+            var selectTable = await page.QuerySelectorAsync("table");
+            var actualRowCount = 0;
 
-            Assert.NotNull(element);
-
-            var actualCardTitle = await element.TextContentAsync();
+            if (selectTable != null)
+                actualRowCount =
+                    await selectTable.EvaluateAsync<int>("table => table.rows.length");
 
             // then
-            actualCardTitle.Should().BeEquivalentTo(expectedCardTitle);
+            // await page.PauseAsync();
+            actualRowCount.Should().Be(expectedTableRowcount);
+        }
+
+        [Fact]
+        public async Task VerifyIngestionPageAddRow()
+        {
+            // given
+            var navSelector = "#navbarScroll > div.me-auto.my-2.my-lg-0.navbar-nav.navbar-nav-scroll > div:nth-child(2) > a";
+            var expectedTableRowcount = 1;
+
+            //Post Ingestions
+
+            var supplier = CreateRandomSupplier();
+            await PostRandomIngestionTrackingAsync(supplier.Id);
+
+
+            //When
+            await using var context = await webServerBroker.browser.NewContextAsync(new() { IgnoreHTTPSErrors = true });
+
+            var apiPage = await context.NewPageAsync();
+            var page = await context.NewPageAsync();
+
+            await Task.WhenAll(
+                apiPage.GotoAsync(webServerBroker.ApiProxyBaseUrl),
+                page.GotoAsync(webServerBroker.FrontendProxyBaseUrl)
+                );
+
+            var loginHandler = new Login(page);
+            await loginHandler.PerformLogin();
+
+            await page
+                .Locator(navSelector)
+                .ClickAsync();
+
+            await page.TypeAsync("input[type='search']", "RETURNNOTHING");
+
+            var selectTable = await page.QuerySelectorAsync("table");
+            var actualRowCount = 0;
+
+            if (selectTable != null)
+                actualRowCount =
+                    await selectTable.EvaluateAsync<int>("table => table.rows.length");
+
+            // then
+            // await page.PauseAsync();
+            actualRowCount.Should().Be(expectedTableRowcount);
         }
     }
+
 }

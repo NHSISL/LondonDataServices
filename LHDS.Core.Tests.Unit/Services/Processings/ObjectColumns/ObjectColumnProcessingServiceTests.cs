@@ -3,12 +3,14 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Services.Foundations.ObjectColumns;
 using LHDS.Core.Services.Processings.ObjectColumns;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
 {
@@ -24,6 +26,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
                 objectColumnService: objectColumnServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object);
         }
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static string GetRandomString(int length) =>
             new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();

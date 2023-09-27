@@ -55,5 +55,42 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
             this.objectColumnServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldAddObjectColumnIfObjectColumnDoesNotExistsAsync()
+        {
+            // Given
+            ObjectColumn randomObjectColumn = CreateRandomObjectColumn();
+            ObjectColumn inputObjectColumn = randomObjectColumn;
+            ObjectColumn storageObjectColumn = inputObjectColumn.DeepClone();
+            ObjectColumn expectedObjectColumn = storageObjectColumn;
+
+            this.objectColumnServiceMock.Setup(service =>
+                service.RetrieveObjectColumnByIdAsync(inputObjectColumn.Id))
+                    .ReturnsAsync(value: null);
+
+            this.objectColumnServiceMock.Setup(service =>
+                service.AddObjectColumnAsync(inputObjectColumn))
+                    .ReturnsAsync(value: storageObjectColumn);
+
+            // When
+            await this.objectColumnProcessingService.ModifyOrAddObjectColumnAsync(inputObjectColumn);
+
+            // Then
+            this.objectColumnServiceMock.Verify(service =>
+                service.RetrieveObjectColumnByIdAsync(inputObjectColumn.Id),
+                    Times.Once);
+
+            this.objectColumnServiceMock.Verify(service =>
+            service.AddObjectColumnAsync(inputObjectColumn),
+            Times.Once);
+
+            this.objectColumnServiceMock.Verify(service =>
+                service.ModifyObjectColumnAsync(inputObjectColumn),
+                    Times.Never);
+
+            this.objectColumnServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

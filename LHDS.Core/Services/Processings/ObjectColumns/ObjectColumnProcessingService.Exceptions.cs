@@ -14,7 +14,8 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
     {
         private delegate ValueTask<ObjectColumn> ReturningObjectColumnProcessingFunction();
 
-        private async ValueTask<ObjectColumn> TryCatch(ReturningObjectColumnProcessingFunction returningObjectColumnProcessingFunction)
+        private async ValueTask<ObjectColumn> TryCatch(
+            ReturningObjectColumnProcessingFunction returningObjectColumnProcessingFunction)
         {
             try
             {
@@ -31,6 +32,14 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             catch (ObjectColumnDependencyValidationException objectColumnDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(objectColumnDependencyValidationException);
+            }
+            catch (ObjectColumnDependencyException objectColumnDependencyException)
+            {
+                throw CreateAndLogDependencyException(objectColumnDependencyException);
+            }
+            catch (ObjectColumnServiceException objectColumnServiceException)
+            {
+                throw CreateAndLogDependencyException(objectColumnServiceException);
             }
         }
 
@@ -57,6 +66,18 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             this.loggingBroker.LogError(objectColumnProcessingDependencyValidationException);
 
             return objectColumnProcessingDependencyValidationException;
+        }
+
+        private ObjectColumnProcessingDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var objectColumnProcessingDependencyException =
+                new ObjectColumnProcessingDependencyException(
+                    message: "ObjectColumn processing dependency error occurred, please try again.",
+                    innerException: exception?.InnerException as Xeption);
+
+            this.loggingBroker.LogError(objectColumnProcessingDependencyException);
+
+            throw objectColumnProcessingDependencyException;
         }
     }
 }

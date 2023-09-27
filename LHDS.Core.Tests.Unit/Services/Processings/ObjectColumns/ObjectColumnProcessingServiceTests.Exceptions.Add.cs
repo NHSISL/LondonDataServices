@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.ObjectColumns;
@@ -91,6 +92,52 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedObjectColumnProcessingDependencyException))),
+                         Times.Once);
+
+            this.objectColumnServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAsync()
+        {
+            // given
+            ObjectColumn someObjectColumn = CreateRandomObjectColumn();
+            ObjectColumn inputObjectColumn = someObjectColumn;
+
+            var serviceException = new Exception();
+
+            var failedObjectColumnProcessingServiceException =
+                new FailedObjectColumnProcessingServiceException(
+                    message: "Failed ObjectColumn processing service error occurred, contact support.",
+                    innerException: serviceException);
+
+            var expectedObjectColumnProcessingServiveException =
+                new ObjectColumnProcessingServiceException(
+                    message: "ObjectColumn processing service error occurred, contact support.",
+                    innerException: failedObjectColumnProcessingServiceException);
+
+            this.objectColumnServiceMock.Setup(service =>
+                service.AddObjectColumnAsync(inputObjectColumn))
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<ObjectColumn> addObjectColumnTask =
+                this.objectColumnProcessingService.AddObjectColumnAsync(inputObjectColumn);
+
+            ObjectColumnProcessingServiceException actualException =
+                await Assert.ThrowsAsync<ObjectColumnProcessingServiceException>(addObjectColumnTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedObjectColumnProcessingServiveException);
+
+            this.objectColumnServiceMock.Verify(service =>
+                service.AddObjectColumnAsync(inputObjectColumn),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedObjectColumnProcessingServiveException))),
                          Times.Once);
 
             this.objectColumnServiceMock.VerifyNoOtherCalls();

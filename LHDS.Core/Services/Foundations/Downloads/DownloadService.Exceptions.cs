@@ -75,7 +75,10 @@ namespace LHDS.Core.Services.Foundations.Downloads
 
         private DownloadDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
-            var downloadDependencyException = new DownloadDependencyException(exception);
+            var downloadDependencyException = new DownloadDependencyException(
+                message: "Download dependency error occurred, contact support.", 
+                innerException: exception);
+
             this.loggingBroker.LogCritical(downloadDependencyException);
 
             return downloadDependencyException;
@@ -84,7 +87,9 @@ namespace LHDS.Core.Services.Foundations.Downloads
         private DownloadDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
         {
             var downloadDependencyValidationException =
-                new DownloadDependencyValidationException(exception);
+                new DownloadDependencyValidationException(
+                    message: "Download dependency validation occurred, please try again.",
+                    innerException: exception);
 
             this.loggingBroker.LogError(downloadDependencyValidationException);
 
@@ -94,7 +99,10 @@ namespace LHDS.Core.Services.Foundations.Downloads
         private DownloadDependencyException CreateAndLogDependencyException(
             Xeption exception)
         {
-            var downloadDependencyException = new DownloadDependencyException(exception);
+            var downloadDependencyException = new DownloadDependencyException(
+                message: "Download dependency error occurred, contact support.",
+                innerException: exception);
+
             this.loggingBroker.LogError(downloadDependencyException);
 
             return downloadDependencyException;
@@ -103,7 +111,10 @@ namespace LHDS.Core.Services.Foundations.Downloads
         private DownloadServiceException CreateAndLogServiceException(
             Xeption exception)
         {
-            var downloadServiceException = new DownloadServiceException(exception);
+            var downloadServiceException = new DownloadServiceException(
+                message: "Download service error occurred, contact support.", 
+                innerException: exception);
+
             this.loggingBroker.LogError(downloadServiceException);
 
             return downloadServiceException;

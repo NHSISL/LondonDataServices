@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.Documents.Exceptions
 {
     public class FailedDocumentStorageException : Xeption
     {
-        public FailedDocumentStorageException(Exception innerException)
-           : base(message: "Failed document storage error occurred, contact support.", innerException) { }
+        public FailedDocumentStorageException(string message, Exception innerException)
+           : base(message, innerException) { }
     }
 }

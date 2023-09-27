@@ -9,9 +9,8 @@ namespace LHDS.Core.Models.Foundations.Documents.Exceptions
 {
     public class FailedDocumentServiceException : Xeption
     {
-        public FailedDocumentServiceException(Exception innerException)
-          : base(message: "Failed document service error occurred, contact support.",
-                innerException)
+        public FailedDocumentServiceException(string message, Exception innerException)
+          : base(message,innerException)
         { }
     }
 }

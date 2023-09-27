@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.Downloads.Exceptions
 {
     public class DownloadServiceException : Xeption
     {
-        public DownloadServiceException(Exception innerException)
+        public DownloadServiceException(string message, Exception innerException)
             : base(message: "Download service error occurred, contact support.", innerException) { }
     }
 }

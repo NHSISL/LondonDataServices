@@ -85,8 +85,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                 DocumentData = randomBytes
             };
 
-            var requestFailedException = new RequestFailedException(randomMessage);
-            var failedDocumentRequestException = new FailedDocumentRequestException(requestFailedException);
+            var requestFailedException = new RequestFailedException(randomMessage)
+                ;
+            var failedDocumentRequestException = new FailedDocumentRequestException(
+                message: "Failed document request occurred, please contact support", 
+                innerException: requestFailedException);
 
             var expectedDependencyException =
                  new DocumentDependencyException(
@@ -136,10 +139,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             };
 
             var serviceException = new Exception(randomMessage);
-            var failedDocumentServiceException = new FailedDocumentServiceException(serviceException);
+
+            var failedDocumentServiceException = new FailedDocumentServiceException(
+                message: "Failed document service error occurred, contact support.",
+                innerException: serviceException);
 
             var expectedDocumentServiceException =
-                new DocumentServiceException(failedDocumentServiceException);
+                new DocumentServiceException(
+                    message: "Document service error occurred, contact support.",
+                    innerException: failedDocumentServiceException);
 
             var stream = new MemoryStream(document.DocumentData);
 

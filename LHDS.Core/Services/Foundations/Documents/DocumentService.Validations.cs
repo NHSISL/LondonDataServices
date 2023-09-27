@@ -29,7 +29,7 @@ namespace LHDS.Core.Services.Foundations.Documents
         {
             if (document is null)
             {
-                throw new NullDocumentException();
+                throw new NullDocumentException(message: "Document is Null");
             }
         }
 
@@ -39,7 +39,7 @@ namespace LHDS.Core.Services.Foundations.Documents
         {
             if (maybeRetrievedDocument is null)
             {
-                throw new NotFoundDocumentException(fileName);
+                throw new NotFoundDocumentException(message: $"Couldn't find documents with fileName: {fileName}.");
             }
         }
 
@@ -59,6 +59,7 @@ namespace LHDS.Core.Services.Foundations.Documents
         private void ValidateDeleteArguments(string fileName)
         {
             Validate(
+
                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
@@ -70,7 +71,8 @@ namespace LHDS.Core.Services.Foundations.Documents
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidDocumentException = new InvalidDocumentException();
+            var invalidDocumentException = new InvalidDocumentException(
+                message: "Invalid document. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {
@@ -81,7 +83,6 @@ namespace LHDS.Core.Services.Foundations.Documents
                         value: rule.Message);
                 }
             }
-
 
             invalidDocumentException.ThrowIfContainsErrors();
         }

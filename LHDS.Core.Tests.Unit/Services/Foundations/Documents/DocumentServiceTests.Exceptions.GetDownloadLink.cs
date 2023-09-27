@@ -20,7 +20,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             // given
             var randomString = GetRandomString();
             var requestFailedException = new RequestFailedException(randomString);
-            var failedDocumentRequestException = new FailedDocumentRequestException(requestFailedException);
+
+            var failedDocumentRequestException = new FailedDocumentRequestException(
+                message: "Failed document request occurred, please contact support", 
+                innerException: requestFailedException);
 
             var expectedDependencyException =
                  new DocumentDependencyException(
@@ -59,10 +62,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             // given
             var randomString = GetRandomString();
             var serviceException = new Exception(randomString);
-            var failedDocumentServiceException = new FailedDocumentServiceException(serviceException);
+
+            var failedDocumentServiceException = new FailedDocumentServiceException(
+                message: "Failed document service error occurred, contact support.",
+                innerException: serviceException);
 
             var expectedDocumentServiceException =
-                new DocumentServiceException(failedDocumentServiceException);
+                new DocumentServiceException(
+                    message: "Document service error occurred, contact support.",
+                    innerException: failedDocumentServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                  broker.GetCurrentDateTimeOffset())

@@ -148,14 +148,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
             return new TheoryData<Xeption>
             {
-                new DocumentValidationException(innerException),
+                new DocumentValidationException(
+                    message: "Document validation errors occured, please try again",
+                    innerException),
 
                 new DocumentDependencyValidationException(
                     message: "Document dependency validation occurred, please try again.",
                     innerException),
 
                 new DownloadValidationException(innerException),
-                new DownloadDependencyValidationException(innerException),
+
+                new DownloadDependencyValidationException(
+                    message: "Download dependency validation occurred, please try again.",
+                    innerException),
+
                 new IngestionTrackingValidationException(innerException),
                 new IngestionTrackingDependencyValidationException(innerException),
 
@@ -181,9 +187,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     message: "Document dependency error occurred, contact support.",
                     innerException),
 
-                new DocumentServiceException(innerException),
-                new DownloadDependencyException(innerException),
-                new DownloadServiceException(innerException),
+                new DocumentServiceException(
+                    message: "Document service error occurred, contact support.",
+                    innerException),
+
+                new DownloadDependencyException(
+                    message: "Download dependency error occurred, contact support.",
+                    innerException),
+
+                new DownloadServiceException(
+                    message: "Download service error occurred, contact support.",
+                    innerException),
+
                 new IngestionTrackingDependencyException(innerException),
                 new IngestionTrackingServiceException(innerException),
 

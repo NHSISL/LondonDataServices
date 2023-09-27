@@ -25,10 +25,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             Document nullDocument = null;
 
             var nullDocumentException =
-                new NullDocumentException();
+                new NullDocumentException(message: "Document is Null");
 
             var expectedDocumentValidationException =
-                new DocumentValidationException(nullDocumentException);
+                new DocumentValidationException(
+                    message: "Document validation errors occured, please try again",
+                    innerException: nullDocumentException);
 
             // when
             ValueTask AddDocumentTask =
@@ -64,14 +66,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                 DocumentData = invalidData
             };
 
-            var invalidDocumentException = new InvalidDocumentException();
+            var invalidDocumentException = new InvalidDocumentException(
+                message: "Invalid document. Please correct the errors and try again.");
 
             invalidDocumentException.AddData(
                  key: "DocumentData",
                  values: "Data is required");
 
             var expectedDocumentValidationException
-                = new DocumentValidationException(innerException: invalidDocumentException);
+                = new DocumentValidationException(
+                    message: "Document validation errors occured, please try again",
+                    innerException: invalidDocumentException);
 
             // When
             ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document);
@@ -126,14 +131,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             Stream validStream = new MemoryStream(document.DocumentData);
 
-            var invalidDocumentException = new InvalidDocumentException();
+            var invalidDocumentException = new InvalidDocumentException(
+                message: "Invalid document. Please correct the errors and try again.");
 
             invalidDocumentException.AddData(
                 key: "FileName",
                 values: "Text is required");
 
             var expectedDocumentValidationException
-                = new DocumentValidationException(innerException: invalidDocumentException);
+                = new DocumentValidationException(
+                    message: "Document validation errors occured, please try again",
+                    innerException: invalidDocumentException);
 
             // When
             ValueTask uploadFileTask = documentService.AddDocumentAsync(document);

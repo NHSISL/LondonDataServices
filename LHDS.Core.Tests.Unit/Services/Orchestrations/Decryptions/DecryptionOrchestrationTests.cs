@@ -105,7 +105,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             return new TheoryData<Xeption>
             {
-                new DocumentValidationException(innerException),
+                new DocumentValidationException(
+                    message: "Document validation errors occured, please try again",
+                    innerException),
 
                 new DocumentDependencyValidationException(
                     message: "Document dependency validation occurred, please try again.",
@@ -144,7 +146,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     message: "Document dependency error occurred, contact support.",
                     innerException),
 
-                new DocumentServiceException(innerException),
+                new DocumentServiceException(
+                    message: "Document service error occurred, contact support.",
+                    innerException),
 
                 new DecryptionDependencyException(
                     message: "Decryption dependency error occurred, contact support.",

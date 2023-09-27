@@ -26,7 +26,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
                 new FailedDownloadServiceException(serviceException);
 
             var expectedDownloadServiceException =
-                new DownloadServiceException(failedDownloadServiceException);
+                new DownloadServiceException(
+                    message: "Download service error occurred, contact support.",
+                    innerException: failedDownloadServiceException);
 
             this.downloadBrokerMock.Setup(broker =>
                 broker.GetListOfDocumentsToProcessAsync())

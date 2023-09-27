@@ -1,0 +1,58 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.ObjectColumns;
+using LHDS.Core.Models.Processings.ObjectColumns.Exceptions;
+using Moq;
+using Xeptions;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
+{
+    public partial class ObjectColumnProcessingServiceTests
+    {
+        [Theory]
+        [MemberData(nameof(DependencyValidationExceptions))]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfErrorOccursAndLogItAsync(
+            Xeption dependencyValidationException)
+        {
+            // given
+            ObjectColumn someObjectColumn = CreateRandomObjectColumn();
+            ObjectColumn inputObjectColumn = someObjectColumn;
+
+            var expectedObjectColumnProcessingDependencyValidationException =
+                new ObjectColumnProcessingDependencyValidationException(
+                    message: "ObjectColumn processing dependency validation error occurred, please try again.",
+                    innerException: dependencyValidationException.InnerException as Xeption);
+
+            this.objectColumnServiceMock.Setup(service =>
+                service.ModifyObjectColumnAsync(inputObjectColumn))
+                    .Throws(dependencyValidationException);
+
+            // when
+            ValueTask<ObjectColumn> objectColumnAddTask =
+                this.objectColumnProcessingService.ModifyObjectColumnAsync(inputObjectColumn);
+
+            ObjectColumnProcessingDependencyValidationException actualException =
+                await Assert.ThrowsAsync<ObjectColumnProcessingDependencyValidationException>(objectColumnAddTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedObjectColumnProcessingDependencyValidationException);
+
+            this.objectColumnServiceMock.Verify(service =>
+                service.ModifyObjectColumnAsync(inputObjectColumn),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedObjectColumnProcessingDependencyValidationException))),
+                         Times.Once);
+
+            this.objectColumnServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

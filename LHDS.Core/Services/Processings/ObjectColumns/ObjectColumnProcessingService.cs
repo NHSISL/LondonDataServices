@@ -63,7 +63,7 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             }
             else
             {
-                throw new NotImplementedException();
+                return await this.objectColumnService.AddObjectColumnAsync(objectColumn);
             }
         }
     }

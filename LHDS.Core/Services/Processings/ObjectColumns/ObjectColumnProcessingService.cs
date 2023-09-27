@@ -57,6 +57,7 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             TryCatch(async () =>
             {
                 ValidateObjectColumn(objectColumn);
+                ValidateObjectColumnId(objectColumn.Id);
                 var maybeObjectColumn = await this.objectColumnService.RetrieveObjectColumnByIdAsync(objectColumn.Id);
 
                 if (maybeObjectColumn != null)

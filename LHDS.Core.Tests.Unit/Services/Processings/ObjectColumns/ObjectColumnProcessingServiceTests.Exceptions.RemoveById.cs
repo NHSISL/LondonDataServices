@@ -55,5 +55,45 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
             this.objectColumnServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnRemoveByIdIfDependencyErrorOccursAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+
+            var expectedObjectColumnProcessingDependencyException =
+                new ObjectColumnProcessingDependencyException(
+                    message: "ObjectColumn processing dependency error occurred, please try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.objectColumnServiceMock.Setup(service =>
+                service.RetrieveObjectColumnByIdAsync(someId))
+                    .Throws(dependencyException);
+
+            // when
+            ValueTask<ObjectColumn> objectColumnRemoveByIdTask =
+                this.objectColumnProcessingService.RetrieveObjectColumnByIdAsync(someId);
+
+            ObjectColumnProcessingDependencyException actualException =
+                await Assert.ThrowsAsync<ObjectColumnProcessingDependencyException>(objectColumnRemoveByIdTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedObjectColumnProcessingDependencyException);
+
+            this.objectColumnServiceMock.Verify(service =>
+                service.RetrieveObjectColumnByIdAsync(someId),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedObjectColumnProcessingDependencyException))),
+                         Times.Once);
+
+            this.objectColumnServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

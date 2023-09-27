@@ -35,7 +35,7 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
         public IQueryable<ObjectColumn> RetrieveAllObjectColumns() =>
             TryCatch(() => this.objectColumnService.RetrieveAllObjectColumns());
 
-        public ValueTask<ObjectColumn> RetrieveObjectColumnByIdAsync(Guid objectColumnId) =>
-            throw new NotImplementedException();
+        public async ValueTask<ObjectColumn> RetrieveObjectColumnByIdAsync(Guid objectColumnId) =>
+            await this.objectColumnService.RetrieveObjectColumnByIdAsync(objectColumnId);
     }
 }

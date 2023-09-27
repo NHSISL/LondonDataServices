@@ -22,7 +22,7 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<ObjectColumn> AddObjectColumnAsync(ObjectColumn objectColumn) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<ObjectColumn> AddObjectColumnAsync(ObjectColumn objectColumn) =>
+            await this.objectColumnService.AddObjectColumnAsync(objectColumn);
     }
 }

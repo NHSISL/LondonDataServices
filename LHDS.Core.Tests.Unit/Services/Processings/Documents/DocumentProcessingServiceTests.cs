@@ -43,7 +43,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             return new TheoryData<Xeption>
             {
                 new DocumentValidationException(innerException),
-                new DocumentDependencyValidationException(innerException)
+
+                new DocumentDependencyValidationException(
+                    message: "Document dependency validation occurred, please try again.",
+                    innerException)
             };
         }
 
@@ -55,7 +58,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 
             return new TheoryData<Xeption>
             {
-                new DocumentDependencyException(innerException),
+                new DocumentDependencyException(
+                    message: "Document dependency error occurred, contact support.",
+                    innerException),
+
                 new DocumentServiceException(innerException)
             };
         }

@@ -106,9 +106,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             return new TheoryData<Xeption>
             {
                 new DocumentValidationException(innerException),
-                new DocumentDependencyValidationException(innerException),
-                new DecryptionValidationException(innerException),
-                new DecryptionDependencyValidationException(innerException),
+
+                new DocumentDependencyValidationException(
+                    message: "Document dependency validation occurred, please try again.",
+                    innerException),
+
+                new DecryptionValidationException(
+                    message: "Decryption validation errors occurred, please try again.",
+                    innerException),
+
+                new DecryptionDependencyValidationException(
+                    message: "Decryption dependency validation occurred, please try again.",
+                    innerException),
+
                 new IngestionTrackingValidationException(innerException),
                 new IngestionTrackingDependencyValidationException(innerException),
 
@@ -130,10 +140,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             return new TheoryData<Xeption>
             {
-                new DocumentDependencyException(innerException),
+                new DocumentDependencyException(
+                    message: "Document dependency error occurred, contact support.",
+                    innerException),
+
                 new DocumentServiceException(innerException),
-                new DecryptionDependencyException(innerException),
-                new DecryptionServiceException(innerException),
+
+                new DecryptionDependencyException(
+                    message: "Decryption dependency error occurred, contact support.",
+                    innerException),
+
+                new DecryptionServiceException(
+                    message: "Decryption service error occurred, contact support.",
+                    innerException),
+                
                 new IngestionTrackingDependencyException(innerException),
                 new IngestionTrackingServiceException(innerException),
 

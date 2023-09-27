@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.Decryptions
         {
             if (Decryption is null)
             {
-                throw new NullDecryptionException();
+                throw new NullDecryptionException(message: "Decryption is null.");
             }
         }
     }

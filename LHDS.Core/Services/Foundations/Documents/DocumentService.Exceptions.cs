@@ -40,7 +40,9 @@ namespace LHDS.Core.Services.Foundations.Documents
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsDocumentException =
-                    new AlreadyExistsDocumentException(duplicateKeyException);
+                    new AlreadyExistsDocumentException(
+                        message: "Document with the same Id already exists.",
+                        innerException: duplicateKeyException);
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsDocumentException);
             }
@@ -117,7 +119,10 @@ namespace LHDS.Core.Services.Foundations.Documents
 
         private DocumentDependencyException CreateAndLogDependencyException(Xeption exception)
         {
-            var documentDependencyException = new DocumentDependencyException(exception);
+            var documentDependencyException = new DocumentDependencyException(
+                message: "Document dependency error occurred, contact support.", 
+                innerException: exception);
+
             this.loggingBroker.LogError(documentDependencyException);
 
             return documentDependencyException;
@@ -126,7 +131,9 @@ namespace LHDS.Core.Services.Foundations.Documents
         private DocumentDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
         {
             var documentDependencyValidationException =
-                new DocumentDependencyValidationException(exception);
+                new DocumentDependencyValidationException(
+                    message: "Document dependency validation occurred, please try again.", 
+                    innerException: exception);
 
             this.loggingBroker.LogError(documentDependencyValidationException);
 

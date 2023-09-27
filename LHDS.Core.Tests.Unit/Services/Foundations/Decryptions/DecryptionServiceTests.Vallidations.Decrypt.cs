@@ -19,10 +19,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decryptions
             byte[] nullDecryption = null;
 
             var nullDecryptionException =
-                new NullDecryptionException();
+                new NullDecryptionException(message: "Decryption is null.");
 
             var expectedDecryptionValidationException =
-                new DecryptionValidationException(nullDecryptionException);
+                new DecryptionValidationException(
+                    message: "Decryption validation errors occurred, please try again.",
+                    innerException: nullDecryptionException);
 
             // when
             Task<byte[]> decryptTask =

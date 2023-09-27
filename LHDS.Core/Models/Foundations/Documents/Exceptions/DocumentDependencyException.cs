@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Foundations.Documents.Exceptions
 {
     public class DocumentDependencyException : Xeption
     {
-        public DocumentDependencyException(Xeption innerException) :
+        public DocumentDependencyException(string message, Xeption innerException) :
             base(message: "Document dependency error occurred, contact support.", innerException)
         { }
     }

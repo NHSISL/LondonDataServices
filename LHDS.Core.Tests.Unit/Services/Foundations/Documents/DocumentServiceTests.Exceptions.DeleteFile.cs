@@ -35,7 +35,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                 new FailedDocumentRequestException(requestFailedException);
 
             var expectedDependencyException =
-                 new DocumentDependencyException(failedDocumentRequestException);
+                 new DocumentDependencyException(
+                     message: "Document dependency error occurred, contact support.", 
+                     innerException: failedDocumentRequestException);
 
             this.blobStorageBrokerMock.Setup(broker =>
                  broker.DeleteFileAsync(randomDocument.FileName))

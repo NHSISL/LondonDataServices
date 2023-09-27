@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions
 {
     public class AlreadyExistsIngestionTrackingException : Xeption
     {
-        public AlreadyExistsIngestionTrackingException(Exception innerException)
-            : base(message: "Ingestion tracking with the same Id already exists.") { }
+        public AlreadyExistsIngestionTrackingException(string message, Exception innerException)
+            : base(message, innerException) { }
     }
 }

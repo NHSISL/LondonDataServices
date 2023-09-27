@@ -122,7 +122,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     innerException),
 
                 new IngestionTrackingValidationException(innerException),
-                new IngestionTrackingDependencyValidationException(innerException),
+
+                new IngestionTrackingDependencyValidationException(
+                    message: "Ingestion tracking dependency validation occurred, please try again.",
+                    innerException),
 
                 new AuditValidationException(
                     message: "Audit validation errors occurred, please try again.",
@@ -158,7 +161,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     message: "Decryption service error occurred, contact support.",
                     innerException),
                 
-                new IngestionTrackingDependencyException(innerException),
+                new IngestionTrackingDependencyException(
+                    message: "Failed ingestion tracking storage error occurred, contact support.",
+                    innerException),
+
                 new IngestionTrackingServiceException(innerException),
 
                 new AuditDependencyException(

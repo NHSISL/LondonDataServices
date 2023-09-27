@@ -58,13 +58,17 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
                 var invalidIngestionTrackingReferenceException =
-                    new InvalidIngestionTrackingReferenceException(foreignKeyConstraintConflictException);
+                    new InvalidIngestionTrackingReferenceException(
+                        message: "Invalid ingestion tracking reference error occurred.", 
+                        innerException: foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidIngestionTrackingReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var lockedIngestionTrackingException = new LockedIngestionTrackingException(dbUpdateConcurrencyException);
+                var lockedIngestionTrackingException = new LockedIngestionTrackingException(
+                    message: "Locked ingestion tracking record exception, please try again later", 
+                    innerException: dbUpdateConcurrencyException);
 
                 throw CreateAndLogDependencyValidationException(lockedIngestionTrackingException);
             }
@@ -117,7 +121,9 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
         private IngestionTrackingValidationException CreateAndLogValidationException(Xeption exception)
         {
             var ingestionTrackingValidationException =
-                new IngestionTrackingValidationException(exception);
+                new IngestionTrackingValidationException(
+                    message: "Ingestion tracking validation errors occurred, fix the errors and try again.",
+                    innerException: exception);
 
             this.loggingBroker.LogError(ingestionTrackingValidationException);
 
@@ -162,7 +168,10 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
         private IngestionTrackingServiceException CreateAndLogServiceException(
             Xeption exception)
         {
-            var ingestionTrackingServiceException = new IngestionTrackingServiceException(exception);
+            var ingestionTrackingServiceException = new IngestionTrackingServiceException(
+                message: "Ingestion tracking service error occurred, contact support.",
+                innerException: exception);
+
             this.loggingBroker.LogError(ingestionTrackingServiceException);
 
             return ingestionTrackingServiceException;

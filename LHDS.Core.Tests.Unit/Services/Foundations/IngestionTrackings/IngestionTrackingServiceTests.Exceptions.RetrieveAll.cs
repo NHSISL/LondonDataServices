@@ -71,7 +71,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     innerException: serviceException);
 
             var expectedIngestionTrackingServiceException =
-                new IngestionTrackingServiceException(failedIngestionTrackingServiceException);
+                new IngestionTrackingServiceException(
+                    message: "Ingestion tracking service error occurred, contact support.",
+                    innerException: failedIngestionTrackingServiceException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllIngestionTrackings())

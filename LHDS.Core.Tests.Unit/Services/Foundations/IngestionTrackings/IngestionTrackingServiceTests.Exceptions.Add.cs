@@ -135,7 +135,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 new ForeignKeyConstraintConflictException(exceptionMessage);
 
             var invalidIngestionTrackingReferenceException =
-                new InvalidIngestionTrackingReferenceException(foreignKeyConstraintConflictException);
+                new InvalidIngestionTrackingReferenceException(
+                    message: "Invalid ingestion tracking reference error occurred.", 
+                    innerException: foreignKeyConstraintConflictException);
 
             var expectedIngestionTrackingValidationException =
                 new IngestionTrackingDependencyValidationException(
@@ -242,7 +244,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     innerException: serviceException);
 
             var expectedIngestionTrackingServiceException =
-                new IngestionTrackingServiceException(failedIngestionTrackingServiceException);
+                new IngestionTrackingServiceException(
+                    message: "Ingestion tracking service error occurred, contact support.",
+                    innerException: failedIngestionTrackingServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())

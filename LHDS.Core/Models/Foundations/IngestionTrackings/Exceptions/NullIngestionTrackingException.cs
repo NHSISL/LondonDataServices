@@ -8,7 +8,8 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions
 {
     public class NullIngestionTrackingException : Xeption
     {
-        public NullIngestionTrackingException()
-            : base(message: "Ingestion tracking is null.") { }
+        public NullIngestionTrackingException(string message)
+            : base(message) 
+        { }
     }
 }

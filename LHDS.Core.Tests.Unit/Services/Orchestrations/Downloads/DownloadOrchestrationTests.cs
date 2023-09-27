@@ -164,7 +164,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     message: "Download dependency validation occurred, please try again.",
                     innerException),
 
-                new IngestionTrackingValidationException(innerException),
+                new IngestionTrackingValidationException(
+                    message: "Ingestion tracking validation errors occurred, fix the errors and try again.",
+                    innerException),
 
                 new IngestionTrackingDependencyValidationException(
                     message: "Ingestion tracking dependency validation occurred, please try again.",
@@ -208,7 +210,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     message: "Failed ingestion tracking storage error occurred, contact support.",
                     innerException),
 
-                new IngestionTrackingServiceException(innerException),
+                new IngestionTrackingServiceException(
+                    message: "Ingestion tracking service error occurred, contact support.",
+                    innerException),
 
                 new AuditDependencyException(
                     message: "Audit dependency error occurred, contact support.",

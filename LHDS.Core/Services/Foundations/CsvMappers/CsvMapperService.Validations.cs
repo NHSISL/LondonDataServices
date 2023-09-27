@@ -13,12 +13,14 @@ namespace LHDS.Core.Brokers.CsvMappers
         private static void ValidateMapCsvToObjectArguments(string data, bool hasHeaderRecord)
         {
             Validate<InvalidCsvMapperArgumentsException>(
+                    message: "Invalid CSV mapper arguments. Please fix the errors and try again.",
                     (Rule: IsInvalid(data), Parameter: "Data"));
         }
 
         private static void ValidateMapObjectToCsvArguments<T>(T @object, bool addHeaderRecord)
         {
             Validate<InvalidCsvMapperArgumentsException>(
+                    message: "Invalid CSV mapper arguments. Please fix the errors and try again.",
                     (Rule: IsInvalid(@object), Parameter: "Object"));
         }
 
@@ -34,10 +36,10 @@ namespace LHDS.Core.Brokers.CsvMappers
             Message = "Object is required"
         };
 
-        private static void Validate<T>(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
-            var invalidDataException = (T)Activator.CreateInstance(typeof(T));
+            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
 
             foreach ((dynamic rule, string parameter) in validations)
             {

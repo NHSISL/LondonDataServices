@@ -67,7 +67,7 @@ namespace LHDS.Core.Services.Foundations.Audits
         {
             if (maybeAudit is null)
             {
-                throw new NotFoundAuditException(auditId);
+                throw new NotFoundAuditException(message: $"Couldn't find audit with auditId: {auditId}.");
             }
         }
 
@@ -75,7 +75,7 @@ namespace LHDS.Core.Services.Foundations.Audits
         {
             if (audit is null)
             {
-                throw new NullAuditException();
+                throw new NullAuditException(message: "Audit is null.");
             }
         }
 
@@ -174,7 +174,8 @@ namespace LHDS.Core.Services.Foundations.Audits
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidAuditException = new InvalidAuditException();
+            var invalidAuditException = new InvalidAuditException(
+                message: "Invalid audit. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

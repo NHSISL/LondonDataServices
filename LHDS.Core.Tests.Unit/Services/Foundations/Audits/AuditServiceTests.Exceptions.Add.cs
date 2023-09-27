@@ -25,7 +25,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             SqlException sqlException = GetSqlException();
 
             var failedAuditStorageException =
-                new FailedAuditStorageException(sqlException);
+                new FailedAuditStorageException(
+                    message: "Failed audit storage error occurred, contact support.", 
+                    innerException: sqlException);
 
             var expectedAuditDependencyException =
                 new AuditDependencyException(
@@ -133,7 +135,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 new ForeignKeyConstraintConflictException(exceptionMessage);
 
             var invalidAuditReferenceException =
-                new InvalidAuditReferenceException(foreignKeyConstraintConflictException);
+                new InvalidAuditReferenceException(
+                    message: "Invalid audit reference error occurred.",
+                    innerException: foreignKeyConstraintConflictException);
 
             var expectedAuditValidationException =
                 new AuditDependencyValidationException(
@@ -184,7 +188,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 new DbUpdateException();
 
             var failedAuditStorageException =
-                new FailedAuditStorageException(databaseUpdateException);
+                new FailedAuditStorageException(
+                    message: "Failed audit storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
 
             var expectedAuditDependencyException =
                 new AuditDependencyException(

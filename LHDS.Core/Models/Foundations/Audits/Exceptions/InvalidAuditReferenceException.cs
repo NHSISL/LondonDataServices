@@ -9,7 +9,8 @@ namespace LHDS.Core.Models.Foundations.Audits.Exceptions
 {
     public class InvalidAuditReferenceException : Xeption
     {
-        public InvalidAuditReferenceException(Exception innerException)
-            : base(message: "Invalid audit reference error occurred.", innerException) { }
+        public InvalidAuditReferenceException(string message, Exception innerException)
+            : base(message, innerException) 
+        { }
     }
 }

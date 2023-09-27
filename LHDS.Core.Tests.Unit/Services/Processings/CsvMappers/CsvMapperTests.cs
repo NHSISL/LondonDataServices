@@ -42,8 +42,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
 
             return new TheoryData<Xeption>
             {
-                new CsvMapperValidationException(innerException),
-                new CsvMapperDependencyValidationException(innerException)
+                new CsvMapperValidationException(
+                    message: "CSV mapper validation errors occurred, fix the errors and try again.",
+                    innerException),
+
+                new CsvMapperDependencyValidationException(
+                    message: "CSV mapper dependency validation occurred, please try again.",
+                    innerException)
             };
         }
 
@@ -55,8 +60,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
 
             return new TheoryData<Xeption>
             {
-                new CsvMapperDependencyException(innerException),
-                new CsvMapperServiceException(innerException)
+                new CsvMapperDependencyException(
+                    message: "CSV mapper dependency error occurred, contact support.",
+                    innerException),
+
+                new CsvMapperServiceException(
+                    message: "CSV mapper service error occurred, contact support.",
+                    innerException)
             };
         }
 

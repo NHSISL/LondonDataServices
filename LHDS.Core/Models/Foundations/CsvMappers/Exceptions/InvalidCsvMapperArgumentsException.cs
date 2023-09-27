@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Foundations.CsvMappers.Exceptions
 {
     public class InvalidCsvMapperArgumentsException : Xeption
     {
-        public InvalidCsvMapperArgumentsException()
+        public InvalidCsvMapperArgumentsException(string message)
             : base(message: "Invalid CSV mapper arguments. Please fix the errors and try again.") { }
     }
 }

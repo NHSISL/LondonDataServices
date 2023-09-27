@@ -119,7 +119,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
             var serviceException = new Exception();
 
             var failedCsvMapperServiceException =
-                new FailedCsvMapperServiceException(serviceException);
+                new FailedCsvMapperServiceException(
+                    message: "Failed CSV mapper service error occurred, contact support.",
+                    innerException: serviceException);
 
             var expectedCsvMapperServiceException =
                 new CsvMapperProcessingServiceException(

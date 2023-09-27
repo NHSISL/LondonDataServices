@@ -20,7 +20,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             SqlException sqlException = GetSqlException();
 
             var failedStorageException =
-                new FailedAuditStorageException(sqlException);
+                new FailedAuditStorageException(
+                    message: "Failed audit storage error occurred, contact support.",
+                    innerException: sqlException);
 
             var expectedAuditDependencyException =
                 new AuditDependencyException(

@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             var invalidAuditId = Guid.Empty;
 
             var invalidAuditException =
-                new InvalidAuditException();
+                new InvalidAuditException(message: "Invalid audit. Please correct the errors and try again.");
 
             invalidAuditException.AddData(
                 key: nameof(Audit.Id),
@@ -66,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             Audit noAudit = null;
 
             var notFoundAuditException =
-                new NotFoundAuditException(someAuditId);
+                new NotFoundAuditException(message: $"Couldn't find audit with auditId: {someAuditId}.");
 
             var expectedAuditValidationException =
                 new AuditValidationException(

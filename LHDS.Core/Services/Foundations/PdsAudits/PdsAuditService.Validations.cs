@@ -75,7 +75,7 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
         {
             if (pdsAudit is null)
             {
-                throw new NullPdsAuditException();
+                throw new NullPdsAuditException(message: "PdsAudit is null.");
             }
         }
 
@@ -174,7 +174,8 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidPdsAuditException = new InvalidPdsAuditException();
+            var invalidPdsAuditException = new InvalidPdsAuditException(
+                message: "Invalid pdsAudit. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

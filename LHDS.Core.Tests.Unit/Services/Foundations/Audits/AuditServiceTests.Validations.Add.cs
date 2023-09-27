@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             Audit nullAudit = null;
 
             var nullAuditException =
-                new NullAuditException();
+                new NullAuditException(message: "Audit is null.");
 
             var expectedAuditValidationException =
                 new AuditValidationException(
@@ -63,7 +63,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             };
 
             var invalidAuditException =
-                new InvalidAuditException();
+                new InvalidAuditException(
+                    message: "Invalid audit. Please correct the errors and try again.");
 
             invalidAuditException.AddData(
                 key: nameof(Audit.Id),
@@ -140,7 +141,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             invalidAudit.UpdatedDate =
                 invalidAudit.CreatedDate.AddDays(randomNumber);
 
-            var invalidAuditException = new InvalidAuditException();
+            var invalidAuditException = new InvalidAuditException(
+                message: "Invalid audit. Please correct the errors and try again.");
 
             invalidAuditException.AddData(
                 key: nameof(Audit.UpdatedDate),
@@ -195,7 +197,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             invalidAudit.UpdatedBy = Guid.NewGuid().ToString();
 
             var invalidAuditException =
-                new InvalidAuditException();
+                new InvalidAuditException(message: "Invalid audit. Please correct the errors and try again.");
 
             invalidAuditException.AddData(
                 key: nameof(Audit.UpdatedBy),
@@ -255,7 +257,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             Audit invalidAudit = randomAudit;
 
             var invalidAuditException =
-                new InvalidAuditException();
+                new InvalidAuditException(message: "Invalid audit. Please correct the errors and try again.");
 
             invalidAuditException.AddData(
                 key: nameof(Audit.CreatedDate),

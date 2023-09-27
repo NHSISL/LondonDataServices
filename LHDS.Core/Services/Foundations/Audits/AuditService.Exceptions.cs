@@ -36,7 +36,9 @@ namespace LHDS.Core.Services.Foundations.Audits
             catch (SqlException sqlException)
             {
                 var failedAuditStorageException =
-                    new FailedAuditStorageException(sqlException);
+                    new FailedAuditStorageException(
+                        message: "Failed audit storage error occurred, contact support.", 
+                        innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedAuditStorageException);
             }
@@ -56,20 +58,26 @@ namespace LHDS.Core.Services.Foundations.Audits
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
                 var invalidAuditReferenceException =
-                    new InvalidAuditReferenceException(foreignKeyConstraintConflictException);
+                    new InvalidAuditReferenceException(
+                        message: "Invalid audit reference error occurred.",
+                        innerException: foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidAuditReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var lockedAuditException = new LockedAuditException(dbUpdateConcurrencyException);
+                var lockedAuditException = new LockedAuditException(
+                    message: "Locked audit record exception, please try again later",
+                    innerException: dbUpdateConcurrencyException);
 
                 throw CreateAndLogDependencyValidationException(lockedAuditException);
             }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedAuditStorageException =
-                    new FailedAuditStorageException(databaseUpdateException);
+                    new FailedAuditStorageException(
+                        message: "Failed audit storage error occurred, contact support.", 
+                        innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedAuditStorageException);
             }
@@ -93,7 +101,10 @@ namespace LHDS.Core.Services.Foundations.Audits
             catch (SqlException sqlException)
             {
                 var failedAuditStorageException =
-                    new FailedAuditStorageException(sqlException);
+                    new FailedAuditStorageException(
+                        message: "Failed audit storage error occurred, contact support.", 
+                        innerException: sqlException);
+
                 throw CreateAndLogCriticalDependencyException(failedAuditStorageException);
             }
             catch (Exception exception)

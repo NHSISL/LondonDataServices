@@ -24,7 +24,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             SqlException sqlException = GetSqlException();
 
             var failedAuditStorageException =
-                new FailedAuditStorageException(sqlException);
+                new FailedAuditStorageException(
+                    message: "Failed audit storage error occurred, contact support.",
+                    innerException: sqlException);
 
             var expectedAuditDependencyException =
                 new AuditDependencyException(
@@ -79,7 +81,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 new DbUpdateConcurrencyException();
 
             var lockedAuditException =
-                new LockedAuditException(databaseUpdateConcurrencyException);
+                new LockedAuditException(
+                    message: "Locked audit record exception, please try again later",
+                    innerException: databaseUpdateConcurrencyException);
 
             var expectedAuditDependencyValidationException =
                 new AuditDependencyValidationException(
@@ -128,7 +132,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             SqlException sqlException = GetSqlException();
 
             var failedAuditStorageException =
-                new FailedAuditStorageException(sqlException);
+                new FailedAuditStorageException(
+                    message: "Failed audit storage error occurred, contact support.",
+                    innerException: sqlException);
 
             var expectedAuditDependencyException =
                 new AuditDependencyException(

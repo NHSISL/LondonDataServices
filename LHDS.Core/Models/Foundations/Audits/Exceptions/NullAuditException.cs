@@ -8,7 +8,8 @@ namespace LHDS.Core.Models.Foundations.Audits.Exceptions
 {
     public class NullAuditException : Xeption
     {
-        public NullAuditException()
-            : base(message: "Audit is null.") { }
+        public NullAuditException(string message)
+            : base(message)
+        { }
     }
 }

@@ -89,5 +89,48 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
             this.objectColumnServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
+        {
+            // given
+            var serviceException = new Exception();
+
+            var failedObjectColumnProcessingServiceException =
+                new FailedObjectColumnProcessingServiceException(
+                    message: "Failed ObjectColumn processing service error occurred, contact support.",
+                    innerException: serviceException);
+
+            var expectedObjectColumnProcessingServiveException =
+                new ObjectColumnProcessingServiceException(
+                    message: "ObjectColumn processing service error occurred, contact support.",
+                    innerException: failedObjectColumnProcessingServiceException);
+
+            this.objectColumnServiceMock.Setup(service =>
+                service.RetrieveAllObjectColumns())
+                    .Throws(serviceException);
+
+            // when
+            Action objectColumnRetrieveAction = () =>
+                this.objectColumnProcessingService.RetrieveAllObjectColumns();
+
+            ObjectColumnProcessingServiceException actualException =
+                Assert.Throws<ObjectColumnProcessingServiceException>(objectColumnRetrieveAction);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedObjectColumnProcessingServiveException);
+
+            this.objectColumnServiceMock.Verify(service =>
+                service.RetrieveAllObjectColumns(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedObjectColumnProcessingServiveException))),
+                         Times.Once);
+
+            this.objectColumnServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

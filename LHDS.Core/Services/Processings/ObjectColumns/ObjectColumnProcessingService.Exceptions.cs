@@ -77,6 +77,15 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             {
                 throw CreateAndLogDependencyException(objectColumnServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedObjectColumnProcessingServiceException =
+                    new FailedObjectColumnProcessingServiceException(
+                        message: "Failed ObjectColumn processing service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedObjectColumnProcessingServiceException);
+            }
         }
 
 

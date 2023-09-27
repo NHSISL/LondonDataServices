@@ -23,7 +23,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
             var serviceException = new Exception(exceptionMessage);
 
             var failedDownloadServiceException =
-                new FailedDownloadServiceException(serviceException);
+                new FailedDownloadServiceException(
+                    message: "Failed download service occurred, please contact support", 
+                    innerException: serviceException);
 
             var expectedDownloadServiceException =
                 new DownloadServiceException(

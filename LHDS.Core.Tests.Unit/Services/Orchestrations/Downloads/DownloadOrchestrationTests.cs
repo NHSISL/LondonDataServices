@@ -156,7 +156,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     message: "Document dependency validation occurred, please try again.",
                     innerException),
 
-                new DownloadValidationException(innerException),
+                new DownloadValidationException(
+                    message: "Download validation errors occurred, please try again.",
+                    innerException),
 
                 new DownloadDependencyValidationException(
                     message: "Download dependency validation occurred, please try again.",

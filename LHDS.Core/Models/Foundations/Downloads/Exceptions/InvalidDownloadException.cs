@@ -8,7 +8,8 @@ namespace LHDS.Core.Models.Foundations.Downloads.Exceptions
 {
     public class InvalidDownloadException : Xeption
     {
-        public InvalidDownloadException()
-            : base(message: "Invalid download. Please correct the errors and try again.") { }
+        public InvalidDownloadException(string message)
+            : base(message) 
+        { }
     }
 }

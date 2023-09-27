@@ -51,5 +51,43 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
             this.objectColumnServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            var expectedObjectColumnProcessingDependencyException =
+                new ObjectColumnProcessingDependencyException(
+                    message: "ObjectColumn processing dependency error occurred, please try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.objectColumnServiceMock.Setup(service =>
+                service.RetrieveAllObjectColumns())
+                    .Throws(dependencyException);
+
+            // when
+            Action objectColumnRetrieveAction = () =>
+                this.objectColumnProcessingService.RetrieveAllObjectColumns();
+
+            ObjectColumnProcessingDependencyException actualException =
+                Assert.Throws<ObjectColumnProcessingDependencyException>(objectColumnRetrieveAction);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedObjectColumnProcessingDependencyException);
+
+            this.objectColumnServiceMock.Verify(service =>
+                service.RetrieveAllObjectColumns(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedObjectColumnProcessingDependencyException))),
+                         Times.Once);
+
+            this.objectColumnServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

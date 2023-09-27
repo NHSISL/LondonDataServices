@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.Downloads
         {
             if (maybeDocument is null)
             {
-                throw new NotFoundDownloadException(fileName);
+                throw new NotFoundDownloadException(message: $"Couldn't find download with file name: {fileName}.");
             }
         }
 
@@ -25,7 +25,7 @@ namespace LHDS.Core.Services.Foundations.Downloads
         {
             if (document is null)
             {
-                throw new NullDownloadException();
+                throw new NullDownloadException(message: "Download is null.");
             }
         }
 
@@ -78,7 +78,8 @@ namespace LHDS.Core.Services.Foundations.Downloads
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidDownloadException = new InvalidDownloadException();
+            var invalidDownloadException = new InvalidDownloadException(
+                message: "Invalid download. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

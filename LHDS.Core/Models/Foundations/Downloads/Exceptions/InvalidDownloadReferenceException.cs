@@ -9,7 +9,8 @@ namespace LHDS.Core.Models.Foundations.Downloads.Exceptions
 {
     public class InvalidDownloadReferenceException : Xeption
     {
-        public InvalidDownloadReferenceException(Exception innerException)
-            : base(message: "Invalid download reference error occurred.", innerException) { }
+        public InvalidDownloadReferenceException(string message, Exception innerException)
+            : base(message, innerException)
+        { }
     }
 }

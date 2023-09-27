@@ -5,8 +5,8 @@ namespace LHDS.Core.Models.Foundations.PdsAudits.Exceptions
 {
     public class PdsAuditServiceException : Xeption
     {
-        public PdsAuditServiceException(Exception innerException)
-            : base(message: "PdsAudit service error occurred, contact support.", innerException)
+        public PdsAuditServiceException(string message, Exception innerException)
+            : base(message, innerException)
         { }
     }
 }

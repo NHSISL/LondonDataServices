@@ -5,8 +5,8 @@ namespace LHDS.Core.Models.Foundations.PdsAudits.Exceptions
 {
     public class FailedPdsAuditStorageException : Xeption
     {
-        public FailedPdsAuditStorageException(Exception innerException)
-            : base(message: "Failed pdsAudit storage error occurred, contact support.", innerException)
+        public FailedPdsAuditStorageException(string message, Exception innerException)
+            : base(message, innerException)
         { }
     }
 }

@@ -25,10 +25,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             SqlException sqlException = GetSqlException();
 
             var failedPdsAuditStorageException =
-                new FailedPdsAuditStorageException(sqlException);
+                new FailedPdsAuditStorageException(
+                    message: "Failed pdsAudit service occurred, please contact support", 
+                    innerException: sqlException);
 
             var expectedPdsAuditDependencyException =
-                new PdsAuditDependencyException(failedPdsAuditStorageException);
+                new PdsAuditDependencyException(
+                    message: "PdsAudit dependency error occurred, contact support.", 
+                    innerException: failedPdsAuditStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -80,10 +84,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 new ForeignKeyConstraintConflictException(exceptionMessage);
 
             var invalidPdsAuditReferenceException =
-                new InvalidPdsAuditReferenceException(foreignKeyConstraintConflictException);
+                new InvalidPdsAuditReferenceException(
+                    message: "Invalid pdsAudit reference error occurred.", 
+                    innerException: foreignKeyConstraintConflictException);
 
             PdsAuditDependencyValidationException expectedPdsAuditDependencyValidationException =
-                new PdsAuditDependencyValidationException(invalidPdsAuditReferenceException);
+                new PdsAuditDependencyValidationException(
+                    message: "PdsAudit dependency validation occurred, please try again.", 
+                    innerException: invalidPdsAuditReferenceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -130,10 +138,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             var databaseUpdateException = new DbUpdateException();
 
             var failedPdsAuditStorageException =
-                new FailedPdsAuditStorageException(databaseUpdateException);
+                new FailedPdsAuditStorageException(
+                    message: "Failed pdsAudit service occurred, please contact support", 
+                    innerException: databaseUpdateException);
 
             var expectedPdsAuditDependencyException =
-                new PdsAuditDependencyException(failedPdsAuditStorageException);
+                new PdsAuditDependencyException(
+                    message: "PdsAudit dependency error occurred, contact support.", 
+                    innerException: failedPdsAuditStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -181,10 +193,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             var databaseUpdateConcurrencyException = new DbUpdateConcurrencyException();
 
             var lockedPdsAuditException =
-                new LockedPdsAuditException(databaseUpdateConcurrencyException);
+                new LockedPdsAuditException(
+                    message: "Locked pdsAudit record exception, please try again later", 
+                    innerException: databaseUpdateConcurrencyException);
 
             var expectedPdsAuditDependencyValidationException =
-                new PdsAuditDependencyValidationException(lockedPdsAuditException);
+                new PdsAuditDependencyValidationException(
+                    message: "PdsAudit dependency validation occurred, please try again.", 
+                    innerException: lockedPdsAuditException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -232,10 +248,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             var serviceException = new Exception();
 
             var failedPdsAuditServiceException =
-                new FailedPdsAuditServiceException(serviceException);
+                new FailedPdsAuditServiceException(
+                    message: "Failed pdsAudit service occurred, please contact support", 
+                    innerException: serviceException);
 
             var expectedPdsAuditServiceException =
-                new PdsAuditServiceException(failedPdsAuditServiceException);
+                new PdsAuditServiceException(
+                    message: "PdsAudit service error occurred, contact support.", 
+                    innerException: failedPdsAuditServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())

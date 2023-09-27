@@ -5,7 +5,7 @@ namespace LHDS.Core.Models.Foundations.PdsAudits.Exceptions
 {
     public class InvalidPdsAuditReferenceException : Xeption
     {
-        public InvalidPdsAuditReferenceException(Exception innerException)
-            : base(message: "Invalid pdsAudit reference error occurred.", innerException) { }
+        public InvalidPdsAuditReferenceException(string message, Exception innerException)
+            : base(message, innerException) { }
     }
 }

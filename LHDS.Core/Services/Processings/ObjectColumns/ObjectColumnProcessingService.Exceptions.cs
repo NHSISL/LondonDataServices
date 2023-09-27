@@ -4,6 +4,7 @@
 
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.ObjectColumns;
+using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 using LHDS.Core.Models.Processings.ObjectColumns.Exceptions;
 using Xeptions;
 
@@ -23,6 +24,14 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             {
                 throw CreateAndLogValidationException(nullObjectColumnException);
             }
+            catch (ObjectColumnValidationException objectColumnValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(objectColumnValidationException);
+            }
+            catch (ObjectColumnDependencyValidationException objectColumnDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(objectColumnDependencyValidationException);
+            }
         }
 
         private ObjectColumnProcessingValidationException CreateAndLogValidationException(Xeption exception)
@@ -35,6 +44,19 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             this.loggingBroker.LogError(objectColumnProcessingValidationExceptionn);
 
             return objectColumnProcessingValidationExceptionn;
+        }
+
+        private ObjectColumnProcessingDependencyValidationException CreateAndLogDependencyValidationException(
+            Xeption exception)
+        {
+            var objectColumnProcessingDependencyValidationException =
+                new ObjectColumnProcessingDependencyValidationException(
+                    message: "ObjectColumn processing dependency validation error occurred, please try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(objectColumnProcessingDependencyValidationException);
+
+            return objectColumnProcessingDependencyValidationException;
         }
     }
 }

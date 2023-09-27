@@ -38,6 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             var expectedPushExpiredOptOutsToMeshIfExpiredOrchestrationOptOutFileValidationException =
                 new OptOutOrchestrationValidationException(
+                    message: "Opt Out orchestration validation errors occurred, please try again.",
                     innerException: nullConfigOptOutOrchestrationException);
 
             // When
@@ -105,6 +106,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             var expectedPushExpiredOptOutsToMeshIfExpiredOrchestrationOptOutFileValidationException =
                 new OptOutOrchestrationValidationException(
+                    message: "Opt Out orchestration validation errors occurred, please try again.",
                     innerException: invalidConfigOptOutOrchestrationException);
 
             // When

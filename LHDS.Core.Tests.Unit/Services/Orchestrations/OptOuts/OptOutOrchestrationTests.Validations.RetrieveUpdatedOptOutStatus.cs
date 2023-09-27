@@ -49,6 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             var expectedOptOutOrchestrationValidationException =
             new OptOutOrchestrationValidationException(
+                message: "Opt Out orchestration validation errors occurred, please try again.",
                 innerException: invalidMeshMessageOrchestrationException);
 
             // when

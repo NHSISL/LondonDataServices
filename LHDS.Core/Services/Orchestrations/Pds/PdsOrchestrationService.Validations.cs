@@ -13,6 +13,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
         public void ValidatePdsArgs(byte[] pdsFile, string fileName)
         {
             Validate<InvalidArgumentPdsException>(
+                message: "Invalid PDS argument(s), please correct the errors and try again.",
                 (Rule: IsInvalid(pdsFile), Parameter: "pdsFile"),
                 (Rule: IsInvalid(fileName), Parameter: "fileName"));
         }
@@ -29,10 +30,10 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             Message = "Data is required"
         };
 
-        private static void Validate<T>(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
-            var invalidDataException = (T)Activator.CreateInstance(typeof(T));
+            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
 
             foreach ((dynamic rule, string parameter) in validations)
             {

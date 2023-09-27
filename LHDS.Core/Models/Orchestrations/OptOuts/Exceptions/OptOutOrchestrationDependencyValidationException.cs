@@ -8,10 +8,8 @@ namespace LHDS.Core.Models.Orchestrations.OptOuts.Exceptions
 {
     public class OptOutOrchestrationDependencyValidationException : Xeption
     {
-        public OptOutOrchestrationDependencyValidationException(Xeption innerException)
-         : base(
-                message: "Opt Out orchestration dependency error occurred, fix the errors and try again.",
-                innerException)
+        public OptOutOrchestrationDependencyValidationException(string message, Xeption innerException)
+         : base(message,innerException)
         { }
     }
 }

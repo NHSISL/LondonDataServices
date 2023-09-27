@@ -30,6 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             var expectedRetrieveOptOutStatusOrchestrationOptOutFileValidationException =
                 new OptOutOrchestrationValidationException(
+                    message: "Opt Out orchestration validation errors occurred, please try again.",
                     innerException: invalidArgumentRetieveOptOutStatusOrchestrationException);
 
             // when
@@ -75,6 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             var expectedRetrieveOptOutStatusOrchestrationOptOutFileValidationException =
                 new OptOutOrchestrationValidationException(
+                    message: "Opt Out orchestration validation errors occurred, please try again.",
                     innerException: invalidArgumentRetieveOptOutStatusOrchestrationException);
 
             // when

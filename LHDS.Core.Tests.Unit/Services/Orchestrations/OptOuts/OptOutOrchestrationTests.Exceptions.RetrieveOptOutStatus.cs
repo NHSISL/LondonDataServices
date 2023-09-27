@@ -28,7 +28,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             var expectedDependencyException =
                 new OptOutOrchestrationDependencyValidationException(
-                    dependancyValidationException.InnerException as Xeption);
+                    message: "Opt Out orchestration dependency error occurred, fix the errors and try again.",
+                    innerException: dependancyValidationException.InnerException as Xeption);
 
             this.csvMapperProcessingServiceMock.Setup(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<string>(), false))
@@ -76,7 +77,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             var expectedDependencyException =
                 new OptOutOrchestrationDependencyException(
-                    dependancyException.InnerException as Xeption);
+                    message: "Opt Out orchestration dependency error occurred, fix the errors and try again.",
+                    innerException: dependancyException.InnerException as Xeption);
 
             this.csvMapperProcessingServiceMock.Setup(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<string>(), It.IsAny<bool>()))
@@ -127,7 +129,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: serviceException);
 
             var expectedOptOrchestrationServiceException =
-                new OptOutOrchestrationServiceException(failedOptOutOrchestrationServiceException);
+                new OptOutOrchestrationServiceException(
+                    message: "Opt Out orchestration service error occurred, contact support.",
+                    innerException: failedOptOutOrchestrationServiceException);
 
             this.csvMapperProcessingServiceMock.Setup(processing =>
                 processing.MapCsvToObjectAsync<OptOutIdentifier>(It.IsAny<string>(), It.IsAny<bool>()))

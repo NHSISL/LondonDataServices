@@ -27,7 +27,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 new FailedAuditStorageException(sqlException);
 
             var expectedAuditDependencyException =
-                new AuditDependencyException(failedAuditStorageException);
+                new AuditDependencyException(
+                    message: "Audit dependency error occurred, contact support.", 
+                    innerException: failedAuditStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAuditByIdAsync(randomAudit.Id))
@@ -80,7 +82,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 new LockedAuditException(databaseUpdateConcurrencyException);
 
             var expectedAuditDependencyValidationException =
-                new AuditDependencyValidationException(lockedAuditException);
+                new AuditDependencyValidationException(
+                    message: "Audit dependency validation occurred, please try again.", 
+                    innerException: lockedAuditException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAuditByIdAsync(It.IsAny<Guid>()))
@@ -127,7 +131,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 new FailedAuditStorageException(sqlException);
 
             var expectedAuditDependencyException =
-                new AuditDependencyException(failedAuditStorageException);
+                new AuditDependencyException(
+                    message: "Audit dependency error occurred, contact support.",
+                    innerException: failedAuditStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAuditByIdAsync(It.IsAny<Guid>()))
@@ -167,10 +173,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             var serviceException = new Exception();
 
             var failedAuditServiceException =
-                new FailedAuditServiceException(serviceException);
+                new FailedAuditServiceException(
+                    message: "Failed audit service occurred, please contact support",
+                    innerException: serviceException);
 
             var expectedAuditServiceException =
-                new AuditServiceException(failedAuditServiceException);
+                new AuditServiceException(
+                    message: "Audit service error occurred, contact support.",
+                    innerException: failedAuditServiceException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAuditByIdAsync(It.IsAny<Guid>()))

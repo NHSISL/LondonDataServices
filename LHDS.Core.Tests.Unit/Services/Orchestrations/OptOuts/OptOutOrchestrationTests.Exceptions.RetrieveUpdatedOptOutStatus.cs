@@ -24,7 +24,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             // Given
             var expectedDependencyException =
                 new OptOutOrchestrationDependencyValidationException(
-                   dependancyValidationException.InnerException as Xeption);
+                    message: "Opt Out orchestration dependency error occurred, fix the errors and try again.",
+                    innerException: dependancyValidationException.InnerException as Xeption);
 
             this.meshProcessingServiceMock.Setup(processings =>
                 processings.RetrieveMessageIdsFromInboxAsync())
@@ -66,7 +67,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             // Given
             var expectedDependencyException =
                 new OptOutOrchestrationDependencyException(
-                    dependancyException.InnerException as Xeption);
+                    message: "Opt Out orchestration dependency error occurred, fix the errors and try again.",
+                    innerException: dependancyException.InnerException as Xeption);
 
             this.meshProcessingServiceMock.Setup(processings =>
                 processings.RetrieveMessageIdsFromInboxAsync())
@@ -113,7 +115,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     innerException: serviceException);
 
             var expectedOptOrchestrationServiceException =
-                new OptOutOrchestrationServiceException(failedOptOutOrchestrationServiceException);
+                new OptOutOrchestrationServiceException(
+                    message: "Opt Out orchestration service error occurred, contact support.",
+                    failedOptOutOrchestrationServiceException);
 
             this.meshProcessingServiceMock.Setup(processings =>
                 processings.RetrieveMessageIdsFromInboxAsync())

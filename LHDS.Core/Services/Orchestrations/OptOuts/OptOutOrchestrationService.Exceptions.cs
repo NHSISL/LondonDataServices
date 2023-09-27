@@ -450,7 +450,9 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         private OptOutOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
             var decryptionOrchestrationValidationException =
-                new OptOutOrchestrationValidationException(exception);
+                new OptOutOrchestrationValidationException(
+                    message: "Opt Out orchestration validation errors occurred, please try again.",
+                    innerException: exception);
 
             this.loggingBroker.LogError(decryptionOrchestrationValidationException);
 
@@ -461,7 +463,9 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             CreateAndLogDependencyValidationException(Xeption exception)
         {
             var retrieveOptOutStatusOrchestrationDependencyValidationException =
-                new OptOutOrchestrationDependencyValidationException(exception.InnerException as Xeption);
+                new OptOutOrchestrationDependencyValidationException(
+                    message: "Opt Out orchestration dependency error occurred, fix the errors and try again.",
+                    innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(retrieveOptOutStatusOrchestrationDependencyValidationException);
 
@@ -472,7 +476,9 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             CreateAndLogDependencyException(Xeption exception)
         {
             var optOutOrchestrationDependencyException =
-                new OptOutOrchestrationDependencyException(exception.InnerException as Xeption);
+                new OptOutOrchestrationDependencyException(
+                    message: "Opt Out orchestration dependency error occurred, fix the errors and try again.",
+                    innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(optOutOrchestrationDependencyException);
 
@@ -483,7 +489,9 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             CreateAndLogServiceException(Xeption exception)
         {
             var optOutOrchestrationServiceException =
-                new OptOutOrchestrationServiceException(exception);
+                new OptOutOrchestrationServiceException(
+                    message: "Opt Out orchestration service error occurred, contact support.",
+                    exception);
 
             this.loggingBroker.LogError(optOutOrchestrationServiceException);
 

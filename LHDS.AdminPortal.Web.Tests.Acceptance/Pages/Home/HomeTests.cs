@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Web.Tests.Acceptance.Brokers;
 using Xunit;
+using static LHDS.AdminPortal.Web.Tests.Acceptance.Pages.CommonFunctions;
 
 namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages.Home
 {
@@ -32,7 +33,7 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages.Home
             var expectedTitle = "LDS Management API";
 
             //// when
-            var response = await page.GotoAsync(broker.ApiBaseUrl);
+            var response = await page.GotoAsync(broker.ApiProxyBaseUrl);
 
             var actualTitle = await page.TitleAsync();
 
@@ -67,32 +68,35 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages.Home
         }
 
         [Fact]
-        public async Task Login()
+        public async Task LoginAndCheckForPageHeader()
         {
             // given
             await using var context =
-                await broker.browser.NewContextAsync(new()
-                {
-                    IgnoreHTTPSErrors = true
-                });
+                await broker.browser.NewContextAsync(new() { IgnoreHTTPSErrors = true });
 
-            var page = await context.NewPageAsync();
-            var LoginBtnClass = "#root > header > div > div.nhsuk-header__content > div > div > button";
+            //When
+            var apiPage = await context.NewPageAsync();
+            var frontendPage = await context.NewPageAsync();
 
-            await page.GotoAsync(broker.FrontendProxyBaseUrl,
-            new Microsoft.Playwright.PageGotoOptions
-            {
-                Timeout = 0,
-                WaitUntil = Microsoft.Playwright.WaitUntilState.DOMContentLoaded
-            });
+            await Task.WhenAll(
+                apiPage.GotoAsync(broker.ApiProxyBaseUrl),
+                frontendPage.GotoAsync(broker.FrontendProxyBaseUrl)
+                );
 
-            await page.Locator(LoginBtnClass).ClickAsync();
+            var loginHandler = new Login(frontendPage);
 
-            //await page.PauseAsync();
 
+            await loginHandler.PerformLogin(
+                "david.hayes17@nelcsu.nhs.uk",
+                "20q^0K5vl#jjLEsP"
+            );
+
+            var expectedElement = await frontendPage.IsVisibleAsync("text='London Health Data Services'");
+
+            //await frontendPage.PauseAsync();
 
             // then
-            // actualTitle.Should().BeEquivalentTo(expectedTitle);
+            expectedElement.Should().BeTrue();
         }
     }
 }

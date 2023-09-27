@@ -10,6 +10,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Content Include="appsettings.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="AspNetCore.HealthChecks.Uris" Version="7.0.0" />
 		<PackageReference Include="AltCover" Version="7.1.795" />
 		<PackageReference Include="FluentAssertions" Version="6.12.0" />
@@ -42,7 +50,6 @@
 	  <Folder Include="Pages\SpecificationObjects\" />
 	  <Folder Include="Pages\Pds\" />
 	  <Folder Include="Pages\OptOuts\" />
-	  <Folder Include="Pages\IngestionTrackings\" />
 	</ItemGroup>
 
 </Project>

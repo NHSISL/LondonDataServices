@@ -69,6 +69,14 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             {
                 throw CreateAndLogDependencyValidationException(objectColumnDependencyValidationException);
             }
+            catch (ObjectColumnDependencyException objectColumnDependencyException)
+            {
+                throw CreateAndLogDependencyException(objectColumnDependencyException);
+            }
+            catch (ObjectColumnServiceException objectColumnServiceException)
+            {
+                throw CreateAndLogDependencyException(objectColumnServiceException);
+            }
         }
 
 

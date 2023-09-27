@@ -69,5 +69,8 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
                     return await this.objectColumnService.AddObjectColumnAsync(objectColumn);
                 }
             });
+
+        public ValueTask<ObjectColumn> ModifyObjectColumnAsync(ObjectColumn objectColumn) =>
+            throw new NotImplementedException();
     }
 }

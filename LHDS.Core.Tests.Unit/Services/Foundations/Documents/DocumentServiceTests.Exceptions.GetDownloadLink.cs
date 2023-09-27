@@ -23,7 +23,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             var failedDocumentRequestException = new FailedDocumentRequestException(requestFailedException);
 
             var expectedDependencyException =
-                 new DocumentDependencyException(failedDocumentRequestException);
+                 new DocumentDependencyException(
+                     message: "Document dependency error occurred, contact support.",
+                     innerException: failedDocumentRequestException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                  broker.GetCurrentDateTimeOffset())

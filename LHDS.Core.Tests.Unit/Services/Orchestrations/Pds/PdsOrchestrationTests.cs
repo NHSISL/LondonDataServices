@@ -209,7 +209,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     innerException),
 
                 new DocumentValidationException(innerException),
-                new DocumentDependencyValidationException(innerException),
+
+                new DocumentDependencyValidationException(
+                    message: "Document dependency validation occurred, please try again.",
+                    innerException),
+
                 new MeshValidationException(innerException),
                 new MeshDependencyValidationException(innerException),
             };
@@ -231,7 +235,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     message: "PDS orchestration service error occurred, contact support.",
                     innerException),
 
-                new DocumentDependencyException(innerException),
+                new DocumentDependencyException(
+                    message: "Document dependency error occurred, contact support.",
+                    innerException),
+
                 new DocumentServiceException(innerException),
                 new MeshDependencyException(innerException),
                 new MeshServiceException(innerException),

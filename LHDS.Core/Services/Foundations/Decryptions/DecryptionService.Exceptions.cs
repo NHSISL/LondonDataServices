@@ -26,7 +26,9 @@ namespace LHDS.Core.Services.Foundations.Decryptions
             catch (Exception exception)
             {
                 var failedDecryptionServiceException =
-                    new FailedDecryptionServiceException(exception);
+                    new FailedDecryptionServiceException(
+                        message: "Failed decryption service occurred, please contact support", 
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedDecryptionServiceException);
             }
@@ -35,7 +37,9 @@ namespace LHDS.Core.Services.Foundations.Decryptions
         private DecryptionValidationException CreateAndLogValidationException(Xeption exception)
         {
             var DecryptionValidationException =
-                new DecryptionValidationException(exception);
+                new DecryptionValidationException(
+                    message: "Decryption validation errors occurred, please try again.",
+                    innerException: exception);
 
             this.loggingBroker.LogError(DecryptionValidationException);
 
@@ -45,7 +49,10 @@ namespace LHDS.Core.Services.Foundations.Decryptions
         private DecryptionServiceException CreateAndLogServiceException(
             Xeption exception)
         {
-            var decryptionServiceException = new DecryptionServiceException(exception);
+            var decryptionServiceException = new DecryptionServiceException(
+                message: "Decryption service error occurred, contact support.", 
+                innerException: exception);
+
             this.loggingBroker.LogError(decryptionServiceException);
 
             return decryptionServiceException;

@@ -21,10 +21,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decryptions
             var serviceException = new Exception();
 
             var failedDecryptionServiceException =
-                new FailedDecryptionServiceException(serviceException);
+                new FailedDecryptionServiceException(
+                    message: "Failed decryption service occurred, please contact support", 
+                    innerException: serviceException);
 
             var expectedDecryptionServiceException =
-                new DecryptionServiceException(failedDecryptionServiceException);
+                new DecryptionServiceException(
+                    message: "Decryption service error occurred, contact support.",
+                    innerException: failedDecryptionServiceException);
 
             this.decryptionBrokerMock.Setup(broker =>
                 broker.DecryptAsync(It.IsAny<byte[]>()))

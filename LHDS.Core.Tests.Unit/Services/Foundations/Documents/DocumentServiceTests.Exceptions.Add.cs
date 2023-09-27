@@ -36,10 +36,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
               new DuplicateKeyException(randomMessage);
 
             var alreadyExistsDocumentException =
-                new AlreadyExistsDocumentException(duplicateKeyException);
+                new AlreadyExistsDocumentException(
+                    message: "Document with the same Id already exists.",
+                    innerException: duplicateKeyException);
 
             var expectedDocumentDependencyValidationException =
-                new DocumentDependencyValidationException(alreadyExistsDocumentException);
+                new DocumentDependencyValidationException(
+                    message: "Document dependency validation occurred, please try again.",
+                    innerException: alreadyExistsDocumentException);
 
             this.blobStorageBrokerMock.Setup(broker =>
                 broker.InsertFileAsync(document.FileName, It.IsAny<Stream>()))
@@ -85,7 +89,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             var failedDocumentRequestException = new FailedDocumentRequestException(requestFailedException);
 
             var expectedDependencyException =
-                 new DocumentDependencyException(failedDocumentRequestException);
+                 new DocumentDependencyException(
+                     message: "Document dependency error occurred, contact support.",
+                     innerException: failedDocumentRequestException);
 
             var stream = new MemoryStream(document.DocumentData);
 

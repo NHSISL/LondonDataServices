@@ -54,5 +54,46 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
             this.objectColumnServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnModifyIfDependencyErrorOccursAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            ObjectColumn someObjectColumn = CreateRandomObjectColumn();
+            ObjectColumn inputObjectColumn = someObjectColumn;
+
+            var expectedObjectColumnProcessingDependencyException =
+                new ObjectColumnProcessingDependencyException(
+                    message: "ObjectColumn processing dependency error occurred, please try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.objectColumnServiceMock.Setup(service =>
+                service.ModifyObjectColumnAsync(inputObjectColumn))
+                    .Throws(dependencyException);
+
+            // when
+            ValueTask<ObjectColumn> objectColumnAddTask =
+                this.objectColumnProcessingService.ModifyObjectColumnAsync(inputObjectColumn);
+
+            ObjectColumnProcessingDependencyException actualException =
+                await Assert.ThrowsAsync<ObjectColumnProcessingDependencyException>(objectColumnAddTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedObjectColumnProcessingDependencyException);
+
+            this.objectColumnServiceMock.Verify(service =>
+                service.ModifyObjectColumnAsync(inputObjectColumn),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedObjectColumnProcessingDependencyException))),
+                         Times.Once);
+
+            this.objectColumnServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

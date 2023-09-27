@@ -94,11 +94,11 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages.IngestionTrackings
         }
 
         [Fact]
-        public async Task VerifyIngestionPageAddRow()
+        public async Task VerifyIngestionPageAddRowAndSearch()
         {
             // given
             var navSelector = "#navbarScroll > div.me-auto.my-2.my-lg-0.navbar-nav.navbar-nav-scroll > div:nth-child(2) > a";
-            var expectedTableRowcount = 1;
+            var expectedTableRowcount = 2;
 
             //Post Ingestions
 

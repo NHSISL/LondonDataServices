@@ -98,7 +98,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
         {
             if (ingestionTracking is null)
             {
-                throw new NullIngestionTrackingException();
+                throw new NullIngestionTrackingException(message: "Ingestion tracking is null.");
             }
         }
 
@@ -199,7 +199,8 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidIngestionTrackingException = new InvalidIngestionTrackingException();
+            var invalidIngestionTrackingException = new InvalidIngestionTrackingException(
+                message: "Invalid ingestion tracking. Please investigate.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

@@ -84,7 +84,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 new ForeignKeyConstraintConflictException(exceptionMessage);
 
             var invalidIngestionTrackingReferenceException =
-                new InvalidIngestionTrackingReferenceException(foreignKeyConstraintConflictException);
+                new InvalidIngestionTrackingReferenceException(
+                    message: "Invalid ingestion tracking reference error occurred.",
+                    innerException: foreignKeyConstraintConflictException);
 
             IngestionTrackingDependencyValidationException expectedIngestionTrackingDependencyValidationException =
                 new IngestionTrackingDependencyValidationException(
@@ -191,7 +193,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             var databaseUpdateConcurrencyException = new DbUpdateConcurrencyException();
 
             var lockedIngestionTrackingException =
-                new LockedIngestionTrackingException(databaseUpdateConcurrencyException);
+                new LockedIngestionTrackingException(
+                    message: "Locked ingestion tracking record exception, please try again later", 
+                    innerException: databaseUpdateConcurrencyException);
 
             var expectedIngestionTrackingDependencyValidationException =
                 new IngestionTrackingDependencyValidationException(
@@ -249,7 +253,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                     innerException: serviceException);
 
             var expectedIngestionTrackingServiceException =
-                new IngestionTrackingServiceException(failedIngestionTrackingServiceException);
+                new IngestionTrackingServiceException(
+                    message: "Ingestion tracking service error occurred, contact support.",
+                    innerException: failedIngestionTrackingServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())

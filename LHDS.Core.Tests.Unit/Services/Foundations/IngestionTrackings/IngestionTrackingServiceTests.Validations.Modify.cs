@@ -20,10 +20,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
         {
             // given
             IngestionTracking nullIngestionTracking = null;
-            var nullIngestionTrackingException = new NullIngestionTrackingException();
+            var nullIngestionTrackingException = new NullIngestionTrackingException(
+                message: "Ingestion tracking is null.");
 
             var expectedIngestionTrackingValidationException =
-                new IngestionTrackingValidationException(nullIngestionTrackingException);
+                new IngestionTrackingValidationException(
+                    message: "Ingestion tracking validation errors occurred, fix the errors and try again.",
+                    innerException: nullIngestionTrackingException);
 
             // when
             ValueTask<IngestionTracking> modifyIngestionTrackingTask =
@@ -69,7 +72,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 DecryptedFileName = invalidText,
             };
 
-            var invalidIngestionTrackingException = new InvalidIngestionTrackingException();
+            var invalidIngestionTrackingException = new InvalidIngestionTrackingException(
+                message: "Invalid ingestion tracking. Please investigate.");
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.Id),
@@ -113,7 +117,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 values: "Text is required");
 
             var expectedIngestionTrackingValidationException =
-                new IngestionTrackingValidationException(innerException: invalidIngestionTrackingException);
+                new IngestionTrackingValidationException(
+                    message: "Ingestion tracking validation errors occurred, fix the errors and try again.",
+                    innerException: invalidIngestionTrackingException);
 
             // when
             ValueTask<IngestionTracking> modifyIngestionTrackingTask =
@@ -152,14 +158,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTimeOffset);
             IngestionTracking invalidIngestionTracking = randomIngestionTracking;
-            var invalidIngestionTrackingException = new InvalidIngestionTrackingException();
+            var invalidIngestionTrackingException = new InvalidIngestionTrackingException(
+                message: "Invalid ingestion tracking. Please investigate.");
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.UpdatedDate),
                 values: $"Date is the same as {nameof(IngestionTracking.CreatedDate)}");
 
             var expectedIngestionTrackingValidationException =
-                new IngestionTrackingValidationException(innerException: invalidIngestionTrackingException);
+                new IngestionTrackingValidationException(
+                    message: "Ingestion tracking validation errors occurred, fix the errors and try again.",
+                    innerException: invalidIngestionTrackingException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -205,14 +214,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             randomIngestionTracking.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
             var invalidIngestionTrackingException =
-                new InvalidIngestionTrackingException();
+                new InvalidIngestionTrackingException(message: "Invalid ingestion tracking. Please investigate.");
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.UpdatedDate),
                 values: "Date is not recent");
 
             var expectedIngestionTrackingValidatonException =
-                new IngestionTrackingValidationException(innerException: invalidIngestionTrackingException);
+                new IngestionTrackingValidationException(
+                    message: "Ingestion tracking validation errors occurred, fix the errors and try again.",
+                    innerException: invalidIngestionTrackingException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -261,7 +272,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 new NotFoundIngestionTrackingException(nonExistIngestionTracking.Id);
 
             var expectedIngestionTrackingValidationException =
-                new IngestionTrackingValidationException(notFoundIngestionTrackingException);
+                new IngestionTrackingValidationException(
+                    message: "Ingestion tracking validation errors occurred, fix the errors and try again.",
+                    innerException: notFoundIngestionTrackingException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectIngestionTrackingByIdAsync(nonExistIngestionTracking.Id))
@@ -313,14 +326,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             IngestionTracking storageIngestionTracking = invalidIngestionTracking.DeepClone();
             storageIngestionTracking.CreatedDate = storageIngestionTracking.CreatedDate.AddMinutes(randomMinutes);
             storageIngestionTracking.UpdatedDate = storageIngestionTracking.UpdatedDate.AddMinutes(randomMinutes);
-            var invalidIngestionTrackingException = new InvalidIngestionTrackingException();
+            var invalidIngestionTrackingException = new InvalidIngestionTrackingException(
+                message: "Invalid ingestion tracking. Please investigate.");
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.CreatedDate),
                 values: $"Date is not the same as {nameof(IngestionTracking.CreatedDate)}");
 
             var expectedIngestionTrackingValidationException =
-                new IngestionTrackingValidationException(innerException: invalidIngestionTrackingException);
+                new IngestionTrackingValidationException(
+                    message: "Ingestion tracking validation errors occurred, fix the errors and try again.",
+                    innerException: invalidIngestionTrackingException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.Id))
@@ -371,14 +387,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             invalidIngestionTracking.CreatedBy = Guid.NewGuid().ToString();
             storageIngestionTracking.UpdatedDate = storageIngestionTracking.CreatedDate;
 
-            var invalidIngestionTrackingException = new InvalidIngestionTrackingException();
+            var invalidIngestionTrackingException = new InvalidIngestionTrackingException(
+                message: "Invalid ingestion tracking. Please investigate.");
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.CreatedBy),
                 values: $"Text is not the same as {nameof(IngestionTracking.CreatedBy)}");
 
             var expectedIngestionTrackingValidationException =
-                new IngestionTrackingValidationException(innerException: invalidIngestionTrackingException);
+                new IngestionTrackingValidationException(
+                    message: "Ingestion tracking validation errors occurred, fix the errors and try again.",
+                    innerException: invalidIngestionTrackingException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.Id))
@@ -426,14 +445,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             IngestionTracking invalidIngestionTracking = randomIngestionTracking;
             IngestionTracking storageIngestionTracking = randomIngestionTracking.DeepClone();
 
-            var invalidIngestionTrackingException = new InvalidIngestionTrackingException();
+            var invalidIngestionTrackingException = new InvalidIngestionTrackingException(
+                message: "Invalid ingestion tracking. Please investigate.");
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.UpdatedDate),
                 values: $"Date is the same as {nameof(IngestionTracking.UpdatedDate)}");
 
             var expectedIngestionTrackingValidationException =
-                new IngestionTrackingValidationException(innerException: invalidIngestionTrackingException);
+                new IngestionTrackingValidationException(
+                    message: "Ingestion tracking validation errors occurred, fix the errors and try again.",
+                    innerException: invalidIngestionTrackingException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectIngestionTrackingByIdAsync(invalidIngestionTracking.Id))

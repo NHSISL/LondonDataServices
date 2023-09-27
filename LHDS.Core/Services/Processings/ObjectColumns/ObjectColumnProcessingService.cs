@@ -79,6 +79,6 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             });
 
         public ValueTask<ObjectColumn> RemoveObjectColumnByIdAsync(Guid objectColumnId) =>
-            throw new NotImplementedException();
+            this.objectColumnService.RemoveObjectColumnByIdAsync(objectColumnId);
     }
 }

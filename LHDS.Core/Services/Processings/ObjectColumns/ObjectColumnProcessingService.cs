@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
@@ -33,5 +34,8 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
 
         public IQueryable<ObjectColumn> RetrieveAllObjectColumns() =>
             TryCatch(() => this.objectColumnService.RetrieveAllObjectColumns());
+
+        public ValueTask<ObjectColumn> RetrieveObjectColumnByIdAsync(Guid objectColumnId) =>
+            throw new NotImplementedException();
     }
 }

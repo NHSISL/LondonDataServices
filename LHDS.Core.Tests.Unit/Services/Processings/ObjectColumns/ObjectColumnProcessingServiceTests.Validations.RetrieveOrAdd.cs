@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.ObjectColumns;
@@ -15,10 +14,44 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
     public partial class ObjectColumnProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionsOnRetrieveByIdIfIdIsInvalidAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionsOnRetrieveOrAddIfObjectColumnProcessingIsNullAndLogItAsync()
         {
             // given
-            Guid invalidId = Guid.Empty;
+            ObjectColumn nullObjectColumn = null;
+
+            var nullObjectColumnProcessingException =
+                new NullObjectColumnProcessingException(message: "ObjectColumn is null.");
+
+            var expectedObjectColumnProcessingValidationException =
+                new ObjectColumnProcessingValidationException(
+                    message: "ObjectColumn processing validation error occurred, please try again.",
+                    innerException: nullObjectColumnProcessingException);
+
+            // when
+            ValueTask<ObjectColumn> AddObjectColumnTask =
+                this.objectColumnProcessingService.RetrieveOrAddObjectColumnAsync(nullObjectColumn);
+
+            ObjectColumnProcessingValidationException actualObjectColumnProcessingValidationException =
+                await Assert.ThrowsAsync<ObjectColumnProcessingValidationException>(AddObjectColumnTask.AsTask);
+
+            //then
+            actualObjectColumnProcessingValidationException.Should()
+                .BeEquivalentTo(expectedObjectColumnProcessingValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedObjectColumnProcessingValidationException))),
+                        Times.Once);
+
+            this.objectColumnServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionsOnRetrieveOrAddIfIdIsInvalidAndLogItAsync()
+        {
+            // given
+            ObjectColumn invalidObjectColumn = new ObjectColumn();
 
             var invalidArgumentObjectColumnProcessingException =
                 new InvalidArgumentObjectColumnProcessingException(
@@ -35,7 +68,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
 
             // when
             ValueTask<ObjectColumn> RetrieveObjectColumnTask =
-                this.objectColumnProcessingService.RetrieveObjectColumnByIdAsync(invalidId);
+                this.objectColumnProcessingService.RetrieveOrAddObjectColumnAsync(invalidObjectColumn);
 
             ObjectColumnProcessingValidationException actualObjectColumnProcessingValidationException =
                 await Assert.ThrowsAsync<ObjectColumnProcessingValidationException>(RetrieveObjectColumnTask.AsTask);

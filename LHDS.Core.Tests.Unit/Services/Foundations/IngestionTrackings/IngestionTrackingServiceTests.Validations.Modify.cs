@@ -158,6 +158,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTimeOffset);
             IngestionTracking invalidIngestionTracking = randomIngestionTracking;
+            
             var invalidIngestionTrackingException = new InvalidIngestionTrackingException(
                 message: "Invalid ingestion tracking. Please investigate.");
 
@@ -326,6 +327,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             IngestionTracking storageIngestionTracking = invalidIngestionTracking.DeepClone();
             storageIngestionTracking.CreatedDate = storageIngestionTracking.CreatedDate.AddMinutes(randomMinutes);
             storageIngestionTracking.UpdatedDate = storageIngestionTracking.UpdatedDate.AddMinutes(randomMinutes);
+            
             var invalidIngestionTrackingException = new InvalidIngestionTrackingException(
                 message: "Invalid ingestion tracking. Please investigate.");
 

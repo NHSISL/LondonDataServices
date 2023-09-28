@@ -10,6 +10,7 @@ namespace LHDS.Core.Models.Orchestrations.Downloads.Exceptions
     public class DownloadOrchestrationServiceException : Xeption
     {
         public DownloadOrchestrationServiceException(string message, Exception innerException)
-            : base(message, innerException) { }
+            : base(message, innerException) 
+        { }
     }
 }

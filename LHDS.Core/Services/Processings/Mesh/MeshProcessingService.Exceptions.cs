@@ -49,7 +49,7 @@ namespace LHDS.Core.Services.Processings.Mesh
                 var failedMeshProcessingServiceException =
                     new FailedMeshProcessingServiceException(
                         message: "Failed mesh processing service error occurred, contact support.",
-                        exception);
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedMeshProcessingServiceException);
             }
@@ -94,7 +94,7 @@ namespace LHDS.Core.Services.Processings.Mesh
                 var failedMeshProcessingServiceException =
                     new FailedMeshProcessingServiceException(
                         message: "Failed mesh processing service error occurred, contact support.",
-                        exception);
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedMeshProcessingServiceException);
             }
@@ -131,7 +131,7 @@ namespace LHDS.Core.Services.Processings.Mesh
                 var failedMeshProcessingServiceException =
                     new FailedMeshProcessingServiceException(
                         message: "Failed mesh processing service error occurred, contact support.",
-                        exception);
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedMeshProcessingServiceException);
             }
@@ -143,7 +143,7 @@ namespace LHDS.Core.Services.Processings.Mesh
             var meshProcessingValidationExceptionn =
                 new MeshProcessingValidationException(
                     message: "Mesh processing validation errors occured, please try again",
-                    exception);
+                    innerException: exception);
 
             this.loggingBroker.LogError(meshProcessingValidationExceptionn);
 
@@ -156,7 +156,7 @@ namespace LHDS.Core.Services.Processings.Mesh
             var meshProcessingDependencyValidationException =
                 new MeshProcessingDependencyValidationException(
                     message: "Mesh processing dependency validation occurred, please try again.",
-                    exception.InnerException as Xeption);
+                    innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(meshProcessingDependencyValidationException);
 
@@ -169,7 +169,7 @@ namespace LHDS.Core.Services.Processings.Mesh
             var meshProcessingDependencyException =
                 new MeshProcessingDependencyException(
                     message: "Mesh processing dependency error occurred, contact support.",
-                    exception.InnerException as Xeption);
+                    innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(meshProcessingDependencyException);
 
@@ -181,7 +181,7 @@ namespace LHDS.Core.Services.Processings.Mesh
             var meshProcessingServiceException = new
                 MeshProcessingServiceException(
                 message: "Mesh processing service error occurred, contact support.",
-                exception);
+                innerException: exception);
 
             this.loggingBroker.LogError(meshProcessingServiceException);
 

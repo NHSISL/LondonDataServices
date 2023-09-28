@@ -7,7 +7,6 @@ namespace LHDS.Core.Models.Foundations.PdsAudits.Exceptions
     {
         public LockedPdsAuditException(string message, Exception innerException)
             : base(message, innerException)
-        {
-        }
+        { }
     }
 }

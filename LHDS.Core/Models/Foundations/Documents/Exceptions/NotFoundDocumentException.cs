@@ -9,6 +9,7 @@ namespace LHDS.Core.Models.Foundations.Documents.Exceptions
     public class NotFoundDocumentException : Xeption
     {
         public NotFoundDocumentException(string message)
-            : base(message) { }
+            : base(message) 
+        { }
     }
 }

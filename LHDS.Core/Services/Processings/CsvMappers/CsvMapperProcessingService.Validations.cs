@@ -13,15 +13,15 @@ namespace LHDS.Core.Services.Processings.CsvMappers
         private static void ValidateMapCsvToObjectArguments(string data, bool hasHeaderRecord)
         {
             Validate<InvalidCsvMapperArgumentsException>(
-                    message: "Invalid CSV mapper arguments. Please fix the errors and try again.",
-                    (Rule: IsInvalid(data), Parameter: "Data"));
+                message: "Invalid CSV mapper arguments. Please fix the errors and try again.",
+                (Rule: IsInvalid(data), Parameter: "Data"));
         }
 
         private static void ValidateMapObjectToCsvArguments<T>(T @object, bool addHeaderRecord)
         {
             Validate<InvalidCsvMapperArgumentsException>(
-                    message: "Invalid CSV mapper arguments. Please fix the errors and try again.",
-                    (Rule: IsInvalid(@object), Parameter: "Object"));
+                message: "Invalid CSV mapper arguments. Please fix the errors and try again.",
+                (Rule: IsInvalid(@object), Parameter: "Object"));
         }
 
         private static dynamic IsInvalid(string text) => new

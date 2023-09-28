@@ -36,10 +36,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
               new DuplicateKeyException(randomMessage);
 
             var alreadyExistsDocumentException =
-                new AlreadyExistsDocumentException(duplicateKeyException);
+                new AlreadyExistsDocumentException(
+                    message: "Document with the same Id already exists.",
+                    innerException: duplicateKeyException);
 
             var expectedDocumentDependencyValidationException =
-                new DocumentDependencyValidationException(alreadyExistsDocumentException);
+                new DocumentDependencyValidationException(
+                    message: "Document dependency validation occurred, please try again.",
+                    innerException: alreadyExistsDocumentException);
 
             this.blobStorageBrokerMock.Setup(broker =>
                 broker.InsertFileAsync(document.FileName, It.IsAny<Stream>()))
@@ -82,10 +86,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             };
 
             var requestFailedException = new RequestFailedException(randomMessage);
-            var failedDocumentRequestException = new FailedDocumentRequestException(requestFailedException);
+            
+            var failedDocumentRequestException = new FailedDocumentRequestException(
+                message: "Failed document request occurred, please contact support", 
+                innerException: requestFailedException);
 
             var expectedDependencyException =
-                 new DocumentDependencyException(failedDocumentRequestException);
+                 new DocumentDependencyException(
+                     message: "Document dependency error occurred, contact support.",
+                     innerException: failedDocumentRequestException);
 
             var stream = new MemoryStream(document.DocumentData);
 
@@ -130,10 +139,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             };
 
             var serviceException = new Exception(randomMessage);
-            var failedDocumentServiceException = new FailedDocumentServiceException(serviceException);
+
+            var failedDocumentServiceException = new FailedDocumentServiceException(
+                message: "Failed document service error occurred, contact support.",
+                innerException: serviceException);
 
             var expectedDocumentServiceException =
-                new DocumentServiceException(failedDocumentServiceException);
+                new DocumentServiceException(
+                    message: "Document service error occurred, contact support.",
+                    innerException: failedDocumentServiceException);
 
             var stream = new MemoryStream(document.DocumentData);
 

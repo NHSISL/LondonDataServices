@@ -24,10 +24,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             SqlException sqlException = GetSqlException();
 
             var failedPdsAuditStorageException =
-                new FailedPdsAuditStorageException(sqlException);
+                new FailedPdsAuditStorageException(
+                    message: "Failed pdsAudit service occurred, please contact support", 
+                    innerException: sqlException);
 
             var expectedPdsAuditDependencyException =
-                new PdsAuditDependencyException(failedPdsAuditStorageException);
+                new PdsAuditDependencyException(
+                    message: "PdsAudit dependency error occurred, contact support.", 
+                    innerException: failedPdsAuditStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectPdsAuditByIdAsync(randomPdsAudit.Id))
@@ -77,10 +81,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 new DbUpdateConcurrencyException();
 
             var lockedPdsAuditException =
-                new LockedPdsAuditException(databaseUpdateConcurrencyException);
+                new LockedPdsAuditException(
+                    message: "Locked pdsAudit record exception, please try again later", 
+                    innerException: databaseUpdateConcurrencyException);
 
             var expectedPdsAuditDependencyValidationException =
-                new PdsAuditDependencyValidationException(lockedPdsAuditException);
+                new PdsAuditDependencyValidationException(
+                    message: "PdsAudit dependency validation occurred, please try again.", 
+                    innerException:lockedPdsAuditException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectPdsAuditByIdAsync(It.IsAny<Guid>()))
@@ -124,10 +132,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             SqlException sqlException = GetSqlException();
 
             var failedPdsAuditStorageException =
-                new FailedPdsAuditStorageException(sqlException);
+                new FailedPdsAuditStorageException(
+                    message: "Failed pdsAudit service occurred, please contact support", 
+                    innerException: sqlException);
 
             var expectedPdsAuditDependencyException =
-                new PdsAuditDependencyException(failedPdsAuditStorageException);
+                new PdsAuditDependencyException(
+                    message: "PdsAudit dependency error occurred, contact support.", 
+                    innerException: failedPdsAuditStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectPdsAuditByIdAsync(It.IsAny<Guid>()))
@@ -167,10 +179,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             var serviceException = new Exception();
 
             var failedPdsAuditServiceException =
-                new FailedPdsAuditServiceException(serviceException);
+                new FailedPdsAuditServiceException(
+                    message: "Failed pdsAudit service occurred, please contact support", 
+                    innerException: serviceException);
 
             var expectedPdsAuditServiceException =
-                new PdsAuditServiceException(failedPdsAuditServiceException);
+                new PdsAuditServiceException(
+                    message: "PdsAudit service error occurred, contact support.", 
+                    innerException: failedPdsAuditServiceException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectPdsAuditByIdAsync(It.IsAny<Guid>()))

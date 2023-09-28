@@ -9,7 +9,8 @@ namespace LHDS.Core.Models.Foundations.Decryptions.Exceptions
 {
     public class FailedDecryptionServiceException : Xeption
     {
-        public FailedDecryptionServiceException(Exception innerException)
-            : base(message: "Failed decryption service occurred, please contact support", innerException) { }
+        public FailedDecryptionServiceException(string message, Exception innerException)
+            : base(message, innerException)
+        { }
     }
 }

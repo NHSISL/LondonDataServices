@@ -47,7 +47,9 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsOptOutException =
-                    new AlreadyExistsOptOutException(duplicateKeyException);
+                    new AlreadyExistsOptOutException(
+                        message: "OptOut with the same Id already exists.", 
+                        innerException: duplicateKeyException);
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsOptOutException);
             }

@@ -9,7 +9,8 @@ namespace LHDS.Core.Models.Foundations.Downloads.Exceptions
 {
     public class FailedDownloadStorageException : Xeption
     {
-        public FailedDownloadStorageException(Exception innerException)
-            : base(message: "Failed download storage error occurred, contact support.", innerException) { }
+        public FailedDownloadStorageException(string message, Exception innerException)
+            : base(message, innerException) 
+        { }
     }
 }

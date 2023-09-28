@@ -30,6 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
 
             var expectedCsvMapperProcessingDependencyValidationException =
                 new CsvMapperProcessingDependencyValidationException(
+                    message: "Csv Mapper processing dependency validation occurred, please try again.",
                     dependancyValidationException.InnerException as Xeption);
 
             this.csvMapperServiceMock.Setup(service =>
@@ -75,6 +76,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
 
             var expectedCsvMapperProcessingDependencyException =
                 new CsvMapperProcessingDependencyException(
+                    message: "Csv Mapper processing dependency validation occurred, please try again.",
                     dependancyException.InnerException as Xeption);
 
             this.csvMapperServiceMock.Setup(service =>
@@ -117,10 +119,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.CsvMappers
             var serviceException = new Exception();
 
             var failedCsvMapperServiceException =
-                new FailedCsvMapperServiceException(serviceException);
+                new FailedCsvMapperServiceException(
+                    message: "Failed CSV mapper service error occurred, contact support.",
+                    innerException: serviceException);
 
             var expectedCsvMapperServiceException =
-                new CsvMapperProcessingServiceException(failedCsvMapperServiceException);
+                new CsvMapperProcessingServiceException(
+                    message: "Csv Mapper processing service error occurred, contact support.",
+                    failedCsvMapperServiceException);
 
             this.csvMapperServiceMock.Setup(service =>
                 service.MapObjectToCsvAsync<OptOut>(inputOptOuts, withHeaderRecord, shouldAddTrailingComma))

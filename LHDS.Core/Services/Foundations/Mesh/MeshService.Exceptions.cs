@@ -32,7 +32,9 @@ namespace LHDS.Core.Services.Foundations.Mesh
             catch (Exception exception)
             {
                 var failedMeshServiceException =
-                    new FailedMeshServiceException(exception);
+                    new FailedMeshServiceException(
+                        message: "Failed mesh service occurred, please contact support", 
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedMeshServiceException);
             }
@@ -75,7 +77,9 @@ namespace LHDS.Core.Services.Foundations.Mesh
             catch (Exception exception)
             {
                 var failedMeshServiceException =
-                    new FailedMeshServiceException(exception);
+                    new FailedMeshServiceException(
+                        message: "Failed mesh service occurred, please contact support", 
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedMeshServiceException);
             }
@@ -98,7 +102,9 @@ namespace LHDS.Core.Services.Foundations.Mesh
             catch (Exception exception)
             {
                 var failedMeshServiceException =
-                    new FailedMeshServiceException(exception);
+                    new FailedMeshServiceException(
+                        message: "Failed mesh service occurred, please contact support", 
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedMeshServiceException);
             }
@@ -117,7 +123,9 @@ namespace LHDS.Core.Services.Foundations.Mesh
             catch (Exception exception)
             {
                 var failedMeshServiceException =
-                    new FailedMeshServiceException(exception);
+                    new FailedMeshServiceException(
+                        message: "Failed mesh service occurred, please contact support", 
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedMeshServiceException);
             }
@@ -125,7 +133,9 @@ namespace LHDS.Core.Services.Foundations.Mesh
 
         private MeshValidationException CreateAndLogValidationException(Xeption exception)
         {
-            var meshValidationException = new MeshValidationException(exception);
+            var meshValidationException = new MeshValidationException(
+                message: "Mesh validation errors occurred, please try again.",
+                innerException: exception);
             this.loggingBroker.LogError(meshValidationException);
 
             return meshValidationException;
@@ -134,7 +144,10 @@ namespace LHDS.Core.Services.Foundations.Mesh
         private MeshServiceException CreateAndLogServiceException(
             Xeption exception)
         {
-            var meshServiceException = new MeshServiceException(exception);
+            var meshServiceException = new MeshServiceException(
+                message: "Mesh service error occurred, contact support.", 
+                innerException: exception);
+
             this.loggingBroker.LogError(meshServiceException);
 
             return meshServiceException;
@@ -142,7 +155,10 @@ namespace LHDS.Core.Services.Foundations.Mesh
 
         private MeshServiceDependencyException CreateAndLogDependencyException(Xeption exception)
         {
-            var meshServiceDependencyException = new MeshServiceDependencyException(exception);
+            var meshServiceDependencyException = new MeshServiceDependencyException(
+                message: "Mesh service dependency error occurred, contact support.", 
+                innerException: exception);
+
             this.loggingBroker.LogError(meshServiceDependencyException);
 
             return meshServiceDependencyException;
@@ -151,7 +167,9 @@ namespace LHDS.Core.Services.Foundations.Mesh
         private MeshServiceDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
         {
             var meshServiceDependencyValidationException =
-                new MeshServiceDependencyValidationException(exception);
+                new MeshServiceDependencyValidationException(
+                    message: "Mesh service dependency validation occurred, please try again.", 
+                    innerException: exception);
 
             this.loggingBroker.LogError(meshServiceDependencyValidationException);
 

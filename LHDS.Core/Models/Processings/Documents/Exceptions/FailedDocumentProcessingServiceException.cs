@@ -9,9 +9,8 @@ namespace LHDS.Core.Models.Processings.Documents.Exceptions
 {
     public class FailedDocumentProcessingServiceException : Xeption
     {
-        public FailedDocumentProcessingServiceException(Exception innerException)
-          : base(message: "Failed document processing service error occurred, contact support.",
-                innerException)
+        public FailedDocumentProcessingServiceException(string message, Exception innerException)
+          : base(message, innerException)
         { }
     }
 }

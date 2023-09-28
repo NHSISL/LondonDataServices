@@ -8,7 +8,8 @@ namespace LHDS.Core.Models.Orchestrations.OptOuts.Exceptions
 {
     public class InvalidMeshMessageOrchestrationException : Xeption
     {
-        public InvalidMeshMessageOrchestrationException()
-            : base(message: "Invalid mesh message orchestration error, please correct the errors and try again.") { }
+        public InvalidMeshMessageOrchestrationException(string message)
+            : base(message) 
+        { }
     }
 }

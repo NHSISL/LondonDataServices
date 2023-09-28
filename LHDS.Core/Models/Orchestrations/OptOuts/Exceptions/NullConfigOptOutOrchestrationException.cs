@@ -8,7 +8,8 @@ namespace LHDS.Core.Models.Orchestrations.OptOuts.Exceptions
 {
     public class NullConfigOptOutOrchestrationException : Xeption
     {
-        public NullConfigOptOutOrchestrationException()
-            : base(message: "Null configuration opt out orchestration exception, please correct the errors and try again.") { }
+        public NullConfigOptOutOrchestrationException(string message)
+            : base(message) 
+        { }
     }
 }

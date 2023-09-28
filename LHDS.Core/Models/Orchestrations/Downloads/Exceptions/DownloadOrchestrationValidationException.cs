@@ -8,10 +8,8 @@ namespace LHDS.Core.Models.Orchestrations.Downloads.Exceptions
 {
     public class DownloadOrchestrationValidationException : Xeption
     {
-        public DownloadOrchestrationValidationException(Xeption innerException)
-            : base(
-                message: "Download orchestration validation errors occurred, please try again.",
-                innerException)
+        public DownloadOrchestrationValidationException(string message, Xeption innerException)
+            : base(message, innerException)
         { }
     }
 }

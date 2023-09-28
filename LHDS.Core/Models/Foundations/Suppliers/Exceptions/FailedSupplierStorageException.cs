@@ -9,8 +9,8 @@ namespace LHDS.Core.Models.Foundations.Suppliers.Exceptions
 {
     public class FailedSupplierStorageException : Xeption
     {
-        public FailedSupplierStorageException(Exception innerException)
-            : base(message: "Failed supplier storage error occurred, contact support.", innerException)
+        public FailedSupplierStorageException(string message, Exception innerException)
+            : base(message, innerException)
         { }
     }
 }

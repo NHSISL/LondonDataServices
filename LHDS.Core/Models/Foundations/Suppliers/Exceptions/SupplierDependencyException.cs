@@ -8,8 +8,8 @@ namespace LHDS.Core.Models.Foundations.Suppliers.Exceptions
 {
     public class SupplierDependencyException : Xeption
     {
-        public SupplierDependencyException(Xeption innerException) :
-            base(message: "Supplier dependency error occurred, contact support.", innerException)
+        public SupplierDependencyException(string message, Xeption innerException) :
+            base(message, innerException)
         { }
     }
 }

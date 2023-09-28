@@ -24,7 +24,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             string fileName = invalidText;
 
             var invalidArgumentPdsException =
-               new InvalidArgumentPdsException();
+               new InvalidArgumentPdsException(
+                   message: "Invalid PDS argument(s), please correct the errors and try again.");
 
             invalidArgumentPdsException.AddData(
                 key: "pdsFile",
@@ -36,6 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             var expectedPdsValidationException =
                 new PdsOrchestrationValidationException(
+                    message: "PDS orchestration validation errors occurred, please try again.",
                     innerException: invalidArgumentPdsException);
 
             // when

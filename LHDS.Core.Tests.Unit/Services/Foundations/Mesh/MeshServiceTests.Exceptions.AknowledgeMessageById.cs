@@ -21,10 +21,14 @@ public async Task ShouldThrowServiceExceptionOnAknowledgeMessageByIdIfServiceErr
             var serviceException = new Exception();
 
             var failedMeshServiceException =
-               new FailedMeshServiceException(serviceException);
+               new FailedMeshServiceException(
+                   message: "Failed mesh service occurred, please contact support", 
+                   innerException: serviceException);
 
             var expectedMeshServiceException =
-               new MeshServiceException(failedMeshServiceException);
+               new MeshServiceException(
+                   message: "Mesh service error occurred, contact support.", 
+                   innerException: failedMeshServiceException);
 
             this.meshBrokerMock.Setup(broker =>
                 broker.AcknowledgeMessageByIdAsync(It.IsAny<string>()))

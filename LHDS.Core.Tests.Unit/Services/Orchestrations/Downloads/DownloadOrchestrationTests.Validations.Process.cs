@@ -20,7 +20,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         {
             // given
             var invalidArgumentDownloadOrchestrationException =
-                new InvalidArgumentDownloadOrchestrationException();
+                new InvalidArgumentDownloadOrchestrationException(
+                    message: "Invalid download orchestration argument(s), please correct the errors and try again.");
 
             invalidArgumentDownloadOrchestrationException.AddData(
                key: "FileName",
@@ -28,6 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
             var expectedDownloadOrchestrationValidationException =
                 new DownloadOrchestrationValidationException(
+                    message: "Download orchestration validation errors occurred, please try again.",
                     innerException: invalidArgumentDownloadOrchestrationException);
 
             // when
@@ -61,10 +63,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             string inputFileName = randomFileName;
 
             var notFoundDownloadOrchestrationException =
-                new NotFoundDownloadOrchestrationException(fileName: inputFileName);
+                new NotFoundDownloadOrchestrationException(
+                message: $"Couldn't find download with file name: {inputFileName}.");
 
             var expectedDownloadOrchestrationValidationException =
                 new DownloadOrchestrationValidationException(
+                    message: "Download orchestration validation errors occurred, please try again.",
                     innerException: notFoundDownloadOrchestrationException);
 
             this.downloadServiceMock.Setup(service =>

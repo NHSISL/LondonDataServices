@@ -21,10 +21,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             var serviceException = new Exception(exceptionMessage);
 
             var failedMeshServiceException =
-               new FailedMeshServiceException(serviceException);
+               new FailedMeshServiceException(
+                   message: "Failed mesh service occurred, please contact support", 
+                   innerException: serviceException);
 
             var expectedMeshServiceException =
-               new MeshServiceException(failedMeshServiceException);
+               new MeshServiceException(
+                   message: "Mesh service error occurred, contact support.", 
+                   innerException: failedMeshServiceException);
 
             this.meshBrokerMock.Setup(broker =>
                 broker.HandshakeAsync())

@@ -466,12 +466,28 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             {
                 new OptOutProcessingValidationException(innerException),
                 new OptOutProcessingDependencyValidationException(innerException),
-                new DocumentProcessingValidationException(innerException),
-                new DocumentProcessingDependencyValidationException(innerException),
-                new MeshProcessingValidationException(innerException),
-                new MeshProcessingDependencyValidationException(innerException),
+
+                new DocumentProcessingValidationException(
+                    message: "Document processing validation errors occured, please try again",
+                    innerException),
+
+                new DocumentProcessingDependencyValidationException(
+                    message: "Document processing dependency validation occurred, please try again.",
+                    innerException),
+
+                new MeshProcessingValidationException(
+                    message: "Mesh processing validation errors occured, please try again",
+                    innerException),
+
+                new MeshProcessingDependencyValidationException(
+                    message: "Mesh processing dependency validation occurred, please try again.",
+                    innerException),
+
                 new CsvMapperProcessingValidationException(innerException),
-                new CsvMapperProcessingDependencyValidationException(innerException),
+
+                new CsvMapperProcessingDependencyValidationException(
+                    message: "Csv Mapper processing dependency validation occurred, please try again.",
+                    innerException),
             };
         }
 
@@ -514,12 +530,30 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             {
                 new OptOutProcessingDependencyException(innerException),
                 new OptOutProcessingServiceException(innerException),
-                new DocumentProcessingDependencyException(innerException),
-                new DocumentProcessingServiceException(innerException),
-                new MeshProcessingDependencyException(innerException),
-                new MeshProcessingServiceException(innerException),
-                new CsvMapperProcessingDependencyException(innerException),
-                new CsvMapperProcessingServiceException(innerException)
+
+                new DocumentProcessingDependencyException(
+                    message: "Document processing dependency error occurred, please try again.",
+                    innerException),
+
+                new DocumentProcessingServiceException(
+                    message: "Document processing service error occurred, contact support.",
+                    innerException),
+
+                new MeshProcessingDependencyException(
+                        message: "Mesh processing dependency error occurred, contact support.",
+                        innerException),
+
+                new MeshProcessingServiceException(
+                    message: "Mesh processing service error occurred, contact support.",
+                    innerException),
+
+                new CsvMapperProcessingDependencyException(
+                    message: "Csv Mapper processing dependency validation occurred, please try again.",
+                    innerException),
+
+                new CsvMapperProcessingServiceException(
+                    message: "Csv Mapper processing service error occurred, contact support.",
+                    innerException)
             };
         }
 

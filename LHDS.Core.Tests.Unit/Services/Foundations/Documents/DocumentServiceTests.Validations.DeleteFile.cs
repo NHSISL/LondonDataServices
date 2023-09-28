@@ -26,14 +26,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             string containerName = invalidInput;
 
             var invalidDocumentException =
-                new InvalidDocumentException();
+                new InvalidDocumentException(
+                    message: "Invalid document. Please correct the errors and try again.");
 
             invalidDocumentException.AddData(
                 key: "fileName",
                 values: "Text is required");
 
             var expectedDocumentValidationException
-                = new DocumentValidationException(innerException: invalidDocumentException);
+                = new DocumentValidationException(
+                    message: "Document validation errors occured, please try again",
+                    innerException: invalidDocumentException);
 
             var appSettingsStub = new Dictionary<string, string> {
                 {"blobContainerName", invalidInput},

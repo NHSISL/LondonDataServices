@@ -8,10 +8,8 @@ namespace LHDS.Core.Models.Foundations.Documents.Exceptions
 {
     public class NullDocumentException : Xeption
     {
-        public NullDocumentException()
-            : base(message: $"Document is Null") { }
-
-        public NullDocumentException(Document document)
-            : base(message: $"Couldn't find document with fileName: {document}") { }
+        public NullDocumentException(string message)
+            : base(message) 
+        { }
     }
 }

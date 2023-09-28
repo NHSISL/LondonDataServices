@@ -8,9 +8,8 @@ namespace LHDS.Core.Models.Foundations.Decryptions.Exceptions
 {
     public class DecryptionValidationException : Xeption
     {
-        public DecryptionValidationException(Xeption innerException)
-            : base(message: "Decryption validation errors occurred, please try again.",
-                  innerException)
+        public DecryptionValidationException(string message, Xeption innerException)
+            : base(message, innerException)
         { }
     }
 }

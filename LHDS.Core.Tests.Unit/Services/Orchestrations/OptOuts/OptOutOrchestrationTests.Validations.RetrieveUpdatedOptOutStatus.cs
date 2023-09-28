@@ -36,7 +36,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             retrievedMessage.Headers.Remove("mex-localid");
 
             var invalidMeshMessageOrchestrationException =
-                new InvalidMeshMessageOrchestrationException();
+                new InvalidMeshMessageOrchestrationException(
+                    message: "Invalid mesh message orchestration error, please correct the errors and try again.");
 
             this.meshProcessingServiceMock.Setup(service =>
                 service.RetrieveMessageByIdAsync(It.IsAny<string>()))
@@ -48,6 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             var expectedOptOutOrchestrationValidationException =
             new OptOutOrchestrationValidationException(
+                message: "Opt Out orchestration validation errors occurred, please try again.",
                 innerException: invalidMeshMessageOrchestrationException);
 
             // when

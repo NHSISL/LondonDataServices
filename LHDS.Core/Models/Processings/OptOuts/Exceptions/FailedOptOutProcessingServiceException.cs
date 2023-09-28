@@ -9,9 +9,8 @@ namespace LHDS.Core.Models.Processings.OptOuts.Exceptions
 {
     public class FailedOptOutProcessingServiceException : Xeption
     {
-        public FailedOptOutProcessingServiceException(Exception innerException)
-          : base(message: "Failed opt out processing service error occurred, contact support.",
-                innerException)
+        public FailedOptOutProcessingServiceException(string message, Exception innerException)
+          : base(message, innerException)
         { }
     }
 }

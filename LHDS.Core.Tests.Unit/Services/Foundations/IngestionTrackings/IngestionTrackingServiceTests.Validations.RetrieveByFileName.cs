@@ -21,14 +21,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             string fileName = String.Empty;
 
             var invalidIngestionTrackingException =
-                new InvalidIngestionTrackingException();
+                new InvalidIngestionTrackingException(message: "Invalid ingestion tracking. Please investigate.");
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.FileName),
                 values: "Text is required");
 
             var expectedIngestionTrackingValidationException =
-                new IngestionTrackingValidationException(innerException: invalidIngestionTrackingException);
+                new IngestionTrackingValidationException(
+                    message: "Ingestion tracking validation errors occurred, fix the errors and try again.",
+                    innerException: invalidIngestionTrackingException);
 
             // when
             ValueTask<IngestionTracking> retrieveIngestionTrackingByFileNameTask =

@@ -8,10 +8,8 @@ namespace LHDS.Core.Models.Orchestrations.Pds.Exceptions
 {
     public class PdsOrchestrationDependencyValidationException : Xeption
     {
-        public PdsOrchestrationDependencyValidationException(Xeption innerException)
-         : base(
-                message: "PDS orchestration dependency validation error occurred, fix the errors and try again.",
-                innerException)
+        public PdsOrchestrationDependencyValidationException(string message, Xeption innerException)
+         : base(message,innerException)
         { }
     }
 }

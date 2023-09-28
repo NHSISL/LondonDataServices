@@ -8,7 +8,8 @@ namespace LHDS.Core.Models.Foundations.Mesh.Exceptions
 {
     public class MeshServiceDependencyValidationException : Xeption
     {
-        public MeshServiceDependencyValidationException(Xeption innerException)
-            : base(message: "Mesh service dependency validation occurred, please try again.", innerException) { }
+        public MeshServiceDependencyValidationException(string message, Xeption innerException)
+            : base(message, innerException) 
+        { }
     }
 }

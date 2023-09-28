@@ -23,14 +23,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             string messageId = invalidText;
 
             var invalidArgumentMeshException =
-                new InvalidArgumentMeshException();
+                new InvalidArgumentMeshException(
+                    message: "Invalid Mesh argument(s), please correct the errors and try again.");
 
             invalidArgumentMeshException.AddData(
                 key: "MessageId",
                 values: "Text is required");
 
             var expectedMeshValidationException =
-                new MeshValidationException(innerException: invalidArgumentMeshException);
+                new MeshValidationException(
+                    message: "Mesh validation errors occurred, please try again.",
+                    innerException: invalidArgumentMeshException);
 
             // when
             ValueTask<bool> retrieveAknowledgeMessageByIdTask =

@@ -21,10 +21,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             Supplier nullSupplier = null;
 
             var nullSupplierException =
-                new NullSupplierException();
+                new NullSupplierException(message: "Supplier is null.");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(nullSupplierException);
+                new SupplierValidationException(
+                    message: "Supplier validation errors occurred, please try again.",
+                    innerException: nullSupplierException);
 
             // when
             ValueTask<Supplier> addSupplierTask =
@@ -63,7 +65,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             };
 
             var invalidSupplierException =
-                new InvalidSupplierException();
+                new InvalidSupplierException(
+                    message: "Invalid supplier. Please correct the errors and try again.");
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.Id),
@@ -102,7 +105,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 values: "Text is required");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(innerException: invalidSupplierException);
+                new SupplierValidationException(
+                    message: "Supplier validation errors occurred, please try again.",
+                    innerException: invalidSupplierException);
 
             // when
             ValueTask<Supplier> addSupplierTask =
@@ -146,14 +151,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             invalidSupplier.UpdatedDate =
                 invalidSupplier.CreatedDate.AddDays(randomNumber);
 
-            var invalidSupplierException = new InvalidSupplierException();
+            var invalidSupplierException = new InvalidSupplierException(
+                message: "Invalid supplier. Please correct the errors and try again.");
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.UpdatedDate),
                 values: $"Date is not the same as {nameof(Supplier.CreatedDate)}");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(innerException: invalidSupplierException);
+                new SupplierValidationException(
+                    message: "Supplier validation errors occurred, please try again.",
+                    innerException: invalidSupplierException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -199,14 +207,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             invalidSupplier.UpdatedBy = Guid.NewGuid().ToString();
 
             var invalidSupplierException =
-                new InvalidSupplierException();
+                new InvalidSupplierException(message: "Invalid supplier. Please correct the errors and try again.");
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.UpdatedBy),
                 values: $"Text is not the same as {nameof(Supplier.CreatedBy)}");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(innerException: invalidSupplierException);
+                new SupplierValidationException(
+                    message: "Supplier validation errors occurred, please try again.",
+                    innerException: invalidSupplierException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -257,14 +267,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             Supplier invalidSupplier = randomSupplier;
 
             var invalidSupplierException =
-                new InvalidSupplierException();
+                new InvalidSupplierException(message: "Invalid supplier. Please correct the errors and try again.");
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.CreatedDate),
                 values: "Date is not recent");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(innerException: invalidSupplierException);
+                new SupplierValidationException(
+                    message: "Supplier validation errors occurred, please try again.",
+                    innerException: invalidSupplierException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())

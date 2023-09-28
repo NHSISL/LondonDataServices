@@ -20,7 +20,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
         {
             // given
             var invalidArgumentDecryptionOrchestrationException =
-                new InvalidArgumentDecryptionOrchestrationException();
+                new InvalidArgumentDecryptionOrchestrationException(
+                    message: "Invalid decryption orchestration argument(s), please correct the errors and try again.");
 
             invalidArgumentDecryptionOrchestrationException.AddData(
                key: "FileName",
@@ -28,6 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             var expectedDecryptionOrchestrationFileNameValidationException =
                 new DecryptionOrchestrationValidationException(
+                    message: "Decryption orchestration validation errors occurred, please try again.",
                     innerException: invalidArgumentDecryptionOrchestrationException);
 
             // when

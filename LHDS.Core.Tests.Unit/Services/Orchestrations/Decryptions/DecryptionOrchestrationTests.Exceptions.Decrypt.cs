@@ -24,7 +24,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             var expectedDependencyException =
                 new DecryptionOrchestrationDependencyValidationException(
-                    dependancyValidationException.InnerException as Xeption);
+                    message: "Decryption orchestration dependency validation error occurred, fix the errors and try again.",
+                    innerException: dependancyValidationException.InnerException as Xeption);
 
             this.ingestionTrackingServiceMock.Setup(service =>
                service.RetrieveIngestionTrackingByFileNameAsync(randomFileName))
@@ -66,7 +67,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             var expectedDependencyException =
                 new DecryptionOrchestrationDependencyException(
-                    dependancyException.InnerException as Xeption);
+                    message: "Decryption orchestration dependency error occurred, fix the errors and try again.",
+                    innerException: dependancyException.InnerException as Xeption);
 
             this.ingestionTrackingServiceMock.Setup(service =>
               service.RetrieveIngestionTrackingByFileNameAsync(randomFileName))
@@ -104,10 +106,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             var serviceException = new Exception();
 
             var failedDecryptionOrchestrationServiceException =
-                new FailedDecryptionOrchestrationServiceException(serviceException);
+                new FailedDecryptionOrchestrationServiceException(
+                    message: "Failed Decryption orchestration service occurred, please contact support",
+                    innerException: serviceException);
 
             var expectedDecryptionOrchestrationServiceException =
-                new DecryptionOrchestrationServiceException(failedDecryptionOrchestrationServiceException);
+                new DecryptionOrchestrationServiceException(
+                    message: "Decryption orchestration service error occurred, contact support.",
+                    innerException: failedDecryptionOrchestrationServiceException);
 
             this.ingestionTrackingServiceMock.Setup(service =>
                 service.RetrieveIngestionTrackingByFileNameAsync(randomFileName))

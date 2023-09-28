@@ -24,10 +24,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             SqlException sqlException = GetSqlException();
 
             var failedIngestionTrackingStorageException =
-                new FailedIngestionTrackingStorageException(sqlException);
+                new FailedIngestionTrackingStorageException(
+                    message: "Failed ingestion tracking storage error occurred, contact support.", 
+                    innerException: sqlException);
 
             var expectedIngestionTrackingDependencyException =
-                new IngestionTrackingDependencyException(failedIngestionTrackingStorageException);
+                new IngestionTrackingDependencyException(
+                    message: "Failed ingestion tracking storage error occurred, contact support.", 
+                    innerException: failedIngestionTrackingStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectIngestionTrackingByIdAsync(randomIngestionTracking.Id))
@@ -77,10 +81,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 new DbUpdateConcurrencyException();
 
             var lockedIngestionTrackingException =
-                new LockedIngestionTrackingException(databaseUpdateConcurrencyException);
+                new LockedIngestionTrackingException(
+                    message: "Locked ingestion tracking record exception, please try again later", 
+                    innerException: databaseUpdateConcurrencyException);
 
             var expectedIngestionTrackingDependencyValidationException =
-                new IngestionTrackingDependencyValidationException(lockedIngestionTrackingException);
+                new IngestionTrackingDependencyValidationException(
+                    message: "Ingestion tracking dependency validation occurred, please try again.", 
+                    innerException: lockedIngestionTrackingException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectIngestionTrackingByIdAsync(It.IsAny<Guid>()))
@@ -124,10 +132,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             SqlException sqlException = GetSqlException();
 
             var failedIngestionTrackingStorageException =
-                new FailedIngestionTrackingStorageException(sqlException);
+                new FailedIngestionTrackingStorageException(
+                    message: "Failed ingestion tracking storage error occurred, contact support.", 
+                    innerException: sqlException);
 
             var expectedIngestionTrackingDependencyException =
-                new IngestionTrackingDependencyException(failedIngestionTrackingStorageException);
+                new IngestionTrackingDependencyException(
+                    message: "Failed ingestion tracking storage error occurred, contact support.",
+                    innerException: failedIngestionTrackingStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectIngestionTrackingByIdAsync(It.IsAny<Guid>()))
@@ -167,10 +179,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             var serviceException = new Exception();
 
             var failedIngestionTrackingServiceException =
-                new FailedIngestionTrackingServiceException(serviceException);
+                new FailedIngestionTrackingServiceException(
+                    message: "Failed ingestion tracking service occurred, please contact support", 
+                    innerException: serviceException);
 
             var expectedIngestionTrackingServiceException =
-                new IngestionTrackingServiceException(failedIngestionTrackingServiceException);
+                new IngestionTrackingServiceException(
+                    message: "Ingestion tracking service error occurred, contact support.",
+                    innerException: failedIngestionTrackingServiceException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectIngestionTrackingByIdAsync(It.IsAny<Guid>()))

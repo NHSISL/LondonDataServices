@@ -8,8 +8,8 @@ namespace LHDS.Core.Models.Foundations.CsvMappers.Exceptions
 {
     public class CsvMapperDependencyException : Xeption
     {
-        public CsvMapperDependencyException(Xeption innerException) :
-            base(message: "CSV mapper dependency error occurred, contact support.", innerException)
+        public CsvMapperDependencyException(string message, Xeption innerException) :
+            base(message, innerException)
         { }
     }
 }

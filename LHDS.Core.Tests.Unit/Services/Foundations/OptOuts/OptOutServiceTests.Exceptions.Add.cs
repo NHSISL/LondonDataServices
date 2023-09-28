@@ -76,7 +76,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 new DuplicateKeyException(randomMessage);
 
             var alreadyExistsOptOutException =
-                new AlreadyExistsOptOutException(duplicateKeyException);
+                new AlreadyExistsOptOutException(
+                    message: "OptOut with the same Id already exists.", 
+                    innerException: duplicateKeyException);
 
             var expectedOptOutDependencyValidationException =
                 new OptOutDependencyValidationException(alreadyExistsOptOutException);

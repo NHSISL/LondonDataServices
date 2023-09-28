@@ -20,10 +20,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             SqlException sqlException = GetSqlException();
 
             var failedStorageException =
-                new FailedSupplierStorageException(sqlException);
+                new FailedSupplierStorageException(
+                    message: "Failed supplier storage error occurred, contact support.", 
+                    innerException: sqlException);
 
             var expectedSupplierDependencyException =
-                new SupplierDependencyException(failedStorageException);
+                new SupplierDependencyException(
+                    message: "Supplier dependency error occurred, contact support.", 
+                    innerException: failedStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllSuppliers())
@@ -62,10 +66,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             var serviceException = new Exception(exceptionMessage);
 
             var failedSupplierServiceException =
-                new FailedSupplierServiceException(serviceException);
+                new FailedSupplierServiceException(
+                    message: "Failed supplier service occurred, please contact support", 
+                    innerException: serviceException);
 
             var expectedSupplierServiceException =
-                new SupplierServiceException(failedSupplierServiceException);
+                new SupplierServiceException(
+                    message: "Supplier service error occurred, contact support.", 
+                    innerException: failedSupplierServiceException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllSuppliers())

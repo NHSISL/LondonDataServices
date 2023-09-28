@@ -21,14 +21,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             Guid invalidSupplierId = Guid.Empty;
 
             var invalidSupplierException =
-                new InvalidSupplierException();
+                new InvalidSupplierException(message: "Invalid supplier. Please correct the errors and try again.");
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.Id),
                 values: "Id is required");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(innerException: invalidSupplierException);
+                new SupplierValidationException(
+                    message: "Supplier validation errors occurred, please try again.",
+                    innerException: invalidSupplierException);
 
             // when
             ValueTask<Supplier> removeSupplierByIdTask =

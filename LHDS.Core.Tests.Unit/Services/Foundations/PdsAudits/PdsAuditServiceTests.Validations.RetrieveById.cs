@@ -21,14 +21,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             var invalidPdsAuditId = Guid.Empty;
 
             var invalidPdsAuditException =
-                new InvalidPdsAuditException();
+                new InvalidPdsAuditException(message: "Invalid pdsAudit. Please correct the errors and try again.");
 
             invalidPdsAuditException.AddData(
                 key: nameof(PdsAudit.Id),
                 values: "Id is required");
 
             var expectedPdsAuditValidationException =
-                new PdsAuditValidationException(invalidPdsAuditException);
+                new PdsAuditValidationException(
+                    message: "PdsAudit validation errors occurred, please try again.",
+                    innerException: invalidPdsAuditException);
 
             // when
             ValueTask<PdsAudit> retrievePdsAuditByIdTask =
@@ -67,7 +69,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 new NotFoundPdsAuditException(somePdsAuditId);
 
             var expectedPdsAuditValidationException =
-                new PdsAuditValidationException(notFoundPdsAuditException);
+                new PdsAuditValidationException(
+                    message: "PdsAudit validation errors occurred, please try again.",
+                    innerException: notFoundPdsAuditException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectPdsAuditByIdAsync(It.IsAny<Guid>()))

@@ -8,10 +8,8 @@ namespace LHDS.Core.Models.Orchestrations.Decryptions.Exceptions
 {
     public class DecryptionOrchestrationDependencyException : Xeption
     {
-        public DecryptionOrchestrationDependencyException(Xeption innerException)
-         : base(
-                message: "Decryption orchestration dependency error occurred, fix the errors and try again.",
-                innerException)
+        public DecryptionOrchestrationDependencyException(string message, Xeption innerException)
+         : base(message, innerException)
         { }
     }
 }

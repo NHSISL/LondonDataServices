@@ -8,9 +8,8 @@ namespace LHDS.Core.Models.Clients.LandingClient.Exceptions
 {
     public class LandingClientDependencyException : Xeption
     {
-        public LandingClientDependencyException(Xeption innerException)
-            : base(message: "Landing client dependency error occurred, contact support.",
-                  innerException)
+        public LandingClientDependencyException(string message, Xeption innerException)
+            : base(message, innerException)
         { }
     }
 }

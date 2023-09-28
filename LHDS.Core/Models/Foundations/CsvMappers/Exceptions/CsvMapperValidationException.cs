@@ -8,10 +8,8 @@ namespace LHDS.Core.Models.Foundations.CsvMappers.Exceptions
 {
     public class CsvMapperValidationException : Xeption
     {
-        public CsvMapperValidationException(Xeption innerException)
-            : base(
-                message: "CSV mapper validation errors occurred, fix the errors and try again.",
-                innerException)
+        public CsvMapperValidationException(string message, Xeption innerException)
+            : base(message,innerException)
         { }
     }
 }

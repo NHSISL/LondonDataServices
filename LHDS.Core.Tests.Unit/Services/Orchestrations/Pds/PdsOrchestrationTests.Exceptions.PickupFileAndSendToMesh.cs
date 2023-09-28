@@ -27,6 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             var expectedDependencyException =
                 new PdsOrchestrationDependencyValidationException(
+                    message: "PDS orchestration validation errors occurred, please try again.",
                     dependancyValidationException.InnerException as Xeption);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -74,7 +75,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             var expectedDependencyException =
                 new PdsOrchestrationDependencyException(
-                    dependancyException.InnerException as Xeption);
+                    message: "PDS orchestration dependency error occurred, fix the errors and try again.",
+                    innerException: dependancyException.InnerException as Xeption);
 
             this.dateTimeBrokerMock.Setup(broker =>
              broker.GetCurrentDateTimeOffset())
@@ -119,10 +121,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             var serviceException = new Exception();
 
             var failedPdsOrchestrationServiceException =
-                new FailedPdsOrchestrationServiceException(serviceException);
+                new FailedPdsOrchestrationServiceException(
+                    message: "Failed PDS orchestration service occurred, please contact support",
+                    innerException: serviceException);
 
             var expectedPdsOrchestrationServiceException =
-                new PdsOrchestrationServiceException(failedPdsOrchestrationServiceException);
+                new PdsOrchestrationServiceException(
+                    message: "PDS orchestration service error occurred, contact support.",
+                    innerException: failedPdsOrchestrationServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
             broker.GetCurrentDateTimeOffset())

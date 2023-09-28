@@ -19,7 +19,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         {
             if (maybeDocument is null)
             {
-                throw new NotFoundDownloadOrchestrationException(fileName);
+                throw new NotFoundDownloadOrchestrationException(
+                    message: $"Couldn't find download with file name: {fileName}.");
             }
         }
 
@@ -31,7 +32,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidArgumentDownloadOrchestrationException = new InvalidArgumentDownloadOrchestrationException();
+            var invalidArgumentDownloadOrchestrationException = new InvalidArgumentDownloadOrchestrationException(
+                message: "Invalid download orchestration argument(s), please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

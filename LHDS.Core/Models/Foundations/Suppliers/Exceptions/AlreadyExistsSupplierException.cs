@@ -9,7 +9,8 @@ namespace LHDS.Core.Models.Foundations.Suppliers.Exceptions
 {
     public class AlreadyExistsSupplierException : Xeption
     {
-        public AlreadyExistsSupplierException(Exception innerException)
-            : base(message: "Supplier with the same Id already exists.", innerException) { }
+        public AlreadyExistsSupplierException(string message, Exception innerException)
+            : base(message, innerException)
+        { }
     }
 }

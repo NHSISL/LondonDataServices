@@ -28,7 +28,9 @@ namespace LHDS.Core.Brokers.CsvMappers
             catch (Exception exception)
             {
                 var failedCsvMapperServiceException =
-                   new FailedCsvMapperServiceException(exception);
+                    new FailedCsvMapperServiceException(
+                        message: "Failed CSV mapper service error occurred, contact support.",
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedCsvMapperServiceException);
             }
@@ -47,7 +49,9 @@ namespace LHDS.Core.Brokers.CsvMappers
             catch (Exception exception)
             {
                 var failedCsvMapperServiceException =
-                   new FailedCsvMapperServiceException(exception);
+                    new FailedCsvMapperServiceException(
+                        message: "Failed CSV mapper service error occurred, contact support.",
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedCsvMapperServiceException);
             }
@@ -55,7 +59,10 @@ namespace LHDS.Core.Brokers.CsvMappers
 
         private CsvMapperValidationException CreateAndLogValidationException(Xeption exception)
         {
-            var csvMapperValidationException = new CsvMapperValidationException(exception);
+            var csvMapperValidationException = new CsvMapperValidationException(
+                message: "CSV mapper validation errors occurred, fix the errors and try again.",
+                innerException: exception);
+
             this.loggingBroker.LogError(csvMapperValidationException);
 
             return csvMapperValidationException;
@@ -63,7 +70,10 @@ namespace LHDS.Core.Brokers.CsvMappers
 
         private CsvMapperServiceException CreateAndLogServiceException(Xeption exception)
         {
-            var csvMapperServiceException = new CsvMapperServiceException(exception);
+            var csvMapperServiceException = new CsvMapperServiceException(
+                message: "CSV mapper service error occurred, contact support.",
+                innerException: exception);
+
             this.loggingBroker.LogError(csvMapperServiceException);
 
             return csvMapperServiceException;

@@ -8,8 +8,8 @@ namespace LHDS.Core.Models.Processings.Mesh.Exceptions
 {
     public class NullMeshMessageProcessingException : Xeption
     {
-        public NullMeshMessageProcessingException()
-            : base(message: $"Mesh processing service exception. Message is Null.")
+        public NullMeshMessageProcessingException(string message)
+            : base(message)
         { }
     }
 }

@@ -198,7 +198,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             var serviceException = new Exception();
 
             var failedOptOutProcessingServiceException =
-                new FailedOptOutProcessingServiceException(serviceException);
+                new FailedOptOutProcessingServiceException(
+                    message: "Failed opt out processing service error occurred, contact support.",
+                    serviceException);
 
             var expectedOptOutProcessingServiveException =
                 new OptOutProcessingServiceException(
@@ -245,7 +247,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
             var serviceException = new Exception();
 
             var failedOptOutProcessingServiceException =
-                new FailedOptOutProcessingServiceException(serviceException);
+                new FailedOptOutProcessingServiceException(
+                    message: "Failed opt out processing service error occurred, contact support.",
+                    serviceException);
 
             var expectedOptOutProcessingServiveException =
                 new OptOutProcessingServiceException(

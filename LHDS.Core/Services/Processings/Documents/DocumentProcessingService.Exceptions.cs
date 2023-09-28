@@ -50,7 +50,9 @@ namespace LHDS.Core.Services.Processings.Documents
             catch (Exception exception)
             {
                 var failedDocumentProcessingServiceException =
-                    new FailedDocumentProcessingServiceException(exception);
+                    new FailedDocumentProcessingServiceException(
+                        message: "Failed document processing service error occurred, contact support.",
+                        exception);
 
                 throw CreateAndLogServiceException(failedDocumentProcessingServiceException);
             }
@@ -85,7 +87,9 @@ namespace LHDS.Core.Services.Processings.Documents
             catch (Exception exception)
             {
                 var failedDocumentProcessingServiceException =
-                    new FailedDocumentProcessingServiceException(exception);
+                    new FailedDocumentProcessingServiceException(
+                        message: "Failed document processing service error occurred, contact support.",
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedDocumentProcessingServiceException);
             }
@@ -128,7 +132,9 @@ namespace LHDS.Core.Services.Processings.Documents
             catch (Exception exception)
             {
                 var failedDocumentProcessingServiceException =
-                    new FailedDocumentProcessingServiceException(exception);
+                    new FailedDocumentProcessingServiceException(
+                        message: "Failed document processing service error occurred, contact support.",
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedDocumentProcessingServiceException);
             }
@@ -138,7 +144,9 @@ namespace LHDS.Core.Services.Processings.Documents
             CreateAndLogValidationException(Xeption exception)
         {
             var documentProcessingValidationExceptionn =
-                new DocumentProcessingValidationException(exception);
+                new DocumentProcessingValidationException(
+                    message: "Document processing validation errors occured, please try again",
+                    innerException: exception);
 
             this.loggingBroker.LogError(documentProcessingValidationExceptionn);
 
@@ -150,7 +158,8 @@ namespace LHDS.Core.Services.Processings.Documents
         {
             var documentProcessingDependencyValidationException =
                 new DocumentProcessingDependencyValidationException(
-                    exception.InnerException as Xeption);
+                    message: "Document processing dependency validation occurred, please try again.",
+                    innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(documentProcessingDependencyValidationException);
 
@@ -161,7 +170,9 @@ namespace LHDS.Core.Services.Processings.Documents
             CreateAndLogDependencyException(Xeption exception)
         {
             var documentProcessingDependencyException =
-                new DocumentProcessingDependencyException(exception.InnerException as Xeption);
+                new DocumentProcessingDependencyException(
+                    message: "Document processing dependency error occurred, please try again.",
+                    innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(documentProcessingDependencyException);
 
@@ -171,7 +182,9 @@ namespace LHDS.Core.Services.Processings.Documents
         private DocumentProcessingServiceException CreateAndLogServiceException(Xeption exception)
         {
             var documentProcessingServiceException = new
-                DocumentProcessingServiceException(exception);
+                DocumentProcessingServiceException(
+                message: "Document processing service error occurred, contact support.",
+                innerException: exception);
 
             this.loggingBroker.LogError(documentProcessingServiceException);
 

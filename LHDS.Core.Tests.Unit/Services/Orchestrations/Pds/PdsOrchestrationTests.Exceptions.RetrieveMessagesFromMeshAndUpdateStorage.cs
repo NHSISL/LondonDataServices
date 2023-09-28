@@ -24,7 +24,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         {
             var expectedDependencyException =
                 new PdsOrchestrationDependencyValidationException(
-                    dependancyValidationException.InnerException as Xeption);
+                    message: "PDS orchestration validation errors occurred, please try again.",
+                    innerException: dependancyValidationException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>
               service.RetrieveMessageIdsFromInboxAsync())
@@ -67,7 +68,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             // given
             var expectedDependencyException =
                 new PdsOrchestrationDependencyException(
-                    dependancyException.InnerException as Xeption);
+                    message: "PDS orchestration dependency error occurred, fix the errors and try again.",
+                    innerException: dependancyException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>
                 service.RetrieveMessageIdsFromInboxAsync())
@@ -108,10 +110,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             var serviceException = new Exception();
 
             var failedPdsOrchestrationServiceException =
-                new FailedPdsOrchestrationServiceException(serviceException);
+                new FailedPdsOrchestrationServiceException(
+                    message: "Failed PDS orchestration service occurred, please contact support",
+                    innerException: serviceException);
 
             var expectedPdsOrchestrationServiceException =
-                new PdsOrchestrationServiceException(failedPdsOrchestrationServiceException);
+                new PdsOrchestrationServiceException(
+                    message: "PDS orchestration service error occurred, contact support.",
+                    innerException: failedPdsOrchestrationServiceException);
 
             this.meshServiceMock.Setup(service =>
                 service.RetrieveMessageIdsFromInboxAsync())

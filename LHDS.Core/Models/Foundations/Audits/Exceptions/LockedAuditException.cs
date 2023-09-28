@@ -9,9 +9,8 @@ namespace LHDS.Core.Models.Foundations.Audits.Exceptions
 {
     public class LockedAuditException : Xeption
     {
-        public LockedAuditException(Exception innerException)
-            : base(message: "Locked audit record exception, please try again later", innerException)
-        {
-        }
+        public LockedAuditException(string message, Exception innerException)
+            : base(message, innerException)
+        { }
     }
 }

@@ -9,8 +9,8 @@ namespace LHDS.Core.Models.Foundations.OptOuts.Exceptions
 {
     public class AlreadyExistsOptOutException : Xeption
     {
-        public AlreadyExistsOptOutException(Exception innerException)
-            : base(message: "OptOut with the same Id already exists.", innerException)
+        public AlreadyExistsOptOutException(string message, Exception innerException)
+            : base(message, innerException)
         { }
     }
 }

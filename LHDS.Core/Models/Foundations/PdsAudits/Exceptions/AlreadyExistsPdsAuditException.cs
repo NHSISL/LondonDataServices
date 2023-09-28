@@ -9,8 +9,8 @@ namespace LHDS.Core.Models.Foundations.PdsAudits.Exceptions
 {
     public class AlreadyExistsPdsAuditException : Xeption
     {
-        public AlreadyExistsPdsAuditException(Exception innerException)
-            : base(message: "PdsAudit with the same Id already exists.", innerException)
+        public AlreadyExistsPdsAuditException(string message, Exception innerException)
+            : base(message, innerException)
         { }
     }
 }

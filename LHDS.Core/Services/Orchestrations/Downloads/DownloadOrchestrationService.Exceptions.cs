@@ -96,7 +96,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             catch (Exception exception)
             {
                 var failedDownloadServiceException =
-                    new FailedDownloadOrchestrationServiceException(exception);
+                    new FailedDownloadOrchestrationServiceException(
+                        message: "Failed download orchestration service occurred, please contact support",
+                        exception);
 
                 throw CreateAndLogServiceException(failedDownloadServiceException);
             }
@@ -183,7 +185,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             catch (Exception exception)
             {
                 var failedDownloadServiceException =
-                    new FailedDownloadOrchestrationServiceException(exception);
+                    new FailedDownloadOrchestrationServiceException(
+                        message: "Failed download orchestration service occurred, please contact support",
+                        exception);
 
                 throw CreateAndLogServiceException(failedDownloadServiceException);
             }
@@ -192,7 +196,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         private DownloadOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
             var downloadOrchestrationValidationException =
-                new DownloadOrchestrationValidationException(exception);
+                new DownloadOrchestrationValidationException(
+                    message: "Download orchestration validation errors occurred, please try again.",
+                    exception);
 
             this.loggingBroker.LogError(downloadOrchestrationValidationException);
 
@@ -203,7 +209,10 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             CreateAndLogDependencyValidationException(Xeption exception)
         {
             var downloadOrchestrationDependencyValidationException =
-                new DownloadOrchestrationDependencyValidationException(exception.InnerException as Xeption);
+                new DownloadOrchestrationDependencyValidationException(
+                    message: "Download orchestration dependency validation error occurred, fix the errors and try again.",
+                    exception.InnerException as Xeption);
+
             this.loggingBroker.LogError(downloadOrchestrationDependencyValidationException);
 
             return downloadOrchestrationDependencyValidationException;
@@ -213,7 +222,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             CreateAndLogDependencyException(Xeption exception)
         {
             var documentOrchestrationDependencyException =
-                new DownloadOrchestrationDependencyException(exception.InnerException as Xeption);
+                new DownloadOrchestrationDependencyException(
+                    message: "Download orchestration dependency error occurred, fix the errors and try again.",
+                    innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(documentOrchestrationDependencyException);
 
@@ -224,7 +235,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             CreateAndLogServiceException(Xeption exception)
         {
             var downloadOrchestrationServiceException =
-                new DownloadOrchestrationServiceException(exception);
+                new DownloadOrchestrationServiceException(
+                    message: "Download orchestration service error occurred, contact support.",
+                    exception);
 
             this.loggingBroker.LogError(downloadOrchestrationServiceException);
 

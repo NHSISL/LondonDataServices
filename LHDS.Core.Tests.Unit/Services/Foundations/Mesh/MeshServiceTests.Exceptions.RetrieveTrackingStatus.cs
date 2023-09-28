@@ -28,7 +28,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 new MeshClientValidationException(validationException as Xeption);
 
             var expectedDependencyValidationException =
-                new MeshServiceDependencyValidationException(meshClientValidationException);
+                new MeshServiceDependencyValidationException(
+                    message: "Mesh service dependency validation occurred, please try again.", 
+                    innerException: meshClientValidationException);
 
             this.meshBrokerMock.Setup(broker =>
                 broker.TrackMessageAsync(It.IsAny<string>()))
@@ -72,7 +74,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
                 new MeshClientDependencyException(dependencyException as Xeption);
 
             var expectedDependencyException =
-                new MeshServiceDependencyException(meshClientDependencyException);
+                new MeshServiceDependencyException(
+                    message: "Mesh service dependency error occurred, contact support.", 
+                    innerException: meshClientDependencyException);
 
             this.meshBrokerMock.Setup(broker =>
                 broker.TrackMessageAsync(It.IsAny<string>()))
@@ -108,10 +112,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             var serviceException = new Exception();
 
             var failedMeshServiceException =
-               new FailedMeshServiceException(serviceException);
+               new FailedMeshServiceException(
+                   message: "Failed mesh service occurred, please contact support", 
+                   innerException: serviceException);
 
             var expectedMeshServiceException =
-               new MeshServiceException(failedMeshServiceException);
+               new MeshServiceException(
+                   message: "Mesh service error occurred, contact support.", 
+                   innerException: failedMeshServiceException);
 
             this.meshBrokerMock.Setup(broker =>
                 broker.TrackMessageAsync(It.IsAny<string>()))

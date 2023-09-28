@@ -24,14 +24,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
             string invalidFileName = invalidText;
 
             var invalidDownloadException =
-                new InvalidDownloadException();
+                new InvalidDownloadException(
+                    message: "Invalid download. Please correct the errors and try again.");
 
             invalidDownloadException.AddData(
                 key: nameof(Document.FileName),
                 values: "Text is required");
 
             var expectedDownloadValidationException =
-                new DownloadValidationException(innerException: invalidDownloadException);
+                new DownloadValidationException(
+                    message: "Download validation errors occurred, please try again.",
+                    innerException: invalidDownloadException);
 
             // when
             ValueTask<Document> retrieveDownloadByIdTask =

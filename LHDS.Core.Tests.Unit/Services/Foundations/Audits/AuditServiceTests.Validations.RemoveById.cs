@@ -21,14 +21,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             Guid invalidAuditId = Guid.Empty;
 
             var invalidAuditException =
-                new InvalidAuditException();
+                new InvalidAuditException(message: "Invalid audit. Please correct the errors and try again.");
 
             invalidAuditException.AddData(
                 key: nameof(Audit.Id),
                 values: "Id is required");
 
             var expectedAuditValidationException =
-                new AuditValidationException(innerException: invalidAuditException);
+                new AuditValidationException(
+                    message: "Audit validation errors occurred, please try again.",
+                    innerException: invalidAuditException);
 
             // when
             ValueTask<Audit> removeAuditByIdTask =

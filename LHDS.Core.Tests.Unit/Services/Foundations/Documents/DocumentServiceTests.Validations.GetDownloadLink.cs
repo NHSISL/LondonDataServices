@@ -22,14 +22,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             // Given
             string invalidFileName = invalidInput;
 
-            var invalidDocumentException = new InvalidDocumentException();
+            var invalidDocumentException = new InvalidDocumentException(
+                message: "Invalid document. Please correct the errors and try again.");
 
             invalidDocumentException.AddData(
                 key: "fileName",
                 values: "Text is required");
 
-            var expectedDocumentValidationException
-                = new DocumentValidationException(innerException: invalidDocumentException);
+            var expectedDocumentValidationException = 
+                new DocumentValidationException(
+                    message: "Document validation errors occured, please try again",
+                    innerException: invalidDocumentException);
 
             // When
             ValueTask<string> uploadFileTask = this.documentService.GetDownloadLinkAsync(invalidFileName);

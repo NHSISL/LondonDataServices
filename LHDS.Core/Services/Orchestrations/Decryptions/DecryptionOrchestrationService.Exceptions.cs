@@ -94,7 +94,9 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             catch (Exception exception)
             {
                 var failedDecryptServiceException =
-                    new FailedDecryptionOrchestrationServiceException(exception);
+                    new FailedDecryptionOrchestrationServiceException(
+                        message: "Failed Decryption orchestration service occurred, please contact support",
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedDecryptServiceException);
             }
@@ -103,7 +105,9 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
         private DecryptionOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
             var decryptionOrchestrationValidationException =
-                new DecryptionOrchestrationValidationException(exception);
+                new DecryptionOrchestrationValidationException(
+                    message: "Decryption orchestration validation errors occurred, please try again.",
+                    innerException: exception);
 
             this.loggingBroker.LogError(decryptionOrchestrationValidationException);
 
@@ -114,7 +118,10 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             CreateAndLogDependencyValidationException(Xeption exception)
         {
             var decryptionOrchestrationDependencyValidationException =
-                new DecryptionOrchestrationDependencyValidationException(exception.InnerException as Xeption);
+                new DecryptionOrchestrationDependencyValidationException(
+                    message: "Decryption orchestration dependency validation error occurred, fix the errors and try again.",
+                    innerException: exception.InnerException as Xeption);
+
             this.loggingBroker.LogError(decryptionOrchestrationDependencyValidationException);
 
             return decryptionOrchestrationDependencyValidationException;
@@ -124,7 +131,9 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             CreateAndLogDependencyException(Xeption exception)
         {
             var decryptionOrchestrationDependencyException =
-                new DecryptionOrchestrationDependencyException(exception.InnerException as Xeption);
+                new DecryptionOrchestrationDependencyException(
+                    message: "Decryption orchestration dependency error occurred, fix the errors and try again.",
+                    innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(decryptionOrchestrationDependencyException);
 
@@ -134,7 +143,9 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
         private DecryptionOrchestrationServiceException CreateAndLogServiceException(Xeption exception)
         {
             var decryptionServiceException =
-                new DecryptionOrchestrationServiceException(exception);
+                new DecryptionOrchestrationServiceException(
+                    message: "Decryption orchestration service error occurred, contact support.",
+                    innerException: exception);
 
             this.loggingBroker.LogError(decryptionServiceException);
 

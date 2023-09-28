@@ -8,10 +8,8 @@ namespace LHDS.Core.Models.Orchestrations.Decryptions.Exceptions
 {
     public class DecryptionOrchestrationValidationException : Xeption
     {
-        public DecryptionOrchestrationValidationException(Xeption innerException)
-            : base(
-                message: "Decryption orchestration validation errors occurred, please try again.",
-                innerException)
+        public DecryptionOrchestrationValidationException(string message, Xeption innerException)
+            : base(message, innerException)
         { }
     }
 }

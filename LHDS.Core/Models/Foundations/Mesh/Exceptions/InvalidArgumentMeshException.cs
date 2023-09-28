@@ -8,8 +8,8 @@ namespace LHDS.Core.Models.Foundations.Mesh.Exceptions
 {
     public class InvalidArgumentMeshException : Xeption
     {
-        public InvalidArgumentMeshException()
-            : base(message: "Invalid Mesh argument(s), please correct the errors and try again.")
+        public InvalidArgumentMeshException(string message)
+            : base(message)
         { }
     }
 }

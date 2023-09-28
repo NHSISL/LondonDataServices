@@ -34,7 +34,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 
             var expectedDocumentProcessingDependencyValidationException =
                 new DocumentProcessingDependencyValidationException(
-                    dependencyValidationException.InnerException as Xeption);
+                    message: "Document processing dependency validation occurred, please try again.",
+                    innerException: dependencyValidationException.InnerException as Xeption);
 
             this.documentServiceMock.Setup(service =>
                 service.RemoveDocumentByFileNameAsync(inputDocument.FileName))
@@ -81,7 +82,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 
             var expectedDocumentProcessingDependencyException =
                 new DocumentProcessingDependencyException(
-                    dependencyException.InnerException as Xeption);
+                    message: "Document processing dependency error occurred, please try again.",
+                    innerException: dependencyException.InnerException as Xeption);
 
             this.documentServiceMock.Setup(service =>
                 service.RemoveDocumentByFileNameAsync(inputDocument.FileName))
@@ -127,10 +129,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             var serviceException = new Exception();
 
             var failedDocumentProcessingServiceException =
-                new FailedDocumentProcessingServiceException(serviceException);
+                new FailedDocumentProcessingServiceException(
+                    message: "Failed document processing service error occurred, contact support.",
+                    serviceException);
 
             var expectedDocumentProcessingServiveException =
                 new DocumentProcessingServiceException(
+                    message: "Document processing service error occurred, contact support.",
                     failedDocumentProcessingServiceException);
 
             this.documentServiceMock.Setup(service =>

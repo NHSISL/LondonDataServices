@@ -34,20 +34,27 @@ namespace LHDS.Core.Services.Foundations.Documents
             }
             catch (RequestFailedException requestFailedException)
             {
-                var failedRequestException = new FailedDocumentRequestException(requestFailedException);
+                var failedRequestException = new FailedDocumentRequestException(
+                    message: "Failed document request occurred, please contact support", 
+                    innerException: requestFailedException);
+
                 throw CreateAndLogDependencyException(failedRequestException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsDocumentException =
-                    new AlreadyExistsDocumentException(duplicateKeyException);
+                    new AlreadyExistsDocumentException(
+                        message: "Document with the same Id already exists.",
+                        innerException: duplicateKeyException);
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsDocumentException);
             }
             catch (Exception exception)
             {
                 var failedDocumentServiceException =
-                   new FailedDocumentServiceException(exception);
+                    new FailedDocumentServiceException(
+                        message: "Failed document service error occurred, contact support.",
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedDocumentServiceException);
             }
@@ -69,13 +76,18 @@ namespace LHDS.Core.Services.Foundations.Documents
             }
             catch (RequestFailedException requestFailedException)
             {
-                var failedRequestException = new FailedDocumentRequestException(requestFailedException);
+                var failedRequestException = new FailedDocumentRequestException(
+                    message: "Failed document request occurred, please contact support", 
+                    innerException: requestFailedException);
+
                 throw CreateAndLogDependencyException(failedRequestException);
             }
             catch (Exception exception)
             {
                 var failedDocumentBlobServiceException =
-                   new FailedDocumentServiceException(exception);
+                    new FailedDocumentServiceException(
+                        message: "Failed document service error occurred, contact support.",
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedDocumentBlobServiceException);
             }
@@ -93,13 +105,18 @@ namespace LHDS.Core.Services.Foundations.Documents
             }
             catch (RequestFailedException requestFailedException)
             {
-                var failedRequestException = new FailedDocumentRequestException(requestFailedException);
+                var failedRequestException = new FailedDocumentRequestException(
+                    message: "Failed document request occurred, please contact support", 
+                    innerException: requestFailedException);
+
                 throw CreateAndLogDependencyException(failedRequestException);
             }
             catch (Exception exception)
             {
                 var failedDocumentBlobServiceException =
-                   new FailedDocumentServiceException(exception);
+                    new FailedDocumentServiceException(
+                        message: "Failed document service error occurred, contact support.",
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedDocumentBlobServiceException);
             }
@@ -108,7 +125,9 @@ namespace LHDS.Core.Services.Foundations.Documents
         private DocumentValidationException CreateAndLogValidationException(Xeption exception)
         {
             var documentValidationExceptionn =
-                new DocumentValidationException(exception);
+                new DocumentValidationException(
+                    message: "Document validation errors occured, please try again",
+                    innerException: exception);
 
             this.loggingBroker.LogError(documentValidationExceptionn);
 
@@ -117,7 +136,10 @@ namespace LHDS.Core.Services.Foundations.Documents
 
         private DocumentDependencyException CreateAndLogDependencyException(Xeption exception)
         {
-            var documentDependencyException = new DocumentDependencyException(exception);
+            var documentDependencyException = new DocumentDependencyException(
+                message: "Document dependency error occurred, contact support.", 
+                innerException: exception);
+
             this.loggingBroker.LogError(documentDependencyException);
 
             return documentDependencyException;
@@ -126,7 +148,9 @@ namespace LHDS.Core.Services.Foundations.Documents
         private DocumentDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
         {
             var documentDependencyValidationException =
-                new DocumentDependencyValidationException(exception);
+                new DocumentDependencyValidationException(
+                    message: "Document dependency validation occurred, please try again.", 
+                    innerException: exception);
 
             this.loggingBroker.LogError(documentDependencyValidationException);
 
@@ -135,7 +159,10 @@ namespace LHDS.Core.Services.Foundations.Documents
 
         private DocumentServiceException CreateAndLogServiceException(Xeption exception)
         {
-            var documentServiceException = new DocumentServiceException(exception);
+            var documentServiceException = new DocumentServiceException(
+                message: "Document service error occurred, contact support.",
+                innerException: exception);
+
             this.loggingBroker.LogError(documentServiceException);
 
             return documentServiceException;

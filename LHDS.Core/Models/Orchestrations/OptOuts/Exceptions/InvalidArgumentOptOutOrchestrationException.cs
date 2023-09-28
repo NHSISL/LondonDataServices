@@ -8,7 +8,8 @@ namespace LHDS.Core.Models.Orchestrations.OptOuts.Exceptions
 {
     public class InvalidArgumentOptOutOrchestrationException : Xeption
     {
-        public InvalidArgumentOptOutOrchestrationException()
-            : base(message: "Invalid Retrieve Opt Out Status orchestration argument(s), please correct the errors and try again.") { }
+        public InvalidArgumentOptOutOrchestrationException(string message)
+            : base(message) 
+        { }
     }
 }

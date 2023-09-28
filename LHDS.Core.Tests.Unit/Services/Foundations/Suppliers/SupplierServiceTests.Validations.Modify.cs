@@ -20,10 +20,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
         {
             // given
             Supplier nullSupplier = null;
-            var nullSupplierException = new NullSupplierException();
+            var nullSupplierException = new NullSupplierException(message: "Supplier is null.");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(nullSupplierException);
+                new SupplierValidationException(
+                    message: "Supplier validation errors occurred, please try again.",
+                    innerException: nullSupplierException);
 
             // when
             ValueTask<Supplier> modifySupplierTask =
@@ -69,7 +71,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 LandingManualTriggerUrl = invalidText,
             };
 
-            var invalidSupplierException = new InvalidSupplierException();
+            var invalidSupplierException = new InvalidSupplierException(
+                message: "Invalid supplier. Please correct the errors and try again.");
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.Id),
@@ -112,7 +115,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 values: "Text is required");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(innerException: invalidSupplierException);
+                new SupplierValidationException(
+                    message: "Supplier validation errors occurred, please try again.",
+                    innerException: invalidSupplierException);
 
             // when
             ValueTask<Supplier> modifySupplierTask =
@@ -151,14 +156,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Supplier randomSupplier = CreateRandomSupplier(randomDateTimeOffset);
             Supplier invalidSupplier = randomSupplier;
-            var invalidSupplierException = new InvalidSupplierException();
+            var invalidSupplierException = new InvalidSupplierException(
+                message: "Invalid supplier. Please correct the errors and try again.");
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.UpdatedDate),
                 values: $"Date is the same as {nameof(Supplier.CreatedDate)}");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(innerException: invalidSupplierException);
+                new SupplierValidationException(
+                    message: "Supplier validation errors occurred, please try again.",
+                    innerException: invalidSupplierException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -204,14 +212,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             randomSupplier.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
             var invalidSupplierException =
-                new InvalidSupplierException();
+                new InvalidSupplierException(message: "Invalid supplier. Please correct the errors and try again.");
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.UpdatedDate),
                 values: "Date is not recent");
 
             var expectedSupplierValidatonException =
-                new SupplierValidationException(innerException: invalidSupplierException);
+                new SupplierValidationException(
+                    message: "Supplier validation errors occurred, please try again.",
+                    innerException: invalidSupplierException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -260,7 +270,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 new NotFoundSupplierException(nonExistSupplier.Id);
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(notFoundSupplierException);
+                new SupplierValidationException(
+                    message: "Supplier validation errors occurred, please try again.",
+                    notFoundSupplierException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectSupplierByIdAsync(nonExistSupplier.Id))
@@ -312,14 +324,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             Supplier storageSupplier = invalidSupplier.DeepClone();
             storageSupplier.CreatedDate = storageSupplier.CreatedDate.AddMinutes(randomMinutes);
             storageSupplier.UpdatedDate = storageSupplier.UpdatedDate.AddMinutes(randomMinutes);
-            var invalidSupplierException = new InvalidSupplierException();
+
+            var invalidSupplierException = new InvalidSupplierException(
+                message: "Invalid supplier. Please correct the errors and try again.");
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.CreatedDate),
                 values: $"Date is not the same as {nameof(Supplier.CreatedDate)}");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(innerException: invalidSupplierException);
+                new SupplierValidationException(
+                    message: "Supplier validation errors occurred, please try again.",
+                    innerException: invalidSupplierException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectSupplierByIdAsync(invalidSupplier.Id))
@@ -370,14 +386,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             invalidSupplier.CreatedBy = Guid.NewGuid().ToString();
             storageSupplier.UpdatedDate = storageSupplier.CreatedDate;
 
-            var invalidSupplierException = new InvalidSupplierException();
+            var invalidSupplierException = new InvalidSupplierException(
+                message: "Invalid supplier. Please correct the errors and try again.");
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.CreatedBy),
                 values: $"Text is not the same as {nameof(Supplier.CreatedBy)}");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(innerException: invalidSupplierException);
+                new SupplierValidationException(
+                    message: "Supplier validation errors occurred, please try again.",
+                    innerException: invalidSupplierException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectSupplierByIdAsync(invalidSupplier.Id))
@@ -425,14 +444,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             Supplier invalidSupplier = randomSupplier;
             Supplier storageSupplier = randomSupplier.DeepClone();
 
-            var invalidSupplierException = new InvalidSupplierException();
+            var invalidSupplierException = new InvalidSupplierException(
+                message: "Invalid supplier. Please correct the errors and try again.");
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.UpdatedDate),
                 values: $"Date is the same as {nameof(Supplier.UpdatedDate)}");
 
             var expectedSupplierValidationException =
-                new SupplierValidationException(innerException: invalidSupplierException);
+                new SupplierValidationException(
+                    message: "Supplier validation errors occurred, please try again.",
+                    innerException: invalidSupplierException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectSupplierByIdAsync(invalidSupplier.Id))

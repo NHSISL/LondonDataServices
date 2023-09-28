@@ -36,7 +36,9 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             catch (SqlException sqlException)
             {
                 var failedSupplierStorageException =
-                    new FailedSupplierStorageException(sqlException);
+                    new FailedSupplierStorageException(
+                        message: "Failed supplier storage error occurred, contact support.", 
+                        innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedSupplierStorageException);
             }
@@ -47,34 +49,44 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsSupplierException =
-                    new AlreadyExistsSupplierException(duplicateKeyException);
+                    new AlreadyExistsSupplierException(
+                        message: "Supplier with the same Id already exists.", 
+                        innerException: duplicateKeyException);
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsSupplierException);
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
                 var invalidSupplierReferenceException =
-                    new InvalidSupplierReferenceException(foreignKeyConstraintConflictException);
+                    new InvalidSupplierReferenceException(
+                        message: "Invalid supplier reference error occurred.", 
+                        innerException: foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidSupplierReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var lockedSupplierException = new LockedSupplierException(dbUpdateConcurrencyException);
+                var lockedSupplierException = new LockedSupplierException(
+                    message: "Locked supplier record exception, please try again later", 
+                    innerException: dbUpdateConcurrencyException);
 
                 throw CreateAndLogDependencyValidationException(lockedSupplierException);
             }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedSupplierStorageException =
-                    new FailedSupplierStorageException(databaseUpdateException);
+                    new FailedSupplierStorageException(
+                        message: "Failed supplier storage error occurred, contact support.", 
+                        innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedSupplierStorageException);
             }
             catch (Exception exception)
             {
                 var failedSupplierServiceException =
-                    new FailedSupplierServiceException(exception);
+                    new FailedSupplierServiceException(
+                        message: "Failed supplier service occurred, please contact support", 
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedSupplierServiceException);
             }
@@ -89,13 +101,18 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             catch (SqlException sqlException)
             {
                 var failedSupplierStorageException =
-                    new FailedSupplierStorageException(sqlException);
+                    new FailedSupplierStorageException(
+                        message: "Failed supplier storage error occurred, contact support.", 
+                        innerException: sqlException);
+
                 throw CreateAndLogCriticalDependencyException(failedSupplierStorageException);
             }
             catch (Exception exception)
             {
                 var failedSupplierServiceException =
-                    new FailedSupplierServiceException(exception);
+                    new FailedSupplierServiceException(
+                        message: "Failed supplier service occurred, please contact support", 
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedSupplierServiceException);
             }
@@ -103,7 +120,10 @@ namespace LHDS.Core.Services.Foundations.Suppliers
 
         private SupplierValidationException CreateAndLogValidationException(Xeption exception)
         {
-            var supplierValidationException = new SupplierValidationException(exception);
+            var supplierValidationException = new SupplierValidationException(
+                message: "Supplier validation errors occurred, please try again.",
+                innerException: exception);
+
             this.loggingBroker.LogError(supplierValidationException);
 
             return supplierValidationException;
@@ -111,7 +131,10 @@ namespace LHDS.Core.Services.Foundations.Suppliers
 
         private SupplierDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
-            var supplierDependencyException = new SupplierDependencyException(exception);
+            var supplierDependencyException = new SupplierDependencyException(
+                message: "Supplier dependency error occurred, contact support.", 
+                innerException: exception);
+
             this.loggingBroker.LogCritical(supplierDependencyException);
 
             return supplierDependencyException;
@@ -120,7 +143,9 @@ namespace LHDS.Core.Services.Foundations.Suppliers
         private SupplierDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
         {
             var supplierDependencyValidationException =
-                new SupplierDependencyValidationException(exception);
+                new SupplierDependencyValidationException(
+                    message: "Supplier dependency error occurred, contact support.", 
+                    innerException: exception);
 
             this.loggingBroker.LogError(supplierDependencyValidationException);
 
@@ -130,7 +155,10 @@ namespace LHDS.Core.Services.Foundations.Suppliers
         private SupplierDependencyException CreateAndLogDependencyException(
             Xeption exception)
         {
-            var supplierDependencyException = new SupplierDependencyException(exception);
+            var supplierDependencyException = new SupplierDependencyException(
+                message: "Supplier dependency error occurred, contact support.", 
+                innerException: exception);
+
             this.loggingBroker.LogError(supplierDependencyException);
 
             return supplierDependencyException;
@@ -139,7 +167,10 @@ namespace LHDS.Core.Services.Foundations.Suppliers
         private SupplierServiceException CreateAndLogServiceException(
             Xeption exception)
         {
-            var supplierServiceException = new SupplierServiceException(exception);
+            var supplierServiceException = new SupplierServiceException(
+                message: "Supplier service error occurred, contact support.", 
+                innerException: exception);
+
             this.loggingBroker.LogError(supplierServiceException);
 
             return supplierServiceException;

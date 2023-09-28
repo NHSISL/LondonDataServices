@@ -54,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given

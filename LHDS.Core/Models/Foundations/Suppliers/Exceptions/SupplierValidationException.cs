@@ -8,7 +8,7 @@ namespace LHDS.Core.Models.Foundations.Suppliers.Exceptions
 {
     public class SupplierValidationException : Xeption
     {
-        public SupplierValidationException(Xeption innerException)
+        public SupplierValidationException(string message, Xeption innerException)
             : base(
                 message: "Supplier validation errors occurred, please try again.",
                 innerException)

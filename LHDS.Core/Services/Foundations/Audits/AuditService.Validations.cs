@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Data;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Audits.Exceptions;
 
@@ -35,6 +36,12 @@ namespace LHDS.Core.Services.Foundations.Audits
                     secondName: nameof(Audit.CreatedBy)),
                 Parameter: nameof(Audit.UpdatedBy)),
 
+                (Rule: IsEqualOrSmallerThan(
+                    audit.CreatedBy, 255), Parameter: nameof(audit.CreatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    audit.UpdatedBy, 255), Parameter: nameof(audit.UpdatedBy)),
+
                 (Rule: IsNotRecent(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)));
         }
 
@@ -56,6 +63,12 @@ namespace LHDS.Core.Services.Foundations.Audits
                     secondDate: audit.CreatedDate,
                     secondDateName: nameof(Audit.CreatedDate)),
                 Parameter: nameof(Audit.UpdatedDate)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    audit.CreatedBy, 255), Parameter: nameof(audit.CreatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    audit.UpdatedBy, 255), Parameter: nameof(audit.UpdatedBy)),
 
                 (Rule: IsNotRecent(audit.UpdatedDate), Parameter: nameof(audit.UpdatedDate)));
         }
@@ -117,6 +130,12 @@ namespace LHDS.Core.Services.Foundations.Audits
         {
             Condition = date == default,
             Message = "Date is required"
+        };
+
+        private static dynamic IsEqualOrSmallerThan(string text, int maxLength) => new
+        {
+            Condition = (text ?? string.Empty).Length > maxLength,
+            Message = "Text is exceeding max length"
         };
 
         private static dynamic IsSame(

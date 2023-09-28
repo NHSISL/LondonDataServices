@@ -52,5 +52,22 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
                 return await this.objectColumnService.RetrieveObjectColumnByIdAsync(objectColumn.Id) ??
                     await this.objectColumnService.AddObjectColumnAsync(objectColumn);
             });
+
+        public ValueTask<ObjectColumn> ModifyOrAddObjectColumnAsync(ObjectColumn objectColumn) =>
+            TryCatch(async () =>
+            {
+                ValidateObjectColumn(objectColumn);
+                ValidateObjectColumnId(objectColumn.Id);
+                var maybeObjectColumn = await this.objectColumnService.RetrieveObjectColumnByIdAsync(objectColumn.Id);
+
+                if (maybeObjectColumn != null)
+                {
+                    return await this.objectColumnService.ModifyObjectColumnAsync(objectColumn);
+                }
+                else
+                {
+                    return await this.objectColumnService.AddObjectColumnAsync(objectColumn);
+                }
+            });
     }
 }

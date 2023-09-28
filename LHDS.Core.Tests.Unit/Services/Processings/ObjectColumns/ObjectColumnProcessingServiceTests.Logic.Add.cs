@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
+using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using Moq;
@@ -26,9 +27,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
                     .ReturnsAsync(storageObjectColumn);
 
             // When
-            await this.objectColumnProcessingService.AddObjectColumnAsync(inputObjectColumn);
+            ObjectColumn actualObjectColumn = await this.objectColumnProcessingService
+                .AddObjectColumnAsync(inputObjectColumn);
 
             // Then
+            actualObjectColumn.Should().BeEquivalentTo(expectedObjectColumn);
+
             this.objectColumnServiceMock.Verify(service =>
                 service.AddObjectColumnAsync(inputObjectColumn),
                     Times.Once);

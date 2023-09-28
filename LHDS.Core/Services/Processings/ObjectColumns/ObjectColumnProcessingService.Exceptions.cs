@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
@@ -14,6 +15,7 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
     public partial class ObjectColumnProcessingService : IObjectColumnProcessingService
     {
         private delegate ValueTask<ObjectColumn> ReturningObjectColumnProcessingFunction();
+        private delegate IQueryable<ObjectColumn> ReturningObjectColumnsFunction();
 
         private async ValueTask<ObjectColumn> TryCatch(
             ReturningObjectColumnProcessingFunction returningObjectColumnProcessingFunction)
@@ -52,6 +54,40 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
                 throw CreateAndLogServiceException(failedObjectColumnProcessingServiceException);
             }
         }
+
+        private IQueryable<ObjectColumn> TryCatch(ReturningObjectColumnsFunction returningObjectColumnsFunction)
+        {
+            try
+            {
+                return returningObjectColumnsFunction();
+            }
+            catch (ObjectColumnValidationException objectColumnValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(objectColumnValidationException);
+            }
+            catch (ObjectColumnDependencyValidationException objectColumnDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(objectColumnDependencyValidationException);
+            }
+            catch (ObjectColumnDependencyException objectColumnDependencyException)
+            {
+                throw CreateAndLogDependencyException(objectColumnDependencyException);
+            }
+            catch (ObjectColumnServiceException objectColumnServiceException)
+            {
+                throw CreateAndLogDependencyException(objectColumnServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedObjectColumnProcessingServiceException =
+                    new FailedObjectColumnProcessingServiceException(
+                        message: "Failed ObjectColumn processing service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedObjectColumnProcessingServiceException);
+            }
+        }
+
 
         private ObjectColumnProcessingValidationException CreateAndLogValidationException(Xeption exception)
         {

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.ObjectColumns;
@@ -70,11 +71,21 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
         private static string GetRandomString(int length) =>
             new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
+        private static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 10).GetValue();
+
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
         private static ObjectColumn CreateRandomObjectColumn() =>
             CreateObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+
+        private static IQueryable<ObjectColumn> CreateRandomObjectColumns()
+        {
+            return CreateObjectColumnFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
 
         private static Filler<ObjectColumn> CreateObjectColumnFiller(DateTimeOffset dateTimeOffset)
         {

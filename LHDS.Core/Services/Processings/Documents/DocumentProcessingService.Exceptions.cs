@@ -89,7 +89,7 @@ namespace LHDS.Core.Services.Processings.Documents
                 var failedDocumentProcessingServiceException =
                     new FailedDocumentProcessingServiceException(
                         message: "Failed document processing service error occurred, contact support.",
-                        exception);
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedDocumentProcessingServiceException);
             }
@@ -134,7 +134,7 @@ namespace LHDS.Core.Services.Processings.Documents
                 var failedDocumentProcessingServiceException =
                     new FailedDocumentProcessingServiceException(
                         message: "Failed document processing service error occurred, contact support.",
-                        exception);
+                        innerException: exception);
 
                 throw CreateAndLogServiceException(failedDocumentProcessingServiceException);
             }
@@ -146,7 +146,7 @@ namespace LHDS.Core.Services.Processings.Documents
             var documentProcessingValidationExceptionn =
                 new DocumentProcessingValidationException(
                     message: "Document processing validation errors occured, please try again",
-                    exception);
+                    innerException: exception);
 
             this.loggingBroker.LogError(documentProcessingValidationExceptionn);
 
@@ -159,7 +159,7 @@ namespace LHDS.Core.Services.Processings.Documents
             var documentProcessingDependencyValidationException =
                 new DocumentProcessingDependencyValidationException(
                     message: "Document processing dependency validation occurred, please try again.",
-                    exception.InnerException as Xeption);
+                    innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(documentProcessingDependencyValidationException);
 
@@ -172,7 +172,7 @@ namespace LHDS.Core.Services.Processings.Documents
             var documentProcessingDependencyException =
                 new DocumentProcessingDependencyException(
                     message: "Document processing dependency error occurred, please try again.",
-                    exception.InnerException as Xeption);
+                    innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(documentProcessingDependencyException);
 
@@ -184,7 +184,7 @@ namespace LHDS.Core.Services.Processings.Documents
             var documentProcessingServiceException = new
                 DocumentProcessingServiceException(
                 message: "Document processing service error occurred, contact support.",
-                exception);
+                innerException: exception);
 
             this.loggingBroker.LogError(documentProcessingServiceException);
 

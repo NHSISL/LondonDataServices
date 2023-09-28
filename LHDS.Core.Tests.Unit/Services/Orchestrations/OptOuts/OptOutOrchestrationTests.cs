@@ -530,7 +530,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             {
                 new OptOutProcessingDependencyException(innerException),
                 new OptOutProcessingServiceException(innerException),
-                new DocumentProcessingDependencyException(exceptionMessage, innerException),
+
+                new DocumentProcessingDependencyException(
+                    message: "Document processing dependency error occurred, please try again.",
+                    innerException),
 
                 new DocumentProcessingServiceException(
                     message: "Document processing service error occurred, contact support.",

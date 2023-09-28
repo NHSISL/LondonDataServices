@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             var expectedDocumentProcessingDependencyValidationException =
                 new DocumentProcessingDependencyValidationException(
                     message: "Document processing dependency validation occurred, please try again.",
-                    dependencyValidationException.InnerException as Xeption);
+                    innerException: dependencyValidationException.InnerException as Xeption);
 
             this.documentServiceMock.Setup(service =>
                 service.AddDocumentAsync(inputDocument))
@@ -129,13 +129,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 
             var failedDocumentProcessingServiceException =
                 new FailedDocumentProcessingServiceException(
-                    message: "Failed document processing service error occurred, contact support.", 
-                    serviceException);
+                    message: "Failed document processing service error occurred, contact support.",
+                    innerException: serviceException);
 
             var expectedDocumentProcessingServiveException =
                 new DocumentProcessingServiceException(
                     message: "Document processing service error occurred, contact support.",
-                    failedDocumentProcessingServiceException);
+                    innerException: failedDocumentProcessingServiceException);
 
             this.documentServiceMock.Setup(service =>
                 service.AddDocumentAsync(inputDocument))

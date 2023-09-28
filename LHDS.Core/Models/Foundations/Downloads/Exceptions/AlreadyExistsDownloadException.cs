@@ -10,6 +10,7 @@ namespace LHDS.Core.Models.Foundations.Downloads.Exceptions
     public class AlreadyExistsDownloadException : Xeption
     {
         public AlreadyExistsDownloadException(string message, Exception innerException)
-            : base(message, innerException) { }
+            : base(message, innerException) 
+        { }
     }
 }

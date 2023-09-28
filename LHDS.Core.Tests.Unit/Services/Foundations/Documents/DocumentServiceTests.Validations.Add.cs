@@ -73,8 +73,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                  key: "DocumentData",
                  values: "Data is required");
 
-            var expectedDocumentValidationException
-                = new DocumentValidationException(
+            var expectedDocumentValidationException = 
+                new DocumentValidationException(
                     message: "Document validation errors occured, please try again",
                     innerException: invalidDocumentException);
 

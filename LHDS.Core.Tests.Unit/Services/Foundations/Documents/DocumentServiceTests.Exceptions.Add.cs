@@ -85,8 +85,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                 DocumentData = randomBytes
             };
 
-            var requestFailedException = new RequestFailedException(randomMessage)
-                ;
+            var requestFailedException = new RequestFailedException(randomMessage);
+            
             var failedDocumentRequestException = new FailedDocumentRequestException(
                 message: "Failed document request occurred, please contact support", 
                 innerException: requestFailedException);

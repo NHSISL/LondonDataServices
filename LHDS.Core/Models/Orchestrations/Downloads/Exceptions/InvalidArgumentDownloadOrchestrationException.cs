@@ -10,6 +10,7 @@ namespace LHDS.Core.Models.Orchestrations.Downloads.Exceptions
     public class InvalidArgumentDownloadOrchestrationException : Xeption
     {
         public InvalidArgumentDownloadOrchestrationException(string message)
-            : base(message) { }
+            : base(message) 
+        { }
     }
 }

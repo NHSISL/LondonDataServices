@@ -9,6 +9,7 @@ namespace LHDS.Core.Models.Foundations.CsvMappers.Exceptions
     public class InvalidCsvMapperArgumentsException : Xeption
     {
         public InvalidCsvMapperArgumentsException(string message)
-            : base(message) { }
+            : base(message) 
+        { }
     }
 }

@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             var invalidMeshProcessingArgumentException =
                 new InvalidMeshProcessingArgumentException(
-                        message: "Invalid mesh processing argument. Please correct the errors and try again.");
+                    message: "Invalid mesh processing argument. Please correct the errors and try again.");
 
             invalidMeshProcessingArgumentException.AddData(
                 key: "MexTo",
@@ -46,9 +46,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 values: "Text is required");
 
             var expectedMeshProcessingValidationException =
-            new MeshProcessingValidationException(
-                message: "Mesh processing validation errors occured, please try again",
-                innerException: invalidMeshProcessingArgumentException);
+                new MeshProcessingValidationException(
+                    message: "Mesh processing validation errors occured, please try again",
+                    innerException: invalidMeshProcessingArgumentException);
 
             // when
             ValueTask<MeshMessage> sendMessageTask =
@@ -114,7 +114,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
             string accept = "text/plain";
 
             var invalidMeshProcessingArgumentException =
-            new InvalidMeshProcessingArgumentException(
+                new InvalidMeshProcessingArgumentException(
                     message: "Invalid mesh processing argument. Please correct the errors and try again.");
 
             invalidMeshProcessingArgumentException.AddData(
@@ -122,9 +122,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
                 values: "Content is required");
 
             var expectedMeshProcessingValidationException =
-            new MeshProcessingValidationException(
-                message: "Mesh processing validation errors occured, please try again",
-                innerException: invalidMeshProcessingArgumentException);
+                new MeshProcessingValidationException(
+                    message: "Mesh processing validation errors occured, please try again",
+                    innerException: invalidMeshProcessingArgumentException);
 
             // when
             ValueTask<MeshMessage> sendMessageTask =

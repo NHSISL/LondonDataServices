@@ -9,6 +9,7 @@ namespace LHDS.Core.Models.Foundations.Mesh.Exceptions
     public class InvalidMeshMessageException : Xeption
     {
         public InvalidMeshMessageException(string message)
-            : base(message) { }
+            : base(message) 
+        { }
     }
 }

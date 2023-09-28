@@ -11,7 +11,6 @@ namespace LHDS.Core.Models.Foundations.Audits.Exceptions
     {
         public LockedAuditException(string message, Exception innerException)
             : base(message, innerException)
-        {
-        }
+        { }
     }
 }

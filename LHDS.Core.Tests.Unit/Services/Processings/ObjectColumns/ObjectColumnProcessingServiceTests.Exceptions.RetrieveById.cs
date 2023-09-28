@@ -17,12 +17,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnAddIfErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveByIdIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
-            ObjectColumn someObjectColumn = CreateRandomObjectColumn();
-            ObjectColumn inputObjectColumn = someObjectColumn;
+            Guid someId = Guid.NewGuid();
 
             var expectedObjectColumnProcessingDependencyValidationException =
                 new ObjectColumnProcessingDependencyValidationException(
@@ -30,22 +29,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.objectColumnServiceMock.Setup(service =>
-                service.AddObjectColumnAsync(inputObjectColumn))
+                service.RetrieveObjectColumnByIdAsync(someId))
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask<ObjectColumn> objectColumnAddTask =
-                this.objectColumnProcessingService.AddObjectColumnAsync(inputObjectColumn);
+            ValueTask<ObjectColumn> objectColumnRetrieveByIdTask =
+                this.objectColumnProcessingService.RetrieveObjectColumnByIdAsync(someId);
 
             ObjectColumnProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<ObjectColumnProcessingDependencyValidationException>(
-                    objectColumnAddTask.AsTask);
+                    objectColumnRetrieveByIdTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedObjectColumnProcessingDependencyValidationException);
 
             this.objectColumnServiceMock.Verify(service =>
-                service.AddObjectColumnAsync(inputObjectColumn),
+                service.RetrieveObjectColumnByIdAsync(someId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -59,12 +58,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnAddIfDependencyErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnRetrieveByIdIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
-            ObjectColumn someObjectColumn = CreateRandomObjectColumn();
-            ObjectColumn inputObjectColumn = someObjectColumn;
+            Guid someId = Guid.NewGuid();
 
             var expectedObjectColumnProcessingDependencyException =
                 new ObjectColumnProcessingDependencyException(
@@ -72,21 +70,21 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
                     innerException: dependencyException.InnerException as Xeption);
 
             this.objectColumnServiceMock.Setup(service =>
-                service.AddObjectColumnAsync(inputObjectColumn))
+                service.RetrieveObjectColumnByIdAsync(someId))
                     .Throws(dependencyException);
 
             // when
-            ValueTask<ObjectColumn> objectColumnAddTask =
-                this.objectColumnProcessingService.AddObjectColumnAsync(inputObjectColumn);
+            ValueTask<ObjectColumn> objectColumnRetrieveByIdTask =
+                this.objectColumnProcessingService.RetrieveObjectColumnByIdAsync(someId);
 
             ObjectColumnProcessingDependencyException actualException =
-                await Assert.ThrowsAsync<ObjectColumnProcessingDependencyException>(objectColumnAddTask.AsTask);
+                await Assert.ThrowsAsync<ObjectColumnProcessingDependencyException>(objectColumnRetrieveByIdTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedObjectColumnProcessingDependencyException);
 
             this.objectColumnServiceMock.Verify(service =>
-                service.AddObjectColumnAsync(inputObjectColumn),
+                service.RetrieveObjectColumnByIdAsync(someId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -99,11 +97,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAsync()
         {
             // given
-            ObjectColumn someObjectColumn = CreateRandomObjectColumn();
-            ObjectColumn inputObjectColumn = someObjectColumn;
+            Guid someId = Guid.NewGuid();
 
             var serviceException = new Exception();
 
@@ -118,12 +115,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
                     innerException: failedObjectColumnProcessingServiceException);
 
             this.objectColumnServiceMock.Setup(service =>
-                service.AddObjectColumnAsync(inputObjectColumn))
+                service.RetrieveObjectColumnByIdAsync(someId))
                     .Throws(serviceException);
 
             // when
             ValueTask<ObjectColumn> addObjectColumnTask =
-                this.objectColumnProcessingService.AddObjectColumnAsync(inputObjectColumn);
+                this.objectColumnProcessingService.RetrieveObjectColumnByIdAsync(someId);
 
             ObjectColumnProcessingServiceException actualException =
                 await Assert.ThrowsAsync<ObjectColumnProcessingServiceException>(addObjectColumnTask.AsTask);
@@ -132,7 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
             actualException.Should().BeEquivalentTo(expectedObjectColumnProcessingServiveException);
 
             this.objectColumnServiceMock.Verify(service =>
-                service.AddObjectColumnAsync(inputObjectColumn),
+                service.RetrieveObjectColumnByIdAsync(someId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

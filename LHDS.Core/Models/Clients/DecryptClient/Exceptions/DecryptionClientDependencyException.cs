@@ -8,9 +8,8 @@ namespace LHDS.Core.Models.Clients.DecryptClient.Exceptions
 {
     public class DecryptionClientDependencyException : Xeption
     {
-        public DecryptionClientDependencyException(Xeption innerException)
-            : base(message: "Decryption client dependency error occurred, contact support.",
-                  innerException)
+        public DecryptionClientDependencyException(string message, Xeption innerException)
+            : base(message, innerException)
         { }
     }
 }

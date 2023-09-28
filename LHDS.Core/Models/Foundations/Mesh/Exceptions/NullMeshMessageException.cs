@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.Mesh.Exceptions
     public class NullMeshMessageException : Xeption
     {
         public NullMeshMessageException(string message)
-            : base(message: "Mesh message is null.")
+            : base(message)
         { }
     }
 }

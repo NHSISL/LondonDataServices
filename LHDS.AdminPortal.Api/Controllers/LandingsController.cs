@@ -4,7 +4,6 @@
 
 using System.Threading.Tasks;
 using System.Web;
-using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using Microsoft.AspNetCore.Mvc;
@@ -28,13 +27,14 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public async ValueTask<ActionResult<IngestionTracking>> GetLandingDocumentByFileNameAsync(string fileName)
+        public async ValueTask<ActionResult<string>> GetLandingDocumentByFileNameAsync(string fileName)
         {
             try
             {
-                await this.downloadOrchestrationService.ProcessAsync(HttpUtility.UrlDecode(fileName));
+                var returnFilePath = await this.downloadOrchestrationService
+                    .ProcessAsync(HttpUtility.UrlDecode(fileName));
 
-                return Ok();
+                return Ok(returnFilePath);
             }
             catch (DownloadOrchestrationValidationException downloadOrchestrationValidationException)
             {

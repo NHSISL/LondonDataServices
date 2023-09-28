@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             var expectedDocumentProcessingDependencyValidationException =
                 new DocumentProcessingDependencyValidationException(
                     message: "Document processing dependency validation occurred, please try again.",
-                    dependencyValidationException.InnerException as Xeption);
+                    innerException: dependencyValidationException.InnerException as Xeption);
 
             this.documentServiceMock.Setup(service =>
                 service.RetrieveDocumentByFileNameAsync(inputDocument.FileName))

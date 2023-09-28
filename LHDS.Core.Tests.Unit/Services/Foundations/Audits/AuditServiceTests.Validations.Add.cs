@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Audits.Exceptions;
+using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 using Moq;
 using Xunit;
 
@@ -289,5 +290,62 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreatedByAndUpdatedByIsInvalidLengthAndLogItAsync()
+        {
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Audit randomAudit = CreateRandomAudit(randomDateTimeOffset);
+            Audit invalidAudit = randomAudit;
+            invalidAudit.CreatedBy = GetRandomString(256);
+            invalidAudit.UpdatedBy = invalidAudit.CreatedBy;
+
+            var invalidAuditException = new InvalidAuditException();
+
+            invalidAuditException.AddData(
+                key: nameof(Audit.CreatedBy),
+                values: "Text is exceeding max length");
+
+            invalidAuditException.AddData(
+                key: nameof(Audit.UpdatedBy),
+                values: "Text is exceeding max length");
+
+            var expectedAuditValidationException =
+                new AuditValidationException(innerException: invalidAuditException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<Audit> addAuditTask =
+                this.auditService.AddAuditAsync(invalidAudit);
+
+            AuditValidationException actualAuditValidationException =
+                await Assert.ThrowsAsync<AuditValidationException>(() =>
+                    addAuditTask.AsTask());
+
+            // then
+            actualAuditValidationException.Should()
+                .BeEquivalentTo(expectedAuditValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAuditValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertAuditAsync(It.IsAny<Audit>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
     }
 }

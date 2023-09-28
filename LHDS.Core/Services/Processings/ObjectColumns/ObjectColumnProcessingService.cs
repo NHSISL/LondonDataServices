@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.ObjectColumns;
@@ -29,5 +30,8 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
 
                 return await this.objectColumnService.AddObjectColumnAsync(objectColumn);
             });
+
+        public IQueryable<ObjectColumn> RetrieveAllObjectColumns() =>
+            TryCatch(() => this.objectColumnService.RetrieveAllObjectColumns());
     }
 }

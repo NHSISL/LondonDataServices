@@ -10,7 +10,6 @@ using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Foundations.PdsAudits.Exceptions;
 using Moq;
 using Xunit;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
 {

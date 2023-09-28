@@ -9,7 +9,7 @@ namespace LHDS.Core.Models.Foundations.Downloads.Exceptions
     public class DownloadDependencyException : Xeption
     {
         public DownloadDependencyException(string message, Xeption innerException) :
-            base(message: "Download dependency error occurred, contact support.", innerException)
+            base(message, innerException)
         { }
     }
 }

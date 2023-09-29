@@ -76,7 +76,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             return new TheoryData<Xeption>
             {
-                new OptOutValidationException(innerException),
+                new OptOutValidationException(
+                    message: "OptOut validation errors occurred, please try again.",
+                    innerException),
+
                 new OptOutDependencyValidationException(innerException)
             };
         }

@@ -38,6 +38,12 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                     secondName: nameof(OptOut.CreatedBy)),
                 Parameter: nameof(OptOut.UpdatedBy)),
 
+                (Rule: IsEqualOrSmallerThan(
+                    optOut.CreatedBy, 255), Parameter: nameof(optOut.CreatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    optOut.UpdatedBy, 255), Parameter: nameof(optOut.UpdatedBy)),
+
                 (Rule: IsNotRecent(optOut.CreatedDate), Parameter: nameof(OptOut.CreatedDate)));
         }
 
@@ -62,6 +68,13 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                     secondDate: optOut.CreatedDate,
                     secondDateName: nameof(OptOut.CreatedDate)),
                 Parameter: nameof(OptOut.UpdatedDate)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    optOut.CreatedBy, 255), Parameter: nameof(optOut.CreatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    optOut.UpdatedBy, 255), Parameter: nameof(optOut.UpdatedBy)),
+
 
                 (Rule: IsNotRecent(optOut.UpdatedDate), Parameter: nameof(optOut.UpdatedDate)));
         }
@@ -129,6 +142,12 @@ namespace LHDS.Core.Services.Foundations.OptOuts
         {
             Condition = date == default,
             Message = "Date is required"
+        };
+
+        private static dynamic IsEqualOrSmallerThan(string text, int maxLength) => new
+        {
+            Condition = (text ?? string.Empty).Length > maxLength,
+            Message = "Text is exceeding max length"
         };
 
         private static dynamic IsSame(
@@ -234,7 +253,8 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidOptOutException = new InvalidOptOutException();
+            var invalidOptOutException = new InvalidOptOutException(
+                message: "Invalid optOut. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

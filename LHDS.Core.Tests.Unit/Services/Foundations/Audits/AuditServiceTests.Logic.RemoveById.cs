@@ -46,6 +46,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
+                broker.SelectAuditByIdAsync(storageAudit.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
                 broker.DeleteAuditAsync(expectedInputAudit),
                     Times.Once);
 

@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
 using Moq;
@@ -157,6 +158,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             storageOptOut.UpdatedDate = randomOptOut.CreatedDate;
             inputOptOut.NhsNumber = GetRandomString(length: nhsNumberMaxLength + 1);
             inputOptOut.Status = GetRandomString(length: optOutStatusMaxLength + 1);
+            inputOptOut.CreatedBy = GetRandomString(256);
+            inputOptOut.UpdatedBy = inputOptOut.CreatedBy;
             OptOut updatedOptOut = inputOptOut;
             OptOut expectedOptOut = updatedOptOut.DeepClone();
             Guid optOutId = inputOptOut.Id;
@@ -179,6 +182,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             invalidOptOutException.AddData(
                 key: nameof(OptOut.Status),
                 values: $"Text length should not be greater than {optOutStatusMaxLength}");
+
+            invalidOptOutException.AddData(
+                key: nameof(OptOut.CreatedBy),
+                values: "Text is exceeding max length");
+
+            invalidOptOutException.AddData(
+                key: nameof(OptOut.UpdatedBy),
+                values: "Text is exceeding max length");
 
             var expectedOptOutValidationException =
                 new OptOutValidationException(
@@ -616,5 +627,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+
     }
 }

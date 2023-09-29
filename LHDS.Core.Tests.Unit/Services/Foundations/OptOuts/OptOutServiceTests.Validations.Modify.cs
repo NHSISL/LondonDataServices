@@ -8,7 +8,6 @@ using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
 using LHDS.Core.Models.Foundations.OptOuts;
-using LHDS.Core.Models.Foundations.OptOuts.Exceptions;
 using Moq;
 using Xunit;
 

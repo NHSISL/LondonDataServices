@@ -69,6 +69,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                 (Rule: IsEqualOrSmallerThan(
                     optOut.UpdatedBy, 255), Parameter: nameof(optOut.UpdatedBy)),
 
+
                 (Rule: IsNotRecent(optOut.UpdatedDate), Parameter: nameof(optOut.UpdatedDate)));
         }
 

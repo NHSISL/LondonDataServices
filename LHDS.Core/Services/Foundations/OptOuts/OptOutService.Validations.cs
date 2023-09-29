@@ -38,6 +38,12 @@ namespace LHDS.Core.Services.Foundations.OptOuts
                     secondName: nameof(OptOut.CreatedBy)),
                 Parameter: nameof(OptOut.UpdatedBy)),
 
+                (Rule: IsEqualOrSmallerThan(
+                    optOut.CreatedBy, 255), Parameter: nameof(optOut.CreatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    optOut.UpdatedBy, 255), Parameter: nameof(optOut.UpdatedBy)),
+
                 (Rule: IsNotRecent(optOut.CreatedDate), Parameter: nameof(OptOut.CreatedDate)));
         }
 

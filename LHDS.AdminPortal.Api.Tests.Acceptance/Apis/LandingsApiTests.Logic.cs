@@ -11,7 +11,6 @@ using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using LHDS.Core.Models.Foundations.Documents;
-using Microsoft.OData.ModelBuilder;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
@@ -74,7 +73,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 await PostLandingSupplierAsync(landingSupplierId);
             }
 
-            string expectedDecryptedFileName = 
+            string expectedDecryptedFileName =
                 $"/{decryptedFilePath}" +
                 $"{retrievedDocument.FileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
@@ -94,15 +93,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
             if (maybeIngestionTracking != null)
             {
-                var audits = this.apiBroker.auditService.RetrieveAllAudits()
-                .Where(audit => audit.IngestionTrackingId == maybeIngestionTracking.Id);
+                await RemoveAuditRecords(maybeIngestionTracking);
 
-                foreach (var audit in audits)
-                {
-                    await this.apiBroker.auditService.RemoveAuditByIdAsync(audit.Id);
-                }
-
-                await this.apiBroker.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(maybeIngestionTracking.Id);
+                await this.apiBroker.ingestionTrackingService
+                    .RemoveIngestionTrackingByIdAsync(maybeIngestionTracking.Id);
             }
         }
 
@@ -113,15 +107,28 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
             if (maybeIngestionTracking != null)
             {
-                var audits = this.apiBroker.auditService.RetrieveAllAudits()
-                    .Where(audit => audit.IngestionTrackingId == ingestionTrackingId);
+                await RemoveAuditRecords(maybeIngestionTracking);
 
-                foreach (var audit in audits)
-                {
-                    await this.apiBroker.auditService.RemoveAuditByIdAsync(audit.Id);
-                }
+                await this.apiBroker.ingestionTrackingService
+                    .RemoveIngestionTrackingByIdAsync(ingestionTrackingId);
+            }
+        }
 
-                await this.apiBroker.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTrackingId);
+        private async Task RemoveAuditRecords(
+            Core.Models.Foundations.IngestionTrackings.IngestionTracking ingestionTracking)
+        {
+            var audits = this.apiBroker.auditService.RetrieveAllAudits()
+                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+
+            foreach (var audit in audits)
+            {
+                await this.apiBroker.auditService.RemoveAuditByIdAsync(audit.Id);
+            }
+
+            if (this.apiBroker.auditService.RetrieveAllAudits()
+                .Any(audit => audit.IngestionTrackingId == ingestionTracking.Id))
+            {
+                await this.RemoveAuditRecords(ingestionTracking);
             }
         }
     }

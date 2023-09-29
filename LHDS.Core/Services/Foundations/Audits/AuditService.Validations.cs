@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Data;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Audits.Exceptions;
 
@@ -89,6 +88,14 @@ namespace LHDS.Core.Services.Foundations.Audits
             if (audit is null)
             {
                 throw new NullAuditException(message: "Audit is null.");
+            }
+        }
+
+        private static void ValidateAuditIsNull(Audit audit)
+        {
+            if (audit is not null)
+            {
+                throw new InvalidAuditException(message: "Audit is not null.");
             }
         }
 

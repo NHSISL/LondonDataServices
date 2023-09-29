@@ -491,7 +491,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             invalidAudit.CreatedBy = GetRandomString(256);
             invalidAudit.UpdatedBy = invalidAudit.CreatedBy;
 
-            var invalidAuditException = new InvalidAuditException();
+            var invalidAuditException = new InvalidAuditException(
+                message: "Invalid audit. Please correct the errors and try again.");
 
             invalidAuditException.AddData(
                 key: nameof(Audit.CreatedBy),
@@ -502,7 +503,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 values: "Text is exceeding max length");
 
             var expectedAuditValidationException =
-                new AuditValidationException(innerException: invalidAuditException);
+                new AuditValidationException(
+                    message: "Audit validation errors occurred, please try again.",
+                    innerException: invalidAuditException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())

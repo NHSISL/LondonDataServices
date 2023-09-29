@@ -21,14 +21,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             var invalidOptOutId = Guid.Empty;
 
             var invalidOptOutException =
-                new InvalidOptOutException();
+                new InvalidOptOutException(message: "Invalid optOut. Please correct the errors and try again.");
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.Id),
                 values: "Id is required");
 
             var expectedOptOutValidationException =
-                new OptOutValidationException(innerException: invalidOptOutException);
+                new OptOutValidationException(
+                    message: "OptOut validation errors occurred, please try again.",
+                    innerException: invalidOptOutException);
 
             // when
             ValueTask<OptOut> retrieveOptOutByIdTask =
@@ -67,7 +69,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 new NotFoundOptOutException(someOptOutId);
 
             var expectedOptOutValidationException =
-                new OptOutValidationException(notFoundOptOutException);
+                new OptOutValidationException(
+                    message: "OptOut validation errors occurred, please try again.",
+                    innerException: notFoundOptOutException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectOptOutByIdAsync(It.IsAny<Guid>()))

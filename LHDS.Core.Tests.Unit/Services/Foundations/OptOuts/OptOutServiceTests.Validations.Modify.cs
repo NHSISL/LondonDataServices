@@ -293,6 +293,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             OptOut randomOptOut = CreateRandomOptOut(randomDateTimeOffset);
             OptOut invalidOptOut = randomOptOut;
+
             var invalidOptOutException = new InvalidOptOutException(
                 message: "Invalid optOut. Please correct the errors and try again.");
 
@@ -626,7 +627,5 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
-
-
     }
 }

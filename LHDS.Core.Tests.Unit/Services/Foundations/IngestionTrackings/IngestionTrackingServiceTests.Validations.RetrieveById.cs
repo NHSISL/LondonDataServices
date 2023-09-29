@@ -21,14 +21,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
             Guid invalidIngestionTrackingId = Guid.Empty;
 
             var invalidIngestionTrackingException =
-                new InvalidIngestionTrackingException();
+                new InvalidIngestionTrackingException(message: "Invalid ingestion tracking. Please investigate.");
 
             invalidIngestionTrackingException.AddData(
                 key: nameof(IngestionTracking.Id),
                 values: "Id is required");
 
             var expectedIngestionTrackingValidationException =
-                new IngestionTrackingValidationException(innerException: invalidIngestionTrackingException);
+                new IngestionTrackingValidationException(
+                    message: "Ingestion tracking validation errors occurred, fix the errors and try again.",
+                    innerException: invalidIngestionTrackingException);
 
             // when
             ValueTask<IngestionTracking> retrieveIngestionTrackingByIdTask =
@@ -67,7 +69,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
                 new NotFoundIngestionTrackingException(someIngestionTrackingId);
 
             var expectedIngestionTrackingValidationException =
-                new IngestionTrackingValidationException(notFoundIngestionTrackingException);
+                new IngestionTrackingValidationException(
+                    message: "Ingestion tracking validation errors occurred, fix the errors and try again.",
+                    innerException: notFoundIngestionTrackingException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectIngestionTrackingByIdAsync(It.IsAny<Guid>()))

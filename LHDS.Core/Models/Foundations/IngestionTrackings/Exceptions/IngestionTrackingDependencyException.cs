@@ -8,7 +8,8 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions
 {
     public class IngestionTrackingDependencyException : Xeption
     {
-        public IngestionTrackingDependencyException(Xeption innerException)
-            : base(message: "Ingestion tracking dependency error occurred, contact support.") { }
+        public IngestionTrackingDependencyException(string message, Xeption innerException)
+            : base(message, innerException) 
+        { }
     }
 }

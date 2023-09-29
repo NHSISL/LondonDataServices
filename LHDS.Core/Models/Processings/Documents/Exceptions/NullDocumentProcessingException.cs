@@ -8,8 +8,8 @@ namespace LHDS.Core.Models.Processings.Documents.Exceptions
 {
     public class NullDocumentProcessingException : Xeption
     {
-        public NullDocumentProcessingException()
-            : base(message: $"Document processing is Null")
+        public NullDocumentProcessingException(string message)
+            : base(message)
         { }
     }
 }

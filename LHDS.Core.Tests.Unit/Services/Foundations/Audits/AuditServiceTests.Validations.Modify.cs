@@ -8,6 +8,7 @@ using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Audits.Exceptions;
+using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 using Moq;
 using Xunit;
 
@@ -20,10 +21,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
         {
             // given
             Audit nullAudit = null;
-            var nullAuditException = new NullAuditException();
+            var nullAuditException = new NullAuditException(message: "Audit is null.");
 
             var expectedAuditValidationException =
-                new AuditValidationException(nullAuditException);
+                new AuditValidationException(
+                    message: "Audit validation errors occurred, please try again.",
+                    innerException: nullAuditException);
 
             // when
             ValueTask<Audit> modifyAuditTask =
@@ -67,7 +70,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 Message = invalidText
             };
 
-            var invalidAuditException = new InvalidAuditException();
+            var invalidAuditException = new InvalidAuditException(
+                message: "Invalid audit. Please correct the errors and try again.");
 
             invalidAuditException.AddData(
                 key: nameof(Audit.Id),
@@ -102,7 +106,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
                 values: "Text is required");
 
             var expectedAuditValidationException =
-                new AuditValidationException(innerException: invalidAuditException);
+                new AuditValidationException(
+                    message: "Audit validation errors occurred, please try again.",
+                    innerException: invalidAuditException);
 
             // when
             ValueTask<Audit> modifyAuditTask =
@@ -141,14 +147,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Audit randomAudit = CreateRandomAudit(randomDateTimeOffset);
             Audit invalidAudit = randomAudit;
-            var invalidAuditException = new InvalidAuditException();
+            
+            var invalidAuditException = new InvalidAuditException(
+                message: "Invalid audit. Please correct the errors and try again.");
 
             invalidAuditException.AddData(
                 key: nameof(Audit.UpdatedDate),
                 values: $"Date is the same as {nameof(Audit.CreatedDate)}");
 
             var expectedAuditValidationException =
-                new AuditValidationException(innerException: invalidAuditException);
+                new AuditValidationException(
+                    message: "Audit validation errors occurred, please try again.",
+                    innerException: invalidAuditException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -194,14 +204,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             randomAudit.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
             var invalidAuditException =
-                new InvalidAuditException();
+                new InvalidAuditException(message: "Invalid audit. Please correct the errors and try again.");
 
             invalidAuditException.AddData(
                 key: nameof(Audit.UpdatedDate),
                 values: "Date is not recent");
 
             var expectedAuditValidatonException =
-                new AuditValidationException(innerException: invalidAuditException);
+                new AuditValidationException(
+                    message: "Audit validation errors occurred, please try again.",
+                    innerException: invalidAuditException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -247,10 +259,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             Audit nullAudit = null;
 
             var notFoundAuditException =
-                new NotFoundAuditException(nonExistAudit.Id);
+                new NotFoundAuditException(message: $"Couldn't find audit with auditId: {nonExistAudit.Id}.");
 
             var expectedAuditValidationException =
-                new AuditValidationException(notFoundAuditException);
+                new AuditValidationException(
+                    message: "Audit validation errors occurred, please try again.",
+                    innerException: notFoundAuditException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAuditByIdAsync(nonExistAudit.Id))
@@ -302,14 +316,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             Audit storageAudit = invalidAudit.DeepClone();
             storageAudit.CreatedDate = storageAudit.CreatedDate.AddMinutes(randomMinutes);
             storageAudit.UpdatedDate = storageAudit.UpdatedDate.AddMinutes(randomMinutes);
-            var invalidAuditException = new InvalidAuditException();
+            
+            var invalidAuditException = new InvalidAuditException(
+                message: "Invalid audit. Please correct the errors and try again.");
 
             invalidAuditException.AddData(
                 key: nameof(Audit.CreatedDate),
                 values: $"Date is not the same as {nameof(Audit.CreatedDate)}");
 
             var expectedAuditValidationException =
-                new AuditValidationException(innerException: invalidAuditException);
+                new AuditValidationException(
+                    message: "Audit validation errors occurred, please try again.",
+                    innerException: invalidAuditException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAuditByIdAsync(invalidAudit.Id))
@@ -360,14 +378,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             invalidAudit.CreatedBy = Guid.NewGuid().ToString();
             storageAudit.UpdatedDate = storageAudit.CreatedDate;
 
-            var invalidAuditException = new InvalidAuditException();
+            var invalidAuditException = new InvalidAuditException(
+                message: "Invalid audit. Please correct the errors and try again.");
 
             invalidAuditException.AddData(
                 key: nameof(Audit.CreatedBy),
                 values: $"Text is not the same as {nameof(Audit.CreatedBy)}");
 
             var expectedAuditValidationException =
-                new AuditValidationException(innerException: invalidAuditException);
+                new AuditValidationException(
+                    message: "Audit validation errors occurred, please try again.",
+                    innerException: invalidAuditException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAuditByIdAsync(invalidAudit.Id))
@@ -415,14 +436,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             Audit invalidAudit = randomAudit;
             Audit storageAudit = randomAudit.DeepClone();
 
-            var invalidAuditException = new InvalidAuditException();
+            var invalidAuditException = new InvalidAuditException(
+                message: "Invalid audit. Please correct the errors and try again.");
 
             invalidAuditException.AddData(
                 key: nameof(Audit.UpdatedDate),
                 values: $"Date is the same as {nameof(Audit.UpdatedDate)}");
 
             var expectedAuditValidationException =
-                new AuditValidationException(innerException: invalidAuditException);
+                new AuditValidationException(
+                    message: "Audit validation errors occurred, please try again.",
+                    innerException: invalidAuditException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAuditByIdAsync(invalidAudit.Id))
@@ -456,6 +480,62 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfCreatedByAndUpdatedByIsInvalidLengthAndLogItAsync()
+        {
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Audit randomAudit = CreateRandomModifyAudit(randomDateTimeOffset);
+            Audit invalidAudit = randomAudit.DeepClone();
+            invalidAudit.CreatedBy = GetRandomString(256);
+            invalidAudit.UpdatedBy = invalidAudit.CreatedBy;
+
+            var invalidAuditException = new InvalidAuditException();
+
+            invalidAuditException.AddData(
+                key: nameof(Audit.CreatedBy),
+                values: "Text is exceeding max length");
+
+            invalidAuditException.AddData(
+                key: nameof(Audit.UpdatedBy),
+                values: "Text is exceeding max length");
+
+            var expectedAuditValidationException =
+                new AuditValidationException(innerException: invalidAuditException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<Audit> modifyAuditTask =
+                this.auditService.ModifyAuditAsync(invalidAudit);
+
+            AuditValidationException actualAuditValidationException =
+                await Assert.ThrowsAsync<AuditValidationException>(
+                    modifyAuditTask.AsTask);
+
+            // then
+            actualAuditValidationException.Should()
+                .BeEquivalentTo(expectedAuditValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAuditValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAuditByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

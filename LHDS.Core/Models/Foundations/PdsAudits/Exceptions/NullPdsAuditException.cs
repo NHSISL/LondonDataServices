@@ -4,8 +4,8 @@ namespace LHDS.Core.Models.Foundations.PdsAudits.Exceptions
 {
     public class NullPdsAuditException : Xeption
     {
-        public NullPdsAuditException()
-            : base(message: "PdsAudit is null.")
+        public NullPdsAuditException(string message)
+            : base(message)
         { }
     }
 }

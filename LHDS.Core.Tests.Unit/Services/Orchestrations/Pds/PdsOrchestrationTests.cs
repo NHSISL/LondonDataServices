@@ -200,12 +200,29 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             return new TheoryData<Xeption>
             {
-                new PdsOrchestrationValidationException(innerException),
-                new PdsOrchestrationDependencyValidationException(innerException),
-                new DocumentValidationException(innerException),
-                new DocumentDependencyValidationException(innerException),
-                new MeshValidationException(innerException),
-                new MeshDependencyValidationException(innerException),
+                new PdsOrchestrationValidationException(
+                    message: "PDS orchestration validation errors occurred, please try again.",
+                    innerException),
+
+                new PdsOrchestrationDependencyValidationException(
+                    message: "PDS orchestration dependency validation error occurred, fix the errors and try again.",
+                    innerException),
+
+                new DocumentValidationException(
+                    message: "Document validation errors occured, please try again",
+                    innerException),
+
+                new DocumentDependencyValidationException(
+                    message: "Document dependency validation occurred, please try again.",
+                    innerException),
+
+                new MeshValidationException(
+                    message: "Mesh validation errors occurred, please try again.",
+                    innerException),
+
+                new MeshDependencyValidationException(
+                    message: "Mesh dependency validation occurred, please try again.",
+                    innerException),
             };
         }
 
@@ -217,12 +234,29 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             return new TheoryData<Xeption>
             {
-                new PdsOrchestrationDependencyException(innerException),
-                new PdsOrchestrationServiceException(innerException),
-                new DocumentDependencyException(innerException),
-                new DocumentServiceException(innerException),
-                new MeshDependencyException(innerException),
-                new MeshServiceException(innerException),
+                new PdsOrchestrationDependencyException(
+                    message: "PDS orchestration dependency error occurred, fix the errors and try again.",
+                    innerException),
+
+                new PdsOrchestrationServiceException(
+                    message: "PDS orchestration service error occurred, contact support.",
+                    innerException),
+
+                new DocumentDependencyException(
+                    message: "Document dependency error occurred, contact support.",
+                    innerException),
+
+                new DocumentServiceException(
+                    message: "Document service error occurred, contact support.",
+                    innerException),
+
+                new MeshDependencyException(
+                    message: "Mesh dependency error occurred, contact support.",
+                    innerException),
+
+                new MeshServiceException(
+                    message: "Mesh service error occurred, contact support.",
+                    innerException),
             };
         }
 

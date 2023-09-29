@@ -9,9 +9,8 @@ namespace LHDS.Core.Models.Processings.Mesh.Exceptions
 {
     public class FailedMeshProcessingServiceException : Xeption
     {
-        public FailedMeshProcessingServiceException(Exception innerException)
-          : base(message: "Failed mesh processing service error occurred, contact support.",
-                innerException)
+        public FailedMeshProcessingServiceException(string message, Exception innerException)
+          : base(message, innerException)
         { }
     }
 }

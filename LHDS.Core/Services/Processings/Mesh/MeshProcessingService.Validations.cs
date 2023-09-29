@@ -14,6 +14,7 @@ namespace LHDS.Core.Services.Processings.Mesh
         public void ValidateMeshArgs(string MessageId)
         {
             Validate<InvalidMeshProcessingArgumentException>(
+                message: "Invalid mesh processing argument. Please correct the errors and try again.",
                 (Rule: IsInvalid(MessageId), Parameter: nameof(MessageId)));
         }
 
@@ -21,13 +22,15 @@ namespace LHDS.Core.Services.Processings.Mesh
         {
             if (meshMessage is null)
             {
-                throw new NullMeshMessageProcessingException();
+                throw new NullMeshMessageProcessingException(
+                    message: "Mesh processing service exception. Message is Null.");
             }
         }
 
         public void ValidateMeshMessageOnSendMessage(string mexTo, string workflowId, byte[] fileContent)
         {
             Validate<InvalidMeshProcessingArgumentException>(
+                message: "Invalid mesh processing argument. Please correct the errors and try again.",
                 (Rule: IsInvalid(mexTo), Parameter: "MexTo"),
                 (Rule: IsInvalid(workflowId), Parameter: "MexWorkflowId"),
                 (Rule: IsInvalid(fileContent), Parameter: "FileContent"));
@@ -38,6 +41,7 @@ namespace LHDS.Core.Services.Processings.Mesh
             ValidateMeshMessageIsNotNull(message);
 
             Validate<InvalidMeshMessageProcessingException>(
+               message: "Invalid mesh processing argument. Please correct the errors and try again.",
                (Rule: IsInvalid(message.MessageId), Parameter: nameof(message.MessageId)));
         }
 
@@ -58,10 +62,10 @@ namespace LHDS.Core.Services.Processings.Mesh
             Message = "Content is required"
         };
 
-        private static void Validate<T>(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
-            var invalidDataException = (T)Activator.CreateInstance(typeof(T));
+            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
 
             foreach ((dynamic rule, string parameter) in validations)
             {

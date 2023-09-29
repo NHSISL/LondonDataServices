@@ -9,7 +9,8 @@ namespace LHDS.Core.Models.Foundations.Suppliers.Exceptions
 {
     public class InvalidSupplierReferenceException : Xeption
     {
-        public InvalidSupplierReferenceException(Exception innerException)
-            : base(message: "Invalid supplier reference error occurred.", innerException) { }
+        public InvalidSupplierReferenceException(string message, Exception innerException)
+            : base(message, innerException)
+        { }
     }
 }

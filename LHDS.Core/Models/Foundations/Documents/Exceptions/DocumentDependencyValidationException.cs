@@ -8,8 +8,8 @@ namespace LHDS.Core.Models.Foundations.Documents.Exceptions
 {
     public class DocumentDependencyValidationException : Xeption
     {
-        public DocumentDependencyValidationException(Xeption innerException)
-            : base(message: "Document dependency validation occurred, please try again.", innerException)
+        public DocumentDependencyValidationException(string message, Xeption innerException)
+            : base(message, innerException)
         { }
     }
 }

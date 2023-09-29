@@ -8,7 +8,8 @@ namespace LHDS.Core.Models.Orchestrations.Downloads.Exceptions
 {
     public class NotFoundDownloadOrchestrationException : Xeption
     {
-        public NotFoundDownloadOrchestrationException(string fileName)
-            : base(message: $"Couldn't find download with file name: {fileName}.") { }
+        public NotFoundDownloadOrchestrationException(string message)
+            : base(message) 
+        { }
     }
 }

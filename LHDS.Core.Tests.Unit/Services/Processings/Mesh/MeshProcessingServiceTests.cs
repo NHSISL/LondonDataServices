@@ -44,8 +44,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             return new TheoryData<Xeption>
             {
-                new MeshValidationException(innerException),
-                new MeshDependencyValidationException(innerException)
+                new MeshValidationException(
+                    message: "Mesh validation errors occurred, please try again.",
+                    innerException),
+
+                new MeshDependencyValidationException(
+                    message: "Mesh dependency validation occurred, please try again.",
+                    innerException)
             };
         }
 
@@ -57,8 +62,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Mesh
 
             return new TheoryData<Xeption>
             {
-                new MeshDependencyException(innerException),
-                new MeshServiceException(innerException)
+                new MeshDependencyException(
+                    message: "Mesh dependency error occurred, contact support.",
+                    innerException),
+
+                new MeshServiceException(
+                    message: "Mesh service error occurred, contact support.",
+                    innerException)
             };
         }
 

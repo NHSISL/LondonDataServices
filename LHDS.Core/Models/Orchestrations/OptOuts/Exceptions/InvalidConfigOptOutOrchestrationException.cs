@@ -8,7 +8,8 @@ namespace LHDS.Core.Models.Orchestrations.OptOuts.Exceptions
 {
     public class InvalidConfigOptOutOrchestrationException : Xeption
     {
-        public InvalidConfigOptOutOrchestrationException()
-            : base(message: "Invalid Configuration orchestration error, please correct the errors and try again.") { }
+        public InvalidConfigOptOutOrchestrationException(string message)
+            : base(message)
+        { }
     }
 }

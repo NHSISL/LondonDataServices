@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Data;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Audits.Exceptions;
 
@@ -35,6 +36,12 @@ namespace LHDS.Core.Services.Foundations.Audits
                     secondName: nameof(Audit.CreatedBy)),
                 Parameter: nameof(Audit.UpdatedBy)),
 
+                (Rule: IsEqualOrSmallerThan(
+                    audit.CreatedBy, 255), Parameter: nameof(audit.CreatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    audit.UpdatedBy, 255), Parameter: nameof(audit.UpdatedBy)),
+
                 (Rule: IsNotRecent(audit.CreatedDate), Parameter: nameof(Audit.CreatedDate)));
         }
 
@@ -57,6 +64,12 @@ namespace LHDS.Core.Services.Foundations.Audits
                     secondDateName: nameof(Audit.CreatedDate)),
                 Parameter: nameof(Audit.UpdatedDate)),
 
+                (Rule: IsEqualOrSmallerThan(
+                    audit.CreatedBy, 255), Parameter: nameof(audit.CreatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    audit.UpdatedBy, 255), Parameter: nameof(audit.UpdatedBy)),
+
                 (Rule: IsNotRecent(audit.UpdatedDate), Parameter: nameof(audit.UpdatedDate)));
         }
 
@@ -67,7 +80,7 @@ namespace LHDS.Core.Services.Foundations.Audits
         {
             if (maybeAudit is null)
             {
-                throw new NotFoundAuditException(auditId);
+                throw new NotFoundAuditException(message: $"Couldn't find audit with auditId: {auditId}.");
             }
         }
 
@@ -75,7 +88,7 @@ namespace LHDS.Core.Services.Foundations.Audits
         {
             if (audit is null)
             {
-                throw new NullAuditException();
+                throw new NullAuditException(message: "Audit is null.");
             }
         }
 
@@ -117,6 +130,12 @@ namespace LHDS.Core.Services.Foundations.Audits
         {
             Condition = date == default,
             Message = "Date is required"
+        };
+
+        private static dynamic IsEqualOrSmallerThan(string text, int maxLength) => new
+        {
+            Condition = (text ?? string.Empty).Length > maxLength,
+            Message = "Text is exceeding max length"
         };
 
         private static dynamic IsSame(
@@ -174,7 +193,8 @@ namespace LHDS.Core.Services.Foundations.Audits
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidAuditException = new InvalidAuditException();
+            var invalidAuditException = new InvalidAuditException(
+                message: "Invalid audit. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

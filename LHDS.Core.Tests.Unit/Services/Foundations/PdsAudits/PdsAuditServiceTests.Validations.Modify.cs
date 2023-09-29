@@ -20,10 +20,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
         {
             // given
             PdsAudit nullPdsAudit = null;
-            var nullPdsAuditException = new NullPdsAuditException();
+            var nullPdsAuditException = new NullPdsAuditException(message: "PdsAudit is null.");
 
             var expectedPdsAuditValidationException =
-                new PdsAuditValidationException(nullPdsAuditException);
+                new PdsAuditValidationException(
+                    message: "PdsAudit validation errors occurred, please try again.",
+                    innerException: nullPdsAuditException);
 
             // when
             ValueTask<PdsAudit> modifyPdsAuditTask =
@@ -67,7 +69,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 // TODO:  Add default values for your properties i.e. Name = invalidText
             };
 
-            var invalidPdsAuditException = new InvalidPdsAuditException();
+            var invalidPdsAuditException = new InvalidPdsAuditException(
+                message: "Invalid pdsAudit. Please correct the errors and try again.");
 
             invalidPdsAuditException.AddData(
                 key: nameof(PdsAudit.Id),
@@ -102,7 +105,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 values: "Text is required");
 
             var expectedPdsAuditValidationException =
-                new PdsAuditValidationException(invalidPdsAuditException);
+                new PdsAuditValidationException(
+                    message: "PdsAudit validation errors occurred, please try again.",
+                    innerException: invalidPdsAuditException);
 
             // when
             ValueTask<PdsAudit> modifyPdsAuditTask =
@@ -141,14 +146,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             PdsAudit randomPdsAudit = CreateRandomPdsAudit(randomDateTimeOffset);
             PdsAudit invalidPdsAudit = randomPdsAudit;
-            var invalidPdsAuditException = new InvalidPdsAuditException();
+            
+            var invalidPdsAuditException = new InvalidPdsAuditException(
+                message: "Invalid pdsAudit. Please correct the errors and try again.");
 
             invalidPdsAuditException.AddData(
                 key: nameof(PdsAudit.UpdatedDate),
                 values: $"Date is the same as {nameof(PdsAudit.CreatedDate)}");
 
             var expectedPdsAuditValidationException =
-                new PdsAuditValidationException(invalidPdsAuditException);
+                new PdsAuditValidationException(
+                    message: "PdsAudit validation errors occurred, please try again.",
+                    innerException: invalidPdsAuditException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -194,14 +203,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             randomPdsAudit.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
             var invalidPdsAuditException =
-                new InvalidPdsAuditException();
+                new InvalidPdsAuditException(message: "Invalid pdsAudit. Please correct the errors and try again.");
 
             invalidPdsAuditException.AddData(
                 key: nameof(PdsAudit.UpdatedDate),
                 values: "Date is not recent");
 
             var expectedPdsAuditValidatonException =
-                new PdsAuditValidationException(invalidPdsAuditException);
+                new PdsAuditValidationException(
+                    message: "PdsAudit validation errors occurred, please try again.",
+                    innerException: invalidPdsAuditException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -250,7 +261,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
                 new NotFoundPdsAuditException(nonExistPdsAudit.Id);
 
             var expectedPdsAuditValidationException =
-                new PdsAuditValidationException(notFoundPdsAuditException);
+                new PdsAuditValidationException(
+                    message: "PdsAudit validation errors occurred, please try again.",
+                    innerException: notFoundPdsAuditException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectPdsAuditByIdAsync(nonExistPdsAudit.Id))
@@ -302,14 +315,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             PdsAudit storagePdsAudit = invalidPdsAudit.DeepClone();
             storagePdsAudit.CreatedDate = storagePdsAudit.CreatedDate.AddMinutes(randomMinutes);
             storagePdsAudit.UpdatedDate = storagePdsAudit.UpdatedDate.AddMinutes(randomMinutes);
-            var invalidPdsAuditException = new InvalidPdsAuditException();
+
+            var invalidPdsAuditException = new InvalidPdsAuditException(
+                message: "Invalid pdsAudit. Please correct the errors and try again.");
 
             invalidPdsAuditException.AddData(
                 key: nameof(PdsAudit.CreatedDate),
                 values: $"Date is not the same as {nameof(PdsAudit.CreatedDate)}");
 
             var expectedPdsAuditValidationException =
-                new PdsAuditValidationException(invalidPdsAuditException);
+                new PdsAuditValidationException(
+                    message: "PdsAudit validation errors occurred, please try again.",
+                    innerException: invalidPdsAuditException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectPdsAuditByIdAsync(invalidPdsAudit.Id))
@@ -360,14 +377,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             invalidPdsAudit.CreatedBy = Guid.NewGuid().ToString();
             storagePdsAudit.UpdatedDate = storagePdsAudit.CreatedDate;
 
-            var invalidPdsAuditException = new InvalidPdsAuditException();
+            var invalidPdsAuditException = new InvalidPdsAuditException(
+                message: "Invalid pdsAudit. Please correct the errors and try again.");
 
             invalidPdsAuditException.AddData(
                 key: nameof(PdsAudit.CreatedBy),
                 values: $"Text is not the same as {nameof(PdsAudit.CreatedBy)}");
 
             var expectedPdsAuditValidationException =
-                new PdsAuditValidationException(invalidPdsAuditException);
+                new PdsAuditValidationException(
+                    message: "PdsAudit validation errors occurred, please try again.",
+                    innerException: invalidPdsAuditException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectPdsAuditByIdAsync(invalidPdsAudit.Id))
@@ -415,14 +435,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             PdsAudit invalidPdsAudit = randomPdsAudit;
             PdsAudit storagePdsAudit = randomPdsAudit.DeepClone();
 
-            var invalidPdsAuditException = new InvalidPdsAuditException();
+            var invalidPdsAuditException = new InvalidPdsAuditException(
+                message: "Invalid pdsAudit. Please correct the errors and try again.");
 
             invalidPdsAuditException.AddData(
                 key: nameof(PdsAudit.UpdatedDate),
                 values: $"Date is the same as {nameof(PdsAudit.UpdatedDate)}");
 
             var expectedPdsAuditValidationException =
-                new PdsAuditValidationException(invalidPdsAuditException);
+                new PdsAuditValidationException(
+                    message: "PdsAudit validation errors occurred, please try again.",
+                    innerException: invalidPdsAuditException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectPdsAuditByIdAsync(invalidPdsAudit.Id))

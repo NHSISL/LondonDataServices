@@ -43,13 +43,15 @@ namespace LHDS.Core.Clients
                 downloadOrchestrationDependencyException)
             {
                 throw new LandingClientDependencyException(
-                    downloadOrchestrationDependencyException.InnerException as Xeption);
+                    message: "Landing client dependency error occurred, contact support.",
+                    innerException: downloadOrchestrationDependencyException.InnerException as Xeption);
             }
             catch (DownloadOrchestrationServiceException
                 downloadOrchestrationServiceException)
             {
                 throw new LandingClientServiceException(
-                    downloadOrchestrationServiceException.InnerException as Xeption);
+                    message: "Landing client service error occurred, fix errors and try again.",
+                    innerException: downloadOrchestrationServiceException.InnerException as Xeption);
             }
         }
 
@@ -73,12 +75,14 @@ namespace LHDS.Core.Clients
             catch (DownloadOrchestrationDependencyException downloadOrchestrationDependencyException)
             {
                 throw new LandingClientDependencyException(
-                    downloadOrchestrationDependencyException.InnerException as Xeption);
+                    message: "Landing client dependency error occurred, contact support.",
+                    innerException: downloadOrchestrationDependencyException.InnerException as Xeption);
             }
             catch (DownloadOrchestrationServiceException downloadOrchestrationServiceException)
             {
                 throw new LandingClientServiceException(
-                    downloadOrchestrationServiceException.InnerException as Xeption);
+                    message: "Landing client service error occurred, fix errors and try again.",
+                    innerException: downloadOrchestrationServiceException.InnerException as Xeption);
             }
         }
     }

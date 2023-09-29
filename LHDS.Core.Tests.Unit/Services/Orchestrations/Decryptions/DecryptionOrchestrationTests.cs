@@ -105,14 +105,37 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             return new TheoryData<Xeption>
             {
-                new DocumentValidationException(innerException),
-                new DocumentDependencyValidationException(innerException),
-                new DecryptionValidationException(innerException),
-                new DecryptionDependencyValidationException(innerException),
-                new IngestionTrackingValidationException(innerException),
-                new IngestionTrackingDependencyValidationException(innerException),
-                new AuditValidationException(innerException),
-                new AuditDependencyValidationException(innerException)
+                new DocumentValidationException(
+                    message: "Document validation errors occured, please try again",
+                    innerException),
+
+                new DocumentDependencyValidationException(
+                    message: "Document dependency validation occurred, please try again.",
+                    innerException),
+
+                new DecryptionValidationException(
+                    message: "Decryption validation errors occurred, please try again.",
+                    innerException),
+
+                new DecryptionDependencyValidationException(
+                    message: "Decryption dependency validation occurred, please try again.",
+                    innerException),
+
+                new IngestionTrackingValidationException(
+                    message: "Ingestion tracking validation errors occurred, fix the errors and try again.",
+                    innerException),
+
+                new IngestionTrackingDependencyValidationException(
+                    message: "Ingestion tracking dependency validation occurred, please try again.",
+                    innerException),
+
+                new AuditValidationException(
+                    message: "Audit validation errors occurred, please try again.",
+                    innerException),
+
+                new AuditDependencyValidationException(
+                    message: "Audit dependency validation occurred, please try again.",
+                    innerException)
             };
         }
 
@@ -124,14 +147,37 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             return new TheoryData<Xeption>
             {
-                new DocumentDependencyException(innerException),
-                new DocumentServiceException(innerException),
-                new DecryptionDependencyException(innerException),
-                new DecryptionServiceException(innerException),
-                new IngestionTrackingDependencyException(innerException),
-                new IngestionTrackingServiceException(innerException),
-                new AuditDependencyException(innerException),
-                new AuditServiceException(innerException)
+                new DocumentDependencyException(
+                    message: "Document dependency error occurred, contact support.",
+                    innerException),
+
+                new DocumentServiceException(
+                    message: "Document service error occurred, contact support.",
+                    innerException),
+
+                new DecryptionDependencyException(
+                    message: "Decryption dependency error occurred, contact support.",
+                    innerException),
+
+                new DecryptionServiceException(
+                    message: "Decryption service error occurred, contact support.",
+                    innerException),
+                
+                new IngestionTrackingDependencyException(
+                    message: "Failed ingestion tracking storage error occurred, contact support.",
+                    innerException),
+
+                new IngestionTrackingServiceException(
+                    message: "Ingestion tracking service error occurred, contact support.",
+                    innerException),
+
+                new AuditDependencyException(
+                    message: "Audit dependency error occurred, contact support.",
+                    innerException),
+
+                new AuditServiceException(
+                    message: "Audit service error occurred, contact support.",
+                    innerException)
             };
         }
 

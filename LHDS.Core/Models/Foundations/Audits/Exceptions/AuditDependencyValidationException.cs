@@ -8,7 +8,8 @@ namespace LHDS.Core.Models.Foundations.Audits.Exceptions
 {
     public class AuditDependencyValidationException : Xeption
     {
-        public AuditDependencyValidationException(Xeption innerException)
-            : base(message: "Audit dependency validation occurred, please try again.", innerException) { }
+        public AuditDependencyValidationException(string message, Xeption innerException)
+            : base(message, innerException) 
+        { }
     }
 }

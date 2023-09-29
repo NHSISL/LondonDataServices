@@ -9,7 +9,8 @@ namespace LHDS.Core.Models.Orchestrations.Pds.Exceptions
 {
     public class FailedPdsOrchestrationServiceException : Xeption
     {
-        public FailedPdsOrchestrationServiceException(Exception innerException)
-            : base(message: "Failed PDS orchestration service occurred, please contact support", innerException) { }
+        public FailedPdsOrchestrationServiceException(string message, Exception innerException)
+            : base(message, innerException)
+        { }
     }
 }

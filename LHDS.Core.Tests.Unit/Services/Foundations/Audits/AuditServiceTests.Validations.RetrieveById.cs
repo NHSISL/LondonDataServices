@@ -21,14 +21,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             var invalidAuditId = Guid.Empty;
 
             var invalidAuditException =
-                new InvalidAuditException();
+                new InvalidAuditException(message: "Invalid audit. Please correct the errors and try again.");
 
             invalidAuditException.AddData(
                 key: nameof(Audit.Id),
                 values: "Id is required");
 
             var expectedAuditValidationException =
-                new AuditValidationException(innerException: invalidAuditException);
+                new AuditValidationException(
+                    message: "Audit validation errors occurred, please try again.",
+                    innerException: invalidAuditException);
 
             // when
             ValueTask<Audit> retrieveAuditByIdTask =
@@ -64,10 +66,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             Audit noAudit = null;
 
             var notFoundAuditException =
-                new NotFoundAuditException(someAuditId);
+                new NotFoundAuditException(message: $"Couldn't find audit with auditId: {someAuditId}.");
 
             var expectedAuditValidationException =
-                new AuditValidationException(notFoundAuditException);
+                new AuditValidationException(
+                    message: "Audit validation errors occurred, please try again.",
+                    notFoundAuditException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAuditByIdAsync(It.IsAny<Guid>()))

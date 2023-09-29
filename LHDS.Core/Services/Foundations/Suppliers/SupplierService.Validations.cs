@@ -83,7 +83,7 @@ namespace LHDS.Core.Services.Foundations.Suppliers
         {
             if (supplier is null)
             {
-                throw new NullSupplierException();
+                throw new NullSupplierException(message: "Supplier is null.");
             }
         }
 
@@ -182,7 +182,8 @@ namespace LHDS.Core.Services.Foundations.Suppliers
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidSupplierException = new InvalidSupplierException();
+            var invalidSupplierException = new InvalidSupplierException(
+                message: "Invalid supplier. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

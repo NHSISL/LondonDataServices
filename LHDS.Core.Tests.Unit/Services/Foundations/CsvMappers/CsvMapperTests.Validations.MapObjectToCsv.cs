@@ -28,14 +28,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.CsvMappers
                 broker.MapObjectToCsvAsync<OptOut>(nullOptOuts, withHeaderRecord, shouldAddTrailingComma))
                     .ReturnsAsync(expectedCsvFormattedOptOutData);
 
-            var invalidCsvMapperArgumentsException = new InvalidCsvMapperArgumentsException();
+            var invalidCsvMapperArgumentsException = new InvalidCsvMapperArgumentsException(
+                message: "Invalid CSV mapper arguments. Please fix the errors and try again.");
 
             invalidCsvMapperArgumentsException.AddData(
                 key: "Object",
                 values: "Object is required");
 
             var expectedCsvMapperValidationException =
-                new CsvMapperValidationException(innerException: invalidCsvMapperArgumentsException);
+                new CsvMapperValidationException(
+                    message: "CSV mapper validation errors occurred, fix the errors and try again.",
+                    innerException: invalidCsvMapperArgumentsException);
 
             // when
             ValueTask<string> mapObjectToCsvTask = this.csvMapperService.MapObjectToCsvAsync<OptOut>(

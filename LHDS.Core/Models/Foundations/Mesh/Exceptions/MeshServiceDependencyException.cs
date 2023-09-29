@@ -8,7 +8,8 @@ namespace LHDS.Core.Models.Foundations.Mesh.Exceptions
 {
     public class MeshServiceDependencyException : Xeption
     {
-        public MeshServiceDependencyException(Xeption innerException)
-            : base(message: "Mesh service dependency error occurred, contact support.") { }
+        public MeshServiceDependencyException(string message, Xeption innerException)
+            : base(message, innerException) 
+        { }
     }
 }

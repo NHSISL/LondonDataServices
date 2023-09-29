@@ -24,7 +24,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 new NullOptOutException();
 
             var expectedOptOutValidationException =
-                new OptOutValidationException(nullOptOutException);
+                new OptOutValidationException(
+                    message: "OptOut validation errors occurred, please try again.",
+                    innerException: nullOptOutException);
 
             // when
             ValueTask<OptOut> addOptOutTask =
@@ -62,7 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             };
 
             var invalidOptOutException =
-                new InvalidOptOutException();
+                new InvalidOptOutException(message: "Invalid optOut. Please correct the errors and try again.");
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.Id),
@@ -97,7 +99,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 values: "Text is required");
 
             var expectedOptOutValidationException =
-                new OptOutValidationException(innerException: invalidOptOutException);
+                new OptOutValidationException(
+                    message: "OptOut validation errors occurred, please try again.",
+                    innerException: invalidOptOutException);
 
             // when
             ValueTask<OptOut> addOptOutTask =
@@ -147,7 +151,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     .Returns(randomDateTimeOffset);
 
             var invalidOptOutException =
-                new InvalidOptOutException();
+                new InvalidOptOutException(message: "Invalid optOut. Please correct the errors and try again.");
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.NhsNumber),
@@ -162,7 +166,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 values: $"Text length should not be greater than {optOutStatusMaxLength}");
 
             var expectedOptOutValidationException =
-                new OptOutValidationException(innerException: invalidOptOutException);
+                new OptOutValidationException(
+                    message: "OptOut validation errors occurred, please try again.",
+                    innerException: invalidOptOutException);
 
             // when
             ValueTask<OptOut> addOptOutTask =
@@ -209,14 +215,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     .Returns(randomDateTimeOffset);
 
             var invalidOptOutException =
-                new InvalidOptOutException();
+                new InvalidOptOutException(message: "Invalid optOut. Please correct the errors and try again.");
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.NhsNumber),
                 values: $"NHS Number invalid");
 
             var expectedOptOutValidationException =
-                new OptOutValidationException(innerException: invalidOptOutException);
+                new OptOutValidationException(
+                    message: "OptOut validation errors occurred, please try again.",
+                    innerException: invalidOptOutException);
 
             // when
             ValueTask<OptOut> addOptOutTask =
@@ -260,14 +268,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             invalidOptOut.UpdatedDate =
                 invalidOptOut.CreatedDate.AddDays(randomNumber);
 
-            var invalidOptOutException = new InvalidOptOutException();
+            var invalidOptOutException = new InvalidOptOutException(
+                message: "Invalid optOut. Please correct the errors and try again.");
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.UpdatedDate),
                 values: $"Date is not the same as {nameof(OptOut.CreatedDate)}");
 
             var expectedOptOutValidationException =
-                new OptOutValidationException(innerException: invalidOptOutException);
+                new OptOutValidationException(
+                    message: "OptOut validation errors occurred, please try again.",
+                    innerException: invalidOptOutException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -313,14 +324,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             invalidOptOut.UpdatedBy = Guid.NewGuid().ToString();
 
             var invalidOptOutException =
-                new InvalidOptOutException();
+                new InvalidOptOutException(message: "Invalid optOut. Please correct the errors and try again.");
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.UpdatedBy),
                 values: $"Text is not the same as {nameof(OptOut.CreatedBy)}");
 
             var expectedOptOutValidationException =
-                new OptOutValidationException(innerException: invalidOptOutException);
+                new OptOutValidationException(
+                    message: "OptOut validation errors occurred, please try again.",
+                    innerException: invalidOptOutException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -371,14 +384,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             OptOut invalidOptOut = randomOptOut;
 
             var invalidOptOutException =
-                new InvalidOptOutException();
+                new InvalidOptOutException(message: "Invalid optOut. Please correct the errors and try again.");
 
             invalidOptOutException.AddData(
                 key: nameof(OptOut.CreatedDate),
                 values: "Date is not recent");
 
             var expectedOptOutValidationException =
-                new OptOutValidationException(innerException: invalidOptOutException);
+                new OptOutValidationException(
+                    message: "OptOut validation errors occurred, please try again.",
+                    innerException: invalidOptOutException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())

@@ -21,17 +21,14 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         private readonly string encryptedFolder;
         private readonly string decryptedFolder;
         private readonly Guid supplierId;
-        private readonly LandingConfiguration landingConfiguration;
 
         public LandingsApiTests(
-            ApiBroker apiBroker,
-            LandingConfigurationFixture landingConfigurationFixture)
+            ApiBroker apiBroker)
         {
             this.apiBroker = apiBroker;
-            this.landingConfiguration = landingConfigurationFixture.LandingConfigOptions.Value;
-            this.supplierId = landingConfiguration.LandingSupplierId;
-            this.encryptedFolder = landingConfiguration.EncryptedFolder;
-            this.decryptedFolder = landingConfiguration.DecryptedFolder;
+            this.supplierId = this.apiBroker.landingConfiguration.LandingSupplierId;
+            this.encryptedFolder = this.apiBroker.landingConfiguration.EncryptedFolder;
+            this.decryptedFolder = this.apiBroker.landingConfiguration.DecryptedFolder;
         }
 
         private static int GetRandomNumber() =>

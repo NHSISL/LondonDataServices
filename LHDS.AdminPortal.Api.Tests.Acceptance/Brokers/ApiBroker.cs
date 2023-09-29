@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System.Net.Http;
-using LHDS.Core.Clients;
 using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Cryptography.Gpg;

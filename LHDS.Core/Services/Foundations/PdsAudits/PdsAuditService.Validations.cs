@@ -35,6 +35,12 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                     secondName: nameof(PdsAudit.CreatedBy)),
                 Parameter: nameof(PdsAudit.UpdatedBy)),
 
+                (Rule: IsEqualOrSmallerThan(
+                    pdsAudit.CreatedBy, 255), Parameter: nameof(pdsAudit.CreatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    pdsAudit.UpdatedBy, 255), Parameter: nameof(pdsAudit.UpdatedBy)),
+
                 (Rule: IsNotRecent(pdsAudit.CreatedDate), Parameter: nameof(PdsAudit.CreatedDate)));
         }
 
@@ -117,6 +123,12 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
         {
             Condition = date == default,
             Message = "Date is required"
+        };
+
+        private static dynamic IsEqualOrSmallerThan(string text, int maxLength) => new
+        {
+            Condition = (text ?? string.Empty).Length > maxLength,
+            Message = "Text is exceeding max length"
         };
 
         private static dynamic IsSame(

@@ -30,7 +30,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         internal IDownloadService downloadService;
         internal ICryptographyProvider cryptographyProvider;
         internal IConfiguration configuration;
-        internal IDocumentService documentService;
 
         public ApiBroker()
         {
@@ -42,7 +41,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
             this.ingestionTrackingService =
                 (IngestionTrackingService)webApplicationFactory.Services.GetService<IIngestionTrackingService>();
 
-            this.documentService = (DocumentService)webApplicationFactory.Services.GetService<IDocumentService>();
             this.httpClient = this.webApplicationFactory.CreateClient();
             this.apiFactoryClient = new RESTFulApiFactoryClient(this.httpClient);
 

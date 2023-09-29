@@ -76,7 +76,15 @@ namespace LHDS.Core.Services.Foundations.Audits
 
                 ValidateStorageAudit(maybeAudit, auditId);
 
-                return await this.storageBroker.DeleteAuditAsync(maybeAudit);
+                var deletedItem = await this.storageBroker
+                    .DeleteAuditAsync(maybeAudit);
+
+                var confirmDeletedItem = await this.storageBroker
+                    .SelectAuditByIdAsync(maybeAudit.Id);
+
+                ValidateAuditIsNull(confirmDeletedItem);
+
+                return deletedItem;
             });
     }
 }

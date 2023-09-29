@@ -8,7 +8,6 @@ using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using LHDS.Core.Models.Orchestrations.Downloads;
-using Microsoft.Extensions.Options;
 using Tynamix.ObjectFiller;
 using Xunit;
 
@@ -24,11 +23,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         private readonly LandingConfiguration landingConfiguration;
 
         public LandingsApiTests(
-            ApiBroker apiBroker,
-            LandingConfigurationFixture landingConfigurationFixture)
+            ApiBroker apiBroker)
         {
             this.apiBroker = apiBroker;
-            this.landingConfiguration = landingConfigurationFixture.LandingConfigOptions.Value;
+            this.landingConfiguration = apiBroker.landingConfiguration;
             this.supplierId = landingConfiguration.LandingSupplierId;
             this.encryptedFolder = landingConfiguration.EncryptedFolder;
             this.decryptedFolder = landingConfiguration.DecryptedFolder;

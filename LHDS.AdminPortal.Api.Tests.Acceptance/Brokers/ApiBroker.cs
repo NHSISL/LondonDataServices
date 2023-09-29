@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Net.Http;
+using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Cryptography.Gpg;
 using LHDS.Core.Services.Foundations.Audits;
@@ -27,6 +28,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         internal IDownloadService downloadService;
         internal ICryptographyProvider cryptographyProvider;
         internal IConfiguration configuration;
+        internal LandingConfiguration landingConfiguration;
 
         public ApiBroker()
         {
@@ -45,6 +47,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
                 (GpgCryptographyProvider)webApplicationFactory.Services.GetService<ICryptographyProvider>();
 
             this.configuration = this.webApplicationFactory.Services.GetService<IConfiguration>();
+            this.landingConfiguration = this.webApplicationFactory.Services.GetService<LandingConfiguration>();
         }
     }
 }

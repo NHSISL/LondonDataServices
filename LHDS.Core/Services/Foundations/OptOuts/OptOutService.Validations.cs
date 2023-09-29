@@ -234,7 +234,8 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidOptOutException = new InvalidOptOutException();
+            var invalidOptOutException = new InvalidOptOutException(
+                message: "Invalid optOut. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

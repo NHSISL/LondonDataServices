@@ -61,7 +61,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
             {
                 Name = invalidText,
                 FriendlyName = invalidText,
-                LandingManualTriggerUrl = invalidText,
             };
 
             var invalidSupplierException =
@@ -78,14 +77,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             invalidSupplierException.AddData(
                 key: nameof(Supplier.FriendlyName),
-                values: "Text is required");
-
-            invalidSupplierException.AddData(
-                key: nameof(Supplier.LandingManualTriggerUrl),
-                values: "Text is required");
-
-            invalidSupplierException.AddData(
-                key: nameof(Supplier.DecryptionManualTriggerUrl),
                 values: "Text is required");
 
             invalidSupplierException.AddData(

@@ -21,8 +21,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
                     Name = "EMIS",
                     FriendlyName = "EMIS",
                     Description = "Emis Supplier",
-                    LandingManualTriggerUrl = "Update this => environment specific",
-                    DecryptionManualTriggerUrl = "Update this => environment specific",
                     CreatedBy = "System",
                     CreatedDate = DateTime.UtcNow,
                     UpdatedBy = "System",

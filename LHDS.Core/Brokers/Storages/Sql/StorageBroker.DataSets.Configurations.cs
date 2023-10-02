@@ -19,6 +19,10 @@ namespace LHDS.Core.Brokers.Storages.Sql
                .IsRequired();
 
             modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.SupplierId)
+                .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
                 .Property(dataSet => dataSet.DataSetName)
                 .HasMaxLength(150)
                 .IsRequired();
@@ -28,10 +32,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .HasMaxLength(250)
                 .IsRequired();
 
-            modelBuilder.Entity<DataSet>()
-                .Property(dataSet => dataSet.DataSetSupplier)
-                .HasMaxLength(150)
-                .IsRequired();
 
             modelBuilder.Entity<DataSet>()
                 .Property(dataSet => dataSet.DataSetAuthor)
@@ -88,6 +88,12 @@ namespace LHDS.Core.Brokers.Storages.Sql
             modelBuilder.Entity<DataSet>()
                 .Property(dataSet => dataSet.UpdatedDate)
                 .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
+                .HasOne(columnDefinition => columnDefinition.Supplier)
+                .WithMany(schemaDefinition => schemaDefinition.DataSets)
+                .HasForeignKey(columnDefinition => columnDefinition.SupplierId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

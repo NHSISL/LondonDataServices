@@ -63,6 +63,12 @@ namespace LHDS.Core.Services.Foundations.PdsAudits
                     secondDateName: nameof(PdsAudit.CreatedDate)),
                 Parameter: nameof(PdsAudit.UpdatedDate)),
 
+                (Rule: IsEqualOrSmallerThan(
+                    pdsAudit.CreatedBy, 255), Parameter: nameof(pdsAudit.CreatedBy)),
+
+                (Rule: IsEqualOrSmallerThan(
+                    pdsAudit.UpdatedBy, 255), Parameter: nameof(pdsAudit.UpdatedBy)),
+
                 (Rule: IsNotRecent(pdsAudit.UpdatedDate), Parameter: nameof(pdsAudit.UpdatedDate)));
         }
 

@@ -487,8 +487,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            PdsAudit randomPdsAudit = CreateRandomPdsAudit(randomDateTimeOffset);
-            PdsAudit invalidPdsAudit = randomPdsAudit;
+            PdsAudit randomPdsAudit = CreateRandomModifyPdsAudit(randomDateTimeOffset);
+            PdsAudit invalidPdsAudit = randomPdsAudit.DeepClone();
+            invalidPdsAudit.CreatedBy = GetRandomString(256);
+            invalidPdsAudit.UpdatedBy = invalidPdsAudit.CreatedBy;
 
             var invalidPdsAuditException = new InvalidPdsAuditException(
                 message: "Invalid pdsAudit. Please correct the errors and try again.");

@@ -29,7 +29,15 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
     function trimString(fileName: string) {
         const str = fileName;
         const lastIndex = str.lastIndexOf('/');
-        return str.substring(lastIndex + 1, str.length - 4);
+
+        if (lastIndex !== -1) {
+            const secondLastIndex = str.lastIndexOf('/', lastIndex - 1);
+            if (secondLastIndex !== -1) {
+                return str.substring(secondLastIndex + 1, str.length - 4);
+            }
+        }
+
+        return fileName;
     }
 
     return (

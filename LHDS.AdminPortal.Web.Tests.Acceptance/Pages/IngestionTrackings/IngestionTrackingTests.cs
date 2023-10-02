@@ -5,6 +5,8 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Web.Tests.Acceptance.Brokers;
+using LHDS.AdminPortal.Web.Tests.Acceptance.Models.IngestionTrackings;
+using LHDS.AdminPortal.Web.Tests.Acceptance.Models.Suppliers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Playwright;
 using Xunit;
@@ -98,32 +100,33 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages.IngestionTrackings
         {
             // given
             var navSelector = "#navbarScroll > div.me-auto.my-2.my-lg-0.navbar-nav.navbar-nav-scroll > div:nth-child(2) > a";
-            var expectedTableRowcount = 1;
+            var expectedTableRowcount = 2;
 
-            //Post Ingestions
-            //var supplier = CreateRandomSupplier();
-            //await PostRandomIngestionTrackingAsync(supplier.Id);
-
-            //When
             IPage page = await InitialiseSetup();
             await PerformLogin(page);
 
+            Supplier randomSupplier = await PostRandomSupplierAsync();
+
+            ValueTask<IngestionTracking> randomIngestionTrackingTask = PostRandomIngestionTrackingAsync(randomSupplier.Id);
+            IngestionTracking randomIngestionTracking = await randomIngestionTrackingTask;
+            string fileName = randomIngestionTracking.EncryptedFileName;
+
+            //When
             await page
                 .Locator(navSelector)
                 .ClickAsync();
 
-            await page.TypeAsync("input[type='search']", "RETURNNOTHING");
+            await page.TypeAsync("input[type='search']", fileName);
+            await page.PauseAsync();
 
-            var selectTable = await page.QuerySelectorAsync("table");
-            var actualRowCount = 0;
+            var actualRowCount = await page.EvalOnSelectorAsync<int>("table tbody", "el => el.rows.length");
 
-            if (selectTable != null)
-                actualRowCount =
-                    await selectTable.EvaluateAsync<int>("table => table.rows.length");
-
-            // Then
-            // await page.PauseAsync();
+            //Then
             actualRowCount.Should().Be(expectedTableRowcount);
+
+            // Cleanup
+            await this.webServerBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
+            await this.webServerBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }
     }
 

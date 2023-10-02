@@ -7,9 +7,9 @@ interface TableBaseTbodyProps {
 
 const TableBaseTbody: FunctionComponent<TableBaseTbodyProps> = (props) => {
     return (
-        <thead>
+        <tbody>
             {props.children}
-        </thead>
+        </tbody>
     )
 }
 

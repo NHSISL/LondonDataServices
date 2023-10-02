@@ -25,6 +25,7 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
         public string FrontendBaseUrl { get; } = $"https://localhost:{GetRandomUnusedPort()}";
         public string FrontendProxyBaseUrl { get; } = $"https://localhost:44405/";
         public string ApiProxyBaseUrl { get; } = $"https://localhost:7052";
+
         private readonly HttpClient httpClient;
         private readonly IRESTFulApiFactoryClient apiFactoryClient;
 
@@ -49,7 +50,7 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
                 .Build();
 
             this.httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri(ApiBaseUrl);
+            httpClient.BaseAddress = new Uri(ApiProxyBaseUrl);
             this.apiFactoryClient = new RESTFulApiFactoryClient(this.httpClient);
         }
 

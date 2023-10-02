@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -32,5 +33,10 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Models.IngestionTrackings
 
         [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset CreatedDate { get; set; }
+
+        public static implicit operator ValueTask<object>(IngestionTracking v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

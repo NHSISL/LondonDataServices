@@ -33,7 +33,9 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages.IngestionTrackings
         {
             // given
             var expectedCardTitle = "Ingestion Tracking";
-            var navSelector = "#navbarScroll > div.me-auto.my-2.my-lg-0.navbar-nav.navbar-nav-scroll > div:nth-child(2) > a";
+            var navSelector =
+                "#navbarScroll > div.me-auto.my-2.my-lg-0.navbar-nav.navbar-nav-scroll > div:nth-child(2) > a";
+
             var cardTitleSelector = $"{".cardBaseTitle"}:has-text(\"{"Ingestion Tracking"}\")";
 
             IPage page = await InitialiseSetup();
@@ -60,7 +62,9 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages.IngestionTrackings
         public async Task VerifyIngestionPageInvlaidSearchReturnsBlank()
         {
             // given
-            var navSelector = "#navbarScroll > div.me-auto.my-2.my-lg-0.navbar-nav.navbar-nav-scroll > div:nth-child(2) > a";
+            var navSelector =
+                "#navbarScroll > div.me-auto.my-2.my-lg-0.navbar-nav.navbar-nav-scroll > div:nth-child(2) > a";
+
             var expectedTableRowcount = 1;
 
             //When
@@ -91,7 +95,6 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages.IngestionTrackings
                     await selectTable.EvaluateAsync<int>("table => table.rows.length");
 
             // then
-            // await page.PauseAsync();
             actualRowCount.Should().Be(expectedTableRowcount);
         }
 
@@ -99,7 +102,9 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages.IngestionTrackings
         public async Task VerifyIngestionPageAddRowAndSearch()
         {
             // given
-            var navSelector = "#navbarScroll > div.me-auto.my-2.my-lg-0.navbar-nav.navbar-nav-scroll > div:nth-child(2) > a";
+            var navSelector =
+                "#navbarScroll > div.me-auto.my-2.my-lg-0.navbar-nav.navbar-nav-scroll > div:nth-child(2) > a";
+
             var expectedTableRowcount = 2;
 
             IPage page = await InitialiseSetup();
@@ -123,6 +128,54 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages.IngestionTrackings
 
             //Then
             actualRowCount.Should().Be(expectedTableRowcount);
+
+            // Cleanup
+            await this.webServerBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
+            await this.webServerBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
+        }
+
+        [Fact]
+        public async Task VerifyIngestionPageAddRowAndCheckDetailslayoutComponentCount()
+        {
+            // given
+            var navSelector =
+                "#navbarScroll > div.me-auto.my-2.my-lg-0.navbar-nav.navbar-nav-scroll > div:nth-child(2) > a";
+
+            var detailsBtn
+                = "#maincontent > div > div > div > div.undefined.cardBaseContent > table > tbody > tr:nth-child(1) > td:nth-child(5) > a > button";
+
+            var expectedRowCount = 12;
+            var expectedButtonCount = 3;
+
+            IPage page = await InitialiseSetup();
+            await PerformLogin(page);
+
+            Supplier randomSupplier = await PostRandomSupplierAsync();
+
+            ValueTask<IngestionTracking> randomIngestionTrackingTask = PostRandomIngestionTrackingAsync(randomSupplier.Id);
+            IngestionTracking randomIngestionTracking = await randomIngestionTrackingTask;
+            string fileName = randomIngestionTracking.EncryptedFileName;
+
+            //When
+            await page
+                .Locator(navSelector)
+                .ClickAsync();
+
+            await page.TypeAsync("input[type='search']", fileName);
+            await page.Locator(detailsBtn).ClickAsync();
+
+            var actualRowCount = await page.EvalOnSelectorAllAsync<int>("div.summaryRow", "els => els.length");
+
+            var actualButtonCount = await page.EvalOnSelectorAsync<int>(
+                ".cardBaseContent",
+                "parentDiv => parentDiv.querySelectorAll('button').length"
+            );
+
+            await page.PauseAsync();
+
+            //Then
+            actualRowCount.Should().Be(expectedRowCount);
+            actualButtonCount.Should().Be(expectedButtonCount);
 
             // Cleanup
             await this.webServerBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using LHDS.Core.Models.Bases;
+using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
@@ -25,5 +26,8 @@ namespace LHDS.Core.Models.Foundations.Suppliers
 
         [BindNever]
         public List<IngestionTracking> IngestionTrackings { get; set; } = new List<IngestionTracking>();
+
+        [BindNever]
+        public List<DataSet> DataSets { get; set; } = new List<DataSet>();
     }
 }

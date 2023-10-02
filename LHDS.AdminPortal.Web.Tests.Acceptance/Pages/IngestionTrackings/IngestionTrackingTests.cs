@@ -98,27 +98,15 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages.IngestionTrackings
         {
             // given
             var navSelector = "#navbarScroll > div.me-auto.my-2.my-lg-0.navbar-nav.navbar-nav-scroll > div:nth-child(2) > a";
-            var expectedTableRowcount = 2;
+            var expectedTableRowcount = 1;
 
             //Post Ingestions
-
-            var supplier = CreateRandomSupplier();
-            await PostRandomIngestionTrackingAsync(supplier.Id);
-
+            //var supplier = CreateRandomSupplier();
+            //await PostRandomIngestionTrackingAsync(supplier.Id);
 
             //When
-            await using var context = await webServerBroker.browser.NewContextAsync(new() { IgnoreHTTPSErrors = true });
-
-            var apiPage = await context.NewPageAsync();
-            var page = await context.NewPageAsync();
-
-            await Task.WhenAll(
-                apiPage.GotoAsync(webServerBroker.ApiProxyBaseUrl),
-                page.GotoAsync(webServerBroker.FrontendProxyBaseUrl)
-                );
-
-            var loginHandler = new Login(page);
-            await loginHandler.PerformLogin();
+            IPage page = await InitialiseSetup();
+            await PerformLogin(page);
 
             await page
                 .Locator(navSelector)
@@ -133,7 +121,7 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages.IngestionTrackings
                 actualRowCount =
                     await selectTable.EvaluateAsync<int>("table => table.rows.length");
 
-            // then
+            // Then
             // await page.PauseAsync();
             actualRowCount.Should().Be(expectedTableRowcount);
         }

@@ -18,7 +18,7 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Pages.IngestionTrackings
     {
         private async ValueTask<IPage> InitialiseSetup()
         {
-            await using var context = await webServerBroker.browser.NewContextAsync(new() { IgnoreHTTPSErrors = true });
+            var context = await webServerBroker.browser.NewContextAsync(new() { IgnoreHTTPSErrors = true });
 
             var apiPage = await context.NewPageAsync();
             var page = await context.NewPageAsync();

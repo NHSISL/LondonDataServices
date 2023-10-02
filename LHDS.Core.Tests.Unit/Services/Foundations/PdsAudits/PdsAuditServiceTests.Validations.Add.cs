@@ -304,7 +304,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnPdsAuditAddIfCreatedByAndUpdatedByIsInvalidLengthAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnPdsAuditAddIfInvalidLengthAndLogItAsync()
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();

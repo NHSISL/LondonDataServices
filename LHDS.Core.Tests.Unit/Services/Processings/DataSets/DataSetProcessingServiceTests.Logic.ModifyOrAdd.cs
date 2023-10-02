@@ -19,7 +19,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
             DataSet randomDataSet = CreateRandomDataSet();
             DataSet storageDataSet = randomDataSet;
             DataSet modifiedDataSet = storageDataSet.DeepClone();
-            modifiedDataSet.DataSetSupplier = modifiedDataSet.DataSetSupplier + "Modified";
+            modifiedDataSet.DataSetName = modifiedDataSet.DataSetName + "Modified";
             DataSet updatedDataSet = modifiedDataSet.DeepClone();
             DataSet expectedDataSet = updatedDataSet;
 

@@ -90,9 +90,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<DataSet>()
-                .HasOne(columnDefinition => columnDefinition.Supplier)
-                .WithMany(schemaDefinition => schemaDefinition.DataSets)
-                .HasForeignKey(columnDefinition => columnDefinition.SupplierId)
+                .HasOne(dataSet => dataSet.Supplier)
+                .WithMany(supplier => supplier.DataSets)
+                .HasForeignKey(dataSet => dataSet.SupplierId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
     }

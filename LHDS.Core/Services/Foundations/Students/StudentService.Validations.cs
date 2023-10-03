@@ -47,7 +47,13 @@ namespace LHDS.Core.Services.Foundations.Students
                 (Rule: IsInvalid(student.CreatedDate), Parameter: nameof(Student.CreatedDate)),
                 (Rule: IsInvalid(student.CreatedBy), Parameter: nameof(Student.CreatedBy)),
                 (Rule: IsInvalid(student.UpdatedDate), Parameter: nameof(Student.UpdatedDate)),
-                (Rule: IsInvalid(student.UpdatedBy), Parameter: nameof(Student.UpdatedBy)));
+                (Rule: IsInvalid(student.UpdatedBy), Parameter: nameof(Student.UpdatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: student.UpdatedDate,
+                    secondDate: student.CreatedDate,
+                    secondDateName: nameof(Student.CreatedDate)),
+                Parameter: nameof(Student.UpdatedDate)));
         }
 
         public void ValidateStudentId(Guid studentId) =>
@@ -86,6 +92,15 @@ namespace LHDS.Core.Services.Foundations.Students
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,

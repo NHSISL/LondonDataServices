@@ -88,7 +88,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Students
 
             invalidStudentException.AddData(
                 key: nameof(Student.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(Student.CreatedDate)}"
+                });
 
             invalidStudentException.AddData(
                 key: nameof(Student.UpdatedBy),
@@ -131,6 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Students
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Student randomStudent = CreateRandomStudent(randomDateTimeOffset);
             Student invalidStudent = randomStudent;
+            
             var invalidStudentException = 
                 new InvalidStudentException(
                     message: "Invalid student. Please correct the errors and try again.");

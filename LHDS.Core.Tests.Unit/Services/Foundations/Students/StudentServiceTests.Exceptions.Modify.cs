@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -58,6 +59,64 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Students
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateStudentAsync(randomStudent),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            Student someStudent = CreateRandomStudent();
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidStudentReferenceException =
+                new InvalidStudentReferenceException(
+                    message: "Invalid student reference error occurred.", 
+                    innerException: foreignKeyConstraintConflictException);
+
+            StudentDependencyValidationException expectedStudentDependencyValidationException =
+                new StudentDependencyValidationException(
+                    message: "Student dependency validation occurred, please try again.",
+                    innerException: invalidStudentReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<Student> modifyStudentTask =
+                this.studentService.ModifyStudentAsync(someStudent);
+
+            StudentDependencyValidationException actualStudentDependencyValidationException =
+                await Assert.ThrowsAsync<StudentDependencyValidationException>(
+                    modifyStudentTask.AsTask);
+
+            // then
+            actualStudentDependencyValidationException.Should()
+                .BeEquivalentTo(expectedStudentDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectStudentByIdAsync(someStudent.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(expectedStudentDependencyValidationException))),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateStudentAsync(someStudent),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

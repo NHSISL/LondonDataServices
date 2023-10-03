@@ -38,6 +38,10 @@ namespace LHDS.Core.Services.Foundations.Students
 
                 throw CreateAndLogCriticalDependencyException(failedStudentStorageException);
             }
+            catch (NotFoundStudentException notFoundStudentException)
+            {
+                throw CreateAndLogValidationException(notFoundStudentException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsStudentException =

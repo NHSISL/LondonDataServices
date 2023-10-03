@@ -43,6 +43,15 @@ namespace LHDS.Core.Services.Foundations.Students
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsStudentException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidStudentReferenceException =
+                    new InvalidStudentReferenceException(
+                        message: "Invalid student reference error occurred.", 
+                        innerException: foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidStudentReferenceException);
+            }
         }
 
         private StudentValidationException CreateAndLogValidationException(Xeption exception)
@@ -62,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.Students
             var studentDependencyException = 
                 new StudentDependencyException(
                     message: "Student dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(studentDependencyException);
 

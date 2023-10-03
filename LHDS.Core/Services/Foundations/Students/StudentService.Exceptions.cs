@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Foundations.Students;
 using LHDS.Core.Models.Foundations.Students.Exceptions;
 using Xeptions;
@@ -23,6 +24,15 @@ namespace LHDS.Core.Services.Foundations.Students
             {
                 throw CreateAndLogValidationException(invalidStudentException);
             }
+            catch (SqlException sqlException)
+            {
+                var failedStudentStorageException =
+                    new FailedStudentStorageException(
+                        message: "Failed student storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedStudentStorageException);
+            }
         }
 
         private StudentValidationException CreateAndLogValidationException(Xeption exception)
@@ -35,6 +45,18 @@ namespace LHDS.Core.Services.Foundations.Students
             this.loggingBroker.LogError(studentValidationException);
 
             return studentValidationException;
+        }
+
+        private StudentDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        {
+            var studentDependencyException = 
+                new StudentDependencyException(
+                    message: "Student dependency error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogCritical(studentDependencyException);
+
+            return studentDependencyException;
         }
     }
 }

@@ -29,8 +29,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Students
                 this.studentService.AddStudentAsync(nullStudent);
 
             StudentValidationException actualStudentValidationException =
-                await Assert.ThrowsAsync<StudentValidationException>(
-                    addStudentTask.AsTask);
+                await Assert.ThrowsAsync<StudentValidationException>(() =>
+                    addStudentTask.AsTask());
 
             // then
             actualStudentValidationException.Should()
@@ -98,12 +98,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Students
                 this.studentService.AddStudentAsync(invalidStudent);
 
             StudentValidationException actualStudentValidationException =
-                await Assert.ThrowsAsync<StudentValidationException>(
-                    addStudentTask.AsTask);
+                await Assert.ThrowsAsync<StudentValidationException>(() =>
+                    addStudentTask.AsTask());
 
             // then
             actualStudentValidationException.Should()
                 .BeEquivalentTo(expectedStudentValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -144,17 +148,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Students
                     message: "Student validation errors occurred, please try again.",
                     innerException: invalidStudentException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<Student> addStudentTask =
                 this.studentService.AddStudentAsync(invalidStudent);
 
             StudentValidationException actualStudentValidationException =
-                await Assert.ThrowsAsync<StudentValidationException>(
-                    addStudentTask.AsTask);
+                await Assert.ThrowsAsync<StudentValidationException>(() =>
+                    addStudentTask.AsTask());
 
             // then
             actualStudentValidationException.Should()
                 .BeEquivalentTo(expectedStudentValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -165,9 +177,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Students
                 broker.InsertStudentAsync(It.IsAny<Student>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -192,17 +204,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Students
                     message: "Student validation errors occurred, please try again.",
                     innerException: invalidStudentException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<Student> addStudentTask =
                 this.studentService.AddStudentAsync(invalidStudent);
 
             StudentValidationException actualStudentValidationException =
-                await Assert.ThrowsAsync<StudentValidationException>(
-                    addStudentTask.AsTask);
+                await Assert.ThrowsAsync<StudentValidationException>(() =>
+                    addStudentTask.AsTask());
 
             // then
             actualStudentValidationException.Should()
                 .BeEquivalentTo(expectedStudentValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -254,8 +274,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Students
                 this.studentService.AddStudentAsync(invalidStudent);
 
             StudentValidationException actualStudentValidationException =
-                await Assert.ThrowsAsync<StudentValidationException>(
-                    addStudentTask.AsTask);
+                await Assert.ThrowsAsync<StudentValidationException>(() =>
+                    addStudentTask.AsTask());
 
             // then
             actualStudentValidationException.Should()

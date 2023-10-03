@@ -27,10 +27,12 @@ namespace LHDS.Core.Services.Foundations.Students
                 Parameter: nameof(Student.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    firstId: student.UpdatedBy,
-                    secondId: student.CreatedBy,
-                    secondIdName: nameof(Student.CreatedBy)),
-                Parameter: nameof(Student.UpdatedBy)));
+                    first: student.UpdatedBy,
+                    second: student.CreatedBy,
+                    secondName: nameof(Student.CreatedBy)),
+                Parameter: nameof(Student.UpdatedBy)),
+
+                (Rule: IsNotRecent(student.CreatedDate), Parameter: nameof(Student.CreatedDate)));
         }
 
         private static void ValidateStudentIsNotNull(Student student)
@@ -85,6 +87,23 @@ namespace LHDS.Core.Services.Foundations.Students
                Condition = first != second,
                Message = $"Text is not the same as {secondName}"
            };
+
+        private dynamic IsNotRecent(DateTimeOffset date) => new
+        {
+            Condition = IsDateNotRecent(date),
+            Message = "Date is not recent"
+        };
+
+        private bool IsDateNotRecent(DateTimeOffset date)
+        {
+            DateTimeOffset currentDateTime =
+                this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+            TimeSpan timeDifference = currentDateTime.Subtract(date);
+            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+
+            return timeDifference.Duration() > oneMinute;
+        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

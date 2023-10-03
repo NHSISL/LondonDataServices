@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.Students
             });
 
         public IQueryable<Student> RetrieveAllStudents() =>
-            throw new System.NotImplementedException();
+            this.storageBroker.SelectAllStudents();
     }
 }

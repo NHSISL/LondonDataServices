@@ -60,6 +60,15 @@ namespace LHDS.Core.Services.Foundations.Students
 
                 throw CreateAndLogDependencyValidationException(invalidStudentReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedStudentException = 
+                    new LockedStudentException(
+                        message: "Locked student record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedStudentException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedStudentStorageException =
@@ -123,7 +132,7 @@ namespace LHDS.Core.Services.Foundations.Students
             var studentDependencyException = 
                 new StudentDependencyException(
                     message: "Student dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(studentDependencyException);
 
@@ -148,7 +157,7 @@ namespace LHDS.Core.Services.Foundations.Students
             var studentDependencyException = 
                 new StudentDependencyException(
                     message: "Student dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(studentDependencyException);
 

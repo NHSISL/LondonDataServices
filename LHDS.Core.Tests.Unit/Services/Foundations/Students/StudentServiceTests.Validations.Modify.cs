@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -65,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Students
 
             var invalidStudentException = 
                 new InvalidStudentException(
-                        message: "Invalid student. Please correct the errors and try again.");
+                    message: "Invalid student. Please correct the errors and try again.");
 
             invalidStudentException.AddData(
                 key: nameof(Student.Id),
@@ -116,6 +117,51 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Students
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateStudentAsync(It.IsAny<Student>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Student randomStudent = CreateRandomStudent(randomDateTimeOffset);
+            Student invalidStudent = randomStudent;
+            var invalidStudentException = 
+                new InvalidStudentException(
+                    message: "Invalid student. Please correct the errors and try again.");
+
+            invalidStudentException.AddData(
+                key: nameof(Student.UpdatedDate),
+                values: $"Date is the same as {nameof(Student.CreatedDate)}");
+
+            var expectedStudentValidationException =
+                new StudentValidationException(
+                    message: "Student validation errors occurred, please try again.",
+                    innerException: invalidStudentException);
+
+            // when
+            ValueTask<Student> modifyStudentTask =
+                this.studentService.ModifyStudentAsync(invalidStudent);
+
+            StudentValidationException actualStudentValidationException =
+                await Assert.ThrowsAsync<StudentValidationException>(
+                    modifyStudentTask.AsTask);
+
+            // then
+            actualStudentValidationException.Should().BeEquivalentTo(expectedStudentValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedStudentValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectStudentByIdAsync(invalidStudent.Id),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

@@ -10,6 +10,8 @@
 	<ItemGroup>
 	  <None Remove="Brokers\Storages\Sql\Functions\Metadata\Columns_GetBaseMetadata.sql" />
 	  <None Remove="Brokers\Storages\Sql\Functions\Metadata\Objects_GetBaseMetadata.sql" />
+	  <None Remove="Brokers\Storages\Sql\Functions\Metadata\SplitString.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Lds\PrimaryCareEMIS_GetProcessingId.sql" />
 	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetBusinessKey.sql" />
 	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNames.sql" />
 	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNamesTypecasted.sql" />
@@ -32,8 +34,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <EmbeddedResource Include="Brokers\Storages\Sql\Functions\Metadata\SplitString.sql" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <EmbeddedResource Include="Brokers\Storages\Sql\Functions\Metadata\Columns_GetBaseMetadata.sql" />
 	  <EmbeddedResource Include="Brokers\Storages\Sql\Functions\Metadata\Objects_GetBaseMetadata.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Lds\PrimaryCareEMIS_GetProcessingId.sql" />
 	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetBusinessKey.sql" />
 	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNames.sql" />
 	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNamesTypecasted.sql" />

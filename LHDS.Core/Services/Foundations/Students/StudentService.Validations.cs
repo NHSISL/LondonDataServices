@@ -84,7 +84,13 @@ namespace LHDS.Core.Services.Foundations.Students
                     firstDate: inputStudent.CreatedDate,
                     secondDate: storageStudent.CreatedDate,
                     secondDateName: nameof(Student.CreatedDate)),
-                Parameter: nameof(Student.CreatedDate)));
+                Parameter: nameof(Student.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    first: inputStudent.CreatedBy,
+                    second: storageStudent.CreatedBy,
+                    secondName: nameof(Student.CreatedBy)),
+                Parameter: nameof(Student.CreatedBy)));
         }
 
         private static dynamic IsInvalid(Guid id) => new

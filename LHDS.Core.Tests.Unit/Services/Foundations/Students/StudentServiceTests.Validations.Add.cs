@@ -169,5 +169,53 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Students
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateUsersIsNotSameAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Student randomStudent = CreateRandomStudent(randomDateTimeOffset);
+            Student invalidStudent = randomStudent;
+            invalidStudent.UpdatedBy = Guid.NewGuid().ToString();
+
+            var invalidStudentException =
+                new InvalidStudentException(
+                    message: "Invalid student. Please correct the errors and try again.");
+
+            invalidStudentException.AddData(
+                key: nameof(Student.UpdatedBy),
+                values: $"Text is not the same as {nameof(Student.CreatedBy)}");
+
+            var expectedStudentValidationException =
+                new StudentValidationException(
+                    message: "Student validation errors occurred, please try again.",
+                    innerException: invalidStudentException);
+
+            // when
+            ValueTask<Student> addStudentTask =
+                this.studentService.AddStudentAsync(invalidStudent);
+
+            StudentValidationException actualStudentValidationException =
+                await Assert.ThrowsAsync<StudentValidationException>(
+                    addStudentTask.AsTask);
+
+            // then
+            actualStudentValidationException.Should()
+                .BeEquivalentTo(expectedStudentValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedStudentValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertStudentAsync(It.IsAny<Student>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

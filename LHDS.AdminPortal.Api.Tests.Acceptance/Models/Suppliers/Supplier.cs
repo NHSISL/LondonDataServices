@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -16,8 +17,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers
         public string Name { get; set; } = string.Empty;
         public string FriendlyName { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public string LandingManualTriggerUrl { get; set; } = string.Empty;
-        public string DecryptionManualTriggerUrl { get; set; } = string.Empty;
         public string UpdatedBy { get; set; } = string.Empty;
         public string CreatedBy { get; set; } = string.Empty;
 
@@ -28,5 +27,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers
         public DateTimeOffset UpdatedDate { get; set; }
 
         public List<IngestionTracking> IngestionTrackings { get; set; } = new List<IngestionTracking>();
+        public List<DataSet> DataSet { get; set; } = new List<DataSet>();
     }
 }

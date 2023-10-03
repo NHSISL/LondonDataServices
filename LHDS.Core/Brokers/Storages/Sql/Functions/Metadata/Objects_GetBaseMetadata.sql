@@ -1,4 +1,4 @@
-CREATE FUNCTION [Metadata].[Objects_GetBaseMetadata] (@SpecificationObjectId [UNIQUEIDENTIFIER]) RETURNS TABLE
+CREATE OR ALTER FUNCTION [Metadata].[Objects_GetBaseMetadata] (@SpecificationObjectId [UNIQUEIDENTIFIER]) RETURNS TABLE
 AS
 RETURN (
 	SELECT o.[Id] as [SpecificationObjectId], o.[DataSetSpecificationId], o.[SupplierObjectName], o.[OurObjectName] as [ConformedObjectName]

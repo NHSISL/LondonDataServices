@@ -1,15 +1,14 @@
 CREATE OR ALTER PROCEDURE [LDS].[Batch_GetBatchID] 
-	@BusinessKey NVARCHAR(50),
-	@SourceSystem VARCHAR(50)
-AS 
-
+	@LDSBusinessKey VARCHAR(50),
+	@LDSSourceSystem VARCHAR(50)
+AS
 BEGIN
-	IF @BusinessKey IS NULL
-		OR @SourceSystem IS NULL
+	IF @LDSBusinessKey IS NULL
+		OR @LDSSourceSystem IS NULL
 	BEGIN
 		DECLARE @ErrorMessage VARCHAR(255);
 
-		SET @ErrorMessage = 'The BusinessKey and @SourceSystem cannot be set to NULL when generating a Id. Check input parameters';
+		SET @ErrorMessage = 'The @LDSBusinessKey and @LDSSourceSystem cannot be set to NULL when generating a LDSBatchID. Check input parameters';
 
 		THROW 50001
 			,@ErrorMessage
@@ -21,10 +20,17 @@ BEGIN
 	DECLARE @StartDateTime DATETIME2 = GETDATE();
 
 	IF NOT EXISTS (
-			SELECT 1
+			SELECT TOP 1
+				[Id] as [LDSBatchID]
+				,[BusinessKey] as [LDSBusinessKey]
+				,[SourceSystem] as [LDSSourceSystem]
+				,[Status]
+				,[ErrorMessage]
+				,[StartDateTime]
+				,[EndDateTime]
 			FROM [LDS].[Batch]
-			WHERE [BusinessKey] = @BusinessKey -- Source system batch identifier e.g. ProcessingId
-				AND [SourceSystem] = @SourceSystem -- Source system name e.g. PrimaryCareEMIS
+			WHERE [BusinessKey] = @LDSBusinessKey -- Source system batch identifier e.g. ProcessingId
+				AND [SourceSystem] = @LDSSourceSystem -- Source system name e.g. PrimaryCareEMIS
 				AND [Status] = 'Started'
 			)
 		--AND (@StartDateTime BETWEEN [StartDateTime] AND DATEADD(HOUR,24,[StartDateTime])) -- No previous identical batches in the last 24 hours  
@@ -36,19 +42,20 @@ BEGIN
 			,[StartDateTime]
 			)
 		VALUES (
-			@BusinessKey
-			,@SourceSystem
+			@LDSBusinessKey
+			,@LDSSourceSystem
 			,'Started'
 			,@StartDateTime
 			)
 	END;
 
-	SELECT TOP 1 [Id]
-		,[SourceSystem]
+	SELECT TOP 1 
+		[Id] as [LDSBatchID]
+		,[SourceSystem] as [LDSSourceSystem]
 		,[Status]
 	FROM [LDS].[Batch]
-	WHERE [BusinessKey] = @BusinessKey
-		AND [SourceSystem] = @SourceSystem
+	WHERE [BusinessKey] = @LDSBusinessKey
+		AND [SourceSystem] = @LDSSourceSystem
 		AND [Status] = 'Started'
 	--AND (@StartDateTime BETWEEN [StartDateTime] AND DATEADD(HOUR,24,[StartDateTime]))
 	ORDER BY [StartDateTime];

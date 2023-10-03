@@ -1,9 +1,8 @@
-CREATE OR ALTER PROCEDURE [LDS].[Batch_UpdateBatchID]
-	@Id UNIQUEIDENTIFIER
-	,@Status NVARCHAR(255)
-	,@ErrorMessage NVARCHAR(255)
+CREATE OR ALTER PROCEDURE [LDS].[Batch_UpdateBatchID] 
+	@LDSBatchID UNIQUEIDENTIFIER
+	,@Status VARCHAR(255)
+	,@ErrorMessage VARCHAR(255)
 AS
-
 BEGIN
 	SET NOCOUNT ON;
 
@@ -11,5 +10,5 @@ BEGIN
 	SET [Status] = @Status
 		,[ErrorMessage] = @ErrorMessage
 		,[EndDateTime] = GETDATE()
-	WHERE [Id] = @Id;
+	WHERE [Id] = @LDSBatchID;
 END

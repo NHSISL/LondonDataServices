@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -57,10 +58,19 @@ namespace LHDS.Core.Services.Foundations.Students
             {
                 var failedStudentStorageException =
                     new FailedStudentStorageException(
-                    message: "Failed student storage error occurred, contact support.",
-                    innerException: databaseUpdateException);
+                        message: "Failed student storage error occurred, contact support.",
+                        innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedStudentStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedStudentServiceException =
+                    new FailedStudentServiceException(
+                        message: "Failed student service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedStudentServiceException);
             }
         }
 
@@ -111,6 +121,19 @@ namespace LHDS.Core.Services.Foundations.Students
             this.loggingBroker.LogError(studentDependencyException);
 
             return studentDependencyException;
+        }
+
+        private StudentServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var studentServiceException = 
+                new StudentServiceException(
+                    message: "Student service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(studentServiceException);
+
+            return studentServiceException;
         }
     }
 }

@@ -38,6 +38,16 @@ namespace LHDS.Core.Services.Foundations.Students
         private void ValidateStudentOnModify(Student student)
         {
             ValidateStudentIsNotNull(student);
+
+            Validate(
+                (Rule: IsInvalid(student.Id), Parameter: nameof(Student.Id)),
+
+                // TODO: Add any other required validation rules
+
+                (Rule: IsInvalid(student.CreatedDate), Parameter: nameof(Student.CreatedDate)),
+                (Rule: IsInvalid(student.CreatedBy), Parameter: nameof(Student.CreatedBy)),
+                (Rule: IsInvalid(student.UpdatedDate), Parameter: nameof(Student.UpdatedDate)),
+                (Rule: IsInvalid(student.UpdatedBy), Parameter: nameof(Student.UpdatedBy)));
         }
 
         public void ValidateStudentId(Guid studentId) =>
@@ -94,7 +104,7 @@ namespace LHDS.Core.Services.Foundations.Students
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
-        
+
         private static dynamic IsNotSame(
            string first,
            string second,

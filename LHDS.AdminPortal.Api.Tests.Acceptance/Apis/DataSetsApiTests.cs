@@ -36,6 +36,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
 
             filler.Setup()
                 .OnProperty(DataSet => DataSet.Id).Use(inputDataSet.Id)
+                .OnProperty(DataSet => DataSet.SupplierId).Use(inputDataSet.SupplierId)
                 .OnProperty(DataSet => DataSet.CreatedBy).Use(inputDataSet.CreatedBy)
                 .OnProperty(DataSet => DataSet.CreatedDate).Use(inputDataSet.CreatedDate)
                 .OnProperty(DataSet => DataSet.ActiveFrom).Use(inputDataSet.ActiveFrom)

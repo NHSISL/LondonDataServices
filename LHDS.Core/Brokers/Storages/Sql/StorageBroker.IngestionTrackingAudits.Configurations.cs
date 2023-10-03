@@ -9,8 +9,12 @@ namespace LHDS.Core.Brokers.Storages.Sql
 {
     public partial class StorageBroker
     {
-        private static void AddAuditConfigurations(ModelBuilder modelBuilder)
+        private static void AddIngestionTrackingAuditConfigurations(ModelBuilder modelBuilder)
         {
+            // Ingestion
+            modelBuilder.Entity<Audit>()
+                .ToTable("IngestionTrackingAudits", "Ingestion");
+
             modelBuilder.Entity<Audit>()
                 .Property(audit => audit.CreatedBy)
                 .HasMaxLength(255)

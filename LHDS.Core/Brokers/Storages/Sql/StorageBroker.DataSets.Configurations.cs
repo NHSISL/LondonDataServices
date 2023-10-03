@@ -12,6 +12,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
         private static void AddDataSetConfigurations(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<DataSet>()
+                .ToTable("DataSets", "Configurations");
+
+            modelBuilder.Entity<DataSet>()
                 .ToTable(dataSet => dataSet.IsTemporal());
 
             modelBuilder.Entity<DataSet>()

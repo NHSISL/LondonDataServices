@@ -58,7 +58,12 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
+#if !DEBUG
         [EnableQuery(PageSize = 50)]
+#endif
+#if DEBUG
+        [EnableQuery(PageSize = 5000)]
+#endif
         public ActionResult<IQueryable<DataType>> Get()
         {
             try

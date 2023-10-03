@@ -12,6 +12,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
         private static void AddSpecificationObjectConfigurations(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<SpecificationObject>()
+                .ToTable("SpecificationObjects", "Configurations");
+
+            modelBuilder.Entity<SpecificationObject>()
                 .ToTable(columnDefinition => columnDefinition.IsTemporal());
 
             modelBuilder.Entity<SpecificationObject>()

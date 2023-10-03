@@ -12,6 +12,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
         private static void AddDataTypeConfigurations(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<DataType>()
+                .ToTable("DataTypes", "Configurations");
+
+            modelBuilder.Entity<DataType>()
                 .ToTable(dataType => dataType.IsTemporal());
 
             modelBuilder.Entity<DataType>()

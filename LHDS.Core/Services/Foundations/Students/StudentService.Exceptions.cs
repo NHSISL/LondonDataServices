@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.Students
     public partial class StudentService
     {
         private delegate ValueTask<Student> ReturningStudentFunction();
+        private delegate IQueryable<Student> ReturningStudentsFunction();
 
         private async ValueTask<Student> TryCatch(ReturningStudentFunction returningStudentFunction)
         {
@@ -74,6 +76,23 @@ namespace LHDS.Core.Services.Foundations.Students
             }
         }
 
+        private IQueryable<Student> TryCatch(ReturningStudentsFunction returningStudentsFunction)
+        {
+            try
+            {
+                return returningStudentsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedStudentStorageException =
+                    new FailedStudentStorageException(
+                        message: "Failed student storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedStudentStorageException);
+            }
+        }
+
         private StudentValidationException CreateAndLogValidationException(Xeption exception)
         {
             var studentValidationException =
@@ -91,7 +110,7 @@ namespace LHDS.Core.Services.Foundations.Students
             var studentDependencyException = 
                 new StudentDependencyException(
                     message: "Student dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(studentDependencyException);
 
@@ -116,7 +135,7 @@ namespace LHDS.Core.Services.Foundations.Students
             var studentDependencyException = 
                 new StudentDependencyException(
                     message: "Student dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(studentDependencyException);
 

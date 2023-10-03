@@ -14,7 +14,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets
         public Guid SupplierId { get; set; }
         public string DataSetName { get; set; } = string.Empty;
         public string DataSetAliases { get; set; } = string.Empty;
-        public string DataSetSupplier { get; set; } = string.Empty;
         public string DataSetAuthor { get; set; } = string.Empty;
         public string SpecifiedBy { get; set; } = string.Empty;
         public bool IsNationallySpecified { get; set; }

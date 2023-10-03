@@ -12,6 +12,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
         private static void AddObjectColumnConfigurations(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ObjectColumn>()
+                .ToTable("ObjectColumns", "Configuration");
+
+            modelBuilder.Entity<ObjectColumn>()
                 .ToTable(columnDefinition => columnDefinition.IsTemporal());
 
             modelBuilder.Entity<ObjectColumn>()

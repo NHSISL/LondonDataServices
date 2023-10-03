@@ -8,6 +8,54 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Brokers\Storages\Sql\Functions\Metadata\Columns_GetBaseMetadata.sql" />
+	  <None Remove="Brokers\Storages\Sql\Functions\Metadata\Objects_GetBaseMetadata.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetBusinessKey.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNames.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNamesTypecasted.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNamesWithDataTypes.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNamesWithVarchar.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetVersionHashElements.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\DataSpecification_ListObjectsToCreate.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Object_GetHeaderFileName.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Object_GetHeaderRow.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\RawContinuum_CreateMainTable.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\RawContinuum_CreateMetadataTable.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\RawContinuum_CreateStoredProcedure.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\RawStaged_CreateHashView.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\RawStaged_CreateTable.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Specification_GetDBName.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Specification_GetObjects.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Typecasted_CreateView.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Lds\Batch_GetBatchID.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Lds\Batch_UpdateBatchID.sql" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Brokers\Storages\Sql\Functions\Metadata\Columns_GetBaseMetadata.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\Functions\Metadata\Objects_GetBaseMetadata.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetBusinessKey.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNames.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNamesTypecasted.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNamesWithDataTypes.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNamesWithVarchar.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetVersionHashElements.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\DataSpecification_ListObjectsToCreate.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Object_GetHeaderFileName.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Object_GetHeaderRow.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\RawContinuum_CreateMainTable.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\RawContinuum_CreateMetadataTable.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\RawContinuum_CreateStoredProcedure.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\RawStaged_CreateHashView.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\RawStaged_CreateTable.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Specification_GetDBName.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Specification_GetObjects.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Typecasted_CreateView.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Lds\Batch_GetBatchID.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Lds\Batch_UpdateBatchID.sql" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="BouncyCastle.Cryptography" Version="2.2.1" />
 		<PackageReference Include="CsvHelper" Version="30.0.1" />
 		<PackageReference Include="EFxceptions" Version="0.4.5" />
@@ -32,6 +80,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="Brokers\Storages\Sql\Views\" />
 	  <Folder Include="Migrations\" />
 	</ItemGroup>
 

@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using Moq;
 using LHDS.Core.Models.Foundations.Students;
 using LHDS.Core.Models.Foundations.Students.Exceptions;
@@ -128,9 +129,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Students
                 broker.UpdateStudentAsync(It.IsAny<Student>()),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -140,7 +141,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Students
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Student randomStudent = CreateRandomStudent(randomDateTimeOffset);
             Student invalidStudent = randomStudent;
-
+            
             var invalidStudentException = 
                 new InvalidStudentException(
                     message: "Invalid student. Please correct the errors and try again.");
@@ -183,9 +184,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Students
                 broker.SelectStudentByIdAsync(invalidStudent.Id),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -197,9 +198,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Students
             Student randomStudent = CreateRandomStudent(randomDateTimeOffset);
             randomStudent.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var invalidStudentException = 
-                new InvalidStudentException(
-                    message: "Invalid student. Please correct the errors and try again.");
+            var invalidStudentException =
+                new InvalidStudentException();
 
             invalidStudentException.AddData(
                 key: nameof(Student.UpdatedDate),
@@ -293,6 +293,70 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Students
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedStudentValidationException))),
                         Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfStorageCreatedDateNotSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNegativeNumber();
+            int randomMinutes = randomNumber;
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Student randomStudent = CreateRandomModifyStudent(randomDateTimeOffset);
+            Student invalidStudent = randomStudent.DeepClone();
+            Student storageStudent = invalidStudent.DeepClone();
+            storageStudent.CreatedDate = storageStudent.CreatedDate.AddMinutes(randomMinutes);
+            storageStudent.UpdatedDate = storageStudent.UpdatedDate.AddMinutes(randomMinutes);
+            
+            var invalidStudentException = 
+                new InvalidStudentException(
+                    message: "Invalid student. Please correct the errors and try again.");
+
+            invalidStudentException.AddData(
+                key: nameof(Student.CreatedDate),
+                values: $"Date is not the same as {nameof(Student.CreatedDate)}");
+
+            var expectedStudentValidationException =
+                new StudentValidationException(
+                    message: "Student validation errors occurred, please try again.",
+                    innerException: invalidStudentException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectStudentByIdAsync(invalidStudent.Id))
+                .ReturnsAsync(storageStudent);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<Student> modifyStudentTask =
+                this.studentService.ModifyStudentAsync(invalidStudent);
+
+            StudentValidationException actualStudentValidationException =
+                await Assert.ThrowsAsync<StudentValidationException>(
+                    modifyStudentTask.AsTask);
+
+            // then
+            actualStudentValidationException.Should()
+                .BeEquivalentTo(expectedStudentValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectStudentByIdAsync(invalidStudent.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedStudentValidationException))),
+                       Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

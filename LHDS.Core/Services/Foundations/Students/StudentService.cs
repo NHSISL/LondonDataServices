@@ -70,6 +70,8 @@ namespace LHDS.Core.Services.Foundations.Students
                 Student maybeStudent = await this.storageBroker
                     .SelectStudentByIdAsync(studentId);
 
+                ValidateStorageStudent(maybeStudent, studentId);
+
                 return await this.storageBroker.DeleteStudentAsync(maybeStudent);
             });
     }

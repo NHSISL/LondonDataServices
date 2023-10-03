@@ -12,6 +12,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
         private static void AddPdsAuditConfigurations(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PdsAudit>()
+                .ToTable("Pds", "Patient");
+
+            modelBuilder.Entity<PdsAudit>()
                 .Property(pdsAudit => pdsAudit.FileName)
                 .HasMaxLength(255)
                 .IsRequired();

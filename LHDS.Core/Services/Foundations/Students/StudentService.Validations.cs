@@ -24,7 +24,13 @@ namespace LHDS.Core.Services.Foundations.Students
                     firstDate: student.UpdatedDate,
                     secondDate: student.CreatedDate,
                     secondDateName: nameof(Student.CreatedDate)),
-                Parameter: nameof(Student.UpdatedDate)));
+                Parameter: nameof(Student.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    firstId: student.UpdatedBy,
+                    secondId: student.CreatedBy,
+                    secondIdName: nameof(Student.CreatedBy)),
+                Parameter: nameof(Student.UpdatedBy)));
         }
 
         private static void ValidateStudentIsNotNull(Student student)
@@ -61,6 +67,24 @@ namespace LHDS.Core.Services.Foundations.Students
                 Condition = firstDate != secondDate,
                 Message = $"Date is not the same as {secondDateName}"
             };
+
+        private static dynamic IsNotSame(
+            Guid firstId,
+            Guid secondId,
+            string secondIdName) => new
+            {
+                Condition = firstId != secondId,
+                Message = $"Id is not the same as {secondIdName}"
+            };
+
+        private static dynamic IsNotSame(
+           string first,
+           string second,
+           string secondName) => new
+           {
+               Condition = first != second,
+               Message = $"Text is not the same as {secondName}"
+           };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

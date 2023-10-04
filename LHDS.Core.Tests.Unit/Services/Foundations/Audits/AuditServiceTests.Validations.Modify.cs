@@ -8,7 +8,6 @@ using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Audits.Exceptions;
-using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 using Moq;
 using Xunit;
 
@@ -147,7 +146,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Audit randomAudit = CreateRandomAudit(randomDateTimeOffset);
             Audit invalidAudit = randomAudit;
-            
+
             var invalidAuditException = new InvalidAuditException(
                 message: "Invalid audit. Please correct the errors and try again.");
 
@@ -316,7 +315,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
             Audit storageAudit = invalidAudit.DeepClone();
             storageAudit.CreatedDate = storageAudit.CreatedDate.AddMinutes(randomMinutes);
             storageAudit.UpdatedDate = storageAudit.UpdatedDate.AddMinutes(randomMinutes);
-            
+
             var invalidAuditException = new InvalidAuditException(
                 message: "Invalid audit. Please correct the errors and try again.");
 

@@ -12,6 +12,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
         private static void AddIngestionTrackingConfigurations(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<IngestionTracking>()
+                .ToTable("IngestionTrackings", "Ingestion");
+
+            modelBuilder.Entity<IngestionTracking>()
                 .Property(ingestionTracking => ingestionTracking.FileName)
                 .HasMaxLength(450)
                 .IsRequired();

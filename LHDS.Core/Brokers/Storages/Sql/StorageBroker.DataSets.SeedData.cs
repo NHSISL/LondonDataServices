@@ -23,7 +23,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
                     DataSetAliases = "EMIS",
                     DataSetAuthor = "EMIS",
                     SpecifiedBy = "EMIS",
-                    DataSetSupplier = "EMIS",
                     CreatedBy = "System",
                     CreatedDate = DateTime.UtcNow,
                     UpdatedBy = "System",

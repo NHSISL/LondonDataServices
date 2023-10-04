@@ -13,6 +13,7 @@ namespace LHDS.Core.Models.Foundations.DataSets
     public class DataSet : IKey, IAudit
     {
         public Guid Id { get; set; }
+        public Guid SupplierId { get; set; }
         public string DataSetName { get; set; } = string.Empty;
         public string DataSetAliases { get; set; } = string.Empty;
         public string DataSetSupplier { get; set; } = string.Empty;

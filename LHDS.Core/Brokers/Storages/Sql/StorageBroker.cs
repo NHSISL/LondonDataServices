@@ -28,17 +28,23 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
         private static void AddConfigurations(ModelBuilder modelBuilder)
         {
+            AddBatchConfigurations(modelBuilder);
+            AddDataSetConfigurations(modelBuilder);
+            AddDataSetSpecificationConfigurations(modelBuilder);
+            AddDataTypeConfigurations(modelBuilder);
             AddSupplierConfigurations(modelBuilder);
             AddIngestionTrackingConfigurations(modelBuilder);
-            AddAuditConfigurations(modelBuilder);
             AddOptOutConfigurations(modelBuilder);
-            AddPdsAuditConfigurations(modelBuilder);
-            AddSupplierSeedData(modelBuilder);
-            AddDataTypeConfigurations(modelBuilder);
             AddObjectColumnConfigurations(modelBuilder);
+            AddPdsAuditConfigurations(modelBuilder);
             AddSpecificationObjectConfigurations(modelBuilder);
-            AddDataSetSpecificationConfigurations(modelBuilder);
-            AddDataSetConfigurations(modelBuilder);
+
+            AddSupplierSeedData(modelBuilder);
+            AddDataSetSeedData(modelBuilder);
+            AddDataSetSpecificationSeedData(modelBuilder);
+            AddSpecificationObjectSeedData(modelBuilder);
+            AddObjectColumnSeedData(modelBuilder);
+            AddIngestionTrackingAuditConfigurations(modelBuilder);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

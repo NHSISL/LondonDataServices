@@ -12,6 +12,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
         private static void AddOptOutConfigurations(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<OptOut>()
+                .ToTable("OptOuts", "Patient");
+
+            modelBuilder.Entity<OptOut>()
                 .Property(optOut => optOut.NhsNumber)
                 .HasMaxLength(10)
                 .IsRequired();

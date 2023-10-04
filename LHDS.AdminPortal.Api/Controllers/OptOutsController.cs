@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -30,7 +29,12 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.optOutProcessingService = optOutProcessingService;
 
         [HttpGet]
+#if !DEBUG
         [EnableQuery(PageSize = 50)]
+#endif
+#if DEBUG
+        [EnableQuery(PageSize = 5000)]
+#endif
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.OptOut, ISL.LDS.AdminApi.ReadOnly")]
 #endif

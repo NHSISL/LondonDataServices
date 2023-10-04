@@ -64,10 +64,15 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
+#if !DEBUG
+        [EnableQuery(PageSize = 50)]
+#endif
+#if DEBUG
+        [EnableQuery(PageSize = 5000)]
+#endif
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        [EnableQuery(PageSize = 50)]
         public ActionResult<IQueryable<Audit>> Get()
         {
             try

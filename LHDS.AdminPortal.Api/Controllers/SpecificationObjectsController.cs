@@ -11,6 +11,9 @@ using LHDS.Core.Services.Foundations.SpecificationObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
+#if RELEASE
+using Microsoft.AspNetCore.Authorization;
+#endif
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
@@ -39,13 +42,13 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return BadRequest(specificationObjectValidationException.InnerException);
             }
             catch (SpecificationObjectDependencyValidationException specificationObjectValidationException)
-                when (specificationObjectValidationException.InnerException 
+                when (specificationObjectValidationException.InnerException
                     is InvalidSpecificationObjectReferenceException)
             {
                 return FailedDependency(specificationObjectValidationException.InnerException);
             }
             catch (SpecificationObjectDependencyValidationException specificationObjectDependencyValidationException)
-                when (specificationObjectDependencyValidationException.InnerException 
+                when (specificationObjectDependencyValidationException.InnerException
                     is AlreadyExistsSpecificationObjectException)
             {
                 return Conflict(specificationObjectDependencyValidationException.InnerException);
@@ -61,7 +64,15 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
+#if !DEBUG
         [EnableQuery(PageSize = 50)]
+#endif
+#if DEBUG
+        [EnableQuery(PageSize = 5000)]
+#endif
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.SpecificationObjects, ISL.LDS.AdminApi.ReadOnly")]
+#endif
         public ActionResult<IQueryable<SpecificationObject>> Get()
         {
             try

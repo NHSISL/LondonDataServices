@@ -38,7 +38,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
                 .OnProperty(supplier => supplier.CreatedDate).Use(inputSupplier.CreatedDate)
                 .OnProperty(supplier => supplier.CreatedBy).Use(inputSupplier.CreatedBy)
                 .OnProperty(supplier => supplier.UpdatedDate).Use(now)
-                .OnProperty(supplier => supplier.IngestionTrackings).IgnoreIt();
+                .OnProperty(supplier => supplier.IngestionTrackings).IgnoreIt()
+                .OnProperty(supplier => supplier.DataSets).IgnoreIt();
 
             return filler.Create();
         }
@@ -80,7 +81,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
                 .OnProperty(supplier => supplier.CreatedBy).Use(userId)
                 .OnProperty(supplier => supplier.UpdatedDate).Use(now)
                 .OnProperty(supplier => supplier.UpdatedBy).Use(userId)
-                .OnProperty(supplier => supplier.IngestionTrackings).IgnoreIt();
+                .OnProperty(supplier => supplier.IngestionTrackings).IgnoreIt()
+                .OnProperty(supplier => supplier.DataSets).IgnoreIt();
 
             return filler;
         }

@@ -113,28 +113,52 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             return filler;
         }
 
-        private static IQueryable<DataSet> CreateRandomDataSets()
-        {
-            return CreateDataSetFiller()
-                .Create(count: GetRandomNumber())
-                    .AsQueryable();
-        }
+        private static DataSet CreateRandomDataSet(Guid supplierId) =>
+            CreateDataSetFiller(supplierId).Create();
 
-        private static DataSet CreateRandomDataSet() =>
-            CreateDataSetFiller().Create();
-
-        private static Filler<DataSet> CreateDataSetFiller()
+        private static Filler<DataSet> CreateDataSetFiller(Guid supplierId)
         {
-            string user = GetRandomString(255);
+            string user = Guid.NewGuid().ToString();
             var filler = new Filler<DataSet>();
             var now = DateTimeOffset.UtcNow;
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
-                .OnProperty(DataSet => DataSet.CreatedBy).Use(user)
-                .OnProperty(DataSet => DataSet.UpdatedBy).Use(user)
-                .OnProperty(DataSet => DataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()));
+                .OnProperty(dataSet => dataSet.SupplierId).Use(supplierId)
+                .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()));
+
+            return filler;
+        }
+
+        private async ValueTask<Supplier> PostRandomSupplierAsync()
+        {
+            Supplier randomSupplier = CreateRandomSupplier();
+            await this.apiBroker.PostSupplierAsync(randomSupplier);
+
+            return randomSupplier;
+        }
+
+        private static Supplier CreateRandomSupplier() =>
+            CreateRandomSupplierFiller().Create();
+
+        private static Filler<Supplier> CreateRandomSupplierFiller()
+        {
+            string userId = Guid.NewGuid().ToString();
+            DateTime now = DateTime.UtcNow;
+            var filler = new Filler<Supplier>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(supplier => supplier.CreatedDate).Use(now)
+                .OnProperty(supplier => supplier.CreatedBy).Use(userId)
+                .OnProperty(supplier => supplier.UpdatedDate).Use(now)
+                .OnProperty(supplier => supplier.UpdatedBy).Use(userId)
+                .OnProperty(supplier => supplier.IngestionTrackings).IgnoreIt()
+                .OnProperty(supplier => supplier.DataSets).IgnoreIt();
 
             return filler;
         }

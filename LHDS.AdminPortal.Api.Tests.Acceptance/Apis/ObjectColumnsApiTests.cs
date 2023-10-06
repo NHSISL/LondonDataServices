@@ -62,8 +62,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
         private async ValueTask<SpecificationObject> PostRandomSpecificationObject()
         {
             Supplier randomSupplier = await PostRandomSupplierAsync();
-            DataSet randomDataSet = CreateRandomDataSet(randomSupplier.Id);
-            await this.apiBroker.PostDataSetAsync(randomDataSet);
+            DataSet randomDataSet = await PostRandomDataSetAsync(randomSupplier.Id);
 
             DataSetSpecification randomDataSetSpecification =
                 CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
@@ -89,8 +88,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
 
         private async ValueTask CleanupTask(ObjectColumn objectColumn, bool isObjectColumnDeleted = false)
         {
-
-
             SpecificationObject retrievedSpecificationObject =
                 await this.apiBroker.GetSpecificationObjectByIdAsync(objectColumn.SpecificationObjectId);
 
@@ -188,6 +185,14 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.ObjectColumns
                 .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        private async ValueTask<DataSet> PostRandomDataSetAsync(Guid supplierId)
+        {
+            DataSet randomDataSet = CreateRandomDataSet(supplierId);
+            await this.apiBroker.PostDataSetAsync(randomDataSet);
+
+            return randomDataSet;
         }
 
         private static DataSet CreateRandomDataSet(Guid supplierId) =>

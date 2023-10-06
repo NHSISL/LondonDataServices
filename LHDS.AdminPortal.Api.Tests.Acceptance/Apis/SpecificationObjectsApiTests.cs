@@ -85,6 +85,14 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
             return filler;
         }
 
+        private async ValueTask<DataSetSpecification> PostRandomDataSetSpecificationAsync(Guid dataSetId)
+        {
+            DataSetSpecification randomDataSetSpecification = CreateRandomDataSetSpecification(dataSetId);
+            await this.apiBroker.PostDataSetSpecificationAsync(randomDataSetSpecification);
+
+            return randomDataSetSpecification;
+        }
+
         private static DataSetSpecification CreateRandomDataSetSpecification(Guid dataSetId) =>
             CreateDataSetSpecificationFiller(dataSetId).Create();
 
@@ -116,11 +124,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
             return filler;
         }
 
-        private static IQueryable<DataSet> CreateRandomDataSets(Guid supplierId)
+        private async ValueTask<DataSet> PostRandomDataSetAsync(Guid supplierId)
         {
-            return CreateDataSetFiller(supplierId)
-                .Create(count: GetRandomNumber())
-                    .AsQueryable();
+            DataSet randomDataSet = CreateRandomDataSet(supplierId);
+            await this.apiBroker.PostDataSetAsync(randomDataSet);
+
+            return randomDataSet;
         }
 
         private static DataSet CreateRandomDataSet(Guid supplierId) =>

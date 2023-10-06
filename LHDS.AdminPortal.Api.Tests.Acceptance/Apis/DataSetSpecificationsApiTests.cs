@@ -8,8 +8,6 @@ using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.PdsAudits;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using Tynamix.ObjectFiller;
 using Xunit;
@@ -48,13 +46,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
                 .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(dataSetSpecification => dataSetSpecification.Id).Use(inputDataSetSpecification.Id)
 
-                .OnProperty(dataSetSpecification => 
+                .OnProperty(dataSetSpecification =>
                     dataSetSpecification.DataSetId).Use(inputDataSetSpecification.DataSetId)
-                
-                .OnProperty(dataSetSpecification => 
+
+                .OnProperty(dataSetSpecification =>
                     dataSetSpecification.CreatedBy).Use(inputDataSetSpecification.CreatedBy)
 
-                .OnProperty(dataSetSpecification => 
+                .OnProperty(dataSetSpecification =>
                     dataSetSpecification.CreatedDate).Use(inputDataSetSpecification.CreatedDate)
 
                 .OnProperty(dataSetSpecification =>
@@ -63,10 +61,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
                 .OnProperty(dataSetSpecification =>
                     dataSetSpecification.SupplierSpecificationVersion).Use(GetRandomString(10))
 
-                .OnProperty(dataSetSpecification => 
+                .OnProperty(dataSetSpecification =>
                     dataSetSpecification.PresededById).Use(inputDataSetSpecification.PresededById)
 
-                .OnProperty(dataSetSpecification => 
+                .OnProperty(dataSetSpecification =>
                     dataSetSpecification.SupersededById).Use(inputDataSetSpecification.SupersededById)
 
                 .OnProperty(DataSet => DataSet.UpdatedDate).Use(now)

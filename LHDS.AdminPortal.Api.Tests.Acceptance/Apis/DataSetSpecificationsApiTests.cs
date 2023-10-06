@@ -113,6 +113,14 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             return filler;
         }
 
+        private async ValueTask<DataSet> PostRandomDataSetAsync(Guid supplierId)
+        {
+            DataSet randomDataSet = CreateRandomDataSet(supplierId);
+            await this.apiBroker.PostDataSetAsync(randomDataSet);
+
+            return randomDataSet;
+        }
+
         private static DataSet CreateRandomDataSet(Guid supplierId) =>
             CreateDataSetFiller(supplierId).Create();
 

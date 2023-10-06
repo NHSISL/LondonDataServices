@@ -3,9 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -25,8 +22,5 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers
 
         [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTimeOffset UpdatedDate { get; set; }
-
-        public List<IngestionTracking> IngestionTrackings { get; set; } = new List<IngestionTracking>();
-        public List<DataSet> DataSets { get; set; } = new List<DataSet>();
     }
 }

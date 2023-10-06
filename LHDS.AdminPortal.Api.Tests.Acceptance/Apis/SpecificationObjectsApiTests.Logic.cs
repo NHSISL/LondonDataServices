@@ -22,13 +22,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
         {
             // Given
             Supplier randomSupplier = await PostRandomSupplierAsync();
-            DataSet randomDataSet = CreateRandomDataSet(randomSupplier.Id);
-            await this.apiBroker.PostDataSetAsync(randomDataSet);
+            DataSet randomDataSet = await PostRandomDataSetAsync(randomSupplier.Id);
 
-            DataSetSpecification randomDataSetSpecification =
-                CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
-
-            await this.apiBroker.PostDataSetSpecificationAsync(randomDataSetSpecification);
+            DataSetSpecification randomDataSetSpecification = 
+                await PostRandomDataSetSpecificationAsync(randomSupplier.Id);
 
             SpecificationObject randomSpecificationObject =
                 CreateRandomSpecificationObject(dataSetSpecificationId: randomDataSetSpecification.Id);
@@ -55,13 +52,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
         {
             // given
             Supplier randomSupplier = await PostRandomSupplierAsync();
-            DataSet randomDataSet = CreateRandomDataSet(randomSupplier.Id);
-            await this.apiBroker.PostDataSetAsync(randomDataSet);
+            DataSet randomDataSet = await PostRandomDataSetAsync(randomSupplier.Id);
 
             DataSetSpecification randomDataSetSpecification =
-                CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
-
-            await this.apiBroker.PostDataSetSpecificationAsync(randomDataSetSpecification);
+                await PostRandomDataSetSpecificationAsync(randomSupplier.Id);
 
             SpecificationObject randomSpecificationObject =
                 CreateRandomSpecificationObject(dataSetSpecificationId: randomDataSetSpecification.Id);
@@ -92,13 +86,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
         {
             // Given
             Supplier randomSupplier = await PostRandomSupplierAsync();
-            DataSet randomDataSet = CreateRandomDataSet(randomSupplier.Id);
-            await this.apiBroker.PostDataSetAsync(randomDataSet);
+            DataSet randomDataSet = await PostRandomDataSetAsync(randomSupplier.Id);
 
             DataSetSpecification randomDataSetSpecification =
-                CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
-
-            await this.apiBroker.PostDataSetSpecificationAsync(randomDataSetSpecification);
+                await PostRandomDataSetSpecificationAsync(randomSupplier.Id);
 
             IQueryable<SpecificationObject> randomSpecificationObjects =
                 CreateRandomSpecificationObjects(dataSetSpecificationId: randomDataSetSpecification.Id);
@@ -135,13 +126,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
         {
             // Given
             Supplier randomSupplier = await PostRandomSupplierAsync();
-            DataSet randomDataSet = CreateRandomDataSet(randomSupplier.Id);
-            await this.apiBroker.PostDataSetAsync(randomDataSet);
+            DataSet randomDataSet = await PostRandomDataSetAsync(randomSupplier.Id);
 
             DataSetSpecification randomDataSetSpecification =
-                CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
-
-            await this.apiBroker.PostDataSetSpecificationAsync(randomDataSetSpecification);
+                await PostRandomDataSetSpecificationAsync(randomSupplier.Id);
 
             SpecificationObject randomSpecificationObject =
                 CreateRandomSpecificationObject(dataSetSpecificationId: randomDataSetSpecification.Id);
@@ -169,13 +157,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
         {
             // Given
             Supplier randomSupplier = await PostRandomSupplierAsync();
-            DataSet randomDataSet = CreateRandomDataSet(randomSupplier.Id);
-            await this.apiBroker.PostDataSetAsync(randomDataSet);
+            DataSet randomDataSet = await PostRandomDataSetAsync(randomSupplier.Id);
 
             DataSetSpecification randomDataSetSpecification =
-                CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
-
-            await this.apiBroker.PostDataSetSpecificationAsync(randomDataSetSpecification);
+                await PostRandomDataSetSpecificationAsync(randomSupplier.Id);
 
             SpecificationObject randomSpecificationObject =
                 CreateRandomSpecificationObject(dataSetSpecificationId: randomDataSetSpecification.Id);

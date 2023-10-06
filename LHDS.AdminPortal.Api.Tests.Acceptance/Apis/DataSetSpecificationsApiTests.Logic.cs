@@ -21,8 +21,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
         {
             // Given
             Supplier randomSupplier = await PostRandomSupplierAsync();
-            DataSet randomDataSet = CreateRandomDataSet(randomSupplier.Id);
-            await this.apiBroker.PostDataSetAsync(randomDataSet);
+            DataSet randomDataSet = await PostRandomDataSetAsync(randomSupplier.Id);
 
             DataSetSpecification randomDataSetSpecification
                 = CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
@@ -48,8 +47,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
         {
             // Given
             Supplier randomSupplier = await PostRandomSupplierAsync();
-            DataSet randomDataSet = CreateRandomDataSet(randomSupplier.Id);
-            await this.apiBroker.PostDataSetAsync(randomDataSet);
+            DataSet randomDataSet = await PostRandomDataSetAsync(randomSupplier.Id);
 
             IQueryable<DataSetSpecification> randomDataSetSpecifications =
                 CreateRandomDataSetSpecifications(dataSetId: randomDataSet.Id);
@@ -85,8 +83,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
         {
             // Given
             Supplier randomSupplier = await PostRandomSupplierAsync();
-            DataSet randomDataSet = CreateRandomDataSet(randomSupplier.Id);
-            await this.apiBroker.PostDataSetAsync(randomDataSet);
+            DataSet randomDataSet = await PostRandomDataSetAsync(randomSupplier.Id);
 
             DataSetSpecification randomDataSetSpecification =
                 CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
@@ -112,8 +109,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
         {
             // Given
             Supplier randomSupplier = await PostRandomSupplierAsync();
-            DataSet randomDataSet = CreateRandomDataSet(randomSupplier.Id);
-            await this.apiBroker.PostDataSetAsync(randomDataSet);
+            DataSet randomDataSet = await PostRandomDataSetAsync(randomSupplier.Id);
 
             DataSetSpecification randomDataSetSpecification
                = CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
@@ -144,8 +140,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
         {
             // given
             Supplier randomSupplier = await PostRandomSupplierAsync();
-            DataSet randomDataSet = CreateRandomDataSet(randomSupplier.Id);
-            await this.apiBroker.PostDataSetAsync(randomDataSet);
+            DataSet randomDataSet = await PostRandomDataSetAsync(randomSupplier.Id);
 
             DataSetSpecification randomDataSetSpecification =
                 CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);

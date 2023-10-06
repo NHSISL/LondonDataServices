@@ -37,9 +37,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
                 .OnType<DateTimeOffset>().Use(GetRandomDateTime())
                 .OnProperty(supplier => supplier.CreatedDate).Use(inputSupplier.CreatedDate)
                 .OnProperty(supplier => supplier.CreatedBy).Use(inputSupplier.CreatedBy)
-                .OnProperty(supplier => supplier.UpdatedDate).Use(now)
-                .OnProperty(supplier => supplier.IngestionTrackings).IgnoreIt()
-                .OnProperty(supplier => supplier.DataSets).IgnoreIt();
+                .OnProperty(supplier => supplier.UpdatedDate).Use(now);
 
             return filler.Create();
         }
@@ -80,9 +78,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
                 .OnProperty(supplier => supplier.CreatedDate).Use(now)
                 .OnProperty(supplier => supplier.CreatedBy).Use(userId)
                 .OnProperty(supplier => supplier.UpdatedDate).Use(now)
-                .OnProperty(supplier => supplier.UpdatedBy).Use(userId)
-                .OnProperty(supplier => supplier.IngestionTrackings).IgnoreIt()
-                .OnProperty(supplier => supplier.DataSets).IgnoreIt();
+                .OnProperty(supplier => supplier.UpdatedBy).Use(userId);
 
             return filler;
         }

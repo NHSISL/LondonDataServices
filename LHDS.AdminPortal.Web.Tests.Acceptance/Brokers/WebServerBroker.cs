@@ -24,7 +24,6 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
         private readonly IHost frontendHost;
         private IPlaywright playwright { get; set; }
         public IBrowser browser { get; private set; }
-        private IPage page;
         private Process reactAppProcess;
         public string ApiBaseUrl { get; } = $"https://localhost:{GetRandomUnusedPort()}";
         public string FrontendBaseUrl { get; } = $"https://localhost:{GetRandomUnusedPort()}";
@@ -62,7 +61,6 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
         public async Task InitializeAsync()
         {
             Task reactAppTask = StartReactAppAsync();
-
             // Sleep for a moment to ensure the React app is started
             Thread.Sleep(10000);
 
@@ -84,7 +82,7 @@ namespace LHDS.AdminPortal.Web.Tests.Acceptance.Brokers
             solutionDirectory = Path.GetFullPath(solutionDirectory);
             string clientAppPath = Path.Combine(solutionDirectory, "LHDS.AdminPortal.Web", "ClientApp");
 
-            using (var reactAppProcess = new Process())
+            using (reactAppProcess = new Process())
             {
                 reactAppProcess.StartInfo = new ProcessStartInfo
                 {

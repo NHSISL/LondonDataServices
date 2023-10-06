@@ -24,8 +24,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
             Supplier randomSupplier = await PostRandomSupplierAsync();
             DataSet randomDataSet = await PostRandomDataSetAsync(randomSupplier.Id);
 
-            DataSetSpecification randomDataSetSpecification = 
-                await PostRandomDataSetSpecificationAsync(randomSupplier.Id);
+            DataSetSpecification randomDataSetSpecification =
+                await PostRandomDataSetSpecificationAsync(randomDataSet.Id);
 
             SpecificationObject randomSpecificationObject =
                 CreateRandomSpecificationObject(dataSetSpecificationId: randomDataSetSpecification.Id);
@@ -55,7 +55,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
             DataSet randomDataSet = await PostRandomDataSetAsync(randomSupplier.Id);
 
             DataSetSpecification randomDataSetSpecification =
-                await PostRandomDataSetSpecificationAsync(randomSupplier.Id);
+                await PostRandomDataSetSpecificationAsync(randomDataSet.Id);
 
             SpecificationObject randomSpecificationObject =
                 CreateRandomSpecificationObject(dataSetSpecificationId: randomDataSetSpecification.Id);
@@ -89,7 +89,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
             DataSet randomDataSet = await PostRandomDataSetAsync(randomSupplier.Id);
 
             DataSetSpecification randomDataSetSpecification =
-                await PostRandomDataSetSpecificationAsync(randomSupplier.Id);
+                await PostRandomDataSetSpecificationAsync(randomDataSet.Id);
 
             IQueryable<SpecificationObject> randomSpecificationObjects =
                 CreateRandomSpecificationObjects(dataSetSpecificationId: randomDataSetSpecification.Id);
@@ -129,7 +129,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
             DataSet randomDataSet = await PostRandomDataSetAsync(randomSupplier.Id);
 
             DataSetSpecification randomDataSetSpecification =
-                await PostRandomDataSetSpecificationAsync(randomSupplier.Id);
+                await PostRandomDataSetSpecificationAsync(randomDataSet.Id);
 
             SpecificationObject randomSpecificationObject =
                 CreateRandomSpecificationObject(dataSetSpecificationId: randomDataSetSpecification.Id);
@@ -160,7 +160,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
             DataSet randomDataSet = await PostRandomDataSetAsync(randomSupplier.Id);
 
             DataSetSpecification randomDataSetSpecification =
-                await PostRandomDataSetSpecificationAsync(randomSupplier.Id);
+                await PostRandomDataSetSpecificationAsync(randomDataSet.Id);
 
             SpecificationObject randomSpecificationObject =
                 CreateRandomSpecificationObject(dataSetSpecificationId: randomDataSetSpecification.Id);

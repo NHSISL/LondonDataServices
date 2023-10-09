@@ -20,8 +20,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
         public async Task ShouldGetAllSuppliersThroughOdataAsync()
         {
             //Given
-            ApiSupplier dummySupplier = new ApiSupplier();
-            var x = await this.apiBroker.PostSupplierAsync(dummySupplier);
             List<ApiSupplier> randomSuppliers = await PostRandomSuppliersAsync();
             List<ApiSupplier> expectedSuppliers = randomSuppliers;
 
@@ -50,7 +48,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
 
             //When
             List<CoreSupplier> actualSuppliers =
-                await this.apiBroker.GetAllItemsAsync<CoreSupplier>("odata/suppliers/?$orderby=createddate desc");
+                await this.apiBroker.GetAllItemsAsync<CoreSupplier>("odata/suppliers?$orderby=createddate desc");
 
             //Then
             for (int i = 1; i < actualSuppliers.Count; i++)

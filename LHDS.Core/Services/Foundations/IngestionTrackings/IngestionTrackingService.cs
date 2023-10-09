@@ -72,8 +72,11 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 IngestionTracking maybeIngestionTracking =
                     await this.storageBroker.SelectIngestionTrackingByIdAsync(ingestionTracking.Id);
 
-                ValidateStorageIngestionTracking(maybeIngestionTracking, ingestionTracking.Id);
-                ValidateAgainstStorageIngestionTrackingOnModify(inputIngestionTracking: ingestionTracking, storageIngestionTracking: maybeIngestionTracking);
+                ValidateStorageIngestionTracking(maybeIngestionTracking, ingestionTrackingId: ingestionTracking.Id);
+
+                ValidateAgainstStorageIngestionTrackingOnModify(
+                    inputIngestionTracking: ingestionTracking,
+                    storageIngestionTracking: maybeIngestionTracking);
 
                 return await this.storageBroker.UpdateIngestionTrackingAsync(ingestionTracking);
             });
@@ -83,7 +86,7 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
             {
                 return await WithRetry(async () =>
                 {
-                    ValidateIngestionTrackingId(ingestionTrackingId);
+                    ValidateIngestionTrackingId(ingestionTrackingId: ingestionTrackingId);
 
                     IngestionTracking maybeIngestionTracking = await this.storageBroker
                         .SelectIngestionTrackingByIdAsync(ingestionTrackingId);

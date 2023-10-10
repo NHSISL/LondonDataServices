@@ -10,16 +10,16 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Orchestrations.Downloads;
-using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
+using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using Moq;
@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         private readonly Mock<IDocumentService> documentServiceMock;
         private readonly Mock<IDownloadService> downloadServiceMock;
         private readonly Mock<IIngestionTrackingService> ingestionTrackingServiceMock;
-        private readonly Mock<IAuditService> auditServiceMock;
+        private readonly Mock<IIngestionTrackingAuditService> auditServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
@@ -50,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             documentServiceMock = new Mock<IDocumentService>();
             downloadServiceMock = new Mock<IDownloadService>();
             ingestionTrackingServiceMock = new Mock<IIngestionTrackingService>();
-            auditServiceMock = new Mock<IAuditService>();
+            auditServiceMock = new Mock<IIngestionTrackingAuditService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             identifierBrokerMock = new Mock<IIdentifierBroker>();
@@ -172,11 +172,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     message: "Ingestion tracking dependency validation occurred, please try again.",
                     innerException),
 
-                new AuditValidationException(
+                new IngestionTrackingAuditValidationException(
                     message: "Audit validation errors occurred, please try again.",
                     innerException),
 
-                new AuditDependencyValidationException(
+                new IngestionTrackingAuditDependencyValidationException(
                     message: "Audit dependency validation occurred, please try again.",
                     innerException)
             };
@@ -214,11 +214,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     message: "Ingestion tracking service error occurred, contact support.",
                     innerException),
 
-                new AuditDependencyException(
+                new IngestionTrackingAuditDependencyException(
                     message: "Audit dependency error occurred, contact support.",
                     innerException),
 
-                new AuditServiceException(
+                new IngestionTrackingAuditServiceException(
                     message: "Audit service error occurred, contact support.",
                     innerException)
             };

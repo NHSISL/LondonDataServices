@@ -5,7 +5,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using Moq;
 using Xunit;
 
@@ -17,16 +17,16 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
         public async Task ShouldRetrieveIngestionTrackingByIdAsync()
         {
             // Given
-            Audit randomIngestionTrackingAudit = CreateRandomIngestionTrackingAudit();
-            Audit storageIngestionTrackingAudit = randomIngestionTrackingAudit;
-            Audit expectedIngestionTrackingAudit = storageIngestionTrackingAudit.DeepClone();
+            IngestionTrackingAudit randomIngestionTrackingAudit = CreateRandomIngestionTrackingAudit();
+            IngestionTrackingAudit storageIngestionTrackingAudit = randomIngestionTrackingAudit;
+            IngestionTrackingAudit expectedIngestionTrackingAudit = storageIngestionTrackingAudit.DeepClone();
 
             this.ingestionTrackingAuditServiceMock.Setup(service =>
-                service.RetrieveAuditByIdAsync(randomIngestionTrackingAudit.Id))
+                service.RetrieveIngestionTrackingAuditByIdAsync(randomIngestionTrackingAudit.Id))
                     .ReturnsAsync(storageIngestionTrackingAudit);
 
             // When
-            Audit actualIngestionTrackingAudit =
+            IngestionTrackingAudit actualIngestionTrackingAudit =
                 await this.ingestionTrackingAuditProcessingService
                     .RetrieveIngestionTrackingAuditByIdAsync(randomIngestionTrackingAudit.Id);
 
@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
             actualIngestionTrackingAudit.Should().BeEquivalentTo(expectedIngestionTrackingAudit);
 
             this.ingestionTrackingAuditServiceMock.Verify(service =>
-                service.RetrieveAuditByIdAsync(randomIngestionTrackingAudit.Id),
+                service.RetrieveIngestionTrackingAuditByIdAsync(randomIngestionTrackingAudit.Id),
                     Times.Once);
 
             this.ingestionTrackingAuditServiceMock.VerifyNoOtherCalls();

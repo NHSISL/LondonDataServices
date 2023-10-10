@@ -7,15 +7,15 @@ using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using LHDS.Core.Models.Foundations.Decryptions.Exceptions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
-using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Decryptions;
 using LHDS.Core.Services.Foundations.Documents;
+using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Orchestrations.Decryptions;
 using Moq;
@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
         private readonly Mock<IDocumentService> documentServiceMock;
         private readonly Mock<IDecryptionService> decryptionServiceMock;
         private readonly Mock<IIngestionTrackingService> ingestionTrackingServiceMock;
-        private readonly Mock<IAuditService> auditServiceMock;
+        private readonly Mock<IIngestionTrackingAuditService> auditServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly IDecryptionOrchestrationService decryptionOrchestrationService;
@@ -41,7 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             documentServiceMock = new Mock<IDocumentService>();
             decryptionServiceMock = new Mock<IDecryptionService>();
             ingestionTrackingServiceMock = new Mock<IIngestionTrackingService>();
-            auditServiceMock = new Mock<IAuditService>();
+            auditServiceMock = new Mock<IIngestionTrackingAuditService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.compareLogic = new CompareLogic();
@@ -129,11 +129,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     message: "Ingestion tracking dependency validation occurred, please try again.",
                     innerException),
 
-                new AuditValidationException(
+                new IngestionTrackingAuditValidationException(
                     message: "Audit validation errors occurred, please try again.",
                     innerException),
 
-                new AuditDependencyValidationException(
+                new IngestionTrackingAuditDependencyValidationException(
                     message: "Audit dependency validation occurred, please try again.",
                     innerException)
             };
@@ -162,7 +162,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 new DecryptionServiceException(
                     message: "Decryption service error occurred, contact support.",
                     innerException),
-                
+
                 new IngestionTrackingDependencyException(
                     message: "Failed ingestion tracking storage error occurred, contact support.",
                     innerException),
@@ -171,11 +171,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     message: "Ingestion tracking service error occurred, contact support.",
                     innerException),
 
-                new AuditDependencyException(
+                new IngestionTrackingAuditDependencyException(
                     message: "Audit dependency error occurred, contact support.",
                     innerException),
 
-                new AuditServiceException(
+                new IngestionTrackingAuditServiceException(
                     message: "Audit service error occurred, contact support.",
                     innerException)
             };

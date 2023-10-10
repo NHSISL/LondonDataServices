@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.Core.Brokers.Storages.Sql
@@ -12,36 +12,36 @@ namespace LHDS.Core.Brokers.Storages.Sql
         private static void AddIngestionTrackingAuditConfigurations(ModelBuilder modelBuilder)
         {
             // Ingestion
-            modelBuilder.Entity<Audit>()
+            modelBuilder.Entity<IngestionTrackingAudit>()
                 .ToTable("IngestionTrackingAudits", "Ingestion");
 
-            modelBuilder.Entity<Audit>()
-                .Property(audit => audit.CreatedBy)
+            modelBuilder.Entity<IngestionTrackingAudit>()
+                .Property(ingestionTrackingAudit => ingestionTrackingAudit.CreatedBy)
                 .HasMaxLength(255)
                 .IsRequired();
 
-            modelBuilder.Entity<Audit>()
-                .Property(audit => audit.CreatedDate)
+            modelBuilder.Entity<IngestionTrackingAudit>()
+                .Property(ingestionTrackingAudit => ingestionTrackingAudit.CreatedDate)
                 .IsRequired();
 
-            modelBuilder.Entity<Audit>()
-                .Property(audit => audit.UpdatedBy)
+            modelBuilder.Entity<IngestionTrackingAudit>()
+                .Property(ingestionTrackingAudit => ingestionTrackingAudit.UpdatedBy)
                 .HasMaxLength(255)
                 .IsRequired();
 
-            modelBuilder.Entity<Audit>()
-                .Property(audit => audit.UpdatedDate)
+            modelBuilder.Entity<IngestionTrackingAudit>()
+                .Property(ingestionTrackingAudit => ingestionTrackingAudit.UpdatedDate)
                 .IsRequired();
 
-            modelBuilder.Entity<Audit>()
-                .Property(audit => audit.IngestionTrackingId)
+            modelBuilder.Entity<IngestionTrackingAudit>()
+                .Property(ingestionTrackingAudit => ingestionTrackingAudit.IngestionTrackingId)
                 .HasMaxLength(450)
                 .IsRequired();
 
-            modelBuilder.Entity<Audit>()
-                .HasOne(audit => audit.IngestionTracking)
-                .WithMany(ingestionTracking => ingestionTracking.Audits)
-                .HasForeignKey(audit => audit.IngestionTrackingId)
+            modelBuilder.Entity<IngestionTrackingAudit>()
+                .HasOne(ingestionTrackingAudit => ingestionTrackingAudit.IngestionTracking)
+                .WithMany(ingestionTracking => ingestionTracking.IngestionTrackingAudits)
+                .HasForeignKey(ingestionTrackingAudit => ingestionTrackingAudit.IngestionTrackingId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
     }

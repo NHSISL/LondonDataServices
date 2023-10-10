@@ -66,12 +66,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
                 ingestionTracking.Should().NotBeNull();
 
-                var audits = this.auditService.RetrieveAllAudits()
+                var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
                     .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
 
                 foreach(var audit in audits)
                 {
-                    await this.auditService.RemoveAuditByIdAsync(audit.Id);
+                    await this.auditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
                 }
 
                 await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
@@ -127,12 +127,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
             foreach (var tracking in ingestionTrackings)
             {
-                var audits = this.auditService.RetrieveAllAudits()
+                var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
                     .Where(audit => audit.IngestionTrackingId == tracking.Id);
 
                 foreach (var audit in audits)
                 {
-                    await this.auditService.RemoveAuditByIdAsync(audit.Id);
+                    await this.auditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
                 }
 
                 await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(tracking.Id);

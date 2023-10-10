@@ -3,10 +3,10 @@
 // ---------------------------------------------------------------
 
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
-using LHDS.Core.Services.Foundations.Audits;
+using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
 using Tynamix.ObjectFiller;
@@ -17,13 +17,13 @@ namespace LHDS.Core.SeedGenerator.Services
     {
         private readonly ISupplierService supplierService;
         private readonly IIngestionTrackingService ingestionTrackingService;
-        private readonly IAuditService auditService;
+        private readonly IIngestionTrackingAuditService auditService;
         private readonly ILoggingBroker loggingBroker;
 
         public Generate(
             ISupplierService supplierService,
             IIngestionTrackingService ingestionTrackingService,
-            IAuditService auditService,
+            IIngestionTrackingAuditService auditService,
             ILoggingBroker loggingBroker)
         {
             this.supplierService = supplierService;
@@ -54,13 +54,13 @@ namespace LHDS.Core.SeedGenerator.Services
         {
             try
             {
-                List<Audit> auditRecords = GenerateAuditRecords(auditCount, ingestionTrackingRecords);
+                List<IngestionTrackingAudit> auditRecords = GenerateAuditRecords(auditCount, ingestionTrackingRecords);
 
-                foreach (Audit audit in auditRecords)
+                foreach (IngestionTrackingAudit audit in auditRecords)
                 {
                     try
                     {
-                        var result = await this.auditService.AddAuditAsync(audit);
+                        var result = await this.auditService.AddIngestionTrackingAuditAsync(audit);
                     }
                     catch (Exception ex)
                     {
@@ -148,7 +148,7 @@ namespace LHDS.Core.SeedGenerator.Services
             return CreateRandomIngestionTrackingRecords(recordCount, suppliers);
         }
 
-        private List<Audit> GenerateAuditRecords(int auditCount, List<IngestionTracking> ingestionTrackingRecords)
+        private List<IngestionTrackingAudit> GenerateAuditRecords(int auditCount, List<IngestionTracking> ingestionTrackingRecords)
         {
             return CreateRandomAuditRecords(auditCount, ingestionTrackingRecords);
         }

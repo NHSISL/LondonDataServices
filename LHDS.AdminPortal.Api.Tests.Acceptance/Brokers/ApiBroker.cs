@@ -22,7 +22,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         private readonly WebApplicationFactory<Startup> webApplicationFactory;
         private readonly HttpClient httpClient;
         private readonly IRESTFulApiFactoryClient apiFactoryClient;
-        internal IAuditService auditService;
+        internal IIngestionTrackingAuditService auditService;
         internal IDocumentService documentService;
         internal IIngestionTrackingService ingestionTrackingService;
         internal IDownloadService downloadService;
@@ -33,7 +33,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         public ApiBroker()
         {
             this.webApplicationFactory = new WebApplicationFactory<Startup>();
-            this.auditService = (AuditService)webApplicationFactory.Services.GetService<IAuditService>();
+            this.auditService = (IngestionTrackingAuditService)webApplicationFactory.Services.GetService<IIngestionTrackingAuditService>();
             this.documentService = (DocumentService)webApplicationFactory.Services.GetService<IDocumentService>();
             this.downloadService = (DownloadService)webApplicationFactory.Services.GetService<IDownloadService>();
 

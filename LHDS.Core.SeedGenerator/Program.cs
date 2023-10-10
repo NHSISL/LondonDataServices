@@ -50,7 +50,7 @@ namespace LHDS.Core.SeedGenerator
                 .AddTransient<IStorageBroker, StorageBroker>()
                 .AddTransient<IDateTimeBroker, DateTimeBroker>()
                 .AddTransient<ILoggingBroker, LoggingBroker>()
-                .AddTransient<IAuditService, AuditService>()
+                .AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>()
                 .AddTransient<IIngestionTrackingService, IngestionTrackingService>()
                 .AddTransient<ISupplierService, SupplierService>()
                 .AddTransient<IGenerate, Generate>()

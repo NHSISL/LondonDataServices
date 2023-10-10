@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Integration.Landings
         private readonly LandingConfiguration landingConfiguration;
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly ISupplierService supplierService;
-        private readonly IAuditService auditService;
+        private readonly IIngestionTrackingAuditService auditService;
 
         public LandingTests(ITestOutputHelper output)
         {
@@ -61,7 +61,7 @@ namespace LHDS.Core.Tests.Integration.Landings
             loggingBroker = serviceProvider.GetService<ILoggingBroker>();
             blobStorageBroker = serviceProvider.GetService<IBlobStorageBroker>();
             ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
-            auditService = serviceProvider.GetService<IAuditService>();
+            auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
             supplierService = serviceProvider.GetService<ISupplierService>();
             landingClient = serviceProvider.GetService<ILandingClient>();
         }

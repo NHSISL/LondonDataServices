@@ -4,7 +4,7 @@
 
 using System.Linq;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using Moq;
 using Xunit;
 
@@ -16,23 +16,23 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
         public void ShouldRetrieveAllIngestionTrackings()
         {
             // given
-            IQueryable<Audit> randomIngestionTrackings = CreateRandomIngestionTrackingAudits();
-            IQueryable<Audit> storageIngestionTrackings = randomIngestionTrackings;
-            IQueryable<Audit> expectedIngestionTrackings = storageIngestionTrackings;
+            IQueryable<IngestionTrackingAudit> randomIngestionTrackings = CreateRandomIngestionTrackingAudits();
+            IQueryable<IngestionTrackingAudit> storageIngestionTrackings = randomIngestionTrackings;
+            IQueryable<IngestionTrackingAudit> expectedIngestionTrackings = storageIngestionTrackings;
 
             this.ingestionTrackingAuditServiceMock.Setup(broker =>
-                broker.RetrieveAllAudits())
+                broker.RetrieveAllIngestionTrackingAudits())
                     .Returns(storageIngestionTrackings);
 
             // when
-            IQueryable<Audit> actualIngestionTrackingAudits =
+            IQueryable<IngestionTrackingAudit> actualIngestionTrackingAudits =
                 this.ingestionTrackingAuditProcessingService.RetrieveAllIngestionTrackingAudits();
 
             // then
             actualIngestionTrackingAudits.Should().BeEquivalentTo(expectedIngestionTrackings);
 
             this.ingestionTrackingAuditServiceMock.Verify(broker =>
-                broker.RetrieveAllAudits(),
+                broker.RetrieveAllIngestionTrackingAudits(),
                     Times.Once);
 
             this.ingestionTrackingAuditServiceMock.VerifyNoOtherCalls();

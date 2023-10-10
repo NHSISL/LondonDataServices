@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
         private readonly IDecryptionClient decryptionClient;
         private readonly LandingConfiguration landingConfiguration;
         private readonly ICryptographyProvider cryptographyProvider;
-        private readonly IAuditService auditService;
+        private readonly IIngestionTrackingAuditService auditService;
 
         public DecryptionTests(DependencyBroker dependencyBroker)
         {
@@ -57,7 +57,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Decryptions
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
-            this.auditService = serviceProvider.GetService<IAuditService>();
+            this.auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             this.landingConfiguration = serviceProvider.GetRequiredService<LandingConfiguration>();
             this.cryptographyProvider = serviceProvider.GetRequiredService<ICryptographyProvider>();

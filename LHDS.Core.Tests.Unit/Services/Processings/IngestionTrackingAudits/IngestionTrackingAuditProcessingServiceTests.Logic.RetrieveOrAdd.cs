@@ -5,7 +5,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using Moq;
 using Xunit;
 
@@ -17,28 +17,28 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
         public async Task ShouldRetrieveIngestionTrackingIfOneExistsAndNotAddAsync()
         {
             // Given
-            Audit randomIngestionTrackingAudit = CreateRandomIngestionTrackingAudit();
-            Audit inputIngestionTrackingAudit = randomIngestionTrackingAudit;
-            Audit storageIngestionTrackingAudit = inputIngestionTrackingAudit;
-            Audit expectedIngestionTrackingAudit = storageIngestionTrackingAudit.DeepClone();
+            IngestionTrackingAudit randomIngestionTrackingAudit = CreateRandomIngestionTrackingAudit();
+            IngestionTrackingAudit inputIngestionTrackingAudit = randomIngestionTrackingAudit;
+            IngestionTrackingAudit storageIngestionTrackingAudit = inputIngestionTrackingAudit;
+            IngestionTrackingAudit expectedIngestionTrackingAudit = storageIngestionTrackingAudit.DeepClone();
 
             this.ingestionTrackingAuditServiceMock.Setup(service =>
-                service.RetrieveAuditByIdAsync(inputIngestionTrackingAudit.Id))
+                service.RetrieveIngestionTrackingAuditByIdAsync(inputIngestionTrackingAudit.Id))
                     .ReturnsAsync(value: storageIngestionTrackingAudit);
 
             // When
-            Audit actualIngestionTrackingAudit = await this.ingestionTrackingAuditProcessingService
+            IngestionTrackingAudit actualIngestionTrackingAudit = await this.ingestionTrackingAuditProcessingService
                 .RetrieveOrAddIngestionTrackingAuditAsync(inputIngestionTrackingAudit);
 
             // Then
             actualIngestionTrackingAudit.Should().BeEquivalentTo(expectedIngestionTrackingAudit);
 
             this.ingestionTrackingAuditServiceMock.Verify(service =>
-                service.RetrieveAuditByIdAsync(inputIngestionTrackingAudit.Id),
+                service.RetrieveIngestionTrackingAuditByIdAsync(inputIngestionTrackingAudit.Id),
                     Times.Once);
 
             this.ingestionTrackingAuditServiceMock.Verify(service =>
-                service.AddAuditAsync(inputIngestionTrackingAudit),
+                service.AddIngestionTrackingAuditAsync(inputIngestionTrackingAudit),
                     Times.Never);
 
             this.ingestionTrackingAuditServiceMock.VerifyNoOtherCalls();
@@ -49,17 +49,17 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
         public async Task ShouldAddIngestionTrackingIfOneDoesNotExistAsync()
         {
             // Given
-            Audit randomIngestionTrackingAudit = CreateRandomIngestionTrackingAudit();
-            Audit inputIngestionTrackingAudit = randomIngestionTrackingAudit;
-            Audit storageIngestionTrackingAudit = inputIngestionTrackingAudit;
-            Audit expectedIngestionTrackingAudit = storageIngestionTrackingAudit.DeepClone();
+            IngestionTrackingAudit randomIngestionTrackingAudit = CreateRandomIngestionTrackingAudit();
+            IngestionTrackingAudit inputIngestionTrackingAudit = randomIngestionTrackingAudit;
+            IngestionTrackingAudit storageIngestionTrackingAudit = inputIngestionTrackingAudit;
+            IngestionTrackingAudit expectedIngestionTrackingAudit = storageIngestionTrackingAudit.DeepClone();
 
             this.ingestionTrackingAuditServiceMock.Setup(service =>
-                service.RetrieveAuditByIdAsync(inputIngestionTrackingAudit.Id))
+                service.RetrieveIngestionTrackingAuditByIdAsync(inputIngestionTrackingAudit.Id))
                     .ReturnsAsync(value: null);
 
             this.ingestionTrackingAuditServiceMock.Setup(service =>
-                service.AddAuditAsync(inputIngestionTrackingAudit))
+                service.AddIngestionTrackingAuditAsync(inputIngestionTrackingAudit))
                     .ReturnsAsync(storageIngestionTrackingAudit);
 
             // When
@@ -67,11 +67,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
 
             // Then
             this.ingestionTrackingAuditServiceMock.Verify(service =>
-                service.RetrieveAuditByIdAsync(inputIngestionTrackingAudit.Id),
+                service.RetrieveIngestionTrackingAuditByIdAsync(inputIngestionTrackingAudit.Id),
                     Times.Once);
 
             this.ingestionTrackingAuditServiceMock.Verify(service =>
-                service.AddAuditAsync(inputIngestionTrackingAudit),
+                service.AddIngestionTrackingAuditAsync(inputIngestionTrackingAudit),
                     Times.Once);
 
             this.ingestionTrackingAuditServiceMock.VerifyNoOtherCalls();

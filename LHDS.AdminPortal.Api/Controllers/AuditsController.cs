@@ -5,8 +5,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Audits;
-using LHDS.Core.Models.Foundations.Audits.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Services.Foundations.Audits;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -21,43 +21,43 @@ namespace LHDS.AdminPortal.Api.Controllers
     [Route("api/[controller]")]
     public class AuditsController : RESTFulController
     {
-        private readonly IAuditService auditService;
+        private readonly IIngestionTrackingAuditService auditService;
 
-        public AuditsController(IAuditService auditService) =>
+        public AuditsController(IIngestionTrackingAuditService auditService) =>
             this.auditService = auditService;
 
         [HttpPost]
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking")]
 #endif
-        public async ValueTask<ActionResult<Audit>> PostAuditAsync(Audit audit)
+        public async ValueTask<ActionResult<IngestionTrackingAudit>> PostAuditAsync(IngestionTrackingAudit audit)
         {
             try
             {
-                Audit addedAudit =
-                    await this.auditService.AddAuditAsync(audit);
+                IngestionTrackingAudit addedAudit =
+                    await this.auditService.AddIngestionTrackingAuditAsync(audit);
 
                 return Created(addedAudit);
             }
-            catch (AuditValidationException auditValidationException)
+            catch (IngestionTrackingAuditValidationException auditValidationException)
             {
                 return BadRequest(auditValidationException.InnerException);
             }
-            catch (AuditDependencyValidationException auditValidationException)
-                when (auditValidationException.InnerException is InvalidAuditReferenceException)
+            catch (IngestionTrackingAuditDependencyValidationException auditValidationException)
+                when (auditValidationException.InnerException is InvalidIngestionTrackingAuditReferenceException)
             {
                 return FailedDependency(auditValidationException.InnerException);
             }
-            catch (AuditDependencyValidationException auditDependencyValidationException)
+            catch (IngestionTrackingAuditDependencyValidationException auditDependencyValidationException)
                when (auditDependencyValidationException.InnerException is AlreadyExistsAuditException)
             {
                 return Conflict(auditDependencyValidationException.InnerException);
             }
-            catch (AuditDependencyException auditDependencyException)
+            catch (IngestionTrackingAuditDependencyException auditDependencyException)
             {
                 return InternalServerError(auditDependencyException);
             }
-            catch (AuditServiceException auditServiceException)
+            catch (IngestionTrackingAuditServiceException auditServiceException)
             {
                 return InternalServerError(auditServiceException);
             }
@@ -73,20 +73,20 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public ActionResult<IQueryable<Audit>> Get()
+        public ActionResult<IQueryable<IngestionTrackingAudit>> Get()
         {
             try
             {
-                IQueryable<Audit> retrievedAudits =
-                    this.auditService.RetrieveAllAudits();
+                IQueryable<IngestionTrackingAudit> retrievedAudits =
+                    this.auditService.RetrieveAllIngestionTrackingAudits();
 
                 return Ok(retrievedAudits);
             }
-            catch (AuditDependencyException auditDependencyException)
+            catch (IngestionTrackingAuditDependencyException auditDependencyException)
             {
                 return InternalServerError(auditDependencyException);
             }
-            catch (AuditServiceException auditServiceException)
+            catch (IngestionTrackingAuditServiceException auditServiceException)
             {
                 return InternalServerError(auditServiceException);
             }
@@ -96,28 +96,28 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public async ValueTask<ActionResult<Audit>> GetAuditByIdAsync(Guid auditId)
+        public async ValueTask<ActionResult<IngestionTrackingAudit>> GetAuditByIdAsync(Guid auditId)
         {
             try
             {
-                Audit audit = await this.auditService.RetrieveAuditByIdAsync(auditId);
+                IngestionTrackingAudit audit = await this.auditService.RetrieveIngestionTrackingAuditByIdAsync(auditId);
 
                 return Ok(audit);
             }
-            catch (AuditValidationException auditValidationException)
-                when (auditValidationException.InnerException is NotFoundAuditException)
+            catch (IngestionTrackingAuditValidationException auditValidationException)
+                when (auditValidationException.InnerException is NotFoundIngestionTrackingAuditException)
             {
                 return NotFound(auditValidationException.InnerException);
             }
-            catch (AuditValidationException auditValidationException)
+            catch (IngestionTrackingAuditValidationException auditValidationException)
             {
                 return BadRequest(auditValidationException.InnerException);
             }
-            catch (AuditDependencyException auditDependencyException)
+            catch (IngestionTrackingAuditDependencyException auditDependencyException)
             {
                 return InternalServerError(auditDependencyException);
             }
-            catch (AuditServiceException auditServiceException)
+            catch (IngestionTrackingAuditServiceException auditServiceException)
             {
                 return InternalServerError(auditServiceException);
             }
@@ -127,39 +127,39 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking")]
 #endif
-        public async ValueTask<ActionResult<Audit>> PutAuditAsync(Audit audit)
+        public async ValueTask<ActionResult<IngestionTrackingAudit>> PutAuditAsync(IngestionTrackingAudit audit)
         {
             try
             {
-                Audit modifiedAudit =
-                    await this.auditService.ModifyAuditAsync(audit);
+                IngestionTrackingAudit modifiedAudit =
+                    await this.auditService.ModifyIngestionTrackingAuditAsync(audit);
 
                 return Ok(modifiedAudit);
             }
-            catch (AuditValidationException auditValidationException)
-                when (auditValidationException.InnerException is NotFoundAuditException)
+            catch (IngestionTrackingAuditValidationException auditValidationException)
+                when (auditValidationException.InnerException is NotFoundIngestionTrackingAuditException)
             {
                 return NotFound(auditValidationException.InnerException);
             }
-            catch (AuditValidationException auditValidationException)
+            catch (IngestionTrackingAuditValidationException auditValidationException)
             {
                 return BadRequest(auditValidationException.InnerException);
             }
-            catch (AuditDependencyValidationException auditValidationException)
-                when (auditValidationException.InnerException is InvalidAuditReferenceException)
+            catch (IngestionTrackingAuditDependencyValidationException auditValidationException)
+                when (auditValidationException.InnerException is InvalidIngestionTrackingAuditReferenceException)
             {
                 return FailedDependency(auditValidationException.InnerException);
             }
-            catch (AuditDependencyValidationException auditDependencyValidationException)
+            catch (IngestionTrackingAuditDependencyValidationException auditDependencyValidationException)
                when (auditDependencyValidationException.InnerException is AlreadyExistsAuditException)
             {
                 return Conflict(auditDependencyValidationException.InnerException);
             }
-            catch (AuditDependencyException auditDependencyException)
+            catch (IngestionTrackingAuditDependencyException auditDependencyException)
             {
                 return InternalServerError(auditDependencyException);
             }
-            catch (AuditServiceException auditServiceException)
+            catch (IngestionTrackingAuditServiceException auditServiceException)
             {
                 return InternalServerError(auditServiceException);
             }
@@ -169,38 +169,38 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking")]
 #endif
-        public async ValueTask<ActionResult<Audit>> DeleteAuditByIdAsync(Guid auditId)
+        public async ValueTask<ActionResult<IngestionTrackingAudit>> DeleteAuditByIdAsync(Guid auditId)
         {
             try
             {
-                Audit deletedAudit =
-                    await this.auditService.RemoveAuditByIdAsync(auditId);
+                IngestionTrackingAudit deletedAudit =
+                    await this.auditService.RemoveIngestionTrackingAuditByIdAsync(auditId);
 
                 return Ok(deletedAudit);
             }
-            catch (AuditValidationException auditValidationException)
-                when (auditValidationException.InnerException is NotFoundAuditException)
+            catch (IngestionTrackingAuditValidationException auditValidationException)
+                when (auditValidationException.InnerException is NotFoundIngestionTrackingAuditException)
             {
                 return NotFound(auditValidationException.InnerException);
             }
-            catch (AuditValidationException auditValidationException)
+            catch (IngestionTrackingAuditValidationException auditValidationException)
             {
                 return BadRequest(auditValidationException.InnerException);
             }
-            catch (AuditDependencyValidationException auditDependencyValidationException)
-                when (auditDependencyValidationException.InnerException is LockedAuditException)
+            catch (IngestionTrackingAuditDependencyValidationException auditDependencyValidationException)
+                when (auditDependencyValidationException.InnerException is LockedIngestionTrackingAuditException)
             {
                 return Locked(auditDependencyValidationException.InnerException);
             }
-            catch (AuditDependencyValidationException auditDependencyValidationException)
+            catch (IngestionTrackingAuditDependencyValidationException auditDependencyValidationException)
             {
                 return BadRequest(auditDependencyValidationException);
             }
-            catch (AuditDependencyException auditDependencyException)
+            catch (IngestionTrackingAuditDependencyException auditDependencyException)
             {
                 return InternalServerError(auditDependencyException);
             }
-            catch (AuditServiceException auditServiceException)
+            catch (IngestionTrackingAuditServiceException auditServiceException)
             {
                 return InternalServerError(auditServiceException);
             }

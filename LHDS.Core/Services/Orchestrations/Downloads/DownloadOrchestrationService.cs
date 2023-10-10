@@ -5,15 +5,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Migrations;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Services.Foundations.Audits;
+using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
@@ -29,6 +32,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly IAuditService auditService;
         private readonly ISupplierService supplierService;
+        private readonly IDataSetSpecificationService dataSetSpecificationService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
@@ -40,6 +44,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             IDownloadService downloadService,
             IIngestionTrackingService ingestionTrackingService,
             IAuditService auditService,
+            IDataSetSpecificationService dataSetSpecificationService,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker,
@@ -49,6 +54,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.downloadService = downloadService;
             this.ingestionTrackingService = ingestionTrackingService;
             this.auditService = auditService;
+            this.dataSetSpecificationService = dataSetSpecificationService;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
@@ -84,6 +90,19 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                                 var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
+                                var retrievedDataSetSpecifications =
+                                    this.dataSetSpecificationService.RetrieveAllDataSetSpecifications().Where(
+                                        specification =>
+                                            specification.DataSet.SupplierId == landingConfiguration.LandingSupplierId
+                                            && specification.DataSet.IsActive == true
+                                            && specification.IsActive == true
+                                            && specification.DataSet.ActiveFrom > currentDateTime
+                                            && specification.DataSet.ActiveTo < currentDateTime
+                                            && specification.ActiveFrom > currentDateTime
+                                            && specification.ActiveTo > currentDateTime);
+
+                                var requriedDataSetSpecification = retrievedDataSetSpecifications.First();
+
                                 var filename = document.FileName.StartsWith('/')
                                     ? document.FileName
                                     : "/" + document.FileName;
@@ -98,6 +117,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                                       DecryptedFileName =
                                         $"/{landingConfiguration.DecryptedFolder}" +
+                                        $"/{requriedDataSetSpecification.DataSet.DataSetName}" +
+                                        $"/{requriedDataSetSpecification.Id}" +
+                                        $"/{filename.Split('_')[4]}" +
                                         $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
                                       Decrypted = false,

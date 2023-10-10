@@ -13,7 +13,7 @@ using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Downloads;
-using LHDS.Core.Services.Foundations.Audits;
+using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly ILandingClient landingClient;
         private readonly LandingConfiguration landingConfiguration;
-        private readonly IAuditService auditService;
+        private readonly IIngestionTrackingAuditService auditService;
 
         private readonly DependencyBroker dependencyBroker;
 
@@ -56,7 +56,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             serviceCollection.AddLandingClientForAcceptance(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
-            this.auditService = serviceProvider.GetService<IAuditService>();
+            this.auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
             this.landingConfiguration = serviceProvider.GetService<LandingConfiguration>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             landingClient = serviceProvider.GetService<ILandingClient>();

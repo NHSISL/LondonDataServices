@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 using LHDS.Core.Models.Bases;
-using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.Suppliers;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
@@ -33,6 +33,6 @@ namespace LHDS.Core.Models.Foundations.IngestionTrackings
         public Supplier? Supplier { get; set; } = null!;
 
         [BindNever]
-        public List<Audit> Audits { get; set; } = new List<Audit>();
+        public List<IngestionTrackingAudit> IngestionTrackingAudits { get; set; } = new List<IngestionTrackingAudit>();
     }
 }

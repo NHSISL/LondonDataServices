@@ -14,12 +14,14 @@ using LHDS.Core.Migrations;
 using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
+using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
 using Document = LHDS.Core.Models.Foundations.Documents.Document;
@@ -31,7 +33,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         private readonly IDocumentService documentService;
         private readonly IDownloadService downloadService;
         private readonly IIngestionTrackingService ingestionTrackingService;
-        private readonly IAuditService auditService;
+        private readonly IIngestionTrackingAuditService auditService;
         private readonly ISupplierService supplierService;
         private readonly IDataSetSpecificationService dataSetSpecificationService;
         private readonly ILoggingBroker loggingBroker;
@@ -46,6 +48,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             IIngestionTrackingService ingestionTrackingService,
             IAuditService auditService,
             IDataSetSpecificationService dataSetSpecificationService,
+            IIngestionTrackingAuditService auditService,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker,
@@ -295,8 +298,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         {
             var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
-            Audit newAudit =
-                new Audit
+            IngestionTrackingAudit newAudit =
+                new IngestionTrackingAudit
                 {
                     Id = Guid.NewGuid(),
                     IngestionTrackingId = ingestionTracking.Id,
@@ -307,7 +310,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     UpdatedDate = currentDateTime
                 };
 
-            this.auditService.AddAuditAsync(newAudit);
+            this.auditService.AddIngestionTrackingAuditAsync(newAudit);
         }
     }
 }

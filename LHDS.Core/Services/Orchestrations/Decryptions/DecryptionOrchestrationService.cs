@@ -6,12 +6,12 @@ using System;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
-using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Decryptions;
 using LHDS.Core.Services.Foundations.Documents;
+using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 
 namespace LHDS.Core.Services.Orchestrations.Decryptions
@@ -21,7 +21,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
         private readonly IDocumentService documentService;
         private readonly IDecryptionService decryptionService;
         private readonly IIngestionTrackingService ingestionTrackingService;
-        private readonly IAuditService auditService;
+        private readonly IIngestionTrackingAuditService auditService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
 
@@ -29,7 +29,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             IDocumentService documentService,
             IDecryptionService decryptionService,
             IIngestionTrackingService ingestionTrackingService,
-            IAuditService auditService,
+            IIngestionTrackingAuditService auditService,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker)
         {
@@ -81,8 +81,8 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
         private void LogAudit(IngestionTracking ingestionTracking, Document document, DateTimeOffset currentDateTime)
         {
-            Audit newAudit =
-                new Audit
+            IngestionTrackingAudit newAudit =
+                new IngestionTrackingAudit
                 {
                     Id = Guid.NewGuid(),
                     IngestionTrackingId = ingestionTracking.Id,
@@ -93,7 +93,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                     UpdatedBy = "DecryptionOrchestrationService",
                 };
 
-            this.auditService.AddAuditAsync(newAudit);
+            this.auditService.AddIngestionTrackingAuditAsync(newAudit);
         }
     }
 }

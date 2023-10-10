@@ -25,11 +25,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<Supplier>()
-                .Property(supplier => supplier.LandingManualTriggerUrl)
-                .HasMaxLength(1000)
-                .IsRequired();
-
-            modelBuilder.Entity<Supplier>()
                 .Property(supplier => supplier.CreatedBy)
                 .HasMaxLength(255)
                 .IsRequired();

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using LHDS.Core.Models.Bases;
+using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
@@ -16,8 +17,6 @@ namespace LHDS.Core.Models.Foundations.Suppliers
         public string Name { get; set; } = string.Empty;
         public string FriendlyName { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public string LandingManualTriggerUrl { get; set; } = string.Empty;
-        public string DecryptionManualTriggerUrl { get; set; } = string.Empty;
         public string CreatedBy { get; set; } = string.Empty;
         public DateTimeOffset CreatedDate { get; set; }
         public string UpdatedBy { get; set; } = string.Empty;
@@ -25,5 +24,8 @@ namespace LHDS.Core.Models.Foundations.Suppliers
 
         [BindNever]
         public List<IngestionTracking> IngestionTrackings { get; set; } = new List<IngestionTracking>();
+
+        [BindNever]
+        public List<DataSet> DataSets { get; set; } = new List<DataSet>();
     }
 }

@@ -6,46 +6,49 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using Xunit;
+using ApiIngestionTracking = LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings.IngestionTracking;
+using ApiSupplier = LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers.Supplier;
+using CoreIngestionTracking = LHDS.Core.Models.Foundations.IngestionTrackings.IngestionTracking;
+using CoreSupplier = LHDS.Core.Models.Foundations.Suppliers.Supplier;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
 {
     public partial class SuppliersApiTests
     {
         [Fact]
-        public async Task ShouldFilterSuppliersAsync()
+        public async Task ShouldGetAllSuppliersThroughOdataAsync()
         {
-            // given
-            List<Supplier> namedSuppliers = await PostRandomSuppliersAsync();
-            Supplier expectedSupplier = namedSuppliers.First();
+            //Given
+            List<ApiSupplier> randomSuppliers = await PostRandomSuppliersAsync();
+            List<ApiSupplier> expectedSuppliers = randomSuppliers;
 
-            // when
-            List<Supplier> actualSuppliers =
-                await this.apiBroker.FilterSuppliersAsync(supplierName: expectedSupplier.Name);
+            //When
+            List<CoreSupplier> actualSuppliers =
+                await this.apiBroker.GetAllItemsAsync<CoreSupplier>("odata/suppliers");
 
-            Supplier actualSupplier = actualSuppliers.First();
-
-            // then
-            actualSupplier.Should().BeEquivalentTo(expectedSupplier);
-
-            // cleanup
-            foreach (Supplier supplier in namedSuppliers)
+            //Then
+            foreach (ApiSupplier expectedSupplier in expectedSuppliers)
             {
-                await this.apiBroker.DeleteSupplierByIdAsync(supplier.Id);
+                actualSuppliers.Any(supplier => supplier.Id == expectedSupplier.Id).Should().BeTrue();
+            }
+
+            foreach (ApiSupplier expectedSupplier in expectedSuppliers)
+            {
+                await this.apiBroker.DeleteSupplierByIdAsync(expectedSupplier.Id);
             }
         }
 
         [Fact]
-        public async Task ShouldGetAllSuppliersOrderAsync()
+        public async Task ShouldGetAllSuppliersOrderByDescendingThroughOdataAsync()
         {
             //Given
-            List<Supplier> randomSuppliers = await PostRandomSuppliersAsync();
-            List<Supplier> expectedSuppliers = randomSuppliers;
+            List<ApiSupplier> randomSuppliers = await PostRandomSuppliersAsync();
+            List<ApiSupplier> expectedSuppliers = randomSuppliers;
 
             //When
-            List<Supplier> actualSuppliers = await this.apiBroker.GetAllSuppliersOrderedDescendingAsync();
+            List<CoreSupplier> actualSuppliers =
+                await this.apiBroker.GetAllItemsAsync<CoreSupplier>("odata/suppliers?$orderby=createddate desc");
 
             //Then
             for (int i = 1; i < actualSuppliers.Count; i++)
@@ -53,9 +56,34 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
                 (actualSuppliers[i - 1].CreatedDate >= actualSuppliers[i].CreatedDate).Should().BeTrue();
             }
 
-            foreach (Supplier expectedSupplier in expectedSuppliers)
+            foreach (ApiSupplier expectedSupplier in expectedSuppliers)
             {
                 await this.apiBroker.DeleteSupplierByIdAsync(expectedSupplier.Id);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldFilterSuppliersAsync()
+        {
+            // given
+            List<ApiSupplier> namedSuppliers = await PostRandomSuppliersAsync();
+            ApiSupplier expectedSupplier = namedSuppliers.First();
+            string supplierName = expectedSupplier.Name;
+
+            // when
+            List<CoreSupplier> actualSuppliers =
+                await this.apiBroker.GetAllItemsAsync<CoreSupplier>(
+                    $"odata/suppliers/?$filter=name eq '{supplierName}'");
+
+            CoreSupplier actualSupplier = actualSuppliers.First();
+
+            // then
+            actualSupplier.Should().BeEquivalentTo(expectedSupplier);
+
+            // cleanup
+            foreach (ApiSupplier supplier in namedSuppliers)
+            {
+                await this.apiBroker.DeleteSupplierByIdAsync(supplier.Id);
             }
         }
 
@@ -63,37 +91,38 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
         public async Task ShouldGetAllSupplierIngestionTrackingExpandsAsync()
         {
             // given
-            List<Supplier> randomSuppliers = new List<Supplier> { await PostRandomSupplierAsync() };
+            ApiSupplier randomSupplier = await PostRandomSupplierAsync();
+            ApiSupplier expectedSupplier = randomSupplier;
 
-            foreach (Supplier supplier in randomSuppliers)
-            {
-                List<IngestionTracking> randomIngestionTrackings = await PostRandomIngestionTrackingsAsync(supplier.Id);
+            List<ApiIngestionTracking> randomIngestionTrackings =
+                await PostRandomIngestionTrackingsAsync(randomSupplier.Id);
 
-                List<IngestionTracking> orderedIngestionTracking =
-                    randomIngestionTrackings.OrderBy(ingestionTracking => ingestionTracking.CreatedDate).ToList();
-
-                supplier.IngestionTrackings.AddRange(orderedIngestionTracking);
-            }
-
-            List<Supplier> expectedSuppliers =
-                randomSuppliers.OrderBy(supplier => supplier.CreatedDate).ToList();
+            List<ApiIngestionTracking> expectedIngestionTrackings = randomIngestionTrackings;
 
             // when
-            List<Supplier> actualSuppliers = await this.apiBroker.GetAllSupplierIngestionTrackingExpandsAsync();
+            List<CoreSupplier> actualSuppliers =
+                await this.apiBroker.GetAllItemsAsync<CoreSupplier>(
+                    $"odata/suppliers/?$filter=Id eq {randomSupplier.Id}&$expand=ingestiontrackings");
 
             // then
-            foreach (Supplier expectedSupplier in expectedSuppliers)
+            CoreSupplier actualSupplier = actualSuppliers.First();
+            actualSupplier.Id.Should().Be(expectedSupplier.Id);
+
+            actualSupplier.IngestionTrackings.Count().Should().
+                BeGreaterThanOrEqualTo(expectedIngestionTrackings.Count());
+
+            foreach (CoreIngestionTracking actualIngestionTracking in actualSupplier.IngestionTrackings)
             {
-                Supplier actualSupplier = actualSuppliers.Single(actual => actual.Id == expectedSupplier.Id);
-                actualSupplier.IngestionTrackings.Count().Should().Be(expectedSupplier.IngestionTrackings.Count());
-
-                foreach (IngestionTracking ingestionTracking in actualSupplier.IngestionTrackings)
-                {
-                    await this.apiBroker.DeleteIngestionTrackingByIdAsync(ingestionTracking.Id);
-                }
-
-                await this.apiBroker.DeleteSupplierByIdAsync(actualSupplier.Id);
+                expectedIngestionTrackings.Any(
+                    ingestionTracking => ingestionTracking.Id == actualIngestionTracking.Id).Should().BeTrue();
             }
+
+            foreach (ApiIngestionTracking expectedIngestionTracking in expectedIngestionTrackings)
+            {
+                await this.apiBroker.DeleteIngestionTrackingByIdAsync(expectedIngestionTracking.Id);
+            }
+
+            await this.apiBroker.DeleteSupplierByIdAsync(expectedSupplier.Id);
         }
     }
 }

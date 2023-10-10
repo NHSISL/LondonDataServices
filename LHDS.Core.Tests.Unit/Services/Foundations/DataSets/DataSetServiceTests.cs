@@ -110,9 +110,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 .OnProperty(dataSet => dataSet.DataSetAliases)
                     .Use(GetRandomString(250))
 
-                .OnProperty(dataSet => dataSet.DataSetSupplier)
-                    .Use(GetRandomString(150))
-
                 .OnProperty(dataSet => dataSet.DataSetAuthor)
                     .Use(GetRandomString(150))
 
@@ -123,11 +120,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)
                 .OnProperty(dataSet => dataSet.DataSetName).Use(GetRandomString(150))
                 .OnProperty(dataSet => dataSet.DataSetAliases).Use(GetRandomString(250))
-                .OnProperty(dataSet => dataSet.DataSetSupplier).Use(GetRandomString(150))
                 .OnProperty(dataSet => dataSet.DataSetAuthor).Use(GetRandomString(150))
                 .OnProperty(dataSet => dataSet.DataSourceType).Use(GetRandomString(50))
-                .OnProperty(dataSet => dataSet.DataSetSpecifications).IgnoreIt();
-            // TODO: Complete the filler setup e.g. ignore related properties etc...
+                .OnProperty(dataSet => dataSet.DataSetSpecifications).IgnoreIt()
+                .OnProperty(dataSet => dataSet.Supplier).IgnoreIt();
 
             return filler;
         }

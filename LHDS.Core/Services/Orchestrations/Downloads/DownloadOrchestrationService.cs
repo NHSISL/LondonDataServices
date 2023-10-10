@@ -5,19 +5,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Migrations;
-using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Downloads;
-using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
@@ -46,7 +42,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             IDocumentService documentService,
             IDownloadService downloadService,
             IIngestionTrackingService ingestionTrackingService,
-            IAuditService auditService,
             IDataSetSpecificationService dataSetSpecificationService,
             IIngestionTrackingAuditService auditService,
             ILoggingBroker loggingBroker,
@@ -57,7 +52,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.documentService = documentService;
             this.downloadService = downloadService;
             this.ingestionTrackingService = ingestionTrackingService;
-            this.auditService = auditService;
             this.dataSetSpecificationService = dataSetSpecificationService;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;

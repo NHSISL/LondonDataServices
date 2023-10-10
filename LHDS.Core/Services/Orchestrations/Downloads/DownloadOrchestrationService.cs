@@ -12,6 +12,7 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Migrations;
 using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Downloads;
@@ -90,7 +91,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                                 var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
-                                var retrievedDataSetSpecifications =
+                                DataSetSpecification retrievedDataSetSpecification =
                                     this.dataSetSpecificationService.RetrieveAllDataSetSpecifications().Where(
                                         specification =>
                                             specification.DataSet.SupplierId == landingConfiguration.LandingSupplierId
@@ -99,9 +100,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                             && specification.DataSet.ActiveFrom > currentDateTime
                                             && specification.DataSet.ActiveTo < currentDateTime
                                             && specification.ActiveFrom > currentDateTime
-                                            && specification.ActiveTo > currentDateTime);
-
-                                var requriedDataSetSpecification = retrievedDataSetSpecifications.First();
+                                            && specification.ActiveTo > currentDateTime).First();
 
                                 var filename = document.FileName.StartsWith('/')
                                     ? document.FileName
@@ -117,8 +116,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                                       DecryptedFileName =
                                         $"/{landingConfiguration.DecryptedFolder}" +
-                                        $"/{requriedDataSetSpecification.DataSet.DataSetName}" +
-                                        $"/{requriedDataSetSpecification.Id}" +
+                                        $"/{retrievedDataSetSpecification.DataSet.DataSetName}" +
+                                        $"/{retrievedDataSetSpecification.Id}" +
                                         $"/{filename.Split('_')[3]}" +
                                         $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 

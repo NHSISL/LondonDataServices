@@ -5,8 +5,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Audits;
-using LHDS.Core.Models.Foundations.Audits.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Processings.IngestionTrackingAudits.Exceptions;
 using Xeptions;
 
@@ -14,10 +14,10 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
 {
     public partial class IngestionTrackingAuditProcessingService
     {
-        private delegate ValueTask<Audit> ReturningIngestionTrackingAuditProcessingFunction();
-        private delegate IQueryable<Audit> ReturningIngestionTrackingAuditsFunction();
+        private delegate ValueTask<IngestionTrackingAudit> ReturningIngestionTrackingAuditProcessingFunction();
+        private delegate IQueryable<IngestionTrackingAudit> ReturningIngestionTrackingAuditsFunction();
 
-        private async ValueTask<Audit> TryCatch(
+        private async ValueTask<IngestionTrackingAudit> TryCatch(
             ReturningIngestionTrackingAuditProcessingFunction returningIngestionTrackingAuditProcessingFunction)
         {
             try
@@ -33,20 +33,20 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             {
                 throw CreateAndLogValidationException(invalidArgumentIngestionTrackingAuditProcessingException);
             }
-            catch (AuditValidationException ingestionTrackingAuditProcessingValidationException)
+            catch (IngestionTrackingAuditValidationException ingestionTrackingAuditProcessingValidationException)
             {
                 throw CreateAndLogDependencyValidationException(ingestionTrackingAuditProcessingValidationException);
             }
-            catch (AuditDependencyValidationException
+            catch (IngestionTrackingAuditDependencyValidationException
                 ingestionTrackingAuditDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(ingestionTrackingAuditDependencyValidationException);
             }
-            catch (AuditDependencyException ingestionTrackingAuditDependencyException)
+            catch (IngestionTrackingAuditDependencyException ingestionTrackingAuditDependencyException)
             {
                 throw CreateAndLogDependencyException(ingestionTrackingAuditDependencyException);
             }
-            catch (AuditServiceException ingestionTrackingAuditServiceException)
+            catch (IngestionTrackingAuditServiceException ingestionTrackingAuditServiceException)
             {
                 throw CreateAndLogDependencyException(ingestionTrackingAuditServiceException);
             }
@@ -61,26 +61,26 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             }
         }
 
-        private IQueryable<Audit> TryCatch(ReturningIngestionTrackingAuditsFunction returningIngestionTrackingAuditsFunction)
+        private IQueryable<IngestionTrackingAudit> TryCatch(ReturningIngestionTrackingAuditsFunction returningIngestionTrackingAuditsFunction)
         {
             try
             {
                 return returningIngestionTrackingAuditsFunction();
             }
-            catch (AuditValidationException ingestionTrackingAuditValidationException)
+            catch (IngestionTrackingAuditValidationException ingestionTrackingAuditValidationException)
             {
                 throw CreateAndLogDependencyValidationException(ingestionTrackingAuditValidationException);
             }
-            catch (AuditDependencyValidationException
+            catch (IngestionTrackingAuditDependencyValidationException
                 ingestionTrackingAuditDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(ingestionTrackingAuditDependencyValidationException);
             }
-            catch (AuditDependencyException ingestionTrackingAuditDependencyException)
+            catch (IngestionTrackingAuditDependencyException ingestionTrackingAuditDependencyException)
             {
                 throw CreateAndLogDependencyException(ingestionTrackingAuditDependencyException);
             }
-            catch (AuditServiceException ingestionTrackingAuditServiceException)
+            catch (IngestionTrackingAuditServiceException ingestionTrackingAuditServiceException)
             {
                 throw CreateAndLogDependencyException(ingestionTrackingAuditServiceException);
             }

@@ -4,7 +4,7 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Processings.IngestionTrackingAudits.Exceptions;
 using Moq;
 using Xunit;
@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
         public async Task ShouldThrowValidationExceptionsOnModifyIfIngestionTrackingAuditProcessingIsNullAndLogItAsync()
         {
             // given
-            Audit nullIngestionTrackingAudit = null;
+            IngestionTrackingAudit nullIngestionTrackingAudit = null;
 
             var nullIngestionTrackingAuditProcessingException =
                 new NullIngestionTrackingAuditProcessingException(message: "IngestionTrackingAudit is null.");
@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
                     innerException: nullIngestionTrackingAuditProcessingException);
 
             // when
-            ValueTask<Audit> AddIngestionTrackingAuditTask =
+            ValueTask<IngestionTrackingAudit> AddIngestionTrackingAuditTask =
                 this.ingestionTrackingAuditProcessingService
                     .ModifyIngestionTrackingAuditAsync(nullIngestionTrackingAudit);
 

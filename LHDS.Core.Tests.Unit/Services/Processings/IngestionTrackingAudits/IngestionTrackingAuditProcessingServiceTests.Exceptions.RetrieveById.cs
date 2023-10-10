@@ -5,7 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Processings.IngestionTrackingAudits.Exceptions;
 using Moq;
 using Xeptions;
@@ -29,11 +29,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.ingestionTrackingAuditServiceMock.Setup(service =>
-                service.RetrieveAuditByIdAsync(someId))
+                service.RetrieveIngestionTrackingAuditByIdAsync(someId))
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask<Audit> ingestionTrackingAuditRetrieveByIdTask =
+            ValueTask<IngestionTrackingAudit> ingestionTrackingAuditRetrieveByIdTask =
                 this.ingestionTrackingAuditProcessingService.RetrieveIngestionTrackingAuditByIdAsync(someId);
 
             IngestionTrackingAuditProcessingDependencyValidationException actualException =
@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
             actualException.Should().BeEquivalentTo(expectedIngestionTrackingAuditProcessingDependencyValidationException);
 
             this.ingestionTrackingAuditServiceMock.Verify(service =>
-                service.RetrieveAuditByIdAsync(someId),
+                service.RetrieveIngestionTrackingAuditByIdAsync(someId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -70,11 +70,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
                     innerException: dependencyException.InnerException as Xeption);
 
             this.ingestionTrackingAuditServiceMock.Setup(service =>
-                service.RetrieveAuditByIdAsync(someId))
+                service.RetrieveIngestionTrackingAuditByIdAsync(someId))
                     .Throws(dependencyException);
 
             // when
-            ValueTask<Audit> ingestionTrackingAuditRetrieveByIdTask =
+            ValueTask<IngestionTrackingAudit> ingestionTrackingAuditRetrieveByIdTask =
                 this.ingestionTrackingAuditProcessingService.RetrieveIngestionTrackingAuditByIdAsync(someId);
 
             IngestionTrackingAuditProcessingDependencyException actualException =
@@ -85,7 +85,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
             actualException.Should().BeEquivalentTo(expectedIngestionTrackingAuditProcessingDependencyException);
 
             this.ingestionTrackingAuditServiceMock.Verify(service =>
-                service.RetrieveAuditByIdAsync(someId),
+                service.RetrieveIngestionTrackingAuditByIdAsync(someId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -116,11 +116,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
                     innerException: failedIngestionTrackingAuditProcessingServiceException);
 
             this.ingestionTrackingAuditServiceMock.Setup(service =>
-                service.RetrieveAuditByIdAsync(someId))
+                service.RetrieveIngestionTrackingAuditByIdAsync(someId))
                     .Throws(serviceException);
 
             // when
-            ValueTask<Audit> ingestionTrackingAuditRetrieveByIdTask =
+            ValueTask<IngestionTrackingAudit> ingestionTrackingAuditRetrieveByIdTask =
                 this.ingestionTrackingAuditProcessingService.RetrieveIngestionTrackingAuditByIdAsync(someId);
 
             IngestionTrackingAuditProcessingServiceException actualException =
@@ -131,7 +131,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
             actualException.Should().BeEquivalentTo(expectedIngestionTrackingAuditProcessingServiveException);
 
             this.ingestionTrackingAuditServiceMock.Verify(service =>
-                service.RetrieveAuditByIdAsync(someId),
+                service.RetrieveIngestionTrackingAuditByIdAsync(someId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

@@ -6,9 +6,9 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.Audits;
-using LHDS.Core.Models.Foundations.Audits.Exceptions;
-using LHDS.Core.Services.Foundations.Audits;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
+using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Processings.IngestionTrackings;
 using Moq;
 using Tynamix.ObjectFiller;
@@ -19,7 +19,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
 {
     public partial class IngestionTrackingAuditProcessingServiceTests
     {
-        private readonly Mock<IAuditService> ingestionTrackingAuditServiceMock = new Mock<IAuditService>();
+        private readonly Mock<IIngestionTrackingAuditService> ingestionTrackingAuditServiceMock = new Mock<IIngestionTrackingAuditService>();
         private readonly Mock<ILoggingBroker> loggingBrokerMock = new Mock<ILoggingBroker>();
         private readonly IIngestionTrackingAuditProcessingService ingestionTrackingAuditProcessingService;
 
@@ -38,11 +38,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
 
             return new TheoryData<Xeption>
             {
-                new AuditValidationException(
-                    message: "Audit validation errors occurred, please try again.", innerException),
+                new IngestionTrackingAuditValidationException(
+                    message: "IngestionTrackingAudit validation errors occurred, please try again.", innerException),
 
-                new AuditDependencyValidationException(
-                    message: "Audit dependency validation occurred, please try again.", innerException)
+                new IngestionTrackingAuditDependencyValidationException(
+                    message: "IngestionTrackingAudit dependency validation occurred, please try again.", innerException)
             };
         }
 
@@ -54,11 +54,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
 
             return new TheoryData<Xeption>
             {
-                new AuditDependencyException(
-                    message: "Audit dependency validation errors occurred, please try again.", innerException),
+                new IngestionTrackingAuditDependencyException(
+                    message: "IngestionTrackingAudit dependency validation errors occurred, please try again.", innerException),
 
-                new AuditServiceException(
-                    message : "Audit service error occurred, contact support.", innerException)
+                new IngestionTrackingAuditServiceException(
+                    message : "IngestionTrackingAudit service error occurred, contact support.", innerException)
             };
         }
 
@@ -77,20 +77,20 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static Audit CreateRandomIngestionTrackingAudit() =>
+        private static IngestionTrackingAudit CreateRandomIngestionTrackingAudit() =>
             CreateIngestionTrackingAuditFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
-        private static IQueryable<Audit> CreateRandomIngestionTrackingAudits()
+        private static IQueryable<IngestionTrackingAudit> CreateRandomIngestionTrackingAudits()
         {
             return CreateIngestionTrackingAuditFiller(dateTimeOffset: GetRandomDateTimeOffset())
                 .Create(count: GetRandomNumber())
                     .AsQueryable();
         }
 
-        private static Filler<Audit> CreateIngestionTrackingAuditFiller(DateTimeOffset dateTimeOffset)
+        private static Filler<IngestionTrackingAudit> CreateIngestionTrackingAuditFiller(DateTimeOffset dateTimeOffset)
         {
             string user = GetRandomString(length: 255).ToString();
-            var filler = new Filler<Audit>();
+            var filler = new Filler<IngestionTrackingAudit>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)

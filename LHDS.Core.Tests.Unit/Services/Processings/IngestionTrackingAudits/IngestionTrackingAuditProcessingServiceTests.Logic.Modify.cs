@@ -4,7 +4,7 @@
 
 using System.Threading.Tasks;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using Moq;
 using Xunit;
 
@@ -16,13 +16,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
         public async Task ShouldModifyIngestionTrackingAsync()
         {
             // Given
-            Audit randomIngestionTrackingAudit = CreateRandomIngestionTrackingAudit();
-            Audit inputIngestionTrackingAudit = randomIngestionTrackingAudit;
-            Audit storageIngestionTrackingAudit = inputIngestionTrackingAudit;
-            Audit expectedIngestionTrackingAudit = storageIngestionTrackingAudit.DeepClone();
+            IngestionTrackingAudit randomIngestionTrackingAudit = CreateRandomIngestionTrackingAudit();
+            IngestionTrackingAudit inputIngestionTrackingAudit = randomIngestionTrackingAudit;
+            IngestionTrackingAudit storageIngestionTrackingAudit = inputIngestionTrackingAudit;
+            IngestionTrackingAudit expectedIngestionTrackingAudit = storageIngestionTrackingAudit.DeepClone();
 
             this.ingestionTrackingAuditServiceMock.Setup(service =>
-                service.ModifyAuditAsync(inputIngestionTrackingAudit))
+                service.ModifyIngestionTrackingAuditAsync(inputIngestionTrackingAudit))
                     .ReturnsAsync(storageIngestionTrackingAudit);
 
             // When
@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
 
             // Then
             this.ingestionTrackingAuditServiceMock.Verify(service =>
-                service.ModifyAuditAsync(inputIngestionTrackingAudit),
+                service.ModifyIngestionTrackingAuditAsync(inputIngestionTrackingAudit),
                     Times.Once);
 
             this.ingestionTrackingAuditServiceMock.VerifyNoOtherCalls();

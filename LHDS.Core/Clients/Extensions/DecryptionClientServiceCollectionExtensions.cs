@@ -23,10 +23,10 @@ using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Cryptography.Gpg;
 using LHDS.Core.Providers.Downloads;
-using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Decryptions;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
+using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.Decryptions;
@@ -131,7 +131,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDownloadService, DownloadService>();
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddTransient<ISupplierService, SupplierService>();
-            services.AddTransient<IAuditService, AuditService>();
+            services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
             services.AddTransient<IDecryptionOrchestrationService, DecryptionOrchestrationService>();
             services.AddTransient<IDecryptionService, DecryptionService>();
         }

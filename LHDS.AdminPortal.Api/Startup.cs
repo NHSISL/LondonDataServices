@@ -19,10 +19,10 @@ using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
-using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataTypes;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -30,11 +30,11 @@ using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Providers.Downloads.Extensions;
-using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.DataTypes;
 using LHDS.Core.Services.Foundations.Documents;
+using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.ObjectColumns;
 using LHDS.Core.Services.Foundations.OptOuts;
@@ -186,7 +186,7 @@ namespace LHDS.AdminPortal.Api
         {
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddTransient<ISupplierService, SupplierService>();
-            services.AddTransient<IAuditService, AuditService>();
+            services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IOptOutService, OptOutService>();
             services.AddTransient<IPdsAuditService, PdsAuditService>();
@@ -267,7 +267,7 @@ namespace LHDS.AdminPortal.Api
             ODataConventionModelBuilder builder =
                new ODataConventionModelBuilder();
 
-            builder.EntitySet<Audit>("Audits");
+            builder.EntitySet<IngestionTrackingAudit>("IngestionTrackingAudits");
             builder.EntitySet<DataSet>("DataSets");
             builder.EntitySet<DataSetSpecification>("DataSetSpecifications");
             builder.EntitySet<SpecificationObject>("SpecificationObjects");

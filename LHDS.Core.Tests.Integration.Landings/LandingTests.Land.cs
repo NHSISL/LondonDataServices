@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
 using Xunit;
@@ -38,12 +38,12 @@ namespace LHDS.Core.Tests.Integration.Landings
 
                     ingestionTracking.Should().NotBeNull();
 
-                    List<Audit> audits = auditService.RetrieveAllAudits()
+                    List<IngestionTrackingAudit> audits = auditService.RetrieveAllIngestionTrackingAudits()
                         .Where(item => item.IngestionTrackingId == ingestionTracking.Id).ToList();
 
-                    foreach (Audit item in audits)
+                    foreach (IngestionTrackingAudit item in audits)
                     {
-                        await auditService.RemoveAuditByIdAsync(item.Id);
+                        await auditService.RemoveIngestionTrackingAuditByIdAsync(item.Id);
                     }
 
                     await ingestionTrackingService

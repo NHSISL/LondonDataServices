@@ -10,6 +10,7 @@ using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
 using Xunit;
@@ -169,7 +170,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                         Times.Once);
 
                 this.auditServiceMock.Verify(service =>
-                    service.AddAuditAsync(It.IsAny<Audit>()),
+                    service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
                         Times.Once);
             }
 
@@ -306,7 +307,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                         Times.Once);
 
             this.auditServiceMock.Verify(service =>
-                service.AddAuditAsync(It.IsAny<Audit>()),
+                service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
                     Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();
@@ -407,7 +408,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                         Times.Once);
 
             this.auditServiceMock.Verify(service =>
-                service.AddAuditAsync(It.IsAny<Audit>()),
+                service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
                     Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();

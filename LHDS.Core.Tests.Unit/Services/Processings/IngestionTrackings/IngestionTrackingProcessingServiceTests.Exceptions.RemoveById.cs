@@ -78,7 +78,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                 this.ingestionTrackingProcessingService.RetrieveIngestionTrackingByIdAsync(someId);
 
             IngestionTrackingProcessingDependencyException actualException =
-                await Assert.ThrowsAsync<IngestionTrackingProcessingDependencyException>(ingestionTrackingRemoveByIdTask.AsTask);
+                await Assert.ThrowsAsync<IngestionTrackingProcessingDependencyException>(
+                    ingestionTrackingRemoveByIdTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedIngestionTrackingProcessingDependencyException);
@@ -119,11 +120,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     .Throws(serviceException);
 
             // when
-            ValueTask<IngestionTracking> addIngestionTrackingTask =
+            ValueTask<IngestionTracking> ingestionTrackingRemoveByIdTask =
                 this.ingestionTrackingProcessingService.RetrieveIngestionTrackingByIdAsync(someId);
 
             IngestionTrackingProcessingServiceException actualException =
-                await Assert.ThrowsAsync<IngestionTrackingProcessingServiceException>(addIngestionTrackingTask.AsTask);
+                await Assert.ThrowsAsync<IngestionTrackingProcessingServiceException>(
+                    ingestionTrackingRemoveByIdTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedIngestionTrackingProcessingServiveException);

@@ -58,7 +58,9 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             {
                 ValidateIngestionTracking(ingestionTracking);
                 ValidateIngestionTrackingId(ingestionTracking.Id);
-                var maybeIngestionTracking = await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id);
+
+                var maybeIngestionTracking = await this.ingestionTrackingService
+                    .RetrieveIngestionTrackingByIdAsync(ingestionTracking.Id);
 
                 if (maybeIngestionTracking != null)
                 {

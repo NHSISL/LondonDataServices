@@ -34,7 +34,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                 this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings();
 
             IngestionTrackingProcessingDependencyValidationException actualException =
-                Assert.Throws<IngestionTrackingProcessingDependencyValidationException>(ingestionTrackingRetrieveAction);
+                Assert.Throws<IngestionTrackingProcessingDependencyValidationException>(
+                    ingestionTrackingRetrieveAction);
 
             // then
             actualException.Should().BeEquivalentTo(expectedIngestionTrackingProcessingDependencyValidationException);

@@ -34,11 +34,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask<IngestionTracking> ingestionTrackingAddTask =
+            ValueTask<IngestionTracking> ingestionTrackingModifyTask =
                 this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(inputIngestionTracking);
 
             IngestionTrackingProcessingDependencyValidationException actualException =
-                await Assert.ThrowsAsync<IngestionTrackingProcessingDependencyValidationException>(ingestionTrackingAddTask.AsTask);
+                await Assert.ThrowsAsync<IngestionTrackingProcessingDependencyValidationException>(
+                    ingestionTrackingModifyTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedIngestionTrackingProcessingDependencyValidationException);
@@ -75,11 +76,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     .Throws(dependencyException);
 
             // when
-            ValueTask<IngestionTracking> ingestionTrackingAddTask =
+            ValueTask<IngestionTracking> ingestionTrackingModifyTask =
                 this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(inputIngestionTracking);
 
             IngestionTrackingProcessingDependencyException actualException =
-                await Assert.ThrowsAsync<IngestionTrackingProcessingDependencyException>(ingestionTrackingAddTask.AsTask);
+                await Assert.ThrowsAsync<IngestionTrackingProcessingDependencyException>(
+                    ingestionTrackingModifyTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedIngestionTrackingProcessingDependencyException);
@@ -121,11 +123,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     .Throws(serviceException);
 
             // when
-            ValueTask<IngestionTracking> addIngestionTrackingTask =
+            ValueTask<IngestionTracking> ingestionTrackingModifyTask =
                 this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(inputIngestionTracking);
 
             IngestionTrackingProcessingServiceException actualException =
-                await Assert.ThrowsAsync<IngestionTrackingProcessingServiceException>(addIngestionTrackingTask.AsTask);
+                await Assert.ThrowsAsync<IngestionTrackingProcessingServiceException>(
+                    ingestionTrackingModifyTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedIngestionTrackingProcessingServiveException);

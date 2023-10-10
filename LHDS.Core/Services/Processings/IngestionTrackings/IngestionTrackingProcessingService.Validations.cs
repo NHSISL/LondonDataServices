@@ -11,23 +11,23 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
 {
     public partial class IngestionTrackingProcessingService : IIngestionTrackingProcessingService
     {
-        private void ValidateIngestionTracking(IngestionTracking objectColumn)
+        private void ValidateIngestionTracking(IngestionTracking ingestionTracking)
         {
-            ValidateIngestionTrackingIsNotNull(objectColumn);
+            ValidateIngestionTrackingIsNotNull(ingestionTracking);
         }
 
-        private static void ValidateIngestionTrackingIsNotNull(IngestionTracking objectColumn)
+        private static void ValidateIngestionTrackingIsNotNull(IngestionTracking ingestionTracking)
         {
-            if (objectColumn is null)
+            if (ingestionTracking is null)
             {
                 throw new NullIngestionTrackingProcessingException(message: "IngestionTracking is null.");
             }
         }
 
-        public void ValidateIngestionTrackingId(Guid objectColumnId) =>
+        public void ValidateIngestionTrackingId(Guid ingestionTrackingId) =>
             Validate<InvalidArgumentIngestionTrackingProcessingException>(
                 message: "Invalid argument(s). Please correct the errors and try again.",
-                (Rule: IsInvalid(objectColumnId), Parameter: nameof(IngestionTracking.Id)));
+                (Rule: IsInvalid(ingestionTrackingId), Parameter: nameof(IngestionTracking.Id)));
 
         private static dynamic IsInvalid(Guid id) => new
         {

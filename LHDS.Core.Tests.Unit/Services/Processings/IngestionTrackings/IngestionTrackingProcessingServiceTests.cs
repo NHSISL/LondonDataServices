@@ -19,7 +19,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 {
     public partial class IngestionTrackingProcessingServiceTests
     {
-        private readonly Mock<IIngestionTrackingService> ingestionTrackingServiceMock = new Mock<IIngestionTrackingService>();
+        private readonly Mock<IIngestionTrackingService> ingestionTrackingServiceMock =
+            new Mock<IIngestionTrackingService>();
+
         private readonly Mock<ILoggingBroker> loggingBrokerMock = new Mock<ILoggingBroker>();
         private readonly IIngestionTrackingProcessingService ingestionTrackingProcessingService;
 

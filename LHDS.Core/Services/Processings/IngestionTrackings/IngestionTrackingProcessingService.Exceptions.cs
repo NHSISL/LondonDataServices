@@ -28,25 +28,26 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             {
                 throw CreateAndLogValidationException(nullIngestionTrackingException);
             }
-            catch (InvalidArgumentIngestionTrackingProcessingException invalidArgumentIngestionTrackingProcessingException)
+            catch (InvalidArgumentIngestionTrackingProcessingException
+                invalidArgumentIngestionTrackingProcessingException)
             {
                 throw CreateAndLogValidationException(invalidArgumentIngestionTrackingProcessingException);
             }
-            catch (IngestionTrackingValidationException objectColumnValidationException)
+            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(objectColumnValidationException);
+                throw CreateAndLogDependencyValidationException(ingestionTrackingValidationException);
             }
-            catch (IngestionTrackingDependencyValidationException objectColumnDependencyValidationException)
+            catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(objectColumnDependencyValidationException);
+                throw CreateAndLogDependencyValidationException(ingestionTrackingDependencyValidationException);
             }
-            catch (IngestionTrackingDependencyException objectColumnDependencyException)
+            catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
             {
-                throw CreateAndLogDependencyException(objectColumnDependencyException);
+                throw CreateAndLogDependencyException(ingestionTrackingDependencyException);
             }
-            catch (IngestionTrackingServiceException objectColumnServiceException)
+            catch (IngestionTrackingServiceException ingestionTrackingServiceException)
             {
-                throw CreateAndLogDependencyException(objectColumnServiceException);
+                throw CreateAndLogDependencyException(ingestionTrackingServiceException);
             }
             catch (Exception exception)
             {
@@ -59,27 +60,28 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
             }
         }
 
-        private IQueryable<IngestionTracking> TryCatch(ReturningIngestionTrackingsFunction returningIngestionTrackingsFunction)
+        private IQueryable<IngestionTracking> TryCatch(ReturningIngestionTrackingsFunction
+            returningIngestionTrackingsFunction)
         {
             try
             {
                 return returningIngestionTrackingsFunction();
             }
-            catch (IngestionTrackingValidationException objectColumnValidationException)
+            catch (IngestionTrackingValidationException ingestionTrackingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(objectColumnValidationException);
+                throw CreateAndLogDependencyValidationException(ingestionTrackingValidationException);
             }
-            catch (IngestionTrackingDependencyValidationException objectColumnDependencyValidationException)
+            catch (IngestionTrackingDependencyValidationException ingestionTrackingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(objectColumnDependencyValidationException);
+                throw CreateAndLogDependencyValidationException(ingestionTrackingDependencyValidationException);
             }
-            catch (IngestionTrackingDependencyException objectColumnDependencyException)
+            catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
             {
-                throw CreateAndLogDependencyException(objectColumnDependencyException);
+                throw CreateAndLogDependencyException(ingestionTrackingDependencyException);
             }
-            catch (IngestionTrackingServiceException objectColumnServiceException)
+            catch (IngestionTrackingServiceException ingestionTrackingServiceException)
             {
-                throw CreateAndLogDependencyException(objectColumnServiceException);
+                throw CreateAndLogDependencyException(ingestionTrackingServiceException);
             }
             catch (Exception exception)
             {
@@ -95,51 +97,51 @@ namespace LHDS.Core.Services.Processings.IngestionTrackings
 
         private IngestionTrackingProcessingValidationException CreateAndLogValidationException(Xeption exception)
         {
-            var objectColumnProcessingValidationExceptionn =
+            var ingestionTrackingProcessingValidationExceptionn =
                 new IngestionTrackingProcessingValidationException(
                     message: "IngestionTracking processing validation error occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(objectColumnProcessingValidationExceptionn);
+            this.loggingBroker.LogError(ingestionTrackingProcessingValidationExceptionn);
 
-            return objectColumnProcessingValidationExceptionn;
+            return ingestionTrackingProcessingValidationExceptionn;
         }
 
         private IngestionTrackingProcessingDependencyValidationException CreateAndLogDependencyValidationException(
             Xeption exception)
         {
-            var objectColumnProcessingDependencyValidationException =
+            var ingestionTrackingProcessingDependencyValidationException =
                 new IngestionTrackingProcessingDependencyValidationException(
                     message: "IngestionTracking processing dependency validation error occurred, please try again.",
                     innerException: exception.InnerException as Xeption);
 
-            this.loggingBroker.LogError(objectColumnProcessingDependencyValidationException);
+            this.loggingBroker.LogError(ingestionTrackingProcessingDependencyValidationException);
 
-            return objectColumnProcessingDependencyValidationException;
+            return ingestionTrackingProcessingDependencyValidationException;
         }
 
         private IngestionTrackingProcessingDependencyException CreateAndLogDependencyException(Xeption exception)
         {
-            var objectColumnProcessingDependencyException =
+            var ingestionTrackingProcessingDependencyException =
                 new IngestionTrackingProcessingDependencyException(
                     message: "IngestionTracking processing dependency error occurred, please try again.",
                     innerException: exception?.InnerException as Xeption);
 
-            this.loggingBroker.LogError(objectColumnProcessingDependencyException);
+            this.loggingBroker.LogError(ingestionTrackingProcessingDependencyException);
 
-            throw objectColumnProcessingDependencyException;
+            throw ingestionTrackingProcessingDependencyException;
         }
 
         private IngestionTrackingProcessingServiceException CreateAndLogServiceException(Xeption exception)
         {
-            var objectColumnProcessingServiceException = new
+            var ingestionTrackingProcessingServiceException = new
                 IngestionTrackingProcessingServiceException(
                     message: "IngestionTracking processing service error occurred, contact support.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(objectColumnProcessingServiceException);
+            this.loggingBroker.LogError(ingestionTrackingProcessingServiceException);
 
-            return objectColumnProcessingServiceException;
+            return ingestionTrackingProcessingServiceException;
         }
     }
 }

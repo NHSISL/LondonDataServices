@@ -80,7 +80,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                 this.ingestionTrackingProcessingService.AddIngestionTrackingAsync(inputIngestionTracking);
 
             IngestionTrackingProcessingDependencyException actualException =
-                await Assert.ThrowsAsync<IngestionTrackingProcessingDependencyException>(ingestionTrackingAddTask.AsTask);
+                await Assert.ThrowsAsync<IngestionTrackingProcessingDependencyException>(
+                    ingestionTrackingAddTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedIngestionTrackingProcessingDependencyException);

@@ -80,8 +80,6 @@ namespace LHDS.Core.Tests.Integration.Landings
                 UpdatedDate = now,
                 UpdatedBy = "Test User",
                 FriendlyName = "Test Supplier Friendly Name",
-                LandingManualTriggerUrl = "hjkhsd",
-                DecryptionManualTriggerUrl = "hjkhsd",
             };
 
             Supplier maybeSupplier = supplierService.RetrieveAllSuppliers()

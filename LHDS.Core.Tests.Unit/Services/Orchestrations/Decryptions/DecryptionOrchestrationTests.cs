@@ -193,7 +193,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset>().Use(dateTimeOffset);
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt(); ;
 
             return filler;
         }

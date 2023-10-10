@@ -8,8 +8,6 @@ using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.PdsAudits;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using Tynamix.ObjectFiller;
 using Xunit;
@@ -48,13 +46,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
                 .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(dataSetSpecification => dataSetSpecification.Id).Use(inputDataSetSpecification.Id)
 
-                .OnProperty(dataSetSpecification => 
+                .OnProperty(dataSetSpecification =>
                     dataSetSpecification.DataSetId).Use(inputDataSetSpecification.DataSetId)
-                
-                .OnProperty(dataSetSpecification => 
+
+                .OnProperty(dataSetSpecification =>
                     dataSetSpecification.CreatedBy).Use(inputDataSetSpecification.CreatedBy)
 
-                .OnProperty(dataSetSpecification => 
+                .OnProperty(dataSetSpecification =>
                     dataSetSpecification.CreatedDate).Use(inputDataSetSpecification.CreatedDate)
 
                 .OnProperty(dataSetSpecification =>
@@ -63,10 +61,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
                 .OnProperty(dataSetSpecification =>
                     dataSetSpecification.SupplierSpecificationVersion).Use(GetRandomString(10))
 
-                .OnProperty(dataSetSpecification => 
+                .OnProperty(dataSetSpecification =>
                     dataSetSpecification.PresededById).Use(inputDataSetSpecification.PresededById)
 
-                .OnProperty(dataSetSpecification => 
+                .OnProperty(dataSetSpecification =>
                     dataSetSpecification.SupersededById).Use(inputDataSetSpecification.SupersededById)
 
                 .OnProperty(DataSet => DataSet.UpdatedDate).Use(now)
@@ -113,28 +111,58 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             return filler;
         }
 
-        private static IQueryable<DataSet> CreateRandomDataSets()
+        private async ValueTask<DataSet> PostRandomDataSetAsync(Guid supplierId)
         {
-            return CreateDataSetFiller()
-                .Create(count: GetRandomNumber())
-                    .AsQueryable();
+            DataSet randomDataSet = CreateRandomDataSet(supplierId);
+            await this.apiBroker.PostDataSetAsync(randomDataSet);
+
+            return randomDataSet;
         }
 
-        private static DataSet CreateRandomDataSet() =>
-            CreateDataSetFiller().Create();
+        private static DataSet CreateRandomDataSet(Guid supplierId) =>
+            CreateDataSetFiller(supplierId).Create();
 
-        private static Filler<DataSet> CreateDataSetFiller()
+        private static Filler<DataSet> CreateDataSetFiller(Guid supplierId)
         {
-            string user = GetRandomString(255);
+            string user = Guid.NewGuid().ToString();
             var filler = new Filler<DataSet>();
             var now = DateTimeOffset.UtcNow;
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
-                .OnProperty(DataSet => DataSet.CreatedBy).Use(user)
-                .OnProperty(DataSet => DataSet.UpdatedBy).Use(user)
-                .OnProperty(DataSet => DataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()));
+                .OnProperty(dataSet => dataSet.SupplierId).Use(supplierId)
+                .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()));
+
+            return filler;
+        }
+
+        private async ValueTask<Supplier> PostRandomSupplierAsync()
+        {
+            Supplier randomSupplier = CreateRandomSupplier();
+            await this.apiBroker.PostSupplierAsync(randomSupplier);
+
+            return randomSupplier;
+        }
+
+        private static Supplier CreateRandomSupplier() =>
+            CreateRandomSupplierFiller().Create();
+
+        private static Filler<Supplier> CreateRandomSupplierFiller()
+        {
+            string userId = Guid.NewGuid().ToString();
+            DateTime now = DateTime.UtcNow;
+            var filler = new Filler<Supplier>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(supplier => supplier.CreatedDate).Use(now)
+                .OnProperty(supplier => supplier.CreatedBy).Use(userId)
+                .OnProperty(supplier => supplier.UpdatedDate).Use(now)
+                .OnProperty(supplier => supplier.UpdatedBy).Use(userId);
 
             return filler;
         }

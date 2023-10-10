@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
@@ -106,12 +105,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
 
         private async Task DeleteAuditRecordsAsync(IngestionTracking inputIngestionTracking)
         {
-            var audits = this.apiBroker.auditService.RetrieveAllIngestionTrackingAudits()
+            var audits = this.apiBroker.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
                 .Where(audit => audit.IngestionTrackingId == inputIngestionTracking.Id);
 
             foreach (var audit in audits)
             {
-                await this.apiBroker.DeleteAuditByIdAsync(audit.Id);
+                await this.apiBroker.DeleteIngestionTrackingAuditByIdAsync(audit.Id);
             }
         }
     }

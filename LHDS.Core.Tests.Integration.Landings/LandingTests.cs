@@ -12,7 +12,7 @@ using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Providers.Downloads.Extensions;
-using LHDS.Core.Services.Foundations.Audits;
+using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
 using Microsoft.Extensions.Configuration;

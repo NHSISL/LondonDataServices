@@ -6,9 +6,9 @@ using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits
+namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackingAudits
 {
-    public class Audit
+    public class IngestionTrackingAudit
     {
         public Guid Id { get; set; }
         public Guid IngestionTrackingId { get; set; }

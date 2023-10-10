@@ -6,22 +6,22 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
-using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Audits;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackingAudits;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using Tynamix.ObjectFiller;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
+namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackingAudits
 {
     [Collection(nameof(ApiTestCollection))]
-    public partial class AuditsApiTests
+    public partial class IngestionTrackingAuditsApiTests
     {
         private readonly ApiBroker apiBroker;
         private readonly ITestOutputHelper output;
 
-        public AuditsApiTests(ApiBroker apiBroker, ITestOutputHelper output)
+        public IngestionTrackingAuditsApiTests(ApiBroker apiBroker, ITestOutputHelper output)
         {
             this.apiBroker = apiBroker;
             this.output = output;
@@ -33,59 +33,59 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Audits
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static Audit UpdateAuditWithRandomValues(Audit inputAudit)
+        private static IngestionTrackingAudit UpdateIngestionTrackingAuditWithRandomValues(IngestionTrackingAudit inputIngestionTrackingAudit)
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
-            var filler = new Filler<Audit>();
+            var filler = new Filler<IngestionTrackingAudit>();
 
             filler.Setup()
-                .OnProperty(audit => audit.Id).Use(inputAudit.Id)
-                .OnProperty(audit => audit.IngestionTrackingId).Use(inputAudit.IngestionTrackingId)
+                .OnProperty(ingestionTrackingAudit => ingestionTrackingAudit.Id).Use(inputIngestionTrackingAudit.Id)
+                .OnProperty(ingestionTrackingAudit => ingestionTrackingAudit.IngestionTrackingId).Use(inputIngestionTrackingAudit.IngestionTrackingId)
                 .OnType<DateTimeOffset>().Use(GetRandomDateTime())
-                .OnProperty(audit => audit.CreatedDate).Use(inputAudit.CreatedDate)
-                .OnProperty(audit => audit.CreatedBy).Use(inputAudit.CreatedBy)
-                .OnProperty(audit => audit.UpdatedDate).Use(now);
+                .OnProperty(ingestionTrackingAudit => ingestionTrackingAudit.CreatedDate).Use(inputIngestionTrackingAudit.CreatedDate)
+                .OnProperty(ingestionTrackingAudit => ingestionTrackingAudit.CreatedBy).Use(inputIngestionTrackingAudit.CreatedBy)
+                .OnProperty(ingestionTrackingAudit => ingestionTrackingAudit.UpdatedDate).Use(now);
             return filler.Create();
         }
 
-        private async ValueTask<Audit> PostRandomAuditAsync(Guid ingestionTrackingId)
+        private async ValueTask<IngestionTrackingAudit> PostRandomIngestionTrackingAuditAsync(Guid ingestionTrackingId)
         {
-            Audit randomAudit = CreateRandomAudit(ingestionTrackingId);
-            await this.apiBroker.PostAuditAsync(randomAudit);
+            IngestionTrackingAudit randomAudit = CreateRandomIngestionTrackingAudit(ingestionTrackingId);
+            await this.apiBroker.PostIngestionTrackingAuditAsync(randomAudit);
 
             return randomAudit;
         }
 
-        private async ValueTask<List<Audit>> PostRandomAuditsAsync(Guid ingestionTrackingId)
+        private async ValueTask<List<IngestionTrackingAudit>> PostRandomIngestionTrackingAuditsAsync(Guid ingestionTrackingId)
         {
             int randomNumber = GetRandomNumber();
-            var randomAudits = new List<Audit>();
+            var randomAudits = new List<IngestionTrackingAudit>();
 
             for (int i = 0; i < randomNumber; i++)
             {
-                randomAudits.Add(await PostRandomAuditAsync(ingestionTrackingId));
+                randomAudits.Add(await PostRandomIngestionTrackingAuditAsync(ingestionTrackingId));
             }
 
             return randomAudits;
         }
 
-        private static Audit CreateRandomAudit(Guid ingestionTrackingId) =>
-            CreateRandomAuditFiller(ingestionTrackingId).Create();
+        private static IngestionTrackingAudit CreateRandomIngestionTrackingAudit(Guid ingestionTrackingId) =>
+            CreateRandomIngestionTrackingAuditFiller(ingestionTrackingId).Create();
 
-        private static Filler<Audit> CreateRandomAuditFiller(Guid ingestionTrackingId)
+        private static Filler<IngestionTrackingAudit> CreateRandomIngestionTrackingAuditFiller(Guid ingestionTrackingId)
         {
             string user = Guid.NewGuid().ToString();
             DateTime now = DateTime.UtcNow;
-            var filler = new Filler<Audit>();
+            var filler = new Filler<IngestionTrackingAudit>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
-                .OnProperty(audit => audit.IngestionTrackingId).Use(ingestionTrackingId)
-                .OnProperty(audit => audit.CreatedDate).Use(now)
-                .OnProperty(audit => audit.CreatedBy).Use(user)
-                .OnProperty(audit => audit.UpdatedDate).Use(now)
-                .OnProperty(audit => audit.UpdatedBy).Use(user);
+                .OnProperty(ingestionTrackingAudit => ingestionTrackingAudit.IngestionTrackingId).Use(ingestionTrackingId)
+                .OnProperty(ingestionTrackingAudit => ingestionTrackingAudit.CreatedDate).Use(now)
+                .OnProperty(ingestionTrackingAudit => ingestionTrackingAudit.CreatedBy).Use(user)
+                .OnProperty(ingestionTrackingAudit => ingestionTrackingAudit.UpdatedDate).Use(now)
+                .OnProperty(ingestionTrackingAudit => ingestionTrackingAudit.UpdatedBy).Use(user);
 
             return filler;
         }

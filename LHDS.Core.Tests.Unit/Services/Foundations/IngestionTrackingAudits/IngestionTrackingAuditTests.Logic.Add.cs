@@ -10,17 +10,16 @@ using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
+namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 {
     public partial class IngestionTrackingAuditTests
     {
         [Fact]
-        public async Task ShouldAddAuditAsync()
+        public async Task ShouldAddIngestionTrackingAuditAsync()
         {
             // given
             DateTimeOffset randomDateTimeOffset =
                 GetRandomDateTimeOffset();
-
             IngestionTrackingAudit randomIngestionTrackingAudit = CreateRandomIngestionTrackingAudit(randomDateTimeOffset);
             IngestionTrackingAudit inputIngestionTrackingAudit = randomIngestionTrackingAudit;
             IngestionTrackingAudit storageIngestionTrackingAudit = inputIngestionTrackingAudit;

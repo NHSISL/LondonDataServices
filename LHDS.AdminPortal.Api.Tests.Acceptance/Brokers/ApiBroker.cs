@@ -6,9 +6,9 @@ using System.Net.Http;
 using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Cryptography.Gpg;
-using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
+using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
@@ -22,7 +22,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         private readonly WebApplicationFactory<Startup> webApplicationFactory;
         private readonly HttpClient httpClient;
         private readonly IRESTFulApiFactoryClient apiFactoryClient;
-        internal IIngestionTrackingAuditService auditService;
+        internal IIngestionTrackingAuditService ingestionTrackingAuditService;
         internal IDocumentService documentService;
         internal IIngestionTrackingService ingestionTrackingService;
         internal IDownloadService downloadService;
@@ -33,7 +33,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         public ApiBroker()
         {
             this.webApplicationFactory = new WebApplicationFactory<Startup>();
-            this.auditService = (IngestionTrackingAuditService)webApplicationFactory.Services.GetService<IIngestionTrackingAuditService>();
+
+            this.ingestionTrackingAuditService = (IngestionTrackingAuditService)webApplicationFactory
+                .Services.GetService<IIngestionTrackingAuditService>();
+
             this.documentService = (DocumentService)webApplicationFactory.Services.GetService<IDocumentService>();
             this.downloadService = (DownloadService)webApplicationFactory.Services.GetService<IDownloadService>();
 

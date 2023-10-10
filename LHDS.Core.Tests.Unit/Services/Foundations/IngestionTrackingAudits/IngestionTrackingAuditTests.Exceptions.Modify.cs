@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.Audits
+namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackingAudits
 {
     public partial class IngestionTrackingAuditTests
     {

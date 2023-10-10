@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Processings.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Processings.IngestionTrackings.Exceptions;
 using Moq;
 using Xeptions;

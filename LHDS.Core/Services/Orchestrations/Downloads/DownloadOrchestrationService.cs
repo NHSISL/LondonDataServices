@@ -119,7 +119,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                         $"/{landingConfiguration.DecryptedFolder}" +
                                         $"/{requriedDataSetSpecification.DataSet.DataSetName}" +
                                         $"/{requriedDataSetSpecification.Id}" +
-                                        $"/{filename.Split('_')[4]}" +
+                                        $"/{filename.Split('_')[3]}" +
                                         $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
                                       Decrypted = false,

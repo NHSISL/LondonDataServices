@@ -7,6 +7,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.DataSets;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
@@ -25,6 +27,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             List<Document> randomDocuments = CreateRandomDocuments();
             List<Document> externalDocuments = randomDocuments;
             List<IngestionTracking> externalIngestionTrackingsFound = new List<IngestionTracking>();
+            DataSet randomDataSet = CreateRandomDataSet(supplierId: landingConfiguration.LandingSupplierId);
+
+            IQueryable<DataSetSpecification> randomDataSetSpecificationList =
+                CreateRandomDataSetSpecifications(dataSetId: randomDataSet.Id);
+
+            DataSetSpecification randomDataSetSpecification = randomDataSetSpecificationList.First();
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -37,6 +45,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             this.downloadServiceMock.Setup(service =>
                service.RetrieveListOfDocumentsToProcessAsync())
                    .ReturnsAsync(externalDocuments);
+
+            this.dataSetSpecificationServiceMock.Setup(service =>
+                service.RetrieveAllDataSetSpecifications())
+                    .Returns(randomDataSetSpecificationList);
 
             foreach (var document in externalDocuments)
             {
@@ -62,6 +74,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
                       DecryptedFileName =
                         $"/{landingConfiguration.DecryptedFolder}"
+                            + $"/{randomDataSetSpecification.DataSet.DataSetName}"
+                            + $"/{randomDataSetSpecification.Id}"
+                            + $"/{filename.Split('_')[3]}"
                             + $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
                       Decrypted = false,
@@ -115,6 +130,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
                       DecryptedFileName =
                         $"/{landingConfiguration.DecryptedFolder}"
+                            + $"/{randomDataSetSpecification.DataSet.DataSetName}"
+                            + $"/{randomDataSetSpecification.Id}"
+                            + $"/{filename.Split('_')[3]}"
                             + $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
                       Decrypted = false,

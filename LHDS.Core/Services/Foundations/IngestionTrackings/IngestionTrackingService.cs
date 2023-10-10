@@ -72,8 +72,11 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
                 IngestionTracking maybeIngestionTracking =
                     await this.storageBroker.SelectIngestionTrackingByIdAsync(ingestionTracking.Id);
 
-                ValidateStorageIngestionTracking(maybeIngestionTracking, ingestionTracking.Id);
-                ValidateAgainstStorageIngestionTrackingOnModify(inputIngestionTracking: ingestionTracking, storageIngestionTracking: maybeIngestionTracking);
+                ValidateStorageIngestionTracking(maybeIngestionTracking, ingestionTrackingId: ingestionTracking.Id);
+
+                ValidateAgainstStorageIngestionTrackingOnModify(
+                    inputIngestionTracking: ingestionTracking,
+                    storageIngestionTracking: maybeIngestionTracking);
 
                 return await this.storageBroker.UpdateIngestionTrackingAsync(ingestionTracking);
             });
@@ -81,14 +84,17 @@ namespace LHDS.Core.Services.Foundations.IngestionTrackings
         public ValueTask<IngestionTracking> RemoveIngestionTrackingByIdAsync(Guid ingestionTrackingId) =>
             TryCatch(async () =>
             {
-                ValidateIngestionTrackingId(ingestionTrackingId);
+                return await WithRetry(async () =>
+                {
+                    ValidateIngestionTrackingId(ingestionTrackingId: ingestionTrackingId);
 
-                IngestionTracking maybeIngestionTracking = await this.storageBroker
-                    .SelectIngestionTrackingByIdAsync(ingestionTrackingId);
+                    IngestionTracking maybeIngestionTracking = await this.storageBroker
+                        .SelectIngestionTrackingByIdAsync(ingestionTrackingId);
 
-                ValidateStorageIngestionTracking(maybeIngestionTracking, ingestionTrackingId);
+                    ValidateStorageIngestionTracking(maybeIngestionTracking, ingestionTrackingId);
 
-                return await this.storageBroker.DeleteIngestionTrackingAsync(maybeIngestionTracking);
+                    return await this.storageBroker.DeleteIngestionTrackingAsync(maybeIngestionTracking);
+                });
             });
     }
 }

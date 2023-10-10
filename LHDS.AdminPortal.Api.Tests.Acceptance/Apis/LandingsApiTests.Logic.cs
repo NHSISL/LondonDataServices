@@ -117,15 +117,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         private async Task RemoveAuditRecords(
             Core.Models.Foundations.IngestionTrackings.IngestionTracking ingestionTracking)
         {
-            var audits = this.apiBroker.auditService.RetrieveAllAudits()
+            var audits = this.apiBroker.auditService.RetrieveAllIngestionTrackingAudits()
                 .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
 
             foreach (var audit in audits)
             {
-                await this.apiBroker.auditService.RemoveAuditByIdAsync(audit.Id);
+                await this.apiBroker.auditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
             }
 
-            if (this.apiBroker.auditService.RetrieveAllAudits()
+            if (this.apiBroker.auditService.RetrieveAllIngestionTrackingAudits()
                 .Any(audit => audit.IngestionTrackingId == ingestionTracking.Id))
             {
                 await this.RemoveAuditRecords(ingestionTracking);

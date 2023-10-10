@@ -5,7 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Processings.IngestionTrackingAudits.Exceptions;
 using Moq;
 using Xunit;
@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
                     innerException: invalidArgumentIngestionTrackingAuditProcessingException);
 
             // when
-            ValueTask<Audit> RetrieveIngestionTrackingAuditTask =
+            ValueTask<IngestionTrackingAudit> RetrieveIngestionTrackingAuditTask =
                 this.ingestionTrackingAuditProcessingService.RemoveIngestionTrackingAuditByIdAsync(invalidId);
 
             IngestionTrackingAuditProcessingValidationException

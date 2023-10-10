@@ -23,9 +23,9 @@ using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Orchestrations.OptOuts;
-using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.CsvMappers;
 using LHDS.Core.Services.Foundations.Documents;
+using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Mesh;
 using LHDS.Core.Services.Foundations.OptOuts;
@@ -120,7 +120,7 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddServices(IServiceCollection services)
         {
-            services.AddTransient<IAuditService, AuditService>();
+            services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
             services.AddTransient<ICsvMapperService, CsvMapperService>();
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();

@@ -6,7 +6,6 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Foundations.PdsAudits.Exceptions;
 using Moq;
@@ -147,7 +146,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.PdsAudits
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             PdsAudit randomPdsAudit = CreateRandomPdsAudit(randomDateTimeOffset);
             PdsAudit invalidPdsAudit = randomPdsAudit;
-            
+
             var invalidPdsAuditException = new InvalidPdsAuditException(
                 message: "Invalid pdsAudit. Please correct the errors and try again.");
 

@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly ILandingClient landingClient;
         private readonly LandingConfiguration landingConfiguration;
-        private readonly IAuditService auditService;
+        private readonly IIngestionTrackingAuditService auditService;
 
         private readonly DependencyBroker dependencyBroker;
 
@@ -56,7 +56,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             serviceCollection.AddLandingClientForAcceptance(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
-            this.auditService = serviceProvider.GetService<IAuditService>();
+            this.auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
             this.landingConfiguration = serviceProvider.GetService<LandingConfiguration>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             landingClient = serviceProvider.GetService<ILandingClient>();

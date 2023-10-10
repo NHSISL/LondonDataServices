@@ -6,7 +6,7 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
 using Xunit;
@@ -100,7 +100,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     Times.Once);
 
             this.auditServiceMock.Verify(service =>
-                service.AddAuditAsync(It.IsAny<Audit>()),
+                service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
                     Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();

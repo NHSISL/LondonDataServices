@@ -5,18 +5,18 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 
 namespace LHDS.Core.Services.Processings.IngestionTrackings
 {
     public interface IIngestionTrackingAuditProcessingService
     {
-        ValueTask<Audit> AddIngestionTrackingAuditAsync(Audit audit);
-        IQueryable<Audit> RetrieveAllIngestionTrackingAudits();
-        ValueTask<Audit> RetrieveIngestionTrackingAuditByIdAsync(Guid auditId);
-        ValueTask<Audit> RetrieveOrAddIngestionTrackingAuditAsync(Audit audit);
-        ValueTask<Audit> ModifyOrAddIngestionTrackingAuditAsync(Audit audit);
-        ValueTask<Audit> ModifyIngestionTrackingAuditAsync(Audit audit);
-        ValueTask<Audit> RemoveIngestionTrackingAuditByIdAsync(Guid auditId);
+        ValueTask<IngestionTrackingAudit> AddIngestionTrackingAuditAsync(IngestionTrackingAudit audit);
+        IQueryable<IngestionTrackingAudit> RetrieveAllIngestionTrackingAudits();
+        ValueTask<IngestionTrackingAudit> RetrieveIngestionTrackingAuditByIdAsync(Guid auditId);
+        ValueTask<IngestionTrackingAudit> RetrieveOrAddIngestionTrackingAuditAsync(IngestionTrackingAudit audit);
+        ValueTask<IngestionTrackingAudit> ModifyOrAddIngestionTrackingAuditAsync(IngestionTrackingAudit audit);
+        ValueTask<IngestionTrackingAudit> ModifyIngestionTrackingAuditAsync(IngestionTrackingAudit audit);
+        ValueTask<IngestionTrackingAudit> RemoveIngestionTrackingAuditByIdAsync(Guid auditId);
     }
 }

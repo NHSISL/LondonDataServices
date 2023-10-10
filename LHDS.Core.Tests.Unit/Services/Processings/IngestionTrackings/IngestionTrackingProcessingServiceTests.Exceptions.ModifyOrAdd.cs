@@ -124,11 +124,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     .Throws(serviceException);
 
             // when
-            ValueTask<IngestionTracking> addIngestionTrackingTask =
+            ValueTask<IngestionTracking> ingestionTrackingModifyOrAddTask =
                 this.ingestionTrackingProcessingService.ModifyOrAddIngestionTrackingAsync(inputIngestionTracking);
 
             IngestionTrackingProcessingServiceException actualException =
-                await Assert.ThrowsAsync<IngestionTrackingProcessingServiceException>(addIngestionTrackingTask.AsTask);
+                await Assert.ThrowsAsync<IngestionTrackingProcessingServiceException>(
+                    ingestionTrackingModifyOrAddTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedIngestionTrackingProcessingServiveException);

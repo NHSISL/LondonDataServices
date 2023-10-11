@@ -6,11 +6,13 @@ using System;
 using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Processings.Downloads;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
 {
@@ -29,6 +31,25 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
                 downloadService: this.downloadServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
+
+        public static TheoryData DependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DownloadValidationException(
+                    message: "Download validation errors occurred, please try again.", innerException),
+
+                new DownloadDependencyValidationException(
+                    message: "Download dependency validation occurred, please try again.", innerException)
+            };
+        }
+
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);

@@ -92,16 +92,18 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
                 return await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(dataSetSpecificationId);
             });
 
-        public async ValueTask<DataSetSpecification> GetActiveDataSetSpecificationAsync(Guid supplierId)
-        {
-            IQueryable<DataSetSpecification> retrievedDataSetSpecifications =
-                this.dataSetSpecificationService.RetrieveAllDataSetSpecifications().Where(
-                    specification =>
-                            specification.DataSet.SupplierId == supplierId
-                            && specification.DataSet.IsActive == true
-                            && specification.IsActive == true);
+        public ValueTask<DataSetSpecification> GetActiveDataSetSpecification(Guid supplierId) =>
+            TryCatch(async () =>
+            {
+                ValidateSupplierId(supplierId);
 
-            return retrievedDataSetSpecifications.First();
-        }
+                DataSetSpecification result = this.dataSetSpecificationService.RetrieveAllDataSetSpecifications().Where(
+                        specification =>
+                                specification.DataSet.SupplierId == supplierId
+                                && specification.DataSet.IsActive == true
+                                && specification.IsActive == true).First();
+
+                return await Task.FromResult(result);
+            });
     }
 }

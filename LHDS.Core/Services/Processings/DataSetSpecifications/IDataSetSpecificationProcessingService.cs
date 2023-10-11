@@ -18,6 +18,6 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
         ValueTask<DataSetSpecification> ModifyOrAddDataSetSpecificationAsync(DataSetSpecification dataSetSpecification);
         ValueTask<DataSetSpecification> ModifyDataSetSpecificationAsync(DataSetSpecification dataSetSpecification);
         ValueTask<DataSetSpecification> RemoveDataSetSpecificationByIdAsync(Guid dataSetSpecificationId);
-        ValueTask<DataSetSpecification> GetActiveDataSetSpecificationAsync(Guid supplierId);
+        ValueTask<DataSetSpecification> GetActiveDataSetSpecification(Guid supplierId);
     }
 }

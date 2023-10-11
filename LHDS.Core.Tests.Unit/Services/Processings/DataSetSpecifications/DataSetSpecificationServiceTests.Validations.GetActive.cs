@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     message: "Invalid argument(s). Please correct the errors and try again.");
 
             invalidArgumentDataSetSpecificationProcessingException.AddData(
-                key: "Id",
+                key: "SupplierId",
                 values: "Id is required");
 
             var expectedDataSetSpecificationProcessingValidationException =
@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             // when
             ValueTask<DataSetSpecification> RetrieveDataSetSpecificationTask =
-                this.dataSetSpecificationProcessingService.GetActiveDataSetSpecificationAsync(invalidSupplierId);
+                this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(invalidSupplierId);
 
             DataSetSpecificationProcessingValidationException actualDataSetSpecificationProcessingValidationException =
                 await Assert.ThrowsAsync<DataSetSpecificationProcessingValidationException>(

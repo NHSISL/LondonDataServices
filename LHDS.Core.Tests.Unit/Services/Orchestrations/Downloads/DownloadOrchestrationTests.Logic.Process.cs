@@ -65,31 +65,31 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     : "/" + document.FileName;
 
                 IngestionTracking newIngestionTracking =
-                  new IngestionTracking
-                  {
-                      Id = randomGuid,
-                      FileName = document.FileName,
-                      SupplierId = landingConfiguration.LandingSupplierId,
-                      EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
+                    new IngestionTracking
+                    {
+                        Id = randomGuid,
+                        FileName = document.FileName,
+                        SupplierId = landingConfiguration.LandingSupplierId,
+                        EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
 
-                      DecryptedFileName =
+                        DecryptedFileName =
                         $"/{landingConfiguration.DecryptedFolder}"
                             + $"/{randomDataSetSpecification.DataSet.DataSetName}"
                             + $"/{randomDataSetSpecification.Id}"
                             + $"/{filename.Split('_')[3]}"
                             + $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
-                      Decrypted = false,
-                      LastSeen = randomDateTime,
-                      FileDeleted = false,
-                      RecordCount = 0,
-                      EncryptedFileSize = document.DocumentData.Length,
-                      DecryptedFileSize = 0,
-                      CreatedBy = "System",
-                      CreatedDate = randomDateTime,
-                      UpdatedBy = "System",
-                      UpdatedDate = randomDateTime
-                  };
+                        Decrypted = false,
+                        LastSeen = randomDateTime,
+                        FileDeleted = false,
+                        RecordCount = 0,
+                        EncryptedFileSize = document.DocumentData.Length,
+                        DecryptedFileSize = 0,
+                        CreatedBy = "System",
+                        CreatedDate = randomDateTime,
+                        UpdatedBy = "System",
+                        UpdatedDate = randomDateTime
+                    };
 
                 IngestionTracking storageIngestionTracking = newIngestionTracking.DeepClone();
 

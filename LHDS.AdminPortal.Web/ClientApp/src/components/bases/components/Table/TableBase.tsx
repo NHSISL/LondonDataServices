@@ -7,7 +7,7 @@ interface TableBaseProps {
 
 const TableBase: FunctionComponent<TableBaseProps> = (props) => {
     return (
-        <table>
+        <table className="table table-bordered">
             {props.children}
         </table>
     )

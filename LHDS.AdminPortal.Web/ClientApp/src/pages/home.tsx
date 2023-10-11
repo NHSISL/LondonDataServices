@@ -1,116 +1,112 @@
 import React from 'react';
-import { Container, Row, Col, Card } from 'nhsuk-react-components';
-import 'nhsuk-frontend/dist/nhsuk.min';
-import 'nhsuk-frontend/packages/polyfills';
 import { PublicLink, SecuredComponents } from '../components/Links';
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 import { loginRequest } from '../authConfig';
-import { Button } from 'react-bootstrap';
+import { Button, Card, Container } from 'react-bootstrap';
 import { FeatureSwitch } from '../components/accessControl/FeatureSwitch';
 import { FeatureDefinitions } from '../featureDefinitions';
 import securityPoints from '../SecurityMatrix';
+import CardBase from '../components/bases/components/Card/CardBase';
+import CardBaseContent from '../components/bases/components/Card/CardBase.Content';
+import CardBaseHeader from '../components/bases/components/Card/CardBase.Header';
+import CardBaseBody from '../components/bases/components/Card/CardBase.Body';
+import CardBaseTitle from '../components/bases/components/Card/CardBase.Title';
+import ButtonBase from '../components/bases/buttons/ButtonBase';
 
 export const Home = () => {
     const isAuthenticated = useIsAuthenticated();
     const { instance } = useMsal();
     return (
         <>
-            <section className="nhsuk-hero">
-                <Container>
-                    <Row className="nhsuk-grid-row">
-                        <Col width="full">
-                            <div className="nhsuk-hero__wrapper app-hero__wrapper">
-                                <h1 className="nhsuk-u-margin-bottom-4">London Health Data Services</h1>
-                                <span className=" nhsuk-u-margin-bottom-1">
-                                    <p className="nhsuk-body-l nhsuk-u-margin-bottom-1">Admin Portal</p>
-                                </span>
-                            </div>
-                        </Col>
-                        <Col width="one-third"></Col>
-                    </Row>
-                </Container>
-            </section>
+
+            <div className="container-fluid py-5 bg-primary text-white">
+                <h1 className="display-5 fw-bold">London Data Service</h1>
+                <p className="col-md-8 fs-4">"Empowering Healthcare with London's GP Data Excellence!"</p>
+            </div>
 
             <section>
-                <Container className="NELTopPadding">
+                <div>
                     {isAuthenticated ? (
-                        <div>
-                            <Card.Group>
-                                <FeatureSwitch feature={FeatureDefinitions.IngestionTracking}>
-                                    <SecuredComponents allowedRoles={securityPoints.ingestionTracking.view}>
-                                        <Card.GroupItem width="one-half">
-                                            <Card clickable>
-                                                <Card.Content>
-                                                    <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
+                        <div className="container-fluid">
+
+                            <FeatureSwitch feature={FeatureDefinitions.IngestionTracking}>
+                                <div className="row">
+
+                                    <div className="col-sm-4">
+                                        <SecuredComponents allowedRoles={securityPoints.ingestionTracking.view}>
+                                            <CardBase>
+                                                <CardBaseBody>
+                                                    <CardBaseTitle>
                                                         <PublicLink to="/ingestionTracking">Ingestion Tracking</PublicLink>
-                                                    </Card.Heading>
-                                                    <Card.Description>
+                                                    </CardBaseTitle>
+                                                    <CardBaseContent>
                                                         View Ingestion Data.
-                                                    </Card.Description>
-                                                </Card.Content>
-                                            </Card>
-                                        </Card.GroupItem>
-                                    </SecuredComponents>
+                                                    </CardBaseContent>
+                                                </CardBaseBody>
+                                            </CardBase>
+                                        </SecuredComponents>
+                                    </div>
 
-                                    <SecuredComponents allowedRoles={securityPoints.optOut.view}>
-                                        <Card.GroupItem width="one-half">
-                                            <Card clickable>
-                                                <Card.Content>
-                                                    <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
+                                    <div className="col-sm-4">
+                                        <SecuredComponents allowedRoles={securityPoints.optOut.view}>
+                                            <CardBase>
+                                                <CardBaseBody>
+                                                    <CardBaseTitle>
                                                         <PublicLink to="/optOutSearch">Search OptOut</PublicLink>
-                                                    </Card.Heading>
-                                                    <Card.Description>
+                                                    </CardBaseTitle>
+                                                    <CardBaseContent>
                                                         Search Opt Out.
-                                                    </Card.Description>
-                                                </Card.Content>
-                                            </Card>
-                                        </Card.GroupItem>
-                                    </SecuredComponents>
+                                                    </CardBaseContent>
+                                                </CardBaseBody>
+                                            </CardBase>
+                                        </SecuredComponents>
+                                    </div>
 
-
-                                    <SecuredComponents allowedRoles={securityPoints.pds.view}>
-                                        <Card.GroupItem width="one-half">
-                                            <Card clickable>
-                                                <Card.Content>
-                                                    <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
+                                    <div className="col-sm-4">
+                                        <SecuredComponents allowedRoles={securityPoints.pds.view}>
+                                            <CardBase>
+                                                <CardBaseBody>
+                                                    <CardBaseTitle>
                                                         <PublicLink to="/pds">Search PDS</PublicLink>
-                                                    </Card.Heading>
-                                                    <Card.Description>
+                                                    </CardBaseTitle>
+                                                    <CardBaseContent>
                                                         Search Pds.
-                                                    </Card.Description>
-                                                </Card.Content>
-                                            </Card>
-                                        </Card.GroupItem>
-                                    </SecuredComponents>
-                                </FeatureSwitch>
-                            </Card.Group>
+                                                    </CardBaseContent>
+                                                </CardBaseBody>
+                                            </CardBase>
+                                        </SecuredComponents>
+                                    </div>
+                                </div>
+                            </FeatureSwitch>
                         </div>
                     ) : (
-                        <Card>
-                            <Card.Content>
-                                <Card.Heading className="nhsuk-heading-m">
-                                        <Card.Link href="#" onClick={() => instance.loginRedirect(loginRequest)}>
+                        <div className="container mt-5">
+                            <CardBase>
+                                <CardBaseBody>
+                                    <CardBaseTitle>
+                                        <a href="#" onClick={() => instance.loginRedirect(loginRequest)}>
                                             Login to continue.
-                                        </Card.Link>
-                                </Card.Heading>
-                                <Card.Description>
-                                    To unlock all the features of this system,
+                                        </a>
+                                    </CardBaseTitle>
+                                    <CardBaseContent>
+                                        To unlock all the features of this system,
                                         please
 
-                                        <Button
-                                            variant="link"
-                                            className="linkCustom"
+                                        <ButtonBase
+                                            className="btn btn-primary ms-2 me-2"
                                             onClick={() => instance.loginRedirect(loginRequest)}>
                                             Login
-                                        </Button>.
+                                        </ButtonBase>.
 
-                                    For access requests, please contact your Manager.
-                                </Card.Description>
-                            </Card.Content>
-                        </Card>
+                                        For access requests, please contact your Manager.
+                                    </CardBaseContent>
+                                </CardBaseBody>
+                            </CardBase>
+                        </div>
                     )}
-                </Container>
-            </section>
+                </div>
+            </section >
+
         </>
     );
 };

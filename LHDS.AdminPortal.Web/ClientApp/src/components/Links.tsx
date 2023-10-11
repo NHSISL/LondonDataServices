@@ -2,6 +2,7 @@ import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 import React, { ReactElement } from 'react';
 import { NavItem, NavLink } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap'
+import { Link } from 'react-router-dom';
 
 type PublicLinkParameters = {
     children: string,
@@ -61,13 +62,11 @@ export const SecuredLink = ({ to, children, allowedRoles = [], deniedRoles = [] 
     }
 
     if (isAuthenticated && (allowedRoles.length === 0 || userIsInRole(allowedRoles))) {
-        return <NavItem>
-            <LinkContainer to={to} >
-                <NavLink className="text-white">
+        return <li className="nav-item">
+            <Link to={to} className="nav-link text-white">
                     {children}
-                </NavLink>
-            </LinkContainer>
-        </NavItem>
+            </Link>
+        </li>
     }
 
     return <></>;

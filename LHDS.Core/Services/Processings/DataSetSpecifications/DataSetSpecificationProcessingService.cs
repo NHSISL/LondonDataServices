@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
+using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 
 namespace LHDS.Core.Services.Processings.DataSetSpecifications
@@ -91,7 +92,16 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
                 return await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(dataSetSpecificationId);
             });
 
-        public async ValueTask<DataSetSpecification> GetActiveDataSetSpecificationAsync(Guid supplierId) =>
-            throw new NotImplementedException();
+        public async ValueTask<DataSetSpecification> GetActiveDataSetSpecificationAsync(Guid supplierId)
+        {
+            IQueryable<DataSetSpecification> retrievedDataSetSpecifications =
+                this.dataSetSpecificationService.RetrieveAllDataSetSpecifications().Where(
+                    specification =>
+                            specification.DataSet.SupplierId == supplierId
+                            && specification.DataSet.IsActive == true
+                            && specification.IsActive == true);
+
+            return retrievedDataSetSpecifications.First();
+        }
     }
 }

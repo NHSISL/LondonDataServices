@@ -126,14 +126,17 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             return filler;
         }
 
-        private static IQueryable<DataSetSpecification> CreateRandomDataSetSpecifications(Guid dataSetId, int count)
+        private static IQueryable<DataSetSpecification> CreateRandomDataSetSpecifications(
+            DataSet dataSet, 
+            Guid dataSetId, 
+            int count)
         {
-            return CreateDataSetSpecificationFiller(dataSetId)
+            return CreateDataSetSpecificationFiller(dataSet, dataSetId)
                 .Create(count)
                     .AsQueryable();
         }
 
-        private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(Guid dataSetId)
+        private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(DataSet dataSet, Guid dataSetId)
         {
             string user = GetRandomString(255);
             var filler = new Filler<DataSetSpecification>();
@@ -145,6 +148,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
                 .OnProperty(dataSetSpecification =>
                     dataSetSpecification.DataSetId).Use(dataSetId)
+
+                .OnProperty(dataSetSpecification =>
+                    dataSetSpecification.DataSet).Use(dataSet)
 
                 .OnProperty(dataSetSpecification =>
                     dataSetSpecification.IsActive).Use(true)

@@ -24,21 +24,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             DataSet randomDataSet = CreateRandomDataSet(randomSupplierId);
 
             IQueryable<DataSetSpecification> randomDataSetSpecifications =
-                CreateRandomDataSetSpecifications(dataSetId: randomDataSet.Id, count: 1);
+                CreateRandomDataSetSpecifications(dataSet: randomDataSet, dataSetId: randomDataSet.Id, count: 1);
 
             IQueryable<DataSetSpecification> storageDataSetSpecifications = randomDataSetSpecifications;
             IQueryable<DataSetSpecification> expectedDataSetSpecifications = storageDataSetSpecifications.DeepClone();
+            DataSetSpecification expectedDataSetSpecification = expectedDataSetSpecifications.First();
 
             this.dataSetSpecificationServiceMock.Setup(broker =>
                 broker.RetrieveAllDataSetSpecifications())
                     .Returns(storageDataSetSpecifications);
 
             // when
-            DataSetSpecification actualDataSetSpecifications =
+            DataSetSpecification actualDataSetSpecification =
                  await this.dataSetSpecificationProcessingService.GetActiveDataSetSpecificationAsync(randomSupplierId);
 
             // then
-            actualDataSetSpecifications.Should().BeEquivalentTo(expectedDataSetSpecifications);
+            actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification);
 
             this.dataSetSpecificationServiceMock.Verify(broker =>
                 broker.RetrieveAllDataSetSpecifications(),

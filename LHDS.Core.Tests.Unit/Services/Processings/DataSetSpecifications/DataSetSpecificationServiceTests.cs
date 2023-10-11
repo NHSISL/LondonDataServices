@@ -26,7 +26,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
         private readonly Mock<ILoggingBroker> loggingBrokerMock = new Mock<ILoggingBroker>();
         private readonly IDataSetSpecificationProcessingService dataSetSpecificationProcessingService;
-        private readonly LandingConfiguration landingConfiguration;
 
         public DataSetSpecificationProcessingServiceTests()
         {

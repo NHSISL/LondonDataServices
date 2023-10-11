@@ -33,13 +33,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             dataSetSpecificationProcessingService = new DataSetSpecificationProcessingService(
                 dataSetSpecificationService: dataSetSpecificationServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object);
-
-            landingConfiguration = new LandingConfiguration
-            {
-                LandingSupplierId = Guid.NewGuid(),
-                EncryptedFolder = "encrypted",
-                DecryptedFolder = "inbox/landings"
-            };
         }
 
         public static TheoryData DependencyValidationExceptions()

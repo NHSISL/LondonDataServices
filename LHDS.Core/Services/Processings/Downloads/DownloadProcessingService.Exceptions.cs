@@ -4,6 +4,7 @@
 
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Processings.Downloads.Exceptions;
 using Xeptions;
 
@@ -23,6 +24,14 @@ namespace LHDS.Core.Services.Processings.Downloads
             {
                 throw CreateAndLogValidationException(invalidArgumentDownloadProcessingException);
             }
+            catch (DownloadValidationException downloadValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(downloadValidationException);
+            }
+            catch (DownloadDependencyValidationException downloadDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(downloadDependencyValidationException);
+            }
         }
 
         private DownloadProcessingValidationException CreateAndLogValidationException(Xeption exception)
@@ -34,6 +43,19 @@ namespace LHDS.Core.Services.Processings.Downloads
             this.loggingBroker.LogError(downloadValidationException);
 
             return downloadValidationException;
+        }
+
+        private DownloadProcessingDependencyValidationException CreateAndLogDependencyValidationException(
+            Xeption exception)
+        {
+            var downloadProcessingDependencyValidationException =
+                new DownloadProcessingDependencyValidationException(
+                    message: "Download processing dependency validation error occurred, please try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(downloadProcessingDependencyValidationException);
+
+            return downloadProcessingDependencyValidationException;
         }
     }
 }

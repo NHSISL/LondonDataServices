@@ -2,12 +2,15 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
+using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Processings.Downloads;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
 {
@@ -26,6 +29,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
                 downloadService: this.downloadServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static Document CreateRandomDocument() =>
             CreateDocumentFiller().Create();

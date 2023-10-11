@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
@@ -14,6 +15,7 @@ namespace LHDS.Core.Services.Processings.Downloads
     public partial class DownloadProcessingService
     {
         private delegate ValueTask<Document> ReturningDownloadFunction();
+        private delegate ValueTask<List<Document>> ReturningDownloadsFunction();
 
         private async ValueTask<Document> TryCatch(ReturningDownloadFunction returningDownloadFunction)
         {
@@ -24,6 +26,39 @@ namespace LHDS.Core.Services.Processings.Downloads
             catch (InvalidArgumentDownloadProcessingException invalidArgumentDownloadProcessingException)
             {
                 throw CreateAndLogValidationException(invalidArgumentDownloadProcessingException);
+            }
+            catch (DownloadValidationException downloadValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(downloadValidationException);
+            }
+            catch (DownloadDependencyValidationException downloadDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(downloadDependencyValidationException);
+            }
+            catch (DownloadDependencyException downloadDependencyException)
+            {
+                throw CreateAndLogDependencyException(downloadDependencyException);
+            }
+            catch (DownloadServiceException downloadServiceException)
+            {
+                throw CreateAndLogDependencyException(downloadServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedDownloadProcessingServiceException =
+                    new FailedDownloadProcessingServiceException(
+                        message: "Failed Download processing service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedDownloadProcessingServiceException);
+            }
+        }
+
+        private async ValueTask<List<Document>> TryCatch(ReturningDownloadsFunction returningDownloadsFunction)
+        {
+            try
+            {
+                return await returningDownloadsFunction();
             }
             catch (DownloadValidationException downloadValidationException)
             {

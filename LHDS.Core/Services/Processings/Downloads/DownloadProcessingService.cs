@@ -23,8 +23,11 @@ namespace LHDS.Core.Services.Processings.Downloads
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<List<Document>> RetrieveListOfDocumentsToProcessAsync() =>
-            await this.downloadService.RetrieveListOfDocumentsToProcessAsync();
+        public ValueTask<List<Document>> RetrieveListOfDocumentsToProcessAsync() =>
+            TryCatch(async () =>
+            {
+                return await this.downloadService.RetrieveListOfDocumentsToProcessAsync();
+            });
 
         public ValueTask<Document> RetrieveDownloadByFileNameAsync(string fileName) =>
             TryCatch(async () =>

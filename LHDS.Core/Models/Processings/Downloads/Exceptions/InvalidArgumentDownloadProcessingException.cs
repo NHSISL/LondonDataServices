@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Processings.IngestionTrackingAudits.Exceptions
+namespace LHDS.Core.Models.Processings.Downloads.Exceptions
 {
     public class InvalidArgumentDownloadProcessingException : Xeption
     {

@@ -6,8 +6,10 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
+using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using Moq;
@@ -24,12 +26,20 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
         private readonly Mock<ILoggingBroker> loggingBrokerMock = new Mock<ILoggingBroker>();
         private readonly IDataSetSpecificationProcessingService dataSetSpecificationProcessingService;
+        private readonly LandingConfiguration landingConfiguration;
 
         public DataSetSpecificationProcessingServiceTests()
         {
             dataSetSpecificationProcessingService = new DataSetSpecificationProcessingService(
                 dataSetSpecificationService: dataSetSpecificationServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object);
+
+            landingConfiguration = new LandingConfiguration
+            {
+                LandingSupplierId = Guid.NewGuid(),
+                EncryptedFolder = "encrypted",
+                DecryptedFolder = "inbox/landings"
+            };
         }
 
         public static TheoryData DependencyValidationExceptions()
@@ -85,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
         private static IQueryable<DataSetSpecification> CreateRandomDataSetSpecifications()
         {
             return CreateDataSetSpecificationFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber())
+                .Create(count: 1)
                     .AsQueryable();
         }
 
@@ -97,6 +107,65 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
+                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static DataSet CreateRandomDataSet(Guid supplierId) =>
+           CreateDataSetFiller(supplierId).Create();
+
+        private static Filler<DataSet> CreateDataSetFiller(Guid supplierId)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<DataSet>();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(dataSet => dataSet.SupplierId).Use(supplierId)
+                .OnProperty(dataSet => dataSet.IsActive).Use(true)
+                .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()));
+
+            return filler;
+        }
+
+        private static IQueryable<DataSetSpecification> CreateRandomDataSetSpecifications(Guid dataSetId, int count)
+        {
+            return CreateDataSetSpecificationFiller(dataSetId)
+                .Create(count)
+                    .AsQueryable();
+        }
+
+        private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(Guid dataSetId)
+        {
+            string user = GetRandomString(255);
+            var filler = new Filler<DataSetSpecification>();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+
+                .OnProperty(dataSetSpecification =>
+                    dataSetSpecification.DataSetId).Use(dataSetId)
+
+                .OnProperty(dataSetSpecification =>
+                    dataSetSpecification.IsActive).Use(true)
+
+                .OnProperty(dataSetSpecification =>
+                    dataSetSpecification.OurSpecificationVersion).Use(GetRandomString(10))
+
+                .OnProperty(dataSetSpecification =>
+                    dataSetSpecification.SupplierSpecificationVersion).Use(GetRandomString(10))
+
+                .OnProperty(dataSetSpecification => dataSetSpecification.PresededById).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
                 .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
 

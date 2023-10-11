@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using ApiSupplier = LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers.Supplier;
-using CoreSupplier = LHDS.Core.Models.Foundations.Suppliers.Supplier;
 using Xunit;
-using CoreIngestionTracking = LHDS.Core.Models.Foundations.IngestionTrackings.IngestionTracking;
 using ApiIngestionTracking = LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings.IngestionTracking;
+using ApiSupplier = LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers.Supplier;
+using CoreIngestionTracking = LHDS.Core.Models.Foundations.IngestionTrackings.IngestionTracking;
+using CoreSupplier = LHDS.Core.Models.Foundations.Suppliers.Supplier;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
 {
@@ -24,13 +24,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
             List<ApiSupplier> expectedSuppliers = randomSuppliers;
 
             //When
-            List<CoreSupplier> actualSuppliers = 
+            List<CoreSupplier> actualSuppliers =
                 await this.apiBroker.GetAllItemsAsync<CoreSupplier>("odata/suppliers");
 
             //Then
-            foreach (CoreSupplier actualSupplier in actualSuppliers)
+            foreach (ApiSupplier expectedSupplier in expectedSuppliers)
             {
-                expectedSuppliers.Any(supplier => supplier.Id == actualSupplier.Id).Should().BeTrue();
+                actualSuppliers.Any(supplier => supplier.Id == expectedSupplier.Id).Should().BeTrue();
             }
 
             foreach (ApiSupplier expectedSupplier in expectedSuppliers)
@@ -94,7 +94,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Suppliers
             ApiSupplier randomSupplier = await PostRandomSupplierAsync();
             ApiSupplier expectedSupplier = randomSupplier;
 
-            List<ApiIngestionTracking> randomIngestionTrackings = 
+            List<ApiIngestionTracking> randomIngestionTrackings =
                 await PostRandomIngestionTrackingsAsync(randomSupplier.Id);
 
             List<ApiIngestionTracking> expectedIngestionTrackings = randomIngestionTrackings;

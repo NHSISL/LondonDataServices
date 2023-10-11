@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
@@ -40,6 +41,15 @@ namespace LHDS.Core.Services.Processings.Downloads
             {
                 throw CreateAndLogDependencyException(downloadServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedDownloadProcessingServiceException =
+                    new FailedDownloadProcessingServiceException(
+                        message: "Failed Download processing service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedDownloadProcessingServiceException);
+            }
         }
 
         private DownloadProcessingValidationException CreateAndLogValidationException(Xeption exception)
@@ -76,6 +86,18 @@ namespace LHDS.Core.Services.Processings.Downloads
             this.loggingBroker.LogError(downloadProcessingDependencyException);
 
             throw downloadProcessingDependencyException;
+        }
+
+        private DownloadProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var downloadProcessingServiceException = new
+                DownloadProcessingServiceException(
+                    message: "Download processing service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(downloadProcessingServiceException);
+
+            return downloadProcessingServiceException;
         }
     }
 }

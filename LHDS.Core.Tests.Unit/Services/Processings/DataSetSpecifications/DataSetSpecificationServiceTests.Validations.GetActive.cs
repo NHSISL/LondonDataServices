@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             // when
             ValueTask<DataSetSpecification> RetrieveDataSetSpecificationTask =
-                this.dataSetSpecificationProcessingService.RetrieveDataSetSpecificationByIdAsync(invalidSupplierId);
+                this.dataSetSpecificationProcessingService.GetActiveDataSetSpecificationAsync(invalidSupplierId);
 
             DataSetSpecificationProcessingValidationException actualDataSetSpecificationProcessingValidationException =
                 await Assert.ThrowsAsync<DataSetSpecificationProcessingValidationException>(

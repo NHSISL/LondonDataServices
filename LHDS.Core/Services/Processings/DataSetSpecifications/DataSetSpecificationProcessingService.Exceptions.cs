@@ -94,19 +94,6 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
             }
         }
 
-        private DataSetSpecification TryCatch(
-            ReturningSingleDataSetSpecificationProcessingFunction ReturningSingleDataSetSpecificationProcessingFunction)
-        {
-            try
-            {
-                return ReturningSingleDataSetSpecificationProcessingFunction();
-            }
-            catch (InvalidArgumentDataSetSpecificationProcessingException invalidArgumentDataSetSpecificationProcessingException)
-            {
-                throw CreateAndLogValidationException(invalidArgumentDataSetSpecificationProcessingException);
-            }
-        }
-
         private DataSetSpecificationProcessingValidationException CreateAndLogValidationException(Xeption exception)
         {
             var dataSetSpecificationProcessingValidationExceptionn =

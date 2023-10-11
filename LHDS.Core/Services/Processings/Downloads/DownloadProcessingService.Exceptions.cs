@@ -32,6 +32,14 @@ namespace LHDS.Core.Services.Processings.Downloads
             {
                 throw CreateAndLogDependencyValidationException(downloadDependencyValidationException);
             }
+            catch (DownloadDependencyException downloadDependencyException)
+            {
+                throw CreateAndLogDependencyException(downloadDependencyException);
+            }
+            catch (DownloadServiceException downloadServiceException)
+            {
+                throw CreateAndLogDependencyException(downloadServiceException);
+            }
         }
 
         private DownloadProcessingValidationException CreateAndLogValidationException(Xeption exception)
@@ -56,6 +64,18 @@ namespace LHDS.Core.Services.Processings.Downloads
             this.loggingBroker.LogError(downloadProcessingDependencyValidationException);
 
             return downloadProcessingDependencyValidationException;
+        }
+
+        private DownloadProcessingDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var downloadProcessingDependencyException =
+                new DownloadProcessingDependencyException(
+                    message: "Download processing dependency error occurred, please try again.",
+                    innerException: exception?.InnerException as Xeption);
+
+            this.loggingBroker.LogError(downloadProcessingDependencyException);
+
+            throw downloadProcessingDependencyException;
         }
     }
 }

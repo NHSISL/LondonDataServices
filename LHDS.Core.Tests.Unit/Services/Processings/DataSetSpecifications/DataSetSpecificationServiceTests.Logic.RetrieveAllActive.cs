@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using Moq;
@@ -19,14 +20,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
         public async Task ShouldRetrieveActiveDataSetSpecificationsAsync()
         {
             // given
-            Guid randomSupplierId = landingConfiguration.LandingSupplierId;
+            Guid randomSupplierId = Guid.NewGuid();
             DataSet randomDataSet = CreateRandomDataSet(randomSupplierId);
 
             IQueryable<DataSetSpecification> randomDataSetSpecifications =
                 CreateRandomDataSetSpecifications(dataSetId: randomDataSet.Id, count: 1);
 
             IQueryable<DataSetSpecification> storageDataSetSpecifications = randomDataSetSpecifications;
-            IQueryable<DataSetSpecification> expectedDataSetSpecifications = storageDataSetSpecifications;
+            IQueryable<DataSetSpecification> expectedDataSetSpecifications = storageDataSetSpecifications.DeepClone();
 
             this.dataSetSpecificationServiceMock.Setup(broker =>
                 broker.RetrieveAllDataSetSpecifications())

@@ -27,7 +27,11 @@ namespace LHDS.Core.Services.Processings.Downloads
         public ValueTask<List<Document>> RetrieveListOfDocumentsToProcessAsync() =>
             throw new NotImplementedException();
 
-        public async ValueTask<Document> RetrieveDownloadByFileNameAsync(string fileName) =>
-            await this.downloadService.RetrieveDownloadByFileNameAsync(fileName);
+        public ValueTask<Document> RetrieveDownloadByFileNameAsync(string fileName) =>
+            TryCatch(async () =>
+            {
+                ValidateDownloadArgs(fileName);
+                return await this.downloadService.RetrieveDownloadByFileNameAsync(fileName);
+            });
     }
 }

@@ -5,8 +5,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Documents;
-using LHDS.Core.Models.Foundations.Downloads.Exceptions;
-using LHDS.Core.Models.Processings.IngestionTrackingAudits.Exceptions;
+using LHDS.Core.Models.Processings.Downloads.Exceptions;
 using Moq;
 using Xunit;
 
@@ -32,26 +31,26 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
                 key: nameof(Document.FileName),
                 values: "Text is required");
 
-            var expectedDownloadValidationException =
-                new DownloadValidationException(
+            var expectedDownloadProcessingValidationException =
+                new DownloadProcessingValidationException(
                     message: "Download validation errors occurred, please try again.",
                     innerException: invalidArgumentDownloadProcessingException);
 
             // when
-            ValueTask<Document> retrieveDownloadByIdTask =
+            ValueTask<Document> retrieveDownloadByFileNameTask =
                 this.downloadProcessingService.RetrieveDownloadByFileNameAsync(invalidFileName);
 
-            DownloadValidationException actualDownloadValidationException =
-                await Assert.ThrowsAsync<DownloadValidationException>(
-                    retrieveDownloadByIdTask.AsTask);
+            DownloadProcessingValidationException actualDownloadProcessingValidationException =
+                await Assert.ThrowsAsync<DownloadProcessingValidationException>(
+                    retrieveDownloadByFileNameTask.AsTask);
 
             // then
-            actualDownloadValidationException.Should()
-                .BeEquivalentTo(expectedDownloadValidationException);
+            actualDownloadProcessingValidationException.Should()
+                .BeEquivalentTo(expectedDownloadProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    expectedDownloadValidationException))),
+                    expectedDownloadProcessingValidationException))),
                         Times.Once);
 
             this.downloadServiceMock.Verify(broker =>

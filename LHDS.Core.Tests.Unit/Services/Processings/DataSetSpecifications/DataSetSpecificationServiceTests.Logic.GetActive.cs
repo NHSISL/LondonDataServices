@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             // when
             DataSetSpecification actualDataSetSpecification =
-                 await this.dataSetSpecificationProcessingService.GetActiveDataSetSpecificationAsync(randomSupplierId);
+                 await this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(randomSupplierId);
 
             // then
             actualDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification);

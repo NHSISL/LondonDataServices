@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Documents;
@@ -89,6 +90,51 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedDownloadProcessingDependencyException))),
+                         Times.Once);
+
+            this.downloadServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveByFileNameIfServiceErrorOccursAsync()
+        {
+            // given
+            string someFileName = GetRandomString();
+
+            var serviceException = new Exception();
+
+            var failedDownloadProcessingServiceException =
+                new FailedDownloadProcessingServiceException(
+                    message: "Failed Download processing service error occurred, contact support.",
+                    innerException: serviceException);
+
+            var expectedDownloadProcessingServiveException =
+                new DownloadProcessingServiceException(
+                    message: "Download processing service error occurred, contact support.",
+                    innerException: failedDownloadProcessingServiceException);
+
+            this.downloadServiceMock.Setup(service =>
+                service.RetrieveDownloadByFileNameAsync(someFileName))
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<Document> addDownloadTask =
+                this.downloadProcessingService.RetrieveDownloadByFileNameAsync(someFileName);
+
+            DownloadProcessingServiceException actualException =
+                await Assert.ThrowsAsync<DownloadProcessingServiceException>(addDownloadTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDownloadProcessingServiveException);
+
+            this.downloadServiceMock.Verify(service =>
+                service.RetrieveDownloadByFileNameAsync(someFileName),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedDownloadProcessingServiveException))),
                          Times.Once);
 
             this.downloadServiceMock.VerifyNoOtherCalls();

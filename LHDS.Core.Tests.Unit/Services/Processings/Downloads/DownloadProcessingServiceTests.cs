@@ -48,6 +48,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
             };
         }
 
+        public static TheoryData DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DownloadDependencyException(
+                    message: "Download validation errors occurred, please try again.", innerException),
+
+                new DownloadServiceException(
+                    message : "Download service error occurred, contact support.", innerException)
+            };
+        }
+
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 

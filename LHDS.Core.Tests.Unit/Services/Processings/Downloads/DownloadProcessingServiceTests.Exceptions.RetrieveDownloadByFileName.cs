@@ -32,12 +32,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask<Document> downloadRetrieveByIdTask =
+            ValueTask<Document> downloadRetrieveByFileNameTask =
                 this.downloadProcessingService.RetrieveDownloadByFileNameAsync(someFileName);
 
             DownloadProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<DownloadProcessingDependencyValidationException>(
-                    downloadRetrieveByIdTask.AsTask);
+                    downloadRetrieveByFileNameTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedDownloadProcessingDependencyValidationException);
@@ -49,6 +49,46 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Downloads
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedDownloadProcessingDependencyValidationException))),
+                         Times.Once);
+
+            this.downloadServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnRetrieveByFileNameIfDependencyErrorOccursAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            string someFileName = GetRandomString();
+
+            var expectedDownloadProcessingDependencyException =
+                new DownloadProcessingDependencyException(
+                    message: "Download processing dependency error occurred, please try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.downloadServiceMock.Setup(service =>
+                service.RetrieveDownloadByFileNameAsync(someFileName))
+                    .Throws(dependencyException);
+
+            // when
+            ValueTask<Document> downloadRetrieveByFileNameTask =
+                this.downloadProcessingService.RetrieveDownloadByFileNameAsync(someFileName);
+
+            DownloadProcessingDependencyException actualException =
+                await Assert.ThrowsAsync<DownloadProcessingDependencyException>(downloadRetrieveByFileNameTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDownloadProcessingDependencyException);
+
+            this.downloadServiceMock.Verify(service =>
+                service.RetrieveDownloadByFileNameAsync(someFileName),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedDownloadProcessingDependencyException))),
                          Times.Once);
 
             this.downloadServiceMock.VerifyNoOtherCalls();

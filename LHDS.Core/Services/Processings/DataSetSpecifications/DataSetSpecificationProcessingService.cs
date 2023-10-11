@@ -90,5 +90,8 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
 
                 return await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(dataSetSpecificationId);
             });
+
+        public async ValueTask<DataSetSpecification> GetActiveDataSetSpecificationAsync(Guid supplierId) =>
+            throw new NotImplementedException();
     }
 }

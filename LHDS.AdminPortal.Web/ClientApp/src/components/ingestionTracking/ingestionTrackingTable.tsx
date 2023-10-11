@@ -16,7 +16,7 @@ import IngestionTrackingRow from "./ingestionTrackingRow";
 import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
 import { Button, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRefresh } from "@fortawesome/free-solid-svg-icons";
+import { faFilter, faRefresh } from "@fortawesome/free-solid-svg-icons";
 
 type IngestionTrackingTableProps = {};
 
@@ -113,29 +113,28 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                     <CardBaseContent>
                         <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
                             <Row>
-                                <Col>&nbsp;</Col>
-                                <Col style={{ textAlign: "right" }}>
+                                <div className="input-group mb-3">
+                                    <SearchBase
+                                        id="search"
+                                        value={searchTerm}
+                                        placeholder="Search for ingestion data..."
+                                        onChange={(e) => {handleSearchChange(e.currentTarget.value)}} />
+
+                                    <div className="input-group-append">
+                                        <button className="btn btn-outline-secondary" id="filterButton">
+                                            <FontAwesomeIcon icon={faFilter} /> Filter
+                                        </button>
+                                    </div>
+
                                     {showSpinner ? (
                                         <SpinnerBase />
                                     ) : (
-                                        <Button variant="light">
-                                            <FontAwesomeIcon icon={faRefresh} onClick={refreshData} />
-                                        </Button>
+                                        <div className="input-group-append">
+                                                <button className="btn btn-outline-secondary" id="refreshButton" onClick={refreshData}>
+                                                <FontAwesomeIcon icon={faRefresh} /> Refresh
+                                            </button>
+                                        </div>
                                     )}
-                                </Col>
-                            </Row>
-                            <Row>
-                                <div className="filter-container">
-                                    <div className="filter-item">
-                                        <SearchBase
-                                            id="search"
-                                            label="Search IngestionTrackings"
-                                            value={searchTerm}
-                                            onChange={(e) => {
-                                                handleSearchChange(e.currentTarget.value);
-                                            }}
-                                        />
-                                    </div>
                                 </div>
                             </Row>
                             <TableBase>
@@ -161,7 +160,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                                                 )
                                             )}
                                             <tr>
-                                                <td colSpan={3} className="text-center">
+                                                <td colSpan={5} className="text-center">
                                                     <InfiniteScrollLoader
                                                         loading={isLoading || isFetchingNextPage}
                                                         spinner={<SpinnerBase />}
@@ -178,7 +177,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                     </CardBaseContent>
                 </CardBaseBody>
             </CardBase>
-        </div>
+        </div >
     );
 };
 

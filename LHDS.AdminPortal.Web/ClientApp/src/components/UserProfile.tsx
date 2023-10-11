@@ -76,7 +76,7 @@ export const UserProfile = (): ReactElement => {
             </DropdownButton>
         </AuthenticatedTemplate>
         <UnauthenticatedTemplate>
-            <ButtonBase onClick={() => instance.loginRedirect(loginRequest)} view>
+            <ButtonBase onClick={() => instance.loginRedirect(loginRequest)} add>
                 Login
             </ButtonBase>
             </UnauthenticatedTemplate>

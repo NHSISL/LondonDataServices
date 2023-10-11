@@ -51,6 +51,12 @@
     <TypeScriptCompile Remove="ClientApp\src\components\audit\auditRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\audit\auditRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\bases\ingestionTrackingTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Content\ContentBase.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Footer\FooterBase.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Header\HeaderBase.Nav.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Header\HeaderBase.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Sidebar\SidebarBase.Nav.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Sidebar\SidebarBase.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationDetailCard.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\dataSetSpecifications\dataSetSpecificationDetailCardEdit.tsx" />
@@ -79,6 +85,7 @@
     <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeValidations.tsx" />
     <TypeScriptCompile Remove="clientapp\src\components\FeatureSwitch.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\HeaderBar.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetailCard.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetailCardView.tsx" />
@@ -202,6 +209,7 @@
     <Folder Include="ClientApp\cypress\screenshots\" />
     <Folder Include="ClientApp\cypress\videos\" />
     <Folder Include="ClientApp\dependencies\guid-typescript\node_modules\%40types\" />
+    <Folder Include="ClientApp\src\components\bases\layouts\Navigation\" />
     <Folder Include="ClientApp\src\models\features\" />
   </ItemGroup>
 

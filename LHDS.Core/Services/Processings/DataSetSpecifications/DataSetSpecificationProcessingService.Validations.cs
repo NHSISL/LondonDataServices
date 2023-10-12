@@ -29,6 +29,20 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
                 message: "Invalid argument(s). Please correct the errors and try again.",
                 (Rule: IsInvalid(dataSetSpecificationId), Parameter: nameof(DataSetSpecification.Id)));
 
+        public void ValidateSupplierId(Guid supplierId) =>
+            Validate<InvalidArgumentDataSetSpecificationProcessingException>(
+                message: "Invalid argument(s). Please correct the errors and try again.",
+                (Rule: IsInvalid(supplierId), Parameter: nameof(DataSetSpecification.DataSet.SupplierId)));
+
+        public void ValidateDataSetSpecificationCount(int count)
+        {
+            if (count != 1) 
+            {
+                throw new InvalidCountDataSetSpecificationProcessingException(
+                    message: "Expected DataSetSpecification count to be one.");
+            }
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

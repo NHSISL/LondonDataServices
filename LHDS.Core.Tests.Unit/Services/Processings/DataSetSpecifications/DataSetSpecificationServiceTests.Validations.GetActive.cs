@@ -57,22 +57,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact]
-        public async Task ShouldThrowValidationExceptionsOnGetActiveIfCountIsZeroAndLogItAsync()
+        [Theory]
+        [MemberData(nameof(CountValidations))]
+        public async Task ShouldThrowValidationExceptionsOnGetActiveIfCountIsZeroAndLogItAsync(
+            IQueryable<DataSetSpecification> items, Guid supplierId)
         {
             // given
-            Guid randomSupplierId = Guid.NewGuid();
-            DataSet randomDataSet = CreateRandomDataSet(randomSupplierId);
-
-            IQueryable<DataSetSpecification> randomDataSetSpecifications =
-                CreateRandomDataSetSpecifications(dataSet: randomDataSet, dataSetId: randomDataSet.Id, count: 0);
-
-            IQueryable<DataSetSpecification> storageDataSetSpecifications = randomDataSetSpecifications;
-            IQueryable<DataSetSpecification> expectedDataSetSpecifications = storageDataSetSpecifications.DeepClone();
-
             this.dataSetSpecificationServiceMock.Setup(broker =>
                 broker.RetrieveAllDataSetSpecifications())
-                    .Returns(storageDataSetSpecifications);
+                    .Returns(items);
 
             var invalidCountDataSetSpecificationProcessingException =
                 new InvalidCountDataSetSpecificationProcessingException(
@@ -85,7 +78,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             // when
             ValueTask<DataSetSpecification> RetrieveDataSetSpecificationTask =
-                this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(randomSupplierId);
+                this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(supplierId);
 
             DataSetSpecificationProcessingValidationException actualDataSetSpecificationProcessingValidationException =
                 await Assert.ThrowsAsync<DataSetSpecificationProcessingValidationException>(

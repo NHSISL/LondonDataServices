@@ -29,6 +29,10 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
             {
                 throw CreateAndLogValidationException(nullDataSetSpecificationException);
             }
+            catch (InvalidCountDataSetSpecificationProcessingException invalidCountDataSetSpecificationProcessingException)
+            {
+                throw CreateAndLogValidationException(invalidCountDataSetSpecificationProcessingException);
+            }
             catch (InvalidArgumentDataSetSpecificationProcessingException invalidArgumentDataSetSpecificationProcessingException)
             {
                 throw CreateAndLogValidationException(invalidArgumentDataSetSpecificationProcessingException);

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
@@ -96,13 +97,15 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
             {
                 ValidateSupplierId(supplierId);
 
-                DataSetSpecification result = this.dataSetSpecificationService.RetrieveAllDataSetSpecifications().Where(
+                List<DataSetSpecification> result = this.dataSetSpecificationService.RetrieveAllDataSetSpecifications().Where(
                         specification =>
                                 specification.DataSet.SupplierId == supplierId
                                 && specification.DataSet.IsActive == true
-                                && specification.IsActive == true).First();
+                                && specification.IsActive == true).ToList();
 
-                return await Task.FromResult(result);
+                ValidateDataSetSpecificationCount(count: result.Count());
+
+                return await Task.FromResult(result.FirstOrDefault());
             });
     }
 }

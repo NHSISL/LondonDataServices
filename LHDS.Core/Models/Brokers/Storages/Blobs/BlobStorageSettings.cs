@@ -8,6 +8,5 @@ namespace LHDS.Core.Models.Brokers.Storages.Blobs
     {
         public string AzureBlobServiceUri { get; set; }
         public string AzureTenantId { get; set; }
-        public string BlobContainerName { get; set; }
     }
 }

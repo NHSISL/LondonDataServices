@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.ComponentModel;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 
@@ -9,26 +10,32 @@ namespace LHDS.Core.Services.Processings.Documents
 {
     public partial class DocumentProcessingService
     {
-        private static void ValidateDocumentProcessingOnAdd(Document document)
+        private static void ValidateDocumentProcessingOnAdd(Document document, string container)
         {
             ValidateDocumentProcessingIsNotNull(document);
+            
+            Validate(
+                (Rule: IsInvalid(container), Parameter: nameof(container)));
         }
 
-        private static void ValidateDocumentProcessingOnRetrieve(string fileName)
+        private static void ValidateDocumentProcessingOnRetrieve(string fileName, string container)
         {
             Validate(
+               (Rule: IsInvalid(container), Parameter: nameof(container)),
                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
-        private static void ValidateDocumentProcessingOnRemove(string fileName)
+        private static void ValidateDocumentProcessingOnRemove(string fileName, string container)
         {
             Validate(
+               (Rule: IsInvalid(container), Parameter: nameof(container)),
                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 
-        private static void ValidateGetDownloadLinkArguments(string fileName)
+        private static void ValidateGetDownloadLinkArguments(string fileName, string container)
         {
             Validate(
+               (Rule: IsInvalid(container), Parameter: nameof(container)),
                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
         }
 

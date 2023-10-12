@@ -24,6 +24,8 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
         private readonly IIngestionTrackingAuditService auditService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly string encryptedFileContainer = "emislanding";
+        private readonly string decryptedFileContainer = "versioner";
 
         public DecryptionOrchestrationService(
             IDocumentService documentService,
@@ -50,7 +52,9 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                     .RetrieveIngestionTrackingByFileNameAsync(fileName);
 
                 Document document = await this.documentService
-                    .RetrieveDocumentByFileNameAsync(ingestionTracking.EncryptedFileName);
+                    .RetrieveDocumentByFileNameAsync(
+                        fileName: ingestionTracking.EncryptedFileName, 
+                        container: encryptedFileContainer);
 
                 byte[] decryptedData = await this.decryptionService.DecryptAsync(document.DocumentData);
 
@@ -63,9 +67,11 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                     FileName = ingestionTracking.DecryptedFileName
                 };
 
-                await this.documentService.AddDocumentAsync(newDecryptedDocument);
-                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                await this.documentService.AddDocumentAsync(
+                    document: newDecryptedDocument, 
+                    container: decryptedFileContainer);
 
+                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
                 ingestionTracking.Decrypted = true;
                 ingestionTracking.RecordCount = lines.Length - 2;
                 ingestionTracking.DecryptedFileSize = newDecryptedDocument.DocumentData.Length;

@@ -27,6 +27,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
         private readonly PdsConfiguration pdsConfiguration;
+        private readonly string pdsFileContainer = "pds";
 
         public PdsOrchestrationService(
             IPdsAuditService pdsAuditService,
@@ -119,7 +120,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                         DocumentData = message.FileContent,
                     };
 
-                    await this.documentService.AddDocumentAsync(document);
+                    await this.documentService.AddDocumentAsync(document, pdsFileContainer);
                     var correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
                     var fileName = message.Headers["mex-filename"].FirstOrDefault();
                     DateTimeOffset currentDate = this.dateTimeBroker.GetCurrentDateTimeOffset();

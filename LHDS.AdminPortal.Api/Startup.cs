@@ -225,10 +225,7 @@ namespace LHDS.AdminPortal.Api
                     Parameter: "blobStorage__azureBlobServiceUri"),
 
                 (Rule: IsInvalid(blobStorageSettings.AzureTenantId),
-                    Parameter: "blobStorage__azureTenantId"),
-
-                (Rule: IsInvalid(blobStorageSettings.BlobContainerName),
-                    Parameter: "blobStorage__blobContainerName"));
+                    Parameter: "blobStorage__azureTenantId"));
         }
 
         private static dynamic IsInvalid(string text) => new

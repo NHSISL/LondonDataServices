@@ -139,6 +139,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                 .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(dataSet => dataSet.SupplierId).Use(supplierId)
                 .OnProperty(dataSet => dataSet.Supplier).IgnoreIt()
+                .OnProperty(dataSet => dataSet.DataSetSpecifications).IgnoreIt()
                 .OnProperty(dataSet => dataSet.IsActive).Use(true)
                 .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
                 .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)

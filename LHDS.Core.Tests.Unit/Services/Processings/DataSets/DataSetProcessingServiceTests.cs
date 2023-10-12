@@ -96,7 +96,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
-                .OnProperty(dataSet => dataSet.UpdatedBy).Use(user);
+                .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.Supplier).IgnoreIt()
+                .OnProperty(dataSet => dataSet.DataSetSpecifications).IgnoreIt();
 
             return filler;
         }

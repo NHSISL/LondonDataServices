@@ -33,6 +33,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         private readonly ILoggingBroker loggingBroker;
         private readonly OptOutConfiguration optOutConfiguration;
         private readonly MeshConfiguration meshConfiguration;
+        private readonly string optOutFileContainer = "optout";
 
         public OptOutOrchestrationService(
             IOptOutProcessingService optOutProcessingService,
@@ -111,7 +112,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     DocumentData = processedBytes
                 };
 
-                string saveDocument = await this.documentProcessingService.AddDocumentAsync(document);
+                string saveDocument = await this.documentProcessingService.AddDocumentAsync(document, optOutFileContainer);
 
                 return saveDocument;
             });
@@ -236,7 +237,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                             FileName = fileName
                         };
 
-                        await this.documentProcessingService.AddDocumentAsync(document);
+                        await this.documentProcessingService.AddDocumentAsync(document, optOutFileContainer);
                     }
 
                     await this.meshProcessingService.AcknowledgeMessageByIdAsync(messageId);

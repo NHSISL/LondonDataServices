@@ -1,7 +1,7 @@
 import React, { FunctionComponent, HTMLProps } from "react";
 import {Button } from 'nhsuk-react-components'
 import classNames from 'classnames';
-import "./ButtonBaseStyle.css"
+import "./ButtonBaseStyle.scss"
 
 interface ButtonBaseProps extends HTMLProps<HTMLButtonElement> {
     id?: string;

@@ -62,7 +62,7 @@ const DataTypeRowAdd: FunctionComponent<DataTypeRowAddProps> = (props) => {
                     error={errors.name}
                     onChange={handleChange} />
             </TableBaseData>
-            
+            <TableBaseData></TableBaseData>
             <TableBaseData classes="text-end">
                 <ButtonBase onClick={() => onCancel()} cancel>Cancel</ButtonBase>&nbsp;
                 <ButtonBase onClick={() => handleSave()} disabled={errors.hasErrors} add>Add</ButtonBase>

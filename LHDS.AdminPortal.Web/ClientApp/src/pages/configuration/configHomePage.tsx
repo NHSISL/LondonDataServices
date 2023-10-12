@@ -1,74 +1,60 @@
 import React from 'react';
-import { Container, Row, Col, Card } from 'nhsuk-react-components'
 import { Link } from 'react-router-dom';
-import 'nhsuk-frontend/dist/nhsuk.min'
-import 'nhsuk-frontend/packages/polyfills';
+import CardBase from '../../components/bases/components/Card/CardBase';
+import CardBaseContent from '../../components/bases/components/Card/CardBase.Content';
+import CardBaseBody from '../../components/bases/components/Card/CardBase.Body';
+import CardBaseTitle from '../../components/bases/components/Card/CardBase.Title';
 
 export const ConfigHomePage = () => {
     return (
         <>
-            <section className="nhsuk-hero">
-                <Container>
-                    <Row className="nhsuk-grid-row">
-                        <Col width="two-thirds">
-                            <div className="nhsuk-hero__wrapper app-hero__wrapper">
-                                <h1 className="nhsuk-u-margin-bottom-4">Configuration</h1>
-                                <p className="nhsuk-body-l nhsuk-u-margin-bottom-1">Area to manage configuration items.</p>
-                            </div>
-                        </Col>
-                    </Row>
-                </Container>
-            </section>
+            <div className="container-fluid py-5 bg-primary text-white">
+                <h1 className="display-5 fw-bold">Configuration</h1>
+                <p className="col-md-8 fs-4">Area to manage configuration items.</p>
+            </div>
 
             <section>
-                <Container className="NELTopPadding">
-                    <Card.Group>
-                        <Card.GroupItem width="one-half">
-                            <Card clickable>
-                                <Card.Content>
-                                    <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
-                                        <Link to={'/configuration/suppliers'}>
-                                            Suppliers
-                                        </Link>
-                                    </Card.Heading>
-                                    <Card.Description>
-                                        View, add, edit and remove Suppliers.
-                                    </Card.Description>
-                                </Card.Content>
-                            </Card>
-                        </Card.GroupItem>
+                <div className="container-fluid">
 
-                        <Card.GroupItem width="one-half">
-                            <Card clickable>
-                                <Card.Content>
-                                    <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
-                                        <Link to={'/configuration/dataTypes'}>
-                                            Data Types
-                                        </Link>
-                                    </Card.Heading>
-                                    <Card.Description>
-                                        View, add, edit and remove Data Types.
-                                    </Card.Description>
-                                </Card.Content>
-                            </Card>
-                        </Card.GroupItem>
+                    <CardBase>
+                        <CardBaseBody>
+                            <CardBaseTitle>
+                                <Link to={'/configuration/suppliers'} className="linkVisited">
+                                    Suppliers
+                                </Link>
+                            </CardBaseTitle>
+                            <CardBaseContent>
+                                View, add, edit and remove Suppliers.
+                            </CardBaseContent>
+                        </CardBaseBody>
+                    </CardBase>
 
-                        <Card.GroupItem width="one-half">
-                            <Card clickable>
-                                <Card.Content>
-                                    <Card.Heading className="nhsuk-card__heading nhsuk-heading-m">
-                                        <Link to={'/configuration/dataSets'}>
-                                            Data Sets
-                                        </Link>
-                                    </Card.Heading>
-                                    <Card.Description>
-                                        View, add, edit and remove Data Sets.
-                                    </Card.Description>
-                                </Card.Content>
-                            </Card>
-                        </Card.GroupItem>
-                    </Card.Group>
-                </Container>
+                    <CardBase>
+                        <CardBaseBody>
+                            <CardBaseTitle>
+                                <Link to={'/configuration/dataTypes'} className="linkVisited">
+                                    Data Types
+                                </Link>
+                            </CardBaseTitle>
+                            <CardBaseContent>
+                                View, add, edit and remove Data Types.
+                            </CardBaseContent>
+                        </CardBaseBody>
+                    </CardBase>
+
+                    <CardBase>
+                        <CardBaseBody>
+                            <CardBaseTitle>
+                                <Link to={'/configuration/dataSets'} className="linkVisited">
+                                    Data Sets
+                                </Link>
+                            </CardBaseTitle>
+                            <CardBaseContent>
+                                View, add, edit and remove Data Sets.
+                            </CardBaseContent>
+                        </CardBaseBody>
+                    </CardBase>
+                </div>
             </section>
         </>
     );

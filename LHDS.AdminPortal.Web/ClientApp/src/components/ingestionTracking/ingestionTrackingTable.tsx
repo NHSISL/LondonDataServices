@@ -16,7 +16,7 @@ import IngestionTrackingRow from "./ingestionTrackingRow";
 import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
 import { Button, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilter, faRefresh } from "@fortawesome/free-solid-svg-icons";
+import { faDatabase, faFilter, faRefresh } from "@fortawesome/free-solid-svg-icons";
 
 type IngestionTrackingTableProps = {};
 
@@ -109,7 +109,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         <div className="infiniteScrollContainer">
             <CardBase>
                 <CardBaseBody>
-                    <CardBaseTitle>Ingestion Tracking</CardBaseTitle>
+                    <CardBaseTitle> <FontAwesomeIcon icon={faDatabase} className="me-2" /> Ingestion Tracking</CardBaseTitle>
                     <CardBaseContent>
                         <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
                             <Row>
@@ -137,7 +137,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                                     )}
                                 </div>
                             </Row>
-                            <TableBase>
+                            <TableBase classes="table-bordered">
                                 <TableBaseTbody>
                                     {isLoading || showSpinner ? (
                                         <tr>

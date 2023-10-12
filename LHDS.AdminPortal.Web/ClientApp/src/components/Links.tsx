@@ -1,16 +1,29 @@
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
+import { IconName, IconProp } from '@fortawesome/fontawesome-svg-core';
+import '@fortawesome/fontawesome-svg-core/styles.css'
+import { faHome, faDatabase, faCog, faMapMarker } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { ReactElement } from 'react';
 import { NavItem, NavLink } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap'
 import { Link } from 'react-router-dom';
 
+const iconMapping: Record<string, IconProp | undefined> = {
+    faHome: faHome,
+    ingestion: faDatabase,
+    config: faCog,
+    address: faMapMarker
+};
+
 type PublicLinkParameters = {
     children: string,
     to: string,
+    icon?: string,
     className?: string
 }
 
 type SecuredLinkParameters = {
+    icon?: string,
     to: string,
     children: string,
     allowedRoles?: Array<string>,
@@ -24,6 +37,7 @@ type SecuredComponentsParameters = {
 }
 
 export const PublicLink = ({ to, children, className }: PublicLinkParameters): ReactElement => {
+
     return (
         <NavItem>
             <LinkContainer to={to} >
@@ -35,7 +49,11 @@ export const PublicLink = ({ to, children, className }: PublicLinkParameters): R
     )
 }
 
-export const SecuredLink = ({ to, children, allowedRoles = [], deniedRoles = [] }: SecuredLinkParameters): ReactElement => {
+export const SecuredLink = ({ to, children, icon, allowedRoles = [], deniedRoles = [] }: SecuredLinkParameters): ReactElement => {
+    console.log(icon);
+    const iconProp = icon ? iconMapping[icon] : undefined;
+    console.log('iconProp:', iconProp);
+
     const { accounts } = useMsal();
     const isAuthenticated = useIsAuthenticated();
 
@@ -64,7 +82,8 @@ export const SecuredLink = ({ to, children, allowedRoles = [], deniedRoles = [] 
     if (isAuthenticated && (allowedRoles.length === 0 || userIsInRole(allowedRoles))) {
         return <li className="nav-item">
             <Link to={to} className="nav-link text-white">
-                    {children}
+                {iconProp && <FontAwesomeIcon icon={iconProp} title="required" className="text-white me-2" />}
+                {children}
             </Link>
         </li>
     }

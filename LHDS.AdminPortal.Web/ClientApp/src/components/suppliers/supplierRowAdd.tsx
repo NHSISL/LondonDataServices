@@ -102,6 +102,7 @@ const SupplierRowAdd: FunctionComponent<SupplierRowAddProps> = (props) => {
                     error={errors.landingManualTriggerUrl}
                     onChange={handleChange} />
             </TableBaseData>
+            
             <TableBaseData classes="text-end">
                 <ButtonBase onClick={() => onCancel()} cancel>Cancel</ButtonBase>&nbsp;
                 <ButtonBase onClick={() => handleSave()} disabled={errors.hasErrors} add>Add</ButtonBase>

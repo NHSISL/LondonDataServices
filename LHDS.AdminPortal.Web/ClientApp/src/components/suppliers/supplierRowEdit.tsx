@@ -88,6 +88,9 @@ const SupplierRowEdit: FunctionComponent<SupplierRowEditProps> = (props) => {
                     onChange={handleChange}
                     rows={3}
                 />
+               
+            </TableBaseData>
+            <TableBaseData>
                 <TextInputBase
                     id="landingManualTriggerUrl"
                     name="landingManualTriggerUrl"

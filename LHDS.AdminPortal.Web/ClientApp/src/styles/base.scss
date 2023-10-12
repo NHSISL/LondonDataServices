@@ -1,81 +1,8 @@
-/*@import "./node_modules/nhsuk-frontend/packages/nhsuk";
+@import url('color-theme.scss');
 
-#navbarScroll > div > div > a {color:white;}
-
-.navbar{ padding:0 !important;}
-
-td, tr, thead, tbody, table, th, body {
-    font-size: 18px;
-    vertical-align: middle;
-}
-
-.NELTopPadding {
-    padding-top: 20px;
-}
-
-.middle{vertical-align: middle}
-
-.linkCustom {
-    color: #005eb8;
-    font-size: 18px;
-    font-weight: 600;
-    padding: 0 0 4px;
-}
-
-#maincontent > div > div > div > div.undefined.cardBaseContent > label {
-    margin-bottom: 0px !important;
-}
-
-.nhsuk-width-container {
-    max-width:95% !important;
-    }
-
-
-
-#navbarScroll > div > div.nav-item.show.dropdown > div > div:nth-child(1) > a,
-#navbarScroll > div > div.nav-item.show.dropdown > div > div:nth-child(2) > a {
-    color: #000 !important;
-}
-
-
-@media (min-width: 40.0625em) {th, td {
-    padding-top: 15px;
-    padding-bottom: 0px;
-    ;
-}
-
-}
-
-
-.nhsuk-form-group{width:90%;}
-
-
-*/
-
-
-.dark {
-    color: #333140;
-    background: #333140
-}
-
-.light {
-    color: #EBEFF2;
-    background: #333140
-}
-
-.blue {
-    color: #1BA0F2;
-    background: #333140
-}
-
-.green {
-    color: #0ABF7D;
-    background: #0ABF7D
-}
-
-.palegreen {
-    color: #46A683;
-    background: #333140
+.text-hero {
+    color: var( --hero-color);
+    font-weight:lighter;
 }
 
 .navBtn {
@@ -83,106 +10,32 @@ td, tr, thead, tbody, table, th, body {
     padding: 10px;
 }
 
+.nav-link { padding: 0; }
+
 .submenu {
     display: none;
-    border-left: 1px solid #ccc; /* Increase the border width */
-    margin-left: 26px; /* Adjust the left margin to increase space */
-    list-style: none; /* Remove bullet points */
+    border-left: 1px solid #ccc;
+    margin-left: 26px;
+    list-style: none;
 }
 
 .submenu.active {
     display: block;
 }
 
-.nav-link {
-    padding: 0;
-}
-
-a:visited {
-    color: #ffffff;
-}
-
-li{
-    list-style-type:none;
-}
-
+li{ list-style-type:none; }
 
 hr {
     color: #cccccc;
-    background-color: #fff;
+    background: var( --light-background);
     margin-left: 20px;
     margin-right: 20px;
 }
 
-@mixin buttonShape {
-    font-weight: 100;
-    font-size: 14px;
-    font-size: 1rem;
-    line-height: 1.5;
-    -webkit-appearance: none;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    box-sizing: border-box;
-    color: #ffffff;
-    cursor: pointer;
-    display: inline-block;
-    font-weight: 600;
-    margin-top: 0;
-    padding:5px 10px;
-    position: relative;
-    text-align: center;
-    vertical-align: top;
-    width: auto;
+a.linkVisited:visited {
+    color: #fff !important;
+    text-decoration:none;
 }
-// Blue NHS Size Button
-.nhsuk-buttonBlue {
-    @include buttonShape;
-    background-color: #005eb8;
-    box-shadow: none;
-}
-
-.nhsuk-buttonBlue:hover {
-    background-color: #0d6efd;
-}
-// Green NHS Sizws Button
-.nhsuk-buttonGreen {
-    @include buttonShape;
-    background-color: #007f3b;
-    box-shadow: none;
-}
-
-.nhsuk-buttonGreen:hover {
-    background-color: #768692;
-}
-// Red NHS Sizws Button
-.nhsuk-buttonRed {
-    @include buttonShape;
-    background-color: #dc3545;
-    box-shadow: none;
-}
-
-.nhsuk-buttonRed:hover {
-    background-color: #ea2134;
-}
-
-.nhsuk-buttonGrey {
-    @include buttonShape;
-    background-color: grey;
-    box-shadow: none;
-}
-
-.nhsuk-buttonGrey:hover {
-    background-color: #9c9797;
-}
-
-.nhsuk-buttonPrimary {
-    @include buttonShape;
-    background-color: #005eb8;
-    box-shadow: none;
-}
-
-
-
 
 
 

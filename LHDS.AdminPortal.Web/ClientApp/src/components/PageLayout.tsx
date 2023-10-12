@@ -54,16 +54,16 @@ export const PageLayout = ({ children }: PageLayoutParameters) => {
                 </SidebarBaseNav>
             </SidebarBase>
 
+            <ContentBase>
+                {children}
+            </ContentBase>
+                
             <HeaderBase>
                 <HeaderBaseNav>
                    <HeaderBar></HeaderBar>
                 </HeaderBaseNav>
             </HeaderBase>
 
-            <ContentBase>
-                {children}
-            </ContentBase>
-                
             <FooterBase>
                 <BaseFooter />
             </FooterBase>

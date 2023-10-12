@@ -3,11 +3,12 @@ import "./TableBaseStyle.css"
 
 interface TableBaseProps {
     children?: React.ReactNode;
+    classes?: string
 }
 
 const TableBase: FunctionComponent<TableBaseProps> = (props) => {
     return (
-        <table className="table table-bordered">
+        <table className={props.classes + " table"}>
             {props.children}
         </table>
     )

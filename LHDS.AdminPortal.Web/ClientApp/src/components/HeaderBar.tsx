@@ -11,7 +11,7 @@ export const HeaderBar = () => {
         </a>
 
         <span className="navbar-brand me-auto ms-4">
-            <strong>The London Data Service</strong>
+            <strong>The <span className="text-hero">London</span> Data Service</strong>
         </span>
 
         <ul className="nav justify-content-end">

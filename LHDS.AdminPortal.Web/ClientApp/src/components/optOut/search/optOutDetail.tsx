@@ -103,7 +103,7 @@ const OptOutDetail: FunctionComponent<OptOutDetailProps> = (props) => {
     return (
         <div>
             <div>
-                <div className="filter-container">
+                <div className="filter-container mt-2">
                     <div className="filter-item">
                         <SearchBase
                             id="search"

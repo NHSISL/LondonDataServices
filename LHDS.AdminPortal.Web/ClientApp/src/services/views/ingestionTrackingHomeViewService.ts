@@ -27,7 +27,7 @@ export const ingestionTrackingHomeViewService = {
             let query = `?$orderby=createdDate desc&$expand=supplier`;
 
              if (searchTerm) {
-                query = query + `&$filter=contains(encryptedFileName,'${searchTerm}') or contains(decryptedFileName,'${searchTerm}')`;
+                query = query + `&$filter=contains(fileName,'${searchTerm}') or contains(decryptedFileName,'${searchTerm}')`;
             }
 
             const response = ingestionTrackingService.useGetAllIngestionTrackingPages(query);

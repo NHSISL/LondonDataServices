@@ -32,45 +32,51 @@ export const Home = () => {
                             <FeatureSwitch feature={FeatureDefinitions.IngestionTracking}>
                                 <div className="row">
 
-                                    <div className="col-sm-4">
+                                    <div className="col-lg-4 col-sm-6">
                                         <SecuredComponents allowedRoles={securityPoints.ingestionTracking.view}>
                                             <CardBase>
                                                 <CardBaseBody>
-                                                    <CardBaseTitle>
-                                                        <PublicLink to="/ingestionTracking">Ingestion Tracking</PublicLink>
-                                                    </CardBaseTitle>
                                                     <CardBaseContent>
-                                                        View Ingestion Data.
+                                                        <div className="me-3 mt-3">
+                                                            <h5><PublicLink icon="" to="/ingestionTracking">View Ingestion Data</PublicLink></h5>
+                                                            <div className="text-muted small">
+                                                                To search for the ingested data encrypted / decrypted.
+                                                            </div>
+                                                        </div>
                                                     </CardBaseContent>
                                                 </CardBaseBody>
                                             </CardBase>
                                         </SecuredComponents>
                                     </div>
 
-                                    <div className="col-sm-4">
+                                    <div className="col-lg-4 col-sm-6">
                                         <SecuredComponents allowedRoles={securityPoints.optOut.view}>
                                             <CardBase>
                                                 <CardBaseBody>
-                                                    <CardBaseTitle>
-                                                        <PublicLink to="/optOutSearch">Search OptOut</PublicLink>
-                                                    </CardBaseTitle>
                                                     <CardBaseContent>
-                                                        Search Opt Out.
+                                                        <div className="me-3 mt-3">
+                                                            <h5><PublicLink icon="" to="/optOutSearch">Search OptOut</PublicLink></h5>
+                                                            <div className="text-muted small">
+                                                                To search for the latest Opt-Out status of a patient.
+                                                            </div>
+                                                        </div>
                                                     </CardBaseContent>
                                                 </CardBaseBody>
                                             </CardBase>
                                         </SecuredComponents>
                                     </div>
 
-                                    <div className="col-sm-4">
+                                    <div className="col-lg-4 col-sm-6">
                                         <SecuredComponents allowedRoles={securityPoints.pds.view}>
                                             <CardBase>
                                                 <CardBaseBody>
-                                                    <CardBaseTitle>
-                                                        <PublicLink to="/pds">Search PDS</PublicLink>
-                                                    </CardBaseTitle>
                                                     <CardBaseContent>
-                                                        Search Pds.
+                                                        <div className="me-3 mt-3">
+                                                            <h5><PublicLink icon="" to="/pds">Search PDS</PublicLink></h5>
+                                                            <div className="text-muted small">
+                                                                To search for patient demographic returned values from NHS Mesh.
+                                                            </div>
+                                                        </div>
                                                     </CardBaseContent>
                                                 </CardBaseBody>
                                             </CardBase>

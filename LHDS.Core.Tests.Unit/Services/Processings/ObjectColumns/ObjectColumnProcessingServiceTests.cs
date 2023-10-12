@@ -96,7 +96,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(objectColumn => objectColumn.CreatedBy).Use(user)
-                .OnProperty(objectColumn => objectColumn.UpdatedBy).Use(user);
+                .OnProperty(objectColumn => objectColumn.UpdatedBy).Use(user)
+                .OnProperty(objectColumn => objectColumn.SpecificationObject).IgnoreIt();
 
             return filler;
         }

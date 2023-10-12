@@ -101,7 +101,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(supplier => supplier.CreatedBy).Use(user)
-                .OnProperty(supplier => supplier.UpdatedBy).Use(user);
+                .OnProperty(supplier => supplier.UpdatedBy).Use(user)
+                .OnProperty(supplier => supplier.IngestionTrackings).IgnoreIt()
+                .OnProperty(supplier => supplier.DataSets).IgnoreIt();
 
             return filler;
         }

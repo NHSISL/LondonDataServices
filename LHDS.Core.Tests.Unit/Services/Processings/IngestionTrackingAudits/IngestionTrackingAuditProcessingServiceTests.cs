@@ -95,8 +95,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
-                .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user);
+                .OnProperty(ingestionTrackingAudit => ingestionTrackingAudit.CreatedBy).Use(user)
+                .OnProperty(ingestionTrackingAudit => ingestionTrackingAudit.UpdatedBy).Use(user)
+                .OnProperty(ingestionTrackingAudit => ingestionTrackingAudit.IngestionTracking).IgnoreIt();
 
             return filler;
         }

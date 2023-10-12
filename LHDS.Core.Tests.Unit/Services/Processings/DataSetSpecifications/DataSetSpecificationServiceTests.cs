@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
@@ -32,6 +33,25 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             dataSetSpecificationProcessingService = new DataSetSpecificationProcessingService(
                 dataSetSpecificationService: dataSetSpecificationServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object);
+        }
+
+        public static TheoryData CountValidations()
+        {
+            Guid randomSupplierId = Guid.NewGuid();
+            DataSet randomDataSet = CreateRandomDataSet(randomSupplierId);
+
+            return new TheoryData<IQueryable<DataSetSpecification>, Guid>
+            {
+                { 
+                    new List<DataSetSpecification>().AsQueryable(), 
+                    randomSupplierId 
+                },
+
+                { 
+                    CreateRandomDataSetSpecifications(dataSet: randomDataSet, dataSetId: randomDataSet.Id, count: 2),
+                    randomSupplierId
+                }
+            };
         }
 
         public static TheoryData DependencyValidationExceptions()

@@ -25,6 +25,7 @@ using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Orchestrations.Downloads;
+using LHDS.Core.Services.Processings.DataSetSpecifications;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -41,6 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         private readonly Mock<IIngestionTrackingService> ingestionTrackingServiceMock;
         private readonly Mock<IIngestionTrackingAuditService> auditServiceMock;
         private readonly Mock<IDataSetSpecificationService> dataSetSpecificationServiceMock;
+        private readonly Mock<IDataSetSpecificationProcessingService> dataSetSpecificationProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
@@ -55,6 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             downloadServiceMock = new Mock<IDownloadService>();
             ingestionTrackingServiceMock = new Mock<IIngestionTrackingService>();
             dataSetSpecificationServiceMock = new Mock<IDataSetSpecificationService>();
+            dataSetSpecificationProcessingServiceMock = new Mock<IDataSetSpecificationProcessingService>();
             auditServiceMock = new Mock<IIngestionTrackingAuditService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
@@ -74,6 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 ingestionTrackingService: ingestionTrackingServiceMock.Object,
                 auditService: auditServiceMock.Object,
                 dataSetSpecificationService: dataSetSpecificationServiceMock.Object,
+                dataSetSpecificationProcessingService: dataSetSpecificationProcessingServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object,

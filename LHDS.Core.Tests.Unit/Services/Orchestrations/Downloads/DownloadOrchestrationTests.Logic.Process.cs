@@ -11,6 +11,7 @@ using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Orchestrations.Downloads;
 using Moq;
 using Xunit;
 
@@ -23,11 +24,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         {
             // given
             Guid randomGuid = Guid.NewGuid();
+            Guid supplierId = landingConfiguration.LandingSupplierId;
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             List<Document> randomDocuments = CreateRandomDocuments();
             List<Document> externalDocuments = randomDocuments;
             List<IngestionTracking> externalIngestionTrackingsFound = new List<IngestionTracking>();
-            DataSet randomDataSet = CreateRandomDataSet(supplierId: landingConfiguration.LandingSupplierId);
+            DataSet randomDataSet = CreateRandomDataSet(supplierId);
 
             IQueryable<DataSetSpecification> randomDataSetSpecificationList =
                 CreateRandomDataSetSpecifications(dataSetId: randomDataSet.Id);

@@ -20,6 +20,7 @@ using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
+using LHDS.Core.Services.Processings.DataSetSpecifications;
 using Document = LHDS.Core.Models.Foundations.Documents.Document;
 
 namespace LHDS.Core.Services.Orchestrations.Downloads
@@ -32,6 +33,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         private readonly IIngestionTrackingAuditService auditService;
         private readonly ISupplierService supplierService;
         private readonly IDataSetSpecificationService dataSetSpecificationService;
+        private readonly IDataSetSpecificationProcessingService dataSetSpecificationProcessingService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
@@ -44,6 +46,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             IIngestionTrackingService ingestionTrackingService,
             IDataSetSpecificationService dataSetSpecificationService,
             IIngestionTrackingAuditService auditService,
+            IDataSetSpecificationProcessingService dataSetSpecificationProcessingService,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker,
@@ -53,6 +56,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.downloadService = downloadService;
             this.ingestionTrackingService = ingestionTrackingService;
             this.dataSetSpecificationService = dataSetSpecificationService;
+            this.dataSetSpecificationProcessingService = dataSetSpecificationProcessingService;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;

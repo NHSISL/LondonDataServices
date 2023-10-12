@@ -78,7 +78,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                 new InvalidCountDataSetSpecificationProcessingException(
                     message: "Expected DataSetSpecification count to be one.");
 
-
             var expectedDataSetSpecificationProcessingValidationException =
                 new DataSetSpecificationProcessingValidationException(
                     message: "DataSetSpecification processing validation error occurred, please try again.",

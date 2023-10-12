@@ -230,7 +230,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt();
 
             return filler;
         }
@@ -243,7 +245,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             filler.Setup()
                 .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(id)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(ingestionTracking => ingestionTracking.Supplier).IgnoreIt()
+                .OnProperty(ingestionTracking => ingestionTracking.IngestionTrackingAudits).IgnoreIt();
 
             return filler;
         }

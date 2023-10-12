@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
-using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 
 namespace LHDS.Core.Services.Processings.DataSetSpecifications

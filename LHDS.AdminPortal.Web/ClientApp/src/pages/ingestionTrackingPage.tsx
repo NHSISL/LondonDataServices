@@ -1,8 +1,7 @@
 import React from "react"
 import { Link, useParams } from 'react-router-dom';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import IngestionTrackingDetail from "../components/ingestionTracking/ingestionTrackingDetail";
+import BreadCrumbBase from "../components/bases/layouts/Breadcrumb/BreadCrumbBase";
 
 export const IngestionTrackingPage = () => {
 
@@ -11,11 +10,13 @@ export const IngestionTrackingPage = () => {
     return <div>
         <section >
             <div className="container-fluid">
-                <main className="mt-3" role="main">
+                <main role="main">
 
-                    <Link to={'/ingestionTracking'}>
-                        <FontAwesomeIcon icon={faChevronLeft} size="1x" className="me-2" />Back to Suppliers Data
-                    </Link>
+                    <BreadCrumbBase
+                        link="/ingestionTracking"
+                        backLink="Ingestion Trackings"
+                        currentLink="Ingestion Tracking Detail">
+                    </BreadCrumbBase>
 
                     {ingestionTrackingId &&
                         <IngestionTrackingDetail ingestionTrackingId={ingestionTrackingId} />

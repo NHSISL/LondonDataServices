@@ -42,3 +42,7 @@
 .table th, .table td {
     vertical-align: middle;
 }
+
+.mh-200 {
+    min-height: 170px;
+}

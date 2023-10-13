@@ -7,7 +7,7 @@
     height: 100%;
     margin-left: -300px;
     overflow-y: auto;
-    background: #333140;
+    background: var( --dark-background) !important;
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;

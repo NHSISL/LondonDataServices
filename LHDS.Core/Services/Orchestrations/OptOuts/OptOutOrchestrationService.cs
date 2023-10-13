@@ -112,7 +112,8 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     DocumentData = processedBytes
                 };
 
-                string saveDocument = await this.documentProcessingService.AddDocumentAsync(document, optOutFileContainer);
+                string saveDocument = await this.documentProcessingService
+                    .AddDocumentAsync(document, optOutFileContainer);
 
                 return saveDocument;
             });

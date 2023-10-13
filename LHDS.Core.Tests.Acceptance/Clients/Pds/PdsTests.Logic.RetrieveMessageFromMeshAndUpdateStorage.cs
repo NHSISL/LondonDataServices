@@ -22,6 +22,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
         public async Task ShouldRetreiveMessagesFromMeshAndUpdateStorageAsync()
         {
             //Given
+            string pdsFileContainer = "pds";
             string messageId = GetRandomString();
             List<string> messageIds = new List<string> { messageId };
             string mexWorkflowId = this.pdsConfiguration.WorkflowId;
@@ -71,7 +72,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
                         Times.Once);
 
                 this.blobStorageBrokerMock.Verify(broker =>
-                    broker.InsertFileAsync(fileNameReturn, It.IsAny<Stream>()),
+                    broker.InsertFileAsync(fileNameReturn, It.IsAny<Stream>(), pdsFileContainer),
                         Times.Once());
 
                 await this.pdsAuditService.RemovePdsAuditByIdAsync(item.Id);

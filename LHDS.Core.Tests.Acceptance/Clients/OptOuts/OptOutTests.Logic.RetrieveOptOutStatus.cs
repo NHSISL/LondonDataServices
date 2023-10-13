@@ -5,18 +5,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Enumeration;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
-using LHDS.Core.Clients;
 using LHDS.Core.Models.Foundations.OptOuts;
 using Moq;
 using Xunit;
-using Xunit.Sdk;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 {
@@ -26,6 +20,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         public async Task ShouldRetrieveOptOutStatusAsyncAsync()
         {
             //Given
+            string optOutFileContainer = "optout";
             Guid identifier = Guid.NewGuid();
             List<OptOutIdentifier> optOutIdentifiers = CreateRandomOptOutIdentifiersList();
             bool hasHeaderRecord = optOutConfiguration.OptOutFileHasHeader;
@@ -47,7 +42,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             actualString.Should().Be(expectedString);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.InsertFileAsync(expectedString, It.IsAny<Stream>()),
+                broker.InsertFileAsync(expectedString, It.IsAny<Stream>(), optOutFileContainer),
                     Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

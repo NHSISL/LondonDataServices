@@ -22,6 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldThrowValidationExceptionsOnAddIfDocumentIsNullAndLogItAsync()
         {
             // given
+            var randomContainer = GetRandomString();
             Document nullDocument = null;
 
             var nullDocumentException =
@@ -34,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             // when
             ValueTask AddDocumentTask =
-                this.documentService.AddDocumentAsync(nullDocument);
+                this.documentService.AddDocumentAsync(nullDocument, randomContainer);
 
             DocumentValidationException actualDocumentValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(AddDocumentTask.AsTask);
@@ -57,6 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldThrowValidationExceptionOnAddIfDocumentDataIsInvalidAndLogItAsync()
         {
             // Given
+            var randomContainer = GetRandomString();
             string validFileName = GetRandomString();
             byte[] invalidData = null;
 
@@ -73,13 +75,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                  key: "DocumentData",
                  values: "Data is required");
 
-            var expectedDocumentValidationException = 
+            var expectedDocumentValidationException =
                 new DocumentValidationException(
                     message: "Document validation errors occured, please try again",
                     innerException: invalidDocumentException);
 
             // When
-            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document);
+            ValueTask uploadFileTask = this.documentService.AddDocumentAsync(document, randomContainer);
 
             DocumentValidationException actualDocumentValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(uploadFileTask.AsTask);
@@ -93,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                         Times.Once);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.InsertFileAsync(validFileName, It.IsAny<Stream>()),
+                broker.InsertFileAsync(validFileName, It.IsAny<Stream>(), randomContainer),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -107,6 +109,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldThrowValidationExceptionOnAddIfFileNameIsInvalid(string invalidInput)
         {
             // Given
+            var invalidContainer = invalidInput;
+
             var appSettingsStub = new Dictionary<string, string> {
                 {"blobContainerName", invalidInput}
             };
@@ -144,7 +148,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                     innerException: invalidDocumentException);
 
             // When
-            ValueTask uploadFileTask = documentService.AddDocumentAsync(document);
+            ValueTask uploadFileTask = documentService.AddDocumentAsync(document, invalidContainer);
 
             DocumentValidationException actualDocumentValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(uploadFileTask.AsTask);
@@ -158,7 +162,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                         Times.Once);
 
             this.blobStorageBrokerMock.Verify(broker =>
-               broker.InsertFileAsync(invalidFileName, validStream),
+               broker.InsertFileAsync(invalidFileName, validStream, invalidContainer),
                    Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

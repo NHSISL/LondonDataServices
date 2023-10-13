@@ -2,14 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
-using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Services.Foundations.Documents;
 using Microsoft.Extensions.Configuration;
 using Moq;
@@ -26,6 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldThrowValidationExceptionOnSelectByFileNameIfInputsIsInvalid(string invalidInput)
         {
             // Given
+            string invalidContainer = invalidInput;
             string containerName = invalidInput;
 
             Document document = new Document
@@ -39,6 +37,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             invalidDocumentException.AddData(
                 key: "fileName",
+                values: "Text is required");
+
+            invalidDocumentException.AddData(
+                key: "container",
                 values: "Text is required");
 
             var expectedDocumentValidationException
@@ -62,7 +64,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             // When
             ValueTask<Document> getDownloadLinkTask =
-                documentService.RetrieveDocumentByFileNameAsync(document.FileName);
+                documentService.RetrieveDocumentByFileNameAsync(
+                    fileName: document.FileName,
+                    container: invalidContainer);
 
             DocumentValidationException actualDocumentBlobValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(getDownloadLinkTask.AsTask);
@@ -76,7 +80,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                         Times.Once);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.SelectByFileNameAsync(It.IsAny<string>()),
+                broker.SelectByFileNameAsync(It.IsAny<string>(), It.IsAny<string>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -87,6 +91,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldThrowNotFoundExceptionOnRetrieveByFileNameIfDocumentIsNotFoundAndLogItAsync()
         {
             //given
+            string someContainer = GetRandomString();
             string someFileName = GetRandomString();
             byte[] nullByte = null;
 
@@ -99,12 +104,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                     innerException: notFoundDocumentException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.SelectByFileNameAsync(It.IsAny<string>()))
+                broker.SelectByFileNameAsync(It.IsAny<string>(), It.IsAny<string>()))
                     .ReturnsAsync(nullByte);
 
             //when
             ValueTask<Document> retrieveDocumentByIdTask =
-                this.documentService.RetrieveDocumentByFileNameAsync(someFileName);
+                this.documentService.RetrieveDocumentByFileNameAsync(
+                    fileName: someFileName,
+                    container: someContainer);
 
             DocumentValidationException actualDocumentValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(
@@ -114,7 +121,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             actualDocumentValidationException.Should().BeEquivalentTo(expectedDocumentValidationException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.SelectByFileNameAsync(It.IsAny<string>()),
+                broker.SelectByFileNameAsync(It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>

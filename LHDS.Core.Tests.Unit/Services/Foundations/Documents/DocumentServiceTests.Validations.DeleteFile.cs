@@ -22,7 +22,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldThrowValidationExceptionOnDeleteFileIfInputsIsInvalid(string invalidInput)
         {
             // Given
-            string fileName = invalidInput;
+            string invalidContainer = invalidInput;
+            string invalidFileName = invalidInput;
             string containerName = invalidInput;
 
             var invalidDocumentException =
@@ -31,6 +32,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             invalidDocumentException.AddData(
                 key: "fileName",
+                values: "Text is required");
+
+            invalidDocumentException.AddData(
+                key: "container",
                 values: "Text is required");
 
             var expectedDocumentValidationException
@@ -54,7 +59,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                     configuration: inMemoryConfiguration);
 
             // When
-            ValueTask deleteFileTask = documentService.RemoveDocumentByFileNameAsync(fileName);
+            ValueTask deleteFileTask = documentService
+                .RemoveDocumentByFileNameAsync(fileName: invalidFileName, invalidContainer);
 
             DocumentValidationException actualDocumentValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(deleteFileTask.AsTask);
@@ -68,7 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                         Times.Once);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.DeleteFileAsync(It.IsAny<string>()),
+                broker.DeleteFileAsync(It.IsAny<string>(), It.IsAny<string>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

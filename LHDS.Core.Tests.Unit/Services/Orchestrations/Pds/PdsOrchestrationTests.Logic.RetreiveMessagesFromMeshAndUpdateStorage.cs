@@ -23,6 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         public async Task ShouldRetreiveMessagesForMatchingPdsWorkflowIdFromMeshAsync()
         {
             // given
+            string randomContainer = GetRandomString();
             DateTimeOffset randomDate = GetRandomDateTimeOffset();
             int randomNumber = GetRandomNumber();
             List<string> randomMessageIds = GetRandomStrings(randomNumber);
@@ -66,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 };
 
                 this.documentServiceMock.Setup(broker =>
-                    broker.AddDocumentAsync(document));
+                    broker.AddDocumentAsync(document, randomContainer));
 
                 Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
 
@@ -134,7 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 };
 
                 this.documentServiceMock.Verify(service =>
-                    service.AddDocumentAsync(It.Is(SameDocumentAs(document))),
+                    service.AddDocumentAsync(It.Is(SameDocumentAs(document)), randomContainer),
                         Times.Once);
 
                 Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());

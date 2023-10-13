@@ -16,9 +16,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public async Task ShouldThrowValidationExceptionsOnRemoveIfDocumentProcessingIsNullAndLogItAsync(string invalidInput)
+        public async Task ShouldThrowValidationExceptionsOnRemoveIfDocumentProcessingIsNullAndLogItAsync(
+            string invalidInput)
         {
             // given
+            string invalidContainer = invalidInput;
             string invalidFileName = invalidInput;
 
             var invalidDocumentProcessingFileNameException =
@@ -36,7 +38,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 
             // when
             ValueTask RemoveDocumentTask =
-                this.documentProcessingService.RemoveDocumentByFileNameAsync(invalidFileName);
+                this.documentProcessingService
+                    .RemoveDocumentByFileNameAsync(fileName: invalidFileName, container: invalidContainer);
 
             DocumentProcessingValidationException actualDocumentProcessingValidationException =
                 await Assert.ThrowsAsync<DocumentProcessingValidationException>(RemoveDocumentTask.AsTask);

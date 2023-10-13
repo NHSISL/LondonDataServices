@@ -16,6 +16,7 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
     {
         private delegate ValueTask<DataSetSpecification> ReturningDataSetSpecificationProcessingFunction();
         private delegate IQueryable<DataSetSpecification> ReturningDataSetSpecificationsFunction();
+        private delegate DataSetSpecification ReturningSingleDataSetSpecificationProcessingFunction();
 
         private async ValueTask<DataSetSpecification> TryCatch(
             ReturningDataSetSpecificationProcessingFunction returningDataSetSpecificationProcessingFunction)
@@ -27,6 +28,10 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
             catch (NullDataSetSpecificationProcessingException nullDataSetSpecificationException)
             {
                 throw CreateAndLogValidationException(nullDataSetSpecificationException);
+            }
+            catch (InvalidCountDataSetSpecificationProcessingException invalidCountDataSetSpecificationProcessingException)
+            {
+                throw CreateAndLogValidationException(invalidCountDataSetSpecificationProcessingException);
             }
             catch (InvalidArgumentDataSetSpecificationProcessingException invalidArgumentDataSetSpecificationProcessingException)
             {
@@ -59,7 +64,8 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
             }
         }
 
-        private IQueryable<DataSetSpecification> TryCatch(ReturningDataSetSpecificationsFunction returningDataSetSpecificationsFunction)
+        private IQueryable<DataSetSpecification> TryCatch(
+            ReturningDataSetSpecificationsFunction returningDataSetSpecificationsFunction)
         {
             try
             {
@@ -91,7 +97,6 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
                 throw CreateAndLogServiceException(failedDataSetSpecificationProcessingServiceException);
             }
         }
-
 
         private DataSetSpecificationProcessingValidationException CreateAndLogValidationException(Xeption exception)
         {

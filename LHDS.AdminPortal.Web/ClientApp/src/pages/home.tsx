@@ -1,15 +1,12 @@
 import React from 'react';
 import { PublicLink, SecuredComponents } from '../components/Links';
-import { useIsAuthenticated, useMsal } from '@azure/msal-react';
-import { loginRequest } from '../authConfig';
+import { useIsAuthenticated } from '@azure/msal-react';
 import { FeatureSwitch } from '../components/accessControl/FeatureSwitch';
 import { FeatureDefinitions } from '../featureDefinitions';
 import securityPoints from '../SecurityMatrix';
 import CardBase from '../components/bases/components/Card/CardBase';
 import CardBaseContent from '../components/bases/components/Card/CardBase.Content';
 import CardBaseBody from '../components/bases/components/Card/CardBase.Body';
-import CardBaseTitle from '../components/bases/components/Card/CardBase.Title';
-import ButtonBase from '../components/bases/buttons/ButtonBase';
 import { HomeUnAuthorised } from './homeUnAuth';
 
 export const Home = () => {

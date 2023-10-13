@@ -4,7 +4,6 @@ import { loginRequest } from '../authConfig';
 import CardBase from '../components/bases/components/Card/CardBase';
 import CardBaseContent from '../components/bases/components/Card/CardBase.Content';
 import CardBaseBody from '../components/bases/components/Card/CardBase.Body';
-import CardBaseTitle from '../components/bases/components/Card/CardBase.Title';
 import ButtonBase from '../components/bases/buttons/ButtonBase';
 
 export const HomeUnAuthorised = () => {
@@ -15,10 +14,17 @@ export const HomeUnAuthorised = () => {
             <div className="container center max-width-400">
                 <CardBase>
                     <CardBaseBody>
-                        <CardBaseTitle>
-                            Login
-                        </CardBaseTitle>
                         <CardBaseContent>
+                            <img src="/LHDLogo.png"
+                                height="150"
+                                width="150"
+                                alt="logo"
+                                className="mb-3 mt-3"
+                                style={{
+                                            display: 'block',  // Set the display property to block
+                                            margin: '0 auto',   // Center horizontally with auto margins
+                                    }} />
+                           
                             <p>Welcome to the London Data Service Admin Portal.</p>
 
                             <p>To unlock all the features of this system login,

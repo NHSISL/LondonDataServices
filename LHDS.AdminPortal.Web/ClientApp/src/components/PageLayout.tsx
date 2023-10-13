@@ -1,10 +1,7 @@
 import React, { ReactElement, useEffect } from "react";
 import '../styles/base.scss';
-import 'nhsuk-frontend/packages/polyfills'; import { UserProfile } from "./UserProfile";
 import { NavigationBar } from "./NavigationBar";
 import { BaseFooter } from "./BaseFooter";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faB, faBars } from "@fortawesome/free-solid-svg-icons";
 import SidebarBase from "./bases/layouts/Sidebar/SidebarBase";
 import SidebarBaseNav from "./bases/layouts/Sidebar/SidebarBase.Nav";
 import HeaderBase from "./bases/layouts/Header/HeaderBase";

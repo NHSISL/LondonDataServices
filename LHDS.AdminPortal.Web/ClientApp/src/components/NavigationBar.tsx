@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { SecuredComponents, SecuredLink } from './Links';
 import securityPoints from '../SecurityMatrix';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretDown, faCaretUp, faHome } from '@fortawesome/free-solid-svg-icons';
+import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
 
 interface SubmenuItem {
     icon: string;

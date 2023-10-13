@@ -1,11 +1,7 @@
 import React from "react";
-import 'nhsuk-frontend/dist/nhsuk.min'
-import 'nhsuk-frontend/packages/polyfills';
-import { Container } from 'nhsuk-react-components'
-import { Link, useParams } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { useParams } from "react-router-dom";
 import DataSetDetail from "../../components/dataSets/dataSetDetail";
+import BreadCrumbBase from "../../components/bases/layouts/Breadcrumb/BreadCrumbBase";
 
 export const DataSetPage = () => {
 
@@ -13,14 +9,18 @@ export const DataSetPage = () => {
 
     return <div>
         <section >
-            <Container>
+            <div className="container-fluid">
                 <main id="maincontent" className="NELTopPadding" role="main">
-                    <Link to={'/configuration/dataSets'}>
-                        <FontAwesomeIcon icon={faChevronLeft} size="1x" />Back to DataSets
-                    </Link>
+
+                    <BreadCrumbBase
+                        link="/configuration/dataSets"
+                        backLink="DataSets"
+                        currentLink="DataSet Detail">
+                    </BreadCrumbBase>
+
                     <DataSetDetail dataSetId={dataSetId} />
                 </main>
-            </Container>
+            </div>
         </section>
     </div>
 }

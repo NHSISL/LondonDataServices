@@ -3,16 +3,20 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { FunctionComponent } from "react";
 import moment from "moment";
 import { IngestionTrackingView } from "../../models/views/components/ingestionTracking/ingestionTrackingView";
-import SummaryListBase from "../bases/components/SummaryList/SummaryListBase";
-import SummaryListBaseKey from "../bases/components/SummaryList/SummaryListBase.Key";
-import SummaryListBaseRow from "../bases/components/SummaryList/SummaryListBase.Row";
-import SummaryListBaseValue from "../bases/components/SummaryList/SummaryListBase.Value";
 import ButtonBase from "../bases/buttons/ButtonBase";
-import { Col, Row } from "react-bootstrap";
 import TableBaseRow from "../bases/components/Table/TableBase.Row";
 import TableBaseData from "../bases/components/Table/TableBase.Data";
 import TableBase from "../bases/components/Table/TableBase";
 import TableBaseTbody from "../bases/components/Table/TableBase.Tbody";
+import CardBase from "../bases/components/Card/CardBase";
+import CardBaseBody from "../bases/components/Card/CardBase.Body";
+import CardBaseTitle from "../bases/components/Card/CardBase.Title";
+import CardBaseContent from "../bases/components/Card/CardBase.Content";
+import SummaryListBaseRow from "../bases/components/SummaryList/SummaryListBase.Row";
+import SummaryListBaseValue from "../bases/components/SummaryList/SummaryListBase.Value";
+import SummaryListBaseKey from "../bases/components/SummaryList/SummaryListBase.Key";
+import SummaryListBase from "../bases/components/SummaryList/SummaryListBase";
+import GridBase from "../bases/layouts/Grid/GridBase";
 
 interface IngestionTrackingDetailCardViewProps {
     ingestionTracking: IngestionTrackingView;
@@ -32,94 +36,108 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
 
     return (
         <>
-            <TableBase>
-                <TableBaseTbody>
-                    <TableBaseRow>
-                        <TableBaseData><strong>Supplier</strong></TableBaseData>
-                        <TableBaseData>{ingestionTracking.supplier?.name}</TableBaseData>
-                    </TableBaseRow>
+            <div className="row">
+                <GridBase size="Two-Third">
+                    <CardBase>
+                        <CardBaseBody>
+                            <CardBaseTitle>
+                                Details
+                            </CardBaseTitle>
+                            <CardBaseContent>
+                                <SummaryListBase>
+                                    <SummaryListBaseRow>
+                                        <SummaryListBaseKey>Supplier</SummaryListBaseKey>
+                                        <SummaryListBaseValue>{ingestionTracking.supplier?.name}</SummaryListBaseValue>
+                                    </SummaryListBaseRow>
+                                    <SummaryListBaseRow>
+                                        <SummaryListBaseKey>Encrypted File Name</SummaryListBaseKey>
+                                        <SummaryListBaseValue>{ingestionTracking.encryptedFileName}</SummaryListBaseValue>
+                                    </SummaryListBaseRow>
+                                    <SummaryListBaseRow>
+                                        <SummaryListBaseKey>Decrypted File Name</SummaryListBaseKey>
+                                        <SummaryListBaseValue>{ingestionTracking.decryptedFileName}</SummaryListBaseValue>
+                                    </SummaryListBaseRow>
+                                    <SummaryListBaseRow>
+                                        <SummaryListBaseKey>Decrypted</SummaryListBaseKey>
+                                        <SummaryListBaseValue>{ingestionTracking.decrypted ?
+                                            <FontAwesomeIcon icon={faCheck} className="text-success" /> :
+                                            <FontAwesomeIcon icon={faTimes} className="text-danger" />}
+                                        </SummaryListBaseValue>
+                                    </SummaryListBaseRow>
+                                    <SummaryListBaseRow>
+                                        <SummaryListBaseKey>Last Seen</SummaryListBaseKey>
+                                        <SummaryListBaseValue>{moment(ingestionTracking.lastSeen?.toString()).format("Do-MMM-yyyy HH:mm")}
+                                        </SummaryListBaseValue>
+                                    </SummaryListBaseRow>
+                                    <SummaryListBaseRow>
+                                        <SummaryListBaseKey>File Deleted</SummaryListBaseKey>
+                                        <SummaryListBaseValue>{ingestionTracking.fileDeleted ?
+                                            <FontAwesomeIcon icon={faCheck} className="text-success" /> :
+                                            <FontAwesomeIcon icon={faTimes} className="text-danger" />}
+                                        </SummaryListBaseValue>
+                                    </SummaryListBaseRow>
+                                    <SummaryListBaseRow>
+                                        <SummaryListBaseKey>Record Count</SummaryListBaseKey>
+                                        <SummaryListBaseValue>{ingestionTracking.recordCount}</SummaryListBaseValue>
+                                    </SummaryListBaseRow>
+                                    <SummaryListBaseRow>
+                                        <SummaryListBaseKey>Encrypted File Size</SummaryListBaseKey>
+                                        <SummaryListBaseValue>{ingestionTracking.encryptedFileSize}</SummaryListBaseValue>
+                                    </SummaryListBaseRow>
+                                    <SummaryListBaseRow>
+                                        <SummaryListBaseKey>Decrypted File Size</SummaryListBaseKey>
+                                        <SummaryListBaseValue>{ingestionTracking.decryptedFileSize}</SummaryListBaseValue>
+                                    </SummaryListBaseRow>
+                                    <SummaryListBaseRow>
+                                        <SummaryListBaseKey>Created Date</SummaryListBaseKey>
+                                        <SummaryListBaseValue>
+                                            {moment(ingestionTracking.createdDate?.toString()).format("Do-MMM-yyyy HH:mm")}
+                                        </SummaryListBaseValue>
+                                    </SummaryListBaseRow>
+                                    <SummaryListBaseRow>
+                                        <SummaryListBaseKey>Updated Date</SummaryListBaseKey>
+                                        <SummaryListBaseValue>
+                                            {moment(ingestionTracking.updatedDate?.toString()).format("Do-MMM-yyyy HH:mm")}
+                                        </SummaryListBaseValue>
+                                    </SummaryListBaseRow>
+                                </SummaryListBase>
 
-                    <TableBaseRow>
-                        <TableBaseData> <strong>Encrypted File Name</strong></TableBaseData>
-                        <TableBaseData>{ingestionTracking.encryptedFileName}</TableBaseData>
-                    </TableBaseRow>
+                            </CardBaseContent>
+                        </CardBaseBody>
+                    </CardBase>
+                </GridBase>
 
-                    <TableBaseRow>
-                        <TableBaseData><strong>Decrypted File Name</strong></TableBaseData>
-                        <TableBaseData>{ingestionTracking.decryptedFileName}</TableBaseData>
-                    </TableBaseRow>
-
-                    <TableBaseRow>
-                        <TableBaseData><strong>Decrypted</strong></TableBaseData>
-                        <TableBaseData>
-                            {ingestionTracking.decrypted ?
-                                <FontAwesomeIcon icon={faCheck} className="text-success" /> :
-                                <FontAwesomeIcon icon={faTimes} className="text-danger" />}
-                        </TableBaseData>
-                    </TableBaseRow>
-
-                    <TableBaseRow>
-                        <TableBaseData><strong>Last Seen</strong></TableBaseData>
-                        <TableBaseData>{moment(ingestionTracking.lastSeen?.toString()).format("Do-MMM-yyyy HH:mm")}</TableBaseData>
-                    </TableBaseRow>
-
-                    <TableBaseRow>
-                        <TableBaseData><strong>File Deleted</strong></TableBaseData>
-                        <TableBaseData>
-                            {ingestionTracking.fileDeleted ?
-                                <FontAwesomeIcon icon={faCheck} className="text-success" /> :
-                                <FontAwesomeIcon icon={faTimes} className="text-danger" />}
-                        </TableBaseData>
-                    </TableBaseRow>
-
-                    <TableBaseRow>
-                        <TableBaseData><strong>Last Seen</strong></TableBaseData>
-                        <TableBaseData>{moment(ingestionTracking.lastSeen?.toString()).format("Do-MMM-yyyy HH:mm")}</TableBaseData>
-                    </TableBaseRow>
-
-                </TableBaseTbody>
-            </TableBase>
-
-            <SummaryListBase>
-
-                <SummaryListBaseRow>
-                    <SummaryListBaseKey>Record Count</SummaryListBaseKey>
-                    <SummaryListBaseValue>{ingestionTracking.recordCount}</SummaryListBaseValue>
-                </SummaryListBaseRow>
-                <SummaryListBaseRow>
-                    <SummaryListBaseKey>Encrypted File Size</SummaryListBaseKey>
-                    <SummaryListBaseValue>{ingestionTracking.encryptedFileSize}</SummaryListBaseValue>
-                </SummaryListBaseRow>
-                <SummaryListBaseRow>
-                    <SummaryListBaseKey>Decrypted File Size</SummaryListBaseKey>
-                    <SummaryListBaseValue>{ingestionTracking.decryptedFileSize}</SummaryListBaseValue>
-                </SummaryListBaseRow>
-                <SummaryListBaseRow>
-                    <SummaryListBaseKey>Created Date</SummaryListBaseKey>
-                    <SummaryListBaseValue>
-                        {moment(ingestionTracking.createdDate?.toString()).format("Do-MMM-yyyy HH:mm")}
-                    </SummaryListBaseValue>
-                </SummaryListBaseRow>
-                <SummaryListBaseRow>
-                    <SummaryListBaseKey>Updated Date</SummaryListBaseKey>
-                    <SummaryListBaseValue>
-                        {moment(ingestionTracking.updatedDate?.toString()).format("Do-MMM-yyyy HH:mm")}
-                    </SummaryListBaseValue>
-                </SummaryListBaseRow>
-                <SummaryListBaseRow>
-                    <SummaryListBaseKey>Actions</SummaryListBaseKey>
-                    <SummaryListBaseValue>
-                        <br />
-                        <ButtonBase onClick={() => onReLand(ingestionTracking)} add>&nbsp;Re-Land</ButtonBase>&nbsp;
-                        <ButtonBase onClick={() => onReDecrypt(ingestionTracking)} add>&nbsp;Re-Decrypt</ButtonBase>&nbsp;
-                        <ButtonBase onClick={() => onDownload(ingestionTracking)} add>
-                            <FontAwesomeIcon icon={faFileDownload} />&nbsp;Download
-                        </ButtonBase>&nbsp;
-                    </SummaryListBaseValue>
-                </SummaryListBaseRow>
-            </SummaryListBase>
-
-
+                <GridBase size="One-Third">
+                    <CardBase>
+                        <CardBaseBody>
+                            <CardBaseTitle>
+                                Actions
+                            </CardBaseTitle>
+                            <CardBaseContent>
+                                <ul className="ps-0 mb-4">
+                                    <li>
+                                        <span>1</span> Re-Encrypt
+                                        <p>Use this option to re-encrypt a file.</p>
+                                    </li>
+                                    <li>
+                                        <span>2</span> Re-Decrypt
+                                        <p>Use this option to re-decrypt a file.</p>
+                                    </li>
+                                    <li>
+                                        <span>3</span> Download Decrypted
+                                        <p>Use this option to download a successfully decrypted file.</p>
+                                    </li>
+                                </ul>
+                                <ButtonBase onClick={() => onReLand(ingestionTracking)} add>&nbsp;Re-Land</ButtonBase>&nbsp;
+                                <ButtonBase onClick={() => onReDecrypt(ingestionTracking)} add>&nbsp;Re-Decrypt</ButtonBase>&nbsp;
+                                <ButtonBase onClick={() => onDownload(ingestionTracking)} add>
+                                    <FontAwesomeIcon icon={faFileDownload} />&nbsp;Download
+                                </ButtonBase>&nbsp;
+                            </CardBaseContent>
+                        </CardBaseBody>
+                    </CardBase>
+                </GridBase>
+            </div>
         </>
     );
 }

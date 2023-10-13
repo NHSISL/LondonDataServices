@@ -8,7 +8,7 @@ interface TableBaseProps {
 
 const TableBase: FunctionComponent<TableBaseProps> = (props) => {
     return (
-        <table className={props.classes + " table"}>
+        <table className={props.classes + " table table-responsive "}>
             {props.children}
         </table>
     )

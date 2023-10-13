@@ -51,8 +51,10 @@
     <TypeScriptCompile Remove="ClientApp\src\components\audit\auditRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\audit\auditRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\bases\ingestionTrackingTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Breadcrumb\BreadCrumbBase.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Content\ContentBase.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Footer\FooterBase.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Grid\GridBase.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Header\HeaderBase.Nav.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Header\HeaderBase.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Sidebar\SidebarBase.Nav.tsx" />
@@ -172,6 +174,7 @@
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataTypesPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\ObjectColumPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\specificationObjectPage.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\homeUnAuth.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\IngestionTrackingHomepage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\ingestionTrackingPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\OptOutSearch.tsx" />

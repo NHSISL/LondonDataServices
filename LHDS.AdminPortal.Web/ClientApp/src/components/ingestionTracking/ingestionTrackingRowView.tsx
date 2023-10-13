@@ -35,9 +35,7 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
     return (
         <TableBaseRow>
             <TableBaseData>
-                <div
-                    className="text-white p-2 rounded al text-center"
-                    style={{ backgroundColor: ingestionTracking.supplier?.name === 'EMIS' ? '#46A683' : '#46A683' }}>
+                <div className="p-2 rounded al text-center">
                     {ingestionTracking.supplier?.name}
                 </div>
             </TableBaseData>

@@ -17,10 +17,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public async Task ShouldThrowValidationExceptionsOnRetrieveIfDocumentProcessingIsNullAndLogItAsync(string invalidInput)
+        public async Task ShouldThrowValidationExceptionsOnRetrieveIfDocumentProcessingIsNullAndLogItAsync(
+            string invalidInput)
         {
             // given
             string invalidFileName = invalidInput;
+            string invalidContainer = invalidInput;
 
             var invalidDocumentProcessingFileNameException =
                 new InvalidDocumentProcessingFileNameException(
@@ -37,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 
             // when
             ValueTask<Document> RetrieveDocumentTask =
-                this.documentProcessingService.RetrieveDocumentByFileNameAsync(invalidFileName);
+                this.documentProcessingService.RetrieveDocumentByFileNameAsync(invalidFileName, invalidContainer);
 
             DocumentProcessingValidationException actualDocumentProcessingValidationException =
                 await Assert.ThrowsAsync<DocumentProcessingValidationException>(RetrieveDocumentTask.AsTask);

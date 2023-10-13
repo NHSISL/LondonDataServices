@@ -21,6 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
         {
             // Given
             string invalidFileName = invalidInput;
+            string invalidContainer = "emislanding";
 
             var invalidDocumentException = new InvalidDocumentException(
                 message: "Invalid document. Please correct the errors and try again.");
@@ -29,13 +30,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                 key: "fileName",
                 values: "Text is required");
 
-            var expectedDocumentValidationException = 
+            var expectedDocumentValidationException =
                 new DocumentValidationException(
                     message: "Document validation errors occured, please try again",
                     innerException: invalidDocumentException);
 
             // When
-            ValueTask<string> uploadFileTask = this.documentService.GetDownloadLinkAsync(invalidFileName);
+            ValueTask<string> uploadFileTask = this.documentService
+                .GetDownloadLinkAsync(invalidFileName, invalidContainer);
 
             DocumentValidationException actualDocumentValidationException =
                 await Assert.ThrowsAsync<DocumentValidationException>(uploadFileTask.AsTask);
@@ -49,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                         Times.Once);
 
             this.blobStorageBrokerMock.Verify(broker =>
-               broker.GetDownloadLinkAsync(invalidFileName, It.IsAny<DateTimeOffset>()),
+               broker.GetDownloadLinkAsync(invalidFileName, invalidContainer, It.IsAny<DateTimeOffset>()),
                    Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

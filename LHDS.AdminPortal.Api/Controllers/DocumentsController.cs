@@ -20,6 +20,7 @@ namespace LHDS.AdminPortal.Api.Controllers
     public class DocumentsController : RESTFulController
     {
         private readonly IDocumentService documentService;
+        private readonly string encryptedFileContainer = "emislanding";
 
         public DocumentsController(IDocumentService documentService) =>
             this.documentService = documentService;
@@ -32,7 +33,8 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                string document = await this.documentService.GetDownloadLinkAsync(WebUtility.UrlDecode(fileName));
+                string document = await this.documentService
+                    .GetDownloadLinkAsync(WebUtility.UrlDecode(fileName), encryptedFileContainer);
 
                 return Ok(document);
             }

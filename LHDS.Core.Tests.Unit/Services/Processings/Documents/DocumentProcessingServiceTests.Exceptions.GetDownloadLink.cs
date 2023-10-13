@@ -22,6 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             Xeption dependencyValidationException)
         {
             // given
+            var randomContainer = GetRandomString();
             var randomString = GetRandomString();
             var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
             var randomMessage = GetRandomString();
@@ -38,12 +39,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.documentServiceMock.Setup(service =>
-                service.GetDownloadLinkAsync(inputDocument.FileName))
+                service.GetDownloadLinkAsync(inputDocument.FileName, randomContainer))
                     .Throws(dependencyValidationException);
 
             // when
             ValueTask<string> GetDownloadLinktTask =
-                this.documentProcessingService.GetDownloadLinkAsync(inputDocument.FileName);
+                this.documentProcessingService.GetDownloadLinkAsync(
+                    fileName: inputDocument.FileName,
+                    container: randomContainer);
 
             DocumentProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<DocumentProcessingDependencyValidationException>(GetDownloadLinktTask.AsTask);
@@ -52,7 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             actualException.Should().BeEquivalentTo(expectedDocumentProcessingDependencyValidationException);
 
             this.documentServiceMock.Verify(service =>
-                service.GetDownloadLinkAsync(inputDocument.FileName),
+                service.GetDownloadLinkAsync(inputDocument.FileName, randomContainer),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -70,6 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
           Xeption dependencyException)
         {
             // given
+            var randomContainer = GetRandomString();
             var randomString = GetRandomString();
             var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
             var randomMessage = GetRandomString();
@@ -86,12 +90,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     innerException: dependencyException.InnerException as Xeption);
 
             this.documentServiceMock.Setup(service =>
-                service.GetDownloadLinkAsync(inputDocument.FileName))
+                service.GetDownloadLinkAsync(inputDocument.FileName, randomContainer))
                     .Throws(dependencyException);
 
             // when
             ValueTask<string> retrieveDocumentTask =
-                this.documentProcessingService.GetDownloadLinkAsync(inputDocument.FileName);
+                this.documentProcessingService.GetDownloadLinkAsync(
+                    fileName: inputDocument.FileName,
+                    container: randomContainer);
 
             DocumentProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<DocumentProcessingDependencyException>(retrieveDocumentTask.AsTask);
@@ -100,7 +106,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             actualException.Should().BeEquivalentTo(expectedDocumentProcessingDependencyException);
 
             this.documentServiceMock.Verify(service =>
-                service.GetDownloadLinkAsync(inputDocument.FileName),
+                service.GetDownloadLinkAsync(inputDocument.FileName, randomContainer),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -116,6 +122,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
         public async Task ShouldThrowServiceExceptionOnGetDownloadLinkIfServiceErrorOccursAsync()
         {
             // given
+            var randomContainer = GetRandomString();
             var randomString = GetRandomString();
             var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
             var randomMessage = GetRandomString();
@@ -139,12 +146,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     innerException: failedDocumentProcessingServiceException);
 
             this.documentServiceMock.Setup(service =>
-                service.GetDownloadLinkAsync(inputDocument.FileName))
+                service.GetDownloadLinkAsync(inputDocument.FileName, randomContainer))
                     .Throws(serviceException);
 
             // when
             ValueTask<string> retrieveDocumentTask =
-                this.documentProcessingService.GetDownloadLinkAsync(inputDocument.FileName);
+                this.documentProcessingService.GetDownloadLinkAsync(
+                    fileName: inputDocument.FileName,
+                    container: randomContainer);
 
             DocumentProcessingServiceException actualException =
                 await Assert.ThrowsAsync<DocumentProcessingServiceException>(retrieveDocumentTask.AsTask);
@@ -153,7 +162,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             actualException.Should().BeEquivalentTo(expectedDocumentProcessingServiveException);
 
             this.documentServiceMock.Verify(service =>
-                service.GetDownloadLinkAsync(inputDocument.FileName),
+                service.GetDownloadLinkAsync(inputDocument.FileName, randomContainer),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

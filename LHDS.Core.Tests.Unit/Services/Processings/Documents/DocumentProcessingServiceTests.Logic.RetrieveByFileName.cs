@@ -17,6 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
         public async Task ShouldRetrieveFileAsync()
         {
             // Given
+            string encryptedFileContainer = "emislanding";
             var randomFileName = GetRandomString();
             var randomfileData = Encoding.ASCII.GetBytes(GetRandomString());
 
@@ -29,19 +30,20 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             Document expectedDocument = randomDocument;
 
             this.documentServiceMock.Setup(service =>
-                service.RetrieveDocumentByFileNameAsync(randomDocument.FileName))
+                service.RetrieveDocumentByFileNameAsync(randomDocument.FileName, encryptedFileContainer))
                     .ReturnsAsync(randomDocument);
 
             // When
             Document actualDocument =
                 await this.documentProcessingService
-                    .RetrieveDocumentByFileNameAsync(randomDocument.FileName);
+                    .RetrieveDocumentByFileNameAsync(
+                        fileName: randomDocument.FileName, container: encryptedFileContainer);
 
             // Then
             actualDocument.Should().BeEquivalentTo(expectedDocument);
 
             this.documentServiceMock.Verify(service =>
-                service.RetrieveDocumentByFileNameAsync(randomDocument.FileName),
+                service.RetrieveDocumentByFileNameAsync(randomDocument.FileName, encryptedFileContainer),
                     Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();

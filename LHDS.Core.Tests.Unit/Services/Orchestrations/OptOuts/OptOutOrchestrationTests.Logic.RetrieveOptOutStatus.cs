@@ -19,6 +19,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         public async Task ShouldRetrieveOptOutStatusAsync()
         {
             // given
+            string encryptedFileContainer = "emislanding";
             bool withHeader = optOutConfiguration.OptOutFileHasHeader;
             Guid identifier = Guid.NewGuid();
             bool shouldAddTrailingComma = optOutConfiguration.OptOutFileRequireTrailingComma;
@@ -88,7 +89,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             };
 
             this.documentProcessingServiceMock.Setup(service =>
-                service.AddDocumentAsync(document));
+                service.AddDocumentAsync(document, encryptedFileContainer));
 
             // when
             await this.optOutOrchestrationService.RetrieveOptOutStatusAsync(inputBytes, randomRecieveName);
@@ -131,7 +132,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.Is(SameDocumentAs(document))),
+                service.AddDocumentAsync(It.Is(SameDocumentAs(document)), encryptedFileContainer),
                     Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();

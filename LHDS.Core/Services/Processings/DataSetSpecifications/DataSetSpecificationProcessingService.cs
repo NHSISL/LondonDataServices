@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
@@ -89,6 +90,22 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
                 ValidateDataSetSpecificationId(dataSetSpecificationId);
 
                 return await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(dataSetSpecificationId);
+            });
+
+        public ValueTask<DataSetSpecification> GetActiveDataSetSpecification(Guid supplierId) =>
+            TryCatch(async () =>
+            {
+                ValidateSupplierId(supplierId);
+
+                List<DataSetSpecification> result = this.dataSetSpecificationService.RetrieveAllDataSetSpecifications().Where(
+                        specification =>
+                                specification.DataSet.SupplierId == supplierId
+                                && specification.DataSet.IsActive == true
+                                && specification.IsActive == true).ToList();
+
+                ValidateDataSetSpecificationCount(count: result.Count());
+
+                return await Task.FromResult(result.FirstOrDefault());
             });
     }
 }

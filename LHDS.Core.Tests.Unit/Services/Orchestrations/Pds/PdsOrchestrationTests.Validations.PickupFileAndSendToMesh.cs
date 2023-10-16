@@ -145,10 +145,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 key: "fileName",
                 values: "Text is required");
 
-            invalidArgumentPdsException.AddData(
-                key: "fileName",
-                values: "Text is required");
-
             var expectedPdsValidationException =
                 new PdsOrchestrationValidationException(
                     message: "PDS orchestration validation errors occurred, please try again.",

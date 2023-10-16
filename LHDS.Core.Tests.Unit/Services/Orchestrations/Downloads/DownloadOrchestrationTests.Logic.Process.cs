@@ -320,14 +320,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         public async Task ShouldProcessNewNamedDocumentsAsync()
         {
             // given
+            Guid supplierId = landingConfiguration.LandingSupplierId;
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             Guid randomIdentifier = Guid.NewGuid();
             Document randomDocument = CreateRandomDocument();
             Document externalDocument = randomDocument;
+            DataSet randomDataSet = CreateRandomDataSet(supplierId);
+
+            IQueryable<DataSetSpecification> randomDataSetSpecificationList =
+                CreateRandomDataSetSpecifications(dataSetId: randomDataSet.Id);
+
+            DataSetSpecification randomDataSetSpecification = randomDataSetSpecificationList.First();
 
             var filename = randomDocument.FileName.StartsWith('/')
                 ? randomDocument.FileName
                 : "/" + randomDocument.FileName;
+
+            this.dataSetSpecificationProcessingServiceMock.Setup(service =>
+                service.GetActiveDataSetSpecification(supplierId))
+                    .Returns(ValueTask.FromResult(randomDataSetSpecificationList.FirstOrDefault()));
 
             IngestionTracking newIngestionTracking = new IngestionTracking
             {
@@ -337,8 +348,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
 
                 DecryptedFileName =
-                    $"/{landingConfiguration.DecryptedFolder}" +
-                    $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                        $"/{landingConfiguration.DecryptedFolder}"
+                            + $"/{randomDataSetSpecification.DataSet.DataSetName}"
+                            + $"/{randomDataSetSpecification.Id}"
+                            + $"/{filename.Split('_')[3]}"
+                            + $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
                 Decrypted = false,
                 LastSeen = randomDateTime,

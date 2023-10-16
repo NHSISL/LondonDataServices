@@ -21,13 +21,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
         {
             // Given
             string invalidFileName = invalidInput;
-            string invalidContainer = "emislanding";
+            string invalidContainer = invalidInput;
 
             var invalidDocumentException = new InvalidDocumentException(
                 message: "Invalid document. Please correct the errors and try again.");
 
             invalidDocumentException.AddData(
-                key: "fileName",
+                key: "FileName",
+                values: "Text is required");
+
+            invalidDocumentException.AddData(
+                key: "Container",
                 values: "Text is required");
 
             var expectedDocumentValidationException =

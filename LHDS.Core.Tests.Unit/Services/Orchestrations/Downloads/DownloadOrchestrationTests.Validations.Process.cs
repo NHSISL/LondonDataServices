@@ -58,7 +58,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         public async Task ShouldNotProcessNamedDocumentsIfDownloadIsNullAsync()
         {
             // given
-
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
 

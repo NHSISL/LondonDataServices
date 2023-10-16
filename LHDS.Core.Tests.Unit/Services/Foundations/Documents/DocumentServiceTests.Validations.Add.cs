@@ -142,6 +142,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                 key: "FileName",
                 values: "Text is required");
 
+            invalidDocumentException.AddData(
+                key: "Container",
+                values: "Text is required");
+
             var expectedDocumentValidationException
                 = new DocumentValidationException(
                     message: "Document validation errors occured, please try again",

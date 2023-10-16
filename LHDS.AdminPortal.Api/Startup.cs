@@ -199,6 +199,11 @@ namespace LHDS.AdminPortal.Api
 
             var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
             ValidateBlobStorageSettings(blobStorageSettings);
+            var blobContainers = configuration.GetSection("blobContainers").Get<BlobContainers>();
+            ValidateBlobContainers(blobContainers);
+
+            services.AddSingleton<BlobContainers>(blobContainers);
+
 
             var blobServiceClientOptions = new BlobClientOptions()
             {
@@ -226,6 +231,22 @@ namespace LHDS.AdminPortal.Api
 
                 (Rule: IsInvalid(blobStorageSettings.AzureTenantId),
                     Parameter: "blobStorage__azureTenantId"));
+        }
+
+        private static void ValidateBlobContainers(BlobContainers blobContainers)
+        {
+            Validate(
+                (Rule: IsInvalid(blobContainers.EmisLanding),
+                    Parameter: "blobContainers__emisLanding"),
+
+                (Rule: IsInvalid(blobContainers.Versioner),
+                    Parameter: "blobContainers__versioner"),
+
+                (Rule: IsInvalid(blobContainers.OptOut),
+                    Parameter: "blobContainers__optOut"),
+
+                (Rule: IsInvalid(blobContainers.Pds),
+                    Parameter: "blobContainers__pds"));
         }
 
         private static dynamic IsInvalid(string text) => new

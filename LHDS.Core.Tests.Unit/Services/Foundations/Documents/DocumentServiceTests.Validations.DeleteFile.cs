@@ -31,11 +31,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                     message: "Invalid document. Please correct the errors and try again.");
 
             invalidDocumentException.AddData(
-                key: "fileName",
+                key: "FileName",
                 values: "Text is required");
 
             invalidDocumentException.AddData(
-                key: "container",
+                key: "Container",
                 values: "Text is required");
 
             var expectedDocumentValidationException

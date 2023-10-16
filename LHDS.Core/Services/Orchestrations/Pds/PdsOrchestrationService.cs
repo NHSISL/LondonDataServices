@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Orchestrations.Pds;
 using LHDS.Core.Services.Foundations.Documents;
@@ -23,16 +24,17 @@ namespace LHDS.Core.Services.Orchestrations.Pds
         private readonly IPdsAuditService pdsAuditService;
         private readonly IDocumentService documentService;
         private readonly IMeshService meshService;
+        private readonly BlobContainers blobContainers;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
         private readonly PdsConfiguration pdsConfiguration;
-        private readonly string pdsFileContainer = "pds";
 
         public PdsOrchestrationService(
             IPdsAuditService pdsAuditService,
             IDocumentService documentService,
             IMeshService meshService,
+            BlobContainers blobContainers,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker,
@@ -42,6 +44,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             this.pdsAuditService = pdsAuditService;
             this.documentService = documentService;
             this.meshService = meshService;
+            this.blobContainers = blobContainers;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
@@ -51,6 +54,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
         public ValueTask<PdsAudit> PickupFileAndSendToMesh(byte[] pdsFile, string fileName) =>
         TryCatch(async () =>
         {
+            ValidateConfigurationSettings();
             ValidatePdsArgs(pdsFile, fileName);
 
             DateTimeOffset timeStamp = this.dateTimeBroker.GetCurrentDateTimeOffset();
@@ -90,6 +94,9 @@ namespace LHDS.Core.Services.Orchestrations.Pds
         public ValueTask<List<PdsAudit>> RetreiveMessagesFromMeshAndUpdateStorage() =>
         TryCatch(async () =>
         {
+            ValidateConfigurationSettings();
+            ValidateBlobContainers();
+
             var exceptions = new List<Exception>();
             var messageIds = await this.meshService.RetrieveMessageIdsFromInboxAsync();
             var pdsAudits = new List<PdsAudit>();
@@ -120,7 +127,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
                         DocumentData = message.FileContent,
                     };
 
-                    await this.documentService.AddDocumentAsync(document, pdsFileContainer);
+                    await this.documentService.AddDocumentAsync(document, blobContainers.Pds);
                     var correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
                     var fileName = message.Headers["mex-filename"].FirstOrDefault();
                     DateTimeOffset currentDate = this.dateTimeBroker.GetCurrentDateTimeOffset();

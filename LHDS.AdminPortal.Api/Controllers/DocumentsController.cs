@@ -4,6 +4,7 @@
 
 using System.Net;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Services.Foundations.Documents;
@@ -20,10 +21,13 @@ namespace LHDS.AdminPortal.Api.Controllers
     public class DocumentsController : RESTFulController
     {
         private readonly IDocumentService documentService;
-        private readonly string encryptedFileContainer = "emislanding";
+        private readonly BlobContainers blobContainers;
 
-        public DocumentsController(IDocumentService documentService) =>
+        public DocumentsController(IDocumentService documentService, BlobContainers blobContainers)
+        {
             this.documentService = documentService;
+            this.blobContainers = blobContainers;
+        }
 
         [HttpGet("{fileName}")]
 #if RELEASE
@@ -34,7 +38,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             try
             {
                 string document = await this.documentService
-                    .GetDownloadLinkAsync(WebUtility.UrlDecode(fileName), encryptedFileContainer);
+                    .GetDownloadLinkAsync(WebUtility.UrlDecode(fileName), blobContainers.EmisLanding);
 
                 return Ok(document);
             }

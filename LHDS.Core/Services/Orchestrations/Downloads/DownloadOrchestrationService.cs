@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
@@ -28,19 +29,20 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         private readonly IDownloadService downloadService;
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly IIngestionTrackingAuditService auditService;
+        private readonly BlobContainers blobContainers;
         private readonly ISupplierService supplierService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
         private readonly Guid supplierId;
         private readonly LandingConfiguration landingConfiguration;
-        private readonly string encryptedFileContainer = "emislanding";
 
         public DownloadOrchestrationService(
             IDocumentService documentService,
             IDownloadService downloadService,
             IIngestionTrackingService ingestionTrackingService,
             IIngestionTrackingAuditService auditService,
+            BlobContainers blobContainers,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker,
@@ -50,6 +52,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.downloadService = downloadService;
             this.ingestionTrackingService = ingestionTrackingService;
             this.auditService = auditService;
+            this.blobContainers = blobContainers;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
@@ -120,7 +123,10 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                 };
 
                                 await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
-                                await this.documentService.AddDocumentAsync(newBlobDocument, encryptedFileContainer);
+
+                                await this.documentService
+                                    .AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
+
                                 LogAudit(newIngestionTracking, document, "Landed");
 
                                 return newIngestionTracking.DecryptedFileName;
@@ -197,7 +203,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     try
                     {
                         await this.documentService.RemoveDocumentByFileNameAsync(
-                            maybeIngestionTracking.EncryptedFileName, encryptedFileContainer);
+                            maybeIngestionTracking.EncryptedFileName, blobContainers.EmisLanding);
                     }
                     catch (DocumentDependencyException documentDependencyException)
                         when (documentDependencyException.InnerException is FailedDocumentRequestException
@@ -213,7 +219,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     };
 
                     await this.ingestionTrackingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);
-                    await this.documentService.AddDocumentAsync(newBlobDocument, encryptedFileContainer);
+                    await this.documentService.AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
 
                     LogAudit(
                         ingestionTracking: maybeIngestionTracking,
@@ -261,7 +267,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     };
 
                     await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
-                    await this.documentService.AddDocumentAsync(newBlobDocument, encryptedFileContainer);
+                    await this.documentService.AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
                     LogAudit(newIngestionTracking, externalDocument, "Re-Landed");
 
                     return newIngestionTracking.DecryptedFileName;

@@ -11,6 +11,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Mesh;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -28,18 +29,19 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         private readonly IDocumentProcessingService documentProcessingService;
         private readonly IMeshProcessingService meshProcessingService;
         private readonly ICsvMapperProcessingService csvMapperProcessingService;
+        private readonly BlobContainers blobContainers;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
         private readonly ILoggingBroker loggingBroker;
         private readonly OptOutConfiguration optOutConfiguration;
         private readonly MeshConfiguration meshConfiguration;
-        private readonly string optOutFileContainer = "optout";
 
         public OptOutOrchestrationService(
             IOptOutProcessingService optOutProcessingService,
             IDocumentProcessingService documentProcessingService,
             IMeshProcessingService meshProcessingService,
             ICsvMapperProcessingService csvMapperProcessingService,
+            BlobContainers blobContainers,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker,
             ILoggingBroker loggingBroker,
@@ -50,6 +52,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             this.documentProcessingService = documentProcessingService;
             this.meshProcessingService = meshProcessingService;
             this.csvMapperProcessingService = csvMapperProcessingService;
+            this.blobContainers = blobContainers;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
             this.loggingBroker = loggingBroker;
@@ -113,7 +116,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 };
 
                 string saveDocument = await this.documentProcessingService
-                    .AddDocumentAsync(document, optOutFileContainer);
+                    .AddDocumentAsync(document, blobContainers.OptOut);
 
                 return saveDocument;
             });
@@ -238,7 +241,7 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                             FileName = fileName
                         };
 
-                        await this.documentProcessingService.AddDocumentAsync(document, optOutFileContainer);
+                        await this.documentProcessingService.AddDocumentAsync(document, blobContainers.OptOut);
                     }
 
                     await this.meshProcessingService.AcknowledgeMessageByIdAsync(messageId);

@@ -21,7 +21,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
         public async Task ShouldProcessDecryptedDocumentAsync()
         {
             // given
-            var randomContainer = GetRandomMessage();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             string randomFileName = GetRandomMessage();
             byte[] randomEncryptedBytes = Encoding.ASCII.GetBytes(GetRandomMessage());
@@ -48,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             this.documentServiceMock.Setup(service =>
                 service.RetrieveDocumentByFileNameAsync(
                     storageIngestionTracking.EncryptedFileName,
-                    randomContainer))
+                    It.IsAny<string>()))
                         .ReturnsAsync(encryptedDocument);
 
             this.decryptionServiceMock.Setup(service =>
@@ -85,7 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             this.documentServiceMock.Verify(service =>
                 service.RetrieveDocumentByFileNameAsync(
                     storageIngestionTracking.EncryptedFileName,
-                    randomContainer),
+                    It.IsAny<string>()),
                         Times.Once);
 
             this.decryptionServiceMock.Verify(service =>
@@ -95,7 +94,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             this.documentServiceMock.Verify(service =>
                 service.AddDocumentAsync(
                     It.Is(SameDocumentAs(decryptedDocument)),
-                    randomContainer),
+                    It.IsAny<string>()),
                         Times.Once);
 
             this.ingestionTrackingServiceMock.Verify(service =>

@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
@@ -22,16 +23,16 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
         private readonly IDecryptionService decryptionService;
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly IIngestionTrackingAuditService auditService;
+        private readonly BlobContainers blobContainers;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
-        private readonly string encryptedFileContainer = "emislanding";
-        private readonly string decryptedFileContainer = "versioner";
 
         public DecryptionOrchestrationService(
             IDocumentService documentService,
             IDecryptionService decryptionService,
             IIngestionTrackingService ingestionTrackingService,
             IIngestionTrackingAuditService auditService,
+            BlobContainers blobContainers,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker)
         {
@@ -39,6 +40,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             this.decryptionService = decryptionService;
             this.ingestionTrackingService = ingestionTrackingService;
             this.auditService = auditService;
+            this.blobContainers = blobContainers;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
         }
@@ -53,8 +55,8 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
                 Document document = await this.documentService
                     .RetrieveDocumentByFileNameAsync(
-                        fileName: ingestionTracking.EncryptedFileName, 
-                        container: encryptedFileContainer);
+                        fileName: ingestionTracking.EncryptedFileName,
+                        container: blobContainers.EmisLanding);
 
                 byte[] decryptedData = await this.decryptionService.DecryptAsync(document.DocumentData);
 
@@ -68,8 +70,8 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 };
 
                 await this.documentService.AddDocumentAsync(
-                    document: newDecryptedDocument, 
-                    container: decryptedFileContainer);
+                    document: newDecryptedDocument,
+                    container: blobContainers.Versioner);
 
                 var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
                 ingestionTracking.Decrypted = true;

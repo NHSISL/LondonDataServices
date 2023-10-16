@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
+using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.Core.Services.Processings.DataSetSpecifications
 {
@@ -97,11 +98,12 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
             {
                 ValidateSupplierId(supplierId);
 
-                List<DataSetSpecification> result = this.dataSetSpecificationService.RetrieveAllDataSetSpecifications().Where(
-                        specification =>
-                                specification.DataSet.SupplierId == supplierId
-                                && specification.DataSet.IsActive == true
-                                && specification.IsActive == true).ToList();
+                List<DataSetSpecification> result = this.dataSetSpecificationService.RetrieveAllDataSetSpecifications()
+                    .Include(specification => specification.DataSet)
+                    .Where(specification =>
+                        specification.DataSet.SupplierId == supplierId
+                        && specification.DataSet.IsActive == true
+                        && specification.IsActive == true).ToList();
 
                 ValidateDataSetSpecificationCount(count: result.Count());
 

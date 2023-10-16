@@ -8,8 +8,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using ApiDataSet = LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets.DataSet;
+using CoreDataSet = LHDS.Core.Models.Foundations.DataSets.DataSet;
+using ApiDataSetSpecification = LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications.DataSetSpecification;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
+using CoreDataSetSpecification = LHDS.Core.Models.Foundations.DataSetSpecifications.DataSetSpecification;
 using LHDS.Core.Models.Foundations.Documents;
 using Xunit;
 
@@ -67,6 +71,14 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             Guid landingSupplierId = supplierId;
             await CleanupTask(retrievedDocument.FileName);
             List<Supplier> exisitingSuppliers = await this.apiBroker.FindSupplierByIdAsync(landingSupplierId);
+            ApiDataSet activeDataSet = await PostRandomActiveDataSetAsync(landingSupplierId);
+
+            ApiDataSetSpecification activeDataSetSpecification = 
+                await PostRandomActiveDataSetSpecificationAsync(activeDataSet.Id);
+
+            //CoreDataSetSpecification activeDataSetSpecification =
+            //    await this.apiBroker.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
+            //        landingSupplierId);
 
             if (!exisitingSuppliers.Any())
             {
@@ -75,6 +87,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
             string expectedDecryptedFileName =
                 $"/{decryptedFilePath}" +
+                $"/{activeDataSet.DataSetName}" +
+                $"/{activeDataSetSpecification.Id}" +
+                $"/{retrievedDocument.FileName.Split('_')[3]}" +
                 $"{retrievedDocument.FileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
             //When
@@ -84,6 +99,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             //Then 
             actualDecryptedFileName.Should().BeEquivalentTo(expectedDecryptedFileName);
             await CleanupTask(retrievedDocument.FileName);
+            await this.apiBroker.DeleteDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
+            await this.apiBroker.DeleteDataSetByIdAsync(activeDataSet.Id);
         }
 
         private async ValueTask CleanupTask(string fileName)

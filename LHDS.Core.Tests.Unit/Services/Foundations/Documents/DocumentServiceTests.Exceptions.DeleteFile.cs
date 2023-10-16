@@ -20,6 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldThrowDependencyExceptionOnDeleteFileAndLogItAsync()
         {
             // given
+            var randomContainer = GetRandomString();
             string randomFileName = GetRandomString();
             var randomMessage = GetRandomString();
 
@@ -33,20 +34,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
 
             var failedDocumentRequestException =
                 new FailedDocumentRequestException(
-                    message: "Failed document request occurred, please contact support", 
+                    message: "Failed document request occurred, please contact support",
                     innerException: requestFailedException);
 
             var expectedDependencyException =
                  new DocumentDependencyException(
-                     message: "Document dependency error occurred, contact support.", 
+                     message: "Document dependency error occurred, contact support.",
                      innerException: failedDocumentRequestException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                 broker.DeleteFileAsync(randomDocument.FileName))
+                 broker.DeleteFileAsync(randomDocument.FileName, randomContainer))
                     .Throws(requestFailedException);
 
             // when
-            ValueTask getDocumentTask = this.documentService.RemoveDocumentByFileNameAsync(randomFileName);
+            ValueTask getDocumentTask = this.documentService
+                .RemoveDocumentByFileNameAsync(randomFileName, randomContainer);
 
             var actualDependencyException =
                  await Assert.ThrowsAsync<DocumentDependencyException>(getDocumentTask.AsTask);
@@ -55,7 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             actualDependencyException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                 broker.DeleteFileAsync(randomDocument.FileName),
+                 broker.DeleteFileAsync(randomDocument.FileName, randomContainer),
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -71,6 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldThrowServiceExceptionOnDeleteFileIfServiceErrorOccursAndLogItAsync()
         {
             // given
+            var randomContainer = GetRandomString();
             string randomFileName = GetRandomString();
             var randomMessage = GetRandomString();
 
@@ -92,12 +95,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                     innerException: failedDocumentServiceException);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                 broker.DeleteFileAsync(randomDocument.FileName))
+                 broker.DeleteFileAsync(randomDocument.FileName, randomContainer))
                      .Throws(failedDocumentServiceException);
 
             // when
             ValueTask getDocumentTask =
-                this.documentService.RemoveDocumentByFileNameAsync(randomDocument.FileName);
+                this.documentService.RemoveDocumentByFileNameAsync(randomDocument.FileName, randomContainer);
 
             var actualServiceException =
                  await Assert.ThrowsAsync<DocumentServiceException>(getDocumentTask.AsTask);
@@ -106,7 +109,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             actualServiceException.Should().BeEquivalentTo(expectedDocumentServiceException);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                 broker.DeleteFileAsync(randomDocument.FileName),
+                 broker.DeleteFileAsync(randomDocument.FileName, randomContainer),
                      Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

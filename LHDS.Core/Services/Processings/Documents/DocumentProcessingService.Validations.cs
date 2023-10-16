@@ -9,27 +9,33 @@ namespace LHDS.Core.Services.Processings.Documents
 {
     public partial class DocumentProcessingService
     {
-        private static void ValidateDocumentProcessingOnAdd(Document document)
+        private static void ValidateDocumentProcessingOnAdd(Document document, string container)
         {
             ValidateDocumentProcessingIsNotNull(document);
+
+            Validate(
+                (Rule: IsInvalid(container), Parameter: "Container"));
         }
 
-        private static void ValidateDocumentProcessingOnRetrieve(string fileName)
+        private static void ValidateDocumentProcessingOnRetrieve(string fileName, string container)
         {
             Validate(
-               (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
+               (Rule: IsInvalid(container), Parameter: "Container"),
+               (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
-        private static void ValidateDocumentProcessingOnRemove(string fileName)
+        private static void ValidateDocumentProcessingOnRemove(string fileName, string container)
         {
             Validate(
-               (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
+               (Rule: IsInvalid(container), Parameter: "Container"),
+               (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
-        private static void ValidateGetDownloadLinkArguments(string fileName)
+        private static void ValidateGetDownloadLinkArguments(string fileName, string container)
         {
             Validate(
-               (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
+               (Rule: IsInvalid(container), Parameter: "Container"),
+               (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
         private static void ValidateDocumentProcessingIsNotNull(Document document)

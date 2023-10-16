@@ -10,7 +10,6 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
-using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using Moq;
@@ -42,12 +41,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
             return new TheoryData<IQueryable<DataSetSpecification>, Guid>
             {
-                { 
-                    new List<DataSetSpecification>().AsQueryable(), 
-                    randomSupplierId 
+                {
+                    new List<DataSetSpecification>().AsQueryable(),
+                    randomSupplierId
                 },
 
-                { 
+                {
                     CreateRandomDataSetSpecifications(dataSet: randomDataSet, dataSetId: randomDataSet.Id, count: 2),
                     randomSupplierId
                 }
@@ -120,7 +119,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
-                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
+                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user)
+                .OnProperty(dataSetSpecification => dataSetSpecification.DataSet).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SpecificationObjects).IgnoreIt();
 
             return filler;
         }
@@ -149,8 +150,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
         }
 
         private static IQueryable<DataSetSpecification> CreateRandomDataSetSpecifications(
-            DataSet dataSet, 
-            Guid dataSetId, 
+            DataSet dataSet,
+            Guid dataSetId,
             int count)
         {
             return CreateDataSetSpecificationFiller(dataSet, dataSetId)

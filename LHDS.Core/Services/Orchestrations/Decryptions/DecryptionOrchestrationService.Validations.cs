@@ -8,6 +8,16 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 {
     public partial class DecryptionOrchestrationService
     {
+        private void ValidateBlobContainersIsNotNull()
+        {
+            if (this.blobContainers is null)
+            {
+                throw new NullBlobContainersDecryptionOrchestrationException(
+                    message: "Null blob container decryption orchestration exception, " +
+                        "please correct the errors and try again.");
+            }
+        }
+
         private static void ValidateFileNameIsNotNull(string fileName)
         {
             Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));
@@ -21,7 +31,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidArgumentDecryptionOrchestrationException = 
+            var invalidArgumentDecryptionOrchestrationException =
                 new InvalidArgumentDecryptionOrchestrationException(
                     message: "Invalid decryption orchestration argument(s), please correct the errors and try again.");
 

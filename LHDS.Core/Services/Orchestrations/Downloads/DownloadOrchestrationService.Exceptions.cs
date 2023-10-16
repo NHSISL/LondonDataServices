@@ -29,6 +29,16 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 throw CreateAndLogValidationException(invalidArgumentDownloadOrchestrationException);
             }
+            catch (NullLandingConfigurationDownloadOrchestrationException
+                nullLandingConfigurationDownloadOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullLandingConfigurationDownloadOrchestrationException);
+            }
+            catch (NullBlobContainersDownloadOrchestrationException
+                nullBlobContainersDownloadOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullBlobContainersDownloadOrchestrationException);
+            }
             catch (DocumentValidationException documentValidationException)
             {
                 throw CreateAndLogDependencyValidationException(documentValidationException);
@@ -113,6 +123,15 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             catch (InvalidArgumentDownloadOrchestrationException invalidArgumentDownloadOrchestrationException)
             {
                 throw CreateAndLogValidationException(invalidArgumentDownloadOrchestrationException);
+            }
+            catch (NullLandingConfigurationDownloadOrchestrationException
+                nullLandingConfigurationDownloadOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullLandingConfigurationDownloadOrchestrationException);
+            }
+            catch (NullBlobContainersDownloadOrchestrationException nullBlobContainersDownloadOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullBlobContainersDownloadOrchestrationException);
             }
             catch (NotFoundDownloadOrchestrationException notFoundDownloadOrchestrationException)
             {

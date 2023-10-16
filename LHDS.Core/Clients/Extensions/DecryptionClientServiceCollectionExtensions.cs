@@ -100,6 +100,7 @@ namespace LHDS.Core.Clients.Extensions
             {
                 var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
                 ValidateBlobStorageSettings(blobStorageSettings);
+                services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
 
                 var blobServiceClientOptions = new BlobClientOptions()
                 {
@@ -120,7 +121,6 @@ namespace LHDS.Core.Clients.Extensions
 
                 services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
                 services.AddTransient<IDownloadBroker, DownloadBroker>();
-                services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
                 services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             }
         }
@@ -196,10 +196,7 @@ namespace LHDS.Core.Clients.Extensions
                     Parameter: "blobStorage__azureBlobServiceUri"),
 
                 (Rule: IsInvalid(blobStorageSettings.AzureTenantId),
-                    Parameter: "blobStorage__azureTenantId"),
-
-                (Rule: IsInvalid(blobStorageSettings.BlobContainerName),
-                    Parameter: "blobStorage__blobContainerName"));
+                    Parameter: "blobStorage__azureTenantId"));
         }
 
         private static dynamic IsInvalid(Guid id) => new

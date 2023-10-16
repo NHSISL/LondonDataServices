@@ -166,7 +166,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 };
 
                 this.documentServiceMock.Verify(service =>
-                    service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument))),
+                    service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument)), It.IsAny<string>()),
                         Times.Once);
 
                 this.auditServiceMock.Verify(service =>
@@ -248,7 +248,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             Document randomDocument = CreateRandomDocument();
             Document externalDocument = randomDocument;
             IngestionTracking externalIngestionTracking = CreateRandomIngestionTracking(randomDateTime);
-            List<IngestionTracking> externalIngestionTrackingsFound = new List<IngestionTracking> { externalIngestionTracking };
+
+            List<IngestionTracking> externalIngestionTrackingsFound =
+                new List<IngestionTracking> { externalIngestionTracking };
 
             this.ingestionTrackingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackings())
@@ -284,7 +286,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     Times.Once);
 
             this.documentServiceMock.Verify(service =>
-                service.RemoveDocumentByFileNameAsync(externalIngestionTracking.EncryptedFileName),
+                service.RemoveDocumentByFileNameAsync(
+                    externalIngestionTracking.EncryptedFileName, It.IsAny<string>()),
                     Times.Once);
 
             Document newBlobDocument = new Document
@@ -294,7 +297,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             };
 
             this.documentServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument))),
+                service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument)), It.IsAny<string>()),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -409,7 +412,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             };
 
             this.documentServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument))),
+                service.AddDocumentAsync(
+                    It.Is(SameDocumentAs(newBlobDocument)), It.IsAny<string>()),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>

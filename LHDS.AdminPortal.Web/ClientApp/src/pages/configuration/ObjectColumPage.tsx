@@ -6,6 +6,7 @@ import { Link, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import ObjectColumnDetail from "../../components/objectColumns/objectColumnDetail";
+import BreadCrumbBase from "../../components/bases/layouts/Breadcrumb/BreadCrumbBase";
 
 export const ObjectColumnPage = () => {
 
@@ -15,12 +16,14 @@ export const ObjectColumnPage = () => {
         <section >
             <Container>
                 <main id="maincontent" className="NELTopPadding" role="main">
+                    <BreadCrumbBase
+                        link={'/configuration/SpecificationObject/'
+                            + specificationObjectId
+                            + '/' + dataSetSpecificationId}
+                        backLink="DataSet / DataSet Detail / DataSet Specification / Specification Object"
+                        currentLink="Object Column">
+                    </BreadCrumbBase>
 
-                    <Link to={'/configuration/SpecificationObject/' + specificationObjectId 
-                        + '/' + dataSetSpecificationId}>
-
-                        <FontAwesomeIcon icon={faChevronLeft} size="1x" />Back to Specifications Object
-                    </Link>
                     <ObjectColumnDetail
                         specificationObjectId={specificationObjectId}
                         objectColumnId={objectColumnId}

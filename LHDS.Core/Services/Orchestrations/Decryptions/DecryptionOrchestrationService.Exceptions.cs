@@ -27,6 +27,11 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             {
                 throw CreateAndLogValidationException(invalidArgumentDecryptionOrchestrationException);
             }
+            catch (NullBlobContainersDecryptionOrchestrationException
+                nullBlobContainersDecryptionOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullBlobContainersDecryptionOrchestrationException);
+            }
             catch (DocumentValidationException documentValidationException)
             {
                 throw CreateAndLogDependencyValidationException(documentValidationException);

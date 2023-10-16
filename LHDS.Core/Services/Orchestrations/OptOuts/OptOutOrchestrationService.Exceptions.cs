@@ -242,6 +242,10 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             {
                 throw CreateAndLogValidationException(nullConfigOptOutOrchestrationException);
             }
+            catch (NullBlobContainersOptOutOrchestrationException nullBlobContainersOptOutOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullBlobContainersOptOutOrchestrationException);
+            }
             catch (InvalidConfigOptOutOrchestrationException invalidConfigOptOutOrchestrationException)
             {
                 throw CreateAndLogValidationException(invalidConfigOptOutOrchestrationException);

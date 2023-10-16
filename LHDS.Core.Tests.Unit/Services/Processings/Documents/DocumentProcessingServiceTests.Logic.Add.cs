@@ -17,6 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
         public async Task ShouldAddFileAsync()
         {
             // Given
+            var randomContainer = GetRandomString();
             var randomFileName = GetRandomString();
             var randomfileData = Encoding.ASCII.GetBytes(GetRandomString());
 
@@ -29,14 +30,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             string expectedDocumentFileName = document.FileName;
 
             // When
-            string actualDocumentFileName = await this.documentProcessingService.AddDocumentAsync(document);
+            string actualDocumentFileName = await this.documentProcessingService
+                .AddDocumentAsync(document, container: randomContainer);
 
             // Then
             actualDocumentFileName.Should().BeEquivalentTo(expectedDocumentFileName);
 
             this.documentServiceMock.Verify(service =>
                 service.AddDocumentAsync(It.Is<Document>(doc =>
-                    doc.FileName == randomFileName && doc.DocumentData == randomfileData)),
+                    doc.FileName == randomFileName && doc.DocumentData == randomfileData), randomContainer),
                     Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();

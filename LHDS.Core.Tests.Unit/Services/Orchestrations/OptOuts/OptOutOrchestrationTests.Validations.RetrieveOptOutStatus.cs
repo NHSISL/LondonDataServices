@@ -16,13 +16,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         [Theory]
         [InlineData(null)]
         [InlineData(new byte[] { })]
-        public async Task ShouldThrowValidationExceptionOnRetrieveOptOutIfOptOutFileIsNullAndLogItAsync(byte[] invalidData)
+        public async Task ShouldThrowValidationExceptionOnRetrieveOptOutIfOptOutFileIsNullAndLogItAsync(
+            byte[] invalidData)
         {
             var randomString = GetRandomString();
 
             var invalidArgumentRetieveOptOutStatusOrchestrationException =
                 new InvalidArgumentOptOutOrchestrationException(
-                    message: "Invalid Retrieve Opt Out Status orchestration argument(s), please correct the errors and try again.");
+                    message: "Invalid Retrieve Opt Out Status orchestration argument(s), " +
+                        "please correct the errors and try again.");
 
             invalidArgumentRetieveOptOutStatusOrchestrationException.AddData(
                key: "OptOutFile",
@@ -61,14 +63,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnRetrieveOptOutIfRequestIdIsNullAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnRetrieveOptOutIfRequestIdIsNullAndLogItAsync(
+            string invalidText)
         {
             var randomString = GetRandomString();
             byte[] randomBytes = Encoding.UTF8.GetBytes(randomString);
 
             var invalidArgumentRetieveOptOutStatusOrchestrationException =
                 new InvalidArgumentOptOutOrchestrationException(
-                    message: "Invalid Retrieve Opt Out Status orchestration argument(s), please correct the errors and try again.");
+                    message: "Invalid Retrieve Opt Out Status orchestration argument(s), " +
+                        "please correct the errors and try again.");
 
             invalidArgumentRetieveOptOutStatusOrchestrationException.AddData(
                key: "RequestId",

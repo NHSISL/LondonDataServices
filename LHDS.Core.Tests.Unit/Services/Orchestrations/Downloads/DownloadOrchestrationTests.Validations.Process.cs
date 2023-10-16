@@ -7,6 +7,7 @@ using FluentAssertions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
+using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using Moq;
 using Xunit;
@@ -27,7 +28,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 documentService: documentServiceMock.Object,
                 downloadService: downloadServiceMock.Object,
                 ingestionTrackingService: ingestionTrackingServiceMock.Object,
+                dataSetSpecificationService: dataSetSpecificationServiceMock.Object,
                 auditService: auditServiceMock.Object,
+                dataSetSpecificationProcessingService: dataSetSpecificationProcessingServiceMock.Object,
                 blobContainers,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
@@ -77,7 +80,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 documentService: documentServiceMock.Object,
                 downloadService: downloadServiceMock.Object,
                 ingestionTrackingService: ingestionTrackingServiceMock.Object,
+                dataSetSpecificationService: dataSetSpecificationServiceMock.Object,
                 auditService: auditServiceMock.Object,
+                dataSetSpecificationProcessingService: dataSetSpecificationProcessingServiceMock.Object,
                 blobContainers: invalidBlobContainers,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,

@@ -22,9 +22,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
                     SupplierSpecificationVersion = "7",
                     OurSpecificationVersion = "1",
                     CreatedBy = "System",
-                    CreatedDate = DateTime.UtcNow,
+                    CreatedDate = new DateTime(year: 2023, month: 1, day: 1,hour: 0,minute: 0, second: 0),
                     UpdatedBy = "System",
-                    UpdatedDate = DateTime.UtcNow
+                    UpdatedDate = new DateTime(year: 2023, month: 1, day: 1,hour: 0,minute: 0, second: 0)
                 }
             };
 

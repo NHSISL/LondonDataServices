@@ -3,9 +3,8 @@ import 'nhsuk-frontend/dist/nhsuk.min'
 import 'nhsuk-frontend/packages/polyfills';
 import { Container } from 'nhsuk-react-components'
 import { Link, useParams } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import DataSetSpecificationDetail from "../../components/dataSetSpecifications/dataSetSpecificationDetail";
+import BreadCrumbBase from "../../components/bases/layouts/Breadcrumb/BreadCrumbBase";
 
 export const DataSetSpecificationPage = () => {
 
@@ -15,9 +14,13 @@ export const DataSetSpecificationPage = () => {
         <section >
             <Container>
                 <main id="maincontent" className="NELTopPadding" role="main">
-                    <Link to={'/configuration/dataSet/' + dataSetId + '/'}>
-                        <FontAwesomeIcon icon={faChevronLeft} size="1x" />Back to DataSet Specification
-                    </Link>
+
+                    <BreadCrumbBase
+                        link={"/configuration/dataSet/" + dataSetId + '/'}
+                        backLink="DataSet / DataSet Detail"
+                        currentLink="DataSet Specification">
+                    </BreadCrumbBase>
+
                     <DataSetSpecificationDetail
                         dataSetSpecificationId={dataSetSpecificationId}
                         dataSetId={dataSetId} />

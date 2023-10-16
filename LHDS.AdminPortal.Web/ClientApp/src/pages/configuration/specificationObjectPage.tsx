@@ -6,6 +6,7 @@ import SpecificationObjectDetail from "../../components/specificationObjects/spe
 import { Link, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import BreadCrumbBase from "../../components/bases/layouts/Breadcrumb/BreadCrumbBase";
 
 export const SpecificationObjectPage = () => {
 
@@ -15,9 +16,13 @@ export const SpecificationObjectPage = () => {
         <section >
             <Container>
                 <main id="maincontent" className="NELTopPadding" role="main">
-                    <Link to={'/configuration/dataSetSpecification/' + specificationObjectId + '/' + dataSetSpecificationId }>
-                        <FontAwesomeIcon icon={faChevronLeft} size="1x" />Back to DataSet Specifications
-                    </Link>
+
+                    <BreadCrumbBase
+                        link={'/configuration/dataSetSpecification/' + specificationObjectId + '/' + dataSetSpecificationId }
+                        backLink="DataSet / DataSet Detail / DataSet Specification"
+                        currentLink="Specification Object">
+                    </BreadCrumbBase>
+
                     <SpecificationObjectDetail
                         dataSetSpecificationId={dataSetSpecificationId}
                         specificationObjectId={specificationObjectId}

@@ -17,6 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldRetrieveDownloadlinkAsync()
         {
             // Given
+            string encryptedFileContainer = "emislanding";
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
@@ -30,13 +31,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                     .Returns(randomDateTimeOffset);
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.GetDownloadLinkAsync(inputFileName, inputExpireTime))
+                broker.GetDownloadLinkAsync(inputFileName, encryptedFileContainer, inputExpireTime))
                     .ReturnsAsync(outputSasUrl);
 
             // When
             string actualSasUrl =
                 await this.documentService
-                    .GetDownloadLinkAsync(inputFileName);
+                    .GetDownloadLinkAsync(inputFileName, encryptedFileContainer);
 
             // Then
             actualSasUrl.Should().Be(expectedSasUrl);
@@ -46,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                     Times.Once());
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.GetDownloadLinkAsync(inputFileName, inputExpireTime),
+                broker.GetDownloadLinkAsync(inputFileName, encryptedFileContainer, inputExpireTime),
                     Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

@@ -47,8 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             // When
             ValueTask<PdsAudit> PickupFileAndSendToMeshTask =
-                this.pdsOrchestrationService
-                    .PickupFileAndSendToMesh(pdsFile: somePdsFile, fileName: someFileName);
+                invalidPdsOrchestrationService.PickupFileAndSendToMesh(pdsFile: somePdsFile, fileName: someFileName);
 
             PdsOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<PdsOrchestrationValidationException>(
@@ -101,8 +100,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             // When
             ValueTask<PdsAudit> PickupFileAndSendToMeshTask =
-                this.pdsOrchestrationService
-                    .PickupFileAndSendToMesh(pdsFile: somePdsFile, fileName: someFileName);
+                invalidPdsOrchestrationService.PickupFileAndSendToMesh(pdsFile: somePdsFile, fileName: someFileName);
 
             PdsOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<PdsOrchestrationValidationException>(

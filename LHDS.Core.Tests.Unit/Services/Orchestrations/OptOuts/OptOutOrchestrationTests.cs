@@ -14,6 +14,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Mesh;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -48,6 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly ICompareLogic compareLogic;
         private readonly OptOutConfiguration optOutConfiguration;
+        private readonly BlobContainers blobContainers;
         private readonly IConfiguration inMemoryConfiguration;
         private readonly MeshConfiguration meshConfiguration;
         private readonly ITestOutputHelper output;
@@ -95,6 +97,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 WorkflowId = inMemoryConfiguration["optOutSettings:workflowId"],
             };
 
+            this.blobContainers = new BlobContainers
+            {
+                OptOut = "optout"
+            };
+
             this.meshConfiguration = new MeshConfiguration
             {
                 MailboxId = inMemoryConfiguration["meshConfiguration:mailboxId"],
@@ -128,6 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 documentProcessingService: this.documentProcessingServiceMock.Object,
                 meshProcessingService: this.meshProcessingServiceMock.Object,
                 csvMapperProcessingService: this.csvMapperProcessingServiceMock.Object,
+                blobContainers: this.blobContainers,
                 loggingBroker: this.loggingBrokerMock.Object,
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 identifierBroker: this.identifierBrokerMock.Object,

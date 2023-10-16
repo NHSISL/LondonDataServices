@@ -118,6 +118,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
         {
             // given
             var randomContainer = GetRandomString();
+
             var randomString = GetRandomString();
             var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
             var randomMessage = GetRandomString();
@@ -141,7 +142,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     innerException: failedDocumentProcessingServiceException);
 
             this.documentServiceMock.Setup(service =>
-                service.AddDocumentAsync(inputDocument, randomString))
+                service.AddDocumentAsync(inputDocument, randomContainer))
                     .Throws(serviceException);
 
             // when

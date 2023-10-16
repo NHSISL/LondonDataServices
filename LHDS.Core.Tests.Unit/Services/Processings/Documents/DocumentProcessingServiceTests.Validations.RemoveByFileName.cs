@@ -28,7 +28,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     message: "Invalid document processing file name. Please correct the errors and try again.");
 
             invalidDocumentProcessingFileNameException.AddData(
-                key: "fileName",
+                key: "FileName",
+                values: "Text is required");
+
+            invalidDocumentProcessingFileNameException.AddData(
+                key: "Container",
                 values: "Text is required");
 
             var expectedDocumentProcessingValidationException =

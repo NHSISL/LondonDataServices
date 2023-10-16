@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.ComponentModel;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 
@@ -13,30 +12,30 @@ namespace LHDS.Core.Services.Processings.Documents
         private static void ValidateDocumentProcessingOnAdd(Document document, string container)
         {
             ValidateDocumentProcessingIsNotNull(document);
-            
+
             Validate(
-                (Rule: IsInvalid(container), Parameter: nameof(container)));
+                (Rule: IsInvalid(container), Parameter: "Container"));
         }
 
         private static void ValidateDocumentProcessingOnRetrieve(string fileName, string container)
         {
             Validate(
-               (Rule: IsInvalid(container), Parameter: nameof(container)),
-               (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
+               (Rule: IsInvalid(container), Parameter: "Container"),
+               (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
         private static void ValidateDocumentProcessingOnRemove(string fileName, string container)
         {
             Validate(
-               (Rule: IsInvalid(container), Parameter: nameof(container)),
-               (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
+               (Rule: IsInvalid(container), Parameter: "Container"),
+               (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
         private static void ValidateGetDownloadLinkArguments(string fileName, string container)
         {
             Validate(
-               (Rule: IsInvalid(container), Parameter: nameof(container)),
-               (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
+               (Rule: IsInvalid(container), Parameter: "Container"),
+               (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
         private static void ValidateDocumentProcessingIsNotNull(Document document)

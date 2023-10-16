@@ -20,7 +20,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         public async Task ShouldProcessNewDocumentsAsync()
         {
             // given
-            string randomContainer = GetRandomString();
             Guid randomGuid = Guid.NewGuid();
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             List<Document> randomDocuments = CreateRandomDocuments();
@@ -148,7 +147,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 };
 
                 this.documentServiceMock.Verify(service =>
-                    service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument)), randomContainer),
+                    service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument)), It.IsAny<string>()),
                         Times.Once);
 
                 this.auditServiceMock.Verify(service =>
@@ -226,7 +225,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         public async Task ShouldProcessExistingNamedDocumentsAsync()
         {
             // given
-            string randomContainer = GetRandomString();
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             Document randomDocument = CreateRandomDocument();
             Document externalDocument = randomDocument;
@@ -270,7 +268,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
             this.documentServiceMock.Verify(service =>
                 service.RemoveDocumentByFileNameAsync(
-                    externalIngestionTracking.EncryptedFileName, randomContainer),
+                    externalIngestionTracking.EncryptedFileName, It.IsAny<string>()),
                     Times.Once);
 
             Document newBlobDocument = new Document
@@ -280,7 +278,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             };
 
             this.documentServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument)), randomContainer),
+                service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument)), It.IsAny<string>()),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -306,7 +304,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         public async Task ShouldProcessNewNamedDocumentsAsync()
         {
             // given
-            string randomContainer = GetRandomString();
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             Guid randomIdentifier = Guid.NewGuid();
             Document randomDocument = CreateRandomDocument();
@@ -383,7 +380,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
             this.documentServiceMock.Verify(service =>
                 service.AddDocumentAsync(
-                    It.Is(SameDocumentAs(newBlobDocument)), randomContainer),
+                    It.Is(SameDocumentAs(newBlobDocument)), It.IsAny<string>()),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>

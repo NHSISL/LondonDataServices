@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.ComponentModel;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 
@@ -25,21 +24,21 @@ namespace LHDS.Core.Services.Foundations.Documents
         {
             Validate(
                 (Rule: IsInvalid(container), Parameter: "Container"),
-                (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
+                (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
         private void ValidateDeleteArguments(string fileName, string container)
         {
             Validate(
                (Rule: IsInvalid(container), Parameter: "Container"),
-               (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
+               (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
         private void ValidateGetDownloadLinkArguments(string fileName, string container)
         {
             Validate(
                (Rule: IsInvalid(container), Parameter: "Container"),
-               (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
+               (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
         private static void ValidateDocumentIsNotNull(Document document)

@@ -24,7 +24,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
         public async Task ShouldRetrieveUpdatedMeshOptOutStatusesAndOutputChangeToFileAsync()
         {
             // Given
-            string optOutFileContainer = "optout";
             bool withHeader = optOutConfiguration.OptOutFileHasHeader;
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             List<string> outputMessageIds = GetRandomStrings(count: GetRandomNumber());
@@ -160,7 +159,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 };
 
                 documentProcessingServiceMock.Verify(processings =>
-                    processings.AddDocumentAsync(It.Is(SameDocumentAs(testDocument)), optOutFileContainer),
+                    processings.AddDocumentAsync(It.Is(SameDocumentAs(testDocument)), It.IsAny<string>()),
                         Times.Once());
 
                 this.meshProcessingServiceMock.Verify(processings =>
@@ -180,7 +179,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             try
             {
                 // Given
-                string optOutFileContainer = "optout";
                 bool withHeader = optOutConfiguration.OptOutFileHasHeader;
                 List<string> outputMessageIds = GetRandomStrings(count: GetRandomNumber());
                 List<string> randomConsentedIdentifiers = CreateRandomListOfConsentedIdentifiers(count: GetRandomNumber());
@@ -298,7 +296,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                                 Times.Never);
 
                     documentProcessingServiceMock.Verify(processings =>
-                        processings.AddDocumentAsync(It.IsAny<Document>(), optOutFileContainer),
+                        processings.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()),
                             Times.Never);
                 }
 

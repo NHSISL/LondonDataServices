@@ -109,15 +109,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 broker.GetListOfDocumentsToProcessAsync())
                     .ReturnsAsync(documents);
 
-            List<IngestionTracking> ingestionTrackings = CreateRandomIngestionTrackings(
+            List<IngestionTracking> ingestionTrackings = await CreateRandomIngestionTrackings(
                 dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
                 documents,
                 supplierId: this.landingConfiguration.LandingSupplierId);
-
-            foreach (var tracking in ingestionTrackings)
-            {
-                await this.ingestionTrackingService.AddIngestionTrackingAsync(tracking);
-            }
 
             //When
             var actualStringList = await this.landingClient.ProcessAsync();

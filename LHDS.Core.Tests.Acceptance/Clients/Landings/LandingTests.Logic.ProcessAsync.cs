@@ -22,13 +22,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         public async Task ShouldProcessNewDocumentsAsync()
         {
             //Given
+            string encryptedFileContainer = "emislanding";
             string fileName = GetRandomString();
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
 
             Document document = new Document
             {
-                DocumentData= documentData,
-                FileName= fileName
+                DocumentData = documentData,
+                FileName = fileName
             };
 
             List<Document> documents = new List<Document> { document };
@@ -49,7 +50,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 broker.GetListOfDocumentsToProcessAsync(),
                     Times.Once);
 
-            foreach (var actualFile in actualStringList) 
+            foreach (var actualFile in actualStringList)
             {
                 this.downloadBrokerMock.Verify(broker =>
                     broker.GetDocumentByFileNameAsync(fileName),
@@ -69,7 +70,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 var audits = this.auditService.RetrieveAllIngestionTrackingAudits()
                     .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
 
-                foreach(var audit in audits)
+                foreach (var audit in audits)
                 {
                     await this.auditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
                 }
@@ -77,8 +78,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
 
                 this.blobStorageBrokerMock.Verify(broker =>
-                    broker.InsertFileAsync(ingestionTracking.EncryptedFileName, It.IsAny<Stream>()),
-                        Times.Once());
+                    broker.InsertFileAsync(
+                        ingestionTracking.EncryptedFileName,
+                        It.IsAny<Stream>(),
+                        encryptedFileContainer),
+                            Times.Once());
             }
 
             this.downloadBrokerMock.VerifyNoOtherCalls();
@@ -105,15 +109,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 broker.GetListOfDocumentsToProcessAsync())
                     .ReturnsAsync(documents);
 
-            List<IngestionTracking> ingestionTrackings = CreateRandomIngestionTrackings(
+            List<IngestionTracking> ingestionTrackings = await CreateRandomIngestionTrackings(
                 dateTimeOffset: this.dateTimeBroker.GetCurrentDateTimeOffset(),
                 documents,
                 supplierId: this.landingConfiguration.LandingSupplierId);
-
-            foreach(var tracking in ingestionTrackings)
-            {
-                await this.ingestionTrackingService.AddIngestionTrackingAsync(tracking);
-            }
 
             //When
             var actualStringList = await this.landingClient.ProcessAsync();

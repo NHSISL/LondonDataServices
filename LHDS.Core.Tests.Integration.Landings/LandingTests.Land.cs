@@ -22,6 +22,7 @@ namespace LHDS.Core.Tests.Integration.Landings
             try
             {
                 // given
+                string encryptedFileContainer = "emislanding";
                 Supplier supplier = await SetupSupplier();
 
                 // when
@@ -49,7 +50,8 @@ namespace LHDS.Core.Tests.Integration.Landings
                     await ingestionTrackingService
                         .RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
 
-                    await blobStorageBroker.DeleteFileAsync(ingestionTracking.EncryptedFileName);
+                    await blobStorageBroker.DeleteFileAsync(
+                        fileName: ingestionTracking.EncryptedFileName, container: encryptedFileContainer);
                 }
             }
             catch (Exception ex)

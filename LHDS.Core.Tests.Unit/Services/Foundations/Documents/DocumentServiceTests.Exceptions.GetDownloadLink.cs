@@ -18,11 +18,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldThrowDependencyExceptionOnGetDownloadLinkAndLogItAsync()
         {
             // given
+            string encryptedFileContainer = "emislanding";
             var randomString = GetRandomString();
             var requestFailedException = new RequestFailedException(randomString);
 
             var failedDocumentRequestException = new FailedDocumentRequestException(
-                message: "Failed document request occurred, please contact support", 
+                message: "Failed document request occurred, please contact support",
                 innerException: requestFailedException);
 
             var expectedDependencyException =
@@ -35,7 +36,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                     .Throws(requestFailedException);
 
             // when
-            ValueTask<string> downloadLinkTask = this.documentService.GetDownloadLinkAsync(randomString);
+            ValueTask<string> downloadLinkTask = this.documentService
+                .GetDownloadLinkAsync(fileName: randomString, container: encryptedFileContainer);
 
             var actualDependencyException =
                  await Assert.ThrowsAsync<DocumentDependencyException>(downloadLinkTask.AsTask);
@@ -60,6 +62,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldThrowServiceExceptionOnGetDownloadLinkIfServiceErrorOccursAndLogItAsync()
         {
             // given
+            string encryptedFileContainer = "emislanding";
             var randomString = GetRandomString();
             var serviceException = new Exception(randomString);
 
@@ -77,7 +80,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                     .Throws(serviceException);
 
             // when
-            ValueTask<string> downloadLinkTask = this.documentService.GetDownloadLinkAsync(randomString);
+            ValueTask<string> downloadLinkTask = this.documentService
+                .GetDownloadLinkAsync(fileName: randomString, container: encryptedFileContainer);
 
             var actualServiceException =
                  await Assert.ThrowsAsync<DocumentServiceException>(downloadLinkTask.AsTask);

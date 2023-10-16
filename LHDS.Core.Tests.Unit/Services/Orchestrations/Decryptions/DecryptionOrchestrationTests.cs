@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Decryptions.Exceptions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
@@ -35,6 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly IDecryptionOrchestrationService decryptionOrchestrationService;
         private readonly ICompareLogic compareLogic;
+        private readonly BlobContainers blobContainers;
 
         public DecryptionOrchestrationTests()
         {
@@ -46,11 +48,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.compareLogic = new CompareLogic();
 
+            this.blobContainers = new BlobContainers
+            {
+                OptOut = "optout"
+            };
+
             this.decryptionOrchestrationService = new DecryptionOrchestrationService(
                 documentService: documentServiceMock.Object,
                 decryptionService: decryptionServiceMock.Object,
                 ingestionTrackingService: ingestionTrackingServiceMock.Object,
                 auditService: auditServiceMock.Object,
+                blobContainers,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object
                 );

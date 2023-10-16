@@ -4,7 +4,9 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
+using LHDS.Core.Services.Orchestrations.Downloads;
 using Moq;
 using Xunit;
 
@@ -12,6 +14,106 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 {
     public partial class DownloadOrchestrationTests
     {
+        [Fact]
+        public async Task ShouldThrowValidationExceptionIfConfigurationIsNullAndLogItAsync()
+        {
+            // given
+            string randomFileName = GetRandomString();
+            string inputFileName = randomFileName;
+            BlobContainers invalidBlobContainers = null;
+
+            var invalidDownloadOrchestrationService = new DownloadOrchestrationService(
+                documentService: documentServiceMock.Object,
+                downloadService: downloadServiceMock.Object,
+                ingestionTrackingService: ingestionTrackingServiceMock.Object,
+                auditService: auditServiceMock.Object,
+                blobContainers: invalidBlobContainers,
+                loggingBroker: loggingBrokerMock.Object,
+                dateTimeBroker: dateTimeBrokerMock.Object,
+                identifierBroker: identifierBrokerMock.Object,
+                landingConfiguration: landingConfiguration);
+
+            var nullConfigDownloadOrchestrationException =
+                new NullConfigDownloadOrchestrationException(
+                    message: "Null configuration download orchestration exception, " +
+                        "please correct the errors and try again.");
+
+            var expectedDownloadOrchestrationValidationException =
+                new DownloadOrchestrationValidationException(
+                    message: "Download orchestration validation errors occurred, please try again.",
+                    innerException: nullConfigDownloadOrchestrationException);
+
+            // when
+            ValueTask<string> DownloadTask = this.downloadOrchestrationService.ProcessAsync(inputFileName);
+
+            DownloadOrchestrationValidationException actualException =
+                await Assert.ThrowsAsync<DownloadOrchestrationValidationException>(DownloadTask.AsTask);
+
+            // then
+            actualException.Should()
+                .BeEquivalentTo(expectedDownloadOrchestrationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDownloadOrchestrationValidationException))),
+                        Times.Once);
+
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionIfBlobContainersIsNullAndLogItAsync()
+        {
+            // given
+            string randomFileName = GetRandomString();
+            string inputFileName = randomFileName;
+            BlobContainers invalidBlobContainers = null;
+
+            var invalidDownloadOrchestrationService = new DownloadOrchestrationService(
+                documentService: documentServiceMock.Object,
+                downloadService: downloadServiceMock.Object,
+                ingestionTrackingService: ingestionTrackingServiceMock.Object,
+                auditService: auditServiceMock.Object,
+                blobContainers: invalidBlobContainers,
+                loggingBroker: loggingBrokerMock.Object,
+                dateTimeBroker: dateTimeBrokerMock.Object,
+                identifierBroker: identifierBrokerMock.Object,
+                landingConfiguration: landingConfiguration);
+
+            var nullBlobContainersDownloadOrchestrationException =
+                new NullBlobContainersDownloadOrchestrationException(
+                    message: "Null blob container download orchestration exception, " +
+                        "please correct the errors and try again.");
+
+            var expectedDownloadOrchestrationValidationException =
+                new DownloadOrchestrationValidationException(
+                    message: "Download orchestration validation errors occurred, please try again.",
+                    innerException: nullBlobContainersDownloadOrchestrationException);
+
+            // when
+            ValueTask<string> DownloadTask = this.downloadOrchestrationService.ProcessAsync(inputFileName);
+
+            DownloadOrchestrationValidationException actualException =
+                await Assert.ThrowsAsync<DownloadOrchestrationValidationException>(DownloadTask.AsTask);
+
+            // then
+            actualException.Should()
+                .BeEquivalentTo(expectedDownloadOrchestrationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDownloadOrchestrationValidationException))),
+                        Times.Once);
+
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
         [Theory]
         [InlineData(null)]
         [InlineData("")]

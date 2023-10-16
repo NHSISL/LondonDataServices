@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             DataSet randomDataSet = CreateRandomDataSet(supplierId);
 
             IQueryable<DataSetSpecification> randomDataSetSpecificationList =
-                CreateRandomDataSetSpecifications(dataSetId: randomDataSet.Id);
+                CreateRandomDataSetSpecifications(dataSet: randomDataSet);
 
             DataSetSpecification randomDataSetSpecification = randomDataSetSpecificationList.First();
 
@@ -75,7 +75,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
                         DecryptedFileName =
                         $"/{landingConfiguration.DecryptedFolder}"
-                            + $"/{randomDataSetSpecification.DataSet.DataSetName}"
+                            + $"/{randomDataSet.DataSetName}"
                             + $"/{randomDataSetSpecification.Id}"
                             + $"/{filename.Split('_')[3]}"
                             + $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
@@ -331,7 +331,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             DataSet randomDataSet = CreateRandomDataSet(supplierId);
 
             IQueryable<DataSetSpecification> randomDataSetSpecificationList =
-                CreateRandomDataSetSpecifications(dataSetId: randomDataSet.Id);
+                CreateRandomDataSetSpecifications(dataSet: randomDataSet);
 
             DataSetSpecification randomDataSetSpecification = randomDataSetSpecificationList.First();
 
@@ -351,11 +351,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
 
                 DecryptedFileName =
-                        $"/{landingConfiguration.DecryptedFolder}"
-                            + $"/{randomDataSetSpecification.DataSet.DataSetName}"
-                            + $"/{randomDataSetSpecification.Id}"
-                            + $"/{filename.Split('_')[3]}"
-                            + $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                    $"/{landingConfiguration.DecryptedFolder}"
+                    + $"/{randomDataSet.DataSetName}"
+                    + $"/{randomDataSetSpecification.Id}"
+                    + $"/{filename.Split('_')[3]}"
+                    + $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
                 Decrypted = false,
                 LastSeen = randomDateTime,

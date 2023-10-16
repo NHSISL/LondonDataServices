@@ -154,10 +154,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             CreateIngestionTrackingFiller(dateTimeOffset).Create();
 
         private Expression<Func<IngestionTracking, bool>> SameIngestionTrackingAs(
-            IngestionTracking exprectedIngestionTracking)
+            IngestionTracking expectedIngestionTracking)
         {
             return actualIngestionTracking =>
-                this.compareLogic.Compare(exprectedIngestionTracking, actualIngestionTracking)
+                this.compareLogic.Compare(expectedIngestionTracking, actualIngestionTracking)
                     .AreEqual;
         }
 
@@ -184,14 +184,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             return filler;
         }
 
-        private static IQueryable<DataSetSpecification> CreateRandomDataSetSpecifications(Guid dataSetId)
+        private static IQueryable<DataSetSpecification> CreateRandomDataSetSpecifications(DataSet dataSet)
         {
-            return CreateDataSetSpecificationFiller(dataSetId)
+            return CreateDataSetSpecificationFiller(dataSet)
                 .Create(count: 1)
                     .AsQueryable();
         }
 
-        private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(Guid dataSetId)
+        private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(DataSet dataSet)
         {
             string user = GetRandomString(255);
             var filler = new Filler<DataSetSpecification>();
@@ -201,19 +201,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
 
-                .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.DataSetId).Use(dataSetId)
+                .OnProperty(dataSetSpecification => dataSetSpecification.DataSetId).Use(dataSet.Id)
+                .OnProperty(dataSetSpecification => dataSetSpecification.DataSet).Use(dataSet)
+                .OnProperty(dataSetSpecification => dataSetSpecification.IsActive).Use(true)
+                .OnProperty(dataSetSpecification => dataSetSpecification.ActiveFrom).Use(now.AddDays(-2))
+                .OnProperty(dataSetSpecification => dataSetSpecification.ActiveTo).Use(now.AddDays(2))
 
-                .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.IsActive).Use(true)
-
-                .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.ActiveFrom).Use(now.AddDays(-2))
-
-                .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.ActiveTo).Use(now.AddDays(2))
-
-                .OnProperty(dataSetSpecification =>
+                .OnProperty(dataSetSpecification => 
                     dataSetSpecification.OurSpecificationVersion).Use(GetRandomString(10))
 
                 .OnProperty(dataSetSpecification =>

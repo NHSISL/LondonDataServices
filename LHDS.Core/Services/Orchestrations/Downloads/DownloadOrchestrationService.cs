@@ -34,7 +34,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
-        private readonly Guid supplierId;
         private readonly LandingConfiguration landingConfiguration;
 
         public DownloadOrchestrationService(
@@ -56,7 +55,6 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
-            this.supplierId = landingConfiguration.LandingSupplierId;
             this.landingConfiguration = landingConfiguration;
         }
 
@@ -99,7 +97,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                   {
                                       Id = this.identifierBroker.GetIdentifier(),
                                       FileName = document.FileName,
-                                      SupplierId = supplierId,
+                                      SupplierId = landingConfiguration.LandingSupplierId,
                                       EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
 
                                       DecryptedFileName =
@@ -244,7 +242,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                       {
                           Id = this.identifierBroker.GetIdentifier(),
                           FileName = externalDocument.FileName,
-                          SupplierId = supplierId,
+                          SupplierId = landingConfiguration.LandingSupplierId,
                           EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
 
                           DecryptedFileName =

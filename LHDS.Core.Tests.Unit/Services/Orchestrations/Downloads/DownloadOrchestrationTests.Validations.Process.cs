@@ -5,6 +5,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using Moq;
@@ -20,31 +21,31 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             // given
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
-            BlobContainers invalidBlobContainers = null;
+            LandingConfiguration invalidLandingConfiguration = null;
 
             var invalidDownloadOrchestrationService = new DownloadOrchestrationService(
                 documentService: documentServiceMock.Object,
                 downloadService: downloadServiceMock.Object,
                 ingestionTrackingService: ingestionTrackingServiceMock.Object,
                 auditService: auditServiceMock.Object,
-                blobContainers: invalidBlobContainers,
+                blobContainers,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object,
-                landingConfiguration: landingConfiguration);
+                landingConfiguration: invalidLandingConfiguration);
 
-            var nullConfigDownloadOrchestrationException =
-                new NullConfigDownloadOrchestrationException(
-                    message: "Null configuration download orchestration exception, " +
+            var nullLandingConfigurationDownloadOrchestrationException =
+                new NullLandingConfigurationDownloadOrchestrationException(
+                    message: "Null landing configuration download orchestration exception, " +
                         "please correct the errors and try again.");
 
             var expectedDownloadOrchestrationValidationException =
                 new DownloadOrchestrationValidationException(
                     message: "Download orchestration validation errors occurred, please try again.",
-                    innerException: nullConfigDownloadOrchestrationException);
+                    innerException: nullLandingConfigurationDownloadOrchestrationException);
 
             // when
-            ValueTask<string> DownloadTask = this.downloadOrchestrationService.ProcessAsync(inputFileName);
+            ValueTask<string> DownloadTask = invalidDownloadOrchestrationService.ProcessAsync(inputFileName);
 
             DownloadOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<DownloadOrchestrationValidationException>(DownloadTask.AsTask);
@@ -94,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     innerException: nullBlobContainersDownloadOrchestrationException);
 
             // when
-            ValueTask<string> DownloadTask = this.downloadOrchestrationService.ProcessAsync(inputFileName);
+            ValueTask<string> DownloadTask = invalidDownloadOrchestrationService.ProcessAsync(inputFileName);
 
             DownloadOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<DownloadOrchestrationValidationException>(DownloadTask.AsTask);

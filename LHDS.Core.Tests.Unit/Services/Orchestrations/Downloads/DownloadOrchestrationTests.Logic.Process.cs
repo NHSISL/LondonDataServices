@@ -11,7 +11,6 @@ using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
-using LHDS.Core.Models.Orchestrations.Downloads;
 using Moq;
 using Xunit;
 
@@ -48,9 +47,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                service.RetrieveListOfDocumentsToProcessAsync())
                    .ReturnsAsync(externalDocuments);
 
-            this.dataSetSpecificationServiceMock.Setup(service =>
-                service.RetrieveAllDataSetSpecifications())
-                    .Returns(randomDataSetSpecificationList);
+            this.dataSetSpecificationProcessingServiceMock.Setup(service =>
+                service.GetActiveDataSetSpecification(supplierId))
+                    .Returns(ValueTask.FromResult(randomDataSetSpecificationList.FirstOrDefault()));
 
             foreach (var document in externalDocuments)
             {

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Downloads;
@@ -92,7 +93,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             return ingestionTracking;
         }
 
-        private static List<IngestionTracking> CreateRandomIngestionTrackings(
+        private async ValueTask<List<IngestionTracking>> CreateRandomIngestionTrackings(
             DateTimeOffset dateTimeOffset,
             List<Document> documents,
             Guid supplierId)
@@ -101,7 +102,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
             foreach (var document in documents)
             {
-                items.Add(CreateIngestionTrackingFiller(dateTimeOffset, fileName: document.FileName, supplierId).Create());
+                var item = CreateIngestionTrackingFiller(
+                    dateTimeOffset,
+                    fileName: document.FileName,
+                    supplierId)
+                        .Create();
+
+                await this.ingestionTrackingService.AddIngestionTrackingAsync(item);
+                items.Add(item);
             }
 
             return items;

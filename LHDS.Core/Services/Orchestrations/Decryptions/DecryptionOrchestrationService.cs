@@ -48,6 +48,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
         public ValueTask<string> DecryptAsync(string fileName) =>
             TryCatch(async () =>
             {
+                ValidateBlobContainersIsNotNull();
                 ValidateFileNameIsNotNull(fileName);
 
                 var ingestionTracking = await this.ingestionTrackingService

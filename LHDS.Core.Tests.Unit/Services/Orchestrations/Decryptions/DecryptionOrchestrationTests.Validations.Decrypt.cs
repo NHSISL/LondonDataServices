@@ -12,6 +12,44 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 {
     public partial class DecryptionOrchestrationTests
     {
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnDecryptIfBlobContainerIsNullAndLogItAsync()
+        {
+            // given
+            string someFileName = GetRandomString();
+
+            var nullBlobContainersDecryptionOrchestrationException =
+                new NullBlobContainersDecryptionOrchestrationException(
+                    message: "Null blob container decryption orchestration exception, " +
+                        "please correct the errors and try again.");
+
+            var expectedDecryptionOrchestrationValidationException =
+                new DecryptionOrchestrationValidationException(
+                    message: "Decryption orchestration validation errors occurred, please try again.",
+                    innerException: nullBlobContainersDecryptionOrchestrationException);
+
+            // when
+            ValueTask<string> decryptTask =
+                this.decryptionOrchestrationService.DecryptAsync(someFileName);
+
+            DecryptionOrchestrationValidationException actualException =
+                await Assert.ThrowsAsync<DecryptionOrchestrationValidationException>(decryptTask.AsTask);
+
+            // then
+            actualException.Should()
+                .BeEquivalentTo(expectedDecryptionOrchestrationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDecryptionOrchestrationValidationException))),
+                        Times.Once);
+
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
         [Theory]
         [InlineData(null)]
         [InlineData("")]

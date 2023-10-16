@@ -63,6 +63,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         public ValueTask<List<string>> ProcessAsync() =>
             TryCatch(async () =>
             {
+                ValidateConfigurationSettings();
+
                 var exceptions = new List<Exception>();
 
                 List<Document> retrievedDocuments =
@@ -182,6 +184,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         public async ValueTask<string> ProcessAsync(string fileName) =>
             await TryCatch(async () =>
             {
+                ValidateConfigurationSettings();
                 ValidateFileName(fileName);
 
                 Document externalDocument =

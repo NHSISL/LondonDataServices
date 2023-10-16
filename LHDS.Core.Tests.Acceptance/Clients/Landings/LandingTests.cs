@@ -109,7 +109,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                         .Create();
 
                 await this.ingestionTrackingService.AddIngestionTrackingAsync(item);
-
                 items.Add(item);
             }
 

@@ -109,6 +109,10 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             {
                 throw CreateAndLogDependencyValidationException(pdsOrchestrationDependencyValidationException);
             }
+            catch (NullBlobContainersPdsOrchestrationException nullBlobContainersPdsOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullBlobContainersPdsOrchestrationException);
+            }
             catch (DocumentValidationException meshValidationException)
             {
                 throw CreateAndLogDependencyValidationException(meshValidationException);

@@ -8,12 +8,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using ApiDataSet = LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets.DataSet;
-using CoreDataSet = LHDS.Core.Models.Foundations.DataSets.DataSet;
-using ApiDataSetSpecification = LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications.DataSetSpecification;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
-using CoreDataSetSpecification = LHDS.Core.Models.Foundations.DataSetSpecifications.DataSetSpecification;
 using LHDS.Core.Models.Foundations.Documents;
 using Xunit;
 
@@ -71,9 +69,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             Guid landingSupplierId = supplierId;
             await CleanupTask(retrievedDocument.FileName);
             List<Supplier> exisitingSuppliers = await this.apiBroker.FindSupplierByIdAsync(landingSupplierId);
-            ApiDataSet activeDataSet = await PostRandomActiveDataSetAsync(landingSupplierId);
+            DataSet activeDataSet = await PostRandomActiveDataSetAsync(landingSupplierId);
 
-            ApiDataSetSpecification activeDataSetSpecification = 
+            DataSetSpecification activeDataSetSpecification = 
                 await PostRandomActiveDataSetSpecificationAsync(activeDataSet.Id);
 
             if (!exisitingSuppliers.Any())

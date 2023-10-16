@@ -246,6 +246,10 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         ? externalDocument.FileName
                         : "/" + externalDocument.FileName;
 
+                    DataSetSpecification retrievedDataSetSpecification = await
+                                    this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
+                                        landingConfiguration.LandingSupplierId);
+
                     IngestionTracking newIngestionTracking =
                       new IngestionTracking
                       {
@@ -255,8 +259,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                           EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
 
                           DecryptedFileName =
-                            $"/{landingConfiguration.DecryptedFolder}" +
-                            $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                                $"/{landingConfiguration.DecryptedFolder}" +
+                                $"/{retrievedDataSetSpecification.DataSet.DataSetName}" +
+                                $"/{retrievedDataSetSpecification.Id}" +
+                                $"/{filename.Split('_')[3]}" +
+                                $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
                           Decrypted = false,
                           LastSeen = currentDateTime,

@@ -5,9 +5,9 @@
 using System;
 using LHDS.Core.Models.Bases;
 
-namespace LHDS.Core.Models.Foundations.Adresses
+namespace LHDS.Core.Models.Foundations.Addresses
 {
-    public class Addresses : IKey, IAudit
+    public class Address : IKey, IAudit
     {
         public Guid Id { get; set; }
         public string? UPRN { get; set; }
@@ -24,7 +24,7 @@ namespace LHDS.Core.Models.Foundations.Adresses
         public string? PostTown { get; set; }
         public string? PostCode { get; set; }
         public string? PostalAddress { get; set; }
-        public string? JsonPostalData { get; set; }
+        public string? JsonPostalAddress { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTimeOffset UpdatedDate { get; set; }

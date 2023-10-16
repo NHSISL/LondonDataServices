@@ -36,7 +36,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             var nullConfigOptOutOrchestrationException =
                 new NullConfigOptOutOrchestrationException(
-                    message: "Null configuration opt out orchestration exception, please correct the errors and try again.");
+                    message: "Null configuration opt out orchestration exception, " +
+                        "please correct the errors and try again.");
 
             var expectedPushExpiredOptOutsToMeshIfExpiredOrchestrationOptOutFileValidationException =
                 new OptOutOrchestrationValidationException(

@@ -255,34 +255,34 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         : "/" + externalDocument.FileName;
 
                     DataSetSpecification retrievedDataSetSpecification = await
-                                    this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
-                                        landingConfiguration.LandingSupplierId);
+                        this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
+                            landingConfiguration.LandingSupplierId);
 
                     IngestionTracking newIngestionTracking =
                       new IngestionTracking
                       {
-                          Id = this.identifierBroker.GetIdentifier(),
-                          FileName = externalDocument.FileName,
-                          SupplierId = landingConfiguration.LandingSupplierId,
-                          EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
+                        Id = this.identifierBroker.GetIdentifier(),
+                        FileName = externalDocument.FileName,
+                        SupplierId = landingConfiguration.LandingSupplierId,
+                        EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
 
-                          DecryptedFileName =
-                                $"/{landingConfiguration.DecryptedFolder}" +
-                                $"/{retrievedDataSetSpecification.DataSet.DataSetName}" +
-                                $"/{retrievedDataSetSpecification.Id}" +
-                                $"/{filename.Split('_')[3]}" +
-                                $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
+                        DecryptedFileName =
+                            $"/{landingConfiguration.DecryptedFolder}" +
+                            $"/{retrievedDataSetSpecification.DataSet.DataSetName}" +
+                            $"/{retrievedDataSetSpecification.Id}" +
+                            $"/{filename.Split('_')[3]}" +
+                            $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
-                          Decrypted = false,
-                          LastSeen = currentDateTime,
-                          FileDeleted = false,
-                          RecordCount = 0,
-                          EncryptedFileSize = externalDocument.DocumentData.Length,
-                          DecryptedFileSize = 0,
-                          CreatedBy = "System",
-                          CreatedDate = currentDateTime,
-                          UpdatedBy = "System",
-                          UpdatedDate = currentDateTime
+                        Decrypted = false,
+                        LastSeen = currentDateTime,
+                        FileDeleted = false,
+                        RecordCount = 0,
+                        EncryptedFileSize = externalDocument.DocumentData.Length,
+                        DecryptedFileSize = 0,
+                        CreatedBy = "System",
+                        CreatedDate = currentDateTime,
+                        UpdatedBy = "System",
+                        UpdatedDate = currentDateTime
                       };
 
                     Document newBlobDocument = new Document

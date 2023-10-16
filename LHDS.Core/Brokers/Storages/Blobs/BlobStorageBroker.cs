@@ -12,14 +12,10 @@ namespace LHDS.Core.Brokers.Storages.Blobs
     public class BlobStorageBroker : IBlobStorageBroker
     {
         private readonly IAzureBlobClient azureBlobClient;
-        private readonly IBlobStorageBrokerSettings blobStorageBrokerSettings;
 
-        public BlobStorageBroker(
-            IAzureBlobClient azureBlobClient,
-            IBlobStorageBrokerSettings blobStorageBrokerSettings)
+        public BlobStorageBroker(IAzureBlobClient azureBlobClient)
         {
             this.azureBlobClient = azureBlobClient;
-            this.blobStorageBrokerSettings = blobStorageBrokerSettings;
         }
 
         public async ValueTask InsertFileAsync(string fileName, Stream stream, string container) =>

@@ -78,16 +78,18 @@ namespace LHDS.Core.Clients.Extensions
             var landingConfiguration = configuration.GetSection("landingSettings").Get<LandingConfiguration>();
             ValidateLandingConfiguration(landingConfiguration);
 
+            var blobStorageSettings = configuration
+                .GetSection("blobStorage").Get<BlobStorageSettings>();
+
+            ValidateBlobStorageSettings(blobStorageSettings);
+            services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
             services.AddSingleton(landingConfiguration);
 
             if (!acceptanceTest)
             {
                 services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
-                services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
                 services.AddTransient<IDownloadBroker, DownloadBroker>();
 
-                var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
-                ValidateBlobStorageSettings(blobStorageSettings);
 
                 var blobServiceClientOptions = new BlobClientOptions()
                 {

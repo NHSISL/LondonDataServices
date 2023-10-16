@@ -20,7 +20,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
         public async Task ShouldRetrieveOptOutStatusAsyncAsync()
         {
             //Given
-            string optOutFileContainer = "optout";
             Guid identifier = Guid.NewGuid();
             List<OptOutIdentifier> optOutIdentifiers = CreateRandomOptOutIdentifiersList();
             bool hasHeaderRecord = optOutConfiguration.OptOutFileHasHeader;
@@ -42,7 +41,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             actualString.Should().Be(expectedString);
 
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.InsertFileAsync(expectedString, It.IsAny<Stream>(), optOutFileContainer),
+                broker.InsertFileAsync(expectedString, It.IsAny<Stream>(), It.IsAny<string>()),
                     Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

@@ -177,7 +177,6 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
-            services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
         }
@@ -199,10 +198,9 @@ namespace LHDS.AdminPortal.Api
 
             var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
             ValidateBlobStorageSettings(blobStorageSettings);
-            var blobContainers = configuration.GetSection("blobContainers").Get<BlobContainers>();
-            ValidateBlobContainers(blobContainers);
+            ValidateBlobContainers(blobStorageSettings.BlobContainers);
 
-            services.AddSingleton<BlobContainers>(blobContainers);
+            services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
 
 
             var blobServiceClientOptions = new BlobClientOptions()

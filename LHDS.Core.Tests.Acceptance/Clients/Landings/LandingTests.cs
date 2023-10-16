@@ -10,12 +10,14 @@ using LHDS.Core.Brokers.Downloads;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -48,6 +50,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             {
                 builder.AddConsole();
             });
+
+            var blobStorageSettings = dependencyBroker.Configuration
+                .GetSection("blobStorage").Get<BlobStorageSettings>();
+
+            serviceCollection.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
 
             serviceCollection
                 .AddTransient<IDownloadBroker>(serviceProvider => downloadBrokerMock.Object)

@@ -9,9 +9,11 @@ using LHDS.Core.Brokers.Mesh;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Orchestrations.Pds;
 using LHDS.Core.Services.Foundations.PdsAudits;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -44,6 +46,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             {
                 builder.AddConsole();
             });
+
+            var blobStorageSettings = dependencyBroker.Configuration
+                .GetSection("blobStorage").Get<BlobStorageSettings>();
+
+            serviceCollection.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
 
             serviceCollection
                 .AddTransient<IMeshBroker>(serviceProvider => meshBrokerMock.Object)

@@ -22,6 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             Xeption dependencyValidationException)
         {
             // given
+            string encryptedFileContainer = "emislanding";
             var randomString = GetRandomString();
             var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
             var randomMessage = GetRandomString();
@@ -38,12 +39,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.documentServiceMock.Setup(service =>
-                service.RetrieveDocumentByFileNameAsync(inputDocument.FileName))
+                service.RetrieveDocumentByFileNameAsync(inputDocument.FileName, encryptedFileContainer))
                     .Throws(dependencyValidationException);
 
             // when
             ValueTask<Document> retrieveDocumentTask =
-                this.documentProcessingService.RetrieveDocumentByFileNameAsync(inputDocument.FileName);
+                this.documentProcessingService
+                    .RetrieveDocumentByFileNameAsync(inputDocument.FileName, encryptedFileContainer);
 
             DocumentProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<DocumentProcessingDependencyValidationException>(retrieveDocumentTask.AsTask);
@@ -52,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             actualException.Should().BeEquivalentTo(expectedDocumentProcessingDependencyValidationException);
 
             this.documentServiceMock.Verify(service =>
-                service.RetrieveDocumentByFileNameAsync(inputDocument.FileName),
+                service.RetrieveDocumentByFileNameAsync(inputDocument.FileName, encryptedFileContainer),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -70,6 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
           Xeption dependencyException)
         {
             // given
+            string encryptedFileContainer = "emislanding";
             var randomString = GetRandomString();
             var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
             var randomMessage = GetRandomString();
@@ -86,12 +89,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     innerException: dependencyException.InnerException as Xeption);
 
             this.documentServiceMock.Setup(service =>
-                service.RetrieveDocumentByFileNameAsync(inputDocument.FileName))
+                service.RetrieveDocumentByFileNameAsync(inputDocument.FileName, encryptedFileContainer))
                     .Throws(dependencyException);
 
             // when
             ValueTask<Document> retrieveDocumentTask =
-                this.documentProcessingService.RetrieveDocumentByFileNameAsync(inputDocument.FileName);
+                this.documentProcessingService
+                    .RetrieveDocumentByFileNameAsync(inputDocument.FileName, encryptedFileContainer);
 
             DocumentProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<DocumentProcessingDependencyException>(retrieveDocumentTask.AsTask);
@@ -100,7 +104,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             actualException.Should().BeEquivalentTo(expectedDocumentProcessingDependencyException);
 
             this.documentServiceMock.Verify(service =>
-                service.RetrieveDocumentByFileNameAsync(inputDocument.FileName),
+                service.RetrieveDocumentByFileNameAsync(inputDocument.FileName, encryptedFileContainer),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -116,6 +120,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
         public async Task ShouldThrowServiceExceptionOnRetrieveIfServiceErrorOccursAsync()
         {
             // given
+            string encryptedFileContainer = "emislanding";
             var randomString = GetRandomString();
             var randomBytes = Encoding.ASCII.GetBytes(GetRandomString());
             var randomMessage = GetRandomString();
@@ -130,7 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 
             var failedDocumentProcessingServiceException =
                 new FailedDocumentProcessingServiceException(
-                    message: "Failed document processing service error occurred, contact support.", 
+                    message: "Failed document processing service error occurred, contact support.",
                     serviceException);
 
             var expectedDocumentProcessingServiveException =
@@ -139,12 +144,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     failedDocumentProcessingServiceException);
 
             this.documentServiceMock.Setup(service =>
-                service.RetrieveDocumentByFileNameAsync(inputDocument.FileName))
+                service.RetrieveDocumentByFileNameAsync(inputDocument.FileName, encryptedFileContainer))
                     .Throws(serviceException);
 
             // when
             ValueTask<Document> retrieveDocumentTask =
-                this.documentProcessingService.RetrieveDocumentByFileNameAsync(inputDocument.FileName);
+                this.documentProcessingService.RetrieveDocumentByFileNameAsync(
+                    fileName: inputDocument.FileName, container: encryptedFileContainer);
 
             DocumentProcessingServiceException actualException =
                 await Assert.ThrowsAsync<DocumentProcessingServiceException>(retrieveDocumentTask.AsTask);
@@ -153,7 +159,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             actualException.Should().BeEquivalentTo(expectedDocumentProcessingServiveException);
 
             this.documentServiceMock.Verify(service =>
-                service.RetrieveDocumentByFileNameAsync(inputDocument.FileName),
+                service.RetrieveDocumentByFileNameAsync(inputDocument.FileName, encryptedFileContainer),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

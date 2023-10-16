@@ -66,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 };
 
                 this.documentServiceMock.Setup(broker =>
-                    broker.AddDocumentAsync(document));
+                    broker.AddDocumentAsync(document, It.IsAny<string>()));
 
                 Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
 
@@ -134,7 +134,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 };
 
                 this.documentServiceMock.Verify(service =>
-                    service.AddDocumentAsync(It.Is(SameDocumentAs(document))),
+                    service.AddDocumentAsync(It.Is(SameDocumentAs(document)), It.IsAny<string>()),
                         Times.Once);
 
                 Guid correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());

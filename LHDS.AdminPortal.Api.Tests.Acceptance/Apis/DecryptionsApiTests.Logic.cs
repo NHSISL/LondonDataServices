@@ -2,15 +2,14 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
-using Xunit;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
-using System.Text;
 using LHDS.Core.Models.Foundations.Documents;
-using System.Diagnostics.SymbolStore;
-using System.Web;
+using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
 {
@@ -20,6 +19,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
         public async Task ShouldDecryptFileAsync()
         {
             // given
+            string encryptedFileContainer = "emislanding";
+            string decryptedFileContainer = "versioner";
             Supplier randomSupplier = await PostRandomSupplierAsync();
             string encryptedFilePath = "encrypted";
             string decryptedFilePath = "decrypted";
@@ -40,10 +41,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
                 FileName = inputFileName
             };
 
-            await this.apiBroker.documentService.AddDocumentAsync(document);
+            await this.apiBroker.documentService.AddDocumentAsync(document, container: encryptedFileContainer);
 
             //When
-            await this.apiBroker.GetDocumentByFileNameToDecryptAsync(HttpUtility.UrlEncode(inputIngestionTracking.FileName));
+            await this.apiBroker.GetDocumentByFileNameToDecryptAsync(
+                HttpUtility.UrlEncode(inputIngestionTracking.FileName));
 
             //Then
             IngestionTracking decryptedIngestionTracking =
@@ -52,7 +54,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
             decryptedIngestionTracking.Decrypted.Should().BeTrue();
 
             await DeleteAuditRecordsAsync(randomIngestionTracking);
-            await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(document.FileName);
+
+            await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(
+                filename: decryptedIngestionTracking.EncryptedFileName, container: encryptedFileContainer);
+
+            await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(
+                filename: decryptedIngestionTracking.DecryptedFileName, container: decryptedFileContainer);
+
             await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }

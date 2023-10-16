@@ -76,10 +76,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             ApiDataSetSpecification activeDataSetSpecification = 
                 await PostRandomActiveDataSetSpecificationAsync(activeDataSet.Id);
 
-            //CoreDataSetSpecification activeDataSetSpecification =
-            //    await this.apiBroker.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
-            //        landingSupplierId);
-
             if (!exisitingSuppliers.Any())
             {
                 await PostLandingSupplierAsync(landingSupplierId);

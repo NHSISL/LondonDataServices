@@ -15,6 +15,7 @@ public partial class DocumentServiceTests
     public async Task ShouldDeleteFileAsync()
     {
         // Given
+        var randomContainer = GetRandomString();
         string randomFileName = GetRandomString();
 
         Document randomDocument = new Document
@@ -24,11 +25,13 @@ public partial class DocumentServiceTests
         };
 
         // When
-        await this.documentService.RemoveDocumentByFileNameAsync(randomDocument.FileName);
+        await this.documentService.RemoveDocumentByFileNameAsync(
+            filename: randomDocument.FileName,
+            container: randomContainer);
 
         // Then
         this.blobStorageBrokerMock.Verify(broker =>
-            broker.DeleteFileAsync(randomDocument.FileName),
+            broker.DeleteFileAsync(randomDocument.FileName, randomContainer),
                 Times.Once);
 
         this.blobStorageBrokerMock.VerifyNoOtherCalls();

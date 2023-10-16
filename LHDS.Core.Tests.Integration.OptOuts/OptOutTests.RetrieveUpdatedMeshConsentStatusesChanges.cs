@@ -23,6 +23,7 @@ namespace LHDS.Core.Tests.Integration.OptOuts
             try
             {
                 // given
+                string optOutFileContainer = "optout";
                 string batchReference = Guid.NewGuid().ToString();
                 var dbItems = await SetupTestNhsNumbersForRetrieveUpdatedMesh(batchReference);
                 List<string> idsFromMesh = dbItems.AsQueryable().Take(2).Select(x => x.NhsNumber).ToList();
@@ -41,7 +42,9 @@ namespace LHDS.Core.Tests.Integration.OptOuts
                         $"{optOutConfiguration.OutputFolder}/{GetHeaderValue(message, "mex-localid")}"
                         + "_deltaresponse.csv";
 
-                    Document document = await this.documentService.RetrieveDocumentByFileNameAsync(filepath);
+                    Document document = await this.documentService
+                        .RetrieveDocumentByFileNameAsync(fileName: filepath, container: optOutFileContainer);
+
                     document.Should().NotBeNull();
 
                     List<OptOutIdentifier> actualContent =
@@ -59,7 +62,8 @@ namespace LHDS.Core.Tests.Integration.OptOuts
                         actualItem.Status.Should().BeEquivalentTo(expectedItem.Status);
                     }
 
-                    await this.documentService.RemoveDocumentByFileNameAsync(filepath);
+                    await this.documentService
+                        .RemoveDocumentByFileNameAsync(filename: filepath, container: optOutFileContainer);
                 }
             }
             catch (Exception ex)

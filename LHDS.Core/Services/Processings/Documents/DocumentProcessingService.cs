@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.ComponentModel;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Documents;
@@ -22,37 +23,37 @@ namespace LHDS.Core.Services.Processings.Documents
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<string> AddDocumentAsync(Document document) =>
+        public ValueTask<string> AddDocumentAsync(Document document, string container) =>
             TryCatch(async () =>
             {
-                ValidateDocumentProcessingOnAdd(document);
-                await this.documentService.AddDocumentAsync(document);
+                ValidateDocumentProcessingOnAdd(document, container);
+                await this.documentService.AddDocumentAsync(document, container);
 
                 return document.FileName;
             });
 
-        public ValueTask<Document> RetrieveDocumentByFileNameAsync(string fileName) =>
+        public ValueTask<Document> RetrieveDocumentByFileNameAsync(string fileName, string container) =>
             TryCatch(async () =>
             {
-                ValidateDocumentProcessingOnRetrieve(fileName);
+                ValidateDocumentProcessingOnRetrieve(fileName, container);
 
-                return await this.documentService.RetrieveDocumentByFileNameAsync(fileName);
+                return await this.documentService.RetrieveDocumentByFileNameAsync(fileName, container);
             });
 
-        public ValueTask RemoveDocumentByFileNameAsync(string fileName) =>
+        public ValueTask RemoveDocumentByFileNameAsync(string fileName, string container) =>
             TryCatch(async () =>
             {
-                ValidateDocumentProcessingOnRemove(fileName);
+                ValidateDocumentProcessingOnRemove(fileName, container);
 
-                await this.documentService.RemoveDocumentByFileNameAsync(fileName);
+                await this.documentService.RemoveDocumentByFileNameAsync(fileName, container);
             });
 
-        public ValueTask<string> GetDownloadLinkAsync(string fileName) =>
+        public ValueTask<string> GetDownloadLinkAsync(string fileName, string container) =>
             TryCatch(async () =>
             {
-                ValidateGetDownloadLinkArguments(fileName);
+                ValidateGetDownloadLinkArguments(fileName, container);
 
-                return await this.documentService.GetDownloadLinkAsync(fileName);
+                return await this.documentService.GetDownloadLinkAsync(fileName, container);
             });
     }
 }

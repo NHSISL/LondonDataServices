@@ -16,6 +16,8 @@ namespace LHDS.Core.Tests.Integration.Decryptions
         public async Task ShouldDecryptAsync()
         {
             // given
+            string encryptedFileContainer = "emislanding";
+
             var items = ingestionTrackingService.RetrieveAllIngestionTrackings()
                 .Where(ingestionTrackingService => ingestionTrackingService.Decrypted == false);
 
@@ -29,7 +31,7 @@ namespace LHDS.Core.Tests.Integration.Decryptions
                 item.DecryptedFileName.Should().BeEquivalentTo(filename);
 
                 Document document = await this.documentService
-                    .RetrieveDocumentByFileNameAsync(filename);
+                    .RetrieveDocumentByFileNameAsync(filename, encryptedFileContainer);
 
                 document.Should().NotBeNull();
                 document.FileName.Should().BeEquivalentTo(filename);

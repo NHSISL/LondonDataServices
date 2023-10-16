@@ -15,7 +15,8 @@ namespace LHDS.Core.Tests.Integration.Pds
         [ReleaseCandidateFact]
         public async Task ShouldRetrieveMessagesFromMeshAndUpdateStorageAsync()
         {
-            // Given 
+            // Given
+            string pdsFileContainer = "pds";
             byte[] fileBytes =
                 File.ReadAllBytes(
                     @"Resources\EmisPDSPatientExtract_247BB600-213A-494E-8E90-A4F9190F07DF_20230601T130544.csv");
@@ -50,10 +51,12 @@ namespace LHDS.Core.Tests.Integration.Pds
                 audit.FileName.Should().BeEquivalentTo(fileNameReturn);
 
                 byte[] checkDocument =
-                        await this.blobStorageBroker.SelectByFileNameAsync(fileNameReturn);
+                        await this.blobStorageBroker.SelectByFileNameAsync(
+                            fileName: fileNameReturn,
+                            container: pdsFileContainer);
 
                 checkDocument.Should().NotBeNull();
-                await this.blobStorageBroker.DeleteFileAsync(fileNameReturn);
+                await this.blobStorageBroker.DeleteFileAsync(fileName: fileNameReturn, container: pdsFileContainer);
                 await this.pdsAuditService.RemovePdsAuditByIdAsync(audit.Id);
             }
 

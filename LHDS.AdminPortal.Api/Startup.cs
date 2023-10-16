@@ -177,7 +177,6 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
-            services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
         }
@@ -199,6 +198,10 @@ namespace LHDS.AdminPortal.Api
 
             var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
             ValidateBlobStorageSettings(blobStorageSettings);
+            ValidateBlobContainers(blobStorageSettings.BlobContainers);
+
+            services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
+
 
             var blobServiceClientOptions = new BlobClientOptions()
             {
@@ -225,10 +228,23 @@ namespace LHDS.AdminPortal.Api
                     Parameter: "blobStorage__azureBlobServiceUri"),
 
                 (Rule: IsInvalid(blobStorageSettings.AzureTenantId),
-                    Parameter: "blobStorage__azureTenantId"),
+                    Parameter: "blobStorage__azureTenantId"));
+        }
 
-                (Rule: IsInvalid(blobStorageSettings.BlobContainerName),
-                    Parameter: "blobStorage__blobContainerName"));
+        private static void ValidateBlobContainers(BlobContainers blobContainers)
+        {
+            Validate(
+                (Rule: IsInvalid(blobContainers.EmisLanding),
+                    Parameter: "blobContainers__emisLanding"),
+
+                (Rule: IsInvalid(blobContainers.Versioner),
+                    Parameter: "blobContainers__versioner"),
+
+                (Rule: IsInvalid(blobContainers.OptOut),
+                    Parameter: "blobContainers__optOut"),
+
+                (Rule: IsInvalid(blobContainers.Pds),
+                    Parameter: "blobContainers__pds"));
         }
 
         private static dynamic IsInvalid(string text) => new

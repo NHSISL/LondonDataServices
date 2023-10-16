@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Orchestrations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
@@ -24,13 +25,15 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
         private static void ValidateRequestIdIsNotNull(string requestId)
         {
             Validate<InvalidArgumentOptOutOrchestrationException>(
-                message: "Invalid Retrieve Opt Out Status orchestration argument(s), please correct the errors and try again.",
+                message: "Invalid Retrieve Opt Out Status orchestration argument(s), " +
+                    "please correct the errors and try again.",
                 (Rule: IsInvalid(requestId), Parameter: "RequestId"));
         }
 
         private void ValidateConfigurationSettings()
         {
             this.ValidateConfigurationIsNotNull();
+            this.ValidateBlobContainersIsNotNull();
 
             Validate<InvalidConfigOptOutOrchestrationException>(
                 message: "Invalid Configuration orchestration error, please correct the errors and try again.",
@@ -38,7 +41,10 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                     Parameter: nameof(OptOutConfiguration.OutputFolder)),
 
                 (Rule: IsInvalid(this.optOutConfiguration.ExpiredAfterDays),
-                    Parameter: nameof(OptOutConfiguration.ExpiredAfterDays)));
+                    Parameter: nameof(OptOutConfiguration.ExpiredAfterDays)),
+
+                (Rule: IsInvalid(this.blobContainers.OptOut),
+                    Parameter: nameof(BlobContainers.OptOut)));
         }
 
         private void ValidateConfigurationIsNotNull()
@@ -46,7 +52,18 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             if (this.optOutConfiguration is null)
             {
                 throw new NullConfigOptOutOrchestrationException(
-                    message: "Null configuration opt out orchestration exception, please correct the errors and try again.");
+                    message: "Null configuration opt out orchestration exception, " +
+                        "please correct the errors and try again.");
+            }
+        }
+
+        private void ValidateBlobContainersIsNotNull()
+        {
+            if (this.blobContainers is null)
+            {
+                throw new NullBlobContainersOptOutOrchestrationException(
+                    message: "Null blob container opt out orchestration exception, " +
+                        "please correct the errors and try again.");
             }
         }
 

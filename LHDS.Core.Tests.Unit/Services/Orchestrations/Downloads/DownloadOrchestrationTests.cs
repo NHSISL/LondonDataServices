@@ -12,6 +12,7 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
@@ -47,6 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly LandingConfiguration landingConfiguration;
+        private readonly BlobContainers blobContainers;
         private readonly IDownloadOrchestrationService downloadOrchestrationService;
         private readonly ICompareLogic compareLogic;
 
@@ -71,6 +73,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 DecryptedFolder = "inbox/landings"
             };
 
+            blobContainers = new BlobContainers
+            {
+                EmisLanding = "emislanding",
+                Versioner = "versioner",
+                OptOut = "optout",
+                Pds = "pds",
+            };
+
             downloadOrchestrationService = new DownloadOrchestrationService(
                 documentService: documentServiceMock.Object,
                 downloadService: downloadServiceMock.Object,
@@ -78,6 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 auditService: auditServiceMock.Object,
                 dataSetSpecificationService: dataSetSpecificationServiceMock.Object,
                 dataSetSpecificationProcessingService: dataSetSpecificationProcessingServiceMock.Object,
+                blobContainers,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object,

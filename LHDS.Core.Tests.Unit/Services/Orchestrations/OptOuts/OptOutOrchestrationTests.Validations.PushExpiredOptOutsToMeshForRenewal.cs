@@ -89,7 +89,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     message: "Null blob container opt out orchestration exception, " +
                         "please correct the errors and try again.");
 
-            var expectedPushExpiredOptOutsToMeshIfExpiredOrchestrationOptOutFileValidationException =
+            var expectedOptOutOrchestrationValidationException =
                 new OptOutOrchestrationValidationException(
                     message: "Opt Out orchestration validation errors occurred, please try again.",
                     innerException: nullBlobContainersOptOutOrchestrationException);
@@ -104,11 +104,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             // Then
             actualException.Should()
-                .BeEquivalentTo(expectedPushExpiredOptOutsToMeshIfExpiredOrchestrationOptOutFileValidationException);
+                .BeEquivalentTo(expectedOptOutOrchestrationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    expectedPushExpiredOptOutsToMeshIfExpiredOrchestrationOptOutFileValidationException))),
+                    expectedOptOutOrchestrationValidationException))),
                         Times.Once);
 
             this.optOutProcessingServiceMock.VerifyNoOtherCalls();

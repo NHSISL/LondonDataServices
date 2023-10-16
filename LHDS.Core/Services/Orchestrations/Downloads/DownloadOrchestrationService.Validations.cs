@@ -3,13 +3,38 @@
 // ---------------------------------------------------------------
 
 using LHDS.Core.Models.Foundations.Documents;
-using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
 
 namespace LHDS.Core.Services.Orchestrations.Downloads
 {
     public partial class DownloadOrchestrationService
     {
+        private void ValidateConfigurationSettings()
+        {
+            this.ValidateLandingConfigurationIsNotNull();
+            this.ValidateBlobContainersIsNotNull();
+        }
+
+        private void ValidateLandingConfigurationIsNotNull()
+        {
+            if (this.landingConfiguration is null)
+            {
+                throw new NullLandingConfigurationDownloadOrchestrationException(
+                    message: "Null landing configuration download orchestration exception, " +
+                        "please correct the errors and try again.");
+            }
+        }
+
+        private void ValidateBlobContainersIsNotNull()
+        {
+            if (this.blobContainers is null)
+            {
+                throw new NullBlobContainersDownloadOrchestrationException(
+                    message: "Null blob container download orchestration exception, " +
+                        "please correct the errors and try again.");
+            }
+        }
+
         private static void ValidateFileName(string fileName)
         {
             Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));

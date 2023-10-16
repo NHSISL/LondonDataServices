@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
 
@@ -13,6 +14,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         {
             this.ValidateLandingConfigurationIsNotNull();
             this.ValidateBlobContainersIsNotNull();
+
+            Validate((Rule: IsInvalid(this.landingConfiguration.LandingSupplierId),
+                Parameter: "LandingConfiguration.SupplierId"));
         }
 
         private void ValidateLandingConfigurationIsNotNull()
@@ -48,6 +52,12 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     message: $"Couldn't find download with file name: {fileName}.");
             }
         }
+
+        private static dynamic IsInvalid(Guid id) => new
+        {
+            Condition = id == Guid.Empty,
+            Message = "Id is required"
+        };
 
         private static dynamic IsInvalid(string text) => new
         {

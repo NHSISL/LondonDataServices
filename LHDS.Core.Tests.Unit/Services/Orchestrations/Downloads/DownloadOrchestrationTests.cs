@@ -42,6 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly LandingConfiguration landingConfiguration;
+        private readonly BlobContainers blobContainers;
         private readonly IDownloadOrchestrationService downloadOrchestrationService;
         private readonly ICompareLogic compareLogic;
 
@@ -64,7 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 DecryptedFolder = "decrypted"
             };
 
-            BlobContainers blobContainers = new BlobContainers
+            blobContainers = new BlobContainers
             {
                 EmisLanding = "emislanding",
                 Versioner = "versioner",

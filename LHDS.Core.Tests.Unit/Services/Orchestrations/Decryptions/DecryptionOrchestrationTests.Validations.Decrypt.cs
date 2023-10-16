@@ -4,7 +4,9 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
+using LHDS.Core.Services.Orchestrations.Decryptions;
 using Moq;
 using Xunit;
 
@@ -28,9 +30,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     message: "Decryption orchestration validation errors occurred, please try again.",
                     innerException: nullBlobContainersDecryptionOrchestrationException);
 
+            BlobContainers invalidBlobContainers = null;
+
+            var invalidDecryptionOrchestrationService = new DecryptionOrchestrationService(
+                documentService: documentServiceMock.Object,
+                decryptionService: decryptionServiceMock.Object,
+                ingestionTrackingService: ingestionTrackingServiceMock.Object,
+                auditService: auditServiceMock.Object,
+                blobContainers: invalidBlobContainers,
+                loggingBroker: loggingBrokerMock.Object,
+                dateTimeBroker: dateTimeBrokerMock.Object
+                );
+
             // when
             ValueTask<string> decryptTask =
-                this.decryptionOrchestrationService.DecryptAsync(someFileName);
+                invalidDecryptionOrchestrationService.DecryptAsync(someFileName);
 
             DecryptionOrchestrationValidationException actualException =
                 await Assert.ThrowsAsync<DecryptionOrchestrationValidationException>(decryptTask.AsTask);

@@ -20,6 +20,7 @@ using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
+using LHDS.Core.Services.Orchestrations.Downloads;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using Document = LHDS.Core.Models.Foundations.Documents.Document;
 
@@ -55,6 +56,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.documentService = documentService;
             this.downloadService = downloadService;
             this.ingestionTrackingService = ingestionTrackingService;
+            this.auditService = auditService;
             this.dataSetSpecificationService = dataSetSpecificationService;
             this.dataSetSpecificationProcessingService = dataSetSpecificationProcessingService;
             this.loggingBroker = loggingBroker;
@@ -92,16 +94,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                                 var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
-                                DataSetSpecification retrievedDataSetSpecification =
-                                    this.dataSetSpecificationService.RetrieveAllDataSetSpecifications().Where(
-                                        specification =>
-                                            specification.DataSet.SupplierId == landingConfiguration.LandingSupplierId
-                                            && specification.DataSet.IsActive == true
-                                            && specification.IsActive == true
-                                            && specification.DataSet.ActiveFrom > currentDateTime
-                                            && specification.DataSet.ActiveTo < currentDateTime
-                                            && specification.ActiveFrom > currentDateTime
-                                            && specification.ActiveTo > currentDateTime).First();
+                                DataSetSpecification retrievedDataSetSpecification = await
+                                    this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
+                                        landingConfiguration.LandingSupplierId);
 
                                 var filename = document.FileName.StartsWith('/')
                                     ? document.FileName

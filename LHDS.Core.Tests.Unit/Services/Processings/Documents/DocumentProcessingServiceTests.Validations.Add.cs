@@ -17,6 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
         public async Task ShouldThrowValidationExceptionsOnAddIfDocumentProcessingIsNullAndLogItAsync()
         {
             // given
+            string randomContainer = GetRandomString();
             Document nullDocument = null;
 
             var nullDocumentProcessingException =
@@ -25,12 +26,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 
             var expectedDocumentProcessingValidationException =
                 new DocumentProcessingValidationException(
-                    message: "Document processing validation errors occured, please try again", 
+                    message: "Document processing validation errors occured, please try again",
                     nullDocumentProcessingException);
 
             // when
             ValueTask<string> AddDocumentTask =
-                this.documentProcessingService.AddDocumentAsync(nullDocument);
+                this.documentProcessingService.AddDocumentAsync(document: nullDocument, container: randomContainer);
 
             DocumentProcessingValidationException actualDocumentProcessingValidationException =
                 await Assert.ThrowsAsync<DocumentProcessingValidationException>(AddDocumentTask.AsTask);

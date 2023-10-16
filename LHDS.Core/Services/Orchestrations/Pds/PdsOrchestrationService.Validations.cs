@@ -4,7 +4,6 @@
 
 using System;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
-using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using LHDS.Core.Models.Orchestrations.Pds;
 using LHDS.Core.Models.Orchestrations.Pds.Exceptions;
 using Xeptions;
@@ -56,8 +55,8 @@ namespace LHDS.Core.Services.Orchestrations.Pds
         {
             if (this.blobContainers is null)
             {
-                throw new NullBlobContainersOptOutOrchestrationException(
-                    message: "Null blob containers PDS orchestration exception, " +
+                throw new NullBlobContainersPdsOrchestrationException(
+                    message: "Null blob container PDS orchestration exception, " +
                         "please correct the errors and try again.");
             }
         }

@@ -24,6 +24,14 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             {
                 return await returningPdsAuditFunction();
             }
+            catch (NullConfigPdsOrchestrationException nullConfigPdsOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullConfigPdsOrchestrationException);
+            }
+            catch (NullBlobContainersPdsOrchestrationException nullBlobContainersPdsOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullBlobContainersPdsOrchestrationException);
+            }
             catch (InvalidArgumentPdsException invalidArgumentPdsException)
             {
                 throw CreateAndLogValidationException(invalidArgumentPdsException);

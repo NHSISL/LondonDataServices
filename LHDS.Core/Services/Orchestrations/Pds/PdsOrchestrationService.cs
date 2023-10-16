@@ -55,6 +55,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
         TryCatch(async () =>
         {
             ValidateConfigurationSettings();
+            ValidateBlobContainers();
             ValidatePdsArgs(pdsFile, fileName);
 
             DateTimeOffset timeStamp = this.dateTimeBroker.GetCurrentDateTimeOffset();

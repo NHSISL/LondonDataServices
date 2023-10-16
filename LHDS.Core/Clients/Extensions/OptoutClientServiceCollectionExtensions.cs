@@ -113,7 +113,6 @@ namespace LHDS.Core.Clients.Extensions
             if (!acceptanceTest)
             {
                 services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
-                services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
                 services.AddTransient<IMeshBroker, MeshBroker>();
             }
         }
@@ -145,6 +144,7 @@ namespace LHDS.Core.Clients.Extensions
         {
             var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
             ValidateBlobStorageSettings(blobStorageSettings);
+            services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
             var optOptOutConfiguration = configuration.GetSection("optOutSettings").Get<OptOutConfiguration>();
             ValidateOptOutConfigurationSettings(optOptOutConfiguration);
 

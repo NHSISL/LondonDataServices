@@ -100,6 +100,7 @@ namespace LHDS.Core.Clients.Extensions
             {
                 var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
                 ValidateBlobStorageSettings(blobStorageSettings);
+                services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
 
                 var blobServiceClientOptions = new BlobClientOptions()
                 {
@@ -120,7 +121,6 @@ namespace LHDS.Core.Clients.Extensions
 
                 services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
                 services.AddTransient<IDownloadBroker, DownloadBroker>();
-                services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
                 services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             }
         }

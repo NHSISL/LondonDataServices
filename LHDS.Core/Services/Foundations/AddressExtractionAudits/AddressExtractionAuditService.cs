@@ -35,7 +35,15 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
         public IQueryable<AddressExtractionAudit> RetrieveAllAddressExtractionAudits() =>
             TryCatch(() => this.storageBroker.SelectAllAddressExtractionAudits());
 
-        public async ValueTask<AddressExtractionAudit> RetrieveAddressExtractionAuditByIdAsync(Guid addressExtractionAuditId) =>
-            await this.storageBroker.SelectAddressExtractionAuditByIdAsync(addressExtractionAuditId);
+        public ValueTask<AddressExtractionAudit> RetrieveAddressExtractionAuditByIdAsync(Guid addressExtractionAuditId) =>
+            TryCatch(async () =>
+            {
+                ValidateAddressExtractionAuditId(addressExtractionAuditId);
+
+                AddressExtractionAudit maybeAddressExtractionAudit = await this.storageBroker
+                    .SelectAddressExtractionAuditByIdAsync(addressExtractionAuditId);
+
+                return maybeAddressExtractionAudit;
+            });
     }
 }

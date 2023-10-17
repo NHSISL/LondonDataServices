@@ -35,6 +35,9 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
                 (Rule: IsNotRecent(addressExtractionAudit.CreatedDate), Parameter: nameof(AddressExtractionAudit.CreatedDate)));
         }
 
+        public void ValidateAddressExtractionAuditId(Guid addressExtractionAuditId) =>
+            Validate((Rule: IsInvalid(addressExtractionAuditId), Parameter: nameof(AddressExtractionAudit.Id)));
+
         private static void ValidateAddressExtractionAuditIsNotNull(AddressExtractionAudit addressExtractionAudit)
         {
             if (addressExtractionAudit is null)

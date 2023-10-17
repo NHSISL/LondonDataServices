@@ -43,6 +43,8 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 Address maybeAddress = await this.storageBroker
                     .SelectAddressByIdAsync(addressId);
 
+                ValidateStorageAddress(maybeAddress, addressId);
+
                 return maybeAddress;
             });
     }

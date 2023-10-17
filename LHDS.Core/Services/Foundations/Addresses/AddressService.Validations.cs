@@ -38,6 +38,14 @@ namespace LHDS.Core.Services.Foundations.Addresses
         public void ValidateAddressId(Guid addressId) =>
             Validate((Rule: IsInvalid(addressId), Parameter: nameof(Address.Id)));
 
+        private static void ValidateStorageAddress(Address maybeAddress, Guid addressId)
+        {
+            if (maybeAddress is null)
+            {
+                throw new NotFoundAddressException(addressId);
+            }
+        }
+
         private static void ValidateAddressIsNotNull(Address address)
         {
             if (address is null)

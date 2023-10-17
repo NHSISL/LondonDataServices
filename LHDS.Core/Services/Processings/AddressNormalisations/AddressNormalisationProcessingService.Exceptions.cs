@@ -3,7 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.AddressNormalisation;
+using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
 using Xeptions;
 

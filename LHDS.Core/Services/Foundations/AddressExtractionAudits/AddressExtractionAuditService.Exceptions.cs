@@ -43,6 +43,15 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsAddressExtractionAuditException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidAddressExtractionAuditReferenceException =
+                    new InvalidAddressExtractionAuditReferenceException(
+                        message: "Invalid addressExtractionAudit reference error occurred.", 
+                        innerException: foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidAddressExtractionAuditReferenceException);
+            }
         }
 
         private AddressExtractionAuditValidationException CreateAndLogValidationException(Xeption exception)
@@ -62,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
             var addressExtractionAuditDependencyException = 
                 new AddressExtractionAuditDependencyException(
                     message: "AddressExtractionAudit dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(addressExtractionAuditDependencyException);
 

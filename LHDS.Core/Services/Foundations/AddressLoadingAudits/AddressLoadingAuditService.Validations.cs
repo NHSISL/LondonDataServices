@@ -53,7 +53,9 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
                     firstDate: addressLoadingAudit.UpdatedDate,
                     secondDate: addressLoadingAudit.CreatedDate,
                     secondDateName: nameof(AddressLoadingAudit.CreatedDate)),
-                Parameter: nameof(AddressLoadingAudit.UpdatedDate)));
+                Parameter: nameof(AddressLoadingAudit.UpdatedDate)),
+
+                (Rule: IsNotRecent(addressLoadingAudit.UpdatedDate), Parameter: nameof(addressLoadingAudit.UpdatedDate)));
         }
 
         public void ValidateAddressLoadingAuditId(Guid addressLoadingAuditId) =>

@@ -61,5 +61,8 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
 
                 return await this.storageBroker.UpdateAddressExtractionAuditAsync(addressExtractionAudit);
             });
+
+        public ValueTask<AddressExtractionAudit> RemoveAddressExtractionAuditByIdAsync(Guid addressExtractionAuditId) =>
+            throw new NotImplementedException();
     }
 }

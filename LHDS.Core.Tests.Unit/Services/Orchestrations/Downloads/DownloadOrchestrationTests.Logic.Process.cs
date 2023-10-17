@@ -131,7 +131,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
                       DecryptedFileName =
                         $"/{landingConfiguration.DecryptedFolder}"
-                            + $"/{randomDataSetSpecification.DataSet.DataSetName}"
+                            + $"/{randomDataSet.DataSetName}"
                             + $"/{randomDataSetSpecification.Id}"
                             + $"/{filename.Split('_')[3]}"
                             + $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",

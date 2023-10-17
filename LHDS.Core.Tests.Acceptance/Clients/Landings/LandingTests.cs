@@ -15,8 +15,10 @@ using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Downloads;
+using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +36,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         private readonly Mock<IDownloadBroker> downloadBrokerMock;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIngestionTrackingService ingestionTrackingService;
+        private readonly IDataSetSpecificationService dataSetSpecificationService;
+        private readonly IDataSetSpecificationProcessingService dataSetSpecificationProcessingService;
         private readonly ILandingClient landingClient;
         private readonly LandingConfiguration landingConfiguration;
         private readonly IIngestionTrackingAuditService auditService;
@@ -64,6 +68,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             serviceCollection.AddLandingClientForAcceptance(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
+            this.dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
+
+            this.dataSetSpecificationProcessingService = 
+                serviceProvider.GetService<IDataSetSpecificationProcessingService>();
+
             this.auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
             this.landingConfiguration = serviceProvider.GetService<LandingConfiguration>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();

@@ -116,9 +116,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         public async Task ShouldNotProcessExistingDocumentsAsync()
         {
             //Given
-            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+            DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            Guid supplierId = landingConfiguration.LandingSupplierId;
             string fileName = GetRandomString();
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
+            Supplier landingSupplier = CreateRandomSupplier(supplierId, randomDateTime);
+            await this.supplierService.AddSupplierAsync(landingSupplier);
 
             Document document = new Document
             {
@@ -160,6 +163,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(tracking.Id);
             }
 
+            await this.supplierService.RemoveSupplierByIdAsync(landingSupplier.Id);
             this.downloadBrokerMock.VerifyNoOtherCalls();
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
         }

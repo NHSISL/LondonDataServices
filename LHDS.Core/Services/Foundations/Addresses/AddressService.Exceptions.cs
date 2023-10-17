@@ -43,6 +43,15 @@ namespace LHDS.Core.Services.Foundations.Addresses
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsAddressException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidAddressReferenceException =
+                    new InvalidAddressReferenceException(
+                        message: "Invalid address reference error occurred.", 
+                        innerException: foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidAddressReferenceException);
+            }
         }
 
         private AddressValidationException CreateAndLogValidationException(Xeption exception)
@@ -62,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             var addressDependencyException = 
                 new AddressDependencyException(
                     message: "Address dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(addressDependencyException);
 

@@ -48,7 +48,12 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
                 return maybeAddressExtractionAudit;
             });
 
-        public async ValueTask<AddressExtractionAudit> ModifyAddressExtractionAuditAsync(AddressExtractionAudit addressExtractionAudit) =>
-            await this.storageBroker.UpdateAddressExtractionAuditAsync(addressExtractionAudit);
+        public ValueTask<AddressExtractionAudit> ModifyAddressExtractionAuditAsync(AddressExtractionAudit addressExtractionAudit) =>
+            TryCatch(async () =>
+            {
+                ValidateAddressExtractionAuditOnModify(addressExtractionAudit);
+
+                return await this.storageBroker.UpdateAddressExtractionAuditAsync(addressExtractionAudit);
+            });
     }
 }

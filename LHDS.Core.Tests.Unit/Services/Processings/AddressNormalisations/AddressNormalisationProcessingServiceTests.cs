@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.AddressNormalisation.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Processings.AddressNormalisations;
 using Moq;
@@ -51,6 +52,24 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
 
                 new AddressNormalisationDependencyValidationException(
                     message: "Address Normalisation dependency validation occurred, please try again.",
+                    innerException)
+            };
+        }
+
+        public static TheoryData DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new AddressNormalisationDependencyException(
+                    message: "AddressNormalisation dependency error occurred, contact support.",
+                    innerException),
+
+                new AddressNormalisationServiceException(
+                    message: "AddressNormalisation service error occurred, contact support.",
                     innerException)
             };
         }

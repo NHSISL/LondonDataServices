@@ -2,10 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
+using LHDS.Core.Models.Processings.Documents.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -51,6 +53,48 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedAddressNormalisationProcessingDependencyValidationException))),
+                         Times.Once);
+
+            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyOnAddIfDependencyErrorOccursAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            var randomAddress = GetRandomString();
+            string inputAddress = randomAddress;
+            var randomMessage = GetRandomString();
+
+            var expectedAddressNormalisationProcessingDependencyException =
+                new AddressNormalisationProcessingDependencyException(
+                    message: "Address normalisation processing dependency error occurred, please try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.addressNormalisationServiceMock.Setup(service =>
+                service.GetNormalisedAddress(inputAddress))
+                    .Throws(dependencyException);
+
+            // when
+            ValueTask<AddressNormalisation> addressNormalisationAddTask =
+                this.addressNormalisationProcessingService.GetNormalisedAddress(inputAddress);
+
+            AddressNormalisationProcessingDependencyException actualException =
+                await Assert.ThrowsAsync<AddressNormalisationProcessingDependencyException>(addressNormalisationAddTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedAddressNormalisationProcessingDependencyException);
+
+            this.addressNormalisationServiceMock.Verify(service =>
+                service.GetNormalisedAddress(inputAddress),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedAddressNormalisationProcessingDependencyException))),
                          Times.Once);
 
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();

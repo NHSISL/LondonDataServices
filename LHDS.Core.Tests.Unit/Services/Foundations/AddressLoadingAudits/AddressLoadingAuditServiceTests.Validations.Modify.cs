@@ -112,7 +112,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
                     modifyAddressLoadingAuditTask.AsTask);
 
             //then
-            actualAddressLoadingAuditValidationException.Should().BeEquivalentTo(expectedAddressLoadingAuditValidationException);
+            actualAddressLoadingAuditValidationException.Should()
+                .BeEquivalentTo(expectedAddressLoadingAuditValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -158,7 +159,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
                     modifyAddressLoadingAuditTask.AsTask);
 
             // then
-            actualAddressLoadingAuditValidationException.Should().BeEquivalentTo(expectedAddressLoadingAuditValidationException);
+            actualAddressLoadingAuditValidationException.Should()
+                .BeEquivalentTo(expectedAddressLoadingAuditValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -172,6 +174,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsNotRecentAndLogItAsync(int minutes)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            AddressLoadingAudit randomAddressLoadingAudit = CreateRandomAddressLoadingAudit(randomDateTimeOffset);
+            randomAddressLoadingAudit.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
+
+            var invalidAddressLoadingAuditException = 
+                new InvalidAddressLoadingAuditException(
+                    message: "Invalid addressLoadingAudit. Please correct the errors and try again.");
+
+            invalidAddressLoadingAuditException.AddData(
+                key: nameof(AddressLoadingAudit.UpdatedDate),
+                values: "Date is not recent");
+
+            var expectedAddressLoadingAuditValidatonException =
+                new AddressLoadingAuditValidationException(
+                    message: "AddressLoadingAudit validation errors occurred, please try again.",
+                    innerException: invalidAddressLoadingAuditException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<AddressLoadingAudit> modifyAddressLoadingAuditTask =
+                this.addressLoadingAuditService.ModifyAddressLoadingAuditAsync(randomAddressLoadingAudit);
+
+            AddressLoadingAuditValidationException actualAddressLoadingAuditValidationException =
+                await Assert.ThrowsAsync<AddressLoadingAuditValidationException>(
+                    modifyAddressLoadingAuditTask.AsTask);
+
+            // then
+            actualAddressLoadingAuditValidationException.Should().BeEquivalentTo(expectedAddressLoadingAuditValidatonException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressLoadingAuditValidatonException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAddressLoadingAuditByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

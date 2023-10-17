@@ -22,7 +22,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         public async ValueTask<List<DataSetSpecification>> GetAllDataSetSpecificationsAsync()
         {
             OdataResponse<DataSetSpecification> response =
-                await this.apiFactoryClient.GetContentAsync<OdataResponse<DataSetSpecification>>($"{dataSetSpecificationsRelativeOdataUrl}/");
+                await this.apiFactoryClient.GetContentAsync<OdataResponse<DataSetSpecification>>(
+                    $"{dataSetSpecificationsRelativeOdataUrl}/");
 
             return response.Items;
         }

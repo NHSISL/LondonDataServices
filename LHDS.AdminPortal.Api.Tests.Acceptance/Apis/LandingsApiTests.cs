@@ -3,8 +3,11 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using LHDS.Core.Models.Orchestrations.Downloads;
@@ -142,6 +145,73 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 .OnProperty(supplier => supplier.CreatedBy).Use(userId)
                 .OnProperty(supplier => supplier.UpdatedDate).Use(now)
                 .OnProperty(supplier => supplier.UpdatedBy).Use(userId);
+
+            return filler;
+        }
+
+        private async ValueTask<DataSet> PostRandomActiveDataSetAsync(Guid supplierId)
+        {
+            DataSet randomDataSet = CreateRandomActiveDataSet(supplierId);
+            await this.apiBroker.PostDataSetAsync(randomDataSet);
+
+            return randomDataSet;
+        }
+
+        private static DataSet CreateRandomActiveDataSet(Guid supplierId) =>
+            CreateActiveDataSetFiller(supplierId).Create();
+
+        private static Filler<DataSet> CreateActiveDataSetFiller(Guid supplierId)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<DataSet>();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(dataSet => dataSet.SupplierId).Use(supplierId)
+                .OnProperty(dataSet => dataSet.IsActive).Use(true)
+                .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()));
+
+            return filler;
+        }
+
+        private async ValueTask<DataSetSpecification> PostRandomActiveDataSetSpecificationAsync(Guid dataSetId)
+        {
+            DataSetSpecification randomDataSetSpecification = CreateRandomActiveDataSetSpecification(dataSetId);
+            await this.apiBroker.PostDataSetSpecificationAsync(randomDataSetSpecification);
+
+            return randomDataSetSpecification;
+        }
+
+        private static DataSetSpecification CreateRandomActiveDataSetSpecification(Guid dataSetId) =>
+            CreateActiveDataSetSpecificationFiller(dataSetId).Create();
+
+        private static Filler<DataSetSpecification> CreateActiveDataSetSpecificationFiller(Guid dataSetId)
+        {
+            string user = GetRandomString(255);
+            var filler = new Filler<DataSetSpecification>();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(dataSetSpecification => dataSetSpecification.DataSetId).Use(dataSetId)
+                .OnProperty(dataSetSpecification => dataSetSpecification.IsActive).Use(true)
+
+                .OnProperty(dataSetSpecification =>
+                    dataSetSpecification.OurSpecificationVersion).Use(GetRandomString(10))
+
+                .OnProperty(dataSetSpecification =>
+                    dataSetSpecification.SupplierSpecificationVersion).Use(GetRandomString(10))
+
+                .OnProperty(dataSetSpecification => dataSetSpecification.PresededById).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
+                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
+                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
 
             return filler;
         }

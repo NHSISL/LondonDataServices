@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
 using Xeptions;
@@ -52,6 +53,15 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
 
                 throw CreateAndLogDependencyValidationException(invalidAddressExtractionAuditReferenceException);
             }
+            catch (DbUpdateException databaseUpdateException)
+            {
+                var failedAddressExtractionAuditStorageException =
+                    new FailedAddressExtractionAuditStorageException(
+                    message: "Failed addressExtractionAudit storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+                throw CreateAndLogDependencyException(failedAddressExtractionAuditStorageException);
+            }
         }
 
         private AddressExtractionAuditValidationException CreateAndLogValidationException(Xeption exception)
@@ -88,6 +98,19 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
             this.loggingBroker.LogError(addressExtractionAuditDependencyValidationException);
 
             return addressExtractionAuditDependencyValidationException;
+        }
+
+        private AddressExtractionAuditDependencyException CreateAndLogDependencyException(
+            Xeption exception)
+        {
+            var addressExtractionAuditDependencyException = 
+                new AddressExtractionAuditDependencyException(
+                    message: "AddressExtractionAudit dependency error occurred, contact support.",
+                    innerException: exception); 
+
+            this.loggingBroker.LogError(addressExtractionAuditDependencyException);
+
+            return addressExtractionAuditDependencyException;
         }
     }
 }

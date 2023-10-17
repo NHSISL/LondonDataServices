@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
     public partial class AddressService
     {
         private delegate ValueTask<Address> ReturningAddressFunction();
+        private delegate IQueryable<Address> ReturningAddressesFunction();
 
         private async ValueTask<Address> TryCatch(ReturningAddressFunction returningAddressFunction)
         {
@@ -74,6 +76,23 @@ namespace LHDS.Core.Services.Foundations.Addresses
             }
         }
 
+        private IQueryable<Address> TryCatch(ReturningAddressesFunction returningAddressesFunction)
+        {
+            try
+            {
+                return returningAddressesFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedAddressStorageException =
+                    new FailedAddressStorageException(
+                        message: "Failed address storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedAddressStorageException);
+            }
+        }
+
         private AddressValidationException CreateAndLogValidationException(Xeption exception)
         {
             var addressValidationException =
@@ -91,7 +110,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             var addressDependencyException = 
                 new AddressDependencyException(
                     message: "Address dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(addressDependencyException);
 
@@ -116,7 +135,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             var addressDependencyException = 
                 new AddressDependencyException(
                     message: "Address dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(addressDependencyException);
 

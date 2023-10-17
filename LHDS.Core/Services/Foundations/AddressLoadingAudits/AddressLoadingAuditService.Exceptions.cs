@@ -19,6 +19,10 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
             {
                 throw CreateAndLogValidationException(nullAddressLoadingAuditException);
             }
+            catch (InvalidAddressLoadingAuditException invalidAddressLoadingAuditException)
+            {
+                throw CreateAndLogValidationException(invalidAddressLoadingAuditException);
+            }
         }
 
         private AddressLoadingAuditValidationException CreateAndLogValidationException(Xeption exception)

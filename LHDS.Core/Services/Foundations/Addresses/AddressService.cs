@@ -1,59 +1,62 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages.Sql;
+using FluentAssertions;
+using Force.DeepCloner;
+using Moq;
 using LHDS.Core.Models.Foundations.Addresses;
+using Xunit;
 
-namespace LHDS.Core.Services.Foundations.Addresses
+namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 {
-    public partial class AddressService : IAddressService
+    public partial class AddressServiceTests
     {
-        private readonly IStorageBroker storageBroker;
-        private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ILoggingBroker loggingBroker;
-
-        public AddressService(
-            IStorageBroker storageBroker,
-            IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker)
+        [Fact]
+        public async Task ShouldModifyAddressAsync()
         {
-            this.storageBroker = storageBroker;
-            this.dateTimeBroker = dateTimeBroker;
-            this.loggingBroker = loggingBroker;
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Address randomAddress = CreateRandomModifyAddress(randomDateTimeOffset);
+            Address inputAddress = randomAddress;
+            Address storageAddress = inputAddress.DeepClone();
+            storageAddress.UpdatedDate = randomAddress.CreatedDate;
+            Address updatedAddress = inputAddress;
+            Address expectedAddress = updatedAddress.DeepClone();
+            Guid addressId = inputAddress.Id;
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAddressByIdAsync(addressId))
+                    .ReturnsAsync(storageAddress);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.UpdateAddressAsync(inputAddress))
+                    .ReturnsAsync(updatedAddress);
+
+            // when
+            Address actualAddress =
+                await this.addressService.ModifyAddressAsync(inputAddress);
+
+            // then
+            actualAddress.Should().BeEquivalentTo(expectedAddress);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAddressByIdAsync(inputAddress.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateAddressAsync(inputAddress),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
-
-        public ValueTask<Address> AddAddressAsync(Address address) =>
-            TryCatch(async () =>
-            {
-                ValidateAddressOnAdd(address);
-
-                return await this.storageBroker.InsertAddressAsync(address);
-            });
-
-        public IQueryable<Address> RetrieveAllAddresses() =>
-            TryCatch(() => this.storageBroker.SelectAllAddresses());
-
-        public ValueTask<Address> RetrieveAddressByIdAsync(Guid addressId) =>
-            TryCatch(async () =>
-            {
-                ValidateAddressId(addressId);
-
-                Address maybeAddress = await this.storageBroker
-                    .SelectAddressByIdAsync(addressId);
-
-                ValidateStorageAddress(maybeAddress, addressId);
-
-                return maybeAddress;
-            });
-
-        public ValueTask<Address> ModifyAddressAsync(Address address) =>
-            TryCatch(async () =>
-            {
-                ValidateAddressOnModify(address);
-
-                return await this.storageBroker.UpdateAddressAsync(address);
-            });
     }
 }

@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
             var expectedAddressLoadingAuditDependencyException =
                 new AddressLoadingAuditDependencyException(
                     message: "AddressLoadingAudit dependency error occurred, contact support.",
-                    innerException: failedAddressLoadingAuditStorageException); 
+                    innerException: failedAddressLoadingAuditStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllAddressLoadingAudits())
@@ -52,6 +52,51 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomString();
+            var serviceException = new Exception(exceptionMessage);
+
+            var failedAddressLoadingAuditServiceException =
+                new FailedAddressLoadingAuditServiceException(
+                    message: "Failed addressLoadingAudit service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedAddressLoadingAuditServiceException =
+                new AddressLoadingAuditServiceException(
+                    message: "AddressLoadingAudit service error occurred, contact support.",
+                    innerException: failedAddressLoadingAuditServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllAddressLoadingAudits())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllAddressLoadingAuditsAction = () =>
+                this.addressLoadingAuditService.RetrieveAllAddressLoadingAudits();
+
+            AddressLoadingAuditServiceException actualAddressLoadingAuditServiceException =
+                Assert.Throws<AddressLoadingAuditServiceException>(retrieveAllAddressLoadingAuditsAction);
+
+            // then
+            actualAddressLoadingAuditServiceException.Should()
+                .BeEquivalentTo(expectedAddressLoadingAuditServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllAddressLoadingAudits(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressLoadingAuditServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

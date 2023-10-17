@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -86,6 +87,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             invalidAddressException.AddData(
                 key: nameof(Address.UpdatedBy),
                 values: "Text is required");
+
+            var expectedAddressValidationException =
+                new AddressValidationException(
+                    message: "Address validation errors occurred, please try again.",
+                    innerException: invalidAddressException);
+
+            // when
+            ValueTask<Address> addAddressTask =
+                this.addressService.AddAddressAsync(invalidAddress);
+
+            AddressValidationException actualAddressValidationException =
+                await Assert.ThrowsAsync<AddressValidationException>(
+                    addAddressTask.AsTask);
+
+            // then
+            actualAddressValidationException.Should()
+                .BeEquivalentTo(expectedAddressValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertAddressAsync(It.IsAny<Address>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateDatesIsNotSameAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNumber();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Address randomAddress = CreateRandomAddress(randomDateTimeOffset);
+            Address invalidAddress = randomAddress;
+
+            invalidAddress.UpdatedDate =
+                invalidAddress.CreatedDate.AddDays(randomNumber);
+
+            var invalidAddressException = 
+                new InvalidAddressException(
+                    message: "Invalid address. Please correct the errors and try again.");
+
+            invalidAddressException.AddData(
+                key: nameof(Address.UpdatedDate),
+                values: $"Date is not the same as {nameof(Address.CreatedDate)}");
 
             var expectedAddressValidationException =
                 new AddressValidationException(

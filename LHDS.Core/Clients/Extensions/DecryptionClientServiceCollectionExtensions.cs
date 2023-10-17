@@ -23,10 +23,10 @@ using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Cryptography.Gpg;
 using LHDS.Core.Providers.Downloads;
-using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Decryptions;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
+using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.Decryptions;
@@ -100,6 +100,7 @@ namespace LHDS.Core.Clients.Extensions
             {
                 var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
                 ValidateBlobStorageSettings(blobStorageSettings);
+                services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
 
                 var blobServiceClientOptions = new BlobClientOptions()
                 {
@@ -120,7 +121,6 @@ namespace LHDS.Core.Clients.Extensions
 
                 services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
                 services.AddTransient<IDownloadBroker, DownloadBroker>();
-                services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
                 services.AddTransient<IAzureBlobClient, AzureBlobClient>();
             }
         }
@@ -131,7 +131,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDownloadService, DownloadService>();
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddTransient<ISupplierService, SupplierService>();
-            services.AddTransient<IAuditService, AuditService>();
+            services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
             services.AddTransient<IDecryptionOrchestrationService, DecryptionOrchestrationService>();
             services.AddTransient<IDecryptionService, DecryptionService>();
         }
@@ -196,10 +196,7 @@ namespace LHDS.Core.Clients.Extensions
                     Parameter: "blobStorage__azureBlobServiceUri"),
 
                 (Rule: IsInvalid(blobStorageSettings.AzureTenantId),
-                    Parameter: "blobStorage__azureTenantId"),
-
-                (Rule: IsInvalid(blobStorageSettings.BlobContainerName),
-                    Parameter: "blobStorage__blobContainerName"));
+                    Parameter: "blobStorage__azureTenantId"));
         }
 
         private static dynamic IsInvalid(Guid id) => new

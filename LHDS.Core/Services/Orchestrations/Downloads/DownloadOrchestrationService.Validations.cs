@@ -2,14 +2,43 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using LHDS.Core.Models.Foundations.Documents;
-using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
 
 namespace LHDS.Core.Services.Orchestrations.Downloads
 {
     public partial class DownloadOrchestrationService
     {
+        private void ValidateConfigurationSettings()
+        {
+            this.ValidateLandingConfigurationIsNotNull();
+            this.ValidateBlobContainersIsNotNull();
+
+            Validate((Rule: IsInvalid(this.landingConfiguration.LandingSupplierId),
+                Parameter: "LandingConfiguration.SupplierId"));
+        }
+
+        private void ValidateLandingConfigurationIsNotNull()
+        {
+            if (this.landingConfiguration is null)
+            {
+                throw new NullLandingConfigurationDownloadOrchestrationException(
+                    message: "Null landing configuration download orchestration exception, " +
+                        "please correct the errors and try again.");
+            }
+        }
+
+        private void ValidateBlobContainersIsNotNull()
+        {
+            if (this.blobContainers is null)
+            {
+                throw new NullBlobContainersDownloadOrchestrationException(
+                    message: "Null blob container download orchestration exception, " +
+                        "please correct the errors and try again.");
+            }
+        }
+
         private static void ValidateFileName(string fileName)
         {
             Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));
@@ -23,6 +52,12 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     message: $"Couldn't find download with file name: {fileName}.");
             }
         }
+
+        private static dynamic IsInvalid(Guid id) => new
+        {
+            Condition = id == Guid.Empty,
+            Message = "Id is required"
+        };
 
         private static dynamic IsInvalid(string text) => new
         {

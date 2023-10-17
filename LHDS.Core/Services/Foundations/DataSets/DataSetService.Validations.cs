@@ -16,9 +16,9 @@ namespace LHDS.Core.Services.Foundations.DataSets
 
             Validate(
                 (Rule: IsInvalid(dataSet.Id), Parameter: nameof(DataSet.Id)),
+                (Rule: IsInvalid(dataSet.SupplierId), Parameter: nameof(DataSet.SupplierId)),
                 (Rule: IsInvalid(dataSet.DataSetName), Parameter: nameof(DataSet.DataSetName)),
                 (Rule: IsInvalid(dataSet.DataSetAliases), Parameter: nameof(DataSet.DataSetAliases)),
-                (Rule: IsInvalid(dataSet.DataSetSupplier), Parameter: nameof(DataSet.DataSetSupplier)),
                 (Rule: IsInvalid(dataSet.DataSetAuthor), Parameter: nameof(DataSet.DataSetAuthor)),
                 (Rule: IsInvalid(dataSet.SpecifiedBy), Parameter: nameof(DataSet.SpecifiedBy)),
                 (Rule: IsInvalid(dataSet.CollectedBy), Parameter: nameof(DataSet.CollectedBy)),
@@ -33,9 +33,6 @@ namespace LHDS.Core.Services.Foundations.DataSets
 
                 (Rule: IsEqualOrSmallerThan(
                     dataSet.DataSetAliases, 250), Parameter: nameof(dataSet.DataSetAliases)),
-
-                (Rule: IsEqualOrSmallerThan(
-                    dataSet.DataSetSupplier, 150), Parameter: nameof(dataSet.DataSetSupplier)),
 
                 (Rule: IsEqualOrSmallerThan(
                     dataSet.DataSetAuthor, 150), Parameter: nameof(dataSet.DataSetAuthor)),
@@ -70,9 +67,9 @@ namespace LHDS.Core.Services.Foundations.DataSets
 
             Validate(
                 (Rule: IsInvalid(dataSet.Id), Parameter: nameof(DataSet.Id)),
+                (Rule: IsInvalid(dataSet.SupplierId), Parameter: nameof(DataSet.SupplierId)),
                 (Rule: IsInvalid(dataSet.DataSetName), Parameter: nameof(DataSet.DataSetName)),
                 (Rule: IsInvalid(dataSet.DataSetAliases), Parameter: nameof(DataSet.DataSetAliases)),
-                (Rule: IsInvalid(dataSet.DataSetSupplier), Parameter: nameof(DataSet.DataSetSupplier)),
                 (Rule: IsInvalid(dataSet.DataSetAuthor), Parameter: nameof(DataSet.DataSetAuthor)),
                 (Rule: IsInvalid(dataSet.SpecifiedBy), Parameter: nameof(DataSet.SpecifiedBy)),
                 (Rule: IsInvalid(dataSet.CollectedBy), Parameter: nameof(DataSet.CollectedBy)),
@@ -87,9 +84,6 @@ namespace LHDS.Core.Services.Foundations.DataSets
 
                 (Rule: IsEqualOrSmallerThan(
                     dataSet.DataSetAliases, 250), Parameter: nameof(dataSet.DataSetAliases)),
-
-                (Rule: IsEqualOrSmallerThan(
-                    dataSet.DataSetSupplier, 150), Parameter: nameof(dataSet.DataSetSupplier)),
 
                 (Rule: IsEqualOrSmallerThan(
                     dataSet.DataSetAuthor, 150), Parameter: nameof(dataSet.DataSetAuthor)),

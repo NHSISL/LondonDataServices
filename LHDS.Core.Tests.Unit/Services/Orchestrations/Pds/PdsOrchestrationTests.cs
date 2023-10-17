@@ -10,6 +10,7 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.Mesh;
@@ -38,6 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly PdsConfiguration pdsConfiguration;
+        private readonly BlobContainers blobContainers;
         private readonly ICompareLogic compareLogic;
         private readonly IPdsOrchestrationService pdsOrchestrationService;
         private readonly IConfiguration inMemoryConfiguration;
@@ -82,6 +84,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             };
 
+            this.blobContainers = new BlobContainers
+            {
+                Pds = "pds"
+            };
+
             this.pdsAuditServiceMock = new Mock<IPdsAuditService>();
             this.documentServiceMock = new Mock<IDocumentService>();
             this.meshServiceMock = new Mock<IMeshService>();
@@ -94,6 +101,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 pdsAuditService: pdsAuditServiceMock.Object,
                 documentService: documentServiceMock.Object,
                 meshService: meshServiceMock.Object,
+                blobContainers: blobContainers,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object,

@@ -159,7 +159,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                 };
 
                 documentProcessingServiceMock.Verify(processings =>
-                    processings.AddDocumentAsync(It.Is(SameDocumentAs(testDocument))),
+                    processings.AddDocumentAsync(It.Is(SameDocumentAs(testDocument)), It.IsAny<string>()),
                         Times.Once());
 
                 this.meshProcessingServiceMock.Verify(processings =>
@@ -296,7 +296,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                                 Times.Never);
 
                     documentProcessingServiceMock.Verify(processings =>
-                        processings.AddDocumentAsync(It.IsAny<Document>()),
+                        processings.AddDocumentAsync(It.IsAny<Document>(), It.IsAny<string>()),
                             Times.Never);
                 }
 

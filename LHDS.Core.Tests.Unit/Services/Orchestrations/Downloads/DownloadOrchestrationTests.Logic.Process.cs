@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
 using Xunit;
@@ -147,11 +147,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 };
 
                 this.documentServiceMock.Verify(service =>
-                    service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument))),
+                    service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument)), It.IsAny<string>()),
                         Times.Once);
 
                 this.auditServiceMock.Verify(service =>
-                    service.AddAuditAsync(It.IsAny<Audit>()),
+                    service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
                         Times.Once);
             }
 
@@ -229,7 +229,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             Document randomDocument = CreateRandomDocument();
             Document externalDocument = randomDocument;
             IngestionTracking externalIngestionTracking = CreateRandomIngestionTracking(randomDateTime);
-            List<IngestionTracking> externalIngestionTrackingsFound = new List<IngestionTracking> { externalIngestionTracking };
+
+            List<IngestionTracking> externalIngestionTrackingsFound =
+                new List<IngestionTracking> { externalIngestionTracking };
 
             this.ingestionTrackingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackings())
@@ -265,7 +267,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     Times.Once);
 
             this.documentServiceMock.Verify(service =>
-                service.RemoveDocumentByFileNameAsync(externalIngestionTracking.EncryptedFileName),
+                service.RemoveDocumentByFileNameAsync(
+                    externalIngestionTracking.EncryptedFileName, It.IsAny<string>()),
                     Times.Once);
 
             Document newBlobDocument = new Document
@@ -275,7 +278,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             };
 
             this.documentServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument))),
+                service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument)), It.IsAny<string>()),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -288,7 +291,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                         Times.Once);
 
             this.auditServiceMock.Verify(service =>
-                service.AddAuditAsync(It.IsAny<Audit>()),
+                service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
                     Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();
@@ -376,7 +379,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             };
 
             this.documentServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument))),
+                service.AddDocumentAsync(
+                    It.Is(SameDocumentAs(newBlobDocument)), It.IsAny<string>()),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
@@ -389,7 +393,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                         Times.Once);
 
             this.auditServiceMock.Verify(service =>
-                service.AddAuditAsync(It.IsAny<Audit>()),
+                service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
                     Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();

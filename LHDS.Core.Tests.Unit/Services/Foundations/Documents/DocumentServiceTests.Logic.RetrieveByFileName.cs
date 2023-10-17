@@ -17,6 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldRetrieveFileAsync()
         {
             // Given
+            var randomContainer = GetRandomString();
             string randomFileName = GetRandomString();
 
             Document randomDocument = new Document
@@ -28,17 +29,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             Document expectedDocument = randomDocument;
 
             this.blobStorageBrokerMock.Setup(broker =>
-                broker.SelectByFileNameAsync(randomDocument.FileName))
+                broker.SelectByFileNameAsync(randomDocument.FileName, randomContainer))
                     .ReturnsAsync(randomDocument.DocumentData);
 
             // When
             Document actualDocument =
                 await this.documentService
-                    .RetrieveDocumentByFileNameAsync(randomDocument.FileName);
+                    .RetrieveDocumentByFileNameAsync(fileName: randomDocument.FileName, container: randomContainer);
 
             // Then
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.SelectByFileNameAsync(randomDocument.FileName),
+                broker.SelectByFileNameAsync(randomDocument.FileName, randomContainer),
                     Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

@@ -68,7 +68,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             {
                 DataSetName = invalidText,
                 DataSetAliases = invalidText,
-                DataSetSupplier = invalidText,
                 DataSetAuthor = invalidText,
                 SpecifiedBy = invalidText,
                 CollectedBy = invalidText,
@@ -84,15 +83,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
                 values: "Id is required");
 
             invalidDataSetException.AddData(
+                key: nameof(DataSet.SupplierId),
+                values: "Id is required");
+
+            invalidDataSetException.AddData(
                key: nameof(DataSet.DataSetName),
                values: "Text is required");
 
             invalidDataSetException.AddData(
                key: nameof(DataSet.DataSetAliases),
-               values: "Text is required");
-
-            invalidDataSetException.AddData(
-               key: nameof(DataSet.DataSetSupplier),
                values: "Text is required");
 
             invalidDataSetException.AddData(
@@ -174,7 +173,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             DataSet invalidDataSet = CreateRandomModifyDataSet(randomDateTimeOffset);
             invalidDataSet.DataSetName = GetRandomString(151);
             invalidDataSet.DataSetAliases = GetRandomString(251);
-            invalidDataSet.DataSetSupplier = GetRandomString(151);
             invalidDataSet.DataSetAuthor = GetRandomString(151);
             invalidDataSet.DataSourceType = GetRandomString(151);
             invalidDataSet.CreatedBy = GetRandomString(256);
@@ -190,10 +188,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             invalidDataSetException.AddData(
                 key: nameof(DataSet.DataSetAliases),
-                values: "Text is exceeding max length");
-
-            invalidDataSetException.AddData(
-                key: nameof(DataSet.DataSetSupplier),
                 values: "Text is exceeding max length");
 
             invalidDataSetException.AddData(

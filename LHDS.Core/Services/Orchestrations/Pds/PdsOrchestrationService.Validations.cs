@@ -3,6 +3,8 @@
 // ---------------------------------------------------------------
 
 using System;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Orchestrations.Pds;
 using LHDS.Core.Models.Orchestrations.Pds.Exceptions;
 using Xeptions;
 
@@ -10,6 +12,55 @@ namespace LHDS.Core.Services.Orchestrations.Pds
 {
     public partial class PdsOrchestrationService
     {
+        private void ValidateConfigurationSettings()
+        {
+            this.ValidateConfigurationIsNotNull();
+
+            Validate<InvalidConfigPdsOrchestrationException>(
+                message: "Invalid Configuration orchestration error, please correct the errors and try again.",
+                (Rule: IsInvalid(this.pdsConfiguration.OutputFolder),
+                    Parameter: nameof(PdsConfiguration.OutputFolder)),
+
+                (Rule: IsInvalid(this.pdsConfiguration.InputFolder),
+                    Parameter: nameof(PdsConfiguration.InputFolder)),
+
+                (Rule: IsInvalid(this.pdsConfiguration.To),
+                    Parameter: nameof(PdsConfiguration.To)),
+
+                (Rule: IsInvalid(this.pdsConfiguration.WorkflowId),
+                    Parameter: nameof(PdsConfiguration.WorkflowId)));
+        }
+
+        private void ValidateBlobContainers()
+        {
+            this.ValidateBlobContainersIsNotNull();
+
+            Validate<InvalidConfigPdsOrchestrationException>(
+                message: "Invalid Configuration orchestration error, please correct the errors and try again.",
+                (Rule: IsInvalid(this.blobContainers.Pds),
+                    Parameter: nameof(BlobContainers.Pds)));
+        }
+
+        private void ValidateConfigurationIsNotNull()
+        {
+            if (this.pdsConfiguration is null)
+            {
+                throw new NullConfigPdsOrchestrationException(
+                    message: "Null configuration PDS orchestration exception, " +
+                        "please correct the errors and try again.");
+            }
+        }
+
+        private void ValidateBlobContainersIsNotNull()
+        {
+            if (this.blobContainers is null)
+            {
+                throw new NullBlobContainersPdsOrchestrationException(
+                    message: "Null blob container PDS orchestration exception, " +
+                        "please correct the errors and try again.");
+            }
+        }
+
         public void ValidatePdsArgs(byte[] pdsFile, string fileName)
         {
             Validate<InvalidArgumentPdsException>(

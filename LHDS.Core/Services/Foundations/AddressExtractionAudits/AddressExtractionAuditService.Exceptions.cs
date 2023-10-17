@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
     public partial class AddressExtractionAuditService
     {
         private delegate ValueTask<AddressExtractionAudit> ReturningAddressExtractionAuditFunction();
+        private delegate IQueryable<AddressExtractionAudit> ReturningAddressExtractionAuditsFunction();
 
         private async ValueTask<AddressExtractionAudit> TryCatch(ReturningAddressExtractionAuditFunction returningAddressExtractionAuditFunction)
         {
@@ -74,6 +76,23 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
             }
         }
 
+        private IQueryable<AddressExtractionAudit> TryCatch(ReturningAddressExtractionAuditsFunction returningAddressExtractionAuditsFunction)
+        {
+            try
+            {
+                return returningAddressExtractionAuditsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedAddressExtractionAuditStorageException =
+                    new FailedAddressExtractionAuditStorageException(
+                        message: "Failed addressExtractionAudit storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedAddressExtractionAuditStorageException);
+            }
+        }
+
         private AddressExtractionAuditValidationException CreateAndLogValidationException(Xeption exception)
         {
             var addressExtractionAuditValidationException =
@@ -91,7 +110,7 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
             var addressExtractionAuditDependencyException = 
                 new AddressExtractionAuditDependencyException(
                     message: "AddressExtractionAudit dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(addressExtractionAuditDependencyException);
 
@@ -116,7 +135,7 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
             var addressExtractionAuditDependencyException = 
                 new AddressExtractionAuditDependencyException(
                     message: "AddressExtractionAudit dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(addressExtractionAuditDependencyException);
 

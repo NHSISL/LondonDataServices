@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -86,6 +87,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             invalidAddressExtractionAuditException.AddData(
                 key: nameof(AddressExtractionAudit.UpdatedBy),
                 values: "Text is required");
+
+            var expectedAddressExtractionAuditValidationException =
+                new AddressExtractionAuditValidationException(
+                    message: "AddressExtractionAudit validation errors occurred, please try again.",
+                    innerException: invalidAddressExtractionAuditException);
+
+            // when
+            ValueTask<AddressExtractionAudit> addAddressExtractionAuditTask =
+                this.addressExtractionAuditService.AddAddressExtractionAuditAsync(invalidAddressExtractionAudit);
+
+            AddressExtractionAuditValidationException actualAddressExtractionAuditValidationException =
+                await Assert.ThrowsAsync<AddressExtractionAuditValidationException>(
+                    addAddressExtractionAuditTask.AsTask);
+
+            // then
+            actualAddressExtractionAuditValidationException.Should()
+                .BeEquivalentTo(expectedAddressExtractionAuditValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressExtractionAuditValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertAddressExtractionAuditAsync(It.IsAny<AddressExtractionAudit>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateDatesIsNotSameAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNumber();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            AddressExtractionAudit randomAddressExtractionAudit = CreateRandomAddressExtractionAudit(randomDateTimeOffset);
+            AddressExtractionAudit invalidAddressExtractionAudit = randomAddressExtractionAudit;
+
+            invalidAddressExtractionAudit.UpdatedDate =
+                invalidAddressExtractionAudit.CreatedDate.AddDays(randomNumber);
+
+            var invalidAddressExtractionAuditException = 
+                new InvalidAddressExtractionAuditException(
+                    message: "Invalid addressExtractionAudit. Please correct the errors and try again.");
+
+            invalidAddressExtractionAuditException.AddData(
+                key: nameof(AddressExtractionAudit.UpdatedDate),
+                values: $"Date is not the same as {nameof(AddressExtractionAudit.CreatedDate)}");
 
             var expectedAddressExtractionAuditValidationException =
                 new AddressExtractionAuditValidationException(

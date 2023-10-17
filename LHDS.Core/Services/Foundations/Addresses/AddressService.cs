@@ -48,7 +48,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 return maybeAddress;
             });
 
-        public ValueTask<Address> ModifyAddressAsync(Address address) =>
-            throw new NotImplementedException();
+        public async ValueTask<Address> ModifyAddressAsync(Address address) =>
+            await this.storageBroker.UpdateAddressAsync(address);
     }
 }

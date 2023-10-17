@@ -43,6 +43,8 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
                 AddressLoadingAudit maybeAddressLoadingAudit = await this.storageBroker
                     .SelectAddressLoadingAuditByIdAsync(addressLoadingAuditId);
 
+                ValidateStorageAddressLoadingAudit(maybeAddressLoadingAudit, addressLoadingAuditId);
+
                 return maybeAddressLoadingAudit;
             });
     }

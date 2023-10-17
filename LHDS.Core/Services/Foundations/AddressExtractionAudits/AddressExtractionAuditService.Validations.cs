@@ -53,7 +53,9 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
                     firstDate: addressExtractionAudit.UpdatedDate,
                     secondDate: addressExtractionAudit.CreatedDate,
                     secondDateName: nameof(AddressExtractionAudit.CreatedDate)),
-                Parameter: nameof(AddressExtractionAudit.UpdatedDate)));
+                Parameter: nameof(AddressExtractionAudit.UpdatedDate)),
+
+                (Rule: IsNotRecent(addressExtractionAudit.UpdatedDate), Parameter: nameof(addressExtractionAudit.UpdatedDate)));
         }
 
         public void ValidateAddressExtractionAuditId(Guid addressExtractionAuditId) =>

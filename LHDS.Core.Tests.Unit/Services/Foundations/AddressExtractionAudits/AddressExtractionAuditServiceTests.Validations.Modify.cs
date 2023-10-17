@@ -115,6 +115,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             actualAddressExtractionAuditValidationException.Should()
                 .BeEquivalentTo(expectedAddressExtractionAuditValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedAddressExtractionAuditValidationException))),
@@ -124,9 +128,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
                 broker.UpdateAddressExtractionAuditAsync(It.IsAny<AddressExtractionAudit>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -136,7 +140,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             AddressExtractionAudit randomAddressExtractionAudit = CreateRandomAddressExtractionAudit(randomDateTimeOffset);
             AddressExtractionAudit invalidAddressExtractionAudit = randomAddressExtractionAudit;
-            
+
             var invalidAddressExtractionAuditException = 
                 new InvalidAddressExtractionAuditException(
                     message: "Invalid addressExtractionAudit. Please correct the errors and try again.");
@@ -150,6 +154,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
                     message: "AddressExtractionAudit validation errors occurred, please try again.",
                     innerException: invalidAddressExtractionAuditException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<AddressExtractionAudit> modifyAddressExtractionAuditTask =
                 this.addressExtractionAuditService.ModifyAddressExtractionAuditAsync(invalidAddressExtractionAudit);
@@ -162,6 +170,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             actualAddressExtractionAuditValidationException.Should()
                 .BeEquivalentTo(expectedAddressExtractionAuditValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedAddressExtractionAuditValidationException))),
@@ -171,9 +183,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
                 broker.SelectAddressExtractionAuditByIdAsync(invalidAddressExtractionAudit.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]

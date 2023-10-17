@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -224,6 +225,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedAddressExtractionAuditDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateAddressExtractionAuditAsync(randomAddressExtractionAudit),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnModifyIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            AddressExtractionAudit randomAddressExtractionAudit = CreateRandomAddressExtractionAudit();
+            var serviceException = new Exception();
+
+            var failedAddressExtractionAuditServiceException =
+                new FailedAddressExtractionAuditServiceException(
+                    message: "Failed addressExtractionAudit service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedAddressExtractionAuditServiceException =
+                new AddressExtractionAuditServiceException(
+                    message: "AddressExtractionAudit service error occurred, contact support.",
+                    innerException: failedAddressExtractionAuditServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<AddressExtractionAudit> modifyAddressExtractionAuditTask =
+                this.addressExtractionAuditService.ModifyAddressExtractionAuditAsync(randomAddressExtractionAudit);
+
+            AddressExtractionAuditServiceException actualAddressExtractionAuditServiceException =
+                await Assert.ThrowsAsync<AddressExtractionAuditServiceException>(
+                    modifyAddressExtractionAuditTask.AsTask);
+
+            // then
+            actualAddressExtractionAuditServiceException.Should()
+                .BeEquivalentTo(expectedAddressExtractionAuditServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAddressExtractionAuditByIdAsync(randomAddressExtractionAudit.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressExtractionAuditServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

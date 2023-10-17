@@ -2,15 +2,16 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Linq.Expressions;
 using System;
+using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.AddressNormalisation.Exceptions;
+using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Processings.AddressNormalisations;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
-using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
@@ -44,12 +45,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
 
             return new TheoryData<Xeption>
             {
-                new DocumentValidationException(
-                    message: "Document validation errors occured, please try again",
+                new AddressNormalisationValidationException(
+                    message: "Address Normalisation validation errors occured, please try again",
                     innerException),
 
-                new DocumentDependencyValidationException(
-                    message: "Document dependency validation occurred, please try again.",
+                new AddressNormalisationDependencyValidationException(
+                    message: "Address Normalisation dependency validation occurred, please try again.",
                     innerException)
             };
         }

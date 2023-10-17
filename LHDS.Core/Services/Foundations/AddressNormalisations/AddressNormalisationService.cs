@@ -5,7 +5,7 @@
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.AddressNormalisations;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.AddressNormalisation;
+using LHDS.Core.Models.Foundations.AddressNormalisations;
 
 namespace LHDS.Core.Services.Foundations.AddressNormalisations
 {

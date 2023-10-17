@@ -47,5 +47,8 @@ namespace LHDS.Core.Services.Foundations.Addresses
 
                 return maybeAddress;
             });
+
+        public ValueTask<Address> ModifyAddressAsync(Address address) =>
+            throw new NotImplementedException();
     }
 }

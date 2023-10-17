@@ -88,7 +88,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
 
             invalidAddressExtractionAuditException.AddData(
                 key: nameof(AddressExtractionAudit.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(AddressExtractionAudit.CreatedDate)}"
+                });
 
             invalidAddressExtractionAuditException.AddData(
                 key: nameof(AddressExtractionAudit.UpdatedBy),
@@ -131,6 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             AddressExtractionAudit randomAddressExtractionAudit = CreateRandomAddressExtractionAudit(randomDateTimeOffset);
             AddressExtractionAudit invalidAddressExtractionAudit = randomAddressExtractionAudit;
+            
             var invalidAddressExtractionAuditException = 
                 new InvalidAddressExtractionAuditException(
                     message: "Invalid addressExtractionAudit. Please correct the errors and try again.");

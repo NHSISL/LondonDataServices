@@ -112,7 +112,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     modifyAddressTask.AsTask);
 
             //then
-            actualAddressValidationException.Should().BeEquivalentTo(expectedAddressValidationException);
+            actualAddressValidationException.Should()
+                .BeEquivalentTo(expectedAddressValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -158,7 +159,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     modifyAddressTask.AsTask);
 
             // then
-            actualAddressValidationException.Should().BeEquivalentTo(expectedAddressValidationException);
+            actualAddressValidationException.Should()
+                .BeEquivalentTo(expectedAddressValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -172,6 +174,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsNotRecentAndLogItAsync(int minutes)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Address randomAddress = CreateRandomAddress(randomDateTimeOffset);
+            randomAddress.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
+
+            var invalidAddressException = 
+                new InvalidAddressException(
+                    message: "Invalid address. Please correct the errors and try again.");
+
+            invalidAddressException.AddData(
+                key: nameof(Address.UpdatedDate),
+                values: "Date is not recent");
+
+            var expectedAddressValidatonException =
+                new AddressValidationException(
+                    message: "Address validation errors occurred, please try again.",
+                    innerException: invalidAddressException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<Address> modifyAddressTask =
+                this.addressService.ModifyAddressAsync(randomAddress);
+
+            AddressValidationException actualAddressValidationException =
+                await Assert.ThrowsAsync<AddressValidationException>(
+                    modifyAddressTask.AsTask);
+
+            // then
+            actualAddressValidationException.Should().BeEquivalentTo(expectedAddressValidatonException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressValidatonException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAddressByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

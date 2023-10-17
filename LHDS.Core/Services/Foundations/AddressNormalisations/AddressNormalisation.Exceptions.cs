@@ -32,7 +32,7 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
             {
                 var failedAddressNormalisationServiceException =
                     new FailedAddressNormalisationServiceException(
-                        message: "Failed addressNormalisation service occurred, please contact support",
+                        message: "Failed address normalisation service occurred, please contact support",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressNormalisationServiceException);

@@ -38,6 +38,10 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
 
                 throw CreateAndLogCriticalDependencyException(failedAddressLoadingAuditStorageException);
             }
+            catch (NotFoundAddressLoadingAuditException notFoundAddressLoadingAuditException)
+            {
+                throw CreateAndLogValidationException(notFoundAddressLoadingAuditException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsAddressLoadingAuditException =

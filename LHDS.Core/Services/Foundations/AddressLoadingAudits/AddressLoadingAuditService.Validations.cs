@@ -38,6 +38,14 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
         public void ValidateAddressLoadingAuditId(Guid addressLoadingAuditId) =>
             Validate((Rule: IsInvalid(addressLoadingAuditId), Parameter: nameof(AddressLoadingAudit.Id)));
 
+        private static void ValidateStorageAddressLoadingAudit(AddressLoadingAudit maybeAddressLoadingAudit, Guid addressLoadingAuditId)
+        {
+            if (maybeAddressLoadingAudit is null)
+            {
+                throw new NotFoundAddressLoadingAuditException(addressLoadingAuditId);
+            }
+        }
+
         private static void ValidateAddressLoadingAuditIsNotNull(AddressLoadingAudit addressLoadingAudit)
         {
             if (addressLoadingAudit is null)

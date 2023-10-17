@@ -22,9 +22,18 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<AddressNormalisation> GetNormalisedAddress(string address)
+        public async ValueTask<AddressNormalisation> GetNormalisedAddress(string address)
         {
-            throw new System.NotImplementedException();
+            (string PostalAddress, string JsonPostalAddress) = 
+                await this.addressNormalisationBroker.GetNormalisedAddress(address);
+
+            AddressNormalisation normalisedAddress = new AddressNormalisation
+                {
+                    PostalAddress = PostalAddress,
+                    JsonPostalAddress = JsonPostalAddress
+                };
+
+            return normalisedAddress;
         }
     }
 }

@@ -11,5 +11,6 @@ namespace LHDS.Core.Services.Foundations.Addresses
         IQueryable<Address> RetrieveAllAddresses();
         ValueTask<Address> RetrieveAddressByIdAsync(Guid addressId);
         ValueTask<Address> ModifyAddressAsync(Address address);
+        ValueTask<Address> RemoveAddressByIdAsync(Guid addressId);
     }
 }

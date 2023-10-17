@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using Moq;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
@@ -128,9 +129,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
                 broker.UpdateAddressLoadingAuditAsync(It.IsAny<AddressLoadingAudit>()),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -140,7 +141,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             AddressLoadingAudit randomAddressLoadingAudit = CreateRandomAddressLoadingAudit(randomDateTimeOffset);
             AddressLoadingAudit invalidAddressLoadingAudit = randomAddressLoadingAudit;
-
+            
             var invalidAddressLoadingAuditException = 
                 new InvalidAddressLoadingAuditException(
                     message: "Invalid addressLoadingAudit. Please correct the errors and try again.");
@@ -183,9 +184,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
                 broker.SelectAddressLoadingAuditByIdAsync(invalidAddressLoadingAudit.Id),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -197,9 +198,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
             AddressLoadingAudit randomAddressLoadingAudit = CreateRandomAddressLoadingAudit(randomDateTimeOffset);
             randomAddressLoadingAudit.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var invalidAddressLoadingAuditException = 
-                new InvalidAddressLoadingAuditException(
-                    message: "Invalid addressLoadingAudit. Please correct the errors and try again.");
+            var invalidAddressLoadingAuditException =
+                new InvalidAddressLoadingAuditException();
 
             invalidAddressLoadingAuditException.AddData(
                 key: nameof(AddressLoadingAudit.UpdatedDate),
@@ -293,6 +293,70 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedAddressLoadingAuditValidationException))),
                         Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfStorageCreatedDateNotSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNegativeNumber();
+            int randomMinutes = randomNumber;
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            AddressLoadingAudit randomAddressLoadingAudit = CreateRandomModifyAddressLoadingAudit(randomDateTimeOffset);
+            AddressLoadingAudit invalidAddressLoadingAudit = randomAddressLoadingAudit.DeepClone();
+            AddressLoadingAudit storageAddressLoadingAudit = invalidAddressLoadingAudit.DeepClone();
+            storageAddressLoadingAudit.CreatedDate = storageAddressLoadingAudit.CreatedDate.AddMinutes(randomMinutes);
+            storageAddressLoadingAudit.UpdatedDate = storageAddressLoadingAudit.UpdatedDate.AddMinutes(randomMinutes);
+            
+            var invalidAddressLoadingAuditException = 
+                new InvalidAddressLoadingAuditException(
+                    message: "Invalid addressLoadingAudit. Please correct the errors and try again.");
+
+            invalidAddressLoadingAuditException.AddData(
+                key: nameof(AddressLoadingAudit.CreatedDate),
+                values: $"Date is not the same as {nameof(AddressLoadingAudit.CreatedDate)}");
+
+            var expectedAddressLoadingAuditValidationException =
+                new AddressLoadingAuditValidationException(
+                    message: "AddressLoadingAudit validation errors occurred, please try again.",
+                    innerException: invalidAddressLoadingAuditException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAddressLoadingAuditByIdAsync(invalidAddressLoadingAudit.Id))
+                .ReturnsAsync(storageAddressLoadingAudit);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<AddressLoadingAudit> modifyAddressLoadingAuditTask =
+                this.addressLoadingAuditService.ModifyAddressLoadingAuditAsync(invalidAddressLoadingAudit);
+
+            AddressLoadingAuditValidationException actualAddressLoadingAuditValidationException =
+                await Assert.ThrowsAsync<AddressLoadingAuditValidationException>(
+                    modifyAddressLoadingAuditTask.AsTask);
+
+            // then
+            actualAddressLoadingAuditValidationException.Should()
+                .BeEquivalentTo(expectedAddressLoadingAuditValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAddressLoadingAuditByIdAsync(invalidAddressLoadingAudit.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedAddressLoadingAuditValidationException))),
+                       Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

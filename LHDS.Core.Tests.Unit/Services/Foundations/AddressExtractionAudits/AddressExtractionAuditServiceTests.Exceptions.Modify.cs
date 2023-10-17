@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -58,6 +59,64 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateAddressExtractionAuditAsync(randomAddressExtractionAudit),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            AddressExtractionAudit someAddressExtractionAudit = CreateRandomAddressExtractionAudit();
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidAddressExtractionAuditReferenceException =
+                new InvalidAddressExtractionAuditReferenceException(
+                    message: "Invalid addressExtractionAudit reference error occurred.", 
+                    innerException: foreignKeyConstraintConflictException);
+
+            AddressExtractionAuditDependencyValidationException expectedAddressExtractionAuditDependencyValidationException =
+                new AddressExtractionAuditDependencyValidationException(
+                    message: "AddressExtractionAudit dependency validation occurred, please try again.",
+                    innerException: invalidAddressExtractionAuditReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<AddressExtractionAudit> modifyAddressExtractionAuditTask =
+                this.addressExtractionAuditService.ModifyAddressExtractionAuditAsync(someAddressExtractionAudit);
+
+            AddressExtractionAuditDependencyValidationException actualAddressExtractionAuditDependencyValidationException =
+                await Assert.ThrowsAsync<AddressExtractionAuditDependencyValidationException>(
+                    modifyAddressExtractionAuditTask.AsTask);
+
+            // then
+            actualAddressExtractionAuditDependencyValidationException.Should()
+                .BeEquivalentTo(expectedAddressExtractionAuditDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAddressExtractionAuditByIdAsync(someAddressExtractionAudit.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(expectedAddressExtractionAuditDependencyValidationException))),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateAddressExtractionAuditAsync(someAddressExtractionAudit),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

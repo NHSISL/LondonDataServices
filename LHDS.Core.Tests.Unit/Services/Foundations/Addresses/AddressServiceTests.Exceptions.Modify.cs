@@ -179,5 +179,60 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyErrorOccursAndLogAsync()
+        {
+            // given
+            Address randomAddress = CreateRandomAddress();
+            var databaseUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedAddressException =
+                new LockedAddressException(
+                    message: "Locked address record exception, please try again later",
+                    innerException: databaseUpdateConcurrencyException);
+
+            var expectedAddressDependencyValidationException =
+                new AddressDependencyValidationException(
+                    message: "Address dependency validation occurred, please try again.",
+                    innerException: lockedAddressException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<Address> modifyAddressTask =
+                this.addressService.ModifyAddressAsync(randomAddress);
+
+            AddressDependencyValidationException actualAddressDependencyValidationException =
+                await Assert.ThrowsAsync<AddressDependencyValidationException>(
+                    modifyAddressTask.AsTask);
+
+            // then
+            actualAddressDependencyValidationException.Should()
+                .BeEquivalentTo(expectedAddressDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAddressByIdAsync(randomAddress.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateAddressAsync(randomAddress),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

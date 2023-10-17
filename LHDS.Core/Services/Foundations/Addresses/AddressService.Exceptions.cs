@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
@@ -33,6 +34,15 @@ namespace LHDS.Core.Services.Foundations.Addresses
 
                 throw CreateAndLogCriticalDependencyException(failedAddressStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsAddressException =
+                    new AlreadyExistsAddressException(
+                        message: "Address with the same Id already exists.",
+                        innerException: duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsAddressException);
+            }
         }
 
         private AddressValidationException CreateAndLogValidationException(Xeption exception)
@@ -57,6 +67,18 @@ namespace LHDS.Core.Services.Foundations.Addresses
             this.loggingBroker.LogCritical(addressDependencyException);
 
             return addressDependencyException;
+        }
+
+        private AddressDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var addressDependencyValidationException =
+                new AddressDependencyValidationException(
+                    message: "Address dependency validation occurred, please try again.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(addressDependencyValidationException);
+
+            return addressDependencyValidationException;
         }
     }
 }

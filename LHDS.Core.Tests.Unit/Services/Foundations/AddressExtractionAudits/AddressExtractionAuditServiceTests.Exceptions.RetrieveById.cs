@@ -57,5 +57,52 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedAddressExtractionAuditServiceException =
+                new FailedAddressExtractionAuditServiceException(
+                    message: "Failed addressExtractionAudit service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedAddressExtractionAuditServiceException =
+                new AddressExtractionAuditServiceException(
+                    message: "AddressExtractionAudit service error occurred, contact support.",
+                    innerException: failedAddressExtractionAuditServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAddressExtractionAuditByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<AddressExtractionAudit> retrieveAddressExtractionAuditByIdTask =
+                this.addressExtractionAuditService.RetrieveAddressExtractionAuditByIdAsync(someId);
+
+            AddressExtractionAuditServiceException actualAddressExtractionAuditServiceException =
+                await Assert.ThrowsAsync<AddressExtractionAuditServiceException>(
+                    retrieveAddressExtractionAuditByIdTask.AsTask);
+
+            // then
+            actualAddressExtractionAuditServiceException.Should()
+                .BeEquivalentTo(expectedAddressExtractionAuditServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAddressExtractionAuditByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedAddressExtractionAuditServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

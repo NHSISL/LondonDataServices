@@ -43,6 +43,8 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
                 AddressExtractionAudit maybeAddressExtractionAudit = await this.storageBroker
                     .SelectAddressExtractionAuditByIdAsync(addressExtractionAuditId);
 
+                ValidateStorageAddressExtractionAudit(maybeAddressExtractionAudit, addressExtractionAuditId);
+
                 return maybeAddressExtractionAudit;
             });
     }

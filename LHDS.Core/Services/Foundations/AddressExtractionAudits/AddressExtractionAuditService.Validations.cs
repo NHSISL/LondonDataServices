@@ -38,6 +38,14 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
         public void ValidateAddressExtractionAuditId(Guid addressExtractionAuditId) =>
             Validate((Rule: IsInvalid(addressExtractionAuditId), Parameter: nameof(AddressExtractionAudit.Id)));
 
+        private static void ValidateStorageAddressExtractionAudit(AddressExtractionAudit maybeAddressExtractionAudit, Guid addressExtractionAuditId)
+        {
+            if (maybeAddressExtractionAudit is null)
+            {
+                throw new NotFoundAddressExtractionAuditException(addressExtractionAuditId);
+            }
+        }
+
         private static void ValidateAddressExtractionAuditIsNotNull(AddressExtractionAudit addressExtractionAudit)
         {
             if (addressExtractionAudit is null)

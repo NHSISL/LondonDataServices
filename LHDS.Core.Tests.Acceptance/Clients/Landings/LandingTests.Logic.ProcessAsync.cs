@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
@@ -27,6 +28,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             string encryptedFileContainer = "emislanding";
             string fileName = GetRandomString();
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
+            DataSet activeDataSet = CreateRandomDataSet(supplierId);
+            DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
 
             Document document = new Document
             {
@@ -44,7 +47,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 broker.GetDocumentByFileNameAsync(fileName))
                     .ReturnsAsync(document);
 
-            DataSetSpecification activeDataSetSpecification =
+
+            this.dataSetSpecificationProcessingService.AddDataSetSpecificationAsync(activeDataSetSpecification);
+
+            DataSetSpecification retrievedDataSetSpecification =
                await this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(supplierId);
 
             //When
@@ -63,7 +69,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
                 string expectedFile =
                     $"/{landingConfiguration.DecryptedFolder}/"
-                    + $"/{activeDataSetSpecification.DataSet.DataSetName}"
+                    + $"/{activeDataSet.DataSetName}"
                     + $"/{activeDataSetSpecification.Id}"
                     + $"/{fileName.Split('_')[3]}"
                     + $"{fileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";

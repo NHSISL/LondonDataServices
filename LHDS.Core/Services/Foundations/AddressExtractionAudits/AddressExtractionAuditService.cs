@@ -1,59 +1,62 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages.Sql;
+using FluentAssertions;
+using Force.DeepCloner;
+using Moq;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits;
+using Xunit;
 
-namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
+namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
 {
-    public partial class AddressExtractionAuditService : IAddressExtractionAuditService
+    public partial class AddressExtractionAuditServiceTests
     {
-        private readonly IStorageBroker storageBroker;
-        private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ILoggingBroker loggingBroker;
-
-        public AddressExtractionAuditService(
-            IStorageBroker storageBroker,
-            IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker)
+        [Fact]
+        public async Task ShouldModifyAddressExtractionAuditAsync()
         {
-            this.storageBroker = storageBroker;
-            this.dateTimeBroker = dateTimeBroker;
-            this.loggingBroker = loggingBroker;
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            AddressExtractionAudit randomAddressExtractionAudit = CreateRandomModifyAddressExtractionAudit(randomDateTimeOffset);
+            AddressExtractionAudit inputAddressExtractionAudit = randomAddressExtractionAudit;
+            AddressExtractionAudit storageAddressExtractionAudit = inputAddressExtractionAudit.DeepClone();
+            storageAddressExtractionAudit.UpdatedDate = randomAddressExtractionAudit.CreatedDate;
+            AddressExtractionAudit updatedAddressExtractionAudit = inputAddressExtractionAudit;
+            AddressExtractionAudit expectedAddressExtractionAudit = updatedAddressExtractionAudit.DeepClone();
+            Guid addressExtractionAuditId = inputAddressExtractionAudit.Id;
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAddressExtractionAuditByIdAsync(addressExtractionAuditId))
+                    .ReturnsAsync(storageAddressExtractionAudit);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.UpdateAddressExtractionAuditAsync(inputAddressExtractionAudit))
+                    .ReturnsAsync(updatedAddressExtractionAudit);
+
+            // when
+            AddressExtractionAudit actualAddressExtractionAudit =
+                await this.addressExtractionAuditService.ModifyAddressExtractionAuditAsync(inputAddressExtractionAudit);
+
+            // then
+            actualAddressExtractionAudit.Should().BeEquivalentTo(expectedAddressExtractionAudit);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAddressExtractionAuditByIdAsync(inputAddressExtractionAudit.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateAddressExtractionAuditAsync(inputAddressExtractionAudit),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
-
-        public ValueTask<AddressExtractionAudit> AddAddressExtractionAuditAsync(AddressExtractionAudit addressExtractionAudit) =>
-            TryCatch(async () =>
-            {
-                ValidateAddressExtractionAuditOnAdd(addressExtractionAudit);
-
-                return await this.storageBroker.InsertAddressExtractionAuditAsync(addressExtractionAudit);
-            });
-
-        public IQueryable<AddressExtractionAudit> RetrieveAllAddressExtractionAudits() =>
-            TryCatch(() => this.storageBroker.SelectAllAddressExtractionAudits());
-
-        public ValueTask<AddressExtractionAudit> RetrieveAddressExtractionAuditByIdAsync(Guid addressExtractionAuditId) =>
-            TryCatch(async () =>
-            {
-                ValidateAddressExtractionAuditId(addressExtractionAuditId);
-
-                AddressExtractionAudit maybeAddressExtractionAudit = await this.storageBroker
-                    .SelectAddressExtractionAuditByIdAsync(addressExtractionAuditId);
-
-                ValidateStorageAddressExtractionAudit(maybeAddressExtractionAudit, addressExtractionAuditId);
-
-                return maybeAddressExtractionAudit;
-            });
-
-        public ValueTask<AddressExtractionAudit> ModifyAddressExtractionAuditAsync(AddressExtractionAudit addressExtractionAudit) =>
-            TryCatch(async () =>
-            {
-                ValidateAddressExtractionAuditOnModify(addressExtractionAudit);
-
-                return await this.storageBroker.UpdateAddressExtractionAuditAsync(addressExtractionAudit);
-            });
     }
 }

@@ -6,12 +6,13 @@ using System;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
-using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.Decryptions;
 using LHDS.Core.Services.Foundations.Documents;
+using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 
 namespace LHDS.Core.Services.Orchestrations.Decryptions
@@ -21,7 +22,8 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
         private readonly IDocumentService documentService;
         private readonly IDecryptionService decryptionService;
         private readonly IIngestionTrackingService ingestionTrackingService;
-        private readonly IAuditService auditService;
+        private readonly IIngestionTrackingAuditService auditService;
+        private readonly BlobContainers blobContainers;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
 
@@ -29,7 +31,8 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             IDocumentService documentService,
             IDecryptionService decryptionService,
             IIngestionTrackingService ingestionTrackingService,
-            IAuditService auditService,
+            IIngestionTrackingAuditService auditService,
+            BlobContainers blobContainers,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker)
         {
@@ -37,6 +40,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             this.decryptionService = decryptionService;
             this.ingestionTrackingService = ingestionTrackingService;
             this.auditService = auditService;
+            this.blobContainers = blobContainers;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
         }
@@ -44,13 +48,16 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
         public ValueTask<string> DecryptAsync(string fileName) =>
             TryCatch(async () =>
             {
+                ValidateBlobContainersIsNotNull();
                 ValidateFileNameIsNotNull(fileName);
 
                 var ingestionTracking = await this.ingestionTrackingService
                     .RetrieveIngestionTrackingByFileNameAsync(fileName);
 
                 Document document = await this.documentService
-                    .RetrieveDocumentByFileNameAsync(ingestionTracking.EncryptedFileName);
+                    .RetrieveDocumentByFileNameAsync(
+                        fileName: ingestionTracking.EncryptedFileName,
+                        container: blobContainers.EmisLanding);
 
                 byte[] decryptedData = await this.decryptionService.DecryptAsync(document.DocumentData);
 
@@ -63,9 +70,11 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                     FileName = ingestionTracking.DecryptedFileName
                 };
 
-                await this.documentService.AddDocumentAsync(newDecryptedDocument);
-                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                await this.documentService.AddDocumentAsync(
+                    document: newDecryptedDocument,
+                    container: blobContainers.Versioner);
 
+                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
                 ingestionTracking.Decrypted = true;
                 ingestionTracking.RecordCount = lines.Length - 2;
                 ingestionTracking.DecryptedFileSize = newDecryptedDocument.DocumentData.Length;
@@ -81,8 +90,8 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
         private void LogAudit(IngestionTracking ingestionTracking, Document document, DateTimeOffset currentDateTime)
         {
-            Audit newAudit =
-                new Audit
+            IngestionTrackingAudit newAudit =
+                new IngestionTrackingAudit
                 {
                     Id = Guid.NewGuid(),
                     IngestionTrackingId = ingestionTracking.Id,
@@ -93,7 +102,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                     UpdatedBy = "DecryptionOrchestrationService",
                 };
 
-            this.auditService.AddAuditAsync(newAudit);
+            this.auditService.AddIngestionTrackingAuditAsync(newAudit);
         }
     }
 }

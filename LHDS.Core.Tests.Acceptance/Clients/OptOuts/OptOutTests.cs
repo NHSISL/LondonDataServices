@@ -13,10 +13,12 @@ using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Mesh;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Orchestrations.OptOuts;
 using LHDS.Core.Services.Foundations.OptOuts;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -49,6 +51,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             {
                 builder.AddConsole();
             });
+
+            var blobStorageSettings = dependencyBroker.Configuration
+                .GetSection("blobStorage").Get<BlobStorageSettings>();
+
+            serviceCollection.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
 
             serviceCollection
                 .AddTransient<IMeshBroker>(serviceProvider => meshBrokerMock.Object)

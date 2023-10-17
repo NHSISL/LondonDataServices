@@ -15,6 +15,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
         public async Task ShouldRetrieveDocumentProcessingDownloadlinkAsync()
         {
             // Given
+            var randomContainer = GetRandomString();
             string randomFileName = GetRandomString();
             string inputFileName = randomFileName;
             string randomSasUrl = GetRandomString();
@@ -22,19 +23,19 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             string expectedSasUrl = randomSasUrl;
 
             this.documentServiceMock.Setup(service =>
-                service.GetDownloadLinkAsync(inputFileName))
+                service.GetDownloadLinkAsync(inputFileName, randomContainer))
                     .ReturnsAsync(outputSasUrl);
 
             // When
             string actualSasUrl =
                 await this.documentProcessingService
-                    .GetDownloadLinkAsync(inputFileName);
+                    .GetDownloadLinkAsync(inputFileName, randomContainer);
 
             // Then
             actualSasUrl.Should().BeEquivalentTo(expectedSasUrl);
 
             this.documentServiceMock.Verify(service =>
-                service.GetDownloadLinkAsync(inputFileName),
+                service.GetDownloadLinkAsync(inputFileName, randomContainer),
                     Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();

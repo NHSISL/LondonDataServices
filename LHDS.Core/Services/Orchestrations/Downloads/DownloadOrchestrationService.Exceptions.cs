@@ -5,9 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Audits.Exceptions;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
 using Xeptions;
@@ -28,6 +28,16 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             catch (InvalidArgumentDownloadOrchestrationException invalidArgumentDownloadOrchestrationException)
             {
                 throw CreateAndLogValidationException(invalidArgumentDownloadOrchestrationException);
+            }
+            catch (NullLandingConfigurationDownloadOrchestrationException
+                nullLandingConfigurationDownloadOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullLandingConfigurationDownloadOrchestrationException);
+            }
+            catch (NullBlobContainersDownloadOrchestrationException
+                nullBlobContainersDownloadOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullBlobContainersDownloadOrchestrationException);
             }
             catch (DocumentValidationException documentValidationException)
             {
@@ -53,11 +63,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 throw CreateAndLogDependencyValidationException(ingestionTrackingDependencyValidationException);
             }
-            catch (AuditValidationException auditValidationException)
+            catch (IngestionTrackingAuditValidationException auditValidationException)
             {
                 throw CreateAndLogDependencyValidationException(auditValidationException);
             }
-            catch (AuditDependencyValidationException auditDependencyValidationException)
+            catch (IngestionTrackingAuditDependencyValidationException auditDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(auditDependencyValidationException);
             }
@@ -85,11 +95,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 throw CreateAndLogDependencyException(ingestionTrackingServiceException);
             }
-            catch (AuditDependencyException auditDependencyException)
+            catch (IngestionTrackingAuditDependencyException auditDependencyException)
             {
                 throw CreateAndLogDependencyException(auditDependencyException);
             }
-            catch (AuditServiceException auditServiceException)
+            catch (IngestionTrackingAuditServiceException auditServiceException)
             {
                 throw CreateAndLogDependencyException(auditServiceException);
             }
@@ -113,6 +123,15 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             catch (InvalidArgumentDownloadOrchestrationException invalidArgumentDownloadOrchestrationException)
             {
                 throw CreateAndLogValidationException(invalidArgumentDownloadOrchestrationException);
+            }
+            catch (NullLandingConfigurationDownloadOrchestrationException
+                nullLandingConfigurationDownloadOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullLandingConfigurationDownloadOrchestrationException);
+            }
+            catch (NullBlobContainersDownloadOrchestrationException nullBlobContainersDownloadOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullBlobContainersDownloadOrchestrationException);
             }
             catch (NotFoundDownloadOrchestrationException notFoundDownloadOrchestrationException)
             {
@@ -142,11 +161,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 throw CreateAndLogDependencyValidationException(ingestionTrackingDependencyValidationException);
             }
-            catch (AuditValidationException auditValidationException)
+            catch (IngestionTrackingAuditValidationException auditValidationException)
             {
                 throw CreateAndLogDependencyValidationException(auditValidationException);
             }
-            catch (AuditDependencyValidationException auditDependencyValidationException)
+            catch (IngestionTrackingAuditDependencyValidationException auditDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(auditDependencyValidationException);
             }
@@ -174,11 +193,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             {
                 throw CreateAndLogDependencyException(ingestionTrackingServiceException);
             }
-            catch (AuditDependencyException auditDependencyException)
+            catch (IngestionTrackingAuditDependencyException auditDependencyException)
             {
                 throw CreateAndLogDependencyException(auditDependencyException);
             }
-            catch (AuditServiceException auditServiceException)
+            catch (IngestionTrackingAuditServiceException auditServiceException)
             {
                 throw CreateAndLogDependencyException(auditServiceException);
             }

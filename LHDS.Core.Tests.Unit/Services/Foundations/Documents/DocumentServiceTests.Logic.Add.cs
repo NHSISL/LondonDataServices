@@ -18,6 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
         public async Task ShouldAddFileAsync()
         {
             // Given
+            string randomContainer = GetRandomString();
             string randomFileName = GetRandomString();
 
             Document randomDocument = new Document
@@ -29,11 +30,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             var stream = new MemoryStream(randomDocument.DocumentData);
 
             // When
-            await this.documentService.AddDocumentAsync(randomDocument);
+            await this.documentService.AddDocumentAsync(document: randomDocument, container: randomContainer);
 
             // Then
             this.blobStorageBrokerMock.Verify(broker =>
-                broker.InsertFileAsync(randomDocument.FileName, It.IsAny<Stream>()),
+                broker.InsertFileAsync(randomDocument.FileName, It.IsAny<Stream>(), randomContainer),
                 Times.Once);
 
             this.blobStorageBrokerMock.VerifyNoOtherCalls();

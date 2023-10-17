@@ -16,6 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
         public async Task ShouldRemoveDocumentAsync()
         {
             // Given
+            var randomContainer = GetRandomString();
             var randomFileName = GetRandomString();
             var randomfileData = Encoding.ASCII.GetBytes(GetRandomString());
 
@@ -26,11 +27,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
             };
 
             // When
-            await this.documentProcessingService.RemoveDocumentByFileNameAsync(document.FileName);
+            await this.documentProcessingService
+                .RemoveDocumentByFileNameAsync(fileName: document.FileName, container: randomContainer);
 
             // Then
             this.documentServiceMock.Verify(service =>
-                service.RemoveDocumentByFileNameAsync(document.FileName),
+                service.RemoveDocumentByFileNameAsync(document.FileName, randomContainer),
                     Times.Once);
         }
     }

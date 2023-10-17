@@ -224,7 +224,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         {
             //Given
             var fileName = GetRandomMessage();
-
             var serviceException = new Exception();
 
             var failedDownloadOrchestrationServiceException =

@@ -6,7 +6,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.SeedGenerator.Services;
-using LHDS.Core.Services.Foundations.Audits;
+using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
 using Microsoft.Extensions.Configuration;
@@ -50,7 +50,7 @@ namespace LHDS.Core.SeedGenerator
                 .AddTransient<IStorageBroker, StorageBroker>()
                 .AddTransient<IDateTimeBroker, DateTimeBroker>()
                 .AddTransient<ILoggingBroker, LoggingBroker>()
-                .AddTransient<IAuditService, AuditService>()
+                .AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>()
                 .AddTransient<IIngestionTrackingService, IngestionTrackingService>()
                 .AddTransient<ISupplierService, SupplierService>()
                 .AddTransient<IGenerate, Generate>()

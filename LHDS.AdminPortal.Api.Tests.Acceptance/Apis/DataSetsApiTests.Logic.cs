@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using RESTFulSense.Exceptions;
 using Xunit;
 
@@ -18,7 +19,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
         public async Task ShouldPostDataSetAsync()
         {
             // Given
-            DataSet randomDataSet = CreateRandomDataSet();
+            Supplier randomSupplier = await PostRandomSupplierAsync();
+            DataSet randomDataSet = CreateRandomDataSet(randomSupplier.Id);
             DataSet inputDataSet = randomDataSet;
             DataSet expectedDataSet = inputDataSet;
 
@@ -36,7 +38,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
         public async Task ShouldGetAllDataSetsAsync()
         {
             // Given
-            IQueryable<DataSet> randomDataSets = CreateRandomDataSets();
+            Supplier randomSupplier = await PostRandomSupplierAsync();
+            IQueryable<DataSet> randomDataSets = CreateRandomDataSets(randomSupplier.Id);
             IQueryable<DataSet> inputDataSets = randomDataSets;
             IQueryable<DataSet> expectedDataSets = inputDataSets;
 
@@ -61,7 +64,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
         public async Task ShouldGetDataSetByIdAsync()
         {
             // Given
-            DataSet randomDataSet = CreateRandomDataSet();
+            Supplier randomSupplier = await PostRandomSupplierAsync();
+            DataSet randomDataSet = CreateRandomDataSet(randomSupplier.Id);
             DataSet inputDataSet = randomDataSet;
             DataSet expectedDataSet = inputDataSet;
             await this.apiBroker.PostDataSetAsync(inputDataSet);
@@ -81,7 +85,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
         public async Task ShouldPutDataSetAsync()
         {
             // Given
-            DataSet randomDataSet = CreateRandomDataSet();
+            Supplier randomSupplier = await PostRandomSupplierAsync();
+            DataSet randomDataSet = CreateRandomDataSet(randomSupplier.Id);
             DataSet inputDataSet = randomDataSet;
             await this.apiBroker.PostDataSetAsync(inputDataSet);
             DataSet modifiedDataSet = UpdateDataSetWithRandomValues(inputDataSet);
@@ -101,7 +106,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
         public async Task ShouldDeleteDataSetAsync()
         {
             // given
-            DataSet randomDataSet = CreateRandomDataSet();
+            Supplier randomSupplier = await PostRandomSupplierAsync();
+            DataSet randomDataSet = CreateRandomDataSet(randomSupplier.Id);
             DataSet inputDataSet = randomDataSet;
             DataSet expectedDataSet = inputDataSet;
             await this.apiBroker.PostDataSetAsync(inputDataSet);

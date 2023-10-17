@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.AddressNormalisation.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
+using LHDS.Core.Models.Processings.Documents.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Processings.AddressNormalisations
@@ -34,6 +36,14 @@ namespace LHDS.Core.Services.Processings.AddressNormalisations
             {
                 throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
             }
+            catch (AddressNormalisationDependencyException addressNormalisationDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressNormalisationDependencyException);
+            }
+            catch (AddressNormalisationServiceException addressNormalisationServiceException)
+            {
+                throw CreateAndLogDependencyException(addressNormalisationServiceException);
+            }
         }
 
         private AddressNormalisationProcessingValidationException CreateAndLogValidationException(Xeption exception)
@@ -59,6 +69,19 @@ namespace LHDS.Core.Services.Processings.AddressNormalisations
             this.loggingBroker.LogError(addressNormalisationProcessingDependencyValidationException);
 
             return addressNormalisationProcessingDependencyValidationException;
+        }
+
+        private AddressNormalisationProcessingDependencyException
+            CreateAndLogDependencyException(Xeption exception)
+        {
+            var addressNormalisationProcessingDependencyException =
+                new AddressNormalisationProcessingDependencyException(
+                    message: "Address normalisation processing dependency error occurred, please try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(addressNormalisationProcessingDependencyException);
+
+            throw addressNormalisationProcessingDependencyException;
         }
     }
 }

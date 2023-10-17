@@ -13,6 +13,7 @@ using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.Suppliers;
 using Moq;
 using Xunit;
 
@@ -24,10 +25,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         public async Task ShouldProcessNewDocumentsAsync()
         {
             //Given
+            DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
             Guid supplierId = landingConfiguration.LandingSupplierId;
             string encryptedFileContainer = "emislanding";
-            string fileName = GetRandomString();
+            string fileName = GetRandomFileName();
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
+            Supplier landingSupplier = CreateRandomSupplier(supplierId, randomDateTime);
             DataSet activeDataSet = CreateRandomDataSet(supplierId);
             DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
 
@@ -47,8 +50,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 broker.GetDocumentByFileNameAsync(fileName))
                     .ReturnsAsync(document);
 
-
-            this.dataSetSpecificationProcessingService.AddDataSetSpecificationAsync(activeDataSetSpecification);
+            await this.supplierService.AddSupplierAsync(landingSupplier);
+            await this.dataSetService.AddDataSetAsync(activeDataSet);
+            await this.dataSetSpecificationProcessingService.AddDataSetSpecificationAsync(activeDataSetSpecification);
 
             DataSetSpecification retrievedDataSetSpecification =
                await this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(supplierId);
@@ -68,11 +72,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                         Times.Once);
 
                 string expectedFile =
-                    $"/{landingConfiguration.DecryptedFolder}/"
+                    $"/{landingConfiguration.DecryptedFolder}"
                     + $"/{activeDataSet.DataSetName}"
                     + $"/{activeDataSetSpecification.Id}"
                     + $"/{fileName.Split('_')[3]}"
-                    + $"{fileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+                    + $"/{fileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
                 actualFile.Should().BeEquivalentTo(expectedFile);
 
@@ -99,6 +103,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                             Times.Once());
             }
 
+            await this.dataSetSpecificationProcessingService
+                .RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
+
+            await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
+            await this.supplierService.RemoveSupplierByIdAsync(landingSupplier.Id);
             this.downloadBrokerMock.VerifyNoOtherCalls();
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
         }

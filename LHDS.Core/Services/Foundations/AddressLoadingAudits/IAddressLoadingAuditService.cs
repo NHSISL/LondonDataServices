@@ -11,5 +11,6 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
         IQueryable<AddressLoadingAudit> RetrieveAllAddressLoadingAudits();
         ValueTask<AddressLoadingAudit> RetrieveAddressLoadingAuditByIdAsync(Guid addressLoadingAuditId);
         ValueTask<AddressLoadingAudit> ModifyAddressLoadingAuditAsync(AddressLoadingAudit addressLoadingAudit);
+        ValueTask<AddressLoadingAudit> RemoveAddressLoadingAuditByIdAsync(Guid addressLoadingAuditId);
     }
 }

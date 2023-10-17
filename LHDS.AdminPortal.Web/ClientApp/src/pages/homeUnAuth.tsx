@@ -11,7 +11,7 @@ export const HomeUnAuthorised = () => {
 
     return (
         <>
-            <div className="container center max-width-400">
+            <div className="container center max-width-400 min-height-600">
                 <CardBase>
                     <CardBaseBody>
                         <CardBaseContent>

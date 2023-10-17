@@ -31,6 +31,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
                     message: "AddressNormalisation service error occurred, contact support.",
                     innerException: failedAddressNormalisationServiceException);
 
+            this.addressNormalisationBrokerMock.Setup(broker =>
+                broker.GetNormalisedAddress(randomAddress))
+                    .Throws(serviceException);
+
             // when
             ValueTask<AddressNormalisation> addAddressNormalisationTask =
                 this.addressNormalisationService.GetNormalisedAddress(randomAddress);
@@ -45,7 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
 
             this.addressNormalisationBrokerMock.Verify(broker =>
                 broker.GetNormalisedAddress(It.IsAny<string>()),
-                    Times.Never);
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

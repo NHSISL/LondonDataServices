@@ -238,7 +238,7 @@ namespace LHDS.Core.Clients.Extensions
                 message: validationErrors.ToString(),
                 data: errors);
 
-            //invalidConfigurationException.ThrowIfContainsErrors();
+            invalidConfigurationException.ThrowIfContainsErrors();
         }
     }
 }

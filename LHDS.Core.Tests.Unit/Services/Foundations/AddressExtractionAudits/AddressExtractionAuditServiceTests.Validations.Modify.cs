@@ -184,9 +184,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
                 broker.SelectAddressExtractionAuditByIdAsync(invalidAddressExtractionAudit.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -198,8 +198,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             AddressExtractionAudit randomAddressExtractionAudit = CreateRandomAddressExtractionAudit(randomDateTimeOffset);
             randomAddressExtractionAudit.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var invalidAddressExtractionAuditException =
-                new InvalidAddressExtractionAuditException();
+            var invalidAddressExtractionAuditException = 
+                new InvalidAddressExtractionAuditException(
+                    message: "Invalid addressExtractionAudit. Please correct the errors and try again.");
 
             invalidAddressExtractionAuditException.AddData(
                 key: nameof(AddressExtractionAudit.UpdatedDate),
@@ -294,8 +295,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
                     expectedAddressExtractionAuditValidationException))),
                         Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -358,8 +359,69 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
                    expectedAddressExtractionAuditValidationException))),
                        Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfCreatedUserDontMacthStorageAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            AddressExtractionAudit randomAddressExtractionAudit = CreateRandomModifyAddressExtractionAudit(randomDateTimeOffset);
+            AddressExtractionAudit invalidAddressExtractionAudit = randomAddressExtractionAudit.DeepClone();
+            AddressExtractionAudit storageAddressExtractionAudit = invalidAddressExtractionAudit.DeepClone();
+            invalidAddressExtractionAudit.CreatedBy = Guid.NewGuid().ToString();
+            storageAddressExtractionAudit.UpdatedDate = storageAddressExtractionAudit.CreatedDate;
+
+            var invalidAddressExtractionAuditException = 
+                new InvalidAddressExtractionAuditException(
+                    message: "Invalid addressExtractionAudit. Please correct the errors and try again.");
+
+            invalidAddressExtractionAuditException.AddData(
+                key: nameof(AddressExtractionAudit.CreatedBy),
+                values: $"Text is not the same as {nameof(AddressExtractionAudit.CreatedBy)}");
+
+            var expectedAddressExtractionAuditValidationException =
+                new AddressExtractionAuditValidationException(
+                    message: "AddressExtractionAudit validation errors occurred, please try again.",
+                    innerException: invalidAddressExtractionAuditException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAddressExtractionAuditByIdAsync(invalidAddressExtractionAudit.Id))
+                .ReturnsAsync(storageAddressExtractionAudit);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<AddressExtractionAudit> modifyAddressExtractionAuditTask =
+                this.addressExtractionAuditService.ModifyAddressExtractionAuditAsync(invalidAddressExtractionAudit);
+
+            AddressExtractionAuditValidationException actualAddressExtractionAuditValidationException =
+                await Assert.ThrowsAsync<AddressExtractionAuditValidationException>(
+                    modifyAddressExtractionAuditTask.AsTask);
+
+            // then
+            actualAddressExtractionAuditValidationException.Should().BeEquivalentTo(expectedAddressExtractionAuditValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAddressExtractionAuditByIdAsync(invalidAddressExtractionAudit.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedAddressExtractionAuditValidationException))),
+                       Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

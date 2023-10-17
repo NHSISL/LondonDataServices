@@ -38,6 +38,10 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
 
                 throw CreateAndLogCriticalDependencyException(failedAddressExtractionAuditStorageException);
             }
+            catch (NotFoundAddressExtractionAuditException notFoundAddressExtractionAuditException)
+            {
+                throw CreateAndLogValidationException(notFoundAddressExtractionAuditException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsAddressExtractionAuditException =

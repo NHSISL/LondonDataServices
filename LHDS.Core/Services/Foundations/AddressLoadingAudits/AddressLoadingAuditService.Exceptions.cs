@@ -43,6 +43,15 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsAddressLoadingAuditException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidAddressLoadingAuditReferenceException =
+                    new InvalidAddressLoadingAuditReferenceException(
+                        message: "Invalid addressLoadingAudit reference error occurred.", 
+                        innerException: foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidAddressLoadingAuditReferenceException);
+            }
         }
 
         private AddressLoadingAuditValidationException CreateAndLogValidationException(Xeption exception)
@@ -62,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
             var addressLoadingAuditDependencyException = 
                 new AddressLoadingAuditDependencyException(
                     message: "AddressLoadingAudit dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(addressLoadingAuditDependencyException);
 

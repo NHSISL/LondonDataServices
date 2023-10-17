@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
@@ -33,6 +34,15 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
 
                 throw CreateAndLogCriticalDependencyException(failedAddressExtractionAuditStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsAddressExtractionAuditException =
+                    new AlreadyExistsAddressExtractionAuditException(
+                        message: "AddressExtractionAudit with the same Id already exists.",
+                        innerException: duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsAddressExtractionAuditException);
+            }
         }
 
         private AddressExtractionAuditValidationException CreateAndLogValidationException(Xeption exception)
@@ -57,6 +67,18 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
             this.loggingBroker.LogCritical(addressExtractionAuditDependencyException);
 
             return addressExtractionAuditDependencyException;
+        }
+
+        private AddressExtractionAuditDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var addressExtractionAuditDependencyValidationException =
+                new AddressExtractionAuditDependencyValidationException(
+                    message: "AddressExtractionAudit dependency validation occurred, please try again.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(addressExtractionAuditDependencyValidationException);
+
+            return addressExtractionAuditDependencyValidationException;
         }
     }
 }

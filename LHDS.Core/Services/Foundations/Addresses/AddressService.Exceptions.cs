@@ -19,6 +19,10 @@ namespace LHDS.Core.Services.Foundations.Addresses
             {
                 throw CreateAndLogValidationException(nullAddressException);
             }
+            catch (InvalidAddressException invalidAddressException)
+            {
+                throw CreateAndLogValidationException(invalidAddressException);
+            }
         }
 
         private AddressValidationException CreateAndLogValidationException(Xeption exception)

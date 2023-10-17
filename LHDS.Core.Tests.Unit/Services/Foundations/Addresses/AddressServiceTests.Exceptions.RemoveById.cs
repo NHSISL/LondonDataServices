@@ -1,6 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
@@ -58,6 +60,59 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
+                    Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationOnRemoveIfDatabaseUpdateConcurrencyErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someAddressId = Guid.NewGuid();
+
+            var databaseUpdateConcurrencyException =
+                new DbUpdateConcurrencyException();
+
+            var lockedAddressException =
+                new LockedAddressException(
+                    message: "Locked address record exception, please try again later",
+                    innerException: databaseUpdateConcurrencyException);
+
+            var expectedAddressDependencyValidationException =
+                new AddressDependencyValidationException(
+                    message: "Address dependency validation occurred, please try again.",
+                    innerException: lockedAddressException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAddressByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<Address> removeAddressByIdTask =
+                this.addressService.RemoveAddressByIdAsync(someAddressId);
+
+            AddressDependencyValidationException actualAddressDependencyValidationException =
+                await Assert.ThrowsAsync<AddressDependencyValidationException>(
+                    removeAddressByIdTask.AsTask);
+
+            // then
+            actualAddressDependencyValidationException.Should()
+                .BeEquivalentTo(expectedAddressDependencyValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAddressByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.DeleteAddressAsync(It.IsAny<Address>()),
                     Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

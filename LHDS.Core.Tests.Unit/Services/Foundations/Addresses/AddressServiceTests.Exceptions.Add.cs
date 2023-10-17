@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             var expectedAddressDependencyException =
                 new AddressDependencyException(
                     message: "Address dependency error occurred, contact support.",
-                    innerException: failedAddressStorageException);             
+                    innerException: failedAddressStorageException); 
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -115,6 +115,60 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            Address someAddress = CreateRandomAddress();
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidAddressReferenceException =
+                new InvalidAddressReferenceException(
+                    message: "Invalid address reference error occurred.", 
+                    innerException: foreignKeyConstraintConflictException);
+
+            var expectedAddressValidationException =
+                new AddressDependencyValidationException(
+                    message: "Address dependency validation occurred, please try again.",
+                    innerException: invalidAddressReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<Address> addAddressTask =
+                this.addressService.AddAddressAsync(someAddress);
+
+            // then
+            AddressDependencyValidationException actualAddressDependencyValidationException =
+                await Assert.ThrowsAsync<AddressDependencyValidationException>(
+                    addAddressTask.AsTask);
+
+            actualAddressDependencyValidationException.Should().BeEquivalentTo(expectedAddressValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertAddressAsync(someAddress),
+                    Times.Never());
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

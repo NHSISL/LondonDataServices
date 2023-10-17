@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
@@ -22,6 +23,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         public async Task ShouldProcessNewDocumentsAsync()
         {
             //Given
+            Guid supplierId = landingConfiguration.LandingSupplierId;
             string encryptedFileContainer = "emislanding";
             string fileName = GetRandomString();
             byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
@@ -42,6 +44,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 broker.GetDocumentByFileNameAsync(fileName))
                     .ReturnsAsync(document);
 
+            DataSetSpecification activeDataSetSpecification =
+               await this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(supplierId);
+
             //When
             var actualStringList = await this.landingClient.ProcessAsync();
 
@@ -57,8 +62,11 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                         Times.Once);
 
                 string expectedFile =
-                   $"/{landingConfiguration.DecryptedFolder}/" +
-                   $"{fileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+                    $"/{landingConfiguration.DecryptedFolder}/"
+                    + $"/{activeDataSetSpecification.DataSet.DataSetName}"
+                    + $"/{activeDataSetSpecification.Id}"
+                    + $"/{fileName.Split('_')[3]}"
+                    + $"{fileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
                 actualFile.Should().BeEquivalentTo(expectedFile);
 

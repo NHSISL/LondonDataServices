@@ -63,7 +63,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
             serviceCollection
                 .AddTransient<IDownloadBroker>(serviceProvider => downloadBrokerMock.Object)
-                .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object);
+                .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object)
+                .AddTransient<IDataSetSpecificationService, DataSetSpecificationService>()
+                .AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
 
             serviceCollection.AddLandingClientForAcceptance(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();

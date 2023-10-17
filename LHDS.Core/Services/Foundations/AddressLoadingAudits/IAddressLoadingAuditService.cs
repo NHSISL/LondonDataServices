@@ -10,5 +10,6 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
         ValueTask<AddressLoadingAudit> AddAddressLoadingAuditAsync(AddressLoadingAudit addressLoadingAudit);
         IQueryable<AddressLoadingAudit> RetrieveAllAddressLoadingAudits();
         ValueTask<AddressLoadingAudit> RetrieveAddressLoadingAuditByIdAsync(Guid addressLoadingAuditId);
+        ValueTask<AddressLoadingAudit> ModifyAddressLoadingAuditAsync(AddressLoadingAudit addressLoadingAudit);
     }
 }

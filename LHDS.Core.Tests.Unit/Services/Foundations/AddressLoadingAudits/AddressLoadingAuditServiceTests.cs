@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using Microsoft.Data.SqlClient;
@@ -62,6 +63,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static IQueryable<AddressLoadingAudit> CreateRandomAddressLoadingAudits()
+        {
+            return CreateAddressLoadingAuditFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
 
         private static AddressLoadingAudit CreateRandomAddressLoadingAudit() =>
             CreateAddressLoadingAuditFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();

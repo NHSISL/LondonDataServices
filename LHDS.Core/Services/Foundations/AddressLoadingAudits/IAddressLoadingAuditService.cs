@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 
@@ -6,5 +7,6 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
     public interface IAddressLoadingAuditService
     {
         ValueTask<AddressLoadingAudit> AddAddressLoadingAuditAsync(AddressLoadingAudit addressLoadingAudit);
+        IQueryable<AddressLoadingAudit> RetrieveAllAddressLoadingAudits();
     }
 }

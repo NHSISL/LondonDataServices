@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.AddressNormalisation.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
@@ -44,6 +45,15 @@ namespace LHDS.Core.Services.Processings.AddressNormalisations
             {
                 throw CreateAndLogDependencyException(addressNormalisationServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedAddressNormalisationProcessingServiceException =
+                    new FailedAddressNormalisationProcessingServiceException(
+                        message: "Failed address normalisation processing service error occurred, contact support.",
+                        exception);
+
+                throw CreateAndLogServiceException(failedAddressNormalisationProcessingServiceException);
+            }
         }
 
         private AddressNormalisationProcessingValidationException CreateAndLogValidationException(Xeption exception)
@@ -82,6 +92,18 @@ namespace LHDS.Core.Services.Processings.AddressNormalisations
             this.loggingBroker.LogError(addressNormalisationProcessingDependencyException);
 
             throw addressNormalisationProcessingDependencyException;
+        }
+
+        private AddressNormalisationProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var addressNormalisationProcessingServiceException = new
+                AddressNormalisationProcessingServiceException(
+                message: "Address normalisation processing service error occurred, contact support.",
+                innerException: exception);
+
+            this.loggingBroker.LogError(addressNormalisationProcessingServiceException);
+
+            return addressNormalisationProcessingServiceException;
         }
     }
 }

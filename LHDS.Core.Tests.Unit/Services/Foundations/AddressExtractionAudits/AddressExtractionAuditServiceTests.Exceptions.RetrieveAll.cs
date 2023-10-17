@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             var expectedAddressExtractionAuditDependencyException =
                 new AddressExtractionAuditDependencyException(
                     message: "AddressExtractionAudit dependency error occurred, contact support.",
-                    innerException: failedAddressExtractionAuditStorageException); 
+                    innerException: failedAddressExtractionAuditStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllAddressExtractionAudits())
@@ -52,6 +52,51 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomString();
+            var serviceException = new Exception(exceptionMessage);
+
+            var failedAddressExtractionAuditServiceException =
+                new FailedAddressExtractionAuditServiceException(
+                    message: "Failed addressExtractionAudit service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedAddressExtractionAuditServiceException =
+                new AddressExtractionAuditServiceException(
+                    message: "AddressExtractionAudit service error occurred, contact support.",
+                    innerException: failedAddressExtractionAuditServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllAddressExtractionAudits())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllAddressExtractionAuditsAction = () =>
+                this.addressExtractionAuditService.RetrieveAllAddressExtractionAudits();
+
+            AddressExtractionAuditServiceException actualAddressExtractionAuditServiceException =
+                Assert.Throws<AddressExtractionAuditServiceException>(retrieveAllAddressExtractionAuditsAction);
+
+            // then
+            actualAddressExtractionAuditServiceException.Should()
+                .BeEquivalentTo(expectedAddressExtractionAuditServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllAddressExtractionAudits(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressExtractionAuditServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
             });
 
         public IQueryable<AddressLoadingAudit> RetrieveAllAddressLoadingAudits() =>
-            this.storageBroker.SelectAllAddressLoadingAudits();
+            TryCatch(() => this.storageBroker.SelectAllAddressLoadingAudits());
     }
 }

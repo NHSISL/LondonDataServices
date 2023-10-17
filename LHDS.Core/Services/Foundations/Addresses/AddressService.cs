@@ -22,7 +22,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<Address> AddAddressAsync(Address address) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<Address> AddAddressAsync(Address address) =>
+            await this.storageBroker.InsertAddressAsync(address);
     }
 }

@@ -60,6 +60,15 @@ namespace LHDS.Core.Services.Foundations.Addresses
 
                 throw CreateAndLogDependencyValidationException(invalidAddressReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedAddressException = 
+                    new LockedAddressException(
+                        message: "Locked address record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedAddressException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedAddressStorageException =
@@ -123,7 +132,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             var addressDependencyException = 
                 new AddressDependencyException(
                     message: "Address dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(addressDependencyException);
 
@@ -148,7 +157,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             var addressDependencyException = 
                 new AddressDependencyException(
                     message: "Address dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(addressDependencyException);
 

@@ -2,9 +2,7 @@ import React from "react";
 import 'nhsuk-frontend/dist/nhsuk.min'
 import 'nhsuk-frontend/packages/polyfills';
 import { Container } from 'nhsuk-react-components'
-import { Link, useParams } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { useParams } from "react-router-dom";
 import ObjectColumnDetail from "../../components/objectColumns/objectColumnDetail";
 import BreadCrumbBase from "../../components/bases/layouts/Breadcrumb/BreadCrumbBase";
 

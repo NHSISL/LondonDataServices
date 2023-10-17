@@ -35,7 +35,7 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
         public IQueryable<AddressLoadingAudit> RetrieveAllAddressLoadingAudits() =>
             TryCatch(() => this.storageBroker.SelectAllAddressLoadingAudits());
 
-        public ValueTask<AddressLoadingAudit> RetrieveAddressLoadingAuditByIdAsync(Guid addressLoadingAuditId) =>
-            throw new NotImplementedException();
+        public async ValueTask<AddressLoadingAudit> RetrieveAddressLoadingAuditByIdAsync(Guid addressLoadingAuditId) =>
+            await this.storageBroker.SelectAddressLoadingAuditByIdAsync(addressLoadingAuditId);
     }
 }

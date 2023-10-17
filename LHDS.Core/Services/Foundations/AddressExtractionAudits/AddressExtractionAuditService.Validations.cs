@@ -77,6 +77,16 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
             }
         }
 
+        private static void ValidateAgainstStorageAddressExtractionAuditOnModify(AddressExtractionAudit inputAddressExtractionAudit, AddressExtractionAudit storageAddressExtractionAudit)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputAddressExtractionAudit.CreatedDate,
+                    secondDate: storageAddressExtractionAudit.CreatedDate,
+                    secondDateName: nameof(AddressExtractionAudit.CreatedDate)),
+                Parameter: nameof(AddressExtractionAudit.CreatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

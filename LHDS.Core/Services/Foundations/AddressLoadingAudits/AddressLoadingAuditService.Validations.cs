@@ -38,6 +38,16 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
         private void ValidateAddressLoadingAuditOnModify(AddressLoadingAudit addressLoadingAudit)
         {
             ValidateAddressLoadingAuditIsNotNull(addressLoadingAudit);
+
+            Validate(
+                (Rule: IsInvalid(addressLoadingAudit.Id), Parameter: nameof(AddressLoadingAudit.Id)),
+
+                // TODO: Add any other required validation rules
+
+                (Rule: IsInvalid(addressLoadingAudit.CreatedDate), Parameter: nameof(AddressLoadingAudit.CreatedDate)),
+                (Rule: IsInvalid(addressLoadingAudit.CreatedBy), Parameter: nameof(AddressLoadingAudit.CreatedBy)),
+                (Rule: IsInvalid(addressLoadingAudit.UpdatedDate), Parameter: nameof(AddressLoadingAudit.UpdatedDate)),
+                (Rule: IsInvalid(addressLoadingAudit.UpdatedBy), Parameter: nameof(AddressLoadingAudit.UpdatedBy)));
         }
 
         public void ValidateAddressLoadingAuditId(Guid addressLoadingAuditId) =>
@@ -94,7 +104,7 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
-        
+
         private static dynamic IsNotSame(
            string first,
            string second,

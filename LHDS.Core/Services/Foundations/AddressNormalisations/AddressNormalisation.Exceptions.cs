@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
+using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisation;
 using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -27,6 +28,15 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
             {
                 throw CreateAndLogValidationException(invalidAddressNormalisationArgumentException);
             }
+            catch (Exception exception)
+            {
+                var failedAddressNormalisationServiceException =
+                    new FailedAddressNormalisationServiceException(
+                        message: "Failed addressNormalisation service occurred, please contact support",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressNormalisationServiceException);
+            }
         }
 
         private AddressNormalisationValidationException CreateAndLogValidationException(Xeption exception)
@@ -39,6 +49,19 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
             this.loggingBroker.LogError(addressLoadingAuditValidationException);
 
             return addressLoadingAuditValidationException;
+        }
+
+        private AddressNormalisationServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var addressNormalisationServiceException =
+                new AddressNormalisationServiceException(
+                    message: "AddressNormalisation service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(addressNormalisationServiceException);
+
+            return addressNormalisationServiceException;
         }
     }
 }

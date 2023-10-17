@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
@@ -151,7 +152,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
                 await Assert.ThrowsAsync<AddressExtractionAuditDependencyValidationException>(
                     addAddressExtractionAuditTask.AsTask);
 
-            actualAddressExtractionAuditDependencyValidationException.Should().BeEquivalentTo(expectedAddressExtractionAuditValidationException);
+            actualAddressExtractionAuditDependencyValidationException.Should()
+                .BeEquivalentTo(expectedAddressExtractionAuditValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -169,6 +171,59 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnAddIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            AddressExtractionAudit someAddressExtractionAudit = CreateRandomAddressExtractionAudit();
+
+            var databaseUpdateException =
+                new DbUpdateException();
+
+            var failedAddressExtractionAuditStorageException =
+                new FailedAddressExtractionAuditStorageException(
+                    message: "Failed addressExtractionAudit storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+            var expectedAddressExtractionAuditDependencyException =
+                new AddressExtractionAuditDependencyException(
+                    message: "AddressExtractionAudit dependency error occurred, contact support.",
+                    innerException: failedAddressExtractionAuditStorageException); 
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<AddressExtractionAudit> addAddressExtractionAuditTask =
+                this.addressExtractionAuditService.AddAddressExtractionAuditAsync(someAddressExtractionAudit);
+
+            AddressExtractionAuditDependencyException actualAddressExtractionAuditDependencyException =
+                await Assert.ThrowsAsync<AddressExtractionAuditDependencyException>(
+                    addAddressExtractionAuditTask.AsTask);
+
+            // then
+            actualAddressExtractionAuditDependencyException.Should()
+                .BeEquivalentTo(expectedAddressExtractionAuditDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertAddressExtractionAuditAsync(It.IsAny<AddressExtractionAudit>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressExtractionAuditDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

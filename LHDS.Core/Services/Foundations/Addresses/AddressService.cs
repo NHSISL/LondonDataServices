@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.Addresses
             });
 
         public IQueryable<Address> RetrieveAllAddresses() =>
-            throw new System.NotImplementedException();
+            this.storageBroker.SelectAllAddresses();
     }
 }

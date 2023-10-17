@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -219,6 +220,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedAddressDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Address someAddress = CreateRandomAddress();
+            var serviceException = new Exception();
+
+            var failedAddressServiceException =
+                new FailedAddressServiceException(
+                    message: "Failed address service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedAddressServiceException =
+                new AddressServiceException(
+                    message: "Address service error occurred, contact support.",
+                    innerException: failedAddressServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<Address> addAddressTask =
+                this.addressService.AddAddressAsync(someAddress);
+
+            AddressServiceException actualAddressServiceException =
+                await Assert.ThrowsAsync<AddressServiceException>(
+                    addAddressTask.AsTask);
+
+            // then
+            actualAddressServiceException.Should()
+                .BeEquivalentTo(expectedAddressServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertAddressAsync(It.IsAny<Address>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressServiceException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

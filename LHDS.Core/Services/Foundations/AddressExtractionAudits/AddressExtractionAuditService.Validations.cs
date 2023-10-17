@@ -18,7 +18,13 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
                 (Rule: IsInvalid(addressExtractionAudit.CreatedDate), Parameter: nameof(AddressExtractionAudit.CreatedDate)),
                 (Rule: IsInvalid(addressExtractionAudit.CreatedBy), Parameter: nameof(AddressExtractionAudit.CreatedBy)),
                 (Rule: IsInvalid(addressExtractionAudit.UpdatedDate), Parameter: nameof(AddressExtractionAudit.UpdatedDate)),
-                (Rule: IsInvalid(addressExtractionAudit.UpdatedBy), Parameter: nameof(AddressExtractionAudit.UpdatedBy)));
+                (Rule: IsInvalid(addressExtractionAudit.UpdatedBy), Parameter: nameof(AddressExtractionAudit.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    firstDate: addressExtractionAudit.UpdatedDate,
+                    secondDate: addressExtractionAudit.CreatedDate,
+                    secondDateName: nameof(AddressExtractionAudit.CreatedDate)),
+                Parameter: nameof(AddressExtractionAudit.UpdatedDate)));
         }
 
         private static void ValidateAddressExtractionAuditIsNotNull(AddressExtractionAudit addressExtractionAudit)
@@ -46,6 +52,15 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsNotSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate != secondDate,
+                Message = $"Date is not the same as {secondDateName}"
+            };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

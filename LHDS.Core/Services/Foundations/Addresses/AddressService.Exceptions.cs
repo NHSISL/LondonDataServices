@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using Xeptions;
@@ -23,6 +24,15 @@ namespace LHDS.Core.Services.Foundations.Addresses
             {
                 throw CreateAndLogValidationException(invalidAddressException);
             }
+            catch (SqlException sqlException)
+            {
+                var failedAddressStorageException =
+                    new FailedAddressStorageException(
+                        message: "Failed address storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedAddressStorageException);
+            }
         }
 
         private AddressValidationException CreateAndLogValidationException(Xeption exception)
@@ -35,6 +45,18 @@ namespace LHDS.Core.Services.Foundations.Addresses
             this.loggingBroker.LogError(addressValidationException);
 
             return addressValidationException;
+        }
+
+        private AddressDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        {
+            var addressDependencyException = 
+                new AddressDependencyException(
+                    message: "Address dependency error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogCritical(addressDependencyException);
+
+            return addressDependencyException;
         }
     }
 }

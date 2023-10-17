@@ -60,6 +60,15 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
 
                 throw CreateAndLogDependencyValidationException(invalidAddressLoadingAuditReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedAddressLoadingAuditException = 
+                    new LockedAddressLoadingAuditException(
+                        message: "Locked addressLoadingAudit record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedAddressLoadingAuditException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedAddressLoadingAuditStorageException =
@@ -123,7 +132,7 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
             var addressLoadingAuditDependencyException = 
                 new AddressLoadingAuditDependencyException(
                     message: "AddressLoadingAudit dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(addressLoadingAuditDependencyException);
 
@@ -148,7 +157,7 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
             var addressLoadingAuditDependencyException = 
                 new AddressLoadingAuditDependencyException(
                     message: "AddressLoadingAudit dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(addressLoadingAuditDependencyException);
 

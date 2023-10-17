@@ -57,5 +57,52 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedAddressServiceException =
+                new FailedAddressServiceException(
+                    message: "Failed address service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedAddressServiceException =
+                new AddressServiceException(
+                    message: "Address service error occurred, contact support.",
+                    innerException: failedAddressServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAddressByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<Address> retrieveAddressByIdTask =
+                this.addressService.RetrieveAddressByIdAsync(someId);
+
+            AddressServiceException actualAddressServiceException =
+                await Assert.ThrowsAsync<AddressServiceException>(
+                    retrieveAddressByIdTask.AsTask);
+
+            // then
+            actualAddressServiceException.Should()
+                .BeEquivalentTo(expectedAddressServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAddressByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedAddressServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

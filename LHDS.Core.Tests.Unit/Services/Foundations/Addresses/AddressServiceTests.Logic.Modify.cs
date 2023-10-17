@@ -23,6 +23,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             Address expectedAddress = updatedAddress.DeepClone();
             Guid addressId = inputAddress.Id;
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.UpdateAddressAsync(inputAddress))
                     .ReturnsAsync(updatedAddress);
@@ -34,13 +38,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             // then
             actualAddress.Should().BeEquivalentTo(expectedAddress);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateAddressAsync(inputAddress),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

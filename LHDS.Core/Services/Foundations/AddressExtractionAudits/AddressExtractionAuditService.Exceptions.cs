@@ -19,6 +19,10 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
             {
                 throw CreateAndLogValidationException(nullAddressExtractionAuditException);
             }
+            catch (InvalidAddressExtractionAuditException invalidAddressExtractionAuditException)
+            {
+                throw CreateAndLogValidationException(invalidAddressExtractionAuditException);
+            }
         }
 
         private AddressExtractionAuditValidationException CreateAndLogValidationException(Xeption exception)

@@ -77,6 +77,16 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
             }
         }
 
+        private static void ValidateAgainstStorageAddressLoadingAuditOnModify(AddressLoadingAudit inputAddressLoadingAudit, AddressLoadingAudit storageAddressLoadingAudit)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputAddressLoadingAudit.CreatedDate,
+                    secondDate: storageAddressLoadingAudit.CreatedDate,
+                    secondDateName: nameof(AddressLoadingAudit.CreatedDate)),
+                Parameter: nameof(AddressLoadingAudit.CreatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

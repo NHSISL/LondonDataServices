@@ -23,10 +23,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
 
             var invalidAddressNormalisationArgumentException =
                 new InvalidAddressNormalisationArgumentException(
-                    message: "Invalid addressNormalisation argument. Please correct the errors and try again.");
+                    message: "Invalid address normalisation argument. Please correct the errors and try again.");
 
             invalidAddressNormalisationArgumentException.AddData(
-                key: nameof(invalidAddress),
+                key: "address",
                 values: "Text is required");
 
             var expectedAddressNormalisationValidationException =

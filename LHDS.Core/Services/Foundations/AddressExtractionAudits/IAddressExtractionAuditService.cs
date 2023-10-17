@@ -10,5 +10,6 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
         ValueTask<AddressExtractionAudit> AddAddressExtractionAuditAsync(AddressExtractionAudit addressExtractionAudit);
         IQueryable<AddressExtractionAudit> RetrieveAllAddressExtractionAudits();
         ValueTask<AddressExtractionAudit> RetrieveAddressExtractionAuditByIdAsync(Guid addressExtractionAuditId);
+        ValueTask<AddressExtractionAudit> ModifyAddressExtractionAuditAsync(AddressExtractionAudit addressExtractionAudit);
     }
 }

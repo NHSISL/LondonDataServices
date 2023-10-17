@@ -64,6 +64,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static AddressExtractionAudit CreateRandomModifyAddressExtractionAudit(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            AddressExtractionAudit randomAddressExtractionAudit = CreateRandomAddressExtractionAudit(dateTimeOffset);
+
+            randomAddressExtractionAudit.CreatedDate =
+                randomAddressExtractionAudit.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomAddressExtractionAudit;
+        }
+
         private static IQueryable<AddressExtractionAudit> CreateRandomAddressExtractionAudits()
         {
             return CreateAddressExtractionAuditFiller(dateTimeOffset: GetRandomDateTimeOffset())

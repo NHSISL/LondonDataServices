@@ -47,5 +47,8 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
 
                 return maybeAddressExtractionAudit;
             });
+
+        public ValueTask<AddressExtractionAudit> ModifyAddressExtractionAuditAsync(AddressExtractionAudit addressExtractionAudit) =>
+            throw new NotImplementedException();
     }
 }

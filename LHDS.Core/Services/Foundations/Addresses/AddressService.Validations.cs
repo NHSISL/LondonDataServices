@@ -38,6 +38,16 @@ namespace LHDS.Core.Services.Foundations.Addresses
         private void ValidateAddressOnModify(Address address)
         {
             ValidateAddressIsNotNull(address);
+
+            Validate(
+                (Rule: IsInvalid(address.Id), Parameter: nameof(Address.Id)),
+
+                // TODO: Add any other required validation rules
+
+                (Rule: IsInvalid(address.CreatedDate), Parameter: nameof(Address.CreatedDate)),
+                (Rule: IsInvalid(address.CreatedBy), Parameter: nameof(Address.CreatedBy)),
+                (Rule: IsInvalid(address.UpdatedDate), Parameter: nameof(Address.UpdatedDate)),
+                (Rule: IsInvalid(address.UpdatedBy), Parameter: nameof(Address.UpdatedBy)));
         }
 
         public void ValidateAddressId(Guid addressId) =>
@@ -94,7 +104,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
-        
+
         private static dynamic IsNotSame(
            string first,
            string second,

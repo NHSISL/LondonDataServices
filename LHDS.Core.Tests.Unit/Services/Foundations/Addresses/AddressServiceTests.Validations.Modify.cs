@@ -88,7 +88,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             invalidAddressException.AddData(
                 key: nameof(Address.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(Address.CreatedDate)}"
+                });
 
             invalidAddressException.AddData(
                 key: nameof(Address.UpdatedBy),
@@ -131,6 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Address randomAddress = CreateRandomAddress(randomDateTimeOffset);
             Address invalidAddress = randomAddress;
+            
             var invalidAddressException = 
                 new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again.");

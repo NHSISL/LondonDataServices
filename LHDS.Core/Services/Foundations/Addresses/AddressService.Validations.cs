@@ -47,7 +47,13 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 (Rule: IsInvalid(address.CreatedDate), Parameter: nameof(Address.CreatedDate)),
                 (Rule: IsInvalid(address.CreatedBy), Parameter: nameof(Address.CreatedBy)),
                 (Rule: IsInvalid(address.UpdatedDate), Parameter: nameof(Address.UpdatedDate)),
-                (Rule: IsInvalid(address.UpdatedBy), Parameter: nameof(Address.UpdatedBy)));
+                (Rule: IsInvalid(address.UpdatedBy), Parameter: nameof(Address.UpdatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: address.UpdatedDate,
+                    secondDate: address.CreatedDate,
+                    secondDateName: nameof(Address.CreatedDate)),
+                Parameter: nameof(Address.UpdatedDate)));
         }
 
         public void ValidateAddressId(Guid addressId) =>
@@ -86,6 +92,15 @@ namespace LHDS.Core.Services.Foundations.Addresses
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,

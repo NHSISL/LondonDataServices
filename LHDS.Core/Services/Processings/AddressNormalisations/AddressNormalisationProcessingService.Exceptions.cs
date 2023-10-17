@@ -3,7 +3,9 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.AddressNormalisation.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
+using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
 using Xeptions;
 
@@ -24,6 +26,14 @@ namespace LHDS.Core.Services.Processings.AddressNormalisations
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressNormalisationProcessingException);
             }
+            catch (AddressNormalisationValidationException addressNormalisationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressNormalisationValidationException);
+            }
+            catch (AddressNormalisationDependencyValidationException addressNormalisationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
+            }
         }
 
         private AddressNormalisationProcessingValidationException CreateAndLogValidationException(Xeption exception)
@@ -36,6 +46,19 @@ namespace LHDS.Core.Services.Processings.AddressNormalisations
             this.loggingBroker.LogError(addressNormalisationProcessingValidationException);
 
             return addressNormalisationProcessingValidationException;
+        }
+
+        private AddressNormalisationProcessingDependencyValidationException
+            CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var addressNormalisationProcessingDependencyValidationException =
+                new AddressNormalisationProcessingDependencyValidationException(
+                    message: "Address normalisation processing dependency validation occurred, please try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(addressNormalisationProcessingDependencyValidationException);
+
+            return addressNormalisationProcessingDependencyValidationException;
         }
     }
 }

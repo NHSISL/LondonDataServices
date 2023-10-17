@@ -1,0 +1,52 @@
+using System;
+using Moq;
+using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Foundations.AddressExtractionAudits;
+using LHDS.Core.Services.Foundations.AddressExtractionAudits;
+using Tynamix.ObjectFiller;
+
+namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
+{
+    public partial class AddressExtractionAuditServiceTests
+    {
+        private readonly Mock<IStorageBroker> storageBrokerMock;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly IAddressExtractionAuditService addressExtractionAuditService;
+
+        public AddressExtractionAuditServiceTests()
+        {
+            this.storageBrokerMock = new Mock<IStorageBroker>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.loggingBrokerMock = new Mock<ILoggingBroker>();
+
+            this.addressExtractionAuditService = new AddressExtractionAuditService(
+                storageBroker: this.storageBrokerMock.Object,
+                dateTimeBroker: this.dateTimeBrokerMock.Object,
+                loggingBroker: this.loggingBrokerMock.Object);
+        }
+
+        private static DateTimeOffset GetRandomDateTimeOffset() =>
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static AddressExtractionAudit CreateRandomAddressExtractionAudit(DateTimeOffset dateTimeOffset) =>
+            CreateAddressExtractionAuditFiller(dateTimeOffset).Create();
+
+        private static Filler<AddressExtractionAudit> CreateAddressExtractionAuditFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<AddressExtractionAudit>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(addressExtractionAudit => addressExtractionAudit.CreatedBy).Use(user)
+                .OnProperty(addressExtractionAudit => addressExtractionAudit.UpdatedBy).Use(user);
+
+            // TODO: Complete the filler setup e.g. ignore related properties etc...
+
+            return filler;
+        }
+    }
+}

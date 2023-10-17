@@ -22,7 +22,7 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<AddressExtractionAudit> AddAddressExtractionAuditAsync(AddressExtractionAudit addressExtractionAudit) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<AddressExtractionAudit> AddAddressExtractionAuditAsync(AddressExtractionAudit addressExtractionAudit) =>
+            await this.storageBroker.InsertAddressExtractionAuditAsync(addressExtractionAudit);
     }
 }

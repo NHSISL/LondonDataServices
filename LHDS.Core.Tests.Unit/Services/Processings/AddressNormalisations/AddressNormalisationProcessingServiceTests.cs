@@ -2,11 +2,14 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Linq.Expressions;
+using System;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Processings.AddressNormalisations;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
 {
@@ -27,5 +30,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
     }
 }

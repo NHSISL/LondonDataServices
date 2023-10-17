@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits;
@@ -8,5 +9,6 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
     {
         ValueTask<AddressExtractionAudit> AddAddressExtractionAuditAsync(AddressExtractionAudit addressExtractionAudit);
         IQueryable<AddressExtractionAudit> RetrieveAllAddressExtractionAudits();
+        ValueTask<AddressExtractionAudit> RetrieveAddressExtractionAuditByIdAsync(Guid addressExtractionAuditId);
     }
 }

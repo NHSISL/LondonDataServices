@@ -2,14 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.AddressNormalisation;
-using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
-using LHDS.Core.Models.Processings.Documents.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -20,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task 
+        public async Task
             ShouldThrowDependencyValidationExceptionOnGetNormalisedAddressIfDependencyValidationErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
@@ -30,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
 
             var expectedAddressNormalisationProcessingDependencyValidationException =
                 new AddressNormalisationProcessingDependencyValidationException(
-                    message: "Document processing dependency validation occurred, please try again.",
+                    message: "Address normalisation processing dependency validation occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.addressNormalisationServiceMock.Setup(service =>

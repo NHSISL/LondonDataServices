@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-namespace LHDS.Core.Models.Foundations.AddressNormalisation
+namespace LHDS.Core.Models.Foundations.AddressNormalisations
 {
     public class AddressNormalisation
     {

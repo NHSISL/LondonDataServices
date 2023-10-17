@@ -91,6 +91,15 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
 
                 throw CreateAndLogCriticalDependencyException(failedAddressLoadingAuditStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedAddressLoadingAuditServiceException =
+                    new FailedAddressLoadingAuditServiceException(
+                        message: "Failed addressLoadingAudit service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressLoadingAuditServiceException);
+            }
         }
 
         private AddressLoadingAuditValidationException CreateAndLogValidationException(Xeption exception)

@@ -22,7 +22,12 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<AddressLoadingAudit> AddAddressLoadingAuditAsync(AddressLoadingAudit addressLoadingAudit) =>
-            await this.storageBroker.InsertAddressLoadingAuditAsync(addressLoadingAudit);
+        public ValueTask<AddressLoadingAudit> AddAddressLoadingAuditAsync(AddressLoadingAudit addressLoadingAudit) =>
+            TryCatch(async () =>
+            {
+                ValidateAddressLoadingAuditOnAdd(addressLoadingAudit);
+
+                return await this.storageBroker.InsertAddressLoadingAuditAsync(addressLoadingAudit);
+            });
     }
 }

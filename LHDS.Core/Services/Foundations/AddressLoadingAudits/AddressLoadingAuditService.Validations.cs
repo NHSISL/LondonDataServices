@@ -27,10 +27,12 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
                 Parameter: nameof(AddressLoadingAudit.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    firstId: addressLoadingAudit.UpdatedBy,
-                    secondId: addressLoadingAudit.CreatedBy,
-                    secondIdName: nameof(AddressLoadingAudit.CreatedBy)),
-                Parameter: nameof(AddressLoadingAudit.UpdatedBy)));
+                    first: addressLoadingAudit.UpdatedBy,
+                    second: addressLoadingAudit.CreatedBy,
+                    secondName: nameof(AddressLoadingAudit.CreatedBy)),
+                Parameter: nameof(AddressLoadingAudit.UpdatedBy)),
+
+                (Rule: IsNotRecent(addressLoadingAudit.CreatedDate), Parameter: nameof(AddressLoadingAudit.CreatedDate)));
         }
 
         private static void ValidateAddressLoadingAuditIsNotNull(AddressLoadingAudit addressLoadingAudit)
@@ -85,6 +87,23 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
                Condition = first != second,
                Message = $"Text is not the same as {secondName}"
            };
+
+        private dynamic IsNotRecent(DateTimeOffset date) => new
+        {
+            Condition = IsDateNotRecent(date),
+            Message = "Date is not recent"
+        };
+
+        private bool IsDateNotRecent(DateTimeOffset date)
+        {
+            DateTimeOffset currentDateTime =
+                this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+            TimeSpan timeDifference = currentDateTime.Subtract(date);
+            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+
+            return timeDifference.Duration() > oneMinute;
+        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

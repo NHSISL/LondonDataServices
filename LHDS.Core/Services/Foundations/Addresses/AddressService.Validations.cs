@@ -53,7 +53,9 @@ namespace LHDS.Core.Services.Foundations.Addresses
                     firstDate: address.UpdatedDate,
                     secondDate: address.CreatedDate,
                     secondDateName: nameof(Address.CreatedDate)),
-                Parameter: nameof(Address.UpdatedDate)));
+                Parameter: nameof(Address.UpdatedDate)),
+
+                (Rule: IsNotRecent(address.UpdatedDate), Parameter: nameof(address.UpdatedDate)));
         }
 
         public void ValidateAddressId(Guid addressId) =>

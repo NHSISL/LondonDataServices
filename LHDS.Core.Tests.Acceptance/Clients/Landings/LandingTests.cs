@@ -17,10 +17,13 @@ using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.Downloads;
+using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.Configuration;
@@ -40,6 +43,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly IDataSetSpecificationService dataSetSpecificationService;
+        private readonly ISupplierService supplierService;
+        private readonly IDataSetService dataSetService;
         private readonly IDataSetSpecificationProcessingService dataSetSpecificationProcessingService;
         private readonly ILandingClient landingClient;
         private readonly LandingConfiguration landingConfiguration;
@@ -67,12 +72,16 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             serviceCollection
                 .AddTransient<IDownloadBroker>(serviceProvider => downloadBrokerMock.Object)
                 .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object)
+                .AddTransient<ISupplierService, SupplierService>()
+                .AddTransient<IDataSetService, DataSetService>()
                 .AddTransient<IDataSetSpecificationService, DataSetSpecificationService>()
                 .AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
 
             serviceCollection.AddLandingClientForAcceptance(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
+            this.supplierService = serviceProvider.GetService<ISupplierService>();
+            this.dataSetService = serviceProvider.GetService<IDataSetService>();
             this.dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
 
             this.dataSetSpecificationProcessingService = 
@@ -87,7 +96,19 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
-        private static string GetRandomString(int length) =>
+        private static string GetRandomFileName()
+        {
+            string filename = GetRandomString();
+
+            for (int i = 0; i< 6; i++)
+            {
+                filename = $"{filename}_{GetRandomString(10)}";
+            }
+
+            return filename;
+        }
+
+    private static string GetRandomString(int length) =>
            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
         private static int GetRandomNumber(int min = 2, int max = 10) =>
@@ -145,6 +166,26 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset);
+
+            return filler;
+        }
+
+        private static Supplier CreateRandomSupplier(Guid supplierId, DateTimeOffset dateTimeOffset) =>
+            CreateSupplierFiller(supplierId ,dateTimeOffset).Create();
+
+        private static Filler<Supplier> CreateSupplierFiller(Guid supplierId, DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<Supplier>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(supplier => supplier.Id).Use(supplierId)
+                .OnProperty(supplier => supplier.CreatedBy).Use(user)
+                .OnProperty(supplier => supplier.UpdatedBy).Use(user)
+                .OnProperty(supplier => supplier.IngestionTrackings).IgnoreIt()
+                .OnProperty(supplier => supplier.DataSets).IgnoreIt();
 
             return filler;
         }

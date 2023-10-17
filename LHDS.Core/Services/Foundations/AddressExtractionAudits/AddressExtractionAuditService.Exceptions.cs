@@ -91,6 +91,15 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
 
                 throw CreateAndLogCriticalDependencyException(failedAddressExtractionAuditStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedAddressExtractionAuditServiceException =
+                    new FailedAddressExtractionAuditServiceException(
+                        message: "Failed addressExtractionAudit service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressExtractionAuditServiceException);
+            }
         }
 
         private AddressExtractionAuditValidationException CreateAndLogValidationException(Xeption exception)

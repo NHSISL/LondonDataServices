@@ -54,5 +54,49 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfAddressIsNotFoundAndLogItAsync()
+        {
+            //given
+            Guid someAddressId = Guid.NewGuid();
+            Address noAddress = null;
+
+            var notFoundAddressException =
+                new NotFoundAddressException(someAddressId);
+
+            var expectedAddressValidationException =
+                new AddressValidationException(
+                    message: "Address validation errors occurred, please try again.",
+                    innerException: notFoundAddressException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAddressByIdAsync(It.IsAny<Guid>()))
+                    .ReturnsAsync(noAddress);
+
+            //when
+            ValueTask<Address> retrieveAddressByIdTask =
+                this.addressService.RetrieveAddressByIdAsync(someAddressId);
+
+            AddressValidationException actualAddressValidationException =
+                await Assert.ThrowsAsync<AddressValidationException>(
+                    retrieveAddressByIdTask.AsTask);
+
+            //then
+            actualAddressValidationException.Should().BeEquivalentTo(expectedAddressValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAddressByIdAsync(It.IsAny<Guid>()),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

@@ -65,11 +65,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
             return new TheoryData<Xeption>
             {
                 new AddressNormalisationDependencyException(
-                    message: "AddressNormalisation dependency error occurred, contact support.",
+                    message: "Address normalisation dependency error occurred, contact support.",
                     innerException),
 
                 new AddressNormalisationServiceException(
-                    message: "AddressNormalisation service error occurred, contact support.",
+                    message: "Address normalisation service error occurred, contact support.",
                     innerException)
             };
         }

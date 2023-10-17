@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
             });
 
         public IQueryable<AddressExtractionAudit> RetrieveAllAddressExtractionAudits() =>
-            this.storageBroker.SelectAllAddressExtractionAudits();
+            TryCatch(() => this.storageBroker.SelectAllAddressExtractionAudits());
     }
 }

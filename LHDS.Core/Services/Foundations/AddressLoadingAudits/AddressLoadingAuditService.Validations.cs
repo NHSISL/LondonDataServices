@@ -84,7 +84,13 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
                     firstDate: inputAddressLoadingAudit.CreatedDate,
                     secondDate: storageAddressLoadingAudit.CreatedDate,
                     secondDateName: nameof(AddressLoadingAudit.CreatedDate)),
-                Parameter: nameof(AddressLoadingAudit.CreatedDate)));
+                Parameter: nameof(AddressLoadingAudit.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    first: inputAddressLoadingAudit.CreatedBy,
+                    second: storageAddressLoadingAudit.CreatedBy,
+                    secondName: nameof(AddressLoadingAudit.CreatedBy)),
+                Parameter: nameof(AddressLoadingAudit.CreatedBy)));
         }
 
         private static dynamic IsInvalid(Guid id) => new

@@ -29,8 +29,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
                 this.addressLoadingAuditService.AddAddressLoadingAuditAsync(nullAddressLoadingAudit);
 
             AddressLoadingAuditValidationException actualAddressLoadingAuditValidationException =
-                await Assert.ThrowsAsync<AddressLoadingAuditValidationException>(
-                    addAddressLoadingAuditTask.AsTask);
+                await Assert.ThrowsAsync<AddressLoadingAuditValidationException>(() =>
+                    addAddressLoadingAuditTask.AsTask());
 
             // then
             actualAddressLoadingAuditValidationException.Should()
@@ -98,12 +98,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
                 this.addressLoadingAuditService.AddAddressLoadingAuditAsync(invalidAddressLoadingAudit);
 
             AddressLoadingAuditValidationException actualAddressLoadingAuditValidationException =
-                await Assert.ThrowsAsync<AddressLoadingAuditValidationException>(
-                    addAddressLoadingAuditTask.AsTask);
+                await Assert.ThrowsAsync<AddressLoadingAuditValidationException>(() =>
+                    addAddressLoadingAuditTask.AsTask());
 
             // then
             actualAddressLoadingAuditValidationException.Should()
                 .BeEquivalentTo(expectedAddressLoadingAuditValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -144,17 +148,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
                     message: "AddressLoadingAudit validation errors occurred, please try again.",
                     innerException: invalidAddressLoadingAuditException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<AddressLoadingAudit> addAddressLoadingAuditTask =
                 this.addressLoadingAuditService.AddAddressLoadingAuditAsync(invalidAddressLoadingAudit);
 
             AddressLoadingAuditValidationException actualAddressLoadingAuditValidationException =
-                await Assert.ThrowsAsync<AddressLoadingAuditValidationException>(
-                    addAddressLoadingAuditTask.AsTask);
+                await Assert.ThrowsAsync<AddressLoadingAuditValidationException>(() =>
+                    addAddressLoadingAuditTask.AsTask());
 
             // then
             actualAddressLoadingAuditValidationException.Should()
                 .BeEquivalentTo(expectedAddressLoadingAuditValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -165,9 +177,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
                 broker.InsertAddressLoadingAuditAsync(It.IsAny<AddressLoadingAudit>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -192,17 +204,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
                     message: "AddressLoadingAudit validation errors occurred, please try again.",
                     innerException: invalidAddressLoadingAuditException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<AddressLoadingAudit> addAddressLoadingAuditTask =
                 this.addressLoadingAuditService.AddAddressLoadingAuditAsync(invalidAddressLoadingAudit);
 
             AddressLoadingAuditValidationException actualAddressLoadingAuditValidationException =
-                await Assert.ThrowsAsync<AddressLoadingAuditValidationException>(
-                    addAddressLoadingAuditTask.AsTask);
+                await Assert.ThrowsAsync<AddressLoadingAuditValidationException>(() =>
+                    addAddressLoadingAuditTask.AsTask());
 
             // then
             actualAddressLoadingAuditValidationException.Should()
                 .BeEquivalentTo(expectedAddressLoadingAuditValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -254,8 +274,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
                 this.addressLoadingAuditService.AddAddressLoadingAuditAsync(invalidAddressLoadingAudit);
 
             AddressLoadingAuditValidationException actualAddressLoadingAuditValidationException =
-                await Assert.ThrowsAsync<AddressLoadingAuditValidationException>(
-                    addAddressLoadingAuditTask.AsTask);
+                await Assert.ThrowsAsync<AddressLoadingAuditValidationException>(() =>
+                    addAddressLoadingAuditTask.AsTask());
 
             // then
             actualAddressLoadingAuditValidationException.Should()

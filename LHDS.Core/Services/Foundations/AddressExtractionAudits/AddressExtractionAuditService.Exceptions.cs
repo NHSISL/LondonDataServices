@@ -60,6 +60,15 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
 
                 throw CreateAndLogDependencyValidationException(invalidAddressExtractionAuditReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedAddressExtractionAuditException = 
+                    new LockedAddressExtractionAuditException(
+                        message: "Locked addressExtractionAudit record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedAddressExtractionAuditException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedAddressExtractionAuditStorageException =
@@ -123,7 +132,7 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
             var addressExtractionAuditDependencyException = 
                 new AddressExtractionAuditDependencyException(
                     message: "AddressExtractionAudit dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(addressExtractionAuditDependencyException);
 
@@ -148,7 +157,7 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
             var addressExtractionAuditDependencyException = 
                 new AddressExtractionAuditDependencyException(
                     message: "AddressExtractionAudit dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(addressExtractionAuditDependencyException);
 

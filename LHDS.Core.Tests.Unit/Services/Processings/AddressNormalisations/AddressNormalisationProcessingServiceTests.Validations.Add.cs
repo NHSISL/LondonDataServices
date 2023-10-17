@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
 
             var expectedAddressNormalisationProcessingValidationException =
                 new AddressNormalisationProcessingValidationException(
-                    message: "Address normalisation  validation errors occurred, please try again.",
+                    message: "Address normalisation processing validation errors occurred, please try again.",
                     innerException: invalidArgumentAddressNormalisationProcessingException);
 
             // when

@@ -9,7 +9,7 @@ using LHDS.Core.Services.Foundations.AddressNormalisations;
 
 namespace LHDS.Core.Services.Processings.AddressNormalisations
 {
-    public class AddressNormalisationProcessingService : IAddressNormalisationProcessingService
+    public partial class AddressNormalisationProcessingService : IAddressNormalisationProcessingService
     {
         private readonly IAddressNormalisationService addressNormalisationService;
         private readonly ILoggingBroker loggingBroker;
@@ -22,12 +22,15 @@ namespace LHDS.Core.Services.Processings.AddressNormalisations
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<AddressNormalisation> GetNormalisedAddress(string address)
-        {
-            AddressNormalisation normalisedAddress = 
-                await this.addressNormalisationService.GetNormalisedAddress(address);
+        public ValueTask<AddressNormalisation> GetNormalisedAddress(string address) =>
+            TryCatch(async () =>
+            {
+                ValidateAddressNormalisationArgs(address);
 
-            return normalisedAddress;
-        }
+                AddressNormalisation normalisedAddress =
+                    await this.addressNormalisationService.GetNormalisedAddress(address);
+
+                return normalisedAddress;
+            });
     }
 }

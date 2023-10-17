@@ -3,9 +3,6 @@ import 'nhsuk-frontend/dist/nhsuk.min'
 import 'nhsuk-frontend/packages/polyfills';
 import { Container } from 'nhsuk-react-components'
 import SpecificationObjectDetail from "../../components/specificationObjects/specificationObjectDetail";
-import { Link, useParams } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import BreadCrumbBase from "../../components/bases/layouts/Breadcrumb/BreadCrumbBase";
 
 export const SpecificationObjectPage = () => {

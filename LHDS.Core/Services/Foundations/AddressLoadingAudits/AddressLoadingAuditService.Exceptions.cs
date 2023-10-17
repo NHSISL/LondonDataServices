@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
     public partial class AddressLoadingAuditService
     {
         private delegate ValueTask<AddressLoadingAudit> ReturningAddressLoadingAuditFunction();
+        private delegate IQueryable<AddressLoadingAudit> ReturningAddressLoadingAuditsFunction();
 
         private async ValueTask<AddressLoadingAudit> TryCatch(ReturningAddressLoadingAuditFunction returningAddressLoadingAuditFunction)
         {
@@ -74,6 +76,23 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
             }
         }
 
+        private IQueryable<AddressLoadingAudit> TryCatch(ReturningAddressLoadingAuditsFunction returningAddressLoadingAuditsFunction)
+        {
+            try
+            {
+                return returningAddressLoadingAuditsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedAddressLoadingAuditStorageException =
+                    new FailedAddressLoadingAuditStorageException(
+                        message: "Failed addressLoadingAudit storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedAddressLoadingAuditStorageException);
+            }
+        }
+
         private AddressLoadingAuditValidationException CreateAndLogValidationException(Xeption exception)
         {
             var addressLoadingAuditValidationException =
@@ -91,7 +110,7 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
             var addressLoadingAuditDependencyException = 
                 new AddressLoadingAuditDependencyException(
                     message: "AddressLoadingAudit dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(addressLoadingAuditDependencyException);
 
@@ -116,7 +135,7 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
             var addressLoadingAuditDependencyException = 
                 new AddressLoadingAuditDependencyException(
                     message: "AddressLoadingAudit dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(addressLoadingAuditDependencyException);
 

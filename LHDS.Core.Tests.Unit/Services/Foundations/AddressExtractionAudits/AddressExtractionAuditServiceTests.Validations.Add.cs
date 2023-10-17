@@ -29,8 +29,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
                 this.addressExtractionAuditService.AddAddressExtractionAuditAsync(nullAddressExtractionAudit);
 
             AddressExtractionAuditValidationException actualAddressExtractionAuditValidationException =
-                await Assert.ThrowsAsync<AddressExtractionAuditValidationException>(
-                    addAddressExtractionAuditTask.AsTask);
+                await Assert.ThrowsAsync<AddressExtractionAuditValidationException>(() =>
+                    addAddressExtractionAuditTask.AsTask());
 
             // then
             actualAddressExtractionAuditValidationException.Should()
@@ -98,12 +98,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
                 this.addressExtractionAuditService.AddAddressExtractionAuditAsync(invalidAddressExtractionAudit);
 
             AddressExtractionAuditValidationException actualAddressExtractionAuditValidationException =
-                await Assert.ThrowsAsync<AddressExtractionAuditValidationException>(
-                    addAddressExtractionAuditTask.AsTask);
+                await Assert.ThrowsAsync<AddressExtractionAuditValidationException>(() =>
+                    addAddressExtractionAuditTask.AsTask());
 
             // then
             actualAddressExtractionAuditValidationException.Should()
                 .BeEquivalentTo(expectedAddressExtractionAuditValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -144,17 +148,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
                     message: "AddressExtractionAudit validation errors occurred, please try again.",
                     innerException: invalidAddressExtractionAuditException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<AddressExtractionAudit> addAddressExtractionAuditTask =
                 this.addressExtractionAuditService.AddAddressExtractionAuditAsync(invalidAddressExtractionAudit);
 
             AddressExtractionAuditValidationException actualAddressExtractionAuditValidationException =
-                await Assert.ThrowsAsync<AddressExtractionAuditValidationException>(
-                    addAddressExtractionAuditTask.AsTask);
+                await Assert.ThrowsAsync<AddressExtractionAuditValidationException>(() =>
+                    addAddressExtractionAuditTask.AsTask());
 
             // then
             actualAddressExtractionAuditValidationException.Should()
                 .BeEquivalentTo(expectedAddressExtractionAuditValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -165,9 +177,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
                 broker.InsertAddressExtractionAuditAsync(It.IsAny<AddressExtractionAudit>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -192,17 +204,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
                     message: "AddressExtractionAudit validation errors occurred, please try again.",
                     innerException: invalidAddressExtractionAuditException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<AddressExtractionAudit> addAddressExtractionAuditTask =
                 this.addressExtractionAuditService.AddAddressExtractionAuditAsync(invalidAddressExtractionAudit);
 
             AddressExtractionAuditValidationException actualAddressExtractionAuditValidationException =
-                await Assert.ThrowsAsync<AddressExtractionAuditValidationException>(
-                    addAddressExtractionAuditTask.AsTask);
+                await Assert.ThrowsAsync<AddressExtractionAuditValidationException>(() =>
+                    addAddressExtractionAuditTask.AsTask());
 
             // then
             actualAddressExtractionAuditValidationException.Should()
                 .BeEquivalentTo(expectedAddressExtractionAuditValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -254,8 +274,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
                 this.addressExtractionAuditService.AddAddressExtractionAuditAsync(invalidAddressExtractionAudit);
 
             AddressExtractionAuditValidationException actualAddressExtractionAuditValidationException =
-                await Assert.ThrowsAsync<AddressExtractionAuditValidationException>(
-                    addAddressExtractionAuditTask.AsTask);
+                await Assert.ThrowsAsync<AddressExtractionAuditValidationException>(() =>
+                    addAddressExtractionAuditTask.AsTask());
 
             // then
             actualAddressExtractionAuditValidationException.Should()

@@ -22,6 +22,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             AddressExtractionAudit storageAddressExtractionAudit = inputAddressExtractionAudit;
             AddressExtractionAudit expectedAddressExtractionAudit = storageAddressExtractionAudit.DeepClone();
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertAddressExtractionAuditAsync(inputAddressExtractionAudit))
                     .ReturnsAsync(storageAddressExtractionAudit);
@@ -33,13 +37,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             // then
             actualAddressExtractionAudit.Should().BeEquivalentTo(expectedAddressExtractionAudit);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertAddressExtractionAuditAsync(inputAddressExtractionAudit),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

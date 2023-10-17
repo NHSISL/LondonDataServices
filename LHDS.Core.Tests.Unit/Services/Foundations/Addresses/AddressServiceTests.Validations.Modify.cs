@@ -223,7 +223,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     modifyAddressTask.AsTask);
 
             // then
-            actualAddressValidationException.Should().BeEquivalentTo(expectedAddressValidatonException);
+            actualAddressValidationException.Should()
+                .BeEquivalentTo(expectedAddressValidatonException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -241,6 +242,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfAddressDoesNotExistAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Address randomAddress = CreateRandomModifyAddress(randomDateTimeOffset);
+            Address nonExistAddress = randomAddress;
+            Address nullAddress = null;
+
+            var notFoundAddressException =
+                new NotFoundAddressException(nonExistAddress.Id);
+
+            var expectedAddressValidationException =
+                new AddressValidationException(
+                    message: "Address validation errors occurred, please try again.",
+                    innerException: notFoundAddressException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAddressByIdAsync(nonExistAddress.Id))
+                .ReturnsAsync(nullAddress);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when 
+            ValueTask<Address> modifyAddressTask =
+                this.addressService.ModifyAddressAsync(nonExistAddress);
+
+            AddressValidationException actualAddressValidationException =
+                await Assert.ThrowsAsync<AddressValidationException>(
+                    modifyAddressTask.AsTask);
+
+            // then
+            actualAddressValidationException.Should()
+                .BeEquivalentTo(expectedAddressValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAddressByIdAsync(nonExistAddress.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

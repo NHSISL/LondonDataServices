@@ -47,5 +47,8 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
 
                 return maybeAddressLoadingAudit;
             });
+
+        public ValueTask<AddressLoadingAudit> ModifyAddressLoadingAuditAsync(AddressLoadingAudit addressLoadingAudit) =>
+            throw new NotImplementedException();
     }
 }

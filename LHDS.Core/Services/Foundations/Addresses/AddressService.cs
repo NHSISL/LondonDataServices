@@ -62,12 +62,15 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 return await this.storageBroker.UpdateAddressAsync(address);
             });
 
-        public async ValueTask<Address> RemoveAddressByIdAsync(Guid addressId)
-        {
-            Address maybeAddress = await this.storageBroker
+        public ValueTask<Address> RemoveAddressByIdAsync(Guid addressId) =>
+            TryCatch(async () =>
+            {
+                ValidateAddressId(addressId);
+
+                Address maybeAddress = await this.storageBroker
                     .SelectAddressByIdAsync(addressId);
 
-            return await this.storageBroker.DeleteAddressAsync(maybeAddress);
-        }
+                return await this.storageBroker.DeleteAddressAsync(maybeAddress);
+            });
     }
 }

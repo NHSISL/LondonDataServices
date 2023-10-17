@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.AddressNormalisation;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using Moq;
 using Xeptions;
@@ -27,8 +28,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
             var randomAddress = GetRandomString();
             string inputAddress = randomAddress;
 
-            var expectedDocumentProcessingDependencyValidationException =
-                new DocumentProcessingDependencyValidationException(
+            var expectedAddressNormalisationProcessingDependencyValidationException =
+                new AddressNormalisationProcessingDependencyValidationException(
                     message: "Document processing dependency validation occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
@@ -40,12 +41,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
             ValueTask<AddressNormalisation> getNormalisedAddressTask =
                 this.addressNormalisationProcessingService.GetNormalisedAddress(inputAddress);
 
-            DocumentProcessingDependencyValidationException actualException =
-                await Assert.ThrowsAsync<DocumentProcessingDependencyValidationException>(
+            AddressNormalisationProcessingDependencyValidationException actualException =
+                await Assert.ThrowsAsync<AddressNormalisationProcessingDependencyValidationException>(
                     getNormalisedAddressTask.AsTask);
 
             // then
-            actualException.Should().BeEquivalentTo(expectedDocumentProcessingDependencyValidationException);
+            actualException.Should().BeEquivalentTo(expectedAddressNormalisationProcessingDependencyValidationException);
 
             this.addressNormalisationServiceMock.Verify(service =>
                 service.GetNormalisedAddress(inputAddress),
@@ -53,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
 
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
-                     expectedDocumentProcessingDependencyValidationException))),
+                     expectedAddressNormalisationProcessingDependencyValidationException))),
                          Times.Once);
 
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();

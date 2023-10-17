@@ -35,6 +35,9 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
                 (Rule: IsNotRecent(addressLoadingAudit.CreatedDate), Parameter: nameof(AddressLoadingAudit.CreatedDate)));
         }
 
+        public void ValidateAddressLoadingAuditId(Guid addressLoadingAuditId) =>
+            Validate((Rule: IsInvalid(addressLoadingAuditId), Parameter: nameof(AddressLoadingAudit.Id)));
+
         private static void ValidateAddressLoadingAuditIsNotNull(AddressLoadingAudit addressLoadingAudit)
         {
             if (addressLoadingAudit is null)

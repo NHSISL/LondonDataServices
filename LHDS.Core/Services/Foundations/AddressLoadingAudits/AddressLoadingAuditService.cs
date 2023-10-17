@@ -1,59 +1,62 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages.Sql;
+using FluentAssertions;
+using Force.DeepCloner;
+using Moq;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
+using Xunit;
 
-namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
+namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
 {
-    public partial class AddressLoadingAuditService : IAddressLoadingAuditService
+    public partial class AddressLoadingAuditServiceTests
     {
-        private readonly IStorageBroker storageBroker;
-        private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ILoggingBroker loggingBroker;
-
-        public AddressLoadingAuditService(
-            IStorageBroker storageBroker,
-            IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker)
+        [Fact]
+        public async Task ShouldModifyAddressLoadingAuditAsync()
         {
-            this.storageBroker = storageBroker;
-            this.dateTimeBroker = dateTimeBroker;
-            this.loggingBroker = loggingBroker;
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            AddressLoadingAudit randomAddressLoadingAudit = CreateRandomModifyAddressLoadingAudit(randomDateTimeOffset);
+            AddressLoadingAudit inputAddressLoadingAudit = randomAddressLoadingAudit;
+            AddressLoadingAudit storageAddressLoadingAudit = inputAddressLoadingAudit.DeepClone();
+            storageAddressLoadingAudit.UpdatedDate = randomAddressLoadingAudit.CreatedDate;
+            AddressLoadingAudit updatedAddressLoadingAudit = inputAddressLoadingAudit;
+            AddressLoadingAudit expectedAddressLoadingAudit = updatedAddressLoadingAudit.DeepClone();
+            Guid addressLoadingAuditId = inputAddressLoadingAudit.Id;
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAddressLoadingAuditByIdAsync(addressLoadingAuditId))
+                    .ReturnsAsync(storageAddressLoadingAudit);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.UpdateAddressLoadingAuditAsync(inputAddressLoadingAudit))
+                    .ReturnsAsync(updatedAddressLoadingAudit);
+
+            // when
+            AddressLoadingAudit actualAddressLoadingAudit =
+                await this.addressLoadingAuditService.ModifyAddressLoadingAuditAsync(inputAddressLoadingAudit);
+
+            // then
+            actualAddressLoadingAudit.Should().BeEquivalentTo(expectedAddressLoadingAudit);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAddressLoadingAuditByIdAsync(inputAddressLoadingAudit.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateAddressLoadingAuditAsync(inputAddressLoadingAudit),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
-
-        public ValueTask<AddressLoadingAudit> AddAddressLoadingAuditAsync(AddressLoadingAudit addressLoadingAudit) =>
-            TryCatch(async () =>
-            {
-                ValidateAddressLoadingAuditOnAdd(addressLoadingAudit);
-
-                return await this.storageBroker.InsertAddressLoadingAuditAsync(addressLoadingAudit);
-            });
-
-        public IQueryable<AddressLoadingAudit> RetrieveAllAddressLoadingAudits() =>
-            TryCatch(() => this.storageBroker.SelectAllAddressLoadingAudits());
-
-        public ValueTask<AddressLoadingAudit> RetrieveAddressLoadingAuditByIdAsync(Guid addressLoadingAuditId) =>
-            TryCatch(async () =>
-            {
-                ValidateAddressLoadingAuditId(addressLoadingAuditId);
-
-                AddressLoadingAudit maybeAddressLoadingAudit = await this.storageBroker
-                    .SelectAddressLoadingAuditByIdAsync(addressLoadingAuditId);
-
-                ValidateStorageAddressLoadingAudit(maybeAddressLoadingAudit, addressLoadingAuditId);
-
-                return maybeAddressLoadingAudit;
-            });
-
-        public ValueTask<AddressLoadingAudit> ModifyAddressLoadingAuditAsync(AddressLoadingAudit addressLoadingAudit) =>
-            TryCatch(async () =>
-            {
-                ValidateAddressLoadingAuditOnModify(addressLoadingAudit);
-
-                return await this.storageBroker.UpdateAddressLoadingAuditAsync(addressLoadingAudit);
-            });
     }
 }

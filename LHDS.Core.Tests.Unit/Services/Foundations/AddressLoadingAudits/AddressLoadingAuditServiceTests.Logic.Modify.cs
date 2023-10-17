@@ -28,6 +28,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
+                broker.SelectAddressLoadingAuditByIdAsync(addressLoadingAuditId))
+                    .ReturnsAsync(storageAddressLoadingAudit);
+
+            this.storageBrokerMock.Setup(broker =>
                 broker.UpdateAddressLoadingAuditAsync(inputAddressLoadingAudit))
                     .ReturnsAsync(updatedAddressLoadingAudit);
 
@@ -43,12 +47,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
+                broker.SelectAddressLoadingAuditByIdAsync(inputAddressLoadingAudit.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
                 broker.UpdateAddressLoadingAuditAsync(inputAddressLoadingAudit),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

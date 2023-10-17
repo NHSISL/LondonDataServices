@@ -88,7 +88,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
 
             invalidAddressLoadingAuditException.AddData(
                 key: nameof(AddressLoadingAudit.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(AddressLoadingAudit.CreatedDate)}"
+                });
 
             invalidAddressLoadingAuditException.AddData(
                 key: nameof(AddressLoadingAudit.UpdatedBy),
@@ -131,6 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             AddressLoadingAudit randomAddressLoadingAudit = CreateRandomAddressLoadingAudit(randomDateTimeOffset);
             AddressLoadingAudit invalidAddressLoadingAudit = randomAddressLoadingAudit;
+            
             var invalidAddressLoadingAuditException = 
                 new InvalidAddressLoadingAuditException(
                     message: "Invalid addressLoadingAudit. Please correct the errors and try again.");

@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             var expectedAddressExtractionAuditDependencyException =
                 new AddressExtractionAuditDependencyException(
                     message: "AddressExtractionAudit dependency error occurred, contact support.",
-                    innerException: failedAddressExtractionAuditStorageException);             
+                    innerException: failedAddressExtractionAuditStorageException); 
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -115,6 +115,60 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            AddressExtractionAudit someAddressExtractionAudit = CreateRandomAddressExtractionAudit();
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidAddressExtractionAuditReferenceException =
+                new InvalidAddressExtractionAuditReferenceException(
+                    message: "Invalid addressExtractionAudit reference error occurred.", 
+                    innerException: foreignKeyConstraintConflictException);
+
+            var expectedAddressExtractionAuditValidationException =
+                new AddressExtractionAuditDependencyValidationException(
+                    message: "AddressExtractionAudit dependency validation occurred, please try again.",
+                    innerException: invalidAddressExtractionAuditReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<AddressExtractionAudit> addAddressExtractionAuditTask =
+                this.addressExtractionAuditService.AddAddressExtractionAuditAsync(someAddressExtractionAudit);
+
+            // then
+            AddressExtractionAuditDependencyValidationException actualAddressExtractionAuditDependencyValidationException =
+                await Assert.ThrowsAsync<AddressExtractionAuditDependencyValidationException>(
+                    addAddressExtractionAuditTask.AsTask);
+
+            actualAddressExtractionAuditDependencyValidationException.Should().BeEquivalentTo(expectedAddressExtractionAuditValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressExtractionAuditValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertAddressExtractionAuditAsync(someAddressExtractionAudit),
+                    Times.Never());
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

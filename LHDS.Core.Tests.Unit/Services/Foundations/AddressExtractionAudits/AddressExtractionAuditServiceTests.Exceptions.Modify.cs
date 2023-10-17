@@ -179,5 +179,60 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyErrorOccursAndLogAsync()
+        {
+            // given
+            AddressExtractionAudit randomAddressExtractionAudit = CreateRandomAddressExtractionAudit();
+            var databaseUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedAddressExtractionAuditException =
+                new LockedAddressExtractionAuditException(
+                    message: "Locked addressExtractionAudit record exception, please try again later",
+                    innerException: databaseUpdateConcurrencyException);
+
+            var expectedAddressExtractionAuditDependencyValidationException =
+                new AddressExtractionAuditDependencyValidationException(
+                    message: "AddressExtractionAudit dependency validation occurred, please try again.",
+                    innerException: lockedAddressExtractionAuditException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<AddressExtractionAudit> modifyAddressExtractionAuditTask =
+                this.addressExtractionAuditService.ModifyAddressExtractionAuditAsync(randomAddressExtractionAudit);
+
+            AddressExtractionAuditDependencyValidationException actualAddressExtractionAuditDependencyValidationException =
+                await Assert.ThrowsAsync<AddressExtractionAuditDependencyValidationException>(
+                    modifyAddressExtractionAuditTask.AsTask);
+
+            // then
+            actualAddressExtractionAuditDependencyValidationException.Should()
+                .BeEquivalentTo(expectedAddressExtractionAuditDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAddressExtractionAuditByIdAsync(randomAddressExtractionAudit.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressExtractionAuditDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateAddressExtractionAuditAsync(randomAddressExtractionAudit),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

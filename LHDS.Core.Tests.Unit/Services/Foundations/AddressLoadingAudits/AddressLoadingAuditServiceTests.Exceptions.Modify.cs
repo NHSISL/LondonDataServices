@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
@@ -117,6 +118,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateAddressLoadingAuditAsync(someAddressLoadingAudit),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnModifyIfDatabaseUpdateExceptionOccursAndLogItAsync()
+        {
+            // given
+            AddressLoadingAudit randomAddressLoadingAudit = CreateRandomAddressLoadingAudit();
+            var databaseUpdateException = new DbUpdateException();
+
+            var failedAddressLoadingAuditStorageException =
+                new FailedAddressLoadingAuditStorageException(
+                    message: "Failed addressLoadingAudit storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+            var expectedAddressLoadingAuditDependencyException =
+                new AddressLoadingAuditDependencyException(
+                    message: "AddressLoadingAudit dependency error occurred, contact support.",
+                    innerException: failedAddressLoadingAuditStorageException); 
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<AddressLoadingAudit> modifyAddressLoadingAuditTask =
+                this.addressLoadingAuditService.ModifyAddressLoadingAuditAsync(randomAddressLoadingAudit);
+
+            AddressLoadingAuditDependencyException actualAddressLoadingAuditDependencyException =
+                await Assert.ThrowsAsync<AddressLoadingAuditDependencyException>(
+                    modifyAddressLoadingAuditTask.AsTask);
+
+            // then
+            actualAddressLoadingAuditDependencyException.Should()
+                .BeEquivalentTo(expectedAddressLoadingAuditDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAddressLoadingAuditByIdAsync(randomAddressLoadingAudit.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressLoadingAuditDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateAddressLoadingAuditAsync(randomAddressLoadingAudit),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

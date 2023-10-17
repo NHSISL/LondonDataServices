@@ -32,7 +32,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
                     addAddressLoadingAuditTask.AsTask);
 
             // then
-            actualAddressLoadingAuditValidationException.Should().BeEquivalentTo(expectedAddressLoadingAuditValidationException);
+            actualAddressLoadingAuditValidationException.Should()
+                .BeEquivalentTo(expectedAddressLoadingAuditValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -42,6 +43,79 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnAddIfAddressLoadingAuditIsInvalidAndLogItAsync(string invalidText)
+        {
+            // given
+            var invalidAddressLoadingAudit = new AddressLoadingAudit
+            {
+                // TODO:  Add default values for your properties i.e. Name = invalidText
+            };
+
+            var invalidAddressLoadingAuditException =
+                new InvalidAddressLoadingAuditException(
+                    message: "Invalid addressLoadingAudit. Please correct the errors and try again.");
+
+            invalidAddressLoadingAuditException.AddData(
+                key: nameof(AddressLoadingAudit.Id),
+                values: "Id is required");
+
+            //invalidAddressLoadingAuditException.AddData(
+            //    key: nameof(AddressLoadingAudit.Name),
+            //    values: "Text is required");
+
+            // TODO: Add or remove data here to suit the validation needs for the AddressLoadingAudit model
+
+            invalidAddressLoadingAuditException.AddData(
+                key: nameof(AddressLoadingAudit.CreatedDate),
+                values: "Date is required");
+
+            invalidAddressLoadingAuditException.AddData(
+                key: nameof(AddressLoadingAudit.CreatedBy),
+                values: "Text is required");
+
+            invalidAddressLoadingAuditException.AddData(
+                key: nameof(AddressLoadingAudit.UpdatedDate),
+                values: "Date is required");
+
+            invalidAddressLoadingAuditException.AddData(
+                key: nameof(AddressLoadingAudit.UpdatedBy),
+                values: "Text is required");
+
+            var expectedAddressLoadingAuditValidationException =
+                new AddressLoadingAuditValidationException(
+                    message: "AddressLoadingAudit validation errors occurred, please try again.",
+                    innerException: invalidAddressLoadingAuditException);
+
+            // when
+            ValueTask<AddressLoadingAudit> addAddressLoadingAuditTask =
+                this.addressLoadingAuditService.AddAddressLoadingAuditAsync(invalidAddressLoadingAudit);
+
+            AddressLoadingAuditValidationException actualAddressLoadingAuditValidationException =
+                await Assert.ThrowsAsync<AddressLoadingAuditValidationException>(
+                    addAddressLoadingAuditTask.AsTask);
+
+            // then
+            actualAddressLoadingAuditValidationException.Should()
+                .BeEquivalentTo(expectedAddressLoadingAuditValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressLoadingAuditValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertAddressLoadingAuditAsync(It.IsAny<AddressLoadingAudit>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

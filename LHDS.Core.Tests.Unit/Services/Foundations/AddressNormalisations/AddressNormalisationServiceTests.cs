@@ -39,6 +39,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
+
         private static AddressNormalisation CreateRandomAddressNormalisation() =>
             CreateAddressNormalisationFiller().Create();
 

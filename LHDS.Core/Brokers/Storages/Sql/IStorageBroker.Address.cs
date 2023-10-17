@@ -14,7 +14,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
         ValueTask<Address> InsertAddressAsync(
             Address address);
 
-        IQueryable<Address> SelectAllAddresss();
+        IQueryable<Address> SelectAllAddresses();
         ValueTask<Address> SelectAddressByIdAsync(Guid addressId);
 
         ValueTask<Address> UpdateAddressAsync(

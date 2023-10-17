@@ -48,7 +48,7 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
                 return maybeAddressLoadingAudit;
             });
 
-        public ValueTask<AddressLoadingAudit> ModifyAddressLoadingAuditAsync(AddressLoadingAudit addressLoadingAudit) =>
-            throw new NotImplementedException();
+        public async ValueTask<AddressLoadingAudit> ModifyAddressLoadingAuditAsync(AddressLoadingAudit addressLoadingAudit) =>
+            await this.storageBroker.UpdateAddressLoadingAuditAsync(addressLoadingAudit);
     }
 }

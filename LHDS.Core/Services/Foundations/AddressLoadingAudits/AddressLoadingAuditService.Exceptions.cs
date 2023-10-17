@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -57,10 +58,19 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
             {
                 var failedAddressLoadingAuditStorageException =
                     new FailedAddressLoadingAuditStorageException(
-                    message: "Failed addressLoadingAudit storage error occurred, contact support.",
-                    innerException: databaseUpdateException);
+                        message: "Failed addressLoadingAudit storage error occurred, contact support.",
+                        innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedAddressLoadingAuditStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressLoadingAuditServiceException =
+                    new FailedAddressLoadingAuditServiceException(
+                        message: "Failed addressLoadingAudit service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressLoadingAuditServiceException);
             }
         }
 
@@ -111,6 +121,19 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
             this.loggingBroker.LogError(addressLoadingAuditDependencyException);
 
             return addressLoadingAuditDependencyException;
+        }
+
+        private AddressLoadingAuditServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var addressLoadingAuditServiceException = 
+                new AddressLoadingAuditServiceException(
+                    message: "AddressLoadingAudit service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(addressLoadingAuditServiceException);
+
+            return addressLoadingAuditServiceException;
         }
     }
 }

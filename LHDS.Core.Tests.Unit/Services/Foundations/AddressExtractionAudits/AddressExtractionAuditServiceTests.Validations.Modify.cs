@@ -112,7 +112,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
                     modifyAddressExtractionAuditTask.AsTask);
 
             //then
-            actualAddressExtractionAuditValidationException.Should().BeEquivalentTo(expectedAddressExtractionAuditValidationException);
+            actualAddressExtractionAuditValidationException.Should()
+                .BeEquivalentTo(expectedAddressExtractionAuditValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -158,7 +159,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
                     modifyAddressExtractionAuditTask.AsTask);
 
             // then
-            actualAddressExtractionAuditValidationException.Should().BeEquivalentTo(expectedAddressExtractionAuditValidationException);
+            actualAddressExtractionAuditValidationException.Should()
+                .BeEquivalentTo(expectedAddressExtractionAuditValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -172,6 +174,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsNotRecentAndLogItAsync(int minutes)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            AddressExtractionAudit randomAddressExtractionAudit = CreateRandomAddressExtractionAudit(randomDateTimeOffset);
+            randomAddressExtractionAudit.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
+
+            var invalidAddressExtractionAuditException = 
+                new InvalidAddressExtractionAuditException(
+                    message: "Invalid addressExtractionAudit. Please correct the errors and try again.");
+
+            invalidAddressExtractionAuditException.AddData(
+                key: nameof(AddressExtractionAudit.UpdatedDate),
+                values: "Date is not recent");
+
+            var expectedAddressExtractionAuditValidatonException =
+                new AddressExtractionAuditValidationException(
+                    message: "AddressExtractionAudit validation errors occurred, please try again.",
+                    innerException: invalidAddressExtractionAuditException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<AddressExtractionAudit> modifyAddressExtractionAuditTask =
+                this.addressExtractionAuditService.ModifyAddressExtractionAuditAsync(randomAddressExtractionAudit);
+
+            AddressExtractionAuditValidationException actualAddressExtractionAuditValidationException =
+                await Assert.ThrowsAsync<AddressExtractionAuditValidationException>(
+                    modifyAddressExtractionAuditTask.AsTask);
+
+            // then
+            actualAddressExtractionAuditValidationException.Should().BeEquivalentTo(expectedAddressExtractionAuditValidatonException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressExtractionAuditValidatonException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAddressExtractionAuditByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

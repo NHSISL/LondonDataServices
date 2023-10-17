@@ -35,6 +35,11 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
                 (Rule: IsNotRecent(addressExtractionAudit.CreatedDate), Parameter: nameof(AddressExtractionAudit.CreatedDate)));
         }
 
+        private void ValidateAddressExtractionAuditOnModify(AddressExtractionAudit addressExtractionAudit)
+        {
+            ValidateAddressExtractionAuditIsNotNull(addressExtractionAudit);
+        }
+
         public void ValidateAddressExtractionAuditId(Guid addressExtractionAuditId) =>
             Validate((Rule: IsInvalid(addressExtractionAuditId), Parameter: nameof(AddressExtractionAudit.Id)));
 
@@ -89,7 +94,7 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
-
+        
         private static dynamic IsNotSame(
            string first,
            string second,

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -25,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             var expectedAddressExtractionAuditDependencyException =
                 new AddressExtractionAuditDependencyException(
                     message: "AddressExtractionAudit dependency error occurred, contact support.",
-                    innerException: failedAddressExtractionAuditStorageException);
+                    innerException: failedAddressExtractionAuditStorageException);             
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -54,6 +55,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
                     expectedAddressExtractionAuditDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfAddressExtractionAuditAlreadyExsitsAndLogItAsync()
+        {
+            // given
+            AddressExtractionAudit randomAddressExtractionAudit = CreateRandomAddressExtractionAudit();
+            AddressExtractionAudit alreadyExistsAddressExtractionAudit = randomAddressExtractionAudit;
+            string randomMessage = GetRandomString();
+
+            var duplicateKeyException =
+                new DuplicateKeyException(randomMessage);
+
+            var alreadyExistsAddressExtractionAuditException =
+                new AlreadyExistsAddressExtractionAuditException(
+                    message: "AddressExtractionAudit with the same Id already exists.",
+                    innerException: duplicateKeyException);
+
+            var expectedAddressExtractionAuditDependencyValidationException =
+                new AddressExtractionAuditDependencyValidationException(
+                    message: "AddressExtractionAudit dependency validation occurred, please try again.",
+                    innerException: alreadyExistsAddressExtractionAuditException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(duplicateKeyException);
+
+            // when
+            ValueTask<AddressExtractionAudit> addAddressExtractionAuditTask =
+                this.addressExtractionAuditService.AddAddressExtractionAuditAsync(alreadyExistsAddressExtractionAudit);
+
+            // then
+            AddressExtractionAuditDependencyValidationException actualAddressExtractionAuditDependencyValidationException =
+                await Assert.ThrowsAsync<AddressExtractionAuditDependencyValidationException>(
+                    addAddressExtractionAuditTask.AsTask);
+
+            actualAddressExtractionAuditDependencyValidationException.Should()
+                .BeEquivalentTo(expectedAddressExtractionAuditDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertAddressExtractionAuditAsync(It.IsAny<AddressExtractionAudit>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressExtractionAuditDependencyValidationException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

@@ -43,7 +43,7 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
         {
             var addressLoadingAuditValidationException =
                 new AddressNormalisationValidationException(
-                    message: "AddressNormalisation validation errors occurred, please try again.",
+                    message: "Address normalisation validation errors occurred, please try again.",
                     innerException: exception);
 
             this.loggingBroker.LogError(addressLoadingAuditValidationException);
@@ -56,7 +56,7 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
         {
             var addressNormalisationServiceException =
                 new AddressNormalisationServiceException(
-                    message: "AddressNormalisation service error occurred, contact support.",
+                    message: "Address normalisation service error occurred, contact support.",
                     innerException: exception);
 
             this.loggingBroker.LogError(addressNormalisationServiceException);

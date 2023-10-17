@@ -10,5 +10,6 @@ namespace LHDS.Core.Services.Foundations.Addresses
         ValueTask<Address> AddAddressAsync(Address address);
         IQueryable<Address> RetrieveAllAddresses();
         ValueTask<Address> RetrieveAddressByIdAsync(Guid addressId);
+        ValueTask<Address> ModifyAddressAsync(Address address);
     }
 }

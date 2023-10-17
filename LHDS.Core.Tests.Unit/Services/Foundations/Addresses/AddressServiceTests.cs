@@ -64,6 +64,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static Address CreateRandomModifyAddress(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            Address randomAddress = CreateRandomAddress(dateTimeOffset);
+
+            randomAddress.CreatedDate =
+                randomAddress.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomAddress;
+        }
+
         private static IQueryable<Address> CreateRandomAddresses()
         {
             return CreateAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())

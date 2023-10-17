@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
 using Xeptions;
@@ -52,6 +53,15 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
 
                 throw CreateAndLogDependencyValidationException(invalidAddressLoadingAuditReferenceException);
             }
+            catch (DbUpdateException databaseUpdateException)
+            {
+                var failedAddressLoadingAuditStorageException =
+                    new FailedAddressLoadingAuditStorageException(
+                    message: "Failed addressLoadingAudit storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+                throw CreateAndLogDependencyException(failedAddressLoadingAuditStorageException);
+            }
         }
 
         private AddressLoadingAuditValidationException CreateAndLogValidationException(Xeption exception)
@@ -88,6 +98,19 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
             this.loggingBroker.LogError(addressLoadingAuditDependencyValidationException);
 
             return addressLoadingAuditDependencyValidationException;
+        }
+
+        private AddressLoadingAuditDependencyException CreateAndLogDependencyException(
+            Xeption exception)
+        {
+            var addressLoadingAuditDependencyException = 
+                new AddressLoadingAuditDependencyException(
+                    message: "AddressLoadingAudit dependency error occurred, contact support.",
+                    innerException: exception); 
+
+            this.loggingBroker.LogError(addressLoadingAuditDependencyException);
+
+            return addressLoadingAuditDependencyException;
         }
     }
 }

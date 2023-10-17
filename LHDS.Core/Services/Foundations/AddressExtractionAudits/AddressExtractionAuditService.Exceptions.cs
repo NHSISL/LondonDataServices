@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -57,10 +58,19 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
             {
                 var failedAddressExtractionAuditStorageException =
                     new FailedAddressExtractionAuditStorageException(
-                    message: "Failed addressExtractionAudit storage error occurred, contact support.",
-                    innerException: databaseUpdateException);
+                        message: "Failed addressExtractionAudit storage error occurred, contact support.",
+                        innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedAddressExtractionAuditStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressExtractionAuditServiceException =
+                    new FailedAddressExtractionAuditServiceException(
+                        message: "Failed addressExtractionAudit service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressExtractionAuditServiceException);
             }
         }
 
@@ -111,6 +121,19 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
             this.loggingBroker.LogError(addressExtractionAuditDependencyException);
 
             return addressExtractionAuditDependencyException;
+        }
+
+        private AddressExtractionAuditServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var addressExtractionAuditServiceException = 
+                new AddressExtractionAuditServiceException(
+                    message: "AddressExtractionAudit service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(addressExtractionAuditServiceException);
+
+            return addressExtractionAuditServiceException;
         }
     }
 }

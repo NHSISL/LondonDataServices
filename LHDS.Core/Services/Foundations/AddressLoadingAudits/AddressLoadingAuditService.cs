@@ -62,12 +62,15 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
                 return await this.storageBroker.UpdateAddressLoadingAuditAsync(addressLoadingAudit);
             });
 
-        public async ValueTask<AddressLoadingAudit> RemoveAddressLoadingAuditByIdAsync(Guid addressLoadingAuditId)
-        {
-            AddressLoadingAudit maybeAddressLoadingAudit = await this.storageBroker
+        public ValueTask<AddressLoadingAudit> RemoveAddressLoadingAuditByIdAsync(Guid addressLoadingAuditId) =>
+            TryCatch(async () =>
+            {
+                ValidateAddressLoadingAuditId(addressLoadingAuditId);
+
+                AddressLoadingAudit maybeAddressLoadingAudit = await this.storageBroker
                     .SelectAddressLoadingAuditByIdAsync(addressLoadingAuditId);
 
-            return await this.storageBroker.DeleteAddressLoadingAuditAsync(maybeAddressLoadingAudit);
-        }
+                return await this.storageBroker.DeleteAddressLoadingAuditAsync(maybeAddressLoadingAudit);
+            });
     }
 }

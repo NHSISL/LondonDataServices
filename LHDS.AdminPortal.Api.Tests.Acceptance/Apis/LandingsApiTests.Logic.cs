@@ -69,15 +69,17 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             Guid landingSupplierId = supplierId;
             await CleanupTask(retrievedDocument.FileName);
             List<Supplier> exisitingSuppliers = await this.apiBroker.FindSupplierByIdAsync(landingSupplierId);
-            DataSet activeDataSet = await PostRandomActiveDataSetAsync(landingSupplierId);
-
-            DataSetSpecification activeDataSetSpecification = 
-                await PostRandomActiveDataSetSpecificationAsync(activeDataSet.Id);
 
             if (!exisitingSuppliers.Any())
             {
                 await PostLandingSupplierAsync(landingSupplierId);
             }
+
+            DataSet activeDataSet = await PostRandomActiveDataSetAsync(landingSupplierId);
+
+            DataSetSpecification activeDataSetSpecification = 
+                await PostRandomActiveDataSetSpecificationAsync(activeDataSet.Id);
+
 
             string expectedDecryptedFileName =
                 $"/{decryptedFilePath}" +
@@ -95,6 +97,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             await CleanupTask(retrievedDocument.FileName);
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
             await this.apiBroker.DeleteDataSetByIdAsync(activeDataSet.Id);
+            await this.apiBroker.DeleteSupplierByIdAsync(landingSupplierId);
         }
 
         private async ValueTask CleanupTask(string fileName)

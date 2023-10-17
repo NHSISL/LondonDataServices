@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -57,10 +58,19 @@ namespace LHDS.Core.Services.Foundations.Addresses
             {
                 var failedAddressStorageException =
                     new FailedAddressStorageException(
-                    message: "Failed address storage error occurred, contact support.",
-                    innerException: databaseUpdateException);
+                        message: "Failed address storage error occurred, contact support.",
+                        innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedAddressStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressServiceException =
+                    new FailedAddressServiceException(
+                        message: "Failed address service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressServiceException);
             }
         }
 
@@ -111,6 +121,19 @@ namespace LHDS.Core.Services.Foundations.Addresses
             this.loggingBroker.LogError(addressDependencyException);
 
             return addressDependencyException;
+        }
+
+        private AddressServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var addressServiceException = 
+                new AddressServiceException(
+                    message: "Address service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(addressServiceException);
+
+            return addressServiceException;
         }
     }
 }

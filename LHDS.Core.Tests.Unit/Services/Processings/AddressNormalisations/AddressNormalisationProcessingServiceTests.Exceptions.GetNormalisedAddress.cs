@@ -2,12 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Text;
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
-using LHDS.Core.Models.Processings.Documents.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -61,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyOnAddIfDependencyErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyOnGetNormalisedAddressIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
@@ -95,6 +94,51 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedAddressNormalisationProcessingDependencyException))),
+                         Times.Once);
+
+            this.addressNormalisationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnGetNormalisedAddressIfServiceErrorOccursAsync()
+        {
+            // given
+            var randomAddress = GetRandomString();
+            string inputAddress = randomAddress;
+            var serviceException = new Exception();
+
+            var failedAddressNormalisationProcessingServiceException =
+                new FailedAddressNormalisationProcessingServiceException(
+                    message: "Failed address normalisation processing service error occurred, contact support.",
+                    innerException: serviceException);
+
+            var expectedAddressNormalisationProcessingServiveException =
+                new AddressNormalisationProcessingServiceException(
+                    message: "Address normalisation processing service error occurred, contact support.",
+                    innerException: failedAddressNormalisationProcessingServiceException);
+
+            this.addressNormalisationServiceMock.Setup(service =>
+                service.GetNormalisedAddress(inputAddress))
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<AddressNormalisation> addAddressNormalisationTask =
+                this.addressNormalisationProcessingService.GetNormalisedAddress(inputAddress);
+
+            AddressNormalisationProcessingServiceException actualException =
+                await Assert.ThrowsAsync<AddressNormalisationProcessingServiceException>(addAddressNormalisationTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedAddressNormalisationProcessingServiveException);
+
+            this.addressNormalisationServiceMock.Verify(service =>
+                service.GetNormalisedAddress(inputAddress),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedAddressNormalisationProcessingServiveException))),
                          Times.Once);
 
             this.addressNormalisationServiceMock.VerifyNoOtherCalls();

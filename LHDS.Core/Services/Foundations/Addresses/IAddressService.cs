@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
@@ -8,5 +9,6 @@ namespace LHDS.Core.Services.Foundations.Addresses
     {
         ValueTask<Address> AddAddressAsync(Address address);
         IQueryable<Address> RetrieveAllAddresses();
+        ValueTask<Address> RetrieveAddressByIdAsync(Guid addressId);
     }
 }

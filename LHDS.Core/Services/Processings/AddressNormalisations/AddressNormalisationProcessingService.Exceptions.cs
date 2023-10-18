@@ -24,7 +24,7 @@ namespace LHDS.Core.Services.Processings.AddressNormalisations
             {
                 return await returningAddressNormalisationFunction();
             }
-            catch (InvalidArgumentAddressNormalisationProcessingException
+                catch (InvalidArgumentAddressNormalisationProcessingException
             invalidArgumentAddressNormalisationProcessingException)
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressNormalisationProcessingException);

@@ -4,6 +4,7 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using Moq;
 using Xunit;
@@ -28,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
             this.addressNormalisationServiceMock.Setup(service =>
                 service.GetNormalisedAddress(inputAddress)).ReturnsAsync(addressNormalisation);
 
-            var expectedNormalisedAddress = addressNormalisation;
+            var expectedNormalisedAddress = addressNormalisation.DeepClone();
 
             // When
             AddressNormalisation actualNormalisedAddress = 

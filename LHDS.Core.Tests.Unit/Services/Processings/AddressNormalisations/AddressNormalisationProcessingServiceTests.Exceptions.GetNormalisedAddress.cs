@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
         public async Task
-            ShouldThrowDependencyValidationExceptionOnGetNormalisedAddressIfDependencyValidationErrorOccursAndLogItAsync(
+            ShouldThrowDependencyValidationExceptionOnGetNormalisedAddressIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -43,7 +43,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
                     getNormalisedAddressTask.AsTask);
 
             // then
-            actualException.Should().BeEquivalentTo(expectedAddressNormalisationProcessingDependencyValidationException);
+            actualException.Should().BeEquivalentTo(
+                expectedAddressNormalisationProcessingDependencyValidationException);
 
             this.addressNormalisationServiceMock.Verify(service =>
                 service.GetNormalisedAddress(inputAddress),
@@ -82,7 +83,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
                 this.addressNormalisationProcessingService.GetNormalisedAddress(inputAddress);
 
             AddressNormalisationProcessingDependencyException actualException =
-                await Assert.ThrowsAsync<AddressNormalisationProcessingDependencyException>(addressNormalisationAddTask.AsTask);
+                await Assert.ThrowsAsync<AddressNormalisationProcessingDependencyException>(
+                    addressNormalisationAddTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedAddressNormalisationProcessingDependencyException);

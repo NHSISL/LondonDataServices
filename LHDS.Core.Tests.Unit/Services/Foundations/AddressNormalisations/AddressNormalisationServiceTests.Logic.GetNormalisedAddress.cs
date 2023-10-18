@@ -1,8 +1,11 @@
-using System;
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.AddressNormalisation;
+using LHDS.Core.Models.Foundations.AddressNormalisations;
 using Moq;
 using Xunit;
 
@@ -29,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
                     .Returns(expectedResult);
 
             // when
-            AddressNormalisation actualAddressNormalisation = 
+            AddressNormalisation actualAddressNormalisation =
                 await this.addressNormalisationService.GetNormalisedAddress(randomAddress);
 
             // then

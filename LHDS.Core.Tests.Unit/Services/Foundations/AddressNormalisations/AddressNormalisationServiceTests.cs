@@ -4,16 +4,13 @@
 
 using System;
 using System.Linq.Expressions;
-using System.Runtime.Serialization;
 using LHDS.Core.Brokers.AddressNormalisations;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.AddressNormalisation;
+using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
-using Microsoft.Data.SqlClient;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
-using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
 {

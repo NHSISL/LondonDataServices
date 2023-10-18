@@ -81,8 +81,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressLoadingAudits
 
             // when
             ValueTask<AddressLoadingAudit> addressLoadingAuditAddTask =
-                this.addressLoadingAuditProcessingService
-                    .AddAddressLoadingAuditAsync(inputAddressLoadingAudit);
+                this.addressLoadingAuditProcessingService.AddAddressLoadingAuditAsync(inputAddressLoadingAudit);
 
             AddressLoadingAuditProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<AddressLoadingAuditProcessingDependencyException>(

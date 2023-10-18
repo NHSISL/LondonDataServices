@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
@@ -44,6 +45,15 @@ namespace LHDS.Core.Services.Processings.AddressLoadingAudits
             {
                 throw CreateAndLogDependencyException(addressLoadingAuditServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedAddressLoadingAuditProcessingServiceException =
+                    new FailedAddressLoadingAuditProcessingServiceException(
+                        message: "Failed address loading audit processing service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressLoadingAuditProcessingServiceException);
+            }
         }
 
         private AddressLoadingAuditValidationException CreateAndLogValidationException(Xeption exception)
@@ -80,6 +90,18 @@ namespace LHDS.Core.Services.Processings.AddressLoadingAudits
             this.loggingBroker.LogError(addressLoadingAuditProcessingDependencyException);
 
             throw addressLoadingAuditProcessingDependencyException;
+        }
+
+        private AddressLoadingAuditProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var addressLoadingAuditProcessingServiceException = new
+                AddressLoadingAuditProcessingServiceException(
+                    message: "Address loading audit processing service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(addressLoadingAuditProcessingServiceException);
+
+            return addressLoadingAuditProcessingServiceException;
         }
     }
 }

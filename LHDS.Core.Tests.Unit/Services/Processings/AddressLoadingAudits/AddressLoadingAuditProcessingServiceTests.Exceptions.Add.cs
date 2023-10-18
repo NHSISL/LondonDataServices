@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Processings.AddressLoadingAudits.Exceptions;
+using LHDS.Core.Models.Processings.IngestionTrackingAudits.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -53,6 +54,50 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressLoadingAudits
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedAddressLoadingAuditProcessingDependencyValidationException))),
+                         Times.Once);
+
+            this.addressLoadingAuditServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnAddIfDependencyErrorOccursAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            AddressLoadingAudit someAddressLoadingAudit = CreateRandomAddressLoadingAudit(randomDateTimeOffset);
+            AddressLoadingAudit inputAddressLoadingAudit = someAddressLoadingAudit;
+
+            var expectedAddressLoadingAuditProcessingDependencyException =
+                new AddressLoadingAuditProcessingDependencyException(
+                    message: "Address loading audit processing dependency error occurred, please try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.addressLoadingAuditServiceMock.Setup(service =>
+                service.AddAddressLoadingAuditAsync(inputAddressLoadingAudit))
+                    .Throws(dependencyException);
+
+            // when
+            ValueTask<AddressLoadingAudit> addressLoadingAuditAddTask =
+                this.addressLoadingAuditProcessingService
+                    .AddAddressLoadingAuditAsync(inputAddressLoadingAudit);
+
+            AddressLoadingAuditProcessingDependencyException actualException =
+                await Assert.ThrowsAsync<AddressLoadingAuditProcessingDependencyException>(
+                    addressLoadingAuditAddTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedAddressLoadingAuditProcessingDependencyException);
+
+            this.addressLoadingAuditServiceMock.Verify(service =>
+                service.AddAddressLoadingAuditAsync(inputAddressLoadingAudit),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedAddressLoadingAuditProcessingDependencyException))),
                          Times.Once);
 
             this.addressLoadingAuditServiceMock.VerifyNoOtherCalls();

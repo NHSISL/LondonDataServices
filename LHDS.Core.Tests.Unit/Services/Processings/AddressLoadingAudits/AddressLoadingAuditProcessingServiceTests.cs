@@ -73,5 +73,21 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressLoadingAudits
                     message: "Address loading audit dependency validation occurred, please try again.", innerException)
             };
         }
+
+        public static TheoryData DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new AddressLoadingAuditDependencyException(
+                    message: "Address loading audit dependency validation errors occurred, please try again.", innerException),
+
+                new AddressLoadingAuditServiceException(
+                    message : "Address loading audit service error occurred, contact support.", innerException)
+            };
+        }
     }
 }

@@ -26,9 +26,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
             string actualAddress = service.CleanupAddress(inputAddress);
 
             // then
-            output.WriteLine($"Input Address:   {inputAddress}");
-            output.WriteLine($"Actual Address:   {actualAddress}");
-            output.WriteLine($"Expected Address: {expectedAddress}");
+            output.WriteLine($"Raw Address:                {inputAddress}");
+            output.WriteLine($"Expected/ Cleaned Address:  {expectedAddress}");
+            output.WriteLine($"Actual Address:             {actualAddress}");
             actualAddress.Should().BeEquivalentTo(expectedAddress);
         }
     }

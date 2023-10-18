@@ -18,7 +18,8 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
     {
         private delegate ValueTask<AddressNormalisation> ReturningAddressNormalisationFunction();
 
-        private async ValueTask<AddressNormalisation> TryCatch(ReturningAddressNormalisationFunction returningAddressNormalisationFunction)
+        private async ValueTask<AddressNormalisation> TryCatch(
+            ReturningAddressNormalisationFunction returningAddressNormalisationFunction)
         {
             try
             {

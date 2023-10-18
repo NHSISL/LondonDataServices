@@ -14,7 +14,7 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
         {
             Validate<InvalidAddressNormalisationArgumentException>(
                 message: "Invalid address normalisation argument. Please correct the errors and try again.",
-                (Rule: IsInvalid(address), Parameter: "address"));
+                    (Rule: IsInvalid(address), Parameter: "address"));
         }
 
         private static dynamic IsInvalid(string text) => new

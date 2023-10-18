@@ -1,0 +1,62 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System;
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.AddressLoadingAudits;
+using LHDS.Core.Models.Processings.AddressLoadingAudits.Exceptions;
+using Moq;
+using Xeptions;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Processings.AddressLoadingAudits
+{
+    public partial class AddressLoadingAuditProcessingServiceTests
+    {
+        [Theory]
+        [MemberData(nameof(DependencyValidationExceptions))]
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfErrorOccursAndLogItAsync(
+            Xeption dependencyValidationException)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            AddressLoadingAudit someAddressLoadingAudit = CreateRandomAddressLoadingAudit(randomDateTimeOffset);
+            AddressLoadingAudit inputAddressLoadingAudit = someAddressLoadingAudit;
+
+            var expectedAddressLoadingAuditProcessingDependencyValidationException =
+                new AddressLoadingAuditProcessingDependencyValidationException(
+                    message: "Address loading audit processing dependency validation error occurred, please try again.",
+                    innerException: dependencyValidationException.InnerException as Xeption);
+
+            this.addressLoadingAuditServiceMock.Setup(service =>
+                service.AddAddressLoadingAuditAsync(inputAddressLoadingAudit))
+                    .Throws(dependencyValidationException);
+
+            // when
+            ValueTask<AddressLoadingAudit> addressLoadingAuditAddTask =
+                this.addressLoadingAuditProcessingService.AddAddressLoadingAuditAsync(inputAddressLoadingAudit);
+
+            AddressLoadingAuditProcessingDependencyValidationException actualException =
+                await Assert.ThrowsAsync<AddressLoadingAuditProcessingDependencyValidationException>(
+                    addressLoadingAuditAddTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(
+                expectedAddressLoadingAuditProcessingDependencyValidationException);
+
+            this.addressLoadingAuditServiceMock.Verify(service =>
+                service.AddAddressLoadingAuditAsync(inputAddressLoadingAudit),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedAddressLoadingAuditProcessingDependencyValidationException))),
+                         Times.Once);
+
+            this.addressLoadingAuditServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

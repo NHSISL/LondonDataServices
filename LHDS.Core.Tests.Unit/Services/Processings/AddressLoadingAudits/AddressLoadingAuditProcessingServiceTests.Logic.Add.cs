@@ -14,9 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressLoadingAudits
         public async Task ShouldAddAddressLoadingAuditAsync()
         {
             // given
-            DateTimeOffset randomDateTimeOffset =
-                GetRandomDateTimeOffset();
-
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             AddressLoadingAudit randomAddressLoadingAudit = CreateRandomAddressLoadingAudit(randomDateTimeOffset);
             AddressLoadingAudit inputAddressLoadingAudit = randomAddressLoadingAudit;
             AddressLoadingAudit storageAddressLoadingAudit = inputAddressLoadingAudit;

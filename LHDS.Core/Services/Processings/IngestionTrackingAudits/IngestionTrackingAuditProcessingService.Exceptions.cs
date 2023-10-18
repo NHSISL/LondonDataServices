@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
+using LHDS.Core.Models.Processings.AddressLoadingAudits.Exceptions;
 using LHDS.Core.Models.Processings.IngestionTrackingAudits.Exceptions;
 using Xeptions;
 

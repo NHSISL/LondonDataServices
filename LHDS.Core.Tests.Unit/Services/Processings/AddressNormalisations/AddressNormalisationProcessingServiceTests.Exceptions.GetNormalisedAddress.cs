@@ -129,7 +129,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressNormalisations
                 this.addressNormalisationProcessingService.GetNormalisedAddress(inputAddress);
 
             AddressNormalisationProcessingServiceException actualException =
-                await Assert.ThrowsAsync<AddressNormalisationProcessingServiceException>(addAddressNormalisationTask.AsTask);
+                await Assert.ThrowsAsync<AddressNormalisationProcessingServiceException>(
+                    addAddressNormalisationTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedAddressNormalisationProcessingServiveException);

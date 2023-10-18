@@ -6,10 +6,10 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions
 {
-    public class AddressNormalisationServiceException : Xeption
+    public class AddressNormalisationDependencyException : Xeption
     {
-        public AddressNormalisationServiceException(string message, Xeption innerException)
-            : base(message, innerException)
+        public AddressNormalisationDependencyException(string message, Xeption innerException) :
+            base(message, innerException)
         { }
     }
 }

@@ -36,6 +36,14 @@ namespace LHDS.Core.Services.Processings.AddressLoadingAudits
             {
                 throw CreateAndLogDependencyValidationException(addressLoadingAuditDependencyValidationException);
             }
+            catch (AddressLoadingAuditDependencyException addressLoadingAuditDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressLoadingAuditDependencyException);
+            }
+            catch (AddressLoadingAuditServiceException addressLoadingAuditServiceException)
+            {
+                throw CreateAndLogDependencyException(addressLoadingAuditServiceException);
+            }
         }
 
         private AddressLoadingAuditValidationException CreateAndLogValidationException(Xeption exception)
@@ -61,6 +69,17 @@ namespace LHDS.Core.Services.Processings.AddressLoadingAudits
             this.loggingBroker.LogError(addressLoadingAuditProcessingDependencyValidationException);
 
             return addressLoadingAuditProcessingDependencyValidationException;
+        }
+        private AddressLoadingAuditProcessingDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var addressLoadingAuditProcessingDependencyException =
+                new AddressLoadingAuditProcessingDependencyException(
+                    message: "Address loading audit processing dependency error occurred, please try again.",
+                    innerException: exception?.InnerException as Xeption);
+
+            this.loggingBroker.LogError(addressLoadingAuditProcessingDependencyException);
+
+            throw addressLoadingAuditProcessingDependencyException;
         }
     }
 }

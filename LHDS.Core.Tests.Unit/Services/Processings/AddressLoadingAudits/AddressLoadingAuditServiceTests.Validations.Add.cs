@@ -54,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressLoadingAudits
         public async Task ShouldThrowValidationExceptionOnAddIfAddressLoadingAuditIsInvalidAndLogItAsync(string invalidText)
         {
             // given
-            var invalidAddressLoadingAudit = new AddressLoadingAudit 
+            var invalidAddressLoadingAudit = new AddressLoadingAudit
             {
                 CreatedBy = invalidText,
                 UpdatedBy = invalidText
@@ -90,12 +90,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressLoadingAudits
                     innerException: invalidAddressLoadingAuditException);
 
             // when
-            ValueTask<AddressLoadingAudit> addAddressLoadingAuditTask =
+            ValueTask<AddressLoadingAudit> addAddressLoadingAuditProcessingTask =
                 this.addressLoadingAuditProcessingService.AddAddressLoadingAuditAsync(invalidAddressLoadingAudit);
 
             AddressLoadingAuditValidationException actualAddressLoadingAuditValidationException =
                 await Assert.ThrowsAsync<AddressLoadingAuditValidationException>(() =>
-                    addAddressLoadingAuditTask.AsTask());
+                    addAddressLoadingAuditProcessingTask.AsTask());
 
             // then
             actualAddressLoadingAuditValidationException.Should()

@@ -3,12 +3,14 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Services.Foundations.AddressLoadingAudits;
 using LHDS.Core.Services.Processings.AddressLoadingAudits;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.AddressLoadingAudits
 {
@@ -30,6 +32,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressLoadingAudits
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static AddressLoadingAudit CreateRandomAddressLoadingAudit(DateTimeOffset dateTimeOffset) =>
             CreateAddressLoadingAuditFiller(dateTimeOffset).Create();

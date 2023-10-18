@@ -52,7 +52,7 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
         {
             //search for line breaks (both Windows and Linux-style) in the
             //string and replace them with a comma followed by a space.
-            var cleanAddress = Regex.Replace(address, @"\r\n?|\n", ", ");
+            var cleanAddress = Regex.Replace(address, @"\r\n?|\n", ",");
 
             // search for consecutive sequences of two or more commas (",{2,}")
             // within the template string and replaces them with a single comma
@@ -64,6 +64,9 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
             // search for one or more consecutive whitespace characters in the
             // string and replaces them with a single space.
             cleanAddress = Regex.Replace(cleanAddress, @"\s+", " ");
+
+            // remove empty segments
+            cleanAddress = Regex.Replace(cleanAddress, ", (, )+", ", ");
 
             return cleanAddress;
         }

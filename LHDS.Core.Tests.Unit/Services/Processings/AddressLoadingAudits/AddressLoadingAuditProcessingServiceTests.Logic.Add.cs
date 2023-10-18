@@ -22,30 +22,21 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressLoadingAudits
             AddressLoadingAudit storageAddressLoadingAudit = inputAddressLoadingAudit;
             AddressLoadingAudit expectedAddressLoadingAudit = storageAddressLoadingAudit.DeepClone();
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
-
             this.addressLoadingAuditServiceMock.Setup(service =>
                 service.AddAddressLoadingAuditAsync(inputAddressLoadingAudit))
                     .ReturnsAsync(storageAddressLoadingAudit);
 
             // when
-            AddressLoadingAudit actualAddressLoadingAudit = await this.addressLoadingAuditProcessingService
-                .AddAddressLoadingAuditAsync(inputAddressLoadingAudit);
+            AddressLoadingAudit actualAddressLoadingAudit = 
+                await this.addressLoadingAuditProcessingService.AddAddressLoadingAuditAsync(inputAddressLoadingAudit);
 
             // then
             actualAddressLoadingAudit.Should().BeEquivalentTo(expectedAddressLoadingAudit);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Once());
 
             this.addressLoadingAuditServiceMock.Verify(service =>
                 service.AddAddressLoadingAuditAsync(inputAddressLoadingAudit),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.addressLoadingAuditServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

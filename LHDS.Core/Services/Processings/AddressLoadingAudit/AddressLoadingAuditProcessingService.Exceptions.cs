@@ -5,6 +5,9 @@
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
+using LHDS.Core.Models.Processings.AddressLoadingAudits.Exceptions;
+using LHDS.Core.Models.Processings.IngestionTrackingAudits.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Processings.AddressLoadingAudits
@@ -24,6 +27,15 @@ namespace LHDS.Core.Services.Processings.AddressLoadingAudits
             {
                 throw CreateAndLogValidationException(nullAddressLoadingAuditException);
             }
+            catch (AddressLoadingAuditValidationException addressLoadingAuditProcessingValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressLoadingAuditProcessingValidationException);
+            }
+            catch (AddressLoadingAuditDependencyValidationException
+                addressLoadingAuditDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressLoadingAuditDependencyValidationException);
+            }
         }
 
         private AddressLoadingAuditValidationException CreateAndLogValidationException(Xeption exception)
@@ -36,6 +48,19 @@ namespace LHDS.Core.Services.Processings.AddressLoadingAudits
             this.loggingBroker.LogError(addressLoadingAuditValidationException);
 
             return addressLoadingAuditValidationException;
+        }
+
+        private AddressLoadingAuditProcessingDependencyValidationException CreateAndLogDependencyValidationException(
+            Xeption exception)
+        {
+            var addressLoadingAuditProcessingDependencyValidationException =
+                new AddressLoadingAuditProcessingDependencyValidationException(
+                    message: "Address loading audit processing dependency validation error occurred, please try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(addressLoadingAuditProcessingDependencyValidationException);
+
+            return addressLoadingAuditProcessingDependencyValidationException;
         }
     }
 }

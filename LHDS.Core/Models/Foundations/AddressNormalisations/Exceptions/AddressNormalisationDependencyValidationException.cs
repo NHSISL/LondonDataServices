@@ -4,11 +4,11 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions
+namespace LHDS.Core.Models.Foundations.AddressNormalisation.Exceptions
 {
-    public class AddressNormalisationServiceException : Xeption
+    public class AddressNormalisationDependencyValidationException : Xeption
     {
-        public AddressNormalisationServiceException(string message, Xeption innerException)
+        public AddressNormalisationDependencyValidationException(string message, Xeption innerException)
             : base(message, innerException)
         { }
     }

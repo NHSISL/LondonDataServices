@@ -9,6 +9,8 @@ namespace LHDS.Core.Services.Processings.AddressNormalisations
 {
     public interface IAddressNormalisationProcessingService
     {
+
+
         ValueTask<AddressNormalisation> GetNormalisedAddress(string address);
     }
 }

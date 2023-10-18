@@ -53,10 +53,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
                     expectedAddressNormalisationValidationException))),
                         Times.Once);
 
-            this.addressNormalisationBrokerMock.Verify(broker =>
-                broker.GetNormalisedAddress(It.IsAny<string>()),
-                    Times.Never);
-
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressNormalisationBrokerMock.VerifyNoOtherCalls();
         }

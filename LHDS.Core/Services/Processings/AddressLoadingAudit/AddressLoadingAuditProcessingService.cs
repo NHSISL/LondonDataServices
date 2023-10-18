@@ -3,14 +3,13 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Services.Foundations.AddressLoadingAudits;
 
 namespace LHDS.Core.Services.Processings.AddressLoadingAudits
 {
-    public class AddressLoadingAuditProcessingService : IAddressLoadingAuditProcessingService
+    public partial class AddressLoadingAuditProcessingService : IAddressLoadingAuditProcessingService
     {
         private readonly IAddressLoadingAuditService addressLoadingAuditService;
         private readonly ILoggingBroker loggingBroker;
@@ -23,9 +22,12 @@ namespace LHDS.Core.Services.Processings.AddressLoadingAudits
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<AddressLoadingAudit> AddAddressLoadingAuditAsync(AddressLoadingAudit addressLoadingAudit)
-        {
-            return await this.addressLoadingAuditService.AddAddressLoadingAuditAsync(addressLoadingAudit);
-        }
+        public ValueTask<AddressLoadingAudit> AddAddressLoadingAuditAsync(AddressLoadingAudit addressLoadingAudit) =>
+            TryCatch(async () =>
+            {
+                ValidateAddressLoadingAuditOnAdd(addressLoadingAudit);
+
+                return await this.addressLoadingAuditService.AddAddressLoadingAuditAsync(addressLoadingAudit);
+            });
     }
 }

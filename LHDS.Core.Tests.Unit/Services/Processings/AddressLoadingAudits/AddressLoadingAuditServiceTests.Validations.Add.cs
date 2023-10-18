@@ -20,11 +20,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressLoadingAudits
             AddressLoadingAudit nullAddressLoadingAudit = null;
 
             var nullAddressLoadingAuditException =
-                new NullAddressLoadingAuditException(message: "Address Loading Audit is null.");
+                new NullAddressLoadingAuditException(message: "Address loading audit is null.");
 
             var expectedAddressLoadingAuditValidationException =
                 new AddressLoadingAuditValidationException(
-                    message: "Address Loading Audit validation errors occurred, please try again.",
+                    message: "Address loading audit validation errors occurred, please try again.",
                     innerException: nullAddressLoadingAuditException);
 
             // when

@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
                     innerException: failedAddressNormalisationServiceException);
 
             this.addressNormalisationBrokerMock.Setup(broker =>
-                broker.GetNormalisedAddress(randomAddress))
+                broker.ExpandAddress(randomAddress))
                     .Throws(serviceException);
 
             // when
@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
                 .BeEquivalentTo(expectedAddressNormalisationServiceException);
 
             this.addressNormalisationBrokerMock.Verify(broker =>
-                broker.GetNormalisedAddress(It.IsAny<string>()),
+                broker.ExpandAddress(It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

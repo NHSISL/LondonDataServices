@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Services.Foundations.AddressLoadingAudits;
@@ -16,25 +15,21 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressLoadingAudits
     public partial class AddressLoadingAuditProcessingServiceTests
     {
         private readonly Mock<IAddressLoadingAuditService> addressLoadingAuditServiceMock;
-        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IAddressLoadingAuditProcessingService addressLoadingAuditProcessingService;
 
         public AddressLoadingAuditProcessingServiceTests()
         {
             this.addressLoadingAuditServiceMock = new Mock<IAddressLoadingAuditService>();
-            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.addressLoadingAuditProcessingService = new AddressLoadingAuditProcessingService(
                 addressLoadingAuditService: this.addressLoadingAuditServiceMock.Object,
-                dateTimeBroker: this.dateTimeBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
-
 
         private static AddressLoadingAudit CreateRandomAddressLoadingAudit(DateTimeOffset dateTimeOffset) =>
             CreateAddressLoadingAuditFiller(dateTimeOffset).Create();

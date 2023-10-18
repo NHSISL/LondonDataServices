@@ -13,22 +13,19 @@ namespace LHDS.Core.Services.Processings.AddressLoadingAudits
     public class AddressLoadingAuditProcessingService : IAddressLoadingAuditProcessingService
     {
         private readonly IAddressLoadingAuditService addressLoadingAuditService;
-        private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public AddressLoadingAuditProcessingService(
             IAddressLoadingAuditService addressLoadingAuditService,
-            IDateTimeBroker dateTimeBroker,
             ILoggingBroker loggingBroker)
         {
             this.addressLoadingAuditService = addressLoadingAuditService;
-            this.dateTimeBroker = dateTimeBroker;
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<AddressLoadingAudit> AddAddressLoadingAuditAsync(AddressLoadingAudit addressLoadingAudit)
+        public async ValueTask<AddressLoadingAudit> AddAddressLoadingAuditAsync(AddressLoadingAudit addressLoadingAudit)
         {
-            throw new System.NotImplementedException();
+            return await this.addressLoadingAuditService.AddAddressLoadingAuditAsync(addressLoadingAudit);
         }
     }
 }

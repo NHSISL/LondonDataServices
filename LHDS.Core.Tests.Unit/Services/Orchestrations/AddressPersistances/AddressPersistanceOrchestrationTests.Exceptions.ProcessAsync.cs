@@ -92,7 +92,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             var expectedDependencyException =
                 new AddressPersistanceOrchestrationDependencyException(
-                    message: "Address persistance orchestration dependency error occurred, fix the errors and try again.",
+                    message: "Address persistance orchestration dependency error occurred, " +
+                    "fix the errors and try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
             this.addressNormalisationProcessingServiceMock.Setup(service =>

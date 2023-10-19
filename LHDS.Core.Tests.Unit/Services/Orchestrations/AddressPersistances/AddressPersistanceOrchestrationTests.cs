@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -55,6 +56,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private Expression<Func<Address, bool>> SameAddressAs(
+            Address exprectedAddress)
+        {
+            return actualAddress =>
+                this.compareLogic.Compare(exprectedAddress, actualAddress)
+                    .AreEqual;
+        }
 
         private static IQueryable<Address> CreateRandomAddresses()
         {

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
-using LHDS.Core.Models.Processings.Addresses.Exceptions;
 using Moq;
 using Xunit;
 
@@ -23,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             var invalidArgumentAddressPersistanceOrchestrationException =
                 new InvalidArgumentAddressPersistanceOrchestrationException(
-                    message: 
+                    message:
                     "Invalid address persistance orchestration argument, please correct the errors and try again.");
 
             invalidArgumentAddressPersistanceOrchestrationException.AddData(
@@ -39,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             ValueTask<List<Address>> processAddressesTask =
                 this.addressPersistanceOrchestrationService.ProcessAsync(nullAddressList);
 
-            AddressPersistanceOrchestrationValidationException 
+            AddressPersistanceOrchestrationValidationException
                 actualAddressPersistanceOrchestrationValidationException =
                     await Assert.ThrowsAsync<AddressPersistanceOrchestrationValidationException>(
                         processAddressesTask.AsTask);

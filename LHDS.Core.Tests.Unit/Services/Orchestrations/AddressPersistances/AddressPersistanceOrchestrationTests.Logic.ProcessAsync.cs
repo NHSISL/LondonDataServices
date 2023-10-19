@@ -21,8 +21,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         {
             // Given
             List<Address> randomAddresses = CreateRandomAddresses().ToList();
+            List<Address> inputAddresses = randomAddresses;
 
-            foreach(Address address in randomAddresses)
+            foreach (Address address in randomAddresses)
             {
                 AddressNormalisation addressNormalisation = new AddressNormalisation
                 {
@@ -40,26 +41,43 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     service.GetNormalisedAddress(stringAddress))
                         .ReturnsAsync(addressNormalisation);
 
+                address.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                address.PostalAddress = addressNormalisation.PostalAddress;
+
                 this.addressProcessingServiceMock.Setup(service =>
-                    service.ModifyOrAddAddressAsync(inputAddress))
-                        .ReturnsAsync(storageAddress);
+                    service.ModifyOrAddAddressAsync(address))
+                        .ReturnsAsync(address);
             }
 
             // Where
-            await this.addressPersistanceOrchestrationService.ProcessAsync(inputAddress);
+            await this.addressPersistanceOrchestrationService.ProcessAsync(randomAddresses);
 
             // Then
-            this.addressNormalisationProcessingServiceMock.Verify(service =>
-                service.GetNormalisedAddress(randomStringAddress),
-                    Times.Once);
+            foreach(Address address in randomAddresses)
+            {
+                AddressNormalisation addressNormalisation = new AddressNormalisation
+                {
+                    JsonPostalAddress = address.JsonPostalAddress,
+                    PostalAddress = address.PostalAddress,
+                };
 
-            this.addressProcessingServiceMock.Verify(service =>
-                service.ModifyOrAddAddressAsync(inputAddress),
-                        Times.Once);
+                var stringAddress = $"{address.OrganisationName},{address.DepartmentName}," +
+                    $"{address.SubBuildingName},{address.BuildingName},{address.BuildingNumber}," +
+                    $"{address.DependentThoroughfare},{address.Thoroughfare}," +
+                    $"{address.DoubleDependentLocality}," +
+                    $"{address.DependentLocality},{address.PostTown},{address.PostCode.Replace(" ", "")}";
 
-            this.addressLoadingAuditProcessingServiceMock.Verify(service =>
-                service.AddAddressLoadingAuditAsync(It.IsAny<AddressLoadingAudit>()), 
-                    Times.Once);
+                this.addressNormalisationProcessingServiceMock.Verify(service =>
+                    service.GetNormalisedAddress(stringAddress),
+                        Times.Once());
+
+                address.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
+                address.PostalAddress = addressNormalisation.PostalAddress;
+
+                this.addressProcessingServiceMock.Verify(service =>
+                    service.ModifyOrAddAddressAsync(address),
+                        Times.Once());
+            }
 
             this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
             this.addressProcessingServiceMock.VerifyNoOtherCalls();

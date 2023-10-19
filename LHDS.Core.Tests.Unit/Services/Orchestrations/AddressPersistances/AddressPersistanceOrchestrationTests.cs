@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -55,8 +56,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static Address CreateRandomAddress() =>
-            CreateAddressFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+        private static IQueryable<Address> CreateRandomAddresses()
+        {
+            return CreateAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
 
         private static Address CreateRandomAddress(DateTimeOffset dateTimeOffset) =>
             CreateAddressFiller(dateTimeOffset).Create();

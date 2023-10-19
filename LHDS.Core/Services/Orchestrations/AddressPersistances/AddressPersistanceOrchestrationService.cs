@@ -38,45 +38,48 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async ValueTask<List<Address>> ProcessAsync(List<Address> addresses)
-        {
-            List<Address> processedAddresses = new List<Address>();
-
-            foreach (var address in addresses)
+        public ValueTask<List<Address>> ProcessAsync(List<Address> addresses) =>
+            TryCatch(async () =>
             {
-                var stringAddress = $"{address.OrganisationName},{address.DepartmentName}," +
-                    $"{address.SubBuildingName},{address.BuildingName},{address.BuildingNumber}," +
-                    $"{address.DependentThoroughfare},{address.Thoroughfare}," +
-                    $"{address.DoubleDependentLocality}," +
-                    $"{address.DependentLocality},{address.PostTown},{address.PostCode.Replace(" ", "")}";
+                ValidateAddressListOrchestrationOnProcess(addresses);
 
-                AddressNormalisation normalisedAddress = 
-                    await this.addressNormalisationProcessingService.GetNormalisedAddress(stringAddress);
+                List<Address> processedAddresses = new List<Address>();
 
-                address.PostalAddress = normalisedAddress.PostalAddress;
-                address.JsonPostalAddress = normalisedAddress.JsonPostalAddress;
-
-                Address processedAddress = await this.addressProcessingService.ModifyOrAddAddressAsync(address);
-
-                var audit = new AddressLoadingAudit
+                foreach (var address in addresses)
                 {
-                    Id = Guid.NewGuid(), 
-                    CorrelationId = Guid.NewGuid(),
-                    FileName = "", 
-                    Message =  "Success", 
-                    MessageId = "",
-                    CreatedBy = "System", 
-                    UpdatedBy = "System", 
-                    UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                    CreatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                };
+                    var stringAddress = $"{address.OrganisationName},{address.DepartmentName}," +
+                        $"{address.SubBuildingName},{address.BuildingName},{address.BuildingNumber}," +
+                        $"{address.DependentThoroughfare},{address.Thoroughfare}," +
+                        $"{address.DoubleDependentLocality}," +
+                        $"{address.DependentLocality},{address.PostTown},{address.PostCode.Replace(" ", "")}";
 
-                await this.auditProcessingService.AddAddressLoadingAuditAsync(audit);
+                    AddressNormalisation normalisedAddress =
+                        await this.addressNormalisationProcessingService.GetNormalisedAddress(stringAddress);
 
-                processedAddresses.Add(processedAddress);
-            }
+                    address.PostalAddress = normalisedAddress.PostalAddress;
+                    address.JsonPostalAddress = normalisedAddress.JsonPostalAddress;
 
-            return processedAddresses;
-        }
+                    Address processedAddress = await this.addressProcessingService.ModifyOrAddAddressAsync(address);
+
+                    var audit = new AddressLoadingAudit
+                    {
+                        Id = Guid.NewGuid(),
+                        CorrelationId = Guid.NewGuid(),
+                        FileName = "",
+                        Message = "Success",
+                        MessageId = "",
+                        CreatedBy = "System",
+                        UpdatedBy = "System",
+                        UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                        CreatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                    };
+
+                    await this.auditProcessingService.AddAddressLoadingAuditAsync(audit);
+
+                    processedAddresses.Add(processedAddress);
+                }
+
+                return processedAddresses;
+            });
     }
 }

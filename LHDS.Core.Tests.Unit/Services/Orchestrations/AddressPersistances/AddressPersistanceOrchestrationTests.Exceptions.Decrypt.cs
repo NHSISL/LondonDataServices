@@ -25,7 +25,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         {
             // given
             List<Address> randomAddresses = CreateRandomAddresses().ToList();
-            Address firstAddress = randomAddresses[0];
+            Address address = randomAddresses[0];
+
+            var stringAddress = $"{address.OrganisationName},{address.DepartmentName}," +
+                        $"{address.SubBuildingName},{address.BuildingName},{address.BuildingNumber}," +
+                        $"{address.DependentThoroughfare},{address.Thoroughfare}," +
+                        $"{address.DoubleDependentLocality}," +
+                        $"{address.DependentLocality},{address.PostTown},{address.PostCode.Replace(" ", "")}";
 
             var expectedDependencyException =
                 new AddressPersistanceOrchestrationDependencyValidationException(
@@ -34,8 +40,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     "fix the errors and try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
-            this.addressProcessingServiceMock.Setup(service => 
-                service.ModifyOrAddAddressAsync(firstAddress))
+            this.addressNormalisationProcessingServiceMock.Setup(service => 
+                service.GetNormalisedAddress(stringAddress))
                     .ThrowsAsync(dependencyValidationException);
 
             // when
@@ -51,12 +57,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                  .BeEquivalentTo(expectedDependencyException);
 
             this.addressNormalisationProcessingServiceMock.Verify(service =>
-             service.GetNormalisedAddress(It.IsAny<string>()),
+             service.GetNormalisedAddress(stringAddress),
                  Times.Once);
 
             this.addressProcessingServiceMock.Verify(service =>
              service.ModifyOrAddAddressAsync(It.IsAny<Address>()),
-                 Times.Once);
+                 Times.Never);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(

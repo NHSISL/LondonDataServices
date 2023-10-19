@@ -44,8 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                 addressNormalisationProcessingService: addressNormalisationProcessingServiceMock.Object,
                 auditProcessingService: addressLoadingAuditProcessingServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
-                dateTimeBroker: dateTimeBrokerMock.Object
-                );
+                dateTimeBroker: dateTimeBrokerMock.Object);
         }
 
         private static string GetRandomString() =>

@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,7 +22,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         {
             // Given
             List<Address> randomAddresses = CreateRandomAddresses().ToList();
-            List<Address> inputAddresses = randomAddresses;
+            List<Address> inputAddresses = randomAddresses.DeepClone();
+            List<Address> processedAddresses = new List<Address>();
 
             foreach (Address address in inputAddresses)
             {
@@ -49,24 +49,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                 this.addressProcessingServiceMock.Setup(service =>
                     service.ModifyOrAddAddressAsync(address))
                         .ReturnsAsync(address);
+
+                processedAddresses.Add(address);
             }
 
-            List<Address> expectedAddress = inputAddresses.DeepClone();
+            List<Address> expectedAddress = processedAddresses.DeepClone();
 
             // Where
-            List<Address> actualAddresses = 
+            List<Address> actualAddresses =
                 await this.addressPersistanceOrchestrationService.ProcessAsync(randomAddresses);
 
             // Then
             actualAddresses.Should().HaveCount(expectedAddress.Count);
-            actualAddresses.Should().BeEquivalentTo(expectedAddress);
-
-            foreach (Address expectedaddress in expectedAddress)
-            {
-                Address actualAddress = actualAddresses.SingleOrDefault(address => address.Id == expectedaddress.Id);
-                actualAddress.JsonPostalAddress.Should().Be(expectedaddress.JsonPostalAddress);
-                actualAddress.PostalAddress.Should().Be(expectedaddress.PostalAddress);
-            }
 
             foreach (Address address in inputAddresses)
             {

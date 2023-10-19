@@ -30,16 +30,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     PostalAddress = address.PostalAddress,
                 };
 
+                var stringAddress = $"{address.OrganisationName},{address.DepartmentName}," +
+                    $"{address.SubBuildingName},{address.BuildingName},{address.BuildingNumber}," +
+                    $"{address.DependentThoroughfare},{address.Thoroughfare}," +
+                    $"{address.DoubleDependentLocality}," +
+                    $"{address.DependentLocality},{address.PostTown},{address.PostCode.Replace(" ", "")}";
+
                 this.addressNormalisationProcessingServiceMock.Setup(service =>
-                    service.GetNormalisedAddress(randomStringAddress))
+                    service.GetNormalisedAddress(stringAddress))
                         .ReturnsAsync(addressNormalisation);
 
                 this.addressProcessingServiceMock.Setup(service =>
                     service.ModifyOrAddAddressAsync(inputAddress))
                         .ReturnsAsync(storageAddress);
-
             }
-
 
             // Where
             await this.addressPersistanceOrchestrationService.ProcessAsync(inputAddress);

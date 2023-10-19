@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -36,28 +37,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public ValueTask ProcessAsync(Address address)
-        {
-                this.addressNormalisationProcessingService.GetNormalisedAddress(address.ToString());
-
-                this.addressProcessingService.ModifyOrAddAddressAsync(address);
-
-                var addressLoadingAudit = new AddressLoadingAudit
-                {
-                    Id = Guid.NewGuid(),    
-                    CorrelationId = Guid.NewGuid(),
-                    FileName = "ProcessedAddressDetails",   
-                    Message = "Address processed successfully",
-                    MessageId = "Success",  
-                    CreatedBy = "System",   
-                    UpdatedBy = "System", 
-                    UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                    CreatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset()
-                };
-
-                this.auditProcessingService.AddAddressLoadingAuditAsync(addressLoadingAudit);
-
-                return ValueTask.CompletedTask;
-        }
+        public async ValueTask<List<Address>> ProcessAsync(List<Address> addresses) =>
+            throw new NotImplementedException();
     }
 }

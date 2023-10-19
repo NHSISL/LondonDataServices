@@ -3,6 +3,8 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
@@ -18,20 +20,26 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         public async Task ShouldProcessAddressesAndLogAsync()
         {
             // Given
-            string randomStringAddress = GetRandomString();
-            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
-            Address randomAddress = CreateRandomAddress(randomDateTime);
-            Address inputAddress = randomAddress;
-            Address storageAddress = inputAddress;
-            AddressNormalisation addressNormalisation = CreateRandomAddressNormalisation();
+            List<Address> randomAddresses = CreateRandomAddresses().ToList();
 
-            this.addressNormalisationProcessingServiceMock.Setup(service =>
-                service.GetNormalisedAddress(randomStringAddress))
-                    .ReturnsAsync(addressNormalisation);
+            foreach(Address address in randomAddresses)
+            {
+                AddressNormalisation addressNormalisation = new AddressNormalisation
+                {
+                    JsonPostalAddress = address.JsonPostalAddress,
+                    PostalAddress = address.PostalAddress,
+                };
 
-            this.addressProcessingServiceMock.Setup(service =>
-                service.ModifyOrAddAddressAsync(inputAddress))
-                    .ReturnsAsync(storageAddress);
+                this.addressNormalisationProcessingServiceMock.Setup(service =>
+                    service.GetNormalisedAddress(randomStringAddress))
+                        .ReturnsAsync(addressNormalisation);
+
+                this.addressProcessingServiceMock.Setup(service =>
+                    service.ModifyOrAddAddressAsync(inputAddress))
+                        .ReturnsAsync(storageAddress);
+
+            }
+
 
             // Where
             await this.addressPersistanceOrchestrationService.ProcessAsync(inputAddress);

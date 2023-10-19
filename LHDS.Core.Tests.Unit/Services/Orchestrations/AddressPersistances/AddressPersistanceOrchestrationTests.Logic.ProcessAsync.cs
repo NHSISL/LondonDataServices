@@ -15,7 +15,7 @@ using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 {
-    public partial class AddressPersistanceOrchestrationTests
+    public partial class AddressPersistanceOrchestrationServiceTests
     {
         [Fact]
         public async Task ShouldProcessAddressesAndLogAsync()

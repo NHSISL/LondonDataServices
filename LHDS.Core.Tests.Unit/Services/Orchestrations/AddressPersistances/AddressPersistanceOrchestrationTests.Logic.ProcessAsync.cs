@@ -83,11 +83,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                 this.addressProcessingServiceMock.Verify(service =>
                     service.ModifyOrAddAddressAsync(It.Is(SameAddressAs(address))),
                         Times.Once());
-
-                this.addressLoadingAuditProcessingServiceMock.Verify(service =>
-                    service.AddAddressLoadingAuditAsync(It.IsAny<AddressLoadingAudit>()),
-                        Times.Once());
             }
+
+            this.addressLoadingAuditProcessingServiceMock.Verify(service =>
+                service.AddAddressLoadingAuditAsync(It.IsAny<AddressLoadingAudit>()),
+                    Times.Exactly(inputAddresses.Count));
 
             this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
             this.addressProcessingServiceMock.VerifyNoOtherCalls();

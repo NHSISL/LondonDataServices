@@ -9,6 +9,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
+using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.AddressLoadingAudits;
 using LHDS.Core.Services.Processings.AddressNormalisations;
@@ -37,7 +38,45 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async ValueTask<List<Address>> ProcessAsync(List<Address> addresses) =>
-            throw new NotImplementedException();
+        public async ValueTask<List<Address>> ProcessAsync(List<Address> addresses)
+        {
+            List<Address> processedAddresses = new List<Address>();
+
+            foreach (var address in addresses)
+            {
+                var stringAddress = $"{address.OrganisationName},{address.DepartmentName}," +
+                    $"{address.SubBuildingName},{address.BuildingName},{address.BuildingNumber}," +
+                    $"{address.DependentThoroughfare},{address.Thoroughfare}," +
+                    $"{address.DoubleDependentLocality}," +
+                    $"{address.DependentLocality},{address.PostTown},{address.PostCode.Replace(" ", "")}";
+
+                AddressNormalisation normalisedAddress = 
+                    await this.addressNormalisationProcessingService.GetNormalisedAddress(stringAddress);
+
+                address.PostalAddress = normalisedAddress.PostalAddress;
+                address.JsonPostalAddress = normalisedAddress.JsonPostalAddress;
+
+                Address processedAddress = await this.addressProcessingService.ModifyOrAddAddressAsync(address);
+
+                var audit = new AddressLoadingAudit
+                {
+                    Id = Guid.NewGuid(), 
+                    CorrelationId = Guid.NewGuid(),
+                    FileName = "", 
+                    Message =  "Success", 
+                    MessageId = "",
+                    CreatedBy = "System", 
+                    UpdatedBy = "System", 
+                    UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                    CreatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                };
+
+                await this.auditProcessingService.AddAddressLoadingAuditAsync(audit);
+
+                processedAddresses.Add(processedAddress);
+            }
+
+            return processedAddresses;
+        }
     }
 }

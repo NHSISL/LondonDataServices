@@ -16,10 +16,11 @@ using LHDS.Core.Services.Processings.AddressLoadingAudits;
 using LHDS.Core.Services.Processings.AddressNormalisations;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 {
-    public partial class AddressPersistanceOrchestrationTests
+    public partial class AddressPersistanceOrchestrationServiceTests
     {
         private readonly Mock<IAddressProcessingService> addressProcessingServiceMock;
         private readonly Mock<IAddressNormalisationProcessingService> addressNormalisationProcessingServiceMock;
@@ -29,9 +30,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
         private readonly ICompareLogic compareLogic;
         private readonly IAddressPersistanceOrchestrationService addressPersistanceOrchestrationService;
 
-        public AddressPersistanceOrchestrationTests()
+        public AddressPersistanceOrchestrationServiceTests()
         {
-
             this.addressProcessingServiceMock = new Mock<IAddressProcessingService>();
             this.addressNormalisationProcessingServiceMock = new Mock<IAddressNormalisationProcessingService>();
             this.addressLoadingAuditProcessingServiceMock = new Mock<IAddressLoadingAuditProcessingService>();
@@ -55,6 +55,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+          actualException => actualException.SameExceptionAs(expectedException);
 
         private Expression<Func<Address, bool>> SameAddressAs(
             Address exprectedAddress)

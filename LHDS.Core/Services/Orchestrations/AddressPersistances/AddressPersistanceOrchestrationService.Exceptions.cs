@@ -7,7 +7,12 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisation.Exceptions;
+using LHDS.Core.Models.Foundations.Decryptions.Exceptions;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
+using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
 using LHDS.Core.Models.Processings.AddressLoadingAudits.Exceptions;
 using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
@@ -56,6 +61,30 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                 throw CreateAndLogDependencyValidationException(
                     addressLoadingAuditProcessingDependencyValidationException);
             }
+            catch (AddressNormalisationProcessingDependencyException addressNormalisationProcessingDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressNormalisationProcessingDependencyException);
+            }
+            catch (AddressNormalisationProcessingServiceException addressNormalisationProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(addressNormalisationProcessingServiceException);
+            }
+            catch (AddressProcessingDependencyException addressProcessingDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressProcessingDependencyException);
+            }
+            catch (AddressProcessingServiceException addressProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(addressProcessingServiceException);
+            }
+            catch (AddressLoadingAuditProcessingDependencyException addressLoadingAuditProcessingDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressLoadingAuditProcessingDependencyException);
+            }
+            catch (AddressLoadingAuditProcessingServiceException addressLoadingAuditProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(addressLoadingAuditProcessingServiceException);
+            }
         }
         private AddressPersistanceOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
@@ -81,6 +110,20 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             this.loggingBroker.LogError(addressPersistanceOrchestrationDependencyValidationException);
 
             return addressPersistanceOrchestrationDependencyValidationException;
+        }
+
+        private AddressPersistanceOrchestrationDependencyException
+            CreateAndLogDependencyException(Xeption exception)
+        {
+            var addressPersistanceOrchestrationDependencyException =
+                new AddressPersistanceOrchestrationDependencyException(
+                    message: "Address persistance orchestration dependency error occurred, " +
+                    "fix the errors and try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(addressPersistanceOrchestrationDependencyException);
+
+            throw addressPersistanceOrchestrationDependencyException;
         }
     }
 }

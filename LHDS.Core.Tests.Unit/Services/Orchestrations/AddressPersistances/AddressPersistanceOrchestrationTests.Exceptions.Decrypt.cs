@@ -30,12 +30,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             var expectedDependencyException =
                 new AddressPersistanceOrchestrationDependencyValidationException(
                     message:
-                    "Address persistance orchestration dependency validation error occurred, fix the errors and try again.",
+                    "Address persistance orchestration dependency validation error occurred, " +
+                    "fix the errors and try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
-            this.addressProcessingServiceMock.Setup(service =>
-               service.ModifyOrAddAddressAsync(firstAddress)
-                   .ThrowsAsync(dependencyValidationException);
+            this.addressProcessingServiceMock.Setup(service => 
+                service.ModifyOrAddAddressAsync(firstAddress))
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<List<Address>> processTask = 

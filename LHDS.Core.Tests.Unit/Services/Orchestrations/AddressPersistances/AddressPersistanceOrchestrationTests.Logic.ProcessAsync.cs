@@ -29,8 +29,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             {
                 AddressNormalisation addressNormalisation = new AddressNormalisation
                 {
-                    JsonPostalAddress = address.JsonPostalAddress,
-                    PostalAddress = address.PostalAddress,
+                    PostalAddress = GetRandomString(),
+                    JsonPostalAddress = GetRandomString()
                 };
 
                 var stringAddress = $"{address.OrganisationName},{address.DepartmentName}," +
@@ -43,8 +43,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     service.GetNormalisedAddress(stringAddress))
                         .ReturnsAsync(addressNormalisation);
 
-                address.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
                 address.PostalAddress = addressNormalisation.PostalAddress;
+                address.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
 
                 this.addressProcessingServiceMock.Setup(service =>
                     service.ModifyOrAddAddressAsync(address))
@@ -61,14 +61,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             actualAddresses.Should().HaveCount(expectedAddress.Count);
             actualAddresses.Should().BeEquivalentTo(expectedAddress);
 
-            foreach(Address address in randomAddresses)
+            foreach (Address expectedaddress in expectedAddress)
             {
-                AddressNormalisation addressNormalisation = new AddressNormalisation
-                {
-                    JsonPostalAddress = address.JsonPostalAddress,
-                    PostalAddress = address.PostalAddress,
-                };
+                Address actualAddress = actualAddresses.SingleOrDefault(address => address.Id == expectedaddress.Id);
+                actualAddress.JsonPostalAddress.Should().Be(expectedaddress.JsonPostalAddress);
+                actualAddress.PostalAddress.Should().Be(expectedaddress.PostalAddress);
+            }
 
+            foreach (Address address in inputAddresses)
+            {
                 var stringAddress = $"{address.OrganisationName},{address.DepartmentName}," +
                     $"{address.SubBuildingName},{address.BuildingName},{address.BuildingNumber}," +
                     $"{address.DependentThoroughfare},{address.Thoroughfare}," +
@@ -79,11 +80,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     service.GetNormalisedAddress(stringAddress),
                         Times.Once());
 
-                address.JsonPostalAddress = addressNormalisation.JsonPostalAddress;
-                address.PostalAddress = addressNormalisation.PostalAddress;
-
                 this.addressProcessingServiceMock.Verify(service =>
-                    service.ModifyOrAddAddressAsync(address),
+                    service.ModifyOrAddAddressAsync(It.Is(SameAddressAs(address))),
                         Times.Once());
 
                 this.addressLoadingAuditProcessingServiceMock.Verify(service =>

@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
@@ -85,6 +86,15 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             {
                 throw CreateAndLogDependencyException(addressLoadingAuditProcessingServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedDecryptServiceException =
+                    new FailedAddressPersistanceOrchestrationServiceException(
+                        message: "Failed address persistance orchestration service occurred, please contact support",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedDecryptServiceException);
+            }
         }
         private AddressPersistanceOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
@@ -124,6 +134,18 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             this.loggingBroker.LogError(addressPersistanceOrchestrationDependencyException);
 
             throw addressPersistanceOrchestrationDependencyException;
+        }
+
+        private AddressPersistanceOrchestrationServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var addressPersistanceOrchestrationServiceException =
+                new AddressPersistanceOrchestrationServiceException(
+                    message: "Address persistance orchestration service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(addressPersistanceOrchestrationServiceException);
+
+            return addressPersistanceOrchestrationServiceException;
         }
     }
 }

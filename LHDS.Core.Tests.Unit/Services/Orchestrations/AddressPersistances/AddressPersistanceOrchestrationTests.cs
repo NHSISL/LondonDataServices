@@ -12,6 +12,7 @@ using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisation.Exceptions;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
+using LHDS.Core.Models.Processings.AddressLoadingAudits.Exceptions;
 using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
 using LHDS.Core.Services.Processings.Addresses;
@@ -122,8 +123,42 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     message: "Audit validation errors occurred, please try again.",
                     innerException),
 
-                new AddressLoadingAuditDependencyValidationException(
+                new AddressLoadingAuditProcessingDependencyValidationException(
                     message: "Audit dependency validation occurred, please try again.",
+                    innerException)
+            };
+        }
+
+        public static TheoryData AddressPersistanceDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new AddressNormalisationProcessingDependencyException(
+                    message: "Address normalisation processing dependency error occurred, contact support.",
+                    innerException),
+
+                new AddressNormalisationProcessingServiceException(
+                    message: "Address Normalisation processing service error occurred, contact support.",
+                    innerException),
+
+                new AddressProcessingDependencyException(
+                    message: "Address processing dependency error occurred, contact support.",
+                    innerException),
+
+                new AddressProcessingServiceException(
+                    message: "Address processing service error occurred, contact support.",
+                    innerException),
+
+                new AddressLoadingAuditProcessingDependencyException(
+                    message: "Audit dependency error occurred, contact support.",
+                    innerException),
+
+                new AddressLoadingAuditProcessingServiceException(
+                    message: "Audit service error occurred, contact support.",
                     innerException)
             };
         }

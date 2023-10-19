@@ -74,5 +74,60 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             this.addressLoadingAuditProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(AddressPersistanceDependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnDycryptIfDependencyExceptionOccursAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            List<Address> randomAddresses = CreateRandomAddresses().ToList();
+            Address address = randomAddresses[0];
+
+            var stringAddress = $"{address.OrganisationName},{address.DepartmentName}," +
+                        $"{address.SubBuildingName},{address.BuildingName},{address.BuildingNumber}," +
+                        $"{address.DependentThoroughfare},{address.Thoroughfare}," +
+                        $"{address.DoubleDependentLocality}," +
+                        $"{address.DependentLocality},{address.PostTown},{address.PostCode.Replace(" ", "")}";
+
+            var expectedDependencyException =
+                new AddressPersistanceOrchestrationDependencyException(
+                    message: "Address persistance orchestration dependency error occurred, fix the errors and try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.addressNormalisationProcessingServiceMock.Setup(service =>
+                service.GetNormalisedAddress(stringAddress))
+                    .ThrowsAsync(dependencyException);
+
+            // when
+            ValueTask<List<Address>> processTask =
+                this.addressPersistanceOrchestrationService.ProcessAsync(randomAddresses);
+
+            AddressPersistanceOrchestrationDependencyException actualException =
+                await Assert.ThrowsAsync<AddressPersistanceOrchestrationDependencyException>(
+                    processTask.AsTask);
+
+            // then
+            actualException.Should()
+                 .BeEquivalentTo(expectedDependencyException);
+
+            this.addressNormalisationProcessingServiceMock.Verify(service =>
+             service.GetNormalisedAddress(stringAddress),
+                 Times.Once);
+
+            this.addressProcessingServiceMock.Verify(service =>
+             service.ModifyOrAddAddressAsync(It.IsAny<Address>()),
+                 Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedDependencyException))),
+                       Times.Once);
+
+            this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressProcessingServiceMock.VerifyNoOtherCalls();
+            this.addressLoadingAuditProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

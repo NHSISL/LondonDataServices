@@ -9,6 +9,7 @@ using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisation.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
+using LHDS.Core.Models.Processings.AddressLoadingAudits.Exceptions;
 using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
 using Xeptions;
 
@@ -49,9 +50,11 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             {
                 throw CreateAndLogDependencyValidationException(addressLoadingAuditValidationException);
             }
-            catch (AddressLoadingAuditDependencyValidationException addressLoadingAuditDependencyValidationException)
+            catch (AddressLoadingAuditProcessingDependencyValidationException 
+                addressLoadingAuditProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(addressLoadingAuditDependencyValidationException);
+                throw CreateAndLogDependencyValidationException(
+                    addressLoadingAuditProcessingDependencyValidationException);
             }
         }
         private AddressPersistanceOrchestrationValidationException CreateAndLogValidationException(Xeption exception)

@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
@@ -23,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             List<Address> randomAddresses = CreateRandomAddresses().ToList();
             List<Address> inputAddresses = randomAddresses;
 
-            foreach (Address address in randomAddresses)
+            foreach (Address address in inputAddresses)
             {
                 AddressNormalisation addressNormalisation = new AddressNormalisation
                 {
@@ -49,10 +51,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                         .ReturnsAsync(address);
             }
 
+            List<Address> expectedAddress = inputAddresses.DeepClone();
+
             // Where
-            await this.addressPersistanceOrchestrationService.ProcessAsync(randomAddresses);
+            List<Address> actualAddresses = 
+                await this.addressPersistanceOrchestrationService.ProcessAsync(randomAddresses);
 
             // Then
+            actualAddresses.Should().HaveCount(expectedAddress.Count);
+            actualAddresses.Should().BeEquivalentTo(expectedAddress);
+
             foreach(Address address in randomAddresses)
             {
                 AddressNormalisation addressNormalisation = new AddressNormalisation
@@ -76,6 +84,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
                 this.addressProcessingServiceMock.Verify(service =>
                     service.ModifyOrAddAddressAsync(address),
+                        Times.Once());
+
+                this.addressLoadingAuditProcessingServiceMock.Verify(service =>
+                    service.AddAddressLoadingAuditAsync(It.IsAny<AddressLoadingAudit>()),
                         Times.Once());
             }
 

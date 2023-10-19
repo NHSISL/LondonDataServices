@@ -9,7 +9,16 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
+using LHDS.Core.Models.Foundations.AddressNormalisation.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
+using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
+using LHDS.Core.Models.Foundations.Decryptions.Exceptions;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
+using LHDS.Core.Models.Processings.Addresses.Exceptions;
+using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.AddressLoadingAudits;
@@ -17,6 +26,7 @@ using LHDS.Core.Services.Processings.AddressNormalisations;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 {
@@ -90,14 +100,38 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             return filler;
         }
 
-        private static AddressNormalisation CreateRandomAddressNormalisation() =>
-            CreateAddressNormalisationFiller().Create();
-
-        private static Filler<AddressNormalisation> CreateAddressNormalisationFiller()
+        public static TheoryData AddressPersistanceDependencyValidationExceptions()
         {
-            var filler = new Filler<AddressNormalisation>();
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
 
-            return filler;
+            return new TheoryData<Xeption>
+            {
+                new AddressNormalisationProcessingValidationException(
+                    message: "Address normalisation processing validation errors occured, please try again",
+                    innerException),
+
+                new AddressNormalisationDependencyValidationException(
+                    message: "Address normalisation processing dependency validation occurred, please try again.",
+                    innerException),
+
+                new AddressProcessingValidationException(
+                    message: "Address processing validation errors occurred, please try again.",
+                    innerException),
+
+                new AddressProcessingDependencyValidationException(
+                    message: "Address processing dependency validation occurred, please try again.",
+                    innerException),
+
+                new AddressLoadingAuditValidationException(
+                    message: "Audit validation errors occurred, please try again.",
+                    innerException),
+
+                new AddressLoadingAuditDependencyValidationException(
+                    message: "Audit dependency validation occurred, please try again.",
+                    innerException)
+            };
         }
     }
 }

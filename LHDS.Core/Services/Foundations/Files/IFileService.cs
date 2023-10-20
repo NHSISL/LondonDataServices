@@ -11,7 +11,7 @@ namespace LHDS.Core.Services.Foundations.Files
     {
         ValueTask<bool> CheckIfFileExistsAsync(string path);
         ValueTask<bool> WriteToFileAsync(string path, string content);
-        ValueTask<string> ReadFromFileAsync(string path);
+        ValueTask<byte[]> ReadFromFileAsync(string path);
         ValueTask<bool> DeleteFileAsync(string path);
         ValueTask<List<string>> RetrieveListOfFilesAsync(string path, string searchPattern = "*");
         ValueTask<bool> CheckIfDirectoryExistsAsync(string path);

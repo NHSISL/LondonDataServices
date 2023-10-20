@@ -19,36 +19,91 @@ namespace LHDS.Core.Services.Foundations.Files
             this.fileBroker = fileBroker;
             this.retryConfig = retryConfig;
         }
+
         public ValueTask<bool> CheckIfFileExistsAsync(string path) =>
+    TryCatch(async () =>
+    {
+        return await WithRetry(async () =>
+        {
+            ValidateCheckIfFileExistsArguments(path);
+
+            return await this.fileBroker.CheckIfFileExistsAsync(path);
+        });
+    });
+
+        public ValueTask<bool> WriteToFileAsync(string path, string content) =>
             TryCatch(async () =>
             {
                 return await WithRetry(async () =>
                 {
-                    ValidateCheckIfFileExistsArguments(path);
+                    ValidateWriteToFileArguments(path, content);
 
-                    return await this.fileBroker.CheckIfFileExistsAsync(path);
+                    return await this.fileBroker.WriteToFileAsync(path, content);
                 });
             });
 
-        public ValueTask<bool> WriteToFileAsync(string path, string content) =>
-            throw new System.NotImplementedException();
+        public ValueTask<byte[]> ReadFromFileAsync(string path) =>
+            TryCatch(async () =>
+            {
+                return await WithRetry(async () =>
+                {
+                    ValidateReadFromFileArguments(path);
 
-        public ValueTask<string> ReadFromFileAsync(string path) =>
-            throw new System.NotImplementedException();
+                    return await this.fileBroker.ReadFileAsync(path);
+                });
+            });
 
         public ValueTask<bool> DeleteFileAsync(string path) =>
-            throw new System.NotImplementedException();
+            TryCatch(async () =>
+            {
+                return await WithRetry(async () =>
+                {
+                    ValidateDeleteFileArguments(path);
+                    return await this.fileBroker.DeleteFileAsync(path);
+                });
+            });
 
         public ValueTask<List<string>> RetrieveListOfFilesAsync(string path, string searchPattern = "*") =>
-            throw new System.NotImplementedException();
+            TryCatch(async () =>
+            {
+                return await WithRetry(async () =>
+                {
+                    ValidateRetrieveListOfFilesArguments(path, searchPattern);
+                    return await this.fileBroker.GetListOfFilesAsync(path, searchPattern);
+                });
+            });
 
         public ValueTask<bool> CheckIfDirectoryExistsAsync(string path) =>
-            throw new System.NotImplementedException();
+            TryCatch(async () =>
+            {
+                return await WithRetry(async () =>
+                {
+                    ValidateCheckIfDirectoryExistsArguments(path);
+
+                    return await this.fileBroker.CheckIfDirectoryExistsAsync(path);
+                });
+            });
 
         public ValueTask<bool> CreateDirectoryAsync(string path) =>
-            throw new System.NotImplementedException();
+            TryCatch(async () =>
+            {
+                return await WithRetry(async () =>
+                {
+                    ValidateCreateDirectoryArguments(path);
+
+                    return await this.fileBroker.CreateDirectoryAsync(path);
+                });
+            });
 
         public ValueTask<bool> DeleteDirectoryAsync(string path, bool recursive = false) =>
-            throw new System.NotImplementedException();
+            TryCatch(async () =>
+            {
+                return await WithRetry(async () =>
+                {
+                    ValidateDeleteDirectoryArguments(path);
+
+                    return await this.fileBroker.DeleteDirectoryAsync(path, recursive);
+                });
+            });
     }
 }

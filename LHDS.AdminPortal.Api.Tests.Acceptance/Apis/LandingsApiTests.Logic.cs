@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using LHDS.Core.Models.Foundations.Documents;
@@ -73,8 +75,17 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 await PostLandingSupplierAsync(landingSupplierId);
             }
 
+            DataSet activeDataSet = await PostRandomActiveDataSetAsync(landingSupplierId);
+
+            DataSetSpecification activeDataSetSpecification = 
+                await PostRandomActiveDataSetSpecificationAsync(activeDataSet.Id);
+
+
             string expectedDecryptedFileName =
                 $"/{decryptedFilePath}" +
+                $"/{activeDataSet.DataSetName}" +
+                $"/{activeDataSetSpecification.Id}" +
+                $"/{retrievedDocument.FileName.Split('_')[3]}" +
                 $"{retrievedDocument.FileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
             //When
@@ -84,6 +95,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             //Then 
             actualDecryptedFileName.Should().BeEquivalentTo(expectedDecryptedFileName);
             await CleanupTask(retrievedDocument.FileName);
+            await this.apiBroker.DeleteDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
+            await this.apiBroker.DeleteDataSetByIdAsync(activeDataSet.Id);
+            await this.apiBroker.DeleteSupplierByIdAsync(landingSupplierId);
         }
 
         private async ValueTask CleanupTask(string fileName)

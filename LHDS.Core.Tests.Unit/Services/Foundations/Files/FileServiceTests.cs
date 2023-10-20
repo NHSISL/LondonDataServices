@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
+using System.Security.Cryptography;
 using LHDS.Core.Brokers.Files;
 using LHDS.Core.Models.Configurations.Retries;
 using LHDS.Core.Services.Foundations.Files;
@@ -75,6 +76,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Files
             }
 
             return stringList;
+        }
+
+        private static string GetHash(byte[] bytes)
+        {
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] hashBytes = sha256.ComputeHash(bytes);
+                return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+            }
         }
     }
 }

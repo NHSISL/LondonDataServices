@@ -48,6 +48,36 @@ namespace LHDS.Core.Services.Foundations.Files
             }
         }
 
+        private async ValueTask<string> WithRetry(ReturningStringFunction returningStringFunction)
+        {
+            var attempts = 0;
+
+            while (true)
+            {
+                try
+                {
+                    attempts++;
+                    return await returningStringFunction();
+                }
+                catch (Exception ex)
+                {
+                    if (retryExceptionTypes.Any(exception => exception == ex.GetType()))
+                    {
+                        if (attempts == this.retryConfig.MaxRetryAttempts)
+                        {
+                            throw;
+                        }
+
+                        Task.Delay(this.retryConfig.PauseBetweenFailures).Wait();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+        }
+
         private async ValueTask<byte[]> WithRetry(ReturningByteArrayFunction returningByteArrayFunction)
         {
             var attempts = 0;

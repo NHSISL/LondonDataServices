@@ -16,6 +16,7 @@ namespace LHDS.Core.Services.Foundations.Files
     {
         private delegate ValueTask<bool> ReturningBooleanFunction();
         private delegate ValueTask<byte[]> ReturningByteArrayFunction();
+        private delegate ValueTask<string> ReturningStringFunction();
         private delegate ValueTask<List<string>> ReturningStringListFunction();
         private delegate ValueTask ReturningNothingFunction();
 
@@ -108,6 +109,90 @@ namespace LHDS.Core.Services.Foundations.Files
             try
             {
                 return await returningByteArrayFunction();
+            }
+            catch (InvalidArgumentFileException invalidArgumentFileException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentFileException);
+            }
+            catch (ArgumentNullException argumentNullException)
+            {
+                var invalidFileDependencyException =
+                    new InvalidFileServiceDependencyException(
+                        message: "Invalid file service dependency validation error occurred.",
+                        innerException: argumentNullException);
+
+                throw CreateAndLogDependencyValidationException(invalidFileDependencyException);
+            }
+            catch (ArgumentOutOfRangeException argumentOutOfRangeException)
+            {
+                var invalidFileDependencyException =
+                    new InvalidFileServiceDependencyException(
+                        message: "Invalid file service dependency validation error occurred.",
+                        innerException: argumentOutOfRangeException);
+
+                throw CreateAndLogDependencyValidationException(invalidFileDependencyException);
+            }
+            catch (ArgumentException argumentException)
+            {
+                var invalidFileDependencyException =
+                    new InvalidFileServiceDependencyException(
+                        message: "Invalid file service dependency validation error occurred.",
+                        innerException: argumentException);
+
+                throw CreateAndLogDependencyValidationException(invalidFileDependencyException);
+            }
+            catch (SerializationException serializationException)
+            {
+                var failedFileDependencyException =
+                    new FailedFileDependencyException(
+                        message: "Failed file dependency error occurred, contact support.",
+                        innerException: serializationException);
+
+                throw CreateAndLogDependencyException(failedFileDependencyException);
+            }
+            catch (OutOfMemoryException outOfMemoryException)
+            {
+                var failedFileDependencyException =
+                    new FailedFileDependencyException(
+                        message: "Failed file dependency error occurred, contact support.",
+                        innerException: outOfMemoryException);
+
+                throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
+            }
+            catch (IOException ioException)
+            {
+                var failedFileDependencyException =
+                    new FailedFileDependencyException(
+                        message: "Failed file dependency error occurred, contact support.",
+                        innerException: ioException);
+
+                throw CreateAndLogDependencyException(failedFileDependencyException);
+            }
+            catch (UnauthorizedAccessException unauthorizedAccessException)
+            {
+                var failedFileDependencyException =
+                    new FailedFileDependencyException(
+                        message: "Failed file dependency error occurred, contact support.",
+                        innerException: unauthorizedAccessException);
+
+                throw CreateAndLogCriticalDependencyException(failedFileDependencyException);
+            }
+            catch (Exception exception)
+            {
+                var failedFileServiceException =
+                    new FailedFileServiceException(
+                        message: "Failed file service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedFileServiceException);
+            }
+        }
+
+        private async ValueTask<string> TryCatch(ReturningStringFunction returningStringFunction)
+        {
+            try
+            {
+                return await returningStringFunction();
             }
             catch (InvalidArgumentFileException invalidArgumentFileException)
             {

@@ -44,11 +44,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
                 "}";
 
             this.addressNormalisationBrokerMock.Setup(broker =>
-                broker.ExpandAddress(inputAddress))
+                broker.ExpandAddressAsync(inputAddress))
                     .ReturnsAsync(expandedAddress);
 
             this.addressNormalisationBrokerMock.Setup(broker =>
-                broker.ParseAddress(expandedAddress.First()))
+                broker.ParseAddressAsync(expandedAddress.First()))
                     .ReturnsAsync(parsedAddress);
 
             AddressNormalisation expectedAddressNormalisation =
@@ -66,11 +66,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
             actualAddressNormalisation.Should().BeEquivalentTo(expectedAddressNormalisation);
 
             this.addressNormalisationBrokerMock.Verify(broker =>
-                broker.ExpandAddress(inputAddress),
+                broker.ExpandAddressAsync(inputAddress),
                     Times.Once);
 
             this.addressNormalisationBrokerMock.Verify(broker =>
-                broker.ParseAddress(expandedAddress.First()),
+                broker.ParseAddressAsync(expandedAddress.First()),
                     Times.Once);
 
             this.addressNormalisationBrokerMock.VerifyNoOtherCalls();

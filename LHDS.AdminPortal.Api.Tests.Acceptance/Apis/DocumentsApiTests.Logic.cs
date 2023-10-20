@@ -21,7 +21,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
             // given
             Supplier randomSupplier = await PostRandomSupplierAsync();
             string encryptedFilePath = "encrypted";
-            string decryptedFilePath = "decrypted";
+            string decryptedFilePath = "inbox/landing";
+            string container = "emislanding";
 
             IngestionTracking randomIngestionTracking =
                 await PostRandomIngestionTrackingAsync(randomSupplier.Id, encryptedFilePath, decryptedFilePath);
@@ -37,7 +38,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
 
             Document expectedDocument = document;
 
-            await this.apiBroker.documentService.AddDocumentAsync(document);
+            await this.apiBroker.documentService.AddDocumentAsync(document, container);
 
             // when
             Document actualDocument = await this.apiBroker.GetDownloadLinkAsync(WebUtility.UrlEncode(inputFileName));
@@ -52,7 +53,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
             actualDocument.DocumentData.Should().BeEquivalentTo(expectedDocument.DocumentData);
 
             // clean up
-            await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(document.FileName);
+            await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(document.FileName, container);
             await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }

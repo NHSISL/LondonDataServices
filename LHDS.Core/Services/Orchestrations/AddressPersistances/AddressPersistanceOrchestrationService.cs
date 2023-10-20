@@ -57,7 +57,6 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
 
                     address.PostalAddress = normalisedAddress.PostalAddress;
                     address.JsonPostalAddress = normalisedAddress.JsonPostalAddress;
-
                     Address processedAddress = await this.addressProcessingService.ModifyOrAddAddressAsync(address);
 
                     var audit = new AddressLoadingAudit
@@ -74,7 +73,6 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
                     };
 
                     await this.auditProcessingService.AddAddressLoadingAuditAsync(audit);
-
                     processedAddresses.Add(processedAddress);
                 }
 

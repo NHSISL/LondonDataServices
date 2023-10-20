@@ -15,7 +15,7 @@ namespace LHDS.Core.Services.Foundations.Files
     internal partial class FileService
     {
         private delegate ValueTask<bool> ReturningBooleanFunction();
-        private delegate ValueTask<string> ReturningStringFunction();
+        private delegate ValueTask<byte[]> ReturningByteArrayFunction();
         private delegate ValueTask<List<string>> ReturningStringListFunction();
         private delegate ValueTask ReturningNothingFunction();
 
@@ -103,11 +103,11 @@ namespace LHDS.Core.Services.Foundations.Files
             }
         }
 
-        private async ValueTask<string> TryCatch(ReturningStringFunction returningStringFunction)
+        private async ValueTask<byte[]> TryCatch(ReturningByteArrayFunction returningByteArrayFunction)
         {
             try
             {
-                return await returningStringFunction();
+                return await returningByteArrayFunction();
             }
             catch (InvalidArgumentFileException invalidArgumentFileException)
             {

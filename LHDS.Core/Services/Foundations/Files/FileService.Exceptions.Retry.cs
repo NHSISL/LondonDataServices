@@ -48,7 +48,7 @@ namespace LHDS.Core.Services.Foundations.Files
             }
         }
 
-        private async ValueTask<string> WithRetry(ReturningStringFunction returningStringFunction)
+        private async ValueTask<byte[]> WithRetry(ReturningByteArrayFunction returningByteArrayFunction)
         {
             var attempts = 0;
 
@@ -57,7 +57,7 @@ namespace LHDS.Core.Services.Foundations.Files
                 try
                 {
                     attempts++;
-                    return await returningStringFunction();
+                    return await returningByteArrayFunction();
                 }
                 catch (Exception ex)
                 {

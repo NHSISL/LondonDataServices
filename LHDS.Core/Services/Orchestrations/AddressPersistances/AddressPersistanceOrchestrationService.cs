@@ -42,7 +42,6 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             TryCatch(async () =>
             {
                 ValidateAddressListOrchestrationOnProcess(addresses);
-
                 List<Address> processedAddresses = new List<Address>();
 
                 foreach (var address in addresses)

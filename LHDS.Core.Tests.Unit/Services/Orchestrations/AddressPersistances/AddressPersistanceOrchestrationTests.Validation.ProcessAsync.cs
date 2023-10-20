@@ -22,8 +22,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             var invalidArgumentAddressPersistanceOrchestrationException =
                 new InvalidArgumentAddressPersistanceOrchestrationException(
-                    message:
-                    "Invalid address persistance orchestration argument, please correct the errors and try again.");
+                    message: "Invalid address persistance orchestration argument, " + 
+                        "please correct the errors and try again.");
 
             invalidArgumentAddressPersistanceOrchestrationException.AddData(
                 key: "AddressList",

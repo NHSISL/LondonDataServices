@@ -19,29 +19,34 @@ namespace LHDS.Core.Services.Foundations.Files
             this.fileBroker = fileBroker;
             this.retryConfig = retryConfig;
         }
+        public ValueTask<bool> CheckIfFileExistsAsync(string path) =>
+            TryCatch(async () =>
+            {
+                return await WithRetry(async () =>
+                {
+                    return await this.fileBroker.CheckIfFileExistsAsync(path);
+                });
+            });
 
-        public ValueTask<bool> CheckIfDirectoryExistsAsync(string path) =>
+        public ValueTask<bool> WriteToFileAsync(string path, string content) =>
             throw new System.NotImplementedException();
 
-        public ValueTask<bool> CheckIfFileExistsAsync(string path) =>
+        public ValueTask<string> ReadFromFileAsync(string path) =>
+            throw new System.NotImplementedException();
+
+        public ValueTask<bool> DeleteFileAsync(string path) =>
+            throw new System.NotImplementedException();
+
+        public ValueTask<List<string>> RetrieveListOfFilesAsync(string path, string searchPattern = "*") =>
+            throw new System.NotImplementedException();
+
+        public ValueTask<bool> CheckIfDirectoryExistsAsync(string path) =>
             throw new System.NotImplementedException();
 
         public ValueTask<bool> CreateDirectoryAsync(string path) =>
             throw new System.NotImplementedException();
 
         public ValueTask<bool> DeleteDirectoryAsync(string path, bool recursive = false) =>
-            throw new System.NotImplementedException();
-
-        public ValueTask<bool> DeleteFileAsync(string path) =>
-            throw new System.NotImplementedException();
-
-        public ValueTask<string> ReadFromFileAsync(string path) =>
-            throw new System.NotImplementedException();
-
-        public ValueTask<List<string>> RetrieveListOfFilesAsync(string path, string searchPattern = "*") =>
-            throw new System.NotImplementedException();
-
-        public ValueTask<bool> WriteToFileAsync(string path, string content) =>
             throw new System.NotImplementedException();
     }
 }

@@ -37,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                 new AddressPersistanceOrchestrationDependencyValidationException(
                     message:
                     "Address persistance orchestration dependency validation error occurred, " +
-                    "fix the errors and try again.",
+                        "fix the errors and try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.addressNormalisationProcessingServiceMock.Setup(service =>
@@ -93,7 +93,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
             var expectedDependencyException =
                 new AddressPersistanceOrchestrationDependencyException(
                     message: "Address persistance orchestration dependency error occurred, " +
-                    "fix the errors and try again.",
+                        "fix the errors and try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
             this.addressNormalisationProcessingServiceMock.Setup(service =>

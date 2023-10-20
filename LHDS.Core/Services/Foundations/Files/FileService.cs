@@ -24,6 +24,8 @@ namespace LHDS.Core.Services.Foundations.Files
             {
                 return await WithRetry(async () =>
                 {
+                    ValidateCheckIfFileExistsArguments(path);
+
                     return await this.fileBroker.CheckIfFileExistsAsync(path);
                 });
             });

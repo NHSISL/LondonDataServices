@@ -31,11 +31,11 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
             {
                 ValidateAddressNormalisationArgs(address);
                 string cleanedAddress = CleanupAddress(address);
-                string[] expandedAddresses = await this.addressNormalisationBroker.ExpandAddress(address);
+                string[] expandedAddresses = await this.addressNormalisationBroker.ExpandAddressAsync(address);
                 string fisrtExpandedAddress = expandedAddresses.FirstOrDefault() ?? string.Empty;
 
                 List<KeyValuePair<string, string>> parsedAddress =
-                    await this.addressNormalisationBroker.ParseAddress(address: fisrtExpandedAddress);
+                    await this.addressNormalisationBroker.ParseAddressAsync(address: fisrtExpandedAddress);
 
                 string jsonPostalAddress = ParseAddressToJson(addressParts: parsedAddress);
 

@@ -13,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
     public partial class AddressNormalisationService
     {
         private delegate ValueTask<AddressNormalisation> ReturningAddressNormalisationFunction();
+        private delegate ValueTask<string> ReturningStringFunction();
 
         private async ValueTask<AddressNormalisation> TryCatch(
             ReturningAddressNormalisationFunction returningAddressNormalisationFunction)
@@ -20,6 +21,28 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
             try
             {
                 return await returningAddressNormalisationFunction();
+            }
+            catch (InvalidAddressNormalisationArgumentException invalidAddressNormalisationArgumentException)
+            {
+                throw CreateAndLogValidationException(invalidAddressNormalisationArgumentException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressNormalisationServiceException =
+                    new FailedAddressNormalisationServiceException(
+                        message: "Failed address normalisation service occurred, please contact support",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressNormalisationServiceException);
+            }
+        }
+
+        private async ValueTask<string> TryCatch(
+            ReturningStringFunction returningStringFunction)
+        {
+            try
+            {
+                return await returningStringFunction();
             }
             catch (InvalidAddressNormalisationArgumentException invalidAddressNormalisationArgumentException)
             {

@@ -2,7 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Files;
 using LHDS.Core.Models.Configurations.Retries;
@@ -103,6 +105,23 @@ namespace LHDS.Core.Services.Foundations.Files
                     ValidateDeleteDirectoryArguments(path);
 
                     return await this.fileBroker.DeleteDirectoryAsync(path, recursive);
+                });
+            });
+
+        public ValueTask<string> ComputeSHA256Hash(string path) =>
+            TryCatch(async () =>
+            {
+                return await WithRetry(async () =>
+                {
+                    ValidateReadFromFileArguments(path);
+
+                    var bytes = await this.fileBroker.ReadFileAsync(path);
+
+                    using (SHA256 sha256 = SHA256.Create())
+                    {
+                        byte[] hashBytes = sha256.ComputeHash(bytes);
+                        return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+                    }
                 });
             });
     }

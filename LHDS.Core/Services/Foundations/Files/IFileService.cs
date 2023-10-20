@@ -17,5 +17,6 @@ namespace LHDS.Core.Services.Foundations.Files
         ValueTask<bool> CheckIfDirectoryExistsAsync(string path);
         ValueTask<bool> CreateDirectoryAsync(string path);
         ValueTask<bool> DeleteDirectoryAsync(string path, bool recursive = false);
+        ValueTask<string> ComputeSHA256Hash(string filePath);
     }
 }

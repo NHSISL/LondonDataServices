@@ -35,8 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             var expectedDependencyException =
                 new AddressPersistanceOrchestrationDependencyValidationException(
-                    message:
-                    "Address persistance orchestration dependency validation error occurred, " +
+                    message: "Address persistance orchestration dependency validation error occurred, " +
                         "fix the errors and try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 

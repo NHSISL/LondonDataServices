@@ -12,38 +12,34 @@ namespace LHDS.Core.Brokers.Storages.Blobs
     public class BlobStorageBroker : IBlobStorageBroker
     {
         private readonly IAzureBlobClient azureBlobClient;
-        private readonly IBlobStorageBrokerSettings blobStorageBrokerSettings;
 
-        public BlobStorageBroker(
-            IAzureBlobClient azureBlobClient,
-            IBlobStorageBrokerSettings blobStorageBrokerSettings)
+        public BlobStorageBroker(IAzureBlobClient azureBlobClient)
         {
             this.azureBlobClient = azureBlobClient;
-            this.blobStorageBrokerSettings = blobStorageBrokerSettings;
         }
 
-        public async ValueTask InsertFileAsync(string fileName, Stream stream) =>
+        public async ValueTask InsertFileAsync(string fileName, Stream stream, string container) =>
             await azureBlobClient.UploadFileAsync(
                 fileName,
                 stream,
-                container: blobStorageBrokerSettings.BlobContainerName);
+                container);
 
-        public async ValueTask<byte[]> SelectByFileNameAsync(string fileName)
+        public async ValueTask<byte[]> SelectByFileNameAsync(string fileName, string container)
         {
             MemoryStream ms = await azureBlobClient
-                .DownloadFileAsync(fileName, container: blobStorageBrokerSettings.BlobContainerName);
+                .DownloadFileAsync(fileName, container);
 
             return ms.ToArray();
         }
 
-        public async ValueTask DeleteFileAsync(string fileName) =>
-            await azureBlobClient.DeleteFileAsync(fileName, blobStorageBrokerSettings.BlobContainerName);
+        public async ValueTask DeleteFileAsync(string fileName, string container) =>
+            await azureBlobClient.DeleteFileAsync(fileName, container);
 
-        public async ValueTask<string> GetDownloadLinkAsync(string fileName, DateTimeOffset expiresOn)
+        public async ValueTask<string> GetDownloadLinkAsync(string fileName, string container, DateTimeOffset expiresOn)
         {
             Uri uri = await azureBlobClient.GetDownloadUriAsync(
                 fileName,
-                container: blobStorageBrokerSettings.BlobContainerName,
+                container,
                 expiresOn);
 
             return uri.ToString();

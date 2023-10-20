@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Tynamix.ObjectFiller;
 
@@ -10,15 +10,15 @@ namespace LHDS.Core.SeedGenerator.Services
 {
     public partial class Generate
     {
-        private static List<Audit> CreateRandomAuditRecords(
+        private static List<IngestionTrackingAudit> CreateRandomAuditRecords(
             int auditCount,
             List<IngestionTracking> ingestionTrackingItems)
         {
-            List<Audit> audits = new List<Audit>();
+            List<IngestionTrackingAudit> audits = new List<IngestionTrackingAudit>();
 
             foreach (IngestionTracking item in ingestionTrackingItems)
             {
-                List<Audit> generatedItems =
+                List<IngestionTrackingAudit> generatedItems =
                     CreateAuditFiller(dateTimeOffset: DateTimeOffset.UtcNow, item)
                         .Create(count: auditCount)
                             .ToList();
@@ -29,12 +29,12 @@ namespace LHDS.Core.SeedGenerator.Services
             return audits;
         }
 
-        private static Filler<Audit> CreateAuditFiller(
+        private static Filler<IngestionTrackingAudit> CreateAuditFiller(
             DateTimeOffset dateTimeOffset,
             IngestionTracking item)
         {
             string user = Guid.NewGuid().ToString();
-            var filler = new Filler<Audit>();
+            var filler = new Filler<IngestionTrackingAudit>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)

@@ -19,10 +19,10 @@ using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
-using LHDS.Core.Models.Foundations.Audits;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataTypes;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -30,17 +30,18 @@ using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Providers.Downloads.Extensions;
-using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.DataTypes;
 using LHDS.Core.Services.Foundations.Documents;
+using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.ObjectColumns;
 using LHDS.Core.Services.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.PdsAudits;
 using LHDS.Core.Services.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.Suppliers;
+using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.OptOuts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -177,7 +178,6 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
-            services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
         }
@@ -186,7 +186,7 @@ namespace LHDS.AdminPortal.Api
         {
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddTransient<ISupplierService, SupplierService>();
-            services.AddTransient<IAuditService, AuditService>();
+            services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IOptOutService, OptOutService>();
             services.AddTransient<IPdsAuditService, PdsAuditService>();
@@ -199,6 +199,10 @@ namespace LHDS.AdminPortal.Api
 
             var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
             ValidateBlobStorageSettings(blobStorageSettings);
+            ValidateBlobContainers(blobStorageSettings.BlobContainers);
+
+            services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
+
 
             var blobServiceClientOptions = new BlobClientOptions()
             {
@@ -225,10 +229,23 @@ namespace LHDS.AdminPortal.Api
                     Parameter: "blobStorage__azureBlobServiceUri"),
 
                 (Rule: IsInvalid(blobStorageSettings.AzureTenantId),
-                    Parameter: "blobStorage__azureTenantId"),
+                    Parameter: "blobStorage__azureTenantId"));
+        }
 
-                (Rule: IsInvalid(blobStorageSettings.BlobContainerName),
-                    Parameter: "blobStorage__blobContainerName"));
+        private static void ValidateBlobContainers(BlobContainers blobContainers)
+        {
+            Validate(
+                (Rule: IsInvalid(blobContainers.EmisLanding),
+                    Parameter: "blobContainers__emisLanding"),
+
+                (Rule: IsInvalid(blobContainers.Versioner),
+                    Parameter: "blobContainers__versioner"),
+
+                (Rule: IsInvalid(blobContainers.OptOut),
+                    Parameter: "blobContainers__optOut"),
+
+                (Rule: IsInvalid(blobContainers.Pds),
+                    Parameter: "blobContainers__pds"));
         }
 
         private static dynamic IsInvalid(string text) => new
@@ -260,14 +277,16 @@ namespace LHDS.AdminPortal.Api
         private static void AddProcessingServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IOptOutProcessingService, OptOutProcessingService>();
+            services.AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
         }
+
 
         private IEdmModel GetEdmModel()
         {
             ODataConventionModelBuilder builder =
                new ODataConventionModelBuilder();
 
-            builder.EntitySet<Audit>("Audits");
+            builder.EntitySet<IngestionTrackingAudit>("IngestionTrackingAudits");
             builder.EntitySet<DataSet>("DataSets");
             builder.EntitySet<DataSetSpecification>("DataSetSpecifications");
             builder.EntitySet<SpecificationObject>("SpecificationObjects");

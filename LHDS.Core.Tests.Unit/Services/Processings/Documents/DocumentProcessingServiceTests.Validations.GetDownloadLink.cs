@@ -16,9 +16,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public async Task ShouldThrowValidationExceptionsOnGetDownloadLinkIfDocumentProcessingIsNullAndLogItAsync(string invalidInput)
+        public async Task ShouldThrowValidationExceptionsOnGetDownloadLinkIfDocumentProcessingIsNullAndLogItAsync(
+            string invalidInput)
         {
             // given
+            string invalidContainer = invalidInput;
             string invalidFileName = invalidInput;
 
             var invalidDocumentProcessingFileNameException =
@@ -26,7 +28,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
                     message: "Invalid document processing file name. Please correct the errors and try again.");
 
             invalidDocumentProcessingFileNameException.AddData(
-                key: "fileName",
+                key: "FileName",
+                values: "Text is required");
+
+            invalidDocumentProcessingFileNameException.AddData(
+                key: "Container",
                 values: "Text is required");
 
             var expectedDocumentProcessingValidationException =
@@ -36,7 +42,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Documents
 
             // when
             ValueTask<string> GetDownloadLinkTask =
-                this.documentProcessingService.GetDownloadLinkAsync(invalidFileName);
+                this.documentProcessingService
+                    .GetDownloadLinkAsync(fileName: invalidFileName, container: invalidContainer);
 
             DocumentProcessingValidationException actualDocumentProcessingValidationException =
                 await Assert.ThrowsAsync<DocumentProcessingValidationException>(GetDownloadLinkTask.AsTask);

@@ -12,11 +12,18 @@ namespace LHDS.Core.Brokers.Storages.Sql
         private static void AddDataSetConfigurations(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<DataSet>()
+                .ToTable("DataSets", "Configuration");
+
+            modelBuilder.Entity<DataSet>()
                 .ToTable(dataSet => dataSet.IsTemporal());
 
             modelBuilder.Entity<DataSet>()
                .Property(dataSet => dataSet.Id)
                .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.SupplierId)
+                .IsRequired();
 
             modelBuilder.Entity<DataSet>()
                 .Property(dataSet => dataSet.DataSetName)
@@ -28,10 +35,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .HasMaxLength(250)
                 .IsRequired();
 
-            modelBuilder.Entity<DataSet>()
-                .Property(dataSet => dataSet.DataSetSupplier)
-                .HasMaxLength(150)
-                .IsRequired();
 
             modelBuilder.Entity<DataSet>()
                 .Property(dataSet => dataSet.DataSetAuthor)
@@ -88,6 +91,12 @@ namespace LHDS.Core.Brokers.Storages.Sql
             modelBuilder.Entity<DataSet>()
                 .Property(dataSet => dataSet.UpdatedDate)
                 .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
+                .HasOne(dataSet => dataSet.Supplier)
+                .WithMany(supplier => supplier.DataSets)
+                .HasForeignKey(dataSet => dataSet.SupplierId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

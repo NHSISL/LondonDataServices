@@ -11,6 +11,9 @@ using LHDS.Core.Services.Foundations.ObjectColumns;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
+#if RELEASE
+using Microsoft.AspNetCore.Authorization;
+#endif
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
@@ -58,7 +61,15 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
+#if !DEBUG
         [EnableQuery(PageSize = 50)]
+#endif
+#if DEBUG
+        [EnableQuery(PageSize = 5000)]
+#endif
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.ObjectColumns, ISL.LDS.AdminApi.ReadOnly")]
+#endif
         public ActionResult<IQueryable<ObjectColumn>> Get()
         {
             try

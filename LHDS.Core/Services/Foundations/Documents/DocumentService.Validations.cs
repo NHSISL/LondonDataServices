@@ -10,19 +10,35 @@ namespace LHDS.Core.Services.Foundations.Documents
 {
     public partial class DocumentService
     {
-        private static void ValidateDocumentOnAdd(Document document)
+        private static void ValidateDocumentOnAdd(Document document, string container)
         {
             ValidateDocumentIsNotNull(document);
 
             Validate(
-                    (Rule: IsInvalid(document.DocumentData), Parameter: nameof(Document.DocumentData)),
-                    (Rule: IsInvalid(document.FileName), Parameter: nameof(Document.FileName)));
+                (Rule: IsInvalid(container), Parameter: "Container"),
+                (Rule: IsInvalid(document.DocumentData), Parameter: nameof(Document.DocumentData)),
+                (Rule: IsInvalid(document.FileName), Parameter: nameof(Document.FileName)));
         }
 
-        private static void ValidateDocumentOnRetrieve(string fileName)
+        private static void ValidateDocumentOnRetrieve(string fileName, string container)
         {
             Validate(
-                    (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
+                (Rule: IsInvalid(container), Parameter: "Container"),
+                (Rule: IsInvalid(fileName), Parameter: "FileName"));
+        }
+
+        private void ValidateDeleteArguments(string fileName, string container)
+        {
+            Validate(
+               (Rule: IsInvalid(container), Parameter: "Container"),
+               (Rule: IsInvalid(fileName), Parameter: "FileName"));
+        }
+
+        private void ValidateGetDownloadLinkArguments(string fileName, string container)
+        {
+            Validate(
+               (Rule: IsInvalid(container), Parameter: "Container"),
+               (Rule: IsInvalid(fileName), Parameter: "FileName"));
         }
 
         private static void ValidateDocumentIsNotNull(Document document)
@@ -54,20 +70,6 @@ namespace LHDS.Core.Services.Foundations.Documents
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
         };
-
-
-        private void ValidateDeleteArguments(string fileName)
-        {
-            Validate(
-
-               (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
-        }
-
-        private void ValidateGetDownloadLinkArguments(string fileName)
-        {
-            Validate(
-               (Rule: IsInvalid(fileName), Parameter: nameof(fileName)));
-        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

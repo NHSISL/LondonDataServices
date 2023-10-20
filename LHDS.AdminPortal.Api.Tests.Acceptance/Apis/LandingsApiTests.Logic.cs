@@ -8,10 +8,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using LHDS.Core.Models.Foundations.Documents;
-using Microsoft.OData.ModelBuilder;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
@@ -74,8 +75,17 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 await PostLandingSupplierAsync(landingSupplierId);
             }
 
-            string expectedDecryptedFileName = 
+            DataSet activeDataSet = await PostRandomActiveDataSetAsync(landingSupplierId);
+
+            DataSetSpecification activeDataSetSpecification = 
+                await PostRandomActiveDataSetSpecificationAsync(activeDataSet.Id);
+
+
+            string expectedDecryptedFileName =
                 $"/{decryptedFilePath}" +
+                $"/{activeDataSet.DataSetName}" +
+                $"/{activeDataSetSpecification.Id}" +
+                $"/{retrievedDocument.FileName.Split('_')[3]}" +
                 $"{retrievedDocument.FileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
 
             //When
@@ -85,6 +95,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             //Then 
             actualDecryptedFileName.Should().BeEquivalentTo(expectedDecryptedFileName);
             await CleanupTask(retrievedDocument.FileName);
+            await this.apiBroker.DeleteDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
+            await this.apiBroker.DeleteDataSetByIdAsync(activeDataSet.Id);
+            await this.apiBroker.DeleteSupplierByIdAsync(landingSupplierId);
         }
 
         private async ValueTask CleanupTask(string fileName)
@@ -94,15 +107,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
             if (maybeIngestionTracking != null)
             {
-                var audits = this.apiBroker.auditService.RetrieveAllAudits()
-                .Where(audit => audit.IngestionTrackingId == maybeIngestionTracking.Id);
+                await RemoveAuditRecords(maybeIngestionTracking);
 
-                foreach (var audit in audits)
-                {
-                    await this.apiBroker.auditService.RemoveAuditByIdAsync(audit.Id);
-                }
-
-                await this.apiBroker.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(maybeIngestionTracking.Id);
+                await this.apiBroker.ingestionTrackingService
+                    .RemoveIngestionTrackingByIdAsync(maybeIngestionTracking.Id);
             }
         }
 
@@ -113,15 +121,28 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
             if (maybeIngestionTracking != null)
             {
-                var audits = this.apiBroker.auditService.RetrieveAllAudits()
-                    .Where(audit => audit.IngestionTrackingId == ingestionTrackingId);
+                await RemoveAuditRecords(maybeIngestionTracking);
 
-                foreach (var audit in audits)
-                {
-                    await this.apiBroker.auditService.RemoveAuditByIdAsync(audit.Id);
-                }
+                await this.apiBroker.ingestionTrackingService
+                    .RemoveIngestionTrackingByIdAsync(ingestionTrackingId);
+            }
+        }
 
-                await this.apiBroker.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTrackingId);
+        private async Task RemoveAuditRecords(
+            Core.Models.Foundations.IngestionTrackings.IngestionTracking ingestionTracking)
+        {
+            var audits = this.apiBroker.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
+                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+
+            foreach (var audit in audits)
+            {
+                await this.apiBroker.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
+            }
+
+            if (this.apiBroker.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
+                .Any(audit => audit.IngestionTrackingId == ingestionTracking.Id))
+            {
+                await this.RemoveAuditRecords(ingestionTracking);
             }
         }
     }

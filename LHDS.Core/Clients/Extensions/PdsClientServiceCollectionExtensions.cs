@@ -23,9 +23,9 @@ using LHDS.Core.Models.Brokers.Mesh;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Orchestrations.Pds;
-using LHDS.Core.Services.Foundations.Audits;
 using LHDS.Core.Services.Foundations.CsvMappers;
 using LHDS.Core.Services.Foundations.Documents;
+using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Mesh;
 using LHDS.Core.Services.Foundations.PdsAudits;
@@ -102,6 +102,7 @@ namespace LHDS.Core.Clients.Extensions
         {
             var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
             ValidateBlobStorageSettings(blobStorageSettings);
+            services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
 
             var pdsConfiguration = configuration.GetSection("pdsSettings").Get<PdsConfiguration>();
             ValidatePdsConfigurationSettings(pdsConfiguration);
@@ -139,7 +140,6 @@ namespace LHDS.Core.Clients.Extensions
             if (!acceptanceTest)
             {
                 services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
-                services.AddTransient<IBlobStorageBrokerSettings, BlobStorageBrokerSettings>();
                 services.AddTransient<IMeshBroker, MeshBroker>();
             }
         }
@@ -151,7 +151,7 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddServices(IServiceCollection services)
         {
-            services.AddTransient<IAuditService, AuditService>();
+            services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
             services.AddTransient<ICsvMapperService, CsvMapperService>();
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
@@ -276,10 +276,7 @@ namespace LHDS.Core.Clients.Extensions
                     Parameter: "blobStorage__azureBlobServiceUri"),
 
                 (Rule: IsInvalid(blobStorageSettings.AzureTenantId),
-                    Parameter: "blobStorage__azureTenantId"),
-
-                (Rule: IsInvalid(blobStorageSettings.BlobContainerName),
-                    Parameter: "blobStorage__blobContainerName"));
+                    Parameter: "blobStorage__azureTenantId"));
         }
 
         private static dynamic IsInvalid(string text) => new

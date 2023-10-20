@@ -29,31 +29,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
             return response.Items;
         }
 
-        public async ValueTask<List<Supplier>> FilterSuppliersAsync(string supplierName)
-        {
-            OdataResponse<Supplier> response = await this.apiFactoryClient.GetContentAsync<OdataResponse<Supplier>>(
-                $"{suppliersRelativeOdataUrl}/?$filter=name eq '{supplierName}'");
-
-            return response.Items;
-        }
-
-        public async ValueTask<List<Supplier>> GetAllSuppliersOrderedDescendingAsync()
-        {
-            OdataResponse<Supplier> response = await this.apiFactoryClient.GetContentAsync<OdataResponse<Supplier>>(
-                $"{suppliersRelativeOdataUrl}/?$orderby=createddate desc");
-
-            return response.Items;
-        }
-
-        public async ValueTask<List<Supplier>> GetAllSupplierIngestionTrackingExpandsAsync()
-        {
-            OdataResponse<Supplier> response = await this.apiFactoryClient.GetContentAsync<OdataResponse<Supplier>>(
-                $"{suppliersRelativeOdataUrl}/" +
-                    $"?$expand=ingestiontrackings($orderby=CreatedDate asc)&$orderby=createddate asc");
-
-            return response.Items;
-        }
-
         public async ValueTask<List<Supplier>> FindSupplierByIdAsync(Guid supplierId) =>
           await this.apiFactoryClient.GetContentAsync<List<Supplier>>(
               $"{suppliersRelativeUrl}/?$filter=Id eq {supplierId}");

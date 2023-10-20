@@ -6,7 +6,7 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.Audits;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
 using Xunit;
@@ -45,8 +45,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                    .ReturnsAsync(storageIngestionTracking);
 
             this.documentServiceMock.Setup(service =>
-                service.RetrieveDocumentByFileNameAsync(storageIngestionTracking.EncryptedFileName))
-                    .ReturnsAsync(encryptedDocument);
+                service.RetrieveDocumentByFileNameAsync(
+                    storageIngestionTracking.EncryptedFileName,
+                    It.IsAny<string>()))
+                        .ReturnsAsync(encryptedDocument);
 
             this.decryptionServiceMock.Setup(service =>
                 service.DecryptAsync(encryptedDocument.DocumentData))
@@ -80,16 +82,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                   Times.Once);
 
             this.documentServiceMock.Verify(service =>
-                service.RetrieveDocumentByFileNameAsync(storageIngestionTracking.EncryptedFileName),
-                    Times.Once);
+                service.RetrieveDocumentByFileNameAsync(
+                    storageIngestionTracking.EncryptedFileName,
+                    It.IsAny<string>()),
+                        Times.Once);
 
             this.decryptionServiceMock.Verify(service =>
                 service.DecryptAsync(encryptedDocument.DocumentData),
                     Times.Once);
 
             this.documentServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.Is(SameDocumentAs(decryptedDocument))),
-                    Times.Once);
+                service.AddDocumentAsync(
+                    It.Is(SameDocumentAs(decryptedDocument)),
+                    It.IsAny<string>()),
+                        Times.Once);
 
             this.ingestionTrackingServiceMock.Verify(service =>
                 service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(updatedIngestionTracking))),
@@ -100,7 +106,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     Times.Once);
 
             this.auditServiceMock.Verify(service =>
-                service.AddAuditAsync(It.IsAny<Audit>()),
+                service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
                     Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();

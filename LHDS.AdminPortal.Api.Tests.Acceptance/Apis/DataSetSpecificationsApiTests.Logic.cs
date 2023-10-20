@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using RESTFulSense.Exceptions;
 using Xunit;
 
@@ -19,8 +20,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
         public async Task ShouldPostDataSetSpecificationAsync()
         {
             // Given
-            DataSet randomDataSet = CreateRandomDataSet();
-            await this.apiBroker.PostDataSetAsync(randomDataSet);
+            Supplier randomSupplier = await PostRandomSupplierAsync();
+            DataSet randomDataSet = await PostRandomDataSetAsync(randomSupplier.Id);
 
             DataSetSpecification randomDataSetSpecification
                 = CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
@@ -38,14 +39,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             // Cleanup
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(inputDataSetSpecification.Id);
             await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
+            await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }
 
         [Fact]
         public async Task ShouldGetAllDataSetSpecificationsAsync()
         {
             // Given
-            DataSet randomDataSet = CreateRandomDataSet();
-            await this.apiBroker.PostDataSetAsync(randomDataSet);
+            Supplier randomSupplier = await PostRandomSupplierAsync();
+            DataSet randomDataSet = await PostRandomDataSetAsync(randomSupplier.Id);
 
             IQueryable<DataSetSpecification> randomDataSetSpecifications =
                 CreateRandomDataSetSpecifications(dataSetId: randomDataSet.Id);
@@ -73,14 +75,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             }
 
             await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
+            await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }
 
         [Fact]
         public async Task ShouldGetDataSetSpecificationByIdAsync()
         {
             // Given
-            DataSet randomDataSet = CreateRandomDataSet();
-            await this.apiBroker.PostDataSetAsync(randomDataSet);
+            Supplier randomSupplier = await PostRandomSupplierAsync();
+            DataSet randomDataSet = await PostRandomDataSetAsync(randomSupplier.Id);
 
             DataSetSpecification randomDataSetSpecification =
                 CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
@@ -99,13 +102,14 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             // Cleanup
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(inputDataSetSpecification.Id);
             await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
+            await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }
       
         public async Task ShouldPutDataSetSpecificationAsync()
         {
             // Given
-            DataSet randomDataSet = CreateRandomDataSet();
-            await this.apiBroker.PostDataSetAsync(randomDataSet);
+            Supplier randomSupplier = await PostRandomSupplierAsync();
+            DataSet randomDataSet = await PostRandomDataSetAsync(randomSupplier.Id);
 
             DataSetSpecification randomDataSetSpecification
                = CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
@@ -128,14 +132,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             // Cleanup
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(actualDataSetSpecification.Id);
             await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
+            await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }
       
         [Fact]
         public async Task ShouldDeleteDataSetSpecificationAsync()
         {
             // given
-            DataSet randomDataSet = CreateRandomDataSet();
-            await this.apiBroker.PostDataSetAsync(randomDataSet);
+            Supplier randomSupplier = await PostRandomSupplierAsync();
+            DataSet randomDataSet = await PostRandomDataSetAsync(randomSupplier.Id);
 
             DataSetSpecification randomDataSetSpecification =
                 CreateRandomDataSetSpecification(dataSetId: randomDataSet.Id);
@@ -154,6 +159,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             // then
             deletedDataSetSpecification.Should().BeEquivalentTo(expectedDataSetSpecification);
             await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
+            await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
 
             await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
                 getDataSetSpecificationbyIdTask.AsTask());

@@ -105,7 +105,10 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 
         private OptOutValidationException CreateAndLogValidationException(Xeption exception)
         {
-            var optOutValidationException = new OptOutValidationException(exception);
+            var optOutValidationException = new OptOutValidationException(
+                message: "OptOut validation errors occurred, please try again.",
+                innerException: exception);
+
             this.loggingBroker.LogError(optOutValidationException);
 
             return optOutValidationException;
@@ -133,6 +136,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             Xeption exception)
         {
             var optOutDependencyException = new OptOutDependencyException(exception);
+
             this.loggingBroker.LogError(optOutDependencyException);
 
             return optOutDependencyException;

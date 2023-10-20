@@ -12,6 +12,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
         private static void AddSupplierConfigurations(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Supplier>()
+                .ToTable("Suppliers", "Configuration");
+
+            modelBuilder.Entity<Supplier>()
                 .Property(supplier => supplier.Name)
                 .HasMaxLength(450)
                 .IsRequired();
@@ -19,11 +22,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
             modelBuilder.Entity<Supplier>()
                 .Property(supplier => supplier.FriendlyName)
                 .HasMaxLength(450)
-                .IsRequired();
-
-            modelBuilder.Entity<Supplier>()
-                .Property(supplier => supplier.LandingManualTriggerUrl)
-                .HasMaxLength(1000)
                 .IsRequired();
 
             modelBuilder.Entity<Supplier>()

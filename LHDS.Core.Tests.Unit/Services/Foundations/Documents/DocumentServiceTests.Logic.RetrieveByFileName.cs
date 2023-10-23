@@ -4,6 +4,8 @@
 
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Documents;
 using Moq;
 using Xunit;
@@ -23,10 +25,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
             Document randomDocument = new Document
             {
                 FileName = randomFileName,
-                DocumentData = Encoding.ASCII.GetBytes(GetRandomString())
+                DocumentData = Encoding.ASCII.GetBytes(GetRandomString()),
             };
 
-            Document expectedDocument = randomDocument;
+            Document expectedDocument = randomDocument.DeepClone();
+            expectedDocument.SHA256Hash = ComputeSHA256Hash(randomDocument.DocumentData);
 
             this.blobStorageBrokerMock.Setup(broker =>
                 broker.SelectByFileNameAsync(randomDocument.FileName, randomContainer))
@@ -38,6 +41,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Documents
                     .RetrieveDocumentByFileNameAsync(fileName: randomDocument.FileName, container: randomContainer);
 
             // Then
+            actualDocument.Should().BeEquivalentTo(expectedDocument);
+
             this.blobStorageBrokerMock.Verify(broker =>
                 broker.SelectByFileNameAsync(randomDocument.FileName, randomContainer),
                     Times.Once);

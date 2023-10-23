@@ -10,10 +10,10 @@ namespace LHDS.Core.Brokers.AddressNormalisations
 {
     public class AddressNormalisationBroker : IAddressNormalisationBroker
     {
-        public ValueTask<string[]> ExpandAddress(string address) =>
+        public async ValueTask<string[]> ExpandAddressAsync(string address) =>
             throw new NotImplementedException();
 
-        public ValueTask<List<KeyValuePair<string, string>>> ParseAddress(string address) =>
+        public async ValueTask<List<KeyValuePair<string, string>>> ParseAddressAsync(string address) =>
             throw new NotImplementedException();
     }
 }

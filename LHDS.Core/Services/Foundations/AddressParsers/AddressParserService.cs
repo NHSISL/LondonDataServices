@@ -1,0 +1,24 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.Addresses;
+
+namespace LHDS.Core.Services.Foundations.AddressParsers
+{
+    public class AddressParserService : IAddressParserService
+    {
+        private readonly ILoggingBroker loggingBroker;
+
+        public AddressParserService(ILoggingBroker loggingBroker)
+        {
+            this.loggingBroker = loggingBroker;
+        }
+
+        public List<Address> ProcessCSV(byte[] data) =>
+            throw new NotImplementedException();
+    }
+}

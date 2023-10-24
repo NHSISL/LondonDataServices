@@ -2,10 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Linq.Expressions;
 using System;
+using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Services.Foundations.Addresses;
+using LHDS.Core.Services.Foundations.AddressParsers;
 using Moq;
 using Xeptions;
 

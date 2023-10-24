@@ -9,10 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Services.Foundations.AddressParsers;
-using Org.BouncyCastle.Utilities;
 
-namespace LHDS.Core.Services.Foundations.Addresses
+namespace LHDS.Core.Services.Foundations.AddressParsers
 {
     public partial class AddressParserService : IAddressParserService
     {
@@ -24,41 +22,43 @@ namespace LHDS.Core.Services.Foundations.Addresses
             this.loggingBroker = loggingBroker;
         }
 
-        public async Task<List<Address>> ProcessCSVAsync(byte[] data)
-        {
-            string stringData = Encoding.UTF8.GetString(data);
-            List<string> recods = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
-            List<Address> returnedAddresses = new List<Address>();
-
-            foreach (string record in recods)
+        public Task<List<Address>> ProcessCSVAsync(byte[] data) =>
+            TryCatch(async () =>
             {
-                if (record.StartsWith("28,"))
+                ValidateAddressParserOnProcessCSV(data);
+                string stringData = Encoding.UTF8.GetString(data);
+                List<string> recods = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+                List<Address> returnedAddresses = new List<Address>();
+
+                foreach (string record in recods)
                 {
-                    string[] index = record.Split(",");
-
-                    Address address = new Address
+                    if (record.StartsWith("28,"))
                     {
-                        Id = Guid.NewGuid(),
-                        UPRN = index[3],
-                        UPSN = index[4],
-                        OrganisationName = index[5],
-                        DepartmentName = index[6],
-                        SubBuildingName = index[7],
-                        BuildingName = index[8],
-                        BuildingNumber = index[9],
-                        DependentThoroughfare = index[10],
-                        Thoroughfare = index[11],
-                        DoubleDependentLocality = index[12],
-                        DependentLocality = index[13],
-                        PostTown = index[14],
-                        PostCode = index[15],
-                    };
+                        string[] index = record.Split(",");
 
-                    returnedAddresses.Add(address);
+                        Address address = new Address
+                        {
+                            Id = Guid.NewGuid(),
+                            UPRN = index[3],
+                            UPSN = index[4],
+                            OrganisationName = index[5],
+                            DepartmentName = index[6],
+                            SubBuildingName = index[7],
+                            BuildingName = index[8],
+                            BuildingNumber = index[9],
+                            DependentThoroughfare = index[10],
+                            Thoroughfare = index[11],
+                            DoubleDependentLocality = index[12],
+                            DependentLocality = index[13],
+                            PostTown = index[14],
+                            PostCode = index[15],
+                        };
+
+                        returnedAddresses.Add(address);
+                    }
                 }
-            }
 
-            return returnedAddresses;
-        }
+                return returnedAddresses;
+            });
     }
 }

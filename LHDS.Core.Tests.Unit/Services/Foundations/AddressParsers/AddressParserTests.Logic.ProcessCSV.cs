@@ -71,6 +71,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
             actualAddresses.Should().BeEquivalentTo(expectedAddresses, options =>
                 options.Excluding(address => address.Id));
 
+            var allAddressIds = actualAddresses.Select(addr => addr.Id).ToList();
+            var uniqueAddressIds = allAddressIds.Distinct().ToList();
+            Assert.Equal(allAddressIds.Count, uniqueAddressIds.Count);
+
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

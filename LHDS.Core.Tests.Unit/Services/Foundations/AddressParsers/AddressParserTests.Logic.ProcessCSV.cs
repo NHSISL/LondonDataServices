@@ -65,7 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
             }
             
             // when
-            List<Address> actualAddresses = this.addressParserService.ProcessCSV(data: inputByteAddressesCsv);
+            List<Address> actualAddresses = await this.addressParserService.ProcessCSVAsync(data: inputByteAddressesCsv);
 
             // then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses, options =>

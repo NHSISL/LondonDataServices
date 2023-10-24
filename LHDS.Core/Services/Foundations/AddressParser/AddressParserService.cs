@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Services.Foundations.AddressParsers;
@@ -23,7 +24,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             this.loggingBroker = loggingBroker;
         }
 
-        public List<Address> ProcessCSV(byte[] data)
+        public async Task<List<Address>> ProcessCSVAsync(byte[] data)
         {
             string stringData = Encoding.UTF8.GetString(data);
             List<string> recods = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();

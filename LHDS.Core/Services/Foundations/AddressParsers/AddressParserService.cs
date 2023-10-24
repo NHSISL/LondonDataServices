@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 
@@ -18,7 +19,7 @@ namespace LHDS.Core.Services.Foundations.AddressParsers
             this.loggingBroker = loggingBroker;
         }
 
-        public List<Address> ProcessCSV(byte[] data) =>
+        public async Task<List<Address>> ProcessCsvAsync(byte[] data) =>
             throw new NotImplementedException();
     }
 }

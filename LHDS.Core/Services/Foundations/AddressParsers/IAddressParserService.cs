@@ -3,12 +3,13 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
 
 namespace LHDS.Core.Services.Foundations.AddressParsers
 {
     public interface IAddressParserService
     {
-        List<Address> ProcessCSV(byte[] data);
+        Task<List<Address>> ProcessCsvAsync(byte[] data);
     }
 }

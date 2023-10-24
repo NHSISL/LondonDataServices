@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Services.Foundations.AddressExtractionAudits;
@@ -31,7 +32,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             this.loggingBroker = loggingBroker;
         }
 
-        public List<Address> ProcessData(byte[] data) =>
+        public async Task<List<Address>> ProcessDataAsync(byte[] data) =>
             throw new NotImplementedException();
     }
 }

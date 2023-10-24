@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Services.Foundations.AddressParsers;
@@ -24,9 +25,9 @@ namespace LHDS.Core.Services.Foundations.Addresses
 
         public List<Address> ProcessCSV(byte[] data)
         {
-            string stringData = data.ToString();
+            string stringData = Encoding.UTF8.GetString(data);
             List<string> recods = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
-            List<Address> expectedAddresses = new List<Address>();
+            List<Address> returnedAddresses = new List<Address>();
 
             foreach (string record in recods)
             {
@@ -45,18 +46,18 @@ namespace LHDS.Core.Services.Foundations.Addresses
                         BuildingName = index[8],
                         BuildingNumber = index[9],
                         DependentThoroughfare = index[10],
-                        Thoroughfare = index[12],
-                        DoubleDependentLocality = index[13],
-                        DependentLocality = index[14],
-                        PostTown = index[15],
-                        PostCode = index[16],
+                        Thoroughfare = index[11],
+                        DoubleDependentLocality = index[12],
+                        DependentLocality = index[13],
+                        PostTown = index[14],
+                        PostCode = index[15],
                     };
 
-                    expectedAddresses.Add(address);
+                    returnedAddresses.Add(address);
                 }
             }
 
-            return expectedAddresses;
+            return returnedAddresses;
         }
     }
 }

@@ -53,11 +53,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
                         BuildingName = index[8],
                         BuildingNumber = index[9],
                         DependentThoroughfare = index[10],
-                        Thoroughfare = index[12],
-                        DoubleDependentLocality = index[13],
-                        DependentLocality = index[14],
-                        PostTown = index[15],
-                        PostCode = index[16],
+                        Thoroughfare = index[11],
+                        DoubleDependentLocality = index[12],
+                        DependentLocality = index[13],
+                        PostTown = index[14],
+                        PostCode = index[15],
                     };
 
                     expectedAddresses.Add(address);
@@ -68,11 +68,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
             List<Address> actualAddresses = this.addressParserService.ProcessCSV(data: inputByteAddressesCsv);
 
             // then
-            foreach (Address actualAddress in actualAddresses)
-            {
-                Address expectedAddress = expectedAddresses.FirstOrDefault(address => address.Id == actualAddress.Id);
-                expectedAddress.Should().NotBeNull();
-            }
+            actualAddresses.Should().BeEquivalentTo(expectedAddresses, options =>
+                options.Excluding(address => address.Id));
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

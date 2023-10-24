@@ -6,9 +6,9 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Foundations.AddressParsers.Exceptions
 {
-    public class NullAddressParserException : Xeption
+    public class InvalidArgumentAddressParserException : Xeption
     {
-        public NullAddressParserException(string message)
+        public InvalidArgumentAddressParserException(string message)
             : base(message) 
         { }
     }

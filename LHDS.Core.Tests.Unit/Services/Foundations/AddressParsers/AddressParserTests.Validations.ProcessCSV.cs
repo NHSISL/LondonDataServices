@@ -15,21 +15,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
     public partial class AddressParserTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnProcessCSVIfDataIsNullAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnProcessCsvIfDataIsNullAndLogItAsync()
         {
             // given
             byte[] nullAddresses = null;
 
-            var nullAddressesParserException =
-                new NullAddressParserException(message: "Address parser is null.");
+            var invalidArgumentAddressParserException =
+                new InvalidArgumentAddressParserException(message: "Address parser is null.");
 
             var expectedAddressParserValidationException =
                 new AddressParserValidationException(
                     message: "Address parser validation errors occurred, please try again.",
-                    innerException: nullAddressesParserException);
+                    innerException: invalidArgumentAddressParserException);
 
             // when
-            Task<List<Address>> processCSVAddressTask = this.addressParserService.ProcessCSVAsync(nullAddresses);
+            Task<List<Address>> processCSVAddressTask = this.addressParserService.ProcessCsvAsync(nullAddresses);
 
             AddressParserValidationException actualAddressParserValidationException =
                 await Assert.ThrowsAsync<AddressParserValidationException>(async () =>

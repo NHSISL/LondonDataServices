@@ -17,7 +17,7 @@ namespace LHDS.Core.Services.Foundations.AddressParsers
         {
             if (data is null)
             {
-                throw new NullAddressParserException(message: "Address parser is null.");
+                throw new InvalidArgumentAddressParserException(message: "Address parser is null.");
             }
         }
     }

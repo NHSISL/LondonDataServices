@@ -22,7 +22,7 @@ namespace LHDS.Core.Services.Foundations.AddressParsers
             this.loggingBroker = loggingBroker;
         }
 
-        public Task<List<Address>> ProcessCSVAsync(byte[] data) =>
+        public Task<List<Address>> ProcessCsvAsync(byte[] data) =>
             TryCatch(async () =>
             {
                 ValidateAddressParserOnProcessCSV(data);

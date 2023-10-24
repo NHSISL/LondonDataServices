@@ -26,6 +26,7 @@ namespace LHDS.Core.Services.Foundations.AddressParsers
             TryCatch(async () =>
             {
                 ValidateAddressParserOnProcessCSV(data);
+                this.loggingBroker.LogInformation("Data validation complete.");
                 string stringData = Encoding.UTF8.GetString(data);
                 List<string> recods = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
                 List<Address> returnedAddresses = new List<Address>();

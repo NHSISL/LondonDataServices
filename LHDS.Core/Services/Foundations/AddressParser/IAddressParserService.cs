@@ -10,6 +10,6 @@ namespace LHDS.Core.Services.Foundations.AddressParsers
 {
     public interface IAddressParserService
     {
-        Task<List<Address>> ProcessCSVAsync(byte[] data);
+        Task<List<Address>> ProcessCsvAsync(byte[] data);
     }
 }

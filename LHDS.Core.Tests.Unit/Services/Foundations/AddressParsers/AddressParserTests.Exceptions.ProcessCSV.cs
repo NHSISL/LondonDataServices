@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
     public partial class AddressParserTests
     {
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnProcessCSVIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnProcessCsvIfServiceErrorOccursAndLogItAsync()
         {
             // given
             byte[] someData = Encoding.GetEncoding("UTF-8").GetBytes(GetRandomString());
@@ -39,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
 
             // when
             Task<List<Address>> processCSVTask =
-                this.addressParserService.ProcessCSVAsync(someData);
+                this.addressParserService.ProcessCsvAsync(someData);
 
             AddressParserServiceException actualAddressParserServiceException =
                 await Assert.ThrowsAsync<AddressParserServiceException>(async () =>

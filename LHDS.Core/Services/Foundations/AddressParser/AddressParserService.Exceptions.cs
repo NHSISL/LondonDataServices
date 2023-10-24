@@ -22,9 +22,9 @@ namespace LHDS.Core.Services.Foundations.AddressParsers
             {
                 return await returningAddressListFunction();
             }
-            catch (NullAddressParserException nullAddressParserException)
+            catch (InvalidArgumentAddressParserException invalidArgumentAddressParserException)
             {
-                throw CreateAndLogValidationException(nullAddressParserException);
+                throw CreateAndLogValidationException(invalidArgumentAddressParserException);
             }
             catch (Exception exception)
             {

@@ -2,9 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Linq.Expressions;
+using System;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Services.Foundations.Addresses;
 using Moq;
+using Xeptions;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
 {
@@ -20,5 +23,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
             this.addressParserService = new AddressParserService(
                 loggingBroker: this.loggingBrokerMock.Object);
         }
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
     }
 }

@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Addresses;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
@@ -74,6 +75,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
             var allAddressIds = actualAddresses.Select(addr => addr.Id).ToList();
             var uniqueAddressIds = allAddressIds.Distinct().ToList();
             Assert.Equal(allAddressIds.Count, uniqueAddressIds.Count);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogInformation(It.IsAny<string>()),
+                    Times.Once);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

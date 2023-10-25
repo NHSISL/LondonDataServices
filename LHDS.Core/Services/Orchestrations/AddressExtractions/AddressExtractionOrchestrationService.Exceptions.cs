@@ -48,6 +48,22 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 throw CreateAndLogDependencyValidationException(addressExtractionAuditDependencyValidationException);
             }
+            catch (AddressParserDependencyException addressParserDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressParserDependencyException);
+            }
+            catch (AddressParserServiceException addressParserServiceException)
+            {
+                throw CreateAndLogDependencyException(addressParserServiceException);
+            }
+            catch (AddressExtractionAuditDependencyException addressExtractionAuditDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressExtractionAuditDependencyException);
+            }
+            catch (AddressExtractionAuditServiceException addressExtractionAuditServiceException)
+            {
+                throw CreateAndLogDependencyException(addressExtractionAuditServiceException);
+            }
         }
 
         private AddressExtractionOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
@@ -74,6 +90,20 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             this.loggingBroker.LogError(addressExtractionOrchestrationDependencyValidationException);
 
             return addressExtractionOrchestrationDependencyValidationException;
+        }
+
+        private AddressExtractionOrchestrationDependencyException
+            CreateAndLogDependencyException(Xeption exception)
+        {
+            var addressExtractionOrchestrationDependencyException =
+                new AddressExtractionOrchestrationDependencyException(
+                    message: "Address extraction orchestration dependency error occurred, " +
+                    "fix the errors and try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(addressExtractionOrchestrationDependencyException);
+
+            throw addressExtractionOrchestrationDependencyException;
         }
     }
 }

@@ -68,9 +68,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         }
 
         [Theory]
-        [MemberData(nameof(AddressExtractionOrchestrationDependencyValidationExceptions))]
+        [MemberData(nameof(AddressExtractionDependencyExceptions))]
         public async Task ShouldThrowDependencyExceptionOnAddressExtractionIfDependencyErrorOccursAndLogItAsync(
-            Xeption dependencyValidationException)
+            Xeption dependencyException)
         {
             // given
             string inputFilePath = @"c:\temp\TestNestedZip.zip";
@@ -80,18 +80,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 new AddressExtractionOrchestrationDependencyException(
                     message: "Address extraction orchestration dependency error occurred, " +
                         "fix the errors and try again.",
-                    innerException: dependencyValidationException.InnerException as Xeption);
+                    innerException: dependencyException.InnerException as Xeption);
 
             this.addressParserServiceMock.Setup(service =>
                 service.ProcessCsvAsync(It.IsAny<byte[]>()))
-                    .ThrowsAsync(dependencyValidationException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<List<Address>> processDataTask =
                 this.addressExtractionOrchestrationService.ProcessDataAsync(inputData);
 
-            AddressExtractionOrchestrationDependencyValidationException actualException =
-                await Assert.ThrowsAsync<AddressExtractionOrchestrationDependencyValidationException>(
+            AddressExtractionOrchestrationDependencyException actualException =
+                await Assert.ThrowsAsync<AddressExtractionOrchestrationDependencyException>(
                     processDataTask.AsTask);
 
             // then

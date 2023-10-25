@@ -23,16 +23,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         public async Task ShouldProcessAddressesDataAndLogAsync()
         {
             // Given
-            string inputFilePath = @"c:\temp\AB.zip";
+            string inputFilePath = @"c:\temp\TestNestedZip.zip";
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
 
             List<string> unZippedInputFilePaths =
-                new List<string> { @"c:\temp\Addresses\SP9500.csv", @"c:\temp\Addresses\SU9565.csv" };
+                new List<string> { @"c:\temp\TestCsv1.csv", @"c:\temp\TestCsv2.csv" };
 
             List<Address> extractedAddresses = new List<Address>();
 
             foreach (string filePath in unZippedInputFilePaths)
             {
+                List<Address> currentCsvAddresses = new List<Address>();
+
                 string randomCsvFormattedAddresses;
 
                 using (StreamReader reader = new StreamReader(filePath))
@@ -48,40 +50,38 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
                 foreach (string line in lines)
                 {
-                    if (line.StartsWith("28,"))
+                    string[] index = line.Split(",");
+
+                    Address address = new Address
                     {
-                        string[] index = line.Split(",");
+                        Id = Guid.NewGuid(),
+                        UPRN = index[3],
+                        UPSN = index[4],
+                        OrganisationName = index[5],
+                        DepartmentName = index[6],
+                        SubBuildingName = index[7],
+                        BuildingName = index[8],
+                        BuildingNumber = index[9],
+                        DependentThoroughfare = index[10],
+                        Thoroughfare = index[11],
+                        DoubleDependentLocality = index[12],
+                        DependentLocality = index[13],
+                        PostTown = index[14],
+                        PostCode = index[15],
+                    };
 
-                        Address address = new Address
-                        {
-                            Id = Guid.NewGuid(),
-                            UPRN = index[3],
-                            UPSN = index[4],
-                            OrganisationName = index[5],
-                            DepartmentName = index[6],
-                            SubBuildingName = index[7],
-                            BuildingName = index[8],
-                            BuildingNumber = index[9],
-                            DependentThoroughfare = index[10],
-                            Thoroughfare = index[11],
-                            DoubleDependentLocality = index[12],
-                            DependentLocality = index[13],
-                            PostTown = index[14],
-                            PostCode = index[15],
-                        };
-
-                        extractedAddresses.Add(address);
-                    }
+                    currentCsvAddresses.Add(address);
+                    extractedAddresses.Add(address);
                 }
 
                 this.addressParserServiceMock.Setup(service =>
                     service.ProcessCsvAsync(byteAddressesCsv))
-                        .ReturnsAsync(extractedAddresses);
+                        .ReturnsAsync(currentCsvAddresses);
             }
 
             List<Address> expectedAddresses = extractedAddresses.DeepClone();
 
-            // Where
+            // When
             List<Address> actualAddresses =
                 await this.addressExtractionOrchestrationService.ProcessDataAsync(inputData);
 
@@ -91,15 +91,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             this.addressParserServiceMock.Verify(service =>
                 service.ProcessCsvAsync(It.IsAny<byte[]>()),
-                    Times.Exactly(unZippedInputFilePaths.Count));
+                    Times.Exactly(unZippedInputFilePaths.Count()));
+
+            this.dateTimeBrokerrMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Exactly(unZippedInputFilePaths.Count() * 2));
 
             this.addressExtractionAuditServiceMock.Verify(service =>
                 service.AddAddressExtractionAuditAsync(It.IsAny<AddressExtractionAudit>()),
-                    Times.Exactly(extractedAddresses.Count));
+                    Times.Exactly(unZippedInputFilePaths.Count));
 
             this.addressParserServiceMock.VerifyNoOtherCalls();
-            this.documentServiceMock.VerifyNoOtherCalls();
             this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerrMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

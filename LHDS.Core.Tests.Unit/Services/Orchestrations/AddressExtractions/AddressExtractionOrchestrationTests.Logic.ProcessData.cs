@@ -93,7 +93,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 service.ProcessCsvAsync(It.IsAny<byte[]>()),
                     Times.Exactly(unZippedInputFilePaths.Count()));
 
-            this.dateTimeBrokerrMock.Verify(broker =>
+            this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
                     Times.Exactly(unZippedInputFilePaths.Count() * 2));
 
@@ -103,7 +103,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             this.addressParserServiceMock.VerifyNoOtherCalls();
             this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerrMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

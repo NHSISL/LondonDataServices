@@ -2,107 +2,54 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Brokers.Storages.Blobs;
-using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
-using LHDS.Core.Services.Orchestrations.Decryptions;
+using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
+namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
-    public partial class DecryptionOrchestrationTests
+    public partial class AddressExctractioneOrchestrationServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnDecryptIfBlobContainerIsNullAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnProcessDataIfDataIsNullAndLogItAsync()
         {
             // given
-            string someFileName = GetRandomString();
+            byte[] someData = null;
 
-            var nullBlobContainersDecryptionOrchestrationException =
-                new NullBlobContainersDecryptionOrchestrationException(
-                    message: "Null blob container decryption orchestration exception, " +
+            var invalidArgumentAddressExtractionOrchestrationException =
+                new InvalidArgumentAddressExtractionOrchestrationException(
+                    message: "Invalid argument address extraction orchestration exception, " +
                         "please correct the errors and try again.");
 
-            var expectedDecryptionOrchestrationValidationException =
-                new DecryptionOrchestrationValidationException(
-                    message: "Decryption orchestration validation errors occurred, please try again.",
-                    innerException: nullBlobContainersDecryptionOrchestrationException);
-
-            BlobContainers invalidBlobContainers = null;
-
-            var invalidDecryptionOrchestrationService = new DecryptionOrchestrationService(
-                documentService: documentServiceMock.Object,
-                decryptionService: decryptionServiceMock.Object,
-                ingestionTrackingService: ingestionTrackingServiceMock.Object,
-                auditService: auditServiceMock.Object,
-                blobContainers: invalidBlobContainers,
-                loggingBroker: loggingBrokerMock.Object,
-                dateTimeBroker: dateTimeBrokerMock.Object
-                );
+            var expectedAddressExtractionOrchestrationValidationException =
+                new AddressExtractionOrchestrationValidationException(
+                    message: "Address extraction orchestration validation errors occurred, please try again.",
+                    innerException: invalidArgumentAddressExtractionOrchestrationException);
 
             // when
-            ValueTask<string> decryptTask =
-                invalidDecryptionOrchestrationService.DecryptAsync(someFileName);
+            ValueTask<List<Address>> processDataTask =
+                this.addressExtractionOrchestrationService.ProcessDataAsync(someData);
 
-            DecryptionOrchestrationValidationException actualException =
-                await Assert.ThrowsAsync<DecryptionOrchestrationValidationException>(decryptTask.AsTask);
+            AddressExtractionOrchestrationValidationException actualException =
+                await Assert.ThrowsAsync<AddressExtractionOrchestrationValidationException>(processDataTask.AsTask);
 
             // then
             actualException.Should()
-                .BeEquivalentTo(expectedDecryptionOrchestrationValidationException);
+                .BeEquivalentTo(expectedAddressExtractionOrchestrationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    expectedDecryptionOrchestrationValidationException))),
+                    expectedAddressExtractionOrchestrationValidationException))),
                         Times.Once);
 
-            this.documentServiceMock.VerifyNoOtherCalls();
+            this.addressParserServiceMock.VerifyNoOtherCalls();
+            this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnDecryptIfFileNameIsNullAndLogItAsync(string invalidText)
-        {
-            // given
-            var invalidArgumentDecryptionOrchestrationException =
-                new InvalidArgumentDecryptionOrchestrationException(
-                    message: "Invalid decryption orchestration argument(s), please correct the errors and try again.");
-
-            invalidArgumentDecryptionOrchestrationException.AddData(
-               key: "FileName",
-               values: "Text is required");
-
-            var expectedDecryptionOrchestrationFileNameValidationException =
-                new DecryptionOrchestrationValidationException(
-                    message: "Decryption orchestration validation errors occurred, please try again.",
-                    innerException: invalidArgumentDecryptionOrchestrationException);
-
-            // when
-            ValueTask<string> decryptTask =
-                this.decryptionOrchestrationService.DecryptAsync(invalidText);
-
-            DecryptionOrchestrationValidationException actualException =
-                await Assert.ThrowsAsync<DecryptionOrchestrationValidationException>(decryptTask.AsTask);
-
-            // then
-            actualException.Should()
-                .BeEquivalentTo(expectedDecryptionOrchestrationFileNameValidationException);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedDecryptionOrchestrationFileNameValidationException))),
-                        Times.Once);
-
-            this.documentServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

@@ -16,7 +16,7 @@ using LHDS.Core.Services.Foundations.AddressParsers;
 
 namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 {
-    internal class AddressExtractionOrchestrationService : IAddressExtractionOrchestrationService
+    public partial class AddressExtractionOrchestrationService : IAddressExtractionOrchestrationService
     {
         private readonly IAddressParserService addressParserService;
         private readonly IAddressExtractionAuditService addressExtractionAuditService;
@@ -35,10 +35,12 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async ValueTask<List<Address>> ProcessDataAsync(byte[] data)
-        {
-            return await ProcessAddressDataAsync(data);
-        }
+        public ValueTask<List<Address>> ProcessDataAsync(byte[] data) =>
+            TryCatch(async () =>
+            {
+                ValidateDataOnProcessData(data);
+                return await ProcessAddressDataAsync(data);
+            });
 
         private async ValueTask<List<Address>> ProcessAddressDataAsync(byte[] data)
         {

@@ -1,0 +1,29 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using LHDS.Core.Models.Foundations.Addresses;
+using System.Numerics;
+using System;
+using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+
+namespace LHDS.Core.Services.Orchestrations.AddressExtractions
+{
+    public partial class AddressExtractionOrchestrationService
+    {
+        private void ValidateDataOnProcessData(byte[] data)
+        {
+            ValidateDataIsNotNull(data);
+        }
+        private static void ValidateDataIsNotNull(byte[] data)
+        {
+            if (data is null)
+            {
+                throw new InvalidArgumentAddressExtractionOrchestrationException(
+                    message: "Invalid argument address extraction orchestration exception, " +
+                    "please correct the errors and try again.");
+            }
+        }
+        }
+}

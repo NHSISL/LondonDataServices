@@ -2,16 +2,14 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
-using LHDS.Core.Models.Foundations.AddressNormalisation.Exceptions;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
-using LHDS.Core.Models.Processings.Addresses.Exceptions;
-using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.AddressExtractions
@@ -43,7 +41,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 throw CreateAndLogDependencyValidationException(addressExtractionAuditValidationException);
             }
-            catch (AddressExtractionAuditDependencyValidationException 
+            catch (AddressExtractionAuditDependencyValidationException
                 addressExtractionAuditDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(addressExtractionAuditDependencyValidationException);
@@ -63,6 +61,15 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             catch (AddressExtractionAuditServiceException addressExtractionAuditServiceException)
             {
                 throw CreateAndLogDependencyException(addressExtractionAuditServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressExtractionOrchestrationServiceException =
+                    new FailedAddressExtractionOrchestrationServiceException(
+                        message: "Failed address extraction orchestration service occurred, please contact support",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressExtractionOrchestrationServiceException);
             }
         }
 
@@ -104,6 +111,18 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             this.loggingBroker.LogError(addressExtractionOrchestrationDependencyException);
 
             throw addressExtractionOrchestrationDependencyException;
+        }
+
+        private AddressExtractionOrchestrationServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var addressExtractionOrchestrationServiceException =
+                new AddressExtractionOrchestrationServiceException(
+                    message: "Address extraction orchestration service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(addressExtractionOrchestrationServiceException);
+
+            return addressExtractionOrchestrationServiceException;
         }
     }
 }

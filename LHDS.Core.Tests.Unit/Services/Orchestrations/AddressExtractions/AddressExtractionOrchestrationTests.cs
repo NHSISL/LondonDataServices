@@ -7,12 +7,15 @@ using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
+using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
 using LHDS.Core.Services.Foundations.AddressExtractionAudits;
 using LHDS.Core.Services.Foundations.AddressParsers;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
@@ -48,5 +51,31 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
+
+        public static TheoryData AddressExtractionOrchestrationDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new AddressParserValidationException(
+                    message: "Address normalisation processing validation errors occured, please try again",
+                    innerException),
+
+                new AddressParserDependencyValidationException(
+                    message: "Address normalisation processing dependency validation occurred, please try again.",
+                    innerException),
+
+                new AddressExtractionAuditValidationException(
+                    message: "Audit validation errors occurred, please try again.",
+                    innerException),
+
+                new AddressExtractionAuditDependencyValidationException(
+                    message: "Audit dependency validation occurred, please try again.",
+                    innerException)
+            };
+        }
     }
 }

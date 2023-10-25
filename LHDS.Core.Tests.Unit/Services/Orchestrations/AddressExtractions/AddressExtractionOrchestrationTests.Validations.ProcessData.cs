@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Addresses;

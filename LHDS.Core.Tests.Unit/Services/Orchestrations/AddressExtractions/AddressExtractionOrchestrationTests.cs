@@ -9,6 +9,9 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
+using LHDS.Core.Models.Processings.Addresses.Exceptions;
+using LHDS.Core.Models.Processings.AddressLoadingAudits.Exceptions;
+using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
 using LHDS.Core.Services.Foundations.AddressExtractionAudits;
 using LHDS.Core.Services.Foundations.AddressParsers;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
@@ -74,6 +77,32 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
                 new AddressExtractionAuditDependencyValidationException(
                     message: "Audit dependency validation occurred, please try again.",
+                    innerException)
+            };
+        }
+
+        public static TheoryData AddressExtractionDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new AddressParserDependencyException(
+                    message: "Address parser dependency error occurred, contact support.",
+                    innerException),
+
+                new AddressParserServiceException(
+                    message: "Address parser service error occurred, contact support.",
+                    innerException),
+
+                new AddressExtractionAuditDependencyException(
+                    message: "Audit dependency error occurred, contact support.",
+                    innerException),
+
+                new AddressExtractionAuditServiceException(
+                    message: "Audit service error occurred, contact support.",
                     innerException)
             };
         }

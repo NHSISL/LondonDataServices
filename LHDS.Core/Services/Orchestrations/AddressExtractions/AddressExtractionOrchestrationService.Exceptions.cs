@@ -5,7 +5,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
+using LHDS.Core.Models.Foundations.AddressNormalisation.Exceptions;
+using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
+using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
+using LHDS.Core.Models.Processings.Addresses.Exceptions;
+using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.AddressExtractions
@@ -25,6 +31,23 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressExtractionOrchestrationException);
             }
+            catch (AddressParserValidationException addressParserValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressParserValidationException);
+            }
+            catch (AddressParserDependencyValidationException addressParserDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressParserDependencyValidationException);
+            }
+            catch (AddressExtractionAuditValidationException addressExtractionAuditValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressExtractionAuditValidationException);
+            }
+            catch (AddressExtractionAuditDependencyValidationException 
+                addressExtractionAuditDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressExtractionAuditDependencyValidationException);
+            }
         }
 
         private AddressExtractionOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
@@ -37,6 +60,20 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             this.loggingBroker.LogError(addressExtractionOrchestrationValidationException);
 
             return addressExtractionOrchestrationValidationException;
+        }
+
+        private AddressExtractionOrchestrationDependencyValidationException
+            CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var addressExtractionOrchestrationDependencyValidationException =
+                new AddressExtractionOrchestrationDependencyValidationException(
+                    message: "Address extraction orchestration dependency validation error occurred, " +
+                    "fix the errors and try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(addressExtractionOrchestrationDependencyValidationException);
+
+            return addressExtractionOrchestrationDependencyValidationException;
         }
     }
 }

@@ -83,12 +83,12 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             }
             catch (Exception exception)
             {
-                var failedDecryptServiceException =
+                var failedAddressPersistanceOrchestrationServiceException =
                     new FailedAddressPersistanceOrchestrationServiceException(
                         message: "Failed address persistance orchestration service occurred, please contact support",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedDecryptServiceException);
+                throw CreateAndLogServiceException(failedAddressPersistanceOrchestrationServiceException);
             }
         }
         private AddressPersistanceOrchestrationValidationException CreateAndLogValidationException(Xeption exception)

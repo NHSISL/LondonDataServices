@@ -10,7 +10,6 @@ using FluentAssertions;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits;
 using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
-using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -119,6 +118,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
+        [Fact]
         public async Task ShouldThrowServiceExceptionOnAddressExtractionIfServiceErrorOccursAndLogItAsync()
         {
             // given

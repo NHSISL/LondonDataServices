@@ -10,6 +10,6 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 {
     public interface IAddressExtractionOrchestrationService
     {
-        public Task<List<Address>> ProcessDataAsync(byte[] data);
+        public ValueTask<List<Address>> ProcessDataAsync(byte[] data);
     }
 }

@@ -11,7 +11,7 @@ using LHDS.Core.Services.Orchestrations.AddressPersistances;
 
 namespace LHDS.Core.Services.Coordinations.AddressCoordinations
 {
-    public class AddressCoordinationService : IAddressCoordinationService
+    public partial class AddressCoordinationService : IAddressCoordinationService
     {
         private readonly IAddressExtractionOrchestrationService addressExtractionOrchestrationService;
         private readonly IAddressPersistanceOrchestrationService addressPersistanceOrchestrationService;
@@ -27,11 +27,13 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<List<Address>> ProcessData(byte[] data)
-        {
-            List<Address> extractedAddress = this.addressExtractionOrchestrationService.ProcessData(data);
+        public ValueTask<List<Address>> ProcessData(byte[] data) =>
+            TryCatch(async () =>
+            {
+                ValidateDataOnProcessData(data);
+                List<Address> extractedAddress = this.addressExtractionOrchestrationService.ProcessData(data);
 
-            return await this.addressPersistanceOrchestrationService.ProcessAsync(extractedAddress);
-        }
+                return await this.addressPersistanceOrchestrationService.ProcessAsync(extractedAddress);
+            });
     }
 }

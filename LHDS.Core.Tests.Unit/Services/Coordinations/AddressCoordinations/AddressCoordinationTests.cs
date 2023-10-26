@@ -8,12 +8,15 @@ using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Orchestrations.AddressOrchesrations.Exceptions;
+using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using LHDS.Core.Services.Coordinations.AddressCoordinations;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
 using LHDS.Core.Services.Orchestrations.AddressPersistances;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 {
@@ -71,6 +74,32 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                 .OnProperty(address => address.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        public static TheoryData AddressCoordinationDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new AddressExtractionOrchestrationValidationException(
+                    message: "Address extraction orchestration validation errors occured, please try again",
+                    innerException),
+
+                new AddressExtractionOrchestrationDependencyValidationException(
+                    message: "Address extraction orchestration dependency validation occurred, please try again.",
+                    innerException),
+
+                new AddressPersistanceOrchestrationValidationException(
+                    message: "Address persistance orchestration validation errors occured, please try again",
+                    innerException),
+
+                new AddressPersistanceOrchestrationDependencyValidationException(
+                    message: "Address persistance orchestration dependency validation occurred, please try again.",
+                    innerException),
+            };
         }
     }
 }

@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Orchestrations.AddressOrchesrations.Exceptions
+namespace LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions
 {
     public class AddressExtractionOrchestrationValidationException : Xeption
     {

@@ -1,14 +1,15 @@
-﻿// ---------------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using Xeptions;
 
 namespace LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions
 {
-    public class AddressExtractionOrchestrationDependencyValidationException : Xeption
+    public class AddressExtractionOrchestrationServiceException : Xeption
     {
-        public AddressExtractionOrchestrationDependencyValidationException(string message, Xeption innerException)
+        public AddressExtractionOrchestrationServiceException(string message, Exception innerException)
             : base(message, innerException)
         { }
     }

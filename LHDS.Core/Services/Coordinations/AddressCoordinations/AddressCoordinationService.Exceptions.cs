@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
+using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Coordinations.AddressCoordinations
@@ -24,6 +26,23 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressCoordinationException);
             }
+            catch (AddressExtractionOrchestrationValidationException addressExtractionOrchestrationValidationException)
+            {
+                throw CreateAndLogValidationException(addressExtractionOrchestrationValidationException);
+            }
+            catch (AddressExtractionOrchestrationDependencyValidationException
+                addressExtractionOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressExtractionOrchestrationDependencyValidationException);
+            }
+            catch (AddressPersistanceOrchestrationValidationException addressPersistanceOrchestrationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressPersistanceOrchestrationValidationException);
+            }
+            catch (AddressPersistanceOrchestrationDependencyValidationException addressPersistanceOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressPersistanceOrchestrationDependencyValidationException);
+            }
         }
 
         private AddressCoordinationValidationException CreateAndLogValidationException(Xeption exception)
@@ -37,5 +56,18 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
 
             return addressCoordinationValidationException;
         }
+
+        private AddressCoordinationDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var addressCoordinationDependencyValidationException =
+                new AddressCoordinationDependencyValidationException(
+                    message: "Address coordination dependency validation errors occurred, please try again.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(addressCoordinationDependencyValidationException);
+
+            return addressCoordinationDependencyValidationException;
+        }
+
     }
 }

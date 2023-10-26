@@ -4,11 +4,11 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions
+namespace LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions
 {
-    public class AddressExtractionOrchestrationDependencyValidationException : Xeption
+    public class AddressCoordinationDependencyException : Xeption
     {
-        public AddressExtractionOrchestrationDependencyValidationException(string message, Xeption innerException)
+        public AddressCoordinationDependencyException(string message, Xeption innerException)
             : base(message, innerException)
         { }
     }

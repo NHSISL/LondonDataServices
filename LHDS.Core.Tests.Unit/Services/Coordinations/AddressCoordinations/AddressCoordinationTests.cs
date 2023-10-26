@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Orchestrations.AddressOrchesrations.Exceptions;
+using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using LHDS.Core.Services.Coordinations.AddressCoordinations;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
@@ -99,6 +99,33 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                 new AddressPersistanceOrchestrationDependencyValidationException(
                     message: "Address persistance orchestration dependency validation occurred, please try again.",
                     innerException),
+            };
+        }
+
+        public static TheoryData AddressCoordinationDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new AddressExtractionOrchestrationDependencyException(
+                    message: "Address extraction orchestration dependency validation occurred, please try again.",
+                    innerException),
+
+                new AddressExtractionOrchestrationServiceException(
+                    message: "Address extraction orchestration error occured, please try again",
+                    innerException),
+
+                new AddressPersistanceOrchestrationDependencyException(
+                    message: "Address persistance orchestration dependency error occurred, please try again.",
+                    innerException),
+
+                new AddressPersistanceOrchestrationServiceException(
+                    message: "Address persistance orchestration service error occured, please try again",
+                    innerException),
+
             };
         }
     }

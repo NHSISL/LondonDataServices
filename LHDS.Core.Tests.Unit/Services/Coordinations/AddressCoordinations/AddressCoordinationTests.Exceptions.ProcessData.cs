@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -27,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             var expectedDependencyException =
                 new AddressCoordinationDependencyValidationException(
-                    message: "Address coordination dependency validation error occurred, fix the errors and try again.",
+                    message: "Address coordination dependency validation errors occurred, please try again.",
                     innerException: dependancyValidationException.InnerException as Xeption);
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
@@ -35,10 +34,51 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     .Throws(dependancyValidationException);
 
             // when
-            ValueTask<List<Address>> decryptTask = this.addressCoordinationService.ProcessData(randomData);
+            ValueTask<List<Address>> processDataTask = this.addressCoordinationService.ProcessData(randomData);
 
-            DecryptionOrchestrationDependencyValidationException actualException =
-                await Assert.ThrowsAsync<DecryptionOrchestrationDependencyValidationException>(decryptTask.AsTask);
+            AddressCoordinationDependencyValidationException actualException =
+                await Assert.ThrowsAsync<AddressCoordinationDependencyValidationException>(processDataTask.AsTask);
+
+            // then
+            actualException.Should()
+                 .BeEquivalentTo(expectedDependencyException);
+
+            this.addressExtractionOrchestrationServiceMock.Verify(service =>
+             service.ProcessData(randomData),
+                 Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedDependencyException))),
+                       Times.Once);
+
+            this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(AddressCoordinationDependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnProcessDataIfDependencyErrorOccursAndLogItAsync(
+            Xeption dependancyException)
+        {
+            // given
+            byte[] randomData = Encoding.UTF8.GetBytes(GetRandomString());
+
+            var expectedDependencyException =
+                new AddressCoordinationDependencyException(
+                    message: "Address coordination dependency errors occurred, please try again.",
+                    innerException: dependancyException.InnerException as Xeption);
+
+            this.addressExtractionOrchestrationServiceMock.Setup(service =>
+                service.ProcessData(randomData))
+                    .Throws(dependancyException);
+
+            // when
+            ValueTask<List<Address>> processDataTask = this.addressCoordinationService.ProcessData(randomData);
+
+            AddressCoordinationDependencyException actualException =
+                await Assert.ThrowsAsync<AddressCoordinationDependencyException>(processDataTask.AsTask);
 
             // then
             actualException.Should()

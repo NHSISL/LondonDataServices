@@ -85,19 +85,20 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             return new TheoryData<Xeption>
             {
                 new AddressExtractionOrchestrationValidationException(
-                    message: "Address extraction orchestration validation errors occured, please try again",
+                    message: "Address extraction orchestration validation error occured, please try again",
                     innerException),
 
                 new AddressExtractionOrchestrationDependencyValidationException(
-                    message: "Address extraction orchestration dependency validation occurred, please try again.",
+                    message: "Address extraction orchestration dependency validation error occurred, please try again.",
                     innerException),
 
                 new AddressPersistanceOrchestrationValidationException(
-                    message: "Address persistance orchestration validation errors occured, please try again",
+                    message: "Address persistance orchestration validation error occured, please try again",
                     innerException),
 
                 new AddressPersistanceOrchestrationDependencyValidationException(
-                    message: "Address persistance orchestration dependency validation occurred, please try again.",
+                    message: "Address persistance orchestration dependency validation error occurred, " +
+                    "please try again.",
                     innerException),
             };
         }
@@ -111,7 +112,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             return new TheoryData<Xeption>
             {
                 new AddressExtractionOrchestrationDependencyException(
-                    message: "Address extraction orchestration dependency validation occurred, please try again.",
+                    message: "Address extraction orchestration dependency validation error occurred, please try again.",
                     innerException),
 
                 new AddressExtractionOrchestrationServiceException(

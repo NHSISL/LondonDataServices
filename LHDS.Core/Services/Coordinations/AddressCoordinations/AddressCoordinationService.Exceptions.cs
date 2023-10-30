@@ -71,7 +71,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             {
                 var failedDecryptServiceException =
                     new FailedAddressCoordinationServiceException(
-                        message: "Failed address coordination service occurred, please contact support",
+                        message: "Failed address coordination service error occurred, please contact support",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedDecryptServiceException);
@@ -82,7 +82,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
         {
             var addressCoordinationValidationException =
                 new AddressCoordinationValidationException(
-                    message: "Address coordination validation errors occurred, please try again.",
+                    message: "Address coordination validation error occurred, please try again.",
                     innerException: exception);
 
             this.loggingBroker.LogError(addressCoordinationValidationException);
@@ -95,7 +95,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
         {
             var addressCoordinationDependencyValidationException =
                 new AddressCoordinationDependencyValidationException(
-                    message: "Address coordination dependency validation errors occurred, please try again.",
+                    message: "Address coordination dependency validation error occurred, please try again.",
                     innerException: exception);
 
             this.loggingBroker.LogError(addressCoordinationDependencyValidationException);
@@ -107,7 +107,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
         {
             var addressCoordinationDependencyException =
                 new AddressCoordinationDependencyException(
-                    message: "Address coordination dependency errors occurred, please try again.",
+                    message: "Address coordination dependency error occurred, please try again.",
                     innerException: exception);
 
             this.loggingBroker.LogError(addressCoordinationDependencyException);

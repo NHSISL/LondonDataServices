@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             var expectedAddressCoordinationValidationException =
                 new AddressCoordinationValidationException(
-                    message: "Address coordination validation errors occurred, please try again.",
+                    message: "Address coordination validation error occurred, please try again.",
                     innerException: invalidArgumentAddressCoordinationException);
 
             // when

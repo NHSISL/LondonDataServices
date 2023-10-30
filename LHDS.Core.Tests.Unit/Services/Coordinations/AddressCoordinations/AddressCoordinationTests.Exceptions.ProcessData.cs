@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             var expectedDependencyException =
                 new AddressCoordinationDependencyValidationException(
                     message: "Address coordination dependency validation errors occurred, please try again.",
-                    innerException: dependancyValidationException.InnerException as Xeption);
+                    innerException: dependancyValidationException);
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
                 service.ProcessData(randomData))
@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
         [Theory]
         [MemberData(nameof(AddressCoordinationDependencyExceptions))]
         public async Task ShouldThrowDependencyExceptionOnProcessDataIfDependencyErrorOccursAndLogItAsync(
-            Xeption dependancyException)
+            Xeption dependencyException)
         {
             // given
             byte[] randomData = Encoding.UTF8.GetBytes(GetRandomString());
@@ -68,11 +68,11 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             var expectedDependencyException =
                 new AddressCoordinationDependencyException(
                     message: "Address coordination dependency errors occurred, please try again.",
-                    innerException: dependancyException.InnerException as Xeption);
+                    innerException: dependencyException);
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
                 service.ProcessData(randomData))
-                    .Throws(dependancyException);
+                    .Throws(dependencyException);
 
             // when
             ValueTask<List<Address>> processDataTask = this.addressCoordinationService.ProcessData(randomData);

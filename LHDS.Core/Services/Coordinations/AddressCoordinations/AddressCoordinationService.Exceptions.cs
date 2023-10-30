@@ -28,20 +28,42 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             }
             catch (AddressExtractionOrchestrationValidationException addressExtractionOrchestrationValidationException)
             {
-                throw CreateAndLogValidationException(addressExtractionOrchestrationValidationException);
+                throw CreateAndLogDependencyValidationException(addressExtractionOrchestrationValidationException);
             }
             catch (AddressExtractionOrchestrationDependencyValidationException
                 addressExtractionOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(addressExtractionOrchestrationDependencyValidationException);
+                throw CreateAndLogDependencyValidationException(
+                    addressExtractionOrchestrationDependencyValidationException);
             }
-            catch (AddressPersistanceOrchestrationValidationException addressPersistanceOrchestrationValidationException)
+            catch (AddressPersistanceOrchestrationValidationException 
+                addressPersistanceOrchestrationValidationException)
             {
                 throw CreateAndLogDependencyValidationException(addressPersistanceOrchestrationValidationException);
             }
-            catch (AddressPersistanceOrchestrationDependencyValidationException addressPersistanceOrchestrationDependencyValidationException)
+            catch (AddressPersistanceOrchestrationDependencyValidationException 
+                addressPersistanceOrchestrationDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(addressPersistanceOrchestrationDependencyValidationException);
+                throw CreateAndLogDependencyValidationException(
+                    addressPersistanceOrchestrationDependencyValidationException);
+            }
+            catch (AddressExtractionOrchestrationServiceException addressExtractionOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(addressExtractionOrchestrationServiceException);
+            }
+            catch (AddressExtractionOrchestrationDependencyException
+                addressExtractionOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressExtractionOrchestrationDependencyException);
+            }
+            catch (AddressPersistanceOrchestrationServiceException addressPersistanceOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(addressPersistanceOrchestrationServiceException);
+            }
+            catch (AddressPersistanceOrchestrationDependencyException
+                addressPersistanceOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressPersistanceOrchestrationDependencyException);
             }
         }
 
@@ -57,7 +79,8 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             return addressCoordinationValidationException;
         }
 
-        private AddressCoordinationDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        private AddressCoordinationDependencyValidationException 
+            CreateAndLogDependencyValidationException(Xeption exception)
         {
             var addressCoordinationDependencyValidationException =
                 new AddressCoordinationDependencyValidationException(
@@ -69,5 +92,16 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             return addressCoordinationDependencyValidationException;
         }
 
+        private AddressCoordinationDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var addressCoordinationDependencyException =
+                new AddressCoordinationDependencyException(
+                    message: "Address coordination dependency errors occurred, please try again.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(addressCoordinationDependencyException);
+
+            return addressCoordinationDependencyException;
+        }
     }
 }

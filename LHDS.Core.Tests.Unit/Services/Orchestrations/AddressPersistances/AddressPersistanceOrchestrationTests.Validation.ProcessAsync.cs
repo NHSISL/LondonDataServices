@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             var expectedAddressPersistanceOrchestrationValidationException =
                 new AddressPersistanceOrchestrationValidationException(
-                    message: "Address persistance orchestration validation errors occured, please try again",
+                    message: "Address persistance orchestration validation error occured, please try again",
                     innerException: invalidArgumentAddressPersistanceOrchestrationException);
 
             // when

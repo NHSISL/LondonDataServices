@@ -146,7 +146,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             var failedAddressPersistanceOrchestrationServiceException =
                 new FailedAddressPersistanceOrchestrationServiceException(
-                    message: "Failed address persistance orchestration service occurred, please contact support",
+                    message: "Failed address persistance orchestration service error occurred, please contact support",
                     innerException: serviceException);
 
             var expectedAddressPersistanceOrchestrationServiceException =

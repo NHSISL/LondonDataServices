@@ -8,7 +8,7 @@ using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 
 namespace LHDS.Core.Services.Orchestrations.AddressPersistances
 {
-    public partial class AddressPersistanceOrchestrationService
+    internal partial class AddressPersistanceOrchestrationService
     {
         private static void ValidateAddressListOrchestrationOnProcess(List<Address> addressList)
         {

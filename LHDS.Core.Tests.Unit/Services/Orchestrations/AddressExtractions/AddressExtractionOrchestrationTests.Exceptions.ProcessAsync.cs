@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             Xeption dependencyValidationException)
         {
             // given
-            string inputFilePath = @"c:\temp\TestNestedZip.zip";
+            string inputFilePath = @"./Resources/TestNestedZip.zip";
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
 
             var expectedDependencyException =

@@ -65,7 +65,8 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 var failedAddressExtractionOrchestrationServiceException =
                     new FailedAddressExtractionOrchestrationServiceException(
-                        message: "Failed address extraction orchestration service error occurred, please contact support",
+                        message: "Failed address extraction orchestration service error occurred, " +
+                        "please contact support",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressExtractionOrchestrationServiceException);

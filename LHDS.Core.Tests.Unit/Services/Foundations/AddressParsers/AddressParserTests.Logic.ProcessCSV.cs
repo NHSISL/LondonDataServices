@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -21,7 +22,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
         public async Task ShouldProcessAddressCsvAsync()
         {
             // given
-            string filePath = @"c:\temp\Addresses\SP9500.csv";
+            string assembly = Assembly.GetExecutingAssembly().Location;
+            string filePath = Path.Combine(Path.GetDirectoryName(assembly), @"Resources/TestCsv3.csv");
             string randomCsvFormattedAddresses;
 
             using (StreamReader reader = new StreamReader(filePath))

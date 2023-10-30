@@ -9,9 +9,6 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
-using LHDS.Core.Models.Processings.Addresses.Exceptions;
-using LHDS.Core.Models.Processings.AddressLoadingAudits.Exceptions;
-using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
 using LHDS.Core.Services.Foundations.AddressExtractionAudits;
 using LHDS.Core.Services.Foundations.AddressParsers;
 using LHDS.Core.Services.Orchestrations.AddressExtractions;
@@ -64,19 +61,19 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             return new TheoryData<Xeption>
             {
                 new AddressParserValidationException(
-                    message: "Address normalisation processing validation errors occured, please try again",
+                    message: "Address normalisation processing validation error occured, please try again",
                     innerException),
 
                 new AddressParserDependencyValidationException(
-                    message: "Address normalisation processing dependency validation occurred, please try again.",
+                    message: "Address normalisation processing dependency validation error occurred, please try again.",
                     innerException),
 
                 new AddressExtractionAuditValidationException(
-                    message: "Audit validation errors occurred, please try again.",
+                    message: "Audit validation error occurred, please try again.",
                     innerException),
 
                 new AddressExtractionAuditDependencyValidationException(
-                    message: "Audit dependency validation occurred, please try again.",
+                    message: "Audit dependency validation error occurred, please try again.",
                     innerException)
             };
         }

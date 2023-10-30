@@ -34,4 +34,16 @@
 	  <ProjectReference Include="..\LHDS.Core\LHDS.Core.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="Resources\TestCsv1.csv">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Resources\TestCsv2.csv">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Resources\TestNestedZip.zip">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 </Project>

@@ -23,11 +23,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         public async Task ShouldProcessAddressesDataAndLogAsync()
         {
             // Given
-            string inputFilePath = @"c:\temp\TestNestedZip.zip";
+            string inputFilePath = @".\Resources\TestNestedZip.zip";
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
 
             List<string> unZippedInputFilePaths =
-                new List<string> { @"c:\temp\TestCsv1.csv", @"c:\temp\TestCsv2.csv" };
+                new List<string> { @".\Resources\TestCsv1.csv", @".\Resources\TestCsv2.csv" };
 
             List<Address> extractedAddresses = new List<Address>();
 

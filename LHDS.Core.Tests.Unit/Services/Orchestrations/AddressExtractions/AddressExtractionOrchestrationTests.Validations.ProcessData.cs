@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             var expectedAddressExtractionOrchestrationValidationException =
                 new AddressExtractionOrchestrationValidationException(
-                    message: "Address extraction orchestration validation errors occurred, please try again.",
+                    message: "Address extraction orchestration validation error occurred, please try again.",
                     innerException: invalidArgumentAddressExtractionOrchestrationException);
 
             // when

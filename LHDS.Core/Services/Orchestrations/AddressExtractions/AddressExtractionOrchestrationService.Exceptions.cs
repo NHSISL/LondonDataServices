@@ -9,7 +9,6 @@ using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
-using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.AddressExtractions
@@ -66,7 +65,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 var failedAddressExtractionOrchestrationServiceException =
                     new FailedAddressExtractionOrchestrationServiceException(
-                        message: "Failed address extraction orchestration service occurred, please contact support",
+                        message: "Failed address extraction orchestration service error occurred, please contact support",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressExtractionOrchestrationServiceException);
@@ -77,7 +76,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
         {
             var addressExtractionOrchestrationValidationException =
                 new AddressExtractionOrchestrationValidationException(
-                    message: "Address extraction orchestration validation errors occurred, please try again.",
+                    message: "Address extraction orchestration validation error occurred, please try again.",
                     innerException: exception);
 
             this.loggingBroker.LogError(addressExtractionOrchestrationValidationException);

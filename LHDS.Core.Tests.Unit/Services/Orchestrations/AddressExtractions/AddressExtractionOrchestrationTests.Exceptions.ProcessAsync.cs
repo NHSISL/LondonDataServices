@@ -128,7 +128,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             var failedAddressPersistanceOrchestrationServiceException =
                 new FailedAddressExtractionOrchestrationServiceException(
-                    message: "Failed address extraction orchestration service occurred, please contact support",
+                    message: "Failed address extraction orchestration service error occurred, please contact support",
                     innerException: serviceException);
 
             var expectedAddressExtractionOrchestrationServiceException =

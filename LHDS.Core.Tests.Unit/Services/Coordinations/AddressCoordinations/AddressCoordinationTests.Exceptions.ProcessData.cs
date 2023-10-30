@@ -124,8 +124,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             // when
             ValueTask<List<Address>> processDataTask = this.addressCoordinationService.ProcessData(randomData);
 
-            DecryptionOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<DecryptionOrchestrationServiceException>(processDataTask.AsTask);
+            AddressCoordinationServiceException actualException =
+                await Assert.ThrowsAsync<AddressCoordinationServiceException>(processDataTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedAddressCoordinationServiceException);

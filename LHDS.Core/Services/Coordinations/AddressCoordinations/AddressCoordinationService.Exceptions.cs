@@ -2,12 +2,14 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
+using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Coordinations.AddressCoordinations
@@ -65,6 +67,15 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             {
                 throw CreateAndLogDependencyException(addressPersistanceOrchestrationDependencyException);
             }
+            catch (Exception exception)
+            {
+                var failedDecryptServiceException =
+                    new FailedAddressCoordinationServiceException(
+                        message: "Failed address coordination service occurred, please contact support",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedDecryptServiceException);
+            }
         }
 
         private AddressCoordinationValidationException CreateAndLogValidationException(Xeption exception)
@@ -102,6 +113,18 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             this.loggingBroker.LogError(addressCoordinationDependencyException);
 
             return addressCoordinationDependencyException;
+        }
+
+        private AddressCoordinationServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var addressCoordinationServiceException =
+                new AddressCoordinationServiceException(
+                    message: "Address coordination service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(addressCoordinationServiceException);
+
+            return addressCoordinationServiceException;
         }
     }
 }

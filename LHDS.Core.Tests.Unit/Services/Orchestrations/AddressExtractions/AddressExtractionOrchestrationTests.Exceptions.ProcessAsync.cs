@@ -74,7 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             Xeption dependencyException)
         {
             // given
-            string inputFilePath = @"c:\temp\TestNestedZip.zip";
+            string inputFilePath = @"./Resources/TestNestedZip.zip";
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
 
             var expectedDependencyException =
@@ -122,7 +122,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         public async Task ShouldThrowServiceExceptionOnAddressExtractionIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            string inputFilePath = @"c:\temp\TestNestedZip.zip";
+            string inputFilePath = @"./Resources/TestNestedZip.zip";
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
             var serviceException = new Exception();
 

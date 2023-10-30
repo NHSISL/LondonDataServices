@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             var expectedDependencyException =
                 new AddressCoordinationDependencyValidationException(
-                    message: "Address coordination dependency validation errors occurred, please try again.",
+                    message: "Address coordination dependency validation error occurred, please try again.",
                     innerException: dependancyValidationException);
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
@@ -69,7 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             var expectedDependencyException =
                 new AddressCoordinationDependencyException(
-                    message: "Address coordination dependency errors occurred, please try again.",
+                    message: "Address coordination dependency error occurred, please try again.",
                     innerException: dependencyException);
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
@@ -109,7 +109,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             var failedAddressCoordinationServiceException =
                 new FailedAddressCoordinationServiceException(
-                    message: "Failed address coordination service occurred, please contact support",
+                    message: "Failed address coordination service error occurred, please contact support",
                     innerException: serviceException);
 
             var expectedAddressCoordinationServiceException =

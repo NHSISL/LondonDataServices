@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Addresses;
@@ -24,7 +25,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             Xeption dependencyValidationException)
         {
             // given
-            string inputFilePath = @"./Resources/TestNestedZip.zip";
+            string assembly = Assembly.GetExecutingAssembly().Location;
+            string inputFilePath = Path.Combine(Path.GetDirectoryName(assembly), @"Resources/TestNestedZip.zip");
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
 
             var expectedDependencyException =
@@ -74,7 +76,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             Xeption dependencyException)
         {
             // given
-            string inputFilePath = @"./Resources/TestNestedZip.zip";
+            string assembly = Assembly.GetExecutingAssembly().Location;
+            string inputFilePath = Path.Combine(Path.GetDirectoryName(assembly), @"Resources/TestNestedZip.zip");
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
 
             var expectedDependencyException =
@@ -122,7 +125,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         public async Task ShouldThrowServiceExceptionOnAddressExtractionIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            string inputFilePath = @"./Resources/TestNestedZip.zip";
+            string assembly = Assembly.GetExecutingAssembly().Location;
+            string inputFilePath = Path.Combine(Path.GetDirectoryName(assembly), @"Resources/TestNestedZip.zip");
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
             var serviceException = new Exception();
 

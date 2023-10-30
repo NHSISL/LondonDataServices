@@ -3,10 +3,12 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
 using LHDS.Core.Services.Foundations.AddressExtractionAudits;
@@ -49,8 +51,34 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
+        private static DateTimeOffset GetRandomDateTimeOffset() =>
+           new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
+
+        private static IQueryable<Address> CreateRandomAddresses()
+        {
+            return CreateAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
+
+        private static Address CreateRandomAddress(DateTimeOffset dateTimeOffset) =>
+            CreateAddressFiller(dateTimeOffset).Create();
+
+        private static Filler<Address> CreateAddressFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<Address>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(address => address.CreatedBy).Use(user)
+                .OnProperty(address => address.UpdatedBy).Use(user);
+
+            return filler;
+        }
 
         public static TheoryData AddressExtractionOrchestrationDependencyValidationExceptions()
         {

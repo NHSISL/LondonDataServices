@@ -125,7 +125,6 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                 new AddressPersistanceOrchestrationServiceException(
                     message: "Address persistance orchestration service error occured, please try again",
                     innerException),
-
             };
         }
     }

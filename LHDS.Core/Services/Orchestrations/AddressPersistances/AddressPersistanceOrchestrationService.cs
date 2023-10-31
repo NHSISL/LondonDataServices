@@ -16,7 +16,7 @@ using LHDS.Core.Services.Processings.AddressNormalisations;
 
 namespace LHDS.Core.Services.Orchestrations.AddressPersistances
 {
-    public partial class AddressPersistanceOrchestrationService : IAddressPersistanceOrchestrationService
+    internal partial class AddressPersistanceOrchestrationService : IAddressPersistanceOrchestrationService
     {
         private readonly IAddressProcessingService addressProcessingService;
         private readonly IAddressNormalisationProcessingService addressNormalisationProcessingService;

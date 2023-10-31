@@ -2,7 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.IO;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -52,13 +54,20 @@ namespace LHDS.Core.Services.Foundations.Documents
 
                  ValidateStorageDocument(retrievedDocument, fileName);
 
-                 var document = new Document
+                 using (SHA256 sha256 = SHA256.Create())
                  {
-                     FileName = fileName,
-                     DocumentData = retrievedDocument
-                 };
+                     byte[] hashBytes = sha256.ComputeHash(retrievedDocument);
+                     var sha256Hash = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
 
-                 return document;
+                     var document = new Document
+                     {
+                         FileName = fileName,
+                         DocumentData = retrievedDocument,
+                         SHA256Hash = sha256Hash
+                     };
+
+                     return document;
+                 }
              });
 
         public ValueTask RemoveDocumentByFileNameAsync(string fileName, string container) =>

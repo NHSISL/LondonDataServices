@@ -29,7 +29,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
                     innerException: invalidArgumentAddressParserException);
 
             // when
-            Task<List<Address>> processCSVAddressTask = this.addressParserService.ProcessCsvAsync(nullAddresses);
+            ValueTask<List<Address>> processCSVAddressTask = 
+                this.addressParserService.ProcessCsvAsync(nullAddresses);
 
             AddressParserValidationException actualAddressParserValidationException =
                 await Assert.ThrowsAsync<AddressParserValidationException>(async () =>

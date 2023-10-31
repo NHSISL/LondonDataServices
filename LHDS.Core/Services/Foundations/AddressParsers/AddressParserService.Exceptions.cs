@@ -14,9 +14,9 @@ namespace LHDS.Core.Services.Foundations.AddressParsers
 {
     public partial class AddressParserService
     {
-        private delegate Task<List<Address>> ReturningAddressListFunction();
+        private delegate ValueTask<List<Address>> ReturningAddressListFunction();
 
-        private async Task<List<Address>> TryCatch(ReturningAddressListFunction returningAddressListFunction)
+        private async ValueTask<List<Address>> TryCatch(ReturningAddressListFunction returningAddressListFunction)
         {
             try
             {

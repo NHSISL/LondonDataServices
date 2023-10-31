@@ -8,5 +8,6 @@ namespace LHDS.Core.Models.Foundations.Documents
     {
         public string FileName { get; set; } = string.Empty;
         public byte[] DocumentData { get; set; } = new byte[0];
+        public string SHA256Hash { get; set; } = string.Empty;
     }
 }

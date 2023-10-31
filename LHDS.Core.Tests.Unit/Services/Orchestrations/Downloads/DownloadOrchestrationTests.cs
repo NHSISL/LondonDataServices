@@ -10,6 +10,8 @@ using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.DataSets;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
@@ -18,11 +20,13 @@ using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Orchestrations.Downloads;
+using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Orchestrations.Downloads;
+using LHDS.Core.Services.Processings.DataSetSpecifications;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -38,6 +42,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         private readonly Mock<IDownloadService> downloadServiceMock;
         private readonly Mock<IIngestionTrackingService> ingestionTrackingServiceMock;
         private readonly Mock<IIngestionTrackingAuditService> auditServiceMock;
+        private readonly Mock<IDataSetSpecificationService> dataSetSpecificationServiceMock;
+        private readonly Mock<IDataSetSpecificationProcessingService> dataSetSpecificationProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
@@ -52,6 +58,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             documentServiceMock = new Mock<IDocumentService>();
             downloadServiceMock = new Mock<IDownloadService>();
             ingestionTrackingServiceMock = new Mock<IIngestionTrackingService>();
+            dataSetSpecificationServiceMock = new Mock<IDataSetSpecificationService>();
+            dataSetSpecificationProcessingServiceMock = new Mock<IDataSetSpecificationProcessingService>();
             auditServiceMock = new Mock<IIngestionTrackingAuditService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
@@ -62,7 +70,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             {
                 LandingSupplierId = Guid.NewGuid(),
                 EncryptedFolder = "encrypted",
-                DecryptedFolder = "decrypted"
+                DecryptedFolder = "inbox/landings"
             };
 
             blobContainers = new BlobContainers
@@ -77,7 +85,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 documentService: documentServiceMock.Object,
                 downloadService: downloadServiceMock.Object,
                 ingestionTrackingService: ingestionTrackingServiceMock.Object,
+                dataSetSpecificationService: dataSetSpecificationServiceMock.Object,
                 auditService: auditServiceMock.Object,
+                dataSetSpecificationProcessingService: dataSetSpecificationProcessingServiceMock.Object,
                 blobContainers,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
@@ -101,13 +111,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         private static Filler<Document> CreateDocumentFiller()
         {
             var filler = new Filler<Document>();
-            filler.Setup();
+            string filename = GetRandomString(10);
+
+            for (int i = 0; i < 6; i++)
+            {
+                filename = $"{filename}_{GetRandomString(10)}";
+            }
+
+            filler.Setup()
+                .OnProperty(dataSet => dataSet.FileName).Use(filename);
 
             return filler;
         }
 
         private static string GetRandomString() =>
           new MnemonicString().GetValue();
+
+        private static string GetRandomString(int length) =>
+            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
         private static string GetRandomMessage() =>
            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
@@ -133,11 +154,72 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             CreateIngestionTrackingFiller(dateTimeOffset).Create();
 
         private Expression<Func<IngestionTracking, bool>> SameIngestionTrackingAs(
-            IngestionTracking exprectedIngestionTracking)
+            IngestionTracking expectedIngestionTracking)
         {
             return actualIngestionTracking =>
-                this.compareLogic.Compare(exprectedIngestionTracking, actualIngestionTracking)
+                this.compareLogic.Compare(expectedIngestionTracking, actualIngestionTracking)
                     .AreEqual;
+        }
+
+        private static DataSet CreateRandomDataSet(Guid supplierId) =>
+            CreateDataSetFiller(supplierId).Create();
+
+        private static Filler<DataSet> CreateDataSetFiller(Guid supplierId)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<DataSet>();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(dataSet => dataSet.SupplierId).Use(supplierId)
+                .OnProperty(dataSet => dataSet.IsActive).Use(true)
+                .OnProperty(dataSet => dataSet.ActiveFrom).Use(now.AddDays(-2))
+                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(2))
+                .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()));
+
+            return filler;
+        }
+
+        private static IQueryable<DataSetSpecification> CreateRandomDataSetSpecifications(DataSet dataSet)
+        {
+            return CreateDataSetSpecificationFiller(dataSet)
+                .Create(count: 1)
+                    .AsQueryable();
+        }
+
+        private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(DataSet dataSet)
+        {
+            string user = GetRandomString(255);
+            var filler = new Filler<DataSetSpecification>();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+
+                .OnProperty(dataSetSpecification => dataSetSpecification.DataSetId).Use(dataSet.Id)
+                .OnProperty(dataSetSpecification => dataSetSpecification.DataSet).Use(dataSet)
+                .OnProperty(dataSetSpecification => dataSetSpecification.IsActive).Use(true)
+                .OnProperty(dataSetSpecification => dataSetSpecification.ActiveFrom).Use(now.AddDays(-2))
+                .OnProperty(dataSetSpecification => dataSetSpecification.ActiveTo).Use(now.AddDays(2))
+
+                .OnProperty(dataSetSpecification => 
+                    dataSetSpecification.OurSpecificationVersion).Use(GetRandomString(10))
+
+                .OnProperty(dataSetSpecification =>
+                    dataSetSpecification.SupplierSpecificationVersion).Use(GetRandomString(10))
+
+                .OnProperty(dataSetSpecification => dataSetSpecification.PresededById).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById).IgnoreIt()
+                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
+                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
+                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
+
+            return filler;
         }
 
         private Expression<Func<Document, bool>> SameDocumentAs(

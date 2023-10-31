@@ -10,6 +10,7 @@ using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Processings.DataSetSpecifications;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +30,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         internal ICryptographyProvider cryptographyProvider;
         internal IConfiguration configuration;
         internal LandingConfiguration landingConfiguration;
+        internal IDataSetSpecificationProcessingService dataSetSpecificationProcessingService;
 
         public ApiBroker()
         {
@@ -51,6 +53,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 
             this.configuration = this.webApplicationFactory.Services.GetService<IConfiguration>();
             this.landingConfiguration = this.webApplicationFactory.Services.GetService<LandingConfiguration>();
+
+            this.dataSetSpecificationProcessingService = 
+                this.webApplicationFactory.Services.GetService<IDataSetSpecificationProcessingService>();
         }
     }
 }

@@ -10,15 +10,19 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Downloads;
+using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
+using LHDS.Core.Services.Orchestrations.Downloads;
+using LHDS.Core.Services.Processings.DataSetSpecifications;
 using Document = LHDS.Core.Models.Foundations.Documents.Document;
 
 namespace LHDS.Core.Services.Orchestrations.Downloads
@@ -31,6 +35,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         private readonly IIngestionTrackingAuditService auditService;
         private readonly BlobContainers blobContainers;
         private readonly ISupplierService supplierService;
+        private readonly IDataSetSpecificationService dataSetSpecificationService;
+        private readonly IDataSetSpecificationProcessingService dataSetSpecificationProcessingService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
@@ -40,7 +46,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             IDocumentService documentService,
             IDownloadService downloadService,
             IIngestionTrackingService ingestionTrackingService,
+            IDataSetSpecificationService dataSetSpecificationService,
             IIngestionTrackingAuditService auditService,
+            IDataSetSpecificationProcessingService dataSetSpecificationProcessingService,
             BlobContainers blobContainers,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
@@ -51,6 +59,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.downloadService = downloadService;
             this.ingestionTrackingService = ingestionTrackingService;
             this.auditService = auditService;
+            this.dataSetSpecificationService = dataSetSpecificationService;
+            this.dataSetSpecificationProcessingService = dataSetSpecificationProcessingService;
             this.blobContainers = blobContainers;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
@@ -88,6 +98,10 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                                 var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
+                                DataSetSpecification retrievedDataSetSpecification = await
+                                    this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
+                                        landingConfiguration.LandingSupplierId);
+
                                 var filename = document.FileName.StartsWith('/')
                                     ? document.FileName
                                     : "/" + document.FileName;
@@ -102,6 +116,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                                       DecryptedFileName =
                                         $"/{landingConfiguration.DecryptedFolder}" +
+                                        $"/{retrievedDataSetSpecification.DataSet.DataSetName}" +
+                                        $"/{retrievedDataSetSpecification.Id}" +
+                                        $"/{filename.Split('_')[3]}" +
                                         $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
                                       Decrypted = false,
@@ -237,28 +254,35 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         ? externalDocument.FileName
                         : "/" + externalDocument.FileName;
 
+                    DataSetSpecification retrievedDataSetSpecification = await
+                        this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
+                            landingConfiguration.LandingSupplierId);
+
                     IngestionTracking newIngestionTracking =
                       new IngestionTracking
                       {
-                          Id = this.identifierBroker.GetIdentifier(),
-                          FileName = externalDocument.FileName,
-                          SupplierId = landingConfiguration.LandingSupplierId,
-                          EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
+                        Id = this.identifierBroker.GetIdentifier(),
+                        FileName = externalDocument.FileName,
+                        SupplierId = landingConfiguration.LandingSupplierId,
+                        EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
 
-                          DecryptedFileName =
+                        DecryptedFileName =
                             $"/{landingConfiguration.DecryptedFolder}" +
+                            $"/{retrievedDataSetSpecification.DataSet.DataSetName}" +
+                            $"/{retrievedDataSetSpecification.Id}" +
+                            $"/{filename.Split('_')[3]}" +
                             $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
-                          Decrypted = false,
-                          LastSeen = currentDateTime,
-                          FileDeleted = false,
-                          RecordCount = 0,
-                          EncryptedFileSize = externalDocument.DocumentData.Length,
-                          DecryptedFileSize = 0,
-                          CreatedBy = "System",
-                          CreatedDate = currentDateTime,
-                          UpdatedBy = "System",
-                          UpdatedDate = currentDateTime
+                        Decrypted = false,
+                        LastSeen = currentDateTime,
+                        FileDeleted = false,
+                        RecordCount = 0,
+                        EncryptedFileSize = externalDocument.DocumentData.Length,
+                        DecryptedFileSize = 0,
+                        CreatedBy = "System",
+                        CreatedDate = currentDateTime,
+                        UpdatedBy = "System",
+                        UpdatedDate = currentDateTime
                       };
 
                     Document newBlobDocument = new Document

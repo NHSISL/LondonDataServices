@@ -41,6 +41,7 @@ using LHDS.Core.Services.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.PdsAudits;
 using LHDS.Core.Services.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.Suppliers;
+using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.OptOuts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -276,7 +277,9 @@ namespace LHDS.AdminPortal.Api
         private static void AddProcessingServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IOptOutProcessingService, OptOutProcessingService>();
+            services.AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
         }
+
 
         private IEdmModel GetEdmModel()
         {

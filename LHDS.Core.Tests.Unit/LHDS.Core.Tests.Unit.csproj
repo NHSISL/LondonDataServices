@@ -9,6 +9,24 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\TestCsv1.csv" />
+	  <None Remove="Resources\TestCsv2.csv" />
+	  <None Remove="Resources\TestNestedZip.zip" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Resources\TestCsv1.csv">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\TestCsv2.csv">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\TestNestedZip.zip">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="CompareNETObjects" Version="4.82.0" />
 		<PackageReference Include="DeepCloner" Version="0.10.4" />
 		<PackageReference Include="EFxceptions" Version="0.4.5" />
@@ -32,18 +50,6 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\LHDS.Core\LHDS.Core.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Update="Resources\TestCsv1.csv">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="Resources\TestCsv2.csv">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	  <None Update="Resources\TestNestedZip.zip">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
 	</ItemGroup>
 
 </Project>

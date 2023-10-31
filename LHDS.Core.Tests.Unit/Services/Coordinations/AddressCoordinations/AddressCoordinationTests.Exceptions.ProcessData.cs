@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -32,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: dependancyValidationException);
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
-                service.ProcessData(randomData))
+                service.ProcessDataAsync(randomData))
                     .Throws(dependancyValidationException);
 
             // when
@@ -46,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                  .BeEquivalentTo(expectedDependencyException);
 
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
-             service.ProcessData(randomData),
+             service.ProcessDataAsync(randomData),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -73,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: dependencyException);
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
-                service.ProcessData(randomData))
+                service.ProcessDataAsync(randomData))
                     .Throws(dependencyException);
 
             // when
@@ -87,7 +86,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                  .BeEquivalentTo(expectedDependencyException);
 
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
-             service.ProcessData(randomData),
+             service.ProcessDataAsync(randomData),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -118,7 +117,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: failedAddressCoordinationServiceException);
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
-                service.ProcessData(randomData))
+                service.ProcessDataAsync(randomData))
                     .Throws(serviceException);
 
             // when
@@ -131,7 +130,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             actualException.Should().BeEquivalentTo(expectedAddressCoordinationServiceException);
 
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
-                service.ProcessData(randomData),
+                service.ProcessDataAsync(randomData),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

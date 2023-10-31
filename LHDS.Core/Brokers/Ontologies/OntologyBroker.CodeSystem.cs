@@ -3,7 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
-using FHIR.Modules.Resources.Foundation.Bundles;
+using Hl7.Fhir.Model;
 
 namespace LHDS.Core.Brokers.Ontologies
 {

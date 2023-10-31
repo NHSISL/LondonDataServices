@@ -5,7 +5,7 @@
 namespace LHDS.Core.Brokers.Ontologies
 {
     using System.Threading.Tasks;
-    using FHIR.Modules.Resources.Foundation.Bundles;
+    using Hl7.Fhir.Model;
 
     internal partial interface IOntologyBroker
     {

@@ -16,8 +16,7 @@ namespace LHDS.Core.Services.Foundations.AddressParsers
     {
         private readonly ILoggingBroker loggingBroker;
 
-        public AddressParserService(
-            ILoggingBroker loggingBroker)
+        public AddressParserService(ILoggingBroker loggingBroker)
         {
             this.loggingBroker = loggingBroker;
         }

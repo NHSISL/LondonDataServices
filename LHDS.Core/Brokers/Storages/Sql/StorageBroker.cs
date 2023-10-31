@@ -2,9 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions;
+using LHDS.Core.Models.Foundations.Addresses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -28,6 +30,9 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
         private static void AddConfigurations(ModelBuilder modelBuilder)
         {
+            AddAddressConfigurations(modelBuilder);
+            AddAddressExtractionAuditConfigurations(modelBuilder);
+            AddAddressLoadingAuditConfigurations(modelBuilder);
             AddBatchConfigurations(modelBuilder);
             AddDataSetConfigurations(modelBuilder);
             AddDataSetSpecificationConfigurations(modelBuilder);
@@ -83,6 +88,11 @@ namespace LHDS.Core.Brokers.Storages.Sql
             await this.SaveChangesAsync();
 
             return @object;
+        }
+
+        public ValueTask<Address> SelectAddressnc(Guid addressId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

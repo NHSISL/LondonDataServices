@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
                     .Throws(serviceException);
 
             // when
-            Task<List<Address>> processCSVTask =
+            ValueTask<List<Address>> processCSVTask =
                 this.addressParserService.ProcessCsvAsync(someData);
 
             AddressParserServiceException actualAddressParserServiceException =

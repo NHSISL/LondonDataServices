@@ -18,6 +18,7 @@ using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
@@ -29,14 +30,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly ICompareLogic compareLogic;
         private readonly IAddressExtractionOrchestrationService addressExtractionOrchestrationService;
+        private readonly ITestOutputHelper output;
 
-        public AddressExctractioneOrchestrationServiceTests()
+        public AddressExctractioneOrchestrationServiceTests(ITestOutputHelper output)
         {
             this.addressParserServiceMock = new Mock<IAddressParserService>();
             this.addressExtractionAuditServiceMock = new Mock<IAddressExtractionAuditService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.compareLogic = new CompareLogic();
+            this.output = output;
 
             this.addressExtractionOrchestrationService = new AddressExtractionOrchestrationService(
                 addressParserService: addressParserServiceMock.Object,

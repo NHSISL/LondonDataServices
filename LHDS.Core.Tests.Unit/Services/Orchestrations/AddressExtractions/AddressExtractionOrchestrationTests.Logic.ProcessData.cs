@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -10,6 +11,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Extensions.Exceptions;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits;
 using Moq;
@@ -22,6 +24,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         [Fact]
         public async Task ShouldProcessAddressesDataAndLogAsync()
         {
+            try
+            {
+
             // Given
             string assembly = Assembly.GetExecutingAssembly().Location;
             string inputFilePath = Path.Combine(Path.GetDirectoryName(assembly), @"Resources/TestNestedZip.zip");
@@ -72,6 +77,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            }
+            catch (Exception ex)
+            {
+                output.WriteLine($"Error: {ex.Message}, Inner ex: {ex.InnerException.Message}");
+                throw;
+            }
         }
     }
 }

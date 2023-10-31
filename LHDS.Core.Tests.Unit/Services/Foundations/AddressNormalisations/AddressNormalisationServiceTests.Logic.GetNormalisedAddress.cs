@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -17,29 +19,58 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
         public async Task ShouldGetNormalisedAddressAsync()
         {
             // given
-            string randomAddress = GetRandomString();
-            string inputAddress = randomAddress;
-            AddressNormalisation randomAddressNormalisation = CreateRandomAddressNormalisation();
-            AddressNormalisation inputAddressNormalisation = randomAddressNormalisation;
-            AddressNormalisation storageAddressNormalisation = inputAddressNormalisation;
-            AddressNormalisation expectedAddressNormalisation = storageAddressNormalisation.DeepClone();
+            string inputAddress = "10 Downing Street, Westminster, London, SW1A2AA, United Kingdom";
+            string[] expandedAddress = new List<string> { inputAddress.DeepClone() }.ToArray();
 
-            var expectedResult = new ValueTask<(string PostalAddress, string JsonPostalAddress)>(
-                (storageAddressNormalisation.PostalAddress, storageAddressNormalisation.JsonPostalAddress));
+            List<KeyValuePair<string, string>> parsedAddress =
+                new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>("house_number", "10 Downing Street"),
+                    new KeyValuePair<string, string>("road", "Downing Street"),
+                    new KeyValuePair<string, string>("suburb", "Westminster"),
+                    new KeyValuePair<string, string>("city", "London"),
+                    new KeyValuePair<string, string>("postcode", "SW1A2AA"),
+                    new KeyValuePair<string, string>("country", "United Kingdom")
+                };
+
+            var jsonAddress =
+                "{" +
+                "\"house_number\":\"10 Downing Street\"," +
+                "\"road\":\"Downing Street\"," +
+                "\"suburb\":\"Westminster\"," +
+                "\"city\":\"London\"," +
+                "\"postcode\":\"SW1A2AA\"," +
+                "\"country\":\"United Kingdom\"" +
+                "}";
 
             this.addressNormalisationBrokerMock.Setup(broker =>
-                broker.GetNormalisedAddress(randomAddress))
-                    .Returns(expectedResult);
+                broker.ExpandAddressAsync(inputAddress))
+                    .ReturnsAsync(expandedAddress);
+
+            this.addressNormalisationBrokerMock.Setup(broker =>
+                broker.ParseAddressAsync(expandedAddress.First()))
+                    .ReturnsAsync(parsedAddress);
+
+            AddressNormalisation expectedAddressNormalisation =
+                new AddressNormalisation
+                {
+                    PostalAddress = expandedAddress[0],
+                    JsonPostalAddress = jsonAddress
+                };
 
             // when
             AddressNormalisation actualAddressNormalisation =
-                await this.addressNormalisationService.GetNormalisedAddress(randomAddress);
+                await this.addressNormalisationService.GetNormalisedAddress(inputAddress);
 
             // then
             actualAddressNormalisation.Should().BeEquivalentTo(expectedAddressNormalisation);
 
             this.addressNormalisationBrokerMock.Verify(broker =>
-                broker.GetNormalisedAddress(randomAddress),
+                broker.ExpandAddressAsync(inputAddress),
+                    Times.Once);
+
+            this.addressNormalisationBrokerMock.Verify(broker =>
+                broker.ParseAddressAsync(expandedAddress.First()),
                     Times.Once);
 
             this.addressNormalisationBrokerMock.VerifyNoOtherCalls();

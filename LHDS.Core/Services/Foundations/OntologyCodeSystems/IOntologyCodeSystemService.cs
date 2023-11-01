@@ -10,5 +10,6 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
         ValueTask<OntologyCodeSystem> AddOntologyCodeSystemAsync(OntologyCodeSystem ontologyCodeSystem);
         IQueryable<OntologyCodeSystem> RetrieveAllOntologyCodeSystems();
         ValueTask<OntologyCodeSystem> RetrieveOntologyCodeSystemByIdAsync(Guid ontologyCodeSystemId);
+        ValueTask<OntologyCodeSystem> ModifyOntologyCodeSystemAsync(OntologyCodeSystem ontologyCodeSystem);
     }
 }

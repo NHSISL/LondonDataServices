@@ -47,5 +47,8 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
 
                 return maybeOntologyCodeSystem;
             });
+
+        public ValueTask<OntologyCodeSystem> ModifyOntologyCodeSystemAsync(OntologyCodeSystem ontologyCodeSystem) =>
+            throw new NotImplementedException();
     }
 }

@@ -88,7 +88,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
 
             invalidOntologyValueSetException.AddData(
                 key: nameof(OntologyValueSet.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(OntologyValueSet.CreatedDate)}"
+                });
 
             invalidOntologyValueSetException.AddData(
                 key: nameof(OntologyValueSet.UpdatedBy),
@@ -131,6 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             OntologyValueSet randomOntologyValueSet = CreateRandomOntologyValueSet(randomDateTimeOffset);
             OntologyValueSet invalidOntologyValueSet = randomOntologyValueSet;
+            
             var invalidOntologyValueSetException = 
                 new InvalidOntologyValueSetException(
                     message: "Invalid ontologyValueSet. Please correct the errors and try again.");

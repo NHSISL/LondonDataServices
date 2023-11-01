@@ -60,6 +60,15 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
 
                 throw CreateAndLogDependencyValidationException(invalidOntologyValueSetReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedOntologyValueSetException = 
+                    new LockedOntologyValueSetException(
+                        message: "Locked ontologyValueSet record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedOntologyValueSetException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedOntologyValueSetStorageException =
@@ -123,7 +132,7 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
             var ontologyValueSetDependencyException = 
                 new OntologyValueSetDependencyException(
                     message: "OntologyValueSet dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(ontologyValueSetDependencyException);
 
@@ -148,7 +157,7 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
             var ontologyValueSetDependencyException = 
                 new OntologyValueSetDependencyException(
                     message: "OntologyValueSet dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(ontologyValueSetDependencyException);
 

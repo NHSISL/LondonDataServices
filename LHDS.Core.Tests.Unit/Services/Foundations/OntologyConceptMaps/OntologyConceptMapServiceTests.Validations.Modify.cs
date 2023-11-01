@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using Moq;
 using LHDS.Core.Models.Foundations.OntologyConceptMaps;
 using LHDS.Core.Models.Foundations.OntologyConceptMaps.Exceptions;
@@ -128,9 +129,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
                 broker.UpdateOntologyConceptMapAsync(It.IsAny<OntologyConceptMap>()),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -140,7 +141,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             OntologyConceptMap randomOntologyConceptMap = CreateRandomOntologyConceptMap(randomDateTimeOffset);
             OntologyConceptMap invalidOntologyConceptMap = randomOntologyConceptMap;
-
+            
             var invalidOntologyConceptMapException = 
                 new InvalidOntologyConceptMapException(
                     message: "Invalid ontologyConceptMap. Please correct the errors and try again.");
@@ -183,9 +184,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
                 broker.SelectOntologyConceptMapByIdAsync(invalidOntologyConceptMap.Id),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -197,9 +198,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
             OntologyConceptMap randomOntologyConceptMap = CreateRandomOntologyConceptMap(randomDateTimeOffset);
             randomOntologyConceptMap.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var invalidOntologyConceptMapException = 
-                new InvalidOntologyConceptMapException(
-                    message: "Invalid ontologyConceptMap. Please correct the errors and try again.");
+            var invalidOntologyConceptMapException =
+                new InvalidOntologyConceptMapException();
 
             invalidOntologyConceptMapException.AddData(
                 key: nameof(OntologyConceptMap.UpdatedDate),
@@ -293,6 +293,70 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedOntologyConceptMapValidationException))),
                         Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfStorageCreatedDateNotSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNegativeNumber();
+            int randomMinutes = randomNumber;
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            OntologyConceptMap randomOntologyConceptMap = CreateRandomModifyOntologyConceptMap(randomDateTimeOffset);
+            OntologyConceptMap invalidOntologyConceptMap = randomOntologyConceptMap.DeepClone();
+            OntologyConceptMap storageOntologyConceptMap = invalidOntologyConceptMap.DeepClone();
+            storageOntologyConceptMap.CreatedDate = storageOntologyConceptMap.CreatedDate.AddMinutes(randomMinutes);
+            storageOntologyConceptMap.UpdatedDate = storageOntologyConceptMap.UpdatedDate.AddMinutes(randomMinutes);
+            
+            var invalidOntologyConceptMapException = 
+                new InvalidOntologyConceptMapException(
+                    message: "Invalid ontologyConceptMap. Please correct the errors and try again.");
+
+            invalidOntologyConceptMapException.AddData(
+                key: nameof(OntologyConceptMap.CreatedDate),
+                values: $"Date is not the same as {nameof(OntologyConceptMap.CreatedDate)}");
+
+            var expectedOntologyConceptMapValidationException =
+                new OntologyConceptMapValidationException(
+                    message: "OntologyConceptMap validation errors occurred, please try again.",
+                    innerException: invalidOntologyConceptMapException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectOntologyConceptMapByIdAsync(invalidOntologyConceptMap.Id))
+                .ReturnsAsync(storageOntologyConceptMap);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<OntologyConceptMap> modifyOntologyConceptMapTask =
+                this.ontologyConceptMapService.ModifyOntologyConceptMapAsync(invalidOntologyConceptMap);
+
+            OntologyConceptMapValidationException actualOntologyConceptMapValidationException =
+                await Assert.ThrowsAsync<OntologyConceptMapValidationException>(
+                    modifyOntologyConceptMapTask.AsTask);
+
+            // then
+            actualOntologyConceptMapValidationException.Should()
+                .BeEquivalentTo(expectedOntologyConceptMapValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyConceptMapByIdAsync(invalidOntologyConceptMap.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedOntologyConceptMapValidationException))),
+                       Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

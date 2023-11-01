@@ -184,9 +184,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
                 broker.SelectOntologyValueSetByIdAsync(invalidOntologyValueSet.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -198,8 +198,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
             OntologyValueSet randomOntologyValueSet = CreateRandomOntologyValueSet(randomDateTimeOffset);
             randomOntologyValueSet.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var invalidOntologyValueSetException =
-                new InvalidOntologyValueSetException();
+            var invalidOntologyValueSetException = 
+                new InvalidOntologyValueSetException(
+                    message: "Invalid ontologyValueSet. Please correct the errors and try again.");
 
             invalidOntologyValueSetException.AddData(
                 key: nameof(OntologyValueSet.UpdatedDate),
@@ -294,8 +295,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
                     expectedOntologyValueSetValidationException))),
                         Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -358,8 +359,69 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
                    expectedOntologyValueSetValidationException))),
                        Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfCreatedUserDontMacthStorageAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            OntologyValueSet randomOntologyValueSet = CreateRandomModifyOntologyValueSet(randomDateTimeOffset);
+            OntologyValueSet invalidOntologyValueSet = randomOntologyValueSet.DeepClone();
+            OntologyValueSet storageOntologyValueSet = invalidOntologyValueSet.DeepClone();
+            invalidOntologyValueSet.CreatedBy = Guid.NewGuid().ToString();
+            storageOntologyValueSet.UpdatedDate = storageOntologyValueSet.CreatedDate;
+
+            var invalidOntologyValueSetException = 
+                new InvalidOntologyValueSetException(
+                    message: "Invalid ontologyValueSet. Please correct the errors and try again.");
+
+            invalidOntologyValueSetException.AddData(
+                key: nameof(OntologyValueSet.CreatedBy),
+                values: $"Text is not the same as {nameof(OntologyValueSet.CreatedBy)}");
+
+            var expectedOntologyValueSetValidationException =
+                new OntologyValueSetValidationException(
+                    message: "OntologyValueSet validation errors occurred, please try again.",
+                    innerException: invalidOntologyValueSetException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectOntologyValueSetByIdAsync(invalidOntologyValueSet.Id))
+                .ReturnsAsync(storageOntologyValueSet);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<OntologyValueSet> modifyOntologyValueSetTask =
+                this.ontologyValueSetService.ModifyOntologyValueSetAsync(invalidOntologyValueSet);
+
+            OntologyValueSetValidationException actualOntologyValueSetValidationException =
+                await Assert.ThrowsAsync<OntologyValueSetValidationException>(
+                    modifyOntologyValueSetTask.AsTask);
+
+            // then
+            actualOntologyValueSetValidationException.Should().BeEquivalentTo(expectedOntologyValueSetValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyValueSetByIdAsync(invalidOntologyValueSet.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedOntologyValueSetValidationException))),
+                       Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

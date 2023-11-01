@@ -43,6 +43,15 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsOntologyValueSetException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidOntologyValueSetReferenceException =
+                    new InvalidOntologyValueSetReferenceException(
+                        message: "Invalid ontologyValueSet reference error occurred.", 
+                        innerException: foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidOntologyValueSetReferenceException);
+            }
         }
 
         private OntologyValueSetValidationException CreateAndLogValidationException(Xeption exception)
@@ -62,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
             var ontologyValueSetDependencyException = 
                 new OntologyValueSetDependencyException(
                     message: "OntologyValueSet dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(ontologyValueSetDependencyException);
 

@@ -119,5 +119,52 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveWhenSqlExceptionOccursAndLogItAsync()
+        {
+            // given
+            Guid someOntologyConceptMapId = Guid.NewGuid();
+            SqlException sqlException = GetSqlException();
+
+            var failedOntologyConceptMapStorageException =
+                new FailedOntologyConceptMapStorageException(
+                    message: "Failed ontologyConceptMap storage error occurred, contact support.",
+                    innerException: sqlException);
+
+            var expectedOntologyConceptMapDependencyException =
+                new OntologyConceptMapDependencyException(
+                    message: "OntologyConceptMap dependency error occurred, contact support.",
+                    innerException: failedOntologyConceptMapStorageException); 
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectOntologyConceptMapByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(sqlException);
+
+            // when
+            ValueTask<OntologyConceptMap> deleteOntologyConceptMapTask =
+                this.ontologyConceptMapService.RemoveOntologyConceptMapByIdAsync(someOntologyConceptMapId);
+
+            OntologyConceptMapDependencyException actualOntologyConceptMapDependencyException =
+                await Assert.ThrowsAsync<OntologyConceptMapDependencyException>(
+                    deleteOntologyConceptMapTask.AsTask);
+
+            // then
+            actualOntologyConceptMapDependencyException.Should()
+                .BeEquivalentTo(expectedOntologyConceptMapDependencyException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyConceptMapByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedOntologyConceptMapDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

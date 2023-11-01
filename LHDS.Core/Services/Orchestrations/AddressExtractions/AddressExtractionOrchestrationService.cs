@@ -100,7 +100,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             }
             catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
         }
     }

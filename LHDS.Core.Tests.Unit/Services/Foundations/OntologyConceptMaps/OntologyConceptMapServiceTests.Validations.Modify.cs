@@ -223,7 +223,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
                     modifyOntologyConceptMapTask.AsTask);
 
             // then
-            actualOntologyConceptMapValidationException.Should().BeEquivalentTo(expectedOntologyConceptMapValidatonException);
+            actualOntologyConceptMapValidationException.Should()
+                .BeEquivalentTo(expectedOntologyConceptMapValidatonException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -241,6 +242,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfOntologyConceptMapDoesNotExistAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            OntologyConceptMap randomOntologyConceptMap = CreateRandomModifyOntologyConceptMap(randomDateTimeOffset);
+            OntologyConceptMap nonExistOntologyConceptMap = randomOntologyConceptMap;
+            OntologyConceptMap nullOntologyConceptMap = null;
+
+            var notFoundOntologyConceptMapException =
+                new NotFoundOntologyConceptMapException(nonExistOntologyConceptMap.Id);
+
+            var expectedOntologyConceptMapValidationException =
+                new OntologyConceptMapValidationException(
+                    message: "OntologyConceptMap validation errors occurred, please try again.",
+                    innerException: notFoundOntologyConceptMapException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectOntologyConceptMapByIdAsync(nonExistOntologyConceptMap.Id))
+                .ReturnsAsync(nullOntologyConceptMap);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when 
+            ValueTask<OntologyConceptMap> modifyOntologyConceptMapTask =
+                this.ontologyConceptMapService.ModifyOntologyConceptMapAsync(nonExistOntologyConceptMap);
+
+            OntologyConceptMapValidationException actualOntologyConceptMapValidationException =
+                await Assert.ThrowsAsync<OntologyConceptMapValidationException>(
+                    modifyOntologyConceptMapTask.AsTask);
+
+            // then
+            actualOntologyConceptMapValidationException.Should()
+                .BeEquivalentTo(expectedOntologyConceptMapValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyConceptMapByIdAsync(nonExistOntologyConceptMap.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyConceptMapValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

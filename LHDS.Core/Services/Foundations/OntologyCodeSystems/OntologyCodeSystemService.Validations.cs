@@ -77,6 +77,16 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
             }
         }
 
+        private static void ValidateAgainstStorageOntologyCodeSystemOnModify(OntologyCodeSystem inputOntologyCodeSystem, OntologyCodeSystem storageOntologyCodeSystem)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputOntologyCodeSystem.CreatedDate,
+                    secondDate: storageOntologyCodeSystem.CreatedDate,
+                    secondDateName: nameof(OntologyCodeSystem.CreatedDate)),
+                Parameter: nameof(OntologyCodeSystem.CreatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

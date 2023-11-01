@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Foundations.OntologyValueSets;
 using LHDS.Core.Models.Foundations.OntologyValueSets.Exceptions;
@@ -33,6 +34,15 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
 
                 throw CreateAndLogCriticalDependencyException(failedOntologyValueSetStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsOntologyValueSetException =
+                    new AlreadyExistsOntologyValueSetException(
+                        message: "OntologyValueSet with the same Id already exists.",
+                        innerException: duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsOntologyValueSetException);
+            }
         }
 
         private OntologyValueSetValidationException CreateAndLogValidationException(Xeption exception)
@@ -57,6 +67,18 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
             this.loggingBroker.LogCritical(ontologyValueSetDependencyException);
 
             return ontologyValueSetDependencyException;
+        }
+
+        private OntologyValueSetDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var ontologyValueSetDependencyValidationException =
+                new OntologyValueSetDependencyValidationException(
+                    message: "OntologyValueSet dependency validation occurred, please try again.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(ontologyValueSetDependencyValidationException);
+
+            return ontologyValueSetDependencyValidationException;
         }
     }
 }

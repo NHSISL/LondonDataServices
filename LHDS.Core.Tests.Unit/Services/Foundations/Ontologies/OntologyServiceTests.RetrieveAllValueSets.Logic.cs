@@ -13,32 +13,32 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologys
     public partial class OntologyServiceTests
     {
         [Fact]
-        public async System.Threading.Tasks.Task ShouldRetrieveAllCodingSystemsByRelativeUrlAsync()
+        public async System.Threading.Tasks.Task ShouldRetrieveAllValueSetsByRelativeUrlAsync()
         {
             // given
             string randomRelativeUrl = GetRandomString();
             string inputRelativeUrl = randomRelativeUrl;
             string nextPageUrl = "http://localhost:5000/api/fhir/ValueSet?_page=2";
-            string artifactType = "CodeSystem";
+            string artifactType = "ValueSet";
 
             List<dynamic> randomArtifactProperties = CreateRandomArtifactProperties(artifactType);
 
-            var remoteCodingSystemBundle = CreateCodeSystemBundleFromRandomData(randomArtifactProperties, nextPageUrl);
+            var remoteValueSetBundle = CreateValueSetBundleFromRandomData(randomArtifactProperties, nextPageUrl);
             var expectedOntologyAssets = CreateArtiFactFromRandomData(randomArtifactProperties, nextPageUrl);
 
             this.ontologyBrokerMock.Setup(broker =>
-                broker.GetAllCodingSystemsAsync(inputRelativeUrl))
-                    .ReturnsAsync(remoteCodingSystemBundle);
+                broker.GetAllValueSetsAsync(inputRelativeUrl))
+                    .ReturnsAsync(remoteValueSetBundle);
 
             // when
             OntologyAssets actualOntologyAssets =
-                await this.ontologyService.RetrieveAllCodingSystemsAsync(inputRelativeUrl);
+                await this.ontologyService.RetrieveAllValueSetsAsync(inputRelativeUrl);
 
             // then
             actualOntologyAssets.Should().BeEquivalentTo(expectedOntologyAssets);
 
             this.ontologyBrokerMock.Verify(broker =>
-                broker.GetAllCodingSystemsAsync(inputRelativeUrl),
+                broker.GetAllValueSetsAsync(inputRelativeUrl),
                     Times.Once);
 
             this.ontologyBrokerMock.VerifyNoOtherCalls();

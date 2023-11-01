@@ -38,6 +38,14 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
         public void ValidateOntologyCodeSystemId(Guid ontologyCodeSystemId) =>
             Validate((Rule: IsInvalid(ontologyCodeSystemId), Parameter: nameof(OntologyCodeSystem.Id)));
 
+        private static void ValidateStorageOntologyCodeSystem(OntologyCodeSystem maybeOntologyCodeSystem, Guid ontologyCodeSystemId)
+        {
+            if (maybeOntologyCodeSystem is null)
+            {
+                throw new NotFoundOntologyCodeSystemException(ontologyCodeSystemId);
+            }
+        }
+
         private static void ValidateOntologyCodeSystemIsNotNull(OntologyCodeSystem ontologyCodeSystem)
         {
             if (ontologyCodeSystem is null)

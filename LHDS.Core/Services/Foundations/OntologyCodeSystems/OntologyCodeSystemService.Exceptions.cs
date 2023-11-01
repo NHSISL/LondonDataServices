@@ -38,6 +38,10 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
 
                 throw CreateAndLogCriticalDependencyException(failedOntologyCodeSystemStorageException);
             }
+            catch (NotFoundOntologyCodeSystemException notFoundOntologyCodeSystemException)
+            {
+                throw CreateAndLogValidationException(notFoundOntologyCodeSystemException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsOntologyCodeSystemException =

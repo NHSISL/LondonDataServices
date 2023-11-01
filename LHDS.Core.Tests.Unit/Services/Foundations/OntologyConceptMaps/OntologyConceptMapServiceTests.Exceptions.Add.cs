@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -219,6 +220,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedOntologyConceptMapDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            OntologyConceptMap someOntologyConceptMap = CreateRandomOntologyConceptMap();
+            var serviceException = new Exception();
+
+            var failedOntologyConceptMapServiceException =
+                new FailedOntologyConceptMapServiceException(
+                    message: "Failed ontologyConceptMap service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedOntologyConceptMapServiceException =
+                new OntologyConceptMapServiceException(
+                    message: "OntologyConceptMap service error occurred, contact support.",
+                    innerException: failedOntologyConceptMapServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<OntologyConceptMap> addOntologyConceptMapTask =
+                this.ontologyConceptMapService.AddOntologyConceptMapAsync(someOntologyConceptMap);
+
+            OntologyConceptMapServiceException actualOntologyConceptMapServiceException =
+                await Assert.ThrowsAsync<OntologyConceptMapServiceException>(
+                    addOntologyConceptMapTask.AsTask);
+
+            // then
+            actualOntologyConceptMapServiceException.Should()
+                .BeEquivalentTo(expectedOntologyConceptMapServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertOntologyConceptMapAsync(It.IsAny<OntologyConceptMap>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyConceptMapServiceException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

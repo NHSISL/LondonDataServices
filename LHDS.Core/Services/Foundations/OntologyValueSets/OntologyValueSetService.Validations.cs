@@ -35,6 +35,11 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
                 (Rule: IsNotRecent(ontologyValueSet.CreatedDate), Parameter: nameof(OntologyValueSet.CreatedDate)));
         }
 
+        private void ValidateOntologyValueSetOnModify(OntologyValueSet ontologyValueSet)
+        {
+            ValidateOntologyValueSetIsNotNull(ontologyValueSet);
+        }
+
         public void ValidateOntologyValueSetId(Guid ontologyValueSetId) =>
             Validate((Rule: IsInvalid(ontologyValueSetId), Parameter: nameof(OntologyValueSet.Id)));
 
@@ -89,7 +94,7 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
-
+        
         private static dynamic IsNotSame(
            string first,
            string second,

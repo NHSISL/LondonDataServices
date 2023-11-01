@@ -48,7 +48,12 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
                 return maybeOntologyValueSet;
             });
 
-        public async ValueTask<OntologyValueSet> ModifyOntologyValueSetAsync(OntologyValueSet ontologyValueSet) =>
-            await this.storageBroker.UpdateOntologyValueSetAsync(ontologyValueSet);
+        public ValueTask<OntologyValueSet> ModifyOntologyValueSetAsync(OntologyValueSet ontologyValueSet) =>
+            TryCatch(async () =>
+            {
+                ValidateOntologyValueSetOnModify(ontologyValueSet);
+
+                return await this.storageBroker.UpdateOntologyValueSetAsync(ontologyValueSet);
+            });
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -57,10 +58,19 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
             {
                 var failedOntologyValueSetStorageException =
                     new FailedOntologyValueSetStorageException(
-                    message: "Failed ontologyValueSet storage error occurred, contact support.",
-                    innerException: databaseUpdateException);
+                        message: "Failed ontologyValueSet storage error occurred, contact support.",
+                        innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedOntologyValueSetStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedOntologyValueSetServiceException =
+                    new FailedOntologyValueSetServiceException(
+                        message: "Failed ontologyValueSet service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedOntologyValueSetServiceException);
             }
         }
 
@@ -111,6 +121,19 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
             this.loggingBroker.LogError(ontologyValueSetDependencyException);
 
             return ontologyValueSetDependencyException;
+        }
+
+        private OntologyValueSetServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var ontologyValueSetServiceException = 
+                new OntologyValueSetServiceException(
+                    message: "OntologyValueSet service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(ontologyValueSetServiceException);
+
+            return ontologyValueSetServiceException;
         }
     }
 }

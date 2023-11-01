@@ -169,5 +169,53 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateUsersIsNotSameAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            OntologyCodeSystem randomOntologyCodeSystem = CreateRandomOntologyCodeSystem(randomDateTimeOffset);
+            OntologyCodeSystem invalidOntologyCodeSystem = randomOntologyCodeSystem;
+            invalidOntologyCodeSystem.UpdatedBy = Guid.NewGuid().ToString();
+
+            var invalidOntologyCodeSystemException =
+                new InvalidOntologyCodeSystemException(
+                    message: "Invalid ontologyCodeSystem. Please correct the errors and try again.");
+
+            invalidOntologyCodeSystemException.AddData(
+                key: nameof(OntologyCodeSystem.UpdatedBy),
+                values: $"Text is not the same as {nameof(OntologyCodeSystem.CreatedBy)}");
+
+            var expectedOntologyCodeSystemValidationException =
+                new OntologyCodeSystemValidationException(
+                    message: "OntologyCodeSystem validation errors occurred, please try again.",
+                    innerException: invalidOntologyCodeSystemException);
+
+            // when
+            ValueTask<OntologyCodeSystem> addOntologyCodeSystemTask =
+                this.ontologyCodeSystemService.AddOntologyCodeSystemAsync(invalidOntologyCodeSystem);
+
+            OntologyCodeSystemValidationException actualOntologyCodeSystemValidationException =
+                await Assert.ThrowsAsync<OntologyCodeSystemValidationException>(
+                    addOntologyCodeSystemTask.AsTask);
+
+            // then
+            actualOntologyCodeSystemValidationException.Should()
+                .BeEquivalentTo(expectedOntologyCodeSystemValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyCodeSystemValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertOntologyCodeSystemAsync(It.IsAny<OntologyCodeSystem>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

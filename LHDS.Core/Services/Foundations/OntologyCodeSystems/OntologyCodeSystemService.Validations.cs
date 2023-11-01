@@ -90,7 +90,13 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
                     first: inputOntologyCodeSystem.CreatedBy,
                     second: storageOntologyCodeSystem.CreatedBy,
                     secondName: nameof(OntologyCodeSystem.CreatedBy)),
-                Parameter: nameof(OntologyCodeSystem.CreatedBy)));
+                Parameter: nameof(OntologyCodeSystem.CreatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: inputOntologyCodeSystem.UpdatedDate,
+                    secondDate: storageOntologyCodeSystem.UpdatedDate,
+                    secondDateName: nameof(OntologyCodeSystem.UpdatedDate)),
+                Parameter: nameof(OntologyCodeSystem.UpdatedDate)));
         }
 
         private static dynamic IsInvalid(Guid id) => new

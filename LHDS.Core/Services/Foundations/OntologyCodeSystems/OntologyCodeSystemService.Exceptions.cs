@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using LHDS.Core.Models.Foundations.OntologyCodeSystems;
 using LHDS.Core.Models.Foundations.OntologyCodeSystems.Exceptions;
 using Xeptions;
@@ -52,6 +53,15 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
 
                 throw CreateAndLogDependencyValidationException(invalidOntologyCodeSystemReferenceException);
             }
+            catch (DbUpdateException databaseUpdateException)
+            {
+                var failedOntologyCodeSystemStorageException =
+                    new FailedOntologyCodeSystemStorageException(
+                    message: "Failed ontologyCodeSystem storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+                throw CreateAndLogDependencyException(failedOntologyCodeSystemStorageException);
+            }
         }
 
         private OntologyCodeSystemValidationException CreateAndLogValidationException(Xeption exception)
@@ -88,6 +98,19 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
             this.loggingBroker.LogError(ontologyCodeSystemDependencyValidationException);
 
             return ontologyCodeSystemDependencyValidationException;
+        }
+
+        private OntologyCodeSystemDependencyException CreateAndLogDependencyException(
+            Xeption exception)
+        {
+            var ontologyCodeSystemDependencyException = 
+                new OntologyCodeSystemDependencyException(
+                    message: "OntologyCodeSystem dependency error occurred, contact support.",
+                    innerException: exception); 
+
+            this.loggingBroker.LogError(ontologyCodeSystemDependencyException);
+
+            return ontologyCodeSystemDependencyException;
         }
     }
 }

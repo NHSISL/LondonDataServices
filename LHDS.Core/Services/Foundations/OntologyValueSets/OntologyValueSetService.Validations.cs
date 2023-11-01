@@ -35,6 +35,9 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
                 (Rule: IsNotRecent(ontologyValueSet.CreatedDate), Parameter: nameof(OntologyValueSet.CreatedDate)));
         }
 
+        public void ValidateOntologyValueSetId(Guid ontologyValueSetId) =>
+            Validate((Rule: IsInvalid(ontologyValueSetId), Parameter: nameof(OntologyValueSet.Id)));
+
         private static void ValidateOntologyValueSetIsNotNull(OntologyValueSet ontologyValueSet)
         {
             if (ontologyValueSet is null)

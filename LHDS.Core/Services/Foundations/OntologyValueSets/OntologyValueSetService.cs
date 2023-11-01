@@ -35,7 +35,15 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
         public IQueryable<OntologyValueSet> RetrieveAllOntologyValueSets() =>
             TryCatch(() => this.storageBroker.SelectAllOntologyValueSets());
 
-        public async ValueTask<OntologyValueSet> RetrieveOntologyValueSetByIdAsync(Guid ontologyValueSetId) =>
-            await this.storageBroker.SelectOntologyValueSetByIdAsync(ontologyValueSetId);
+        public ValueTask<OntologyValueSet> RetrieveOntologyValueSetByIdAsync(Guid ontologyValueSetId) =>
+            TryCatch(async () =>
+            {
+                ValidateOntologyValueSetId(ontologyValueSetId);
+
+                OntologyValueSet maybeOntologyValueSet = await this.storageBroker
+                    .SelectOntologyValueSetByIdAsync(ontologyValueSetId);
+
+                return maybeOntologyValueSet;
+            });
     }
 }

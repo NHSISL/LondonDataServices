@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             var expectedOntologyCodeSystemDependencyException =
                 new OntologyCodeSystemDependencyException(
                     message: "OntologyCodeSystem dependency error occurred, contact support.",
-                    innerException: failedOntologyCodeSystemStorageException);             
+                    innerException: failedOntologyCodeSystemStorageException); 
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -115,6 +115,60 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            OntologyCodeSystem someOntologyCodeSystem = CreateRandomOntologyCodeSystem();
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidOntologyCodeSystemReferenceException =
+                new InvalidOntologyCodeSystemReferenceException(
+                    message: "Invalid ontologyCodeSystem reference error occurred.", 
+                    innerException: foreignKeyConstraintConflictException);
+
+            var expectedOntologyCodeSystemValidationException =
+                new OntologyCodeSystemDependencyValidationException(
+                    message: "OntologyCodeSystem dependency validation occurred, please try again.",
+                    innerException: invalidOntologyCodeSystemReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<OntologyCodeSystem> addOntologyCodeSystemTask =
+                this.ontologyCodeSystemService.AddOntologyCodeSystemAsync(someOntologyCodeSystem);
+
+            // then
+            OntologyCodeSystemDependencyValidationException actualOntologyCodeSystemDependencyValidationException =
+                await Assert.ThrowsAsync<OntologyCodeSystemDependencyValidationException>(
+                    addOntologyCodeSystemTask.AsTask);
+
+            actualOntologyCodeSystemDependencyValidationException.Should().BeEquivalentTo(expectedOntologyCodeSystemValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyCodeSystemValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertOntologyCodeSystemAsync(someOntologyCodeSystem),
+                    Times.Never());
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

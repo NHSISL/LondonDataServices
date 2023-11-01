@@ -1,10 +1,14 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using Moq;
 using LHDS.Core.Models.Foundations.OntologyCodeSystems;
 using LHDS.Core.Models.Foundations.OntologyCodeSystems.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
@@ -62,10 +66,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             // given 
             var invalidOntologyCodeSystem = new OntologyCodeSystem
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                FullUrl = invalidText,
+                ResourceType = invalidText,
             };
 
-            var invalidOntologyCodeSystemException = 
+            var invalidOntologyCodeSystemException =
                 new InvalidOntologyCodeSystemException(
                     message: "Invalid ontologyCodeSystem. Please correct the errors and try again.");
 
@@ -73,11 +78,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
                 key: nameof(OntologyCodeSystem.Id),
                 values: "Id is required");
 
-            //invalidOntologyCodeSystemException.AddData(
-            //    key: nameof(OntologyCodeSystem.Name),
-            //    values: "Text is required");
+            invalidOntologyCodeSystemException.AddData(
+                key: nameof(OntologyCodeSystem.FullUrl),
+                values: "Text is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the OntologyCodeSystem model
+            invalidOntologyCodeSystemException.AddData(
+                key: nameof(OntologyCodeSystem.ResourceType),
+                values: "Text is required");
 
             invalidOntologyCodeSystemException.AddData(
                 key: nameof(OntologyCodeSystem.CreatedDate),
@@ -141,8 +148,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             OntologyCodeSystem randomOntologyCodeSystem = CreateRandomOntologyCodeSystem(randomDateTimeOffset);
             OntologyCodeSystem invalidOntologyCodeSystem = randomOntologyCodeSystem;
-            
-            var invalidOntologyCodeSystemException = 
+
+            var invalidOntologyCodeSystemException =
                 new InvalidOntologyCodeSystemException(
                     message: "Invalid ontologyCodeSystem. Please correct the errors and try again.");
 
@@ -198,7 +205,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             OntologyCodeSystem randomOntologyCodeSystem = CreateRandomOntologyCodeSystem(randomDateTimeOffset);
             randomOntologyCodeSystem.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var invalidOntologyCodeSystemException = 
+            var invalidOntologyCodeSystemException =
                 new InvalidOntologyCodeSystemException(
                     message: "Invalid ontologyCodeSystem. Please correct the errors and try again.");
 
@@ -312,8 +319,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             OntologyCodeSystem storageOntologyCodeSystem = invalidOntologyCodeSystem.DeepClone();
             storageOntologyCodeSystem.CreatedDate = storageOntologyCodeSystem.CreatedDate.AddMinutes(randomMinutes);
             storageOntologyCodeSystem.UpdatedDate = storageOntologyCodeSystem.UpdatedDate.AddMinutes(randomMinutes);
-            
-            var invalidOntologyCodeSystemException = 
+
+            var invalidOntologyCodeSystemException =
                 new InvalidOntologyCodeSystemException(
                     message: "Invalid ontologyCodeSystem. Please correct the errors and try again.");
 
@@ -375,7 +382,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             invalidOntologyCodeSystem.CreatedBy = Guid.NewGuid().ToString();
             storageOntologyCodeSystem.UpdatedDate = storageOntologyCodeSystem.CreatedDate;
 
-            var invalidOntologyCodeSystemException = 
+            var invalidOntologyCodeSystemException =
                 new InvalidOntologyCodeSystemException(
                     message: "Invalid ontologyCodeSystem. Please correct the errors and try again.");
 
@@ -434,7 +441,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             OntologyCodeSystem invalidOntologyCodeSystem = randomOntologyCodeSystem;
             OntologyCodeSystem storageOntologyCodeSystem = randomOntologyCodeSystem.DeepClone();
 
-            var invalidOntologyCodeSystemException = 
+            var invalidOntologyCodeSystemException =
                 new InvalidOntologyCodeSystemException(
                     message: "Invalid ontologyCodeSystem. Please correct the errors and try again.");
 

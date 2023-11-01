@@ -88,7 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     ? string.Join(", ", actualAddresses.Select(a => a.ToString()))
                     : "Not set";
 
-                output.WriteLine($"Error: {ex.Message}, Inner ex: {ex.InnerException.Message}, Inner inner ex: {ex.InnerException.InnerException.Message}, expectedAddresses: {expectedAddresses}, actualAddress{actualAddresses}");
+                output.WriteLine($"Error: {ex.Message}, Inner ex: {ex.InnerException.Message}, Inner inner ex: {ex.InnerException.InnerException.Message}, expectedAddresses: {expectedAddressesStr}, actualAddress{actualAddressesStr}");
                 Assert.Fail();
             }
         }

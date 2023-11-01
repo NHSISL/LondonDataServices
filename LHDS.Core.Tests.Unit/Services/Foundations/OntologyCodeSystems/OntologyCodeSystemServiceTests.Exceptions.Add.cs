@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -219,6 +220,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedOntologyCodeSystemDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            OntologyCodeSystem someOntologyCodeSystem = CreateRandomOntologyCodeSystem();
+            var serviceException = new Exception();
+
+            var failedOntologyCodeSystemServiceException =
+                new FailedOntologyCodeSystemServiceException(
+                    message: "Failed ontologyCodeSystem service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedOntologyCodeSystemServiceException =
+                new OntologyCodeSystemServiceException(
+                    message: "OntologyCodeSystem service error occurred, contact support.",
+                    innerException: failedOntologyCodeSystemServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<OntologyCodeSystem> addOntologyCodeSystemTask =
+                this.ontologyCodeSystemService.AddOntologyCodeSystemAsync(someOntologyCodeSystem);
+
+            OntologyCodeSystemServiceException actualOntologyCodeSystemServiceException =
+                await Assert.ThrowsAsync<OntologyCodeSystemServiceException>(
+                    addOntologyCodeSystemTask.AsTask);
+
+            // then
+            actualOntologyCodeSystemServiceException.Should()
+                .BeEquivalentTo(expectedOntologyCodeSystemServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertOntologyCodeSystemAsync(It.IsAny<OntologyCodeSystem>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyCodeSystemServiceException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

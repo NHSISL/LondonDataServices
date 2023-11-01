@@ -1,0 +1,10 @@
+using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.OntologyConceptMaps;
+
+namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
+{
+    public interface IOntologyConceptMapService
+    {
+        ValueTask<OntologyConceptMap> AddOntologyConceptMapAsync(OntologyConceptMap ontologyConceptMap);
+    }
+}

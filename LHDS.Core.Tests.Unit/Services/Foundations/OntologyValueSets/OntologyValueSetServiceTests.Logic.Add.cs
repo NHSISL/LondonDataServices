@@ -22,6 +22,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
             OntologyValueSet storageOntologyValueSet = inputOntologyValueSet;
             OntologyValueSet expectedOntologyValueSet = storageOntologyValueSet.DeepClone();
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertOntologyValueSetAsync(inputOntologyValueSet))
                     .ReturnsAsync(storageOntologyValueSet);
@@ -33,13 +37,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
             // then
             actualOntologyValueSet.Should().BeEquivalentTo(expectedOntologyValueSet);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertOntologyValueSetAsync(inputOntologyValueSet),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

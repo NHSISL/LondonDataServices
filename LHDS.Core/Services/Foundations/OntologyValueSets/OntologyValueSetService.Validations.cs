@@ -27,10 +27,12 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
                 Parameter: nameof(OntologyValueSet.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    firstId: ontologyValueSet.UpdatedBy,
-                    secondId: ontologyValueSet.CreatedBy,
-                    secondIdName: nameof(OntologyValueSet.CreatedBy)),
-                Parameter: nameof(OntologyValueSet.UpdatedBy)));
+                    first: ontologyValueSet.UpdatedBy,
+                    second: ontologyValueSet.CreatedBy,
+                    secondName: nameof(OntologyValueSet.CreatedBy)),
+                Parameter: nameof(OntologyValueSet.UpdatedBy)),
+
+                (Rule: IsNotRecent(ontologyValueSet.CreatedDate), Parameter: nameof(OntologyValueSet.CreatedDate)));
         }
 
         private static void ValidateOntologyValueSetIsNotNull(OntologyValueSet ontologyValueSet)
@@ -85,6 +87,23 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
                Condition = first != second,
                Message = $"Text is not the same as {secondName}"
            };
+
+        private dynamic IsNotRecent(DateTimeOffset date) => new
+        {
+            Condition = IsDateNotRecent(date),
+            Message = "Date is not recent"
+        };
+
+        private bool IsDateNotRecent(DateTimeOffset date)
+        {
+            DateTimeOffset currentDateTime =
+                this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+            TimeSpan timeDifference = currentDateTime.Subtract(date);
+            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+
+            return timeDifference.Duration() > oneMinute;
+        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

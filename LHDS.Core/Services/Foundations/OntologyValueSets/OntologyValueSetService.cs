@@ -70,6 +70,8 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
                 OntologyValueSet maybeOntologyValueSet = await this.storageBroker
                     .SelectOntologyValueSetByIdAsync(ontologyValueSetId);
 
+                ValidateStorageOntologyValueSet(maybeOntologyValueSet, ontologyValueSetId);
+
                 return await this.storageBroker.DeleteOntologyValueSetAsync(maybeOntologyValueSet);
             });
     }

@@ -22,7 +22,7 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<OntologyValueSet> AddOntologyValueSetAsync(OntologyValueSet ontologyValueSet) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<OntologyValueSet> AddOntologyValueSetAsync(OntologyValueSet ontologyValueSet) =>
+            await this.storageBroker.InsertOntologyValueSetAsync(ontologyValueSet);
     }
 }

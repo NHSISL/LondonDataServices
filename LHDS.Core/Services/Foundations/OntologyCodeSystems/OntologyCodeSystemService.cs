@@ -22,7 +22,7 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<OntologyCodeSystem> AddOntologyCodeSystemAsync(OntologyCodeSystem ontologyCodeSystem) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<OntologyCodeSystem> AddOntologyCodeSystemAsync(OntologyCodeSystem ontologyCodeSystem) =>
+            await this.storageBroker.InsertOntologyCodeSystemAsync(ontologyCodeSystem);
     }
 }

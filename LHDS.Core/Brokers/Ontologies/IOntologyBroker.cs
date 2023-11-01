@@ -5,6 +5,5 @@
 namespace LHDS.Core.Brokers.Ontologies
 {
     internal partial interface IOntologyBroker
-    {
-    }
+    { }
 }

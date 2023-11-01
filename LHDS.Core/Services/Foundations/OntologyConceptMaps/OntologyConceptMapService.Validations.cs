@@ -24,7 +24,13 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
                     firstDate: ontologyConceptMap.UpdatedDate,
                     secondDate: ontologyConceptMap.CreatedDate,
                     secondDateName: nameof(OntologyConceptMap.CreatedDate)),
-                Parameter: nameof(OntologyConceptMap.UpdatedDate)));
+                Parameter: nameof(OntologyConceptMap.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    firstId: ontologyConceptMap.UpdatedBy,
+                    secondId: ontologyConceptMap.CreatedBy,
+                    secondIdName: nameof(OntologyConceptMap.CreatedBy)),
+                Parameter: nameof(OntologyConceptMap.UpdatedBy)));
         }
 
         private static void ValidateOntologyConceptMapIsNotNull(OntologyConceptMap ontologyConceptMap)
@@ -61,6 +67,24 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
                 Condition = firstDate != secondDate,
                 Message = $"Date is not the same as {secondDateName}"
             };
+
+        private static dynamic IsNotSame(
+            Guid firstId,
+            Guid secondId,
+            string secondIdName) => new
+            {
+                Condition = firstId != secondId,
+                Message = $"Id is not the same as {secondIdName}"
+            };
+
+        private static dynamic IsNotSame(
+           string first,
+           string second,
+           string secondName) => new
+           {
+               Condition = first != second,
+               Message = $"Text is not the same as {secondName}"
+           };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

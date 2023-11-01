@@ -23,6 +23,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             OntologyCodeSystem expectedOntologyCodeSystem = updatedOntologyCodeSystem.DeepClone();
             Guid ontologyCodeSystemId = inputOntologyCodeSystem.Id;
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.UpdateOntologyCodeSystemAsync(inputOntologyCodeSystem))
                     .ReturnsAsync(updatedOntologyCodeSystem);
@@ -34,13 +38,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             // then
             actualOntologyCodeSystem.Should().BeEquivalentTo(expectedOntologyCodeSystem);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateOntologyCodeSystemAsync(inputOntologyCodeSystem),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

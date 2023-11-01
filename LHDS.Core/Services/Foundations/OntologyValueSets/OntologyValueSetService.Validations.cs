@@ -38,6 +38,16 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
         private void ValidateOntologyValueSetOnModify(OntologyValueSet ontologyValueSet)
         {
             ValidateOntologyValueSetIsNotNull(ontologyValueSet);
+
+            Validate(
+                (Rule: IsInvalid(ontologyValueSet.Id), Parameter: nameof(OntologyValueSet.Id)),
+
+                // TODO: Add any other required validation rules
+
+                (Rule: IsInvalid(ontologyValueSet.CreatedDate), Parameter: nameof(OntologyValueSet.CreatedDate)),
+                (Rule: IsInvalid(ontologyValueSet.CreatedBy), Parameter: nameof(OntologyValueSet.CreatedBy)),
+                (Rule: IsInvalid(ontologyValueSet.UpdatedDate), Parameter: nameof(OntologyValueSet.UpdatedDate)),
+                (Rule: IsInvalid(ontologyValueSet.UpdatedBy), Parameter: nameof(OntologyValueSet.UpdatedBy)));
         }
 
         public void ValidateOntologyValueSetId(Guid ontologyValueSetId) =>
@@ -94,7 +104,7 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
-        
+
         private static dynamic IsNotSame(
            string first,
            string second,

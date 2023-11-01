@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using LHDS.Core.Models.Foundations.OntologyValueSets;
 using LHDS.Core.Models.Foundations.OntologyValueSets.Exceptions;
@@ -12,9 +16,8 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
 
             Validate(
                 (Rule: IsInvalid(ontologyValueSet.Id), Parameter: nameof(OntologyValueSet.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(ontologyValueSet.FullUrl), Parameter: nameof(OntologyValueSet.FullUrl)),
+                (Rule: IsInvalid(ontologyValueSet.ResourceType), Parameter: nameof(OntologyValueSet.ResourceType)),
                 (Rule: IsInvalid(ontologyValueSet.CreatedDate), Parameter: nameof(OntologyValueSet.CreatedDate)),
                 (Rule: IsInvalid(ontologyValueSet.CreatedBy), Parameter: nameof(OntologyValueSet.CreatedBy)),
                 (Rule: IsInvalid(ontologyValueSet.UpdatedDate), Parameter: nameof(OntologyValueSet.UpdatedDate)),
@@ -41,9 +44,8 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
 
             Validate(
                 (Rule: IsInvalid(ontologyValueSet.Id), Parameter: nameof(OntologyValueSet.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(ontologyValueSet.FullUrl), Parameter: nameof(OntologyValueSet.FullUrl)),
+                (Rule: IsInvalid(ontologyValueSet.ResourceType), Parameter: nameof(OntologyValueSet.ResourceType)),
                 (Rule: IsInvalid(ontologyValueSet.CreatedDate), Parameter: nameof(OntologyValueSet.CreatedDate)),
                 (Rule: IsInvalid(ontologyValueSet.CreatedBy), Parameter: nameof(OntologyValueSet.CreatedBy)),
                 (Rule: IsInvalid(ontologyValueSet.UpdatedDate), Parameter: nameof(OntologyValueSet.UpdatedDate)),
@@ -172,7 +174,7 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidOntologyValueSetException = 
+            var invalidOntologyValueSetException =
                 new InvalidOntologyValueSetException(
                     message: "Invalid ontologyValueSet. Please correct the errors and try again.");
 

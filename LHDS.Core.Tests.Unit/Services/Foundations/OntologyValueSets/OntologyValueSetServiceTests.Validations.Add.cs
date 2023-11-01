@@ -1,9 +1,13 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.OntologyValueSets;
 using LHDS.Core.Models.Foundations.OntologyValueSets.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
@@ -55,7 +59,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
             // given
             var invalidOntologyValueSet = new OntologyValueSet
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                FullUrl = invalidText,
+                ResourceType = invalidText,
             };
 
             var invalidOntologyValueSetException =
@@ -66,11 +71,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
                 key: nameof(OntologyValueSet.Id),
                 values: "Id is required");
 
-            //invalidOntologyValueSetException.AddData(
-            //    key: nameof(OntologyValueSet.Name),
-            //    values: "Text is required");
+            invalidOntologyValueSetException.AddData(
+                key: nameof(OntologyValueSet.FullUrl),
+                values: "Text is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the OntologyValueSet model
+            invalidOntologyValueSetException.AddData(
+                key: nameof(OntologyValueSet.ResourceType),
+                values: "Text is required");
 
             invalidOntologyValueSetException.AddData(
                 key: nameof(OntologyValueSet.CreatedDate),
@@ -135,7 +142,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
             invalidOntologyValueSet.UpdatedDate =
                 invalidOntologyValueSet.CreatedDate.AddDays(randomNumber);
 
-            var invalidOntologyValueSetException = 
+            var invalidOntologyValueSetException =
                 new InvalidOntologyValueSetException(
                     message: "Invalid ontologyValueSet. Please correct the errors and try again.");
 

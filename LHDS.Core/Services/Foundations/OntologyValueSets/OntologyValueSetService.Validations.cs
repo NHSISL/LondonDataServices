@@ -53,7 +53,9 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
                     firstDate: ontologyValueSet.UpdatedDate,
                     secondDate: ontologyValueSet.CreatedDate,
                     secondDateName: nameof(OntologyValueSet.CreatedDate)),
-                Parameter: nameof(OntologyValueSet.UpdatedDate)));
+                Parameter: nameof(OntologyValueSet.UpdatedDate)),
+
+                (Rule: IsNotRecent(ontologyValueSet.UpdatedDate), Parameter: nameof(ontologyValueSet.UpdatedDate)));
         }
 
         public void ValidateOntologyValueSetId(Guid ontologyValueSetId) =>

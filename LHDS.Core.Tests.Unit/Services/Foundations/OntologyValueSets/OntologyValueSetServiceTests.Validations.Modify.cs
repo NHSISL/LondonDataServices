@@ -115,6 +115,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
             actualOntologyValueSetValidationException.Should()
                 .BeEquivalentTo(expectedOntologyValueSetValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedOntologyValueSetValidationException))),
@@ -124,9 +128,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
                 broker.UpdateOntologyValueSetAsync(It.IsAny<OntologyValueSet>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -136,7 +140,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             OntologyValueSet randomOntologyValueSet = CreateRandomOntologyValueSet(randomDateTimeOffset);
             OntologyValueSet invalidOntologyValueSet = randomOntologyValueSet;
-            
+
             var invalidOntologyValueSetException = 
                 new InvalidOntologyValueSetException(
                     message: "Invalid ontologyValueSet. Please correct the errors and try again.");
@@ -150,6 +154,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
                     message: "OntologyValueSet validation errors occurred, please try again.",
                     innerException: invalidOntologyValueSetException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<OntologyValueSet> modifyOntologyValueSetTask =
                 this.ontologyValueSetService.ModifyOntologyValueSetAsync(invalidOntologyValueSet);
@@ -162,6 +170,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
             actualOntologyValueSetValidationException.Should()
                 .BeEquivalentTo(expectedOntologyValueSetValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedOntologyValueSetValidationException))),
@@ -171,9 +183,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
                 broker.SelectOntologyValueSetByIdAsync(invalidOntologyValueSet.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]

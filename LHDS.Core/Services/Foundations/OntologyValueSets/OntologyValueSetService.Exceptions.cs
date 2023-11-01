@@ -38,6 +38,10 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
 
                 throw CreateAndLogCriticalDependencyException(failedOntologyValueSetStorageException);
             }
+            catch (NotFoundOntologyValueSetException notFoundOntologyValueSetException)
+            {
+                throw CreateAndLogValidationException(notFoundOntologyValueSetException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsOntologyValueSetException =

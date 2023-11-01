@@ -38,6 +38,14 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
         public void ValidateOntologyValueSetId(Guid ontologyValueSetId) =>
             Validate((Rule: IsInvalid(ontologyValueSetId), Parameter: nameof(OntologyValueSet.Id)));
 
+        private static void ValidateStorageOntologyValueSet(OntologyValueSet maybeOntologyValueSet, Guid ontologyValueSetId)
+        {
+            if (maybeOntologyValueSet is null)
+            {
+                throw new NotFoundOntologyValueSetException(ontologyValueSetId);
+            }
+        }
+
         private static void ValidateOntologyValueSetIsNotNull(OntologyValueSet ontologyValueSet)
         {
             if (ontologyValueSet is null)

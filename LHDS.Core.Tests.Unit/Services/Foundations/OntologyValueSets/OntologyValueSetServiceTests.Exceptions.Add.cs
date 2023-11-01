@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.OntologyValueSets;
 using LHDS.Core.Models.Foundations.OntologyValueSets.Exceptions;
@@ -151,7 +152,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
                 await Assert.ThrowsAsync<OntologyValueSetDependencyValidationException>(
                     addOntologyValueSetTask.AsTask);
 
-            actualOntologyValueSetDependencyValidationException.Should().BeEquivalentTo(expectedOntologyValueSetValidationException);
+            actualOntologyValueSetDependencyValidationException.Should()
+                .BeEquivalentTo(expectedOntologyValueSetValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -169,6 +171,59 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnAddIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            OntologyValueSet someOntologyValueSet = CreateRandomOntologyValueSet();
+
+            var databaseUpdateException =
+                new DbUpdateException();
+
+            var failedOntologyValueSetStorageException =
+                new FailedOntologyValueSetStorageException(
+                    message: "Failed ontologyValueSet storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+            var expectedOntologyValueSetDependencyException =
+                new OntologyValueSetDependencyException(
+                    message: "OntologyValueSet dependency error occurred, contact support.",
+                    innerException: failedOntologyValueSetStorageException); 
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<OntologyValueSet> addOntologyValueSetTask =
+                this.ontologyValueSetService.AddOntologyValueSetAsync(someOntologyValueSet);
+
+            OntologyValueSetDependencyException actualOntologyValueSetDependencyException =
+                await Assert.ThrowsAsync<OntologyValueSetDependencyException>(
+                    addOntologyValueSetTask.AsTask);
+
+            // then
+            actualOntologyValueSetDependencyException.Should()
+                .BeEquivalentTo(expectedOntologyValueSetDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertOntologyValueSetAsync(It.IsAny<OntologyValueSet>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyValueSetDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -84,7 +84,13 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
                     firstDate: inputOntologyValueSet.CreatedDate,
                     secondDate: storageOntologyValueSet.CreatedDate,
                     secondDateName: nameof(OntologyValueSet.CreatedDate)),
-                Parameter: nameof(OntologyValueSet.CreatedDate)));
+                Parameter: nameof(OntologyValueSet.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    first: inputOntologyValueSet.CreatedBy,
+                    second: storageOntologyValueSet.CreatedBy,
+                    secondName: nameof(OntologyValueSet.CreatedBy)),
+                Parameter: nameof(OntologyValueSet.CreatedBy)));
         }
 
         private static dynamic IsInvalid(Guid id) => new

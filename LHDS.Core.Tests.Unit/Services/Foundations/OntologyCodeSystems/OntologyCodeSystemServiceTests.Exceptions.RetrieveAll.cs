@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             var expectedOntologyCodeSystemDependencyException =
                 new OntologyCodeSystemDependencyException(
                     message: "OntologyCodeSystem dependency error occurred, contact support.",
-                    innerException: failedOntologyCodeSystemStorageException); 
+                    innerException: failedOntologyCodeSystemStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllOntologyCodeSystems())
@@ -52,6 +52,51 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomString();
+            var serviceException = new Exception(exceptionMessage);
+
+            var failedOntologyCodeSystemServiceException =
+                new FailedOntologyCodeSystemServiceException(
+                    message: "Failed ontologyCodeSystem service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedOntologyCodeSystemServiceException =
+                new OntologyCodeSystemServiceException(
+                    message: "OntologyCodeSystem service error occurred, contact support.",
+                    innerException: failedOntologyCodeSystemServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllOntologyCodeSystems())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllOntologyCodeSystemsAction = () =>
+                this.ontologyCodeSystemService.RetrieveAllOntologyCodeSystems();
+
+            OntologyCodeSystemServiceException actualOntologyCodeSystemServiceException =
+                Assert.Throws<OntologyCodeSystemServiceException>(retrieveAllOntologyCodeSystemsAction);
+
+            // then
+            actualOntologyCodeSystemServiceException.Should()
+                .BeEquivalentTo(expectedOntologyCodeSystemServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllOntologyCodeSystems(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyCodeSystemServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

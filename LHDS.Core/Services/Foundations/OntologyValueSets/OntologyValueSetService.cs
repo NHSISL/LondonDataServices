@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -29,5 +30,8 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
 
                 return await this.storageBroker.InsertOntologyValueSetAsync(ontologyValueSet);
             });
+
+        public IQueryable<OntologyValueSet> RetrieveAllOntologyValueSets() =>
+            throw new System.NotImplementedException();
     }
 }

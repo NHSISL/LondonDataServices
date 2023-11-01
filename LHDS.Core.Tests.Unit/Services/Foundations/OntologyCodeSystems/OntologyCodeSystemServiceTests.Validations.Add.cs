@@ -217,5 +217,66 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreatedDateIsNotRecentAndLogItAsync(
+            int minutesBeforeOrAfter)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+
+            DateTimeOffset invalidDateTime =
+                randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
+
+            OntologyCodeSystem randomOntologyCodeSystem = CreateRandomOntologyCodeSystem(invalidDateTime);
+            OntologyCodeSystem invalidOntologyCodeSystem = randomOntologyCodeSystem;
+
+            var invalidOntologyCodeSystemException =
+                new InvalidOntologyCodeSystemException(
+                    message: "Invalid ontologyCodeSystem. Please correct the errors and try again.");
+
+            invalidOntologyCodeSystemException.AddData(
+                key: nameof(OntologyCodeSystem.CreatedDate),
+                values: "Date is not recent");
+
+            var expectedOntologyCodeSystemValidationException =
+                new OntologyCodeSystemValidationException(
+                    message: "OntologyCodeSystem validation errors occurred, please try again.",
+                    innerException: invalidOntologyCodeSystemException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<OntologyCodeSystem> addOntologyCodeSystemTask =
+                this.ontologyCodeSystemService.AddOntologyCodeSystemAsync(invalidOntologyCodeSystem);
+
+            OntologyCodeSystemValidationException actualOntologyCodeSystemValidationException =
+                await Assert.ThrowsAsync<OntologyCodeSystemValidationException>(
+                    addOntologyCodeSystemTask.AsTask);
+
+            // then
+            actualOntologyCodeSystemValidationException.Should()
+                .BeEquivalentTo(expectedOntologyCodeSystemValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyCodeSystemValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertOntologyCodeSystemAsync(It.IsAny<OntologyCodeSystem>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

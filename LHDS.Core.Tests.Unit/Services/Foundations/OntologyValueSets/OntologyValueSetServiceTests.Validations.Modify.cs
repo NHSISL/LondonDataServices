@@ -184,9 +184,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
                 broker.SelectOntologyValueSetByIdAsync(invalidOntologyValueSet.Id),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -295,8 +295,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
                     expectedOntologyValueSetValidationException))),
                         Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -359,8 +359,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
                    expectedOntologyValueSetValidationException))),
                        Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -420,8 +420,64 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
                    expectedOntologyValueSetValidationException))),
                        Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfStorageUpdatedDateSameAsUpdatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            OntologyValueSet randomOntologyValueSet = CreateRandomModifyOntologyValueSet(randomDateTimeOffset);
+            OntologyValueSet invalidOntologyValueSet = randomOntologyValueSet;
+            OntologyValueSet storageOntologyValueSet = randomOntologyValueSet.DeepClone();
+
+            var invalidOntologyValueSetException = 
+                new InvalidOntologyValueSetException(
+                    message: "Invalid ontologyValueSet. Please correct the errors and try again.");
+
+            invalidOntologyValueSetException.AddData(
+                key: nameof(OntologyValueSet.UpdatedDate),
+                values: $"Date is the same as {nameof(OntologyValueSet.UpdatedDate)}");
+
+            var expectedOntologyValueSetValidationException =
+                new OntologyValueSetValidationException(
+                    message: "OntologyValueSet validation errors occurred, please try again.",
+                    innerException: invalidOntologyValueSetException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectOntologyValueSetByIdAsync(invalidOntologyValueSet.Id))
+                .ReturnsAsync(storageOntologyValueSet);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<OntologyValueSet> modifyOntologyValueSetTask =
+                this.ontologyValueSetService.ModifyOntologyValueSetAsync(invalidOntologyValueSet);
+
+            // then
+            await Assert.ThrowsAsync<OntologyValueSetValidationException>(
+                modifyOntologyValueSetTask.AsTask);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyValueSetValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyValueSetByIdAsync(invalidOntologyValueSet.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

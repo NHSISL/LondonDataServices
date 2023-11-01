@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using LHDS.Core.Models.Foundations.OntologyValueSets;
 using LHDS.Core.Models.Foundations.OntologyValueSets.Exceptions;
 using Xeptions;
@@ -52,6 +53,15 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
 
                 throw CreateAndLogDependencyValidationException(invalidOntologyValueSetReferenceException);
             }
+            catch (DbUpdateException databaseUpdateException)
+            {
+                var failedOntologyValueSetStorageException =
+                    new FailedOntologyValueSetStorageException(
+                    message: "Failed ontologyValueSet storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+                throw CreateAndLogDependencyException(failedOntologyValueSetStorageException);
+            }
         }
 
         private OntologyValueSetValidationException CreateAndLogValidationException(Xeption exception)
@@ -88,6 +98,19 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
             this.loggingBroker.LogError(ontologyValueSetDependencyValidationException);
 
             return ontologyValueSetDependencyValidationException;
+        }
+
+        private OntologyValueSetDependencyException CreateAndLogDependencyException(
+            Xeption exception)
+        {
+            var ontologyValueSetDependencyException = 
+                new OntologyValueSetDependencyException(
+                    message: "OntologyValueSet dependency error occurred, contact support.",
+                    innerException: exception); 
+
+            this.loggingBroker.LogError(ontologyValueSetDependencyException);
+
+            return ontologyValueSetDependencyException;
         }
     }
 }

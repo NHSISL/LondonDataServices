@@ -47,7 +47,13 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
                 (Rule: IsInvalid(ontologyCodeSystem.CreatedDate), Parameter: nameof(OntologyCodeSystem.CreatedDate)),
                 (Rule: IsInvalid(ontologyCodeSystem.CreatedBy), Parameter: nameof(OntologyCodeSystem.CreatedBy)),
                 (Rule: IsInvalid(ontologyCodeSystem.UpdatedDate), Parameter: nameof(OntologyCodeSystem.UpdatedDate)),
-                (Rule: IsInvalid(ontologyCodeSystem.UpdatedBy), Parameter: nameof(OntologyCodeSystem.UpdatedBy)));
+                (Rule: IsInvalid(ontologyCodeSystem.UpdatedBy), Parameter: nameof(OntologyCodeSystem.UpdatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: ontologyCodeSystem.UpdatedDate,
+                    secondDate: ontologyCodeSystem.CreatedDate,
+                    secondDateName: nameof(OntologyCodeSystem.CreatedDate)),
+                Parameter: nameof(OntologyCodeSystem.UpdatedDate)));
         }
 
         public void ValidateOntologyCodeSystemId(Guid ontologyCodeSystemId) =>
@@ -86,6 +92,15 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,

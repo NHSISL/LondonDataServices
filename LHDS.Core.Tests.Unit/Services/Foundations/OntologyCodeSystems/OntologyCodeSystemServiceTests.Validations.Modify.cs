@@ -88,7 +88,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
 
             invalidOntologyCodeSystemException.AddData(
                 key: nameof(OntologyCodeSystem.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(OntologyCodeSystem.CreatedDate)}"
+                });
 
             invalidOntologyCodeSystemException.AddData(
                 key: nameof(OntologyCodeSystem.UpdatedBy),
@@ -131,6 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             OntologyCodeSystem randomOntologyCodeSystem = CreateRandomOntologyCodeSystem(randomDateTimeOffset);
             OntologyCodeSystem invalidOntologyCodeSystem = randomOntologyCodeSystem;
+            
             var invalidOntologyCodeSystemException = 
                 new InvalidOntologyCodeSystemException(
                     message: "Invalid ontologyCodeSystem. Please correct the errors and try again.");

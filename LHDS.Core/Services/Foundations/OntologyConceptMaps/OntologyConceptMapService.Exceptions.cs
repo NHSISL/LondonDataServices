@@ -19,6 +19,10 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
             {
                 throw CreateAndLogValidationException(nullOntologyConceptMapException);
             }
+            catch (InvalidOntologyConceptMapException invalidOntologyConceptMapException)
+            {
+                throw CreateAndLogValidationException(invalidOntologyConceptMapException);
+            }
         }
 
         private OntologyConceptMapValidationException CreateAndLogValidationException(Xeption exception)

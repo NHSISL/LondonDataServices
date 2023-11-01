@@ -169,5 +169,53 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateUsersIsNotSameAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            OntologyValueSet randomOntologyValueSet = CreateRandomOntologyValueSet(randomDateTimeOffset);
+            OntologyValueSet invalidOntologyValueSet = randomOntologyValueSet;
+            invalidOntologyValueSet.UpdatedBy = Guid.NewGuid().ToString();
+
+            var invalidOntologyValueSetException =
+                new InvalidOntologyValueSetException(
+                    message: "Invalid ontologyValueSet. Please correct the errors and try again.");
+
+            invalidOntologyValueSetException.AddData(
+                key: nameof(OntologyValueSet.UpdatedBy),
+                values: $"Text is not the same as {nameof(OntologyValueSet.CreatedBy)}");
+
+            var expectedOntologyValueSetValidationException =
+                new OntologyValueSetValidationException(
+                    message: "OntologyValueSet validation errors occurred, please try again.",
+                    innerException: invalidOntologyValueSetException);
+
+            // when
+            ValueTask<OntologyValueSet> addOntologyValueSetTask =
+                this.ontologyValueSetService.AddOntologyValueSetAsync(invalidOntologyValueSet);
+
+            OntologyValueSetValidationException actualOntologyValueSetValidationException =
+                await Assert.ThrowsAsync<OntologyValueSetValidationException>(
+                    addOntologyValueSetTask.AsTask);
+
+            // then
+            actualOntologyValueSetValidationException.Should()
+                .BeEquivalentTo(expectedOntologyValueSetValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyValueSetValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertOntologyValueSetAsync(It.IsAny<OntologyValueSet>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

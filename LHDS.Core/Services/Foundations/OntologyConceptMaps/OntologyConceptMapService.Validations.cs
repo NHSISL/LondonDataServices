@@ -47,7 +47,13 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
                 (Rule: IsInvalid(ontologyConceptMap.CreatedDate), Parameter: nameof(OntologyConceptMap.CreatedDate)),
                 (Rule: IsInvalid(ontologyConceptMap.CreatedBy), Parameter: nameof(OntologyConceptMap.CreatedBy)),
                 (Rule: IsInvalid(ontologyConceptMap.UpdatedDate), Parameter: nameof(OntologyConceptMap.UpdatedDate)),
-                (Rule: IsInvalid(ontologyConceptMap.UpdatedBy), Parameter: nameof(OntologyConceptMap.UpdatedBy)));
+                (Rule: IsInvalid(ontologyConceptMap.UpdatedBy), Parameter: nameof(OntologyConceptMap.UpdatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: ontologyConceptMap.UpdatedDate,
+                    secondDate: ontologyConceptMap.CreatedDate,
+                    secondDateName: nameof(OntologyConceptMap.CreatedDate)),
+                Parameter: nameof(OntologyConceptMap.UpdatedDate)));
         }
 
         public void ValidateOntologyConceptMapId(Guid ontologyConceptMapId) =>
@@ -86,6 +92,15 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,

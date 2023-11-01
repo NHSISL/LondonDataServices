@@ -7,7 +7,7 @@ using LHDS.Core.Models.Bases;
 
 namespace LHDS.Core.Models.Foundations.OntologyConceptMaps
 {
-    internal class OntologyConceptMap : IKey, IAudit
+    public class OntologyConceptMap : IKey, IAudit
     {
         public Guid Id { get; set; }
         public string FullUrl { get; set; }

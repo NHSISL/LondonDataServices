@@ -48,7 +48,12 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
                 return maybeOntologyCodeSystem;
             });
 
-        public async ValueTask<OntologyCodeSystem> ModifyOntologyCodeSystemAsync(OntologyCodeSystem ontologyCodeSystem) =>
-            await this.storageBroker.UpdateOntologyCodeSystemAsync(ontologyCodeSystem);
+        public ValueTask<OntologyCodeSystem> ModifyOntologyCodeSystemAsync(OntologyCodeSystem ontologyCodeSystem) =>
+            TryCatch(async () =>
+            {
+                ValidateOntologyCodeSystemOnModify(ontologyCodeSystem);
+
+                return await this.storageBroker.UpdateOntologyCodeSystemAsync(ontologyCodeSystem);
+            });
     }
 }

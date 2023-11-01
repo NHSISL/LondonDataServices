@@ -35,6 +35,11 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
                 (Rule: IsNotRecent(ontologyCodeSystem.CreatedDate), Parameter: nameof(OntologyCodeSystem.CreatedDate)));
         }
 
+        private void ValidateOntologyCodeSystemOnModify(OntologyCodeSystem ontologyCodeSystem)
+        {
+            ValidateOntologyCodeSystemIsNotNull(ontologyCodeSystem);
+        }
+
         public void ValidateOntologyCodeSystemId(Guid ontologyCodeSystemId) =>
             Validate((Rule: IsInvalid(ontologyCodeSystemId), Parameter: nameof(OntologyCodeSystem.Id)));
 
@@ -89,7 +94,7 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
-
+        
         private static dynamic IsNotSame(
            string first,
            string second,

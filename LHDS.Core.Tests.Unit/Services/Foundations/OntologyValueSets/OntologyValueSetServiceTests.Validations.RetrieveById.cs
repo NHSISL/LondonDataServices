@@ -54,5 +54,49 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfOntologyValueSetIsNotFoundAndLogItAsync()
+        {
+            //given
+            Guid someOntologyValueSetId = Guid.NewGuid();
+            OntologyValueSet noOntologyValueSet = null;
+
+            var notFoundOntologyValueSetException =
+                new NotFoundOntologyValueSetException(someOntologyValueSetId);
+
+            var expectedOntologyValueSetValidationException =
+                new OntologyValueSetValidationException(
+                    message: "OntologyValueSet validation errors occurred, please try again.",
+                    innerException: notFoundOntologyValueSetException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectOntologyValueSetByIdAsync(It.IsAny<Guid>()))
+                    .ReturnsAsync(noOntologyValueSet);
+
+            //when
+            ValueTask<OntologyValueSet> retrieveOntologyValueSetByIdTask =
+                this.ontologyValueSetService.RetrieveOntologyValueSetByIdAsync(someOntologyValueSetId);
+
+            OntologyValueSetValidationException actualOntologyValueSetValidationException =
+                await Assert.ThrowsAsync<OntologyValueSetValidationException>(
+                    retrieveOntologyValueSetByIdTask.AsTask);
+
+            //then
+            actualOntologyValueSetValidationException.Should().BeEquivalentTo(expectedOntologyValueSetValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyValueSetByIdAsync(It.IsAny<Guid>()),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyValueSetValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

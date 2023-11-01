@@ -35,6 +35,9 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
                 (Rule: IsNotRecent(ontologyConceptMap.CreatedDate), Parameter: nameof(OntologyConceptMap.CreatedDate)));
         }
 
+        public void ValidateOntologyConceptMapId(Guid ontologyConceptMapId) =>
+            Validate((Rule: IsInvalid(ontologyConceptMapId), Parameter: nameof(OntologyConceptMap.Id)));
+
         private static void ValidateOntologyConceptMapIsNotNull(OntologyConceptMap ontologyConceptMap)
         {
             if (ontologyConceptMap is null)

@@ -35,7 +35,15 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
         public IQueryable<OntologyConceptMap> RetrieveAllOntologyConceptMaps() =>
             TryCatch(() => this.storageBroker.SelectAllOntologyConceptMaps());
 
-        public async ValueTask<OntologyConceptMap> RetrieveOntologyConceptMapByIdAsync(Guid ontologyConceptMapId) =>
-            await this.storageBroker.SelectOntologyConceptMapByIdAsync(ontologyConceptMapId);
+        public ValueTask<OntologyConceptMap> RetrieveOntologyConceptMapByIdAsync(Guid ontologyConceptMapId) =>
+            TryCatch(async () =>
+            {
+                ValidateOntologyConceptMapId(ontologyConceptMapId);
+
+                OntologyConceptMap maybeOntologyConceptMap = await this.storageBroker
+                    .SelectOntologyConceptMapByIdAsync(ontologyConceptMapId);
+
+                return maybeOntologyConceptMap;
+            });
     }
 }

@@ -54,5 +54,49 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfOntologyConceptMapIsNotFoundAndLogItAsync()
+        {
+            //given
+            Guid someOntologyConceptMapId = Guid.NewGuid();
+            OntologyConceptMap noOntologyConceptMap = null;
+
+            var notFoundOntologyConceptMapException =
+                new NotFoundOntologyConceptMapException(someOntologyConceptMapId);
+
+            var expectedOntologyConceptMapValidationException =
+                new OntologyConceptMapValidationException(
+                    message: "OntologyConceptMap validation errors occurred, please try again.",
+                    innerException: notFoundOntologyConceptMapException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectOntologyConceptMapByIdAsync(It.IsAny<Guid>()))
+                    .ReturnsAsync(noOntologyConceptMap);
+
+            //when
+            ValueTask<OntologyConceptMap> retrieveOntologyConceptMapByIdTask =
+                this.ontologyConceptMapService.RetrieveOntologyConceptMapByIdAsync(someOntologyConceptMapId);
+
+            OntologyConceptMapValidationException actualOntologyConceptMapValidationException =
+                await Assert.ThrowsAsync<OntologyConceptMapValidationException>(
+                    retrieveOntologyConceptMapByIdTask.AsTask);
+
+            //then
+            actualOntologyConceptMapValidationException.Should().BeEquivalentTo(expectedOntologyConceptMapValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyConceptMapByIdAsync(It.IsAny<Guid>()),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyConceptMapValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

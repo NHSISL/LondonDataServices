@@ -43,6 +43,15 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsOntologyConceptMapException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidOntologyConceptMapReferenceException =
+                    new InvalidOntologyConceptMapReferenceException(
+                        message: "Invalid ontologyConceptMap reference error occurred.", 
+                        innerException: foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidOntologyConceptMapReferenceException);
+            }
         }
 
         private OntologyConceptMapValidationException CreateAndLogValidationException(Xeption exception)
@@ -62,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
             var ontologyConceptMapDependencyException = 
                 new OntologyConceptMapDependencyException(
                     message: "OntologyConceptMap dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(ontologyConceptMapDependencyException);
 

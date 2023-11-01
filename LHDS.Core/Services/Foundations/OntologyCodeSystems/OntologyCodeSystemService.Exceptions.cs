@@ -19,6 +19,10 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
             {
                 throw CreateAndLogValidationException(nullOntologyCodeSystemException);
             }
+            catch (InvalidOntologyCodeSystemException invalidOntologyCodeSystemException)
+            {
+                throw CreateAndLogValidationException(invalidOntologyCodeSystemException);
+            }
         }
 
         private OntologyCodeSystemValidationException CreateAndLogValidationException(Xeption exception)

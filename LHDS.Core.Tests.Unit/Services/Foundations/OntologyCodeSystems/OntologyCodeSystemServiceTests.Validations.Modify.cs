@@ -115,6 +115,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             actualOntologyCodeSystemValidationException.Should()
                 .BeEquivalentTo(expectedOntologyCodeSystemValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedOntologyCodeSystemValidationException))),
@@ -124,9 +128,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
                 broker.UpdateOntologyCodeSystemAsync(It.IsAny<OntologyCodeSystem>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -136,7 +140,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             OntologyCodeSystem randomOntologyCodeSystem = CreateRandomOntologyCodeSystem(randomDateTimeOffset);
             OntologyCodeSystem invalidOntologyCodeSystem = randomOntologyCodeSystem;
-            
+
             var invalidOntologyCodeSystemException = 
                 new InvalidOntologyCodeSystemException(
                     message: "Invalid ontologyCodeSystem. Please correct the errors and try again.");
@@ -150,6 +154,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
                     message: "OntologyCodeSystem validation errors occurred, please try again.",
                     innerException: invalidOntologyCodeSystemException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<OntologyCodeSystem> modifyOntologyCodeSystemTask =
                 this.ontologyCodeSystemService.ModifyOntologyCodeSystemAsync(invalidOntologyCodeSystem);
@@ -162,6 +170,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             actualOntologyCodeSystemValidationException.Should()
                 .BeEquivalentTo(expectedOntologyCodeSystemValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedOntologyCodeSystemValidationException))),
@@ -171,9 +183,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
                 broker.SelectOntologyCodeSystemByIdAsync(invalidOntologyCodeSystem.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]

@@ -53,7 +53,9 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
                     firstDate: ontologyCodeSystem.UpdatedDate,
                     secondDate: ontologyCodeSystem.CreatedDate,
                     secondDateName: nameof(OntologyCodeSystem.CreatedDate)),
-                Parameter: nameof(OntologyCodeSystem.UpdatedDate)));
+                Parameter: nameof(OntologyCodeSystem.UpdatedDate)),
+
+                (Rule: IsNotRecent(ontologyCodeSystem.UpdatedDate), Parameter: nameof(ontologyCodeSystem.UpdatedDate)));
         }
 
         public void ValidateOntologyCodeSystemId(Guid ontologyCodeSystemId) =>

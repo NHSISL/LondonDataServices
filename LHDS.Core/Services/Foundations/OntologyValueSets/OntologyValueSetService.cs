@@ -62,7 +62,12 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
                 return await this.storageBroker.UpdateOntologyValueSetAsync(ontologyValueSet);
             });
 
-        public ValueTask<OntologyValueSet> RemoveOntologyValueSetByIdAsync(Guid ontologyValueSetId) =>
-            throw new NotImplementedException();
+        public async ValueTask<OntologyValueSet> RemoveOntologyValueSetByIdAsync(Guid ontologyValueSetId)
+        {
+            OntologyValueSet maybeOntologyValueSet = await this.storageBroker
+                    .SelectOntologyValueSetByIdAsync(ontologyValueSetId);
+
+            return await this.storageBroker.DeleteOntologyValueSetAsync(maybeOntologyValueSet);
+        }
     }
 }

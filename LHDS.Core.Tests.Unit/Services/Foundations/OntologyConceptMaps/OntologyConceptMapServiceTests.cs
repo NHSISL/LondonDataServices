@@ -64,6 +64,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static OntologyConceptMap CreateRandomModifyOntologyConceptMap(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            OntologyConceptMap randomOntologyConceptMap = CreateRandomOntologyConceptMap(dateTimeOffset);
+
+            randomOntologyConceptMap.CreatedDate =
+                randomOntologyConceptMap.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomOntologyConceptMap;
+        }
+
         private static IQueryable<OntologyConceptMap> CreateRandomOntologyConceptMaps()
         {
             return CreateOntologyConceptMapFiller(dateTimeOffset: GetRandomDateTimeOffset())

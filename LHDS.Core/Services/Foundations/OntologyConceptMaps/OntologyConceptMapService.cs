@@ -47,5 +47,8 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
 
                 return maybeOntologyConceptMap;
             });
+
+        public ValueTask<OntologyConceptMap> ModifyOntologyConceptMapAsync(OntologyConceptMap ontologyConceptMap) =>
+            throw new NotImplementedException();
     }
 }

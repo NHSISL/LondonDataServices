@@ -22,7 +22,12 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<OntologyConceptMap> AddOntologyConceptMapAsync(OntologyConceptMap ontologyConceptMap) =>
-            await this.storageBroker.InsertOntologyConceptMapAsync(ontologyConceptMap);
+        public ValueTask<OntologyConceptMap> AddOntologyConceptMapAsync(OntologyConceptMap ontologyConceptMap) =>
+            TryCatch(async () =>
+            {
+                ValidateOntologyConceptMapOnAdd(ontologyConceptMap);
+
+                return await this.storageBroker.InsertOntologyConceptMapAsync(ontologyConceptMap);
+            });
     }
 }

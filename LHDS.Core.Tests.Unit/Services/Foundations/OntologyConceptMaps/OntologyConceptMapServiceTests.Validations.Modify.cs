@@ -115,6 +115,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
             actualOntologyConceptMapValidationException.Should()
                 .BeEquivalentTo(expectedOntologyConceptMapValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedOntologyConceptMapValidationException))),
@@ -124,9 +128,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
                 broker.UpdateOntologyConceptMapAsync(It.IsAny<OntologyConceptMap>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -136,7 +140,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             OntologyConceptMap randomOntologyConceptMap = CreateRandomOntologyConceptMap(randomDateTimeOffset);
             OntologyConceptMap invalidOntologyConceptMap = randomOntologyConceptMap;
-            
+
             var invalidOntologyConceptMapException = 
                 new InvalidOntologyConceptMapException(
                     message: "Invalid ontologyConceptMap. Please correct the errors and try again.");
@@ -150,6 +154,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
                     message: "OntologyConceptMap validation errors occurred, please try again.",
                     innerException: invalidOntologyConceptMapException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<OntologyConceptMap> modifyOntologyConceptMapTask =
                 this.ontologyConceptMapService.ModifyOntologyConceptMapAsync(invalidOntologyConceptMap);
@@ -162,6 +170,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
             actualOntologyConceptMapValidationException.Should()
                 .BeEquivalentTo(expectedOntologyConceptMapValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedOntologyConceptMapValidationException))),
@@ -171,9 +183,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
                 broker.SelectOntologyConceptMapByIdAsync(invalidOntologyConceptMap.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]

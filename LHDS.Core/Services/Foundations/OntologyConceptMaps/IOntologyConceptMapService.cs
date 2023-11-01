@@ -11,5 +11,6 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
         IQueryable<OntologyConceptMap> RetrieveAllOntologyConceptMaps();
         ValueTask<OntologyConceptMap> RetrieveOntologyConceptMapByIdAsync(Guid ontologyConceptMapId);
         ValueTask<OntologyConceptMap> ModifyOntologyConceptMapAsync(OntologyConceptMap ontologyConceptMap);
+        ValueTask<OntologyConceptMap> RemoveOntologyConceptMapByIdAsync(Guid ontologyConceptMapId);
     }
 }

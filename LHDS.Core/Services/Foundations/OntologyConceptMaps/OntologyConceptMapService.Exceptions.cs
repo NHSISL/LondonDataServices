@@ -38,6 +38,10 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
 
                 throw CreateAndLogCriticalDependencyException(failedOntologyConceptMapStorageException);
             }
+            catch (NotFoundOntologyConceptMapException notFoundOntologyConceptMapException)
+            {
+                throw CreateAndLogValidationException(notFoundOntologyConceptMapException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsOntologyConceptMapException =

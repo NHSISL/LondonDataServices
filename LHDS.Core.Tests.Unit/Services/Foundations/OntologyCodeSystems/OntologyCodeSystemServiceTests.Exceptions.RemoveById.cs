@@ -119,5 +119,52 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveWhenSqlExceptionOccursAndLogItAsync()
+        {
+            // given
+            Guid someOntologyCodeSystemId = Guid.NewGuid();
+            SqlException sqlException = GetSqlException();
+
+            var failedOntologyCodeSystemStorageException =
+                new FailedOntologyCodeSystemStorageException(
+                    message: "Failed ontologyCodeSystem storage error occurred, contact support.",
+                    innerException: sqlException);
+
+            var expectedOntologyCodeSystemDependencyException =
+                new OntologyCodeSystemDependencyException(
+                    message: "OntologyCodeSystem dependency error occurred, contact support.",
+                    innerException: failedOntologyCodeSystemStorageException); 
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectOntologyCodeSystemByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(sqlException);
+
+            // when
+            ValueTask<OntologyCodeSystem> deleteOntologyCodeSystemTask =
+                this.ontologyCodeSystemService.RemoveOntologyCodeSystemByIdAsync(someOntologyCodeSystemId);
+
+            OntologyCodeSystemDependencyException actualOntologyCodeSystemDependencyException =
+                await Assert.ThrowsAsync<OntologyCodeSystemDependencyException>(
+                    deleteOntologyCodeSystemTask.AsTask);
+
+            // then
+            actualOntologyCodeSystemDependencyException.Should()
+                .BeEquivalentTo(expectedOntologyCodeSystemDependencyException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyCodeSystemByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedOntologyCodeSystemDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

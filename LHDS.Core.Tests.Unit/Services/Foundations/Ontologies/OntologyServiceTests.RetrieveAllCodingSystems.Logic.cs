@@ -21,10 +21,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologys
             string randomRelativeUrl = GetRandomString();
             string inputRelativeUrl = randomRelativeUrl;
             string nextPageUrl = "http://localhost:5000/api/fhir/ValueSet?_page=2";
+            string artifactType = "CodeSystem";
 
-            List<dynamic> randomArtifactProperties = CreateRandomArtifactProperties();
+            List<dynamic> randomArtifactProperties = CreateRandomArtifactProperties(artifactType);
 
-            var remoteCodingSystemBundle = CreateBundleFromRandomData(randomArtifactProperties, nextPageUrl);
+            var remoteCodingSystemBundle = CreateCodeSystemBundleFromRandomData(randomArtifactProperties, nextPageUrl);
             var expectedOntologyAssets = CreateArtiFactFromRandomData(randomArtifactProperties, nextPageUrl);
 
             this.ontologyBrokerMock.Setup(broker =>
@@ -46,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologys
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
-        private static Bundle CreateBundleFromRandomData(List<dynamic> randomArtifactProperties, string nextPageUrl)
+        private static Bundle CreateCodeSystemBundleFromRandomData(List<dynamic> randomArtifactProperties, string nextPageUrl)
         {
             Bundle externalBundleResult = new Bundle
             {
@@ -81,10 +82,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologys
                             {
                                 LastUpdated = item.LastUpdated,
                             },
+
                             Version = item.Version,
                             Name = item.Name,
                             Title = item.Title,
-                            Status = (PublicationStatus)Enum.Parse(typeof(PublicationStatus), item.Status),
+
+                            Status = (PublicationStatus)Enum.Parse(
+                                typeof(PublicationStatus), item.Status, ignoreCase: true),
                         }
                     });
             }

@@ -3,10 +3,13 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Hl7.Fhir.Model;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Ontologies;
 using LHDS.Core.Models.Foundations.Ontologies;
+using static Hl7.Fhir.Model.Bundle;
 
 namespace LHDS.Core.Services.Foundations.Ontologies
 {
@@ -23,8 +26,36 @@ namespace LHDS.Core.Services.Foundations.Ontologies
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<OntologyAssets> RetrieveAllCodingSystemsAsync(string? relativeUrl) =>
-            throw new NotImplementedException();
+        public async ValueTask<OntologyAssets> RetrieveAllCodingSystemsAsync(string? relativeUrl)
+        {
+            Bundle codingSystems = await this.ontologyBroker.GetAllCodingSystemsAsync(relativeUrl);
+            string? nextPageUrl = codingSystems.NextLink?.ToString();
+
+            var ontologyAssets = new OntologyAssets
+            {
+                Assets = new List<OntologyAsset>(),
+                NextPage = nextPageUrl
+            };
+
+            foreach (EntryComponent item in codingSystems.Entry)
+            {
+                CodeSystem resource = (CodeSystem)item.Resource;
+
+                ontologyAssets.Assets.Add(
+                    new OntologyAsset
+                    {
+                        FullUrl = item.FullUrl,
+                        ResourceType = "CodeSystem",
+                        Version = resource.Version,
+                        Name = resource.Name,
+                        Title = resource.Title,
+                        Status = resource.Status.ToString()?.ToLower(),
+                        LastUpdated = resource.Meta.LastUpdated,
+                    });
+            }
+
+            return ontologyAssets;
+        }
 
         public ValueTask<OntologyAssets> RetrieveAllConceptMapsAsync(string? relativeUrl) =>
             throw new NotImplementedException();

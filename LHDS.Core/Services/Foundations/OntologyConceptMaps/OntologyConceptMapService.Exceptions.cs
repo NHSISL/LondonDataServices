@@ -91,6 +91,15 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
 
                 throw CreateAndLogCriticalDependencyException(failedOntologyConceptMapStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedOntologyConceptMapServiceException =
+                    new FailedOntologyConceptMapServiceException(
+                        message: "Failed ontologyConceptMap service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedOntologyConceptMapServiceException);
+            }
         }
 
         private OntologyConceptMapValidationException CreateAndLogValidationException(Xeption exception)

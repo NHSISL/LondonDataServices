@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using LHDS.Core.Models.Foundations.OntologyCodeSystems;
 using LHDS.Core.Models.Foundations.OntologyCodeSystems.Exceptions;
@@ -12,9 +16,8 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
 
             Validate(
                 (Rule: IsInvalid(ontologyCodeSystem.Id), Parameter: nameof(OntologyCodeSystem.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(ontologyCodeSystem.FullUrl), Parameter: nameof(OntologyCodeSystem.FullUrl)),
+                (Rule: IsInvalid(ontologyCodeSystem.ResourceType), Parameter: nameof(OntologyCodeSystem.ResourceType)),
                 (Rule: IsInvalid(ontologyCodeSystem.CreatedDate), Parameter: nameof(OntologyCodeSystem.CreatedDate)),
                 (Rule: IsInvalid(ontologyCodeSystem.CreatedBy), Parameter: nameof(OntologyCodeSystem.CreatedBy)),
                 (Rule: IsInvalid(ontologyCodeSystem.UpdatedDate), Parameter: nameof(OntologyCodeSystem.UpdatedDate)),
@@ -41,9 +44,8 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
 
             Validate(
                 (Rule: IsInvalid(ontologyCodeSystem.Id), Parameter: nameof(OntologyCodeSystem.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(ontologyCodeSystem.FullUrl), Parameter: nameof(OntologyCodeSystem.FullUrl)),
+                (Rule: IsInvalid(ontologyCodeSystem.ResourceType), Parameter: nameof(OntologyCodeSystem.ResourceType)),
                 (Rule: IsInvalid(ontologyCodeSystem.CreatedDate), Parameter: nameof(OntologyCodeSystem.CreatedDate)),
                 (Rule: IsInvalid(ontologyCodeSystem.CreatedBy), Parameter: nameof(OntologyCodeSystem.CreatedBy)),
                 (Rule: IsInvalid(ontologyCodeSystem.UpdatedDate), Parameter: nameof(OntologyCodeSystem.UpdatedDate)),
@@ -61,7 +63,9 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
         public void ValidateOntologyCodeSystemId(Guid ontologyCodeSystemId) =>
             Validate((Rule: IsInvalid(ontologyCodeSystemId), Parameter: nameof(OntologyCodeSystem.Id)));
 
-        private static void ValidateStorageOntologyCodeSystem(OntologyCodeSystem maybeOntologyCodeSystem, Guid ontologyCodeSystemId)
+        private static void ValidateStorageOntologyCodeSystem(
+            OntologyCodeSystem maybeOntologyCodeSystem,
+            Guid ontologyCodeSystemId)
         {
             if (maybeOntologyCodeSystem is null)
             {
@@ -77,7 +81,9 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
             }
         }
 
-        private static void ValidateAgainstStorageOntologyCodeSystemOnModify(OntologyCodeSystem inputOntologyCodeSystem, OntologyCodeSystem storageOntologyCodeSystem)
+        private static void ValidateAgainstStorageOntologyCodeSystemOnModify(
+            OntologyCodeSystem inputOntologyCodeSystem,
+            OntologyCodeSystem storageOntologyCodeSystem)
         {
             Validate(
                 (Rule: IsNotSame(
@@ -172,7 +178,7 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidOntologyCodeSystemException = 
+            var invalidOntologyCodeSystemException =
                 new InvalidOntologyCodeSystemException(
                     message: "Invalid ontologyCodeSystem. Please correct the errors and try again.");
 

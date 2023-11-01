@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.OntologyConceptMaps;
 using LHDS.Core.Models.Foundations.OntologyConceptMaps.Exceptions;
@@ -151,7 +152,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
                 await Assert.ThrowsAsync<OntologyConceptMapDependencyValidationException>(
                     addOntologyConceptMapTask.AsTask);
 
-            actualOntologyConceptMapDependencyValidationException.Should().BeEquivalentTo(expectedOntologyConceptMapValidationException);
+            actualOntologyConceptMapDependencyValidationException.Should()
+                .BeEquivalentTo(expectedOntologyConceptMapValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -169,6 +171,59 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnAddIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            OntologyConceptMap someOntologyConceptMap = CreateRandomOntologyConceptMap();
+
+            var databaseUpdateException =
+                new DbUpdateException();
+
+            var failedOntologyConceptMapStorageException =
+                new FailedOntologyConceptMapStorageException(
+                    message: "Failed ontologyConceptMap storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+            var expectedOntologyConceptMapDependencyException =
+                new OntologyConceptMapDependencyException(
+                    message: "OntologyConceptMap dependency error occurred, contact support.",
+                    innerException: failedOntologyConceptMapStorageException); 
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<OntologyConceptMap> addOntologyConceptMapTask =
+                this.ontologyConceptMapService.AddOntologyConceptMapAsync(someOntologyConceptMap);
+
+            OntologyConceptMapDependencyException actualOntologyConceptMapDependencyException =
+                await Assert.ThrowsAsync<OntologyConceptMapDependencyException>(
+                    addOntologyConceptMapTask.AsTask);
+
+            // then
+            actualOntologyConceptMapDependencyException.Should()
+                .BeEquivalentTo(expectedOntologyConceptMapDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertOntologyConceptMapAsync(It.IsAny<OntologyConceptMap>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyConceptMapDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -58,6 +59,64 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateOntologyConceptMapAsync(randomOntologyConceptMap),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            OntologyConceptMap someOntologyConceptMap = CreateRandomOntologyConceptMap();
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidOntologyConceptMapReferenceException =
+                new InvalidOntologyConceptMapReferenceException(
+                    message: "Invalid ontologyConceptMap reference error occurred.", 
+                    innerException: foreignKeyConstraintConflictException);
+
+            OntologyConceptMapDependencyValidationException expectedOntologyConceptMapDependencyValidationException =
+                new OntologyConceptMapDependencyValidationException(
+                    message: "OntologyConceptMap dependency validation occurred, please try again.",
+                    innerException: invalidOntologyConceptMapReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<OntologyConceptMap> modifyOntologyConceptMapTask =
+                this.ontologyConceptMapService.ModifyOntologyConceptMapAsync(someOntologyConceptMap);
+
+            OntologyConceptMapDependencyValidationException actualOntologyConceptMapDependencyValidationException =
+                await Assert.ThrowsAsync<OntologyConceptMapDependencyValidationException>(
+                    modifyOntologyConceptMapTask.AsTask);
+
+            // then
+            actualOntologyConceptMapDependencyValidationException.Should()
+                .BeEquivalentTo(expectedOntologyConceptMapDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyConceptMapByIdAsync(someOntologyConceptMap.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(expectedOntologyConceptMapDependencyValidationException))),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateOntologyConceptMapAsync(someOntologyConceptMap),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

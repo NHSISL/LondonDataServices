@@ -1,6 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.OntologyCodeSystems;
 using LHDS.Core.Models.Foundations.OntologyCodeSystems.Exceptions;
@@ -58,6 +60,59 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
+                    Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationOnRemoveIfDatabaseUpdateConcurrencyErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someOntologyCodeSystemId = Guid.NewGuid();
+
+            var databaseUpdateConcurrencyException =
+                new DbUpdateConcurrencyException();
+
+            var lockedOntologyCodeSystemException =
+                new LockedOntologyCodeSystemException(
+                    message: "Locked ontologyCodeSystem record exception, please try again later",
+                    innerException: databaseUpdateConcurrencyException);
+
+            var expectedOntologyCodeSystemDependencyValidationException =
+                new OntologyCodeSystemDependencyValidationException(
+                    message: "OntologyCodeSystem dependency validation occurred, please try again.",
+                    innerException: lockedOntologyCodeSystemException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectOntologyCodeSystemByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<OntologyCodeSystem> removeOntologyCodeSystemByIdTask =
+                this.ontologyCodeSystemService.RemoveOntologyCodeSystemByIdAsync(someOntologyCodeSystemId);
+
+            OntologyCodeSystemDependencyValidationException actualOntologyCodeSystemDependencyValidationException =
+                await Assert.ThrowsAsync<OntologyCodeSystemDependencyValidationException>(
+                    removeOntologyCodeSystemByIdTask.AsTask);
+
+            // then
+            actualOntologyCodeSystemDependencyValidationException.Should()
+                .BeEquivalentTo(expectedOntologyCodeSystemDependencyValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyCodeSystemByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyCodeSystemDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.DeleteOntologyCodeSystemAsync(It.IsAny<OntologyCodeSystem>()),
                     Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

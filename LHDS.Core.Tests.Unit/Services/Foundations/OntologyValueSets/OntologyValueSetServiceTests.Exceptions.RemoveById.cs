@@ -1,6 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.OntologyValueSets;
 using LHDS.Core.Models.Foundations.OntologyValueSets.Exceptions;
@@ -58,6 +60,59 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
+                    Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationOnRemoveIfDatabaseUpdateConcurrencyErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someOntologyValueSetId = Guid.NewGuid();
+
+            var databaseUpdateConcurrencyException =
+                new DbUpdateConcurrencyException();
+
+            var lockedOntologyValueSetException =
+                new LockedOntologyValueSetException(
+                    message: "Locked ontologyValueSet record exception, please try again later",
+                    innerException: databaseUpdateConcurrencyException);
+
+            var expectedOntologyValueSetDependencyValidationException =
+                new OntologyValueSetDependencyValidationException(
+                    message: "OntologyValueSet dependency validation occurred, please try again.",
+                    innerException: lockedOntologyValueSetException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectOntologyValueSetByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<OntologyValueSet> removeOntologyValueSetByIdTask =
+                this.ontologyValueSetService.RemoveOntologyValueSetByIdAsync(someOntologyValueSetId);
+
+            OntologyValueSetDependencyValidationException actualOntologyValueSetDependencyValidationException =
+                await Assert.ThrowsAsync<OntologyValueSetDependencyValidationException>(
+                    removeOntologyValueSetByIdTask.AsTask);
+
+            // then
+            actualOntologyValueSetDependencyValidationException.Should()
+                .BeEquivalentTo(expectedOntologyValueSetDependencyValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyValueSetByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyValueSetDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.DeleteOntologyValueSetAsync(It.IsAny<OntologyValueSet>()),
                     Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

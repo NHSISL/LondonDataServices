@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using LHDS.Core.Models.Foundations.OntologyConceptMaps;
 using LHDS.Core.Models.Foundations.OntologyConceptMaps.Exceptions;
 using Xeptions;
@@ -52,6 +53,15 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
 
                 throw CreateAndLogDependencyValidationException(invalidOntologyConceptMapReferenceException);
             }
+            catch (DbUpdateException databaseUpdateException)
+            {
+                var failedOntologyConceptMapStorageException =
+                    new FailedOntologyConceptMapStorageException(
+                    message: "Failed ontologyConceptMap storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+                throw CreateAndLogDependencyException(failedOntologyConceptMapStorageException);
+            }
         }
 
         private OntologyConceptMapValidationException CreateAndLogValidationException(Xeption exception)
@@ -88,6 +98,19 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
             this.loggingBroker.LogError(ontologyConceptMapDependencyValidationException);
 
             return ontologyConceptMapDependencyValidationException;
+        }
+
+        private OntologyConceptMapDependencyException CreateAndLogDependencyException(
+            Xeption exception)
+        {
+            var ontologyConceptMapDependencyException = 
+                new OntologyConceptMapDependencyException(
+                    message: "OntologyConceptMap dependency error occurred, contact support.",
+                    innerException: exception); 
+
+            this.loggingBroker.LogError(ontologyConceptMapDependencyException);
+
+            return ontologyConceptMapDependencyException;
         }
     }
 }

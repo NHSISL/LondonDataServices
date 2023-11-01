@@ -70,7 +70,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologys
             return filler;
         }
 
-        private static List<dynamic> CreateRandomArtifactProperties()
+        private static List<dynamic> CreateRandomArtifactProperties(string artifactType)
         {
             return Enumerable.Range(1, GetRandomNumber())
                 .Select(item =>
@@ -78,7 +78,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologys
                     return new
                     {
                         FullUrl = GetRandomString(),
-                        ResourceType = GetRandomString(),
+                        ResourceType = artifactType,
                         Version = GetRandomString(),
                         Name = GetRandomString(),
                         Title = GetRandomString(),

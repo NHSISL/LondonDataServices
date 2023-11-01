@@ -61,5 +61,8 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
 
                 return await this.storageBroker.UpdateOntologyConceptMapAsync(ontologyConceptMap);
             });
+
+        public ValueTask<OntologyConceptMap> RemoveOntologyConceptMapByIdAsync(Guid ontologyConceptMapId) =>
+            throw new NotImplementedException();
     }
 }

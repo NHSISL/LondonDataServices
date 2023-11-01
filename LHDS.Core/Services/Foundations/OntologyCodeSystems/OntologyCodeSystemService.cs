@@ -1,59 +1,62 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages.Sql;
+using FluentAssertions;
+using Force.DeepCloner;
+using Moq;
 using LHDS.Core.Models.Foundations.OntologyCodeSystems;
+using Xunit;
 
-namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
+namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
 {
-    public partial class OntologyCodeSystemService : IOntologyCodeSystemService
+    public partial class OntologyCodeSystemServiceTests
     {
-        private readonly IStorageBroker storageBroker;
-        private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ILoggingBroker loggingBroker;
-
-        public OntologyCodeSystemService(
-            IStorageBroker storageBroker,
-            IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker)
+        [Fact]
+        public async Task ShouldModifyOntologyCodeSystemAsync()
         {
-            this.storageBroker = storageBroker;
-            this.dateTimeBroker = dateTimeBroker;
-            this.loggingBroker = loggingBroker;
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            OntologyCodeSystem randomOntologyCodeSystem = CreateRandomModifyOntologyCodeSystem(randomDateTimeOffset);
+            OntologyCodeSystem inputOntologyCodeSystem = randomOntologyCodeSystem;
+            OntologyCodeSystem storageOntologyCodeSystem = inputOntologyCodeSystem.DeepClone();
+            storageOntologyCodeSystem.UpdatedDate = randomOntologyCodeSystem.CreatedDate;
+            OntologyCodeSystem updatedOntologyCodeSystem = inputOntologyCodeSystem;
+            OntologyCodeSystem expectedOntologyCodeSystem = updatedOntologyCodeSystem.DeepClone();
+            Guid ontologyCodeSystemId = inputOntologyCodeSystem.Id;
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectOntologyCodeSystemByIdAsync(ontologyCodeSystemId))
+                    .ReturnsAsync(storageOntologyCodeSystem);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.UpdateOntologyCodeSystemAsync(inputOntologyCodeSystem))
+                    .ReturnsAsync(updatedOntologyCodeSystem);
+
+            // when
+            OntologyCodeSystem actualOntologyCodeSystem =
+                await this.ontologyCodeSystemService.ModifyOntologyCodeSystemAsync(inputOntologyCodeSystem);
+
+            // then
+            actualOntologyCodeSystem.Should().BeEquivalentTo(expectedOntologyCodeSystem);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyCodeSystemByIdAsync(inputOntologyCodeSystem.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateOntologyCodeSystemAsync(inputOntologyCodeSystem),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
-
-        public ValueTask<OntologyCodeSystem> AddOntologyCodeSystemAsync(OntologyCodeSystem ontologyCodeSystem) =>
-            TryCatch(async () =>
-            {
-                ValidateOntologyCodeSystemOnAdd(ontologyCodeSystem);
-
-                return await this.storageBroker.InsertOntologyCodeSystemAsync(ontologyCodeSystem);
-            });
-
-        public IQueryable<OntologyCodeSystem> RetrieveAllOntologyCodeSystems() =>
-            TryCatch(() => this.storageBroker.SelectAllOntologyCodeSystems());
-
-        public ValueTask<OntologyCodeSystem> RetrieveOntologyCodeSystemByIdAsync(Guid ontologyCodeSystemId) =>
-            TryCatch(async () =>
-            {
-                ValidateOntologyCodeSystemId(ontologyCodeSystemId);
-
-                OntologyCodeSystem maybeOntologyCodeSystem = await this.storageBroker
-                    .SelectOntologyCodeSystemByIdAsync(ontologyCodeSystemId);
-
-                ValidateStorageOntologyCodeSystem(maybeOntologyCodeSystem, ontologyCodeSystemId);
-
-                return maybeOntologyCodeSystem;
-            });
-
-        public ValueTask<OntologyCodeSystem> ModifyOntologyCodeSystemAsync(OntologyCodeSystem ontologyCodeSystem) =>
-            TryCatch(async () =>
-            {
-                ValidateOntologyCodeSystemOnModify(ontologyCodeSystem);
-
-                return await this.storageBroker.UpdateOntologyCodeSystemAsync(ontologyCodeSystem);
-            });
     }
 }

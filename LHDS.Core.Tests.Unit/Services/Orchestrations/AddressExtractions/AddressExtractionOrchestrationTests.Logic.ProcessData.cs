@@ -5,13 +5,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Extensions.Exceptions;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits;
 using Moq;
@@ -27,61 +25,61 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             try
             {
 
-            // Given
-            string assembly = Assembly.GetExecutingAssembly().Location;
-            string inputFilePath = Path.Combine(Path.GetDirectoryName(assembly), @"Resources/TestNestedZip.zip");
-            byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
+                // Given
+                string assembly = Assembly.GetExecutingAssembly().Location;
+                string inputFilePath = Path.Combine(Path.GetDirectoryName(assembly), @"Resources/TestNestedZip.zip");
+                byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
 
-            List<string> unZippedInputFilePaths =
-                new List<string> {
+                List<string> unZippedInputFilePaths =
+                    new List<string> {
                     Path.Combine(Path.GetDirectoryName(assembly), @"Resources/TestCsv1.csv"),
                     Path.Combine(Path.GetDirectoryName(assembly), @"Resources/TestCsv2.csv")
-                };
+                    };
 
-            List<Address> outputAddresses = new List<Address>();
+                List<Address> outputAddresses = new List<Address>();
 
-            foreach (string filePath in unZippedInputFilePaths)
-            {
-                List<Address> randomAddresses = CreateRandomAddresses().ToList();
-                outputAddresses.AddRange(randomAddresses);
-                byte[] csvData = await File.ReadAllBytesAsync(filePath);
+                foreach (string filePath in unZippedInputFilePaths)
+                {
+                    List<Address> randomAddresses = CreateRandomAddresses().ToList();
+                    outputAddresses.AddRange(randomAddresses);
+                    byte[] csvData = await File.ReadAllBytesAsync(filePath);
 
-                this.addressParserServiceMock.Setup(service =>
-                    service.ProcessCsvAsync(csvData))
-                        .ReturnsAsync(randomAddresses);
-            }
+                    this.addressParserServiceMock.Setup(service =>
+                        service.ProcessCsvAsync(csvData))
+                            .ReturnsAsync(randomAddresses);
+                }
 
-            List<Address> expectedAddresses = outputAddresses.DeepClone();
+                List<Address> expectedAddresses = outputAddresses.DeepClone();
 
-            // When
-            List<Address> actualAddresses =
-                await this.addressExtractionOrchestrationService.ProcessDataAsync(inputData);
+                // When
+                List<Address> actualAddresses =
+                    await this.addressExtractionOrchestrationService.ProcessDataAsync(inputData);
 
-            // Then
-            actualAddresses.Should().BeEquivalentTo(expectedAddresses, options =>
-               options.Excluding(address => address.Id));
+                // Then
+                actualAddresses.Should().BeEquivalentTo(expectedAddresses, options =>
+                   options.Excluding(address => address.Id));
 
-            this.addressParserServiceMock.Verify(service =>
-                service.ProcessCsvAsync(It.IsAny<byte[]>()),
-                    Times.Exactly(unZippedInputFilePaths.Count()));
+                this.addressParserServiceMock.Verify(service =>
+                    service.ProcessCsvAsync(It.IsAny<byte[]>()),
+                        Times.Exactly(unZippedInputFilePaths.Count()));
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Exactly(unZippedInputFilePaths.Count() * 2));
+                this.dateTimeBrokerMock.Verify(broker =>
+                    broker.GetCurrentDateTimeOffset(),
+                        Times.Exactly(unZippedInputFilePaths.Count() * 2));
 
-            this.addressExtractionAuditServiceMock.Verify(service =>
-                service.AddAddressExtractionAuditAsync(It.IsAny<AddressExtractionAudit>()),
-                    Times.Exactly(unZippedInputFilePaths.Count));
+                this.addressExtractionAuditServiceMock.Verify(service =>
+                    service.AddAddressExtractionAuditAsync(It.IsAny<AddressExtractionAudit>()),
+                        Times.Exactly(unZippedInputFilePaths.Count));
 
-            this.addressParserServiceMock.VerifyNoOtherCalls();
-            this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
+                this.addressParserServiceMock.VerifyNoOtherCalls();
+                this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
+                this.dateTimeBrokerMock.VerifyNoOtherCalls();
+                this.loggingBrokerMock.VerifyNoOtherCalls();
             }
             catch (Exception ex)
             {
-                output.WriteLine($"Error: {ex.Message}, Inner ex: {ex.InnerException.Message}");
-                throw;
+                output.WriteLine($"Error: {ex.Message}, Inner ex: {ex.InnerException.Message}, Inner inner ex: {ex.InnerException.InnerException.Message}");
+                Assert.Fail();
             }
         }
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -57,10 +58,19 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
             {
                 var failedOntologyCodeSystemStorageException =
                     new FailedOntologyCodeSystemStorageException(
-                    message: "Failed ontologyCodeSystem storage error occurred, contact support.",
-                    innerException: databaseUpdateException);
+                        message: "Failed ontologyCodeSystem storage error occurred, contact support.",
+                        innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedOntologyCodeSystemStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedOntologyCodeSystemServiceException =
+                    new FailedOntologyCodeSystemServiceException(
+                        message: "Failed ontologyCodeSystem service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedOntologyCodeSystemServiceException);
             }
         }
 
@@ -111,6 +121,19 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
             this.loggingBroker.LogError(ontologyCodeSystemDependencyException);
 
             return ontologyCodeSystemDependencyException;
+        }
+
+        private OntologyCodeSystemServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var ontologyCodeSystemServiceException = 
+                new OntologyCodeSystemServiceException(
+                    message: "OntologyCodeSystem service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(ontologyCodeSystemServiceException);
+
+            return ontologyCodeSystemServiceException;
         }
     }
 }

@@ -91,6 +91,15 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
 
                 throw CreateAndLogCriticalDependencyException(failedOntologyValueSetStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedOntologyValueSetServiceException =
+                    new FailedOntologyValueSetServiceException(
+                        message: "Failed ontologyValueSet service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedOntologyValueSetServiceException);
+            }
         }
 
         private OntologyValueSetValidationException CreateAndLogValidationException(Xeption exception)

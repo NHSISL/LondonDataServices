@@ -38,6 +38,16 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
         private void ValidateOntologyConceptMapOnModify(OntologyConceptMap ontologyConceptMap)
         {
             ValidateOntologyConceptMapIsNotNull(ontologyConceptMap);
+
+            Validate(
+                (Rule: IsInvalid(ontologyConceptMap.Id), Parameter: nameof(OntologyConceptMap.Id)),
+
+                // TODO: Add any other required validation rules
+
+                (Rule: IsInvalid(ontologyConceptMap.CreatedDate), Parameter: nameof(OntologyConceptMap.CreatedDate)),
+                (Rule: IsInvalid(ontologyConceptMap.CreatedBy), Parameter: nameof(OntologyConceptMap.CreatedBy)),
+                (Rule: IsInvalid(ontologyConceptMap.UpdatedDate), Parameter: nameof(OntologyConceptMap.UpdatedDate)),
+                (Rule: IsInvalid(ontologyConceptMap.UpdatedBy), Parameter: nameof(OntologyConceptMap.UpdatedBy)));
         }
 
         public void ValidateOntologyConceptMapId(Guid ontologyConceptMapId) =>
@@ -94,7 +104,7 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
-        
+
         private static dynamic IsNotSame(
            string first,
            string second,

@@ -36,12 +36,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologys
                     innerException: invalidArgumentOntologyException);
 
             // when
-            ValueTask<OntologyAssets> retrieveOntologyByIdTask =
+            ValueTask<OntologyAssets> retrieveOntologyByRelaviveUrlTask =
                 this.ontologyService.RetrieveAllValueSetsAsync(invalidFileName);
 
             OntologyValidationException actualOntologyValidationException =
                 await Assert.ThrowsAsync<OntologyValidationException>(
-                    retrieveOntologyByIdTask.AsTask);
+                    retrieveOntologyByRelaviveUrlTask.AsTask);
 
             // then
             actualOntologyValidationException.Should()

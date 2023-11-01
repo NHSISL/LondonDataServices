@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologys
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnRetrieveAllCodingSystemsIfUrlIsInvalidAndLogItAsync(
+        public async Task ShouldThrowValidationExceptionOnRetrieveAllConceptMapsIfUrlIsInvalidAndLogItAsync(
             string invalidText)
         {
             string invalidFileName = invalidText;
@@ -37,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologys
 
             // when
             ValueTask<OntologyAssets> retrieveOntologyByRelaviveUrlTask =
-                this.ontologyService.RetrieveAllCodingSystemsAsync(invalidFileName);
+                this.ontologyService.RetrieveAllConceptMapsAsync(invalidFileName);
 
             OntologyValidationException actualOntologyValidationException =
                 await Assert.ThrowsAsync<OntologyValidationException>(

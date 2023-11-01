@@ -70,6 +70,8 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
                 OntologyConceptMap maybeOntologyConceptMap = await this.storageBroker
                     .SelectOntologyConceptMapByIdAsync(ontologyConceptMapId);
 
+                ValidateStorageOntologyConceptMap(maybeOntologyConceptMap, ontologyConceptMapId);
+
                 return await this.storageBroker.DeleteOntologyConceptMapAsync(maybeOntologyConceptMap);
             });
     }

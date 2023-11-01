@@ -1,62 +1,65 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
-using FluentAssertions;
-using Force.DeepCloner;
-using Moq;
+using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.OntologyConceptMaps;
-using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
+namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
 {
-    public partial class OntologyConceptMapServiceTests
+    public partial class OntologyConceptMapService : IOntologyConceptMapService
     {
-        [Fact]
-        public async Task ShouldModifyOntologyConceptMapAsync()
+        private readonly IStorageBroker storageBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ILoggingBroker loggingBroker;
+
+        public OntologyConceptMapService(
+            IStorageBroker storageBroker,
+            IDateTimeBroker dateTimeBroker,
+            ILoggingBroker loggingBroker)
         {
-            // given
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            OntologyConceptMap randomOntologyConceptMap = CreateRandomModifyOntologyConceptMap(randomDateTimeOffset);
-            OntologyConceptMap inputOntologyConceptMap = randomOntologyConceptMap;
-            OntologyConceptMap storageOntologyConceptMap = inputOntologyConceptMap.DeepClone();
-            storageOntologyConceptMap.UpdatedDate = randomOntologyConceptMap.CreatedDate;
-            OntologyConceptMap updatedOntologyConceptMap = inputOntologyConceptMap;
-            OntologyConceptMap expectedOntologyConceptMap = updatedOntologyConceptMap.DeepClone();
-            Guid ontologyConceptMapId = inputOntologyConceptMap.Id;
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
-
-            this.storageBrokerMock.Setup(broker =>
-                broker.SelectOntologyConceptMapByIdAsync(ontologyConceptMapId))
-                    .ReturnsAsync(storageOntologyConceptMap);
-
-            this.storageBrokerMock.Setup(broker =>
-                broker.UpdateOntologyConceptMapAsync(inputOntologyConceptMap))
-                    .ReturnsAsync(updatedOntologyConceptMap);
-
-            // when
-            OntologyConceptMap actualOntologyConceptMap =
-                await this.ontologyConceptMapService.ModifyOntologyConceptMapAsync(inputOntologyConceptMap);
-
-            // then
-            actualOntologyConceptMap.Should().BeEquivalentTo(expectedOntologyConceptMap);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectOntologyConceptMapByIdAsync(inputOntologyConceptMap.Id),
-                    Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.UpdateOntologyConceptMapAsync(inputOntologyConceptMap),
-                    Times.Once);
-
-            this.storageBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBroker = storageBroker;
+            this.dateTimeBroker = dateTimeBroker;
+            this.loggingBroker = loggingBroker;
         }
+
+        public ValueTask<OntologyConceptMap> AddOntologyConceptMapAsync(OntologyConceptMap ontologyConceptMap) =>
+            TryCatch(async () =>
+            {
+                ValidateOntologyConceptMapOnAdd(ontologyConceptMap);
+
+                return await this.storageBroker.InsertOntologyConceptMapAsync(ontologyConceptMap);
+            });
+
+        public IQueryable<OntologyConceptMap> RetrieveAllOntologyConceptMaps() =>
+            TryCatch(() => this.storageBroker.SelectAllOntologyConceptMaps());
+
+        public ValueTask<OntologyConceptMap> RetrieveOntologyConceptMapByIdAsync(Guid ontologyConceptMapId) =>
+            TryCatch(async () =>
+            {
+                ValidateOntologyConceptMapId(ontologyConceptMapId);
+
+                OntologyConceptMap maybeOntologyConceptMap = await this.storageBroker
+                    .SelectOntologyConceptMapByIdAsync(ontologyConceptMapId);
+
+                ValidateStorageOntologyConceptMap(maybeOntologyConceptMap, ontologyConceptMapId);
+
+                return maybeOntologyConceptMap;
+            });
+
+        public ValueTask<OntologyConceptMap> ModifyOntologyConceptMapAsync(OntologyConceptMap ontologyConceptMap) =>
+            TryCatch(async () =>
+            {
+                ValidateOntologyConceptMapOnModify(ontologyConceptMap);
+
+                OntologyConceptMap maybeOntologyConceptMap =
+                    await this.storageBroker.SelectOntologyConceptMapByIdAsync(ontologyConceptMap.Id);
+
+                ValidateStorageOntologyConceptMap(maybeOntologyConceptMap, ontologyConceptMap.Id);
+                ValidateAgainstStorageOntologyConceptMapOnModify(inputOntologyConceptMap: ontologyConceptMap, storageOntologyConceptMap: maybeOntologyConceptMap);
+
+                return await this.storageBroker.UpdateOntologyConceptMapAsync(ontologyConceptMap);
+            });
     }
 }

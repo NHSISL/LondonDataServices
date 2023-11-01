@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.OntologyCodeSystems;
 using LHDS.Core.Models.Foundations.OntologyCodeSystems.Exceptions;
@@ -117,6 +118,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateOntologyCodeSystemAsync(someOntologyCodeSystem),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnModifyIfDatabaseUpdateExceptionOccursAndLogItAsync()
+        {
+            // given
+            OntologyCodeSystem randomOntologyCodeSystem = CreateRandomOntologyCodeSystem();
+            var databaseUpdateException = new DbUpdateException();
+
+            var failedOntologyCodeSystemStorageException =
+                new FailedOntologyCodeSystemStorageException(
+                    message: "Failed ontologyCodeSystem storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+            var expectedOntologyCodeSystemDependencyException =
+                new OntologyCodeSystemDependencyException(
+                    message: "OntologyCodeSystem dependency error occurred, contact support.",
+                    innerException: failedOntologyCodeSystemStorageException); 
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<OntologyCodeSystem> modifyOntologyCodeSystemTask =
+                this.ontologyCodeSystemService.ModifyOntologyCodeSystemAsync(randomOntologyCodeSystem);
+
+            OntologyCodeSystemDependencyException actualOntologyCodeSystemDependencyException =
+                await Assert.ThrowsAsync<OntologyCodeSystemDependencyException>(
+                    modifyOntologyCodeSystemTask.AsTask);
+
+            // then
+            actualOntologyCodeSystemDependencyException.Should()
+                .BeEquivalentTo(expectedOntologyCodeSystemDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyCodeSystemByIdAsync(randomOntologyCodeSystem.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyCodeSystemDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateOntologyCodeSystemAsync(randomOntologyCodeSystem),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

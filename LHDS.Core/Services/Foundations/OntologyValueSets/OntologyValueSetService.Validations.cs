@@ -77,6 +77,16 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
             }
         }
 
+        private static void ValidateAgainstStorageOntologyValueSetOnModify(OntologyValueSet inputOntologyValueSet, OntologyValueSet storageOntologyValueSet)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputOntologyValueSet.CreatedDate,
+                    secondDate: storageOntologyValueSet.CreatedDate,
+                    secondDateName: nameof(OntologyValueSet.CreatedDate)),
+                Parameter: nameof(OntologyValueSet.CreatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

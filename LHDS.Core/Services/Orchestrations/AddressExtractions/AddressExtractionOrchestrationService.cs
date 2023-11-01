@@ -44,57 +44,64 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 
         private async ValueTask<List<Address>> ProcessAddressDataAsync(byte[] data)
         {
-            List<Address> addresses = new List<Address>();
-            using (MemoryStream memoryStream = new MemoryStream(data))
-            using (ZipArchive archive = new ZipArchive(memoryStream))
+            try
             {
-                foreach (ZipArchiveEntry entry in archive.Entries)
+                List<Address> addresses = new List<Address>();
+                using (MemoryStream memoryStream = new MemoryStream(data))
+                using (ZipArchive archive = new ZipArchive(memoryStream))
                 {
-                    if (entry.Name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+                    foreach (ZipArchiveEntry entry in archive.Entries)
                     {
-                        using (var entryStream = entry.Open())
-                        using (var tempMemoryStream = new MemoryStream())
+                        if (entry.Name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
                         {
-                            await entryStream.CopyToAsync(tempMemoryStream);
-                            byte[] csvData = tempMemoryStream.ToArray();
-
-                            List<Address> csvAddresses = await this.addressParserService.ProcessCsvAsync(csvData);
-
-                            addresses.AddRange(csvAddresses);
-
-                            var audit = new AddressExtractionAudit
+                            using (var entryStream = entry.Open())
+                            using (var tempMemoryStream = new MemoryStream())
                             {
-                                Id = Guid.NewGuid(),
-                                CorrelationId = Guid.NewGuid(),
-                                FileName = $"{entry}",
-                                Message = "Success",
-                                MessageId = "",
-                                CreatedBy = "System",
-                                UpdatedBy = "System",
-                                UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                                CreatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                            };
+                                await entryStream.CopyToAsync(tempMemoryStream);
+                                byte[] csvData = tempMemoryStream.ToArray();
 
-                            await this.addressExtractionAuditService.AddAddressExtractionAuditAsync(audit);
+                                List<Address> csvAddresses = await this.addressParserService.ProcessCsvAsync(csvData);
+
+                                addresses.AddRange(csvAddresses);
+
+                                var audit = new AddressExtractionAudit
+                                {
+                                    Id = Guid.NewGuid(),
+                                    CorrelationId = Guid.NewGuid(),
+                                    FileName = $"{entry}",
+                                    Message = "Success",
+                                    MessageId = "",
+                                    CreatedBy = "System",
+                                    UpdatedBy = "System",
+                                    UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                                    CreatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                                };
+
+                                await this.addressExtractionAuditService.AddAddressExtractionAuditAsync(audit);
+                            }
                         }
-                    }
-                    else if (entry.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
-                    {
-                        byte[] nestedZipData;
-                        using (MemoryStream nestedMemoryStream = new MemoryStream())
-                        using (Stream entryStream = entry.Open())
+                        else if (entry.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
                         {
-                            entryStream.CopyTo(nestedMemoryStream);
-                            nestedZipData = nestedMemoryStream.ToArray();
-                        }
+                            byte[] nestedZipData;
+                            using (MemoryStream nestedMemoryStream = new MemoryStream())
+                            using (Stream entryStream = entry.Open())
+                            {
+                                entryStream.CopyTo(nestedMemoryStream);
+                                nestedZipData = nestedMemoryStream.ToArray();
+                            }
 
-                        List<Address> nestedAddresses = await ProcessAddressDataAsync(nestedZipData);
-                        addresses.AddRange(nestedAddresses);
+                            List<Address> nestedAddresses = await ProcessAddressDataAsync(nestedZipData);
+                            addresses.AddRange(nestedAddresses);
+                        }
                     }
                 }
-            }
 
-            return addresses;
+                return addresses;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 }

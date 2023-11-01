@@ -80,15 +80,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             }
             catch (Exception ex)
             {
-                var expectedAddressesStr = expectedAddresses != null
-                    ? string.Join(", ", expectedAddresses.Select(a => a.ToString()))
-                    : "Not set";
-
                 var actualAddressesStr = actualAddresses != null
                     ? string.Join(", ", actualAddresses.Select(a => a.ToString()))
                     : "Not set";
 
-                output.WriteLine($"Error: {ex.Message}, Inner ex: {ex.InnerException.Message}, Inner inner ex: {ex.InnerException.InnerException.Message}, expectedAddresses: {expectedAddressesStr}, actualAddress{actualAddressesStr}");
+                output.WriteLine($"Error: {ex.Message}, Inner ex: {ex.InnerException.Message}, Inner inner ex: {ex.InnerException.InnerException.Message}, actualAddress: {actualAddressesStr}");
                 Assert.Fail();
             }
         }

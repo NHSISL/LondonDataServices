@@ -22,6 +22,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         [Fact]
         public async Task ShouldProcessAddressesDataAndLogAsync()
         {
+            List<Address> expectedAddresses = null;  // Declare outside the try block
+            List<Address> actualAddresses = null;
             try
             {
 
@@ -49,10 +51,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                             .ReturnsAsync(randomAddresses);
                 }
 
-                List<Address> expectedAddresses = outputAddresses.DeepClone();
+                expectedAddresses = outputAddresses.DeepClone();
 
                 // When
-                List<Address> actualAddresses =
+                actualAddresses =
                     await this.addressExtractionOrchestrationService.ProcessDataAsync(inputData);
 
                 // Then
@@ -78,7 +80,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             }
             catch (Exception ex)
             {
-                output.WriteLine($"Error: {ex.Message}, Inner ex: {ex.InnerException.Message}, Inner inner ex: {ex.InnerException.InnerException.Message}");
+                var expectedAddressesStr = expectedAddresses != null
+                    ? string.Join(", ", expectedAddresses.Select(a => a.ToString()))
+                    : "Not set";
+
+                var actualAddressesStr = actualAddresses != null
+                    ? string.Join(", ", actualAddresses.Select(a => a.ToString()))
+                    : "Not set";
+
+                output.WriteLine($"Error: {ex.Message}, Inner ex: {ex.InnerException.Message}, Inner inner ex: {ex.InnerException.InnerException.Message}, expectedAddresses: {expectedAddresses}, actualAddress{actualAddresses}");
                 Assert.Fail();
             }
         }

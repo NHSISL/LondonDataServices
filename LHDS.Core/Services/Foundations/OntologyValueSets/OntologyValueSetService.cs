@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
             });
 
         public IQueryable<OntologyValueSet> RetrieveAllOntologyValueSets() =>
-            throw new System.NotImplementedException();
+            this.storageBroker.SelectAllOntologyValueSets();
     }
 }

@@ -77,6 +77,16 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
             }
         }
 
+        private static void ValidateAgainstStorageOntologyConceptMapOnModify(OntologyConceptMap inputOntologyConceptMap, OntologyConceptMap storageOntologyConceptMap)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputOntologyConceptMap.CreatedDate,
+                    secondDate: storageOntologyConceptMap.CreatedDate,
+                    secondDateName: nameof(OntologyConceptMap.CreatedDate)),
+                Parameter: nameof(OntologyConceptMap.CreatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

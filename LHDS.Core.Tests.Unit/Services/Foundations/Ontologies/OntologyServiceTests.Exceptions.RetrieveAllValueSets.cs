@@ -36,12 +36,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologys
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<OntologyAssets> retrieveOntologyByIdTask =
+            ValueTask<OntologyAssets> retrieveOntologyByRelativeUrlTask =
                 this.ontologyService.RetrieveAllValueSetsAsync(someRelativeUrl);
 
             OntologyServiceException actualOntologyServiceException =
                 await Assert.ThrowsAsync<OntologyServiceException>(
-                    retrieveOntologyByIdTask.AsTask);
+                    retrieveOntologyByRelativeUrlTask.AsTask);
 
             // then
             actualOntologyServiceException.Should()

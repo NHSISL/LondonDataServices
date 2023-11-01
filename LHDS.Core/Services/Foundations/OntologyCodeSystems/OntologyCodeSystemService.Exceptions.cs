@@ -91,6 +91,15 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
 
                 throw CreateAndLogCriticalDependencyException(failedOntologyCodeSystemStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedOntologyCodeSystemServiceException =
+                    new FailedOntologyCodeSystemServiceException(
+                        message: "Failed ontologyCodeSystem service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedOntologyCodeSystemServiceException);
+            }
         }
 
         private OntologyCodeSystemValidationException CreateAndLogValidationException(Xeption exception)

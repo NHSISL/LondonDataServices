@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
             var expectedOntologyValueSetDependencyException =
                 new OntologyValueSetDependencyException(
                     message: "OntologyValueSet dependency error occurred, contact support.",
-                    innerException: failedOntologyValueSetStorageException);             
+                    innerException: failedOntologyValueSetStorageException); 
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -115,6 +115,60 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            OntologyValueSet someOntologyValueSet = CreateRandomOntologyValueSet();
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidOntologyValueSetReferenceException =
+                new InvalidOntologyValueSetReferenceException(
+                    message: "Invalid ontologyValueSet reference error occurred.", 
+                    innerException: foreignKeyConstraintConflictException);
+
+            var expectedOntologyValueSetValidationException =
+                new OntologyValueSetDependencyValidationException(
+                    message: "OntologyValueSet dependency validation occurred, please try again.",
+                    innerException: invalidOntologyValueSetReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<OntologyValueSet> addOntologyValueSetTask =
+                this.ontologyValueSetService.AddOntologyValueSetAsync(someOntologyValueSet);
+
+            // then
+            OntologyValueSetDependencyValidationException actualOntologyValueSetDependencyValidationException =
+                await Assert.ThrowsAsync<OntologyValueSetDependencyValidationException>(
+                    addOntologyValueSetTask.AsTask);
+
+            actualOntologyValueSetDependencyValidationException.Should().BeEquivalentTo(expectedOntologyValueSetValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyValueSetValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertOntologyValueSetAsync(someOntologyValueSet),
+                    Times.Never());
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

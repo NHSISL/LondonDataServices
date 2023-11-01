@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -25,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
             var expectedOntologyValueSetDependencyException =
                 new OntologyValueSetDependencyException(
                     message: "OntologyValueSet dependency error occurred, contact support.",
-                    innerException: failedOntologyValueSetStorageException);
+                    innerException: failedOntologyValueSetStorageException);             
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -54,6 +55,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
                     expectedOntologyValueSetDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfOntologyValueSetAlreadyExsitsAndLogItAsync()
+        {
+            // given
+            OntologyValueSet randomOntologyValueSet = CreateRandomOntologyValueSet();
+            OntologyValueSet alreadyExistsOntologyValueSet = randomOntologyValueSet;
+            string randomMessage = GetRandomString();
+
+            var duplicateKeyException =
+                new DuplicateKeyException(randomMessage);
+
+            var alreadyExistsOntologyValueSetException =
+                new AlreadyExistsOntologyValueSetException(
+                    message: "OntologyValueSet with the same Id already exists.",
+                    innerException: duplicateKeyException);
+
+            var expectedOntologyValueSetDependencyValidationException =
+                new OntologyValueSetDependencyValidationException(
+                    message: "OntologyValueSet dependency validation occurred, please try again.",
+                    innerException: alreadyExistsOntologyValueSetException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(duplicateKeyException);
+
+            // when
+            ValueTask<OntologyValueSet> addOntologyValueSetTask =
+                this.ontologyValueSetService.AddOntologyValueSetAsync(alreadyExistsOntologyValueSet);
+
+            // then
+            OntologyValueSetDependencyValidationException actualOntologyValueSetDependencyValidationException =
+                await Assert.ThrowsAsync<OntologyValueSetDependencyValidationException>(
+                    addOntologyValueSetTask.AsTask);
+
+            actualOntologyValueSetDependencyValidationException.Should()
+                .BeEquivalentTo(expectedOntologyValueSetDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertOntologyValueSetAsync(It.IsAny<OntologyValueSet>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyValueSetDependencyValidationException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

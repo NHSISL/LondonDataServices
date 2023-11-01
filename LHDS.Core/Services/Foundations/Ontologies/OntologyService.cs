@@ -30,7 +30,6 @@ namespace LHDS.Core.Services.Foundations.Ontologies
             TryCatch(async () =>
             {
                 ValidateArgs(relativeUrl);
-
                 Bundle codingSystems = await this.ontologyBroker.GetAllCodingSystemsAsync(relativeUrl);
                 string? nextPageUrl = codingSystems.NextLink?.ToString();
 
@@ -63,35 +62,37 @@ namespace LHDS.Core.Services.Foundations.Ontologies
         public ValueTask<OntologyAssets> RetrieveAllConceptMapsAsync(string relativeUrl) =>
             throw new NotImplementedException();
 
-        public async ValueTask<OntologyAssets> RetrieveAllValueSetsAsync(string relativeUrl)
-        {
-            Bundle valueSets = await this.ontologyBroker.GetAllValueSetsAsync(relativeUrl);
-            string? nextPageUrl = valueSets.NextLink?.ToString();
-
-            var ontologyAssets = new OntologyAssets
+        public ValueTask<OntologyAssets> RetrieveAllValueSetsAsync(string relativeUrl) =>
+            TryCatch(async () =>
             {
-                Assets = new List<OntologyAsset>(),
-                NextPage = nextPageUrl
-            };
+                ValidateArgs(relativeUrl);
+                Bundle valueSets = await this.ontologyBroker.GetAllValueSetsAsync(relativeUrl);
+                string? nextPageUrl = valueSets.NextLink?.ToString();
 
-            foreach (EntryComponent item in valueSets.Entry)
-            {
-                ValueSet resource = (ValueSet)item.Resource;
+                var ontologyAssets = new OntologyAssets
+                {
+                    Assets = new List<OntologyAsset>(),
+                    NextPage = nextPageUrl
+                };
 
-                ontologyAssets.Assets.Add(
-                    new OntologyAsset
-                    {
-                        FullUrl = item.FullUrl,
-                        ResourceType = "ValueSet",
-                        Version = resource.Version,
-                        Name = resource.Name,
-                        Title = resource.Title,
-                        Status = resource.Status.ToString()?.ToLower(),
-                        LastUpdated = resource.Meta.LastUpdated,
-                    });
-            }
+                foreach (EntryComponent item in valueSets.Entry)
+                {
+                    ValueSet resource = (ValueSet)item.Resource;
 
-            return ontologyAssets;
-        }
+                    ontologyAssets.Assets.Add(
+                        new OntologyAsset
+                        {
+                            FullUrl = item.FullUrl,
+                            ResourceType = "ValueSet",
+                            Version = resource.Version,
+                            Name = resource.Name,
+                            Title = resource.Title,
+                            Status = resource.Status.ToString()?.ToLower(),
+                            LastUpdated = resource.Meta.LastUpdated,
+                        });
+                }
+
+                return ontologyAssets;
+            });
     }
 }

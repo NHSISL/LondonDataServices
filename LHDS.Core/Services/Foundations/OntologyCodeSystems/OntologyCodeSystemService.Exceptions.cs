@@ -60,6 +60,15 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
 
                 throw CreateAndLogDependencyValidationException(invalidOntologyCodeSystemReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedOntologyCodeSystemException = 
+                    new LockedOntologyCodeSystemException(
+                        message: "Locked ontologyCodeSystem record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedOntologyCodeSystemException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedOntologyCodeSystemStorageException =
@@ -123,7 +132,7 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
             var ontologyCodeSystemDependencyException = 
                 new OntologyCodeSystemDependencyException(
                     message: "OntologyCodeSystem dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(ontologyCodeSystemDependencyException);
 
@@ -148,7 +157,7 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
             var ontologyCodeSystemDependencyException = 
                 new OntologyCodeSystemDependencyException(
                     message: "OntologyCodeSystem dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(ontologyCodeSystemDependencyException);
 

@@ -43,6 +43,15 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsOntologyCodeSystemException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidOntologyCodeSystemReferenceException =
+                    new InvalidOntologyCodeSystemReferenceException(
+                        message: "Invalid ontologyCodeSystem reference error occurred.", 
+                        innerException: foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidOntologyCodeSystemReferenceException);
+            }
         }
 
         private OntologyCodeSystemValidationException CreateAndLogValidationException(Xeption exception)
@@ -62,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
             var ontologyCodeSystemDependencyException = 
                 new OntologyCodeSystemDependencyException(
                     message: "OntologyCodeSystem dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(ontologyCodeSystemDependencyException);
 

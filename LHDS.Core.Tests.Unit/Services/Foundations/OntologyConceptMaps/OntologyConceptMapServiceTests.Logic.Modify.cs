@@ -28,6 +28,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
+                broker.SelectOntologyConceptMapByIdAsync(ontologyConceptMapId))
+                    .ReturnsAsync(storageOntologyConceptMap);
+
+            this.storageBrokerMock.Setup(broker =>
                 broker.UpdateOntologyConceptMapAsync(inputOntologyConceptMap))
                     .ReturnsAsync(updatedOntologyConceptMap);
 
@@ -43,12 +47,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyConceptMapByIdAsync(inputOntologyConceptMap.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
                 broker.UpdateOntologyConceptMapAsync(inputOntologyConceptMap),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

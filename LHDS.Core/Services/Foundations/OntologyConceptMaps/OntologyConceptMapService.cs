@@ -62,12 +62,15 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
                 return await this.storageBroker.UpdateOntologyConceptMapAsync(ontologyConceptMap);
             });
 
-        public async ValueTask<OntologyConceptMap> RemoveOntologyConceptMapByIdAsync(Guid ontologyConceptMapId)
-        {
-            OntologyConceptMap maybeOntologyConceptMap = await this.storageBroker
+        public ValueTask<OntologyConceptMap> RemoveOntologyConceptMapByIdAsync(Guid ontologyConceptMapId) =>
+            TryCatch(async () =>
+            {
+                ValidateOntologyConceptMapId(ontologyConceptMapId);
+
+                OntologyConceptMap maybeOntologyConceptMap = await this.storageBroker
                     .SelectOntologyConceptMapByIdAsync(ontologyConceptMapId);
 
-            return await this.storageBroker.DeleteOntologyConceptMapAsync(maybeOntologyConceptMap);
-        }
+                return await this.storageBroker.DeleteOntologyConceptMapAsync(maybeOntologyConceptMap);
+            });
     }
 }

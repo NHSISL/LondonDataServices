@@ -57,5 +57,52 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedOntologyConceptMapServiceException =
+                new FailedOntologyConceptMapServiceException(
+                    message: "Failed ontologyConceptMap service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedOntologyConceptMapServiceException =
+                new OntologyConceptMapServiceException(
+                    message: "OntologyConceptMap service error occurred, contact support.",
+                    innerException: failedOntologyConceptMapServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectOntologyConceptMapByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<OntologyConceptMap> retrieveOntologyConceptMapByIdTask =
+                this.ontologyConceptMapService.RetrieveOntologyConceptMapByIdAsync(someId);
+
+            OntologyConceptMapServiceException actualOntologyConceptMapServiceException =
+                await Assert.ThrowsAsync<OntologyConceptMapServiceException>(
+                    retrieveOntologyConceptMapByIdTask.AsTask);
+
+            // then
+            actualOntologyConceptMapServiceException.Should()
+                .BeEquivalentTo(expectedOntologyConceptMapServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyConceptMapByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedOntologyConceptMapServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

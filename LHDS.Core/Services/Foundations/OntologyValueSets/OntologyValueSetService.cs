@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -33,5 +34,8 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
 
         public IQueryable<OntologyValueSet> RetrieveAllOntologyValueSets() =>
             TryCatch(() => this.storageBroker.SelectAllOntologyValueSets());
+
+        public ValueTask<OntologyValueSet> RetrieveOntologyValueSetByIdAsync(Guid ontologyValueSetId) =>
+            throw new NotImplementedException();
     }
 }

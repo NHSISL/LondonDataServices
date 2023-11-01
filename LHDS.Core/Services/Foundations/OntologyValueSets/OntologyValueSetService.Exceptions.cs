@@ -19,6 +19,10 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
             {
                 throw CreateAndLogValidationException(nullOntologyValueSetException);
             }
+            catch (InvalidOntologyValueSetException invalidOntologyValueSetException)
+            {
+                throw CreateAndLogValidationException(invalidOntologyValueSetException);
+            }
         }
 
         private OntologyValueSetValidationException CreateAndLogValidationException(Xeption exception)

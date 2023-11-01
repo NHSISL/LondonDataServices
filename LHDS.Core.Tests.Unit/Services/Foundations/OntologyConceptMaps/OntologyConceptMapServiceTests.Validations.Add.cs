@@ -1,9 +1,13 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.OntologyConceptMaps;
 using LHDS.Core.Models.Foundations.OntologyConceptMaps.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
@@ -55,7 +59,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
             // given
             var invalidOntologyConceptMap = new OntologyConceptMap
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                FullUrl = invalidText,
+                ResourceType = invalidText,
             };
 
             var invalidOntologyConceptMapException =
@@ -66,11 +71,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
                 key: nameof(OntologyConceptMap.Id),
                 values: "Id is required");
 
-            //invalidOntologyConceptMapException.AddData(
-            //    key: nameof(OntologyConceptMap.Name),
-            //    values: "Text is required");
+            invalidOntologyConceptMapException.AddData(
+                key: nameof(OntologyConceptMap.FullUrl),
+                values: "Text is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the OntologyConceptMap model
+            invalidOntologyConceptMapException.AddData(
+                key: nameof(OntologyConceptMap.ResourceType),
+                values: "Text is required");
 
             invalidOntologyConceptMapException.AddData(
                 key: nameof(OntologyConceptMap.CreatedDate),
@@ -135,7 +142,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
             invalidOntologyConceptMap.UpdatedDate =
                 invalidOntologyConceptMap.CreatedDate.AddDays(randomNumber);
 
-            var invalidOntologyConceptMapException = 
+            var invalidOntologyConceptMapException =
                 new InvalidOntologyConceptMapException(
                     message: "Invalid ontologyConceptMap. Please correct the errors and try again.");
 

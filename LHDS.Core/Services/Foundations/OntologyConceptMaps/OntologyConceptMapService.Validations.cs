@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using LHDS.Core.Models.Foundations.OntologyConceptMaps;
 using LHDS.Core.Models.Foundations.OntologyConceptMaps.Exceptions;
@@ -12,9 +16,8 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
 
             Validate(
                 (Rule: IsInvalid(ontologyConceptMap.Id), Parameter: nameof(OntologyConceptMap.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(ontologyConceptMap.FullUrl), Parameter: nameof(OntologyConceptMap.FullUrl)),
+                (Rule: IsInvalid(ontologyConceptMap.ResourceType), Parameter: nameof(OntologyConceptMap.ResourceType)),
                 (Rule: IsInvalid(ontologyConceptMap.CreatedDate), Parameter: nameof(OntologyConceptMap.CreatedDate)),
                 (Rule: IsInvalid(ontologyConceptMap.CreatedBy), Parameter: nameof(OntologyConceptMap.CreatedBy)),
                 (Rule: IsInvalid(ontologyConceptMap.UpdatedDate), Parameter: nameof(OntologyConceptMap.UpdatedDate)),
@@ -41,9 +44,8 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
 
             Validate(
                 (Rule: IsInvalid(ontologyConceptMap.Id), Parameter: nameof(OntologyConceptMap.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(ontologyConceptMap.FullUrl), Parameter: nameof(OntologyConceptMap.FullUrl)),
+                (Rule: IsInvalid(ontologyConceptMap.ResourceType), Parameter: nameof(OntologyConceptMap.ResourceType)),
                 (Rule: IsInvalid(ontologyConceptMap.CreatedDate), Parameter: nameof(OntologyConceptMap.CreatedDate)),
                 (Rule: IsInvalid(ontologyConceptMap.CreatedBy), Parameter: nameof(OntologyConceptMap.CreatedBy)),
                 (Rule: IsInvalid(ontologyConceptMap.UpdatedDate), Parameter: nameof(OntologyConceptMap.UpdatedDate)),
@@ -172,7 +174,7 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidOntologyConceptMapException = 
+            var invalidOntologyConceptMapException =
                 new InvalidOntologyConceptMapException(
                     message: "Invalid ontologyConceptMap. Please correct the errors and try again.");
 

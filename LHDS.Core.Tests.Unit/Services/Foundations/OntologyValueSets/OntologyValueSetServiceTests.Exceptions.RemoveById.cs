@@ -119,5 +119,52 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveWhenSqlExceptionOccursAndLogItAsync()
+        {
+            // given
+            Guid someOntologyValueSetId = Guid.NewGuid();
+            SqlException sqlException = GetSqlException();
+
+            var failedOntologyValueSetStorageException =
+                new FailedOntologyValueSetStorageException(
+                    message: "Failed ontologyValueSet storage error occurred, contact support.",
+                    innerException: sqlException);
+
+            var expectedOntologyValueSetDependencyException =
+                new OntologyValueSetDependencyException(
+                    message: "OntologyValueSet dependency error occurred, contact support.",
+                    innerException: failedOntologyValueSetStorageException); 
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectOntologyValueSetByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(sqlException);
+
+            // when
+            ValueTask<OntologyValueSet> deleteOntologyValueSetTask =
+                this.ontologyValueSetService.RemoveOntologyValueSetByIdAsync(someOntologyValueSetId);
+
+            OntologyValueSetDependencyException actualOntologyValueSetDependencyException =
+                await Assert.ThrowsAsync<OntologyValueSetDependencyException>(
+                    deleteOntologyValueSetTask.AsTask);
+
+            // then
+            actualOntologyValueSetDependencyException.Should()
+                .BeEquivalentTo(expectedOntologyValueSetDependencyException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyValueSetByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedOntologyValueSetDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

@@ -1,59 +1,62 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages.Sql;
+using FluentAssertions;
+using Force.DeepCloner;
+using Moq;
 using LHDS.Core.Models.Foundations.OntologyValueSets;
+using Xunit;
 
-namespace LHDS.Core.Services.Foundations.OntologyValueSets
+namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
 {
-    public partial class OntologyValueSetService : IOntologyValueSetService
+    public partial class OntologyValueSetServiceTests
     {
-        private readonly IStorageBroker storageBroker;
-        private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ILoggingBroker loggingBroker;
-
-        public OntologyValueSetService(
-            IStorageBroker storageBroker,
-            IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker)
+        [Fact]
+        public async Task ShouldModifyOntologyValueSetAsync()
         {
-            this.storageBroker = storageBroker;
-            this.dateTimeBroker = dateTimeBroker;
-            this.loggingBroker = loggingBroker;
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            OntologyValueSet randomOntologyValueSet = CreateRandomModifyOntologyValueSet(randomDateTimeOffset);
+            OntologyValueSet inputOntologyValueSet = randomOntologyValueSet;
+            OntologyValueSet storageOntologyValueSet = inputOntologyValueSet.DeepClone();
+            storageOntologyValueSet.UpdatedDate = randomOntologyValueSet.CreatedDate;
+            OntologyValueSet updatedOntologyValueSet = inputOntologyValueSet;
+            OntologyValueSet expectedOntologyValueSet = updatedOntologyValueSet.DeepClone();
+            Guid ontologyValueSetId = inputOntologyValueSet.Id;
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectOntologyValueSetByIdAsync(ontologyValueSetId))
+                    .ReturnsAsync(storageOntologyValueSet);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.UpdateOntologyValueSetAsync(inputOntologyValueSet))
+                    .ReturnsAsync(updatedOntologyValueSet);
+
+            // when
+            OntologyValueSet actualOntologyValueSet =
+                await this.ontologyValueSetService.ModifyOntologyValueSetAsync(inputOntologyValueSet);
+
+            // then
+            actualOntologyValueSet.Should().BeEquivalentTo(expectedOntologyValueSet);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyValueSetByIdAsync(inputOntologyValueSet.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateOntologyValueSetAsync(inputOntologyValueSet),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
-
-        public ValueTask<OntologyValueSet> AddOntologyValueSetAsync(OntologyValueSet ontologyValueSet) =>
-            TryCatch(async () =>
-            {
-                ValidateOntologyValueSetOnAdd(ontologyValueSet);
-
-                return await this.storageBroker.InsertOntologyValueSetAsync(ontologyValueSet);
-            });
-
-        public IQueryable<OntologyValueSet> RetrieveAllOntologyValueSets() =>
-            TryCatch(() => this.storageBroker.SelectAllOntologyValueSets());
-
-        public ValueTask<OntologyValueSet> RetrieveOntologyValueSetByIdAsync(Guid ontologyValueSetId) =>
-            TryCatch(async () =>
-            {
-                ValidateOntologyValueSetId(ontologyValueSetId);
-
-                OntologyValueSet maybeOntologyValueSet = await this.storageBroker
-                    .SelectOntologyValueSetByIdAsync(ontologyValueSetId);
-
-                ValidateStorageOntologyValueSet(maybeOntologyValueSet, ontologyValueSetId);
-
-                return maybeOntologyValueSet;
-            });
-
-        public ValueTask<OntologyValueSet> ModifyOntologyValueSetAsync(OntologyValueSet ontologyValueSet) =>
-            TryCatch(async () =>
-            {
-                ValidateOntologyValueSetOnModify(ontologyValueSet);
-
-                return await this.storageBroker.UpdateOntologyValueSetAsync(ontologyValueSet);
-            });
     }
 }

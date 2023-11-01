@@ -179,5 +179,60 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyErrorOccursAndLogAsync()
+        {
+            // given
+            OntologyCodeSystem randomOntologyCodeSystem = CreateRandomOntologyCodeSystem();
+            var databaseUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedOntologyCodeSystemException =
+                new LockedOntologyCodeSystemException(
+                    message: "Locked ontologyCodeSystem record exception, please try again later",
+                    innerException: databaseUpdateConcurrencyException);
+
+            var expectedOntologyCodeSystemDependencyValidationException =
+                new OntologyCodeSystemDependencyValidationException(
+                    message: "OntologyCodeSystem dependency validation occurred, please try again.",
+                    innerException: lockedOntologyCodeSystemException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<OntologyCodeSystem> modifyOntologyCodeSystemTask =
+                this.ontologyCodeSystemService.ModifyOntologyCodeSystemAsync(randomOntologyCodeSystem);
+
+            OntologyCodeSystemDependencyValidationException actualOntologyCodeSystemDependencyValidationException =
+                await Assert.ThrowsAsync<OntologyCodeSystemDependencyValidationException>(
+                    modifyOntologyCodeSystemTask.AsTask);
+
+            // then
+            actualOntologyCodeSystemDependencyValidationException.Should()
+                .BeEquivalentTo(expectedOntologyCodeSystemDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyCodeSystemByIdAsync(randomOntologyCodeSystem.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyCodeSystemDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateOntologyCodeSystemAsync(randomOntologyCodeSystem),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

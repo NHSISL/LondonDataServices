@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Foundations.OntologyConceptMaps;
 using LHDS.Core.Models.Foundations.OntologyConceptMaps.Exceptions;
@@ -33,6 +34,15 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
 
                 throw CreateAndLogCriticalDependencyException(failedOntologyConceptMapStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsOntologyConceptMapException =
+                    new AlreadyExistsOntologyConceptMapException(
+                        message: "OntologyConceptMap with the same Id already exists.",
+                        innerException: duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsOntologyConceptMapException);
+            }
         }
 
         private OntologyConceptMapValidationException CreateAndLogValidationException(Xeption exception)
@@ -57,6 +67,18 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
             this.loggingBroker.LogCritical(ontologyConceptMapDependencyException);
 
             return ontologyConceptMapDependencyException;
+        }
+
+        private OntologyConceptMapDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var ontologyConceptMapDependencyValidationException =
+                new OntologyConceptMapDependencyValidationException(
+                    message: "OntologyConceptMap dependency validation occurred, please try again.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(ontologyConceptMapDependencyValidationException);
+
+            return ontologyConceptMapDependencyValidationException;
         }
     }
 }

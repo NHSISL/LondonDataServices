@@ -35,7 +35,15 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
         public IQueryable<OntologyCodeSystem> RetrieveAllOntologyCodeSystems() =>
             TryCatch(() => this.storageBroker.SelectAllOntologyCodeSystems());
 
-        public async ValueTask<OntologyCodeSystem> RetrieveOntologyCodeSystemByIdAsync(Guid ontologyCodeSystemId) =>
-            await this.storageBroker.SelectOntologyCodeSystemByIdAsync(ontologyCodeSystemId);
+        public ValueTask<OntologyCodeSystem> RetrieveOntologyCodeSystemByIdAsync(Guid ontologyCodeSystemId) =>
+            TryCatch(async () =>
+            {
+                ValidateOntologyCodeSystemId(ontologyCodeSystemId);
+
+                OntologyCodeSystem maybeOntologyCodeSystem = await this.storageBroker
+                    .SelectOntologyCodeSystemByIdAsync(ontologyCodeSystemId);
+
+                return maybeOntologyCodeSystem;
+            });
     }
 }

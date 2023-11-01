@@ -63,7 +63,35 @@ namespace LHDS.Core.Services.Foundations.Ontologies
         public ValueTask<OntologyAssets> RetrieveAllConceptMapsAsync(string relativeUrl) =>
             throw new NotImplementedException();
 
-        public ValueTask<OntologyAssets> RetrieveAllValueSetsAsync(string relativeUrl) =>
-            throw new NotImplementedException();
+        public async ValueTask<OntologyAssets> RetrieveAllValueSetsAsync(string relativeUrl)
+        {
+            Bundle valueSets = await this.ontologyBroker.GetAllValueSetsAsync(relativeUrl);
+            string? nextPageUrl = valueSets.NextLink?.ToString();
+
+            var ontologyAssets = new OntologyAssets
+            {
+                Assets = new List<OntologyAsset>(),
+                NextPage = nextPageUrl
+            };
+
+            foreach (EntryComponent item in valueSets.Entry)
+            {
+                ValueSet resource = (ValueSet)item.Resource;
+
+                ontologyAssets.Assets.Add(
+                    new OntologyAsset
+                    {
+                        FullUrl = item.FullUrl,
+                        ResourceType = "ValueSet",
+                        Version = resource.Version,
+                        Name = resource.Name,
+                        Title = resource.Title,
+                        Status = resource.Status.ToString()?.ToLower(),
+                        LastUpdated = resource.Meta.LastUpdated,
+                    });
+            }
+
+            return ontologyAssets;
+        }
     }
 }

@@ -57,5 +57,52 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedOntologyCodeSystemServiceException =
+                new FailedOntologyCodeSystemServiceException(
+                    message: "Failed ontologyCodeSystem service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedOntologyCodeSystemServiceException =
+                new OntologyCodeSystemServiceException(
+                    message: "OntologyCodeSystem service error occurred, contact support.",
+                    innerException: failedOntologyCodeSystemServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectOntologyCodeSystemByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<OntologyCodeSystem> retrieveOntologyCodeSystemByIdTask =
+                this.ontologyCodeSystemService.RetrieveOntologyCodeSystemByIdAsync(someId);
+
+            OntologyCodeSystemServiceException actualOntologyCodeSystemServiceException =
+                await Assert.ThrowsAsync<OntologyCodeSystemServiceException>(
+                    retrieveOntologyCodeSystemByIdTask.AsTask);
+
+            // then
+            actualOntologyCodeSystemServiceException.Should()
+                .BeEquivalentTo(expectedOntologyCodeSystemServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyCodeSystemByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedOntologyCodeSystemServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

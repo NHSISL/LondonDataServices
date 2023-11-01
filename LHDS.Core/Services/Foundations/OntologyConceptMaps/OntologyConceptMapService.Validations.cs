@@ -53,7 +53,9 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
                     firstDate: ontologyConceptMap.UpdatedDate,
                     secondDate: ontologyConceptMap.CreatedDate,
                     secondDateName: nameof(OntologyConceptMap.CreatedDate)),
-                Parameter: nameof(OntologyConceptMap.UpdatedDate)));
+                Parameter: nameof(OntologyConceptMap.UpdatedDate)),
+
+                (Rule: IsNotRecent(ontologyConceptMap.UpdatedDate), Parameter: nameof(ontologyConceptMap.UpdatedDate)));
         }
 
         public void ValidateOntologyConceptMapId(Guid ontologyConceptMapId) =>

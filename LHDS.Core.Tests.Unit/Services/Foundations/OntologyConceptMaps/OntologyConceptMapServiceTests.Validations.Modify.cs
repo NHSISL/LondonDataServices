@@ -88,7 +88,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
 
             invalidOntologyConceptMapException.AddData(
                 key: nameof(OntologyConceptMap.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(OntologyConceptMap.CreatedDate)}"
+                });
 
             invalidOntologyConceptMapException.AddData(
                 key: nameof(OntologyConceptMap.UpdatedBy),
@@ -131,6 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             OntologyConceptMap randomOntologyConceptMap = CreateRandomOntologyConceptMap(randomDateTimeOffset);
             OntologyConceptMap invalidOntologyConceptMap = randomOntologyConceptMap;
+            
             var invalidOntologyConceptMapException = 
                 new InvalidOntologyConceptMapException(
                     message: "Invalid ontologyConceptMap. Please correct the errors and try again.");

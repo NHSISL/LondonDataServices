@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Foundations.OntologyCodeSystems;
 using LHDS.Core.Models.Foundations.OntologyCodeSystems.Exceptions;
@@ -33,6 +34,15 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
 
                 throw CreateAndLogCriticalDependencyException(failedOntologyCodeSystemStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsOntologyCodeSystemException =
+                    new AlreadyExistsOntologyCodeSystemException(
+                        message: "OntologyCodeSystem with the same Id already exists.",
+                        innerException: duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsOntologyCodeSystemException);
+            }
         }
 
         private OntologyCodeSystemValidationException CreateAndLogValidationException(Xeption exception)
@@ -57,6 +67,18 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
             this.loggingBroker.LogCritical(ontologyCodeSystemDependencyException);
 
             return ontologyCodeSystemDependencyException;
+        }
+
+        private OntologyCodeSystemDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var ontologyCodeSystemDependencyValidationException =
+                new OntologyCodeSystemDependencyValidationException(
+                    message: "OntologyCodeSystem dependency validation occurred, please try again.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(ontologyCodeSystemDependencyValidationException);
+
+            return ontologyCodeSystemDependencyValidationException;
         }
     }
 }

@@ -47,5 +47,8 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
 
                 return maybeOntologyValueSet;
             });
+
+        public ValueTask<OntologyValueSet> ModifyOntologyValueSetAsync(OntologyValueSet ontologyValueSet) =>
+            throw new NotImplementedException();
     }
 }

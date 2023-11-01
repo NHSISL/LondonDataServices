@@ -64,6 +64,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static OntologyValueSet CreateRandomModifyOntologyValueSet(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            OntologyValueSet randomOntologyValueSet = CreateRandomOntologyValueSet(dateTimeOffset);
+
+            randomOntologyValueSet.CreatedDate =
+                randomOntologyValueSet.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomOntologyValueSet;
+        }
+
         private static IQueryable<OntologyValueSet> CreateRandomOntologyValueSets()
         {
             return CreateOntologyValueSetFiller(dateTimeOffset: GetRandomDateTimeOffset())

@@ -60,6 +60,15 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
 
                 throw CreateAndLogDependencyValidationException(invalidOntologyConceptMapReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedOntologyConceptMapException = 
+                    new LockedOntologyConceptMapException(
+                        message: "Locked ontologyConceptMap record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedOntologyConceptMapException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedOntologyConceptMapStorageException =
@@ -123,7 +132,7 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
             var ontologyConceptMapDependencyException = 
                 new OntologyConceptMapDependencyException(
                     message: "OntologyConceptMap dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(ontologyConceptMapDependencyException);
 
@@ -148,7 +157,7 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
             var ontologyConceptMapDependencyException = 
                 new OntologyConceptMapDependencyException(
                     message: "OntologyConceptMap dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(ontologyConceptMapDependencyException);
 

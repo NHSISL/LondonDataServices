@@ -90,7 +90,13 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
                     first: inputOntologyConceptMap.CreatedBy,
                     second: storageOntologyConceptMap.CreatedBy,
                     secondName: nameof(OntologyConceptMap.CreatedBy)),
-                Parameter: nameof(OntologyConceptMap.CreatedBy)));
+                Parameter: nameof(OntologyConceptMap.CreatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: inputOntologyConceptMap.UpdatedDate,
+                    secondDate: storageOntologyConceptMap.UpdatedDate,
+                    secondDateName: nameof(OntologyConceptMap.UpdatedDate)),
+                Parameter: nameof(OntologyConceptMap.UpdatedDate)));
         }
 
         private static dynamic IsInvalid(Guid id) => new

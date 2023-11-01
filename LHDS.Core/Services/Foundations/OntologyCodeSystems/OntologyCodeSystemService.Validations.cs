@@ -35,6 +35,9 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
                 (Rule: IsNotRecent(ontologyCodeSystem.CreatedDate), Parameter: nameof(OntologyCodeSystem.CreatedDate)));
         }
 
+        public void ValidateOntologyCodeSystemId(Guid ontologyCodeSystemId) =>
+            Validate((Rule: IsInvalid(ontologyCodeSystemId), Parameter: nameof(OntologyCodeSystem.Id)));
+
         private static void ValidateOntologyCodeSystemIsNotNull(OntologyCodeSystem ontologyCodeSystem)
         {
             if (ontologyCodeSystem is null)

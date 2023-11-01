@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -224,6 +225,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedOntologyValueSetDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateOntologyValueSetAsync(randomOntologyValueSet),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnModifyIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            OntologyValueSet randomOntologyValueSet = CreateRandomOntologyValueSet();
+            var serviceException = new Exception();
+
+            var failedOntologyValueSetServiceException =
+                new FailedOntologyValueSetServiceException(
+                    message: "Failed ontologyValueSet service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedOntologyValueSetServiceException =
+                new OntologyValueSetServiceException(
+                    message: "OntologyValueSet service error occurred, contact support.",
+                    innerException: failedOntologyValueSetServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<OntologyValueSet> modifyOntologyValueSetTask =
+                this.ontologyValueSetService.ModifyOntologyValueSetAsync(randomOntologyValueSet);
+
+            OntologyValueSetServiceException actualOntologyValueSetServiceException =
+                await Assert.ThrowsAsync<OntologyValueSetServiceException>(
+                    modifyOntologyValueSetTask.AsTask);
+
+            // then
+            actualOntologyValueSetServiceException.Should()
+                .BeEquivalentTo(expectedOntologyValueSetServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyValueSetByIdAsync(randomOntologyValueSet.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyValueSetServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

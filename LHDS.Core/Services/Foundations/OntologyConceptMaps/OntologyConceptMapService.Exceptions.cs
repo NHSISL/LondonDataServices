@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
     public partial class OntologyConceptMapService
     {
         private delegate ValueTask<OntologyConceptMap> ReturningOntologyConceptMapFunction();
+        private delegate IQueryable<OntologyConceptMap> ReturningOntologyConceptMapsFunction();
 
         private async ValueTask<OntologyConceptMap> TryCatch(ReturningOntologyConceptMapFunction returningOntologyConceptMapFunction)
         {
@@ -74,6 +76,23 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
             }
         }
 
+        private IQueryable<OntologyConceptMap> TryCatch(ReturningOntologyConceptMapsFunction returningOntologyConceptMapsFunction)
+        {
+            try
+            {
+                return returningOntologyConceptMapsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedOntologyConceptMapStorageException =
+                    new FailedOntologyConceptMapStorageException(
+                        message: "Failed ontologyConceptMap storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedOntologyConceptMapStorageException);
+            }
+        }
+
         private OntologyConceptMapValidationException CreateAndLogValidationException(Xeption exception)
         {
             var ontologyConceptMapValidationException =
@@ -91,7 +110,7 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
             var ontologyConceptMapDependencyException = 
                 new OntologyConceptMapDependencyException(
                     message: "OntologyConceptMap dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(ontologyConceptMapDependencyException);
 
@@ -116,7 +135,7 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
             var ontologyConceptMapDependencyException = 
                 new OntologyConceptMapDependencyException(
                     message: "OntologyConceptMap dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(ontologyConceptMapDependencyException);
 

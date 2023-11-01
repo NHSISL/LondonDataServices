@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
             });
 
         public IQueryable<OntologyConceptMap> RetrieveAllOntologyConceptMaps() =>
-            this.storageBroker.SelectAllOntologyConceptMaps();
+            TryCatch(() => this.storageBroker.SelectAllOntologyConceptMaps());
     }
 }

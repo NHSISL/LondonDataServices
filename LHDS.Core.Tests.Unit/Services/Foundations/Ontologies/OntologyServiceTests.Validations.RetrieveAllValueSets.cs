@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologys
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnRetrieveAllCodingSystemsIfUrlIsInvalidAndLogItAsync(
+        public async Task ShouldThrowValidationExceptionOnRetrieveAllValueSetsIfUrlIsInvalidAndLogItAsync(
             string invalidText)
         {
             string invalidFileName = invalidText;
@@ -36,12 +36,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologys
                     innerException: invalidArgumentOntologyException);
 
             // when
-            ValueTask<OntologyAssets> retrieveOntologyByIdTask =
-                this.ontologyService.RetrieveAllCodingSystemsAsync(invalidFileName);
+            ValueTask<OntologyAssets> retrieveOntologyByRelativeUrlTask =
+                this.ontologyService.RetrieveAllValueSetsAsync(invalidFileName);
 
             OntologyValidationException actualOntologyValidationException =
                 await Assert.ThrowsAsync<OntologyValidationException>(
-                    retrieveOntologyByIdTask.AsTask);
+                    retrieveOntologyByRelativeUrlTask.AsTask);
 
             // then
             actualOntologyValidationException.Should()

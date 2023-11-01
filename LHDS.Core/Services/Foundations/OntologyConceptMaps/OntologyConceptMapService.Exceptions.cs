@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -57,10 +58,19 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
             {
                 var failedOntologyConceptMapStorageException =
                     new FailedOntologyConceptMapStorageException(
-                    message: "Failed ontologyConceptMap storage error occurred, contact support.",
-                    innerException: databaseUpdateException);
+                        message: "Failed ontologyConceptMap storage error occurred, contact support.",
+                        innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedOntologyConceptMapStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedOntologyConceptMapServiceException =
+                    new FailedOntologyConceptMapServiceException(
+                        message: "Failed ontologyConceptMap service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedOntologyConceptMapServiceException);
             }
         }
 
@@ -111,6 +121,19 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
             this.loggingBroker.LogError(ontologyConceptMapDependencyException);
 
             return ontologyConceptMapDependencyException;
+        }
+
+        private OntologyConceptMapServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var ontologyConceptMapServiceException = 
+                new OntologyConceptMapServiceException(
+                    message: "OntologyConceptMap service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(ontologyConceptMapServiceException);
+
+            return ontologyConceptMapServiceException;
         }
     }
 }

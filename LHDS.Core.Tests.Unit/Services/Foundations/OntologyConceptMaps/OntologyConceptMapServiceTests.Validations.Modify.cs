@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -65,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
 
             var invalidOntologyConceptMapException = 
                 new InvalidOntologyConceptMapException(
-                        message: "Invalid ontologyConceptMap. Please correct the errors and try again.");
+                    message: "Invalid ontologyConceptMap. Please correct the errors and try again.");
 
             invalidOntologyConceptMapException.AddData(
                 key: nameof(OntologyConceptMap.Id),
@@ -116,6 +117,51 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateOntologyConceptMapAsync(It.IsAny<OntologyConceptMap>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            OntologyConceptMap randomOntologyConceptMap = CreateRandomOntologyConceptMap(randomDateTimeOffset);
+            OntologyConceptMap invalidOntologyConceptMap = randomOntologyConceptMap;
+            var invalidOntologyConceptMapException = 
+                new InvalidOntologyConceptMapException(
+                    message: "Invalid ontologyConceptMap. Please correct the errors and try again.");
+
+            invalidOntologyConceptMapException.AddData(
+                key: nameof(OntologyConceptMap.UpdatedDate),
+                values: $"Date is the same as {nameof(OntologyConceptMap.CreatedDate)}");
+
+            var expectedOntologyConceptMapValidationException =
+                new OntologyConceptMapValidationException(
+                    message: "OntologyConceptMap validation errors occurred, please try again.",
+                    innerException: invalidOntologyConceptMapException);
+
+            // when
+            ValueTask<OntologyConceptMap> modifyOntologyConceptMapTask =
+                this.ontologyConceptMapService.ModifyOntologyConceptMapAsync(invalidOntologyConceptMap);
+
+            OntologyConceptMapValidationException actualOntologyConceptMapValidationException =
+                await Assert.ThrowsAsync<OntologyConceptMapValidationException>(
+                    modifyOntologyConceptMapTask.AsTask);
+
+            // then
+            actualOntologyConceptMapValidationException.Should().BeEquivalentTo(expectedOntologyConceptMapValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyConceptMapValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyConceptMapByIdAsync(invalidOntologyConceptMap.Id),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

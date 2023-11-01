@@ -28,6 +28,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
+                broker.SelectOntologyCodeSystemByIdAsync(ontologyCodeSystemId))
+                    .ReturnsAsync(storageOntologyCodeSystem);
+
+            this.storageBrokerMock.Setup(broker =>
                 broker.UpdateOntologyCodeSystemAsync(inputOntologyCodeSystem))
                     .ReturnsAsync(updatedOntologyCodeSystem);
 
@@ -43,12 +47,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyCodeSystemByIdAsync(inputOntologyCodeSystem.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
                 broker.UpdateOntologyCodeSystemAsync(inputOntologyCodeSystem),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

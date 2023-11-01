@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
             });
 
         public IQueryable<OntologyCodeSystem> RetrieveAllOntologyCodeSystems() =>
-            this.storageBroker.SelectAllOntologyCodeSystems();
+            TryCatch(() => this.storageBroker.SelectAllOntologyCodeSystems());
     }
 }

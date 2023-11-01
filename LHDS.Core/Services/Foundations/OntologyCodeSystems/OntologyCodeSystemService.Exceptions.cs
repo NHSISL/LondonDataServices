@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
     public partial class OntologyCodeSystemService
     {
         private delegate ValueTask<OntologyCodeSystem> ReturningOntologyCodeSystemFunction();
+        private delegate IQueryable<OntologyCodeSystem> ReturningOntologyCodeSystemsFunction();
 
         private async ValueTask<OntologyCodeSystem> TryCatch(ReturningOntologyCodeSystemFunction returningOntologyCodeSystemFunction)
         {
@@ -74,6 +76,23 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
             }
         }
 
+        private IQueryable<OntologyCodeSystem> TryCatch(ReturningOntologyCodeSystemsFunction returningOntologyCodeSystemsFunction)
+        {
+            try
+            {
+                return returningOntologyCodeSystemsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedOntologyCodeSystemStorageException =
+                    new FailedOntologyCodeSystemStorageException(
+                        message: "Failed ontologyCodeSystem storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedOntologyCodeSystemStorageException);
+            }
+        }
+
         private OntologyCodeSystemValidationException CreateAndLogValidationException(Xeption exception)
         {
             var ontologyCodeSystemValidationException =
@@ -91,7 +110,7 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
             var ontologyCodeSystemDependencyException = 
                 new OntologyCodeSystemDependencyException(
                     message: "OntologyCodeSystem dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(ontologyCodeSystemDependencyException);
 
@@ -116,7 +135,7 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
             var ontologyCodeSystemDependencyException = 
                 new OntologyCodeSystemDependencyException(
                     message: "OntologyCodeSystem dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(ontologyCodeSystemDependencyException);
 

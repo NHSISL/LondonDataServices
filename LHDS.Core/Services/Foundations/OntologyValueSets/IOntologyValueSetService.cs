@@ -11,5 +11,6 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
         IQueryable<OntologyValueSet> RetrieveAllOntologyValueSets();
         ValueTask<OntologyValueSet> RetrieveOntologyValueSetByIdAsync(Guid ontologyValueSetId);
         ValueTask<OntologyValueSet> ModifyOntologyValueSetAsync(OntologyValueSet ontologyValueSet);
+        ValueTask<OntologyValueSet> RemoveOntologyValueSetByIdAsync(Guid ontologyValueSetId);
     }
 }

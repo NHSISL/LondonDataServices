@@ -7,7 +7,7 @@ using LHDS.Core.Models.Bases;
 
 namespace LHDS.Core.Models.Foundations.OntologyCodeSystems
 {
-    internal class OntologyCodeSystem : IKey, IAudit
+    public class OntologyCodeSystem : IKey, IAudit
     {
         public Guid Id { get; set; }
         public string FullUrl { get; set; }

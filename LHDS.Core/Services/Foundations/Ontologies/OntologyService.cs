@@ -13,7 +13,7 @@ using static Hl7.Fhir.Model.Bundle;
 
 namespace LHDS.Core.Services.Foundations.Ontologies
 {
-    internal class OntologyService : IOntologyService
+    internal partial class OntologyService : IOntologyService
     {
         private readonly IOntologyBroker ontologyBroker;
         private readonly ILoggingBroker loggingBroker;
@@ -26,41 +26,44 @@ namespace LHDS.Core.Services.Foundations.Ontologies
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<OntologyAssets> RetrieveAllCodingSystemsAsync(string? relativeUrl)
-        {
-            Bundle codingSystems = await this.ontologyBroker.GetAllCodingSystemsAsync(relativeUrl);
-            string? nextPageUrl = codingSystems.NextLink?.ToString();
-
-            var ontologyAssets = new OntologyAssets
+        public ValueTask<OntologyAssets> RetrieveAllCodingSystemsAsync(string relativeUrl) =>
+            TryCatch(async () =>
             {
-                Assets = new List<OntologyAsset>(),
-                NextPage = nextPageUrl
-            };
+                ValidateArgs(relativeUrl);
 
-            foreach (EntryComponent item in codingSystems.Entry)
-            {
-                CodeSystem resource = (CodeSystem)item.Resource;
+                Bundle codingSystems = await this.ontologyBroker.GetAllCodingSystemsAsync(relativeUrl);
+                string? nextPageUrl = codingSystems.NextLink?.ToString();
 
-                ontologyAssets.Assets.Add(
-                    new OntologyAsset
-                    {
-                        FullUrl = item.FullUrl,
-                        ResourceType = "CodeSystem",
-                        Version = resource.Version,
-                        Name = resource.Name,
-                        Title = resource.Title,
-                        Status = resource.Status.ToString()?.ToLower(),
-                        LastUpdated = resource.Meta.LastUpdated,
-                    });
-            }
+                var ontologyAssets = new OntologyAssets
+                {
+                    Assets = new List<OntologyAsset>(),
+                    NextPage = nextPageUrl
+                };
 
-            return ontologyAssets;
-        }
+                foreach (EntryComponent item in codingSystems.Entry)
+                {
+                    CodeSystem resource = (CodeSystem)item.Resource;
 
-        public ValueTask<OntologyAssets> RetrieveAllConceptMapsAsync(string? relativeUrl) =>
+                    ontologyAssets.Assets.Add(
+                        new OntologyAsset
+                        {
+                            FullUrl = item.FullUrl,
+                            ResourceType = "CodeSystem",
+                            Version = resource.Version,
+                            Name = resource.Name,
+                            Title = resource.Title,
+                            Status = resource.Status.ToString()?.ToLower(),
+                            LastUpdated = resource.Meta.LastUpdated,
+                        });
+                }
+
+                return ontologyAssets;
+            });
+
+        public ValueTask<OntologyAssets> RetrieveAllConceptMapsAsync(string relativeUrl) =>
             throw new NotImplementedException();
 
-        public ValueTask<OntologyAssets> RetrieveAllValueSetsAsync(string? relativeUrl) =>
+        public ValueTask<OntologyAssets> RetrieveAllValueSetsAsync(string relativeUrl) =>
             throw new NotImplementedException();
     }
 }

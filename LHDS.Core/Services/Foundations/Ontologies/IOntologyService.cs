@@ -9,8 +9,8 @@ namespace LHDS.Core.Services.Foundations.Ontologies
 {
     internal interface IOntologyService
     {
-        ValueTask<OntologyAssets> RetrieveAllCodingSystemsAsync(string? relativeUrl);
-        ValueTask<OntologyAssets> RetrieveAllValueSetsAsync(string? relativeUrl);
-        ValueTask<OntologyAssets> RetrieveAllConceptMapsAsync(string? relativeUrl);
+        ValueTask<OntologyAssets> RetrieveAllCodingSystemsAsync(string relativeUrl);
+        ValueTask<OntologyAssets> RetrieveAllValueSetsAsync(string relativeUrl);
+        ValueTask<OntologyAssets> RetrieveAllConceptMapsAsync(string relativeUrl);
     }
 }

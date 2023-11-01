@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologys
 
             var invalidArgumentOntologyException =
                 new InvalidArgumentOntologyException(
-                    message: "Invalid ontology. Please correct the errors and try again.");
+                    message: "Invalid ontology arguments. Please correct the error and try again.");
 
             invalidArgumentOntologyException.AddData(
                 key: "relativeUrl",
@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologys
 
             var expectedOntologyValidationException =
                 new OntologyValidationException(
-                    message: "Ontology validation errors occurred, please try again.",
+                    message: "Ontology validation error occurred, please try again.",
                     innerException: invalidArgumentOntologyException);
 
             // when

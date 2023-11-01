@@ -179,5 +179,60 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyErrorOccursAndLogAsync()
+        {
+            // given
+            OntologyValueSet randomOntologyValueSet = CreateRandomOntologyValueSet();
+            var databaseUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedOntologyValueSetException =
+                new LockedOntologyValueSetException(
+                    message: "Locked ontologyValueSet record exception, please try again later",
+                    innerException: databaseUpdateConcurrencyException);
+
+            var expectedOntologyValueSetDependencyValidationException =
+                new OntologyValueSetDependencyValidationException(
+                    message: "OntologyValueSet dependency validation occurred, please try again.",
+                    innerException: lockedOntologyValueSetException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<OntologyValueSet> modifyOntologyValueSetTask =
+                this.ontologyValueSetService.ModifyOntologyValueSetAsync(randomOntologyValueSet);
+
+            OntologyValueSetDependencyValidationException actualOntologyValueSetDependencyValidationException =
+                await Assert.ThrowsAsync<OntologyValueSetDependencyValidationException>(
+                    modifyOntologyValueSetTask.AsTask);
+
+            // then
+            actualOntologyValueSetDependencyValidationException.Should()
+                .BeEquivalentTo(expectedOntologyValueSetDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectOntologyValueSetByIdAsync(randomOntologyValueSet.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyValueSetDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateOntologyValueSetAsync(randomOntologyValueSet),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

@@ -24,7 +24,13 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
                     firstDate: ontologyCodeSystem.UpdatedDate,
                     secondDate: ontologyCodeSystem.CreatedDate,
                     secondDateName: nameof(OntologyCodeSystem.CreatedDate)),
-                Parameter: nameof(OntologyCodeSystem.UpdatedDate)));
+                Parameter: nameof(OntologyCodeSystem.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    firstId: ontologyCodeSystem.UpdatedBy,
+                    secondId: ontologyCodeSystem.CreatedBy,
+                    secondIdName: nameof(OntologyCodeSystem.CreatedBy)),
+                Parameter: nameof(OntologyCodeSystem.UpdatedBy)));
         }
 
         private static void ValidateOntologyCodeSystemIsNotNull(OntologyCodeSystem ontologyCodeSystem)
@@ -61,6 +67,24 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
                 Condition = firstDate != secondDate,
                 Message = $"Date is not the same as {secondDateName}"
             };
+
+        private static dynamic IsNotSame(
+            Guid firstId,
+            Guid secondId,
+            string secondIdName) => new
+            {
+                Condition = firstId != secondId,
+                Message = $"Id is not the same as {secondIdName}"
+            };
+
+        private static dynamic IsNotSame(
+           string first,
+           string second,
+           string secondName) => new
+           {
+               Condition = first != second,
+               Message = $"Text is not the same as {secondName}"
+           };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

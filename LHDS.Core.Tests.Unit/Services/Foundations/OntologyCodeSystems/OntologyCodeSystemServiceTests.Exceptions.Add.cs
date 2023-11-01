@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -25,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             var expectedOntologyCodeSystemDependencyException =
                 new OntologyCodeSystemDependencyException(
                     message: "OntologyCodeSystem dependency error occurred, contact support.",
-                    innerException: failedOntologyCodeSystemStorageException);
+                    innerException: failedOntologyCodeSystemStorageException);             
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -54,6 +55,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyCodeSystems
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
                     expectedOntologyCodeSystemDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfOntologyCodeSystemAlreadyExsitsAndLogItAsync()
+        {
+            // given
+            OntologyCodeSystem randomOntologyCodeSystem = CreateRandomOntologyCodeSystem();
+            OntologyCodeSystem alreadyExistsOntologyCodeSystem = randomOntologyCodeSystem;
+            string randomMessage = GetRandomString();
+
+            var duplicateKeyException =
+                new DuplicateKeyException(randomMessage);
+
+            var alreadyExistsOntologyCodeSystemException =
+                new AlreadyExistsOntologyCodeSystemException(
+                    message: "OntologyCodeSystem with the same Id already exists.",
+                    innerException: duplicateKeyException);
+
+            var expectedOntologyCodeSystemDependencyValidationException =
+                new OntologyCodeSystemDependencyValidationException(
+                    message: "OntologyCodeSystem dependency validation occurred, please try again.",
+                    innerException: alreadyExistsOntologyCodeSystemException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(duplicateKeyException);
+
+            // when
+            ValueTask<OntologyCodeSystem> addOntologyCodeSystemTask =
+                this.ontologyCodeSystemService.AddOntologyCodeSystemAsync(alreadyExistsOntologyCodeSystem);
+
+            // then
+            OntologyCodeSystemDependencyValidationException actualOntologyCodeSystemDependencyValidationException =
+                await Assert.ThrowsAsync<OntologyCodeSystemDependencyValidationException>(
+                    addOntologyCodeSystemTask.AsTask);
+
+            actualOntologyCodeSystemDependencyValidationException.Should()
+                .BeEquivalentTo(expectedOntologyCodeSystemDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertOntologyCodeSystemAsync(It.IsAny<OntologyCodeSystem>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyCodeSystemDependencyValidationException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

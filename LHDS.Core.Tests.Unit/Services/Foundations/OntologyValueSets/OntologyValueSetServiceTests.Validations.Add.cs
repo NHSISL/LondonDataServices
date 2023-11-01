@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -86,6 +87,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyValueSets
             invalidOntologyValueSetException.AddData(
                 key: nameof(OntologyValueSet.UpdatedBy),
                 values: "Text is required");
+
+            var expectedOntologyValueSetValidationException =
+                new OntologyValueSetValidationException(
+                    message: "OntologyValueSet validation errors occurred, please try again.",
+                    innerException: invalidOntologyValueSetException);
+
+            // when
+            ValueTask<OntologyValueSet> addOntologyValueSetTask =
+                this.ontologyValueSetService.AddOntologyValueSetAsync(invalidOntologyValueSet);
+
+            OntologyValueSetValidationException actualOntologyValueSetValidationException =
+                await Assert.ThrowsAsync<OntologyValueSetValidationException>(
+                    addOntologyValueSetTask.AsTask);
+
+            // then
+            actualOntologyValueSetValidationException.Should()
+                .BeEquivalentTo(expectedOntologyValueSetValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyValueSetValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertOntologyValueSetAsync(It.IsAny<OntologyValueSet>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateDatesIsNotSameAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNumber();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            OntologyValueSet randomOntologyValueSet = CreateRandomOntologyValueSet(randomDateTimeOffset);
+            OntologyValueSet invalidOntologyValueSet = randomOntologyValueSet;
+
+            invalidOntologyValueSet.UpdatedDate =
+                invalidOntologyValueSet.CreatedDate.AddDays(randomNumber);
+
+            var invalidOntologyValueSetException = 
+                new InvalidOntologyValueSetException(
+                    message: "Invalid ontologyValueSet. Please correct the errors and try again.");
+
+            invalidOntologyValueSetException.AddData(
+                key: nameof(OntologyValueSet.UpdatedDate),
+                values: $"Date is not the same as {nameof(OntologyValueSet.CreatedDate)}");
 
             var expectedOntologyValueSetValidationException =
                 new OntologyValueSetValidationException(

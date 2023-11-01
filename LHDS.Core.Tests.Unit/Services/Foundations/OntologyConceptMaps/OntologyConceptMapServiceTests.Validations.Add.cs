@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -86,6 +87,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
             invalidOntologyConceptMapException.AddData(
                 key: nameof(OntologyConceptMap.UpdatedBy),
                 values: "Text is required");
+
+            var expectedOntologyConceptMapValidationException =
+                new OntologyConceptMapValidationException(
+                    message: "OntologyConceptMap validation errors occurred, please try again.",
+                    innerException: invalidOntologyConceptMapException);
+
+            // when
+            ValueTask<OntologyConceptMap> addOntologyConceptMapTask =
+                this.ontologyConceptMapService.AddOntologyConceptMapAsync(invalidOntologyConceptMap);
+
+            OntologyConceptMapValidationException actualOntologyConceptMapValidationException =
+                await Assert.ThrowsAsync<OntologyConceptMapValidationException>(
+                    addOntologyConceptMapTask.AsTask);
+
+            // then
+            actualOntologyConceptMapValidationException.Should()
+                .BeEquivalentTo(expectedOntologyConceptMapValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyConceptMapValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertOntologyConceptMapAsync(It.IsAny<OntologyConceptMap>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateDatesIsNotSameAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNumber();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            OntologyConceptMap randomOntologyConceptMap = CreateRandomOntologyConceptMap(randomDateTimeOffset);
+            OntologyConceptMap invalidOntologyConceptMap = randomOntologyConceptMap;
+
+            invalidOntologyConceptMap.UpdatedDate =
+                invalidOntologyConceptMap.CreatedDate.AddDays(randomNumber);
+
+            var invalidOntologyConceptMapException = 
+                new InvalidOntologyConceptMapException(
+                    message: "Invalid ontologyConceptMap. Please correct the errors and try again.");
+
+            invalidOntologyConceptMapException.AddData(
+                key: nameof(OntologyConceptMap.UpdatedDate),
+                values: $"Date is not the same as {nameof(OntologyConceptMap.CreatedDate)}");
 
             var expectedOntologyConceptMapValidationException =
                 new OntologyConceptMapValidationException(

@@ -34,4 +34,10 @@
 	  <ProjectReference Include="..\LHDS.Core\LHDS.Core.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="Resources\TestCsv3.csv">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 </Project>

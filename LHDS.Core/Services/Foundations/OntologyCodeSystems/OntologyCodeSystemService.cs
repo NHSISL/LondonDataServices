@@ -70,6 +70,8 @@ namespace LHDS.Core.Services.Foundations.OntologyCodeSystems
                 OntologyCodeSystem maybeOntologyCodeSystem = await this.storageBroker
                     .SelectOntologyCodeSystemByIdAsync(ontologyCodeSystemId);
 
+                ValidateStorageOntologyCodeSystem(maybeOntologyCodeSystem, ontologyCodeSystemId);
+
                 return await this.storageBroker.DeleteOntologyCodeSystemAsync(maybeOntologyCodeSystem);
             });
     }

@@ -22,6 +22,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
             OntologyConceptMap storageOntologyConceptMap = inputOntologyConceptMap;
             OntologyConceptMap expectedOntologyConceptMap = storageOntologyConceptMap.DeepClone();
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertOntologyConceptMapAsync(inputOntologyConceptMap))
                     .ReturnsAsync(storageOntologyConceptMap);
@@ -33,13 +37,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
             // then
             actualOntologyConceptMap.Should().BeEquivalentTo(expectedOntologyConceptMap);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertOntologyConceptMapAsync(inputOntologyConceptMap),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

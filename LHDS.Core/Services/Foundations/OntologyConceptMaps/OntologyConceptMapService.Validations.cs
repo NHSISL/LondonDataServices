@@ -27,10 +27,12 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
                 Parameter: nameof(OntologyConceptMap.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    firstId: ontologyConceptMap.UpdatedBy,
-                    secondId: ontologyConceptMap.CreatedBy,
-                    secondIdName: nameof(OntologyConceptMap.CreatedBy)),
-                Parameter: nameof(OntologyConceptMap.UpdatedBy)));
+                    first: ontologyConceptMap.UpdatedBy,
+                    second: ontologyConceptMap.CreatedBy,
+                    secondName: nameof(OntologyConceptMap.CreatedBy)),
+                Parameter: nameof(OntologyConceptMap.UpdatedBy)),
+
+                (Rule: IsNotRecent(ontologyConceptMap.CreatedDate), Parameter: nameof(OntologyConceptMap.CreatedDate)));
         }
 
         private static void ValidateOntologyConceptMapIsNotNull(OntologyConceptMap ontologyConceptMap)
@@ -85,6 +87,23 @@ namespace LHDS.Core.Services.Foundations.OntologyConceptMaps
                Condition = first != second,
                Message = $"Text is not the same as {secondName}"
            };
+
+        private dynamic IsNotRecent(DateTimeOffset date) => new
+        {
+            Condition = IsDateNotRecent(date),
+            Message = "Date is not recent"
+        };
+
+        private bool IsDateNotRecent(DateTimeOffset date)
+        {
+            DateTimeOffset currentDateTime =
+                this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+            TimeSpan timeDifference = currentDateTime.Subtract(date);
+            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+
+            return timeDifference.Duration() > oneMinute;
+        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

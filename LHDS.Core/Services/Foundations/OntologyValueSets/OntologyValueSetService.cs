@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
             });
 
         public IQueryable<OntologyValueSet> RetrieveAllOntologyValueSets() =>
-            this.storageBroker.SelectAllOntologyValueSets();
+            TryCatch(() => this.storageBroker.SelectAllOntologyValueSets());
     }
 }

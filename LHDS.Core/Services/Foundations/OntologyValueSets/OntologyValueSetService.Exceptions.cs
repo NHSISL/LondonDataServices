@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
     public partial class OntologyValueSetService
     {
         private delegate ValueTask<OntologyValueSet> ReturningOntologyValueSetFunction();
+        private delegate IQueryable<OntologyValueSet> ReturningOntologyValueSetsFunction();
 
         private async ValueTask<OntologyValueSet> TryCatch(ReturningOntologyValueSetFunction returningOntologyValueSetFunction)
         {
@@ -74,6 +76,23 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
             }
         }
 
+        private IQueryable<OntologyValueSet> TryCatch(ReturningOntologyValueSetsFunction returningOntologyValueSetsFunction)
+        {
+            try
+            {
+                return returningOntologyValueSetsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedOntologyValueSetStorageException =
+                    new FailedOntologyValueSetStorageException(
+                        message: "Failed ontologyValueSet storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedOntologyValueSetStorageException);
+            }
+        }
+
         private OntologyValueSetValidationException CreateAndLogValidationException(Xeption exception)
         {
             var ontologyValueSetValidationException =
@@ -91,7 +110,7 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
             var ontologyValueSetDependencyException = 
                 new OntologyValueSetDependencyException(
                     message: "OntologyValueSet dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(ontologyValueSetDependencyException);
 
@@ -116,7 +135,7 @@ namespace LHDS.Core.Services.Foundations.OntologyValueSets
             var ontologyValueSetDependencyException = 
                 new OntologyValueSetDependencyException(
                     message: "OntologyValueSet dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(ontologyValueSetDependencyException);
 

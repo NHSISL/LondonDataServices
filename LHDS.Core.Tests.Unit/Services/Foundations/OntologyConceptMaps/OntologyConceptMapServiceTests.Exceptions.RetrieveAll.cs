@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
             var expectedOntologyConceptMapDependencyException =
                 new OntologyConceptMapDependencyException(
                     message: "OntologyConceptMap dependency error occurred, contact support.",
-                    innerException: failedOntologyConceptMapStorageException); 
+                    innerException: failedOntologyConceptMapStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllOntologyConceptMaps())
@@ -52,6 +52,51 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OntologyConceptMaps
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomString();
+            var serviceException = new Exception(exceptionMessage);
+
+            var failedOntologyConceptMapServiceException =
+                new FailedOntologyConceptMapServiceException(
+                    message: "Failed ontologyConceptMap service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedOntologyConceptMapServiceException =
+                new OntologyConceptMapServiceException(
+                    message: "OntologyConceptMap service error occurred, contact support.",
+                    innerException: failedOntologyConceptMapServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllOntologyConceptMaps())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllOntologyConceptMapsAction = () =>
+                this.ontologyConceptMapService.RetrieveAllOntologyConceptMaps();
+
+            OntologyConceptMapServiceException actualOntologyConceptMapServiceException =
+                Assert.Throws<OntologyConceptMapServiceException>(retrieveAllOntologyConceptMapsAction);
+
+            // then
+            actualOntologyConceptMapServiceException.Should()
+                .BeEquivalentTo(expectedOntologyConceptMapServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllOntologyConceptMaps(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedOntologyConceptMapServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

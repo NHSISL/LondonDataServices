@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -224,6 +225,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedTerminologyPollDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateTerminologyPollAsync(randomTerminologyPoll),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnModifyIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll();
+            var serviceException = new Exception();
+
+            var failedTerminologyPollServiceException =
+                new FailedTerminologyPollServiceException(
+                    message: "Failed terminologyPoll service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedTerminologyPollServiceException =
+                new TerminologyPollServiceException(
+                    message: "TerminologyPoll service error occurred, contact support.",
+                    innerException: failedTerminologyPollServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<TerminologyPoll> modifyTerminologyPollTask =
+                this.terminologyPollService.ModifyTerminologyPollAsync(randomTerminologyPoll);
+
+            TerminologyPollServiceException actualTerminologyPollServiceException =
+                await Assert.ThrowsAsync<TerminologyPollServiceException>(
+                    modifyTerminologyPollTask.AsTask);
+
+            // then
+            actualTerminologyPollServiceException.Should()
+                .BeEquivalentTo(expectedTerminologyPollServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectTerminologyPollByIdAsync(randomTerminologyPoll.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTerminologyPollServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

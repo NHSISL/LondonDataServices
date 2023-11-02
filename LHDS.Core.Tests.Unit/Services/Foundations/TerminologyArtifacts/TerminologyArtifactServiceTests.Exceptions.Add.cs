@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
@@ -151,7 +152,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                 await Assert.ThrowsAsync<TerminologyArtifactDependencyValidationException>(
                     addTerminologyArtifactTask.AsTask);
 
-            actualTerminologyArtifactDependencyValidationException.Should().BeEquivalentTo(expectedTerminologyArtifactValidationException);
+            actualTerminologyArtifactDependencyValidationException.Should()
+                .BeEquivalentTo(expectedTerminologyArtifactValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -169,6 +171,59 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnAddIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            TerminologyArtifact someTerminologyArtifact = CreateRandomTerminologyArtifact();
+
+            var databaseUpdateException =
+                new DbUpdateException();
+
+            var failedTerminologyArtifactStorageException =
+                new FailedTerminologyArtifactStorageException(
+                    message: "Failed terminologyArtifact storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+            var expectedTerminologyArtifactDependencyException =
+                new TerminologyArtifactDependencyException(
+                    message: "TerminologyArtifact dependency error occurred, contact support.",
+                    innerException: failedTerminologyArtifactStorageException); 
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<TerminologyArtifact> addTerminologyArtifactTask =
+                this.terminologyArtifactService.AddTerminologyArtifactAsync(someTerminologyArtifact);
+
+            TerminologyArtifactDependencyException actualTerminologyArtifactDependencyException =
+                await Assert.ThrowsAsync<TerminologyArtifactDependencyException>(
+                    addTerminologyArtifactTask.AsTask);
+
+            // then
+            actualTerminologyArtifactDependencyException.Should()
+                .BeEquivalentTo(expectedTerminologyArtifactDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertTerminologyArtifactAsync(It.IsAny<TerminologyArtifact>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTerminologyArtifactDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

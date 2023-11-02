@@ -47,5 +47,8 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
 
                 return maybeTerminologyArtifact;
             });
+
+        public ValueTask<TerminologyArtifact> ModifyTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact) =>
+            throw new NotImplementedException();
     }
 }

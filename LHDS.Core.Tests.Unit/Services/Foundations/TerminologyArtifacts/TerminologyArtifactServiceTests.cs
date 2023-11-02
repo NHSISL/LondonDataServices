@@ -64,6 +64,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static TerminologyArtifact CreateRandomModifyTerminologyArtifact(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            TerminologyArtifact randomTerminologyArtifact = CreateRandomTerminologyArtifact(dateTimeOffset);
+
+            randomTerminologyArtifact.CreatedDate =
+                randomTerminologyArtifact.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomTerminologyArtifact;
+        }
+
         private static IQueryable<TerminologyArtifact> CreateRandomTerminologyArtifacts()
         {
             return CreateTerminologyArtifactFiller(dateTimeOffset: GetRandomDateTimeOffset())

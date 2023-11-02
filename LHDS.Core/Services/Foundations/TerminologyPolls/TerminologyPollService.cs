@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -29,5 +30,8 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
 
                 return await this.storageBroker.InsertTerminologyPollAsync(terminologyPoll);
             });
+
+        public IQueryable<TerminologyPoll> RetrieveAllTerminologyPolls() =>
+            throw new System.NotImplementedException();
     }
 }

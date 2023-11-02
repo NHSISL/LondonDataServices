@@ -48,7 +48,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                 return maybeTerminologyPoll;
             });
 
-        public ValueTask<TerminologyPoll> ModifyTerminologyPollAsync(TerminologyPoll terminologyPoll) =>
-            throw new NotImplementedException();
+        public async ValueTask<TerminologyPoll> ModifyTerminologyPollAsync(TerminologyPoll terminologyPoll) =>
+            await this.storageBroker.UpdateTerminologyPollAsync(terminologyPoll);
     }
 }

@@ -35,7 +35,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
         public IQueryable<TerminologyArtifact> RetrieveAllTerminologyArtifacts() =>
             TryCatch(() => this.storageBroker.SelectAllTerminologyArtifacts());
 
-        public ValueTask<TerminologyArtifact> RetrieveTerminologyArtifactByIdAsync(Guid terminologyArtifactId) =>
-            throw new NotImplementedException();
+        public async ValueTask<TerminologyArtifact> RetrieveTerminologyArtifactByIdAsync(Guid terminologyArtifactId) =>
+            await this.storageBroker.SelectTerminologyArtifactByIdAsync(terminologyArtifactId);
     }
 }

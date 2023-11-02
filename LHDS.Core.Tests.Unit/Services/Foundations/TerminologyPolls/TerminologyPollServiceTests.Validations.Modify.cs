@@ -223,7 +223,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     modifyTerminologyPollTask.AsTask);
 
             // then
-            actualTerminologyPollValidationException.Should().BeEquivalentTo(expectedTerminologyPollValidatonException);
+            actualTerminologyPollValidationException.Should()
+                .BeEquivalentTo(expectedTerminologyPollValidatonException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -241,6 +242,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfTerminologyPollDoesNotExistAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            TerminologyPoll randomTerminologyPoll = CreateRandomModifyTerminologyPoll(randomDateTimeOffset);
+            TerminologyPoll nonExistTerminologyPoll = randomTerminologyPoll;
+            TerminologyPoll nullTerminologyPoll = null;
+
+            var notFoundTerminologyPollException =
+                new NotFoundTerminologyPollException(nonExistTerminologyPoll.Id);
+
+            var expectedTerminologyPollValidationException =
+                new TerminologyPollValidationException(
+                    message: "TerminologyPoll validation errors occurred, please try again.",
+                    innerException: notFoundTerminologyPollException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectTerminologyPollByIdAsync(nonExistTerminologyPoll.Id))
+                .ReturnsAsync(nullTerminologyPoll);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when 
+            ValueTask<TerminologyPoll> modifyTerminologyPollTask =
+                this.terminologyPollService.ModifyTerminologyPollAsync(nonExistTerminologyPoll);
+
+            TerminologyPollValidationException actualTerminologyPollValidationException =
+                await Assert.ThrowsAsync<TerminologyPollValidationException>(
+                    modifyTerminologyPollTask.AsTask);
+
+            // then
+            actualTerminologyPollValidationException.Should()
+                .BeEquivalentTo(expectedTerminologyPollValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectTerminologyPollByIdAsync(nonExistTerminologyPoll.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTerminologyPollValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

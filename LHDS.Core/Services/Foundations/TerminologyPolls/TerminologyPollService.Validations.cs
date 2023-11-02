@@ -77,6 +77,16 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             }
         }
 
+        private static void ValidateAgainstStorageTerminologyPollOnModify(TerminologyPoll inputTerminologyPoll, TerminologyPoll storageTerminologyPoll)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputTerminologyPoll.CreatedDate,
+                    secondDate: storageTerminologyPoll.CreatedDate,
+                    secondDateName: nameof(TerminologyPoll.CreatedDate)),
+                Parameter: nameof(TerminologyPoll.CreatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

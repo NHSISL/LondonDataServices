@@ -166,5 +166,52 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRemoveIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someTerminologyArtifactId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedTerminologyArtifactServiceException =
+                new FailedTerminologyArtifactServiceException(
+                    message: "Failed terminologyArtifact service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedTerminologyArtifactServiceException =
+                new TerminologyArtifactServiceException(
+                    message: "TerminologyArtifact service error occurred, contact support.",
+                    innerException: failedTerminologyArtifactServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectTerminologyArtifactByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<TerminologyArtifact> removeTerminologyArtifactByIdTask =
+                this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(someTerminologyArtifactId);
+
+            TerminologyArtifactServiceException actualTerminologyArtifactServiceException =
+                await Assert.ThrowsAsync<TerminologyArtifactServiceException>(
+                    removeTerminologyArtifactByIdTask.AsTask);
+
+            // then
+            actualTerminologyArtifactServiceException.Should()
+                .BeEquivalentTo(expectedTerminologyArtifactServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectTerminologyArtifactByIdAsync(It.IsAny<Guid>()),
+                        Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTerminologyArtifactServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

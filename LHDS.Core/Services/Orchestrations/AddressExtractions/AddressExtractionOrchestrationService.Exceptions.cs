@@ -28,6 +28,11 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressExtractionOrchestrationException);
             }
+            catch (InvalidArchiveAddressExtractionOrchestrationException
+                invalidArchiveAddressExtractionOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidArchiveAddressExtractionOrchestrationException);
+            }
             catch (AddressParserValidationException addressParserValidationException)
             {
                 throw CreateAndLogDependencyValidationException(addressParserValidationException);

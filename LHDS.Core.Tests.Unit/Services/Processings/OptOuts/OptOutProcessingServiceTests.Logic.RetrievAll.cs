@@ -4,7 +4,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -16,7 +15,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
     public partial class OptOutProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldRetrieveOptOutProcessingAllAsync()
+        public void ShouldRetrieveOptOutProcessingAllAsync()
         {
             // given
             IQueryable<OptOut> randomOptOuts = CreateRandomOptOuts();

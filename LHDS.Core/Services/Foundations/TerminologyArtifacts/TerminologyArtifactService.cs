@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -33,5 +34,8 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
 
         public IQueryable<TerminologyArtifact> RetrieveAllTerminologyArtifacts() =>
             TryCatch(() => this.storageBroker.SelectAllTerminologyArtifacts());
+
+        public ValueTask<TerminologyArtifact> RetrieveTerminologyArtifactByIdAsync(Guid terminologyArtifactId) =>
+            throw new NotImplementedException();
     }
 }

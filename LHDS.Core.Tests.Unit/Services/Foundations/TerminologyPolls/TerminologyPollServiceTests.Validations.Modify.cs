@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -65,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             var invalidTerminologyPollException = 
                 new InvalidTerminologyPollException(
-                        message: "Invalid terminologyPoll. Please correct the errors and try again.");
+                    message: "Invalid terminologyPoll. Please correct the errors and try again.");
 
             invalidTerminologyPollException.AddData(
                 key: nameof(TerminologyPoll.Id),
@@ -116,6 +117,51 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateTerminologyPollAsync(It.IsAny<TerminologyPoll>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll(randomDateTimeOffset);
+            TerminologyPoll invalidTerminologyPoll = randomTerminologyPoll;
+            var invalidTerminologyPollException = 
+                new InvalidTerminologyPollException(
+                    message: "Invalid terminologyPoll. Please correct the errors and try again.");
+
+            invalidTerminologyPollException.AddData(
+                key: nameof(TerminologyPoll.UpdatedDate),
+                values: $"Date is the same as {nameof(TerminologyPoll.CreatedDate)}");
+
+            var expectedTerminologyPollValidationException =
+                new TerminologyPollValidationException(
+                    message: "TerminologyPoll validation errors occurred, please try again.",
+                    innerException: invalidTerminologyPollException);
+
+            // when
+            ValueTask<TerminologyPoll> modifyTerminologyPollTask =
+                this.terminologyPollService.ModifyTerminologyPollAsync(invalidTerminologyPoll);
+
+            TerminologyPollValidationException actualTerminologyPollValidationException =
+                await Assert.ThrowsAsync<TerminologyPollValidationException>(
+                    modifyTerminologyPollTask.AsTask);
+
+            // then
+            actualTerminologyPollValidationException.Should().BeEquivalentTo(expectedTerminologyPollValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTerminologyPollValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectTerminologyPollByIdAsync(invalidTerminologyPoll.Id),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

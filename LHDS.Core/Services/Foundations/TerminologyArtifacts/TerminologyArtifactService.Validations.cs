@@ -90,7 +90,13 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                     first: inputTerminologyArtifact.CreatedBy,
                     second: storageTerminologyArtifact.CreatedBy,
                     secondName: nameof(TerminologyArtifact.CreatedBy)),
-                Parameter: nameof(TerminologyArtifact.CreatedBy)));
+                Parameter: nameof(TerminologyArtifact.CreatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: inputTerminologyArtifact.UpdatedDate,
+                    secondDate: storageTerminologyArtifact.UpdatedDate,
+                    secondDateName: nameof(TerminologyArtifact.UpdatedDate)),
+                Parameter: nameof(TerminologyArtifact.UpdatedDate)));
         }
 
         private static dynamic IsInvalid(Guid id) => new

@@ -38,6 +38,16 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
         private void ValidateTerminologyArtifactOnModify(TerminologyArtifact terminologyArtifact)
         {
             ValidateTerminologyArtifactIsNotNull(terminologyArtifact);
+
+            Validate(
+                (Rule: IsInvalid(terminologyArtifact.Id), Parameter: nameof(TerminologyArtifact.Id)),
+
+                // TODO: Add any other required validation rules
+
+                (Rule: IsInvalid(terminologyArtifact.CreatedDate), Parameter: nameof(TerminologyArtifact.CreatedDate)),
+                (Rule: IsInvalid(terminologyArtifact.CreatedBy), Parameter: nameof(TerminologyArtifact.CreatedBy)),
+                (Rule: IsInvalid(terminologyArtifact.UpdatedDate), Parameter: nameof(TerminologyArtifact.UpdatedDate)),
+                (Rule: IsInvalid(terminologyArtifact.UpdatedBy), Parameter: nameof(TerminologyArtifact.UpdatedBy)));
         }
 
         public void ValidateTerminologyArtifactId(Guid terminologyArtifactId) =>
@@ -94,7 +104,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
-        
+
         private static dynamic IsNotSame(
            string first,
            string second,

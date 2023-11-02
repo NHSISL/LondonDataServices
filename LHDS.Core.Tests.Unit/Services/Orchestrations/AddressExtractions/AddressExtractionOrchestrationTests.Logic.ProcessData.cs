@@ -26,7 +26,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             List<Address> actualAddresses = null;
             try
             {
-
                 // Given
                 string assembly = Assembly.GetExecutingAssembly().Location;
                 string inputFilePath = Path.Combine(Path.GetDirectoryName(assembly), @"Resources/TestNestedZip.zip");
@@ -58,6 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     await this.addressExtractionOrchestrationService.ProcessDataAsync(inputData);
 
                 // Then
+                var x = 1;
                 actualAddresses.Should().BeEquivalentTo(expectedAddresses, options =>
                    options.Excluding(address => address.Id));
 

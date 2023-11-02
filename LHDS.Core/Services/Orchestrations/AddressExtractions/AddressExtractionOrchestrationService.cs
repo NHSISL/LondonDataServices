@@ -59,9 +59,8 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                             {
                                 await entryStream.CopyToAsync(tempMemoryStream);
                                 byte[] csvData = tempMemoryStream.ToArray();
-
+                                ValidateDataOnProcessCsv(csvData);
                                 List<Address> csvAddresses = await this.addressParserService.ProcessCsvAsync(csvData);
-
                                 addresses.AddRange(csvAddresses);
 
                                 var audit = new AddressExtractionAudit

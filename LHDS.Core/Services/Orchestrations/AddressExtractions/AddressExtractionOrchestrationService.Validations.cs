@@ -21,5 +21,10 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                     "please correct the errors and try again.");
             }
         }
+
+        private void ValidateDataOnProcessCsv(byte[] data)
+        {
+            ValidateDataIsNotNull(data);
+        }
     }
 }

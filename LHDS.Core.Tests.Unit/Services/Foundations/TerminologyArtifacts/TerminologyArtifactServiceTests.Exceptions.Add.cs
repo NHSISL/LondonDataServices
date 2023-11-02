@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -219,6 +220,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedTerminologyArtifactDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            TerminologyArtifact someTerminologyArtifact = CreateRandomTerminologyArtifact();
+            var serviceException = new Exception();
+
+            var failedTerminologyArtifactServiceException =
+                new FailedTerminologyArtifactServiceException(
+                    message: "Failed terminologyArtifact service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedTerminologyArtifactServiceException =
+                new TerminologyArtifactServiceException(
+                    message: "TerminologyArtifact service error occurred, contact support.",
+                    innerException: failedTerminologyArtifactServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<TerminologyArtifact> addTerminologyArtifactTask =
+                this.terminologyArtifactService.AddTerminologyArtifactAsync(someTerminologyArtifact);
+
+            TerminologyArtifactServiceException actualTerminologyArtifactServiceException =
+                await Assert.ThrowsAsync<TerminologyArtifactServiceException>(
+                    addTerminologyArtifactTask.AsTask);
+
+            // then
+            actualTerminologyArtifactServiceException.Should()
+                .BeEquivalentTo(expectedTerminologyArtifactServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertTerminologyArtifactAsync(It.IsAny<TerminologyArtifact>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTerminologyArtifactServiceException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

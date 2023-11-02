@@ -91,6 +91,15 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
 
                 throw CreateAndLogCriticalDependencyException(failedTerminologyPollStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedTerminologyPollServiceException =
+                    new FailedTerminologyPollServiceException(
+                        message: "Failed terminologyPoll service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedTerminologyPollServiceException);
+            }
         }
 
         private TerminologyPollValidationException CreateAndLogValidationException(Xeption exception)

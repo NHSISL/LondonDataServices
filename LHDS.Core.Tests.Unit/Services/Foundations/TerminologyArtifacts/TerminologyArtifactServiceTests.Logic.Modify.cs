@@ -28,6 +28,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
+                broker.SelectTerminologyArtifactByIdAsync(terminologyArtifactId))
+                    .ReturnsAsync(storageTerminologyArtifact);
+
+            this.storageBrokerMock.Setup(broker =>
                 broker.UpdateTerminologyArtifactAsync(inputTerminologyArtifact))
                     .ReturnsAsync(updatedTerminologyArtifact);
 
@@ -43,12 +47,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
+                broker.SelectTerminologyArtifactByIdAsync(inputTerminologyArtifact.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
                 broker.UpdateTerminologyArtifactAsync(inputTerminologyArtifact),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -1,11 +1,15 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
@@ -15,7 +19,8 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
         private delegate ValueTask<TerminologyArtifact> ReturningTerminologyArtifactFunction();
         private delegate IQueryable<TerminologyArtifact> ReturningTerminologyArtifactsFunction();
 
-        private async ValueTask<TerminologyArtifact> TryCatch(ReturningTerminologyArtifactFunction returningTerminologyArtifactFunction)
+        private async ValueTask<TerminologyArtifact> TryCatch(
+            ReturningTerminologyArtifactFunction returningTerminologyArtifactFunction)
         {
             try
             {
@@ -55,14 +60,14 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             {
                 var invalidTerminologyArtifactReferenceException =
                     new InvalidTerminologyArtifactReferenceException(
-                        message: "Invalid terminologyArtifact reference error occurred.", 
+                        message: "Invalid terminologyArtifact reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidTerminologyArtifactReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var lockedTerminologyArtifactException = 
+                var lockedTerminologyArtifactException =
                     new LockedTerminologyArtifactException(
                         message: "Locked terminologyArtifact record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
@@ -82,14 +87,15 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             {
                 var failedTerminologyArtifactServiceException =
                     new FailedTerminologyArtifactServiceException(
-                        message: "Failed terminologyArtifact service occurred, please contact support", 
+                        message: "Failed terminologyArtifact service occurred, please contact support",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedTerminologyArtifactServiceException);
             }
         }
 
-        private IQueryable<TerminologyArtifact> TryCatch(ReturningTerminologyArtifactsFunction returningTerminologyArtifactsFunction)
+        private IQueryable<TerminologyArtifact> TryCatch(
+            ReturningTerminologyArtifactsFunction returningTerminologyArtifactsFunction)
         {
             try
             {
@@ -108,7 +114,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             {
                 var failedTerminologyArtifactServiceException =
                     new FailedTerminologyArtifactServiceException(
-                        message: "Failed terminologyArtifact service occurred, please contact support", 
+                        message: "Failed terminologyArtifact service occurred, please contact support",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedTerminologyArtifactServiceException);
@@ -129,17 +135,18 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
 
         private TerminologyArtifactDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
-            var terminologyArtifactDependencyException = 
+            var terminologyArtifactDependencyException =
                 new TerminologyArtifactDependencyException(
                     message: "TerminologyArtifact dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(terminologyArtifactDependencyException);
 
             return terminologyArtifactDependencyException;
         }
 
-        private TerminologyArtifactDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        private TerminologyArtifactDependencyValidationException CreateAndLogDependencyValidationException(
+            Xeption exception)
         {
             var terminologyArtifactDependencyValidationException =
                 new TerminologyArtifactDependencyValidationException(
@@ -154,10 +161,10 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
         private TerminologyArtifactDependencyException CreateAndLogDependencyException(
             Xeption exception)
         {
-            var terminologyArtifactDependencyException = 
+            var terminologyArtifactDependencyException =
                 new TerminologyArtifactDependencyException(
                     message: "TerminologyArtifact dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(terminologyArtifactDependencyException);
 
@@ -167,7 +174,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
         private TerminologyArtifactServiceException CreateAndLogServiceException(
             Xeption exception)
         {
-            var terminologyArtifactServiceException = 
+            var terminologyArtifactServiceException =
                 new TerminologyArtifactServiceException(
                     message: "TerminologyArtifact service error occurred, contact support.",
                     innerException: exception);

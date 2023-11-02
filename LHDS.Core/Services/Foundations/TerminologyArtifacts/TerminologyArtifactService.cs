@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -57,7 +61,10 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                     await this.storageBroker.SelectTerminologyArtifactByIdAsync(terminologyArtifact.Id);
 
                 ValidateStorageTerminologyArtifact(maybeTerminologyArtifact, terminologyArtifact.Id);
-                ValidateAgainstStorageTerminologyArtifactOnModify(inputTerminologyArtifact: terminologyArtifact, storageTerminologyArtifact: maybeTerminologyArtifact);
+
+                ValidateAgainstStorageTerminologyArtifactOnModify(
+                    inputTerminologyArtifact: terminologyArtifact,
+                    storageTerminologyArtifact: maybeTerminologyArtifact);
 
                 return await this.storageBroker.UpdateTerminologyArtifactAsync(terminologyArtifact);
             });

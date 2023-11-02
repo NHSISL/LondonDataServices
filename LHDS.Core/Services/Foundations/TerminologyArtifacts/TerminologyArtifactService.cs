@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             });
 
         public IQueryable<TerminologyArtifact> RetrieveAllTerminologyArtifacts() =>
-            this.storageBroker.SelectAllTerminologyArtifacts();
+            TryCatch(() => this.storageBroker.SelectAllTerminologyArtifacts());
     }
 }

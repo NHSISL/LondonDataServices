@@ -35,6 +35,9 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                 (Rule: IsNotRecent(terminologyArtifact.CreatedDate), Parameter: nameof(TerminologyArtifact.CreatedDate)));
         }
 
+        public void ValidateTerminologyArtifactId(Guid terminologyArtifactId) =>
+            Validate((Rule: IsInvalid(terminologyArtifactId), Parameter: nameof(TerminologyArtifact.Id)));
+
         private static void ValidateTerminologyArtifactIsNotNull(TerminologyArtifact terminologyArtifact)
         {
             if (terminologyArtifact is null)

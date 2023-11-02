@@ -61,5 +61,8 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
 
                 return await this.storageBroker.UpdateTerminologyPollAsync(terminologyPoll);
             });
+
+        public ValueTask<TerminologyPoll> RemoveTerminologyPollByIdAsync(Guid terminologyPollId) =>
+            throw new NotImplementedException();
     }
 }

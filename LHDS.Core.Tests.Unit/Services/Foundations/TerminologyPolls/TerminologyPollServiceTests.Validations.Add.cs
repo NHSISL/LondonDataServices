@@ -1,9 +1,13 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
@@ -55,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             // given
             var invalidTerminologyPoll = new TerminologyPoll
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                ResourceType = invalidText,
             };
 
             var invalidTerminologyPollException =
@@ -66,11 +70,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 key: nameof(TerminologyPoll.Id),
                 values: "Id is required");
 
-            //invalidTerminologyPollException.AddData(
-            //    key: nameof(TerminologyPoll.Name),
-            //    values: "Text is required");
-
-            // TODO: Add or remove data here to suit the validation needs for the TerminologyPoll model
+            invalidTerminologyPollException.AddData(
+                key: nameof(TerminologyPoll.ResourceType),
+                values: "Text is required");
 
             invalidTerminologyPollException.AddData(
                 key: nameof(TerminologyPoll.CreatedDate),
@@ -135,7 +137,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             invalidTerminologyPoll.UpdatedDate =
                 invalidTerminologyPoll.CreatedDate.AddDays(randomNumber);
 
-            var invalidTerminologyPollException = 
+            var invalidTerminologyPollException =
                 new InvalidTerminologyPollException(
                     message: "Invalid terminologyPoll. Please correct the errors and try again.");
 

@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
@@ -12,9 +16,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
 
             Validate(
                 (Rule: IsInvalid(terminologyPoll.Id), Parameter: nameof(TerminologyPoll.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(terminologyPoll.ResourceType), Parameter: nameof(TerminologyPoll.ResourceType)),
                 (Rule: IsInvalid(terminologyPoll.CreatedDate), Parameter: nameof(TerminologyPoll.CreatedDate)),
                 (Rule: IsInvalid(terminologyPoll.CreatedBy), Parameter: nameof(TerminologyPoll.CreatedBy)),
                 (Rule: IsInvalid(terminologyPoll.UpdatedDate), Parameter: nameof(TerminologyPoll.UpdatedDate)),
@@ -41,9 +43,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
 
             Validate(
                 (Rule: IsInvalid(terminologyPoll.Id), Parameter: nameof(TerminologyPoll.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(terminologyPoll.ResourceType), Parameter: nameof(TerminologyPoll.ResourceType)),
                 (Rule: IsInvalid(terminologyPoll.CreatedDate), Parameter: nameof(TerminologyPoll.CreatedDate)),
                 (Rule: IsInvalid(terminologyPoll.CreatedBy), Parameter: nameof(TerminologyPoll.CreatedBy)),
                 (Rule: IsInvalid(terminologyPoll.UpdatedDate), Parameter: nameof(TerminologyPoll.UpdatedDate)),
@@ -172,7 +172,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidTerminologyPollException = 
+            var invalidTerminologyPollException =
                 new InvalidTerminologyPollException(
                     message: "Invalid terminologyPoll. Please correct the errors and try again.");
 

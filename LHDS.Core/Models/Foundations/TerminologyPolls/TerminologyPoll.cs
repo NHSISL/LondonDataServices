@@ -5,7 +5,7 @@
 using System;
 using LHDS.Core.Models.Bases;
 
-namespace LHDS.Core.Models.Foundations.OntologyPolls
+namespace LHDS.Core.Models.Foundations.TerminologyPolls
 {
     public class TerminologyPoll : IKey, IAudit
     {

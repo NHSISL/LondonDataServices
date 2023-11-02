@@ -61,5 +61,8 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
 
                 return await this.storageBroker.UpdateTerminologyArtifactAsync(terminologyArtifact);
             });
+
+        public ValueTask<TerminologyArtifact> RemoveTerminologyArtifactByIdAsync(Guid terminologyArtifactId) =>
+            throw new NotImplementedException();
     }
 }

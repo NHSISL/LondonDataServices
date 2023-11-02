@@ -91,6 +91,15 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
 
                 throw CreateAndLogCriticalDependencyException(failedTerminologyArtifactStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedTerminologyArtifactServiceException =
+                    new FailedTerminologyArtifactServiceException(
+                        message: "Failed terminologyArtifact service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedTerminologyArtifactServiceException);
+            }
         }
 
         private TerminologyArtifactValidationException CreateAndLogValidationException(Xeption exception)

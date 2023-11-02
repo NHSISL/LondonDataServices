@@ -7,8 +7,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.AddressExtractionAudits;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
 using LHDS.Core.Services.Foundations.AddressExtractionAudits;
@@ -22,22 +24,24 @@ using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
-    public partial class AddressExctractioneOrchestrationServiceTests
+    public partial class AddressExctractionOrchestrationServiceTests
     {
         private readonly Mock<IAddressParserService> addressParserServiceMock;
         private readonly Mock<IAddressExtractionAuditService> addressExtractionAuditServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly ICompareLogic compareLogic;
         private readonly IAddressExtractionOrchestrationService addressExtractionOrchestrationService;
         private readonly ITestOutputHelper output;
 
-        public AddressExctractioneOrchestrationServiceTests(ITestOutputHelper output)
+        public AddressExctractionOrchestrationServiceTests(ITestOutputHelper output)
         {
             this.addressParserServiceMock = new Mock<IAddressParserService>();
             this.addressExtractionAuditServiceMock = new Mock<IAddressExtractionAuditService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.compareLogic = new CompareLogic();
             this.output = output;
 
@@ -45,7 +49,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                 addressParserService: addressParserServiceMock.Object,
                 addressExtractionAuditService: addressExtractionAuditServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
-                dateTimeBroker: dateTimeBrokerMock.Object);
+                dateTimeBroker: dateTimeBrokerMock.Object,
+                identifierBroker: identifierBrokerMock.Object);
         }
 
         private static string GetRandomString() =>
@@ -59,6 +64,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
+
+        private Expression<Func<AddressExtractionAudit, bool>> SameAddressExtractionAuditAs(
+            AddressExtractionAudit expectedAddressExtractionAudit)
+        {
+            return actualAddressExtractionAudit =>
+                this.compareLogic.Compare(expectedAddressExtractionAudit, actualAddressExtractionAudit)
+                    .AreEqual;
+        }
 
         private static IQueryable<Address> CreateRandomAddresses()
         {

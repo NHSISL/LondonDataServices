@@ -217,5 +217,66 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreatedDateIsNotRecentAndLogItAsync(
+            int minutesBeforeOrAfter)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+
+            DateTimeOffset invalidDateTime =
+                randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
+
+            TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll(invalidDateTime);
+            TerminologyPoll invalidTerminologyPoll = randomTerminologyPoll;
+
+            var invalidTerminologyPollException =
+                new InvalidTerminologyPollException(
+                    message: "Invalid terminologyPoll. Please correct the errors and try again.");
+
+            invalidTerminologyPollException.AddData(
+                key: nameof(TerminologyPoll.CreatedDate),
+                values: "Date is not recent");
+
+            var expectedTerminologyPollValidationException =
+                new TerminologyPollValidationException(
+                    message: "TerminologyPoll validation errors occurred, please try again.",
+                    innerException: invalidTerminologyPollException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<TerminologyPoll> addTerminologyPollTask =
+                this.terminologyPollService.AddTerminologyPollAsync(invalidTerminologyPoll);
+
+            TerminologyPollValidationException actualTerminologyPollValidationException =
+                await Assert.ThrowsAsync<TerminologyPollValidationException>(
+                    addTerminologyPollTask.AsTask);
+
+            // then
+            actualTerminologyPollValidationException.Should()
+                .BeEquivalentTo(expectedTerminologyPollValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTerminologyPollValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertTerminologyPollAsync(It.IsAny<TerminologyPoll>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

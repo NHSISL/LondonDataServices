@@ -10,5 +10,6 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
         ValueTask<TerminologyArtifact> AddTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact);
         IQueryable<TerminologyArtifact> RetrieveAllTerminologyArtifacts();
         ValueTask<TerminologyArtifact> RetrieveTerminologyArtifactByIdAsync(Guid terminologyArtifactId);
+        ValueTask<TerminologyArtifact> ModifyTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact);
     }
 }

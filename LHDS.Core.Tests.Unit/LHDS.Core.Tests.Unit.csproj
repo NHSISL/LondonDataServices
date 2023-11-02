@@ -10,6 +10,9 @@
 
 	<ItemGroup>
 	  <None Remove="Resources\NestedCsvZip.zip" />
+	  <None Remove="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessZipFileWithCsvAddressesData.zip" />
+	  <None Remove="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessZipFileWithOnlyCsvAddressesData.zip" />
+	  <None Remove="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessZipFileWithZippedCsvAddressesData.zip" />
 	  <None Remove="Resources\TestCsv1.csv" />
 	  <None Remove="Resources\TestCsv2.csv" />
 	  <None Remove="Resources\TestCsv2.zip" />
@@ -20,10 +23,13 @@
 	  <Content Include="Resources\NestedCsvZip.zip">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="Resources\TestCsv1.csv">
+	  <Content Include="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessZipFileWithOnlyCsvAddressesData.zip">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="Resources\TestCsv2.zip">
+	  <Content Include="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessZipFileWithZippedCsvAddressesData.zip">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\TestCsv1.csv">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="Resources\TestCsv2.csv">

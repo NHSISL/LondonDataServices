@@ -17,7 +17,7 @@ using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 {
-    public partial class AddressExctractioneOrchestrationServiceTests
+    public partial class AddressExctractionOrchestrationServiceTests
     {
         [Theory]
         [MemberData(nameof(AddressExtractionOrchestrationDependencyValidationExceptions))]

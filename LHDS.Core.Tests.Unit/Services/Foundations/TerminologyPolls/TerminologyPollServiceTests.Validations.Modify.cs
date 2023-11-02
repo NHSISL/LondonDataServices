@@ -88,7 +88,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             invalidTerminologyPollException.AddData(
                 key: nameof(TerminologyPoll.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(TerminologyPoll.CreatedDate)}"
+                });
 
             invalidTerminologyPollException.AddData(
                 key: nameof(TerminologyPoll.UpdatedBy),
@@ -131,6 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll(randomDateTimeOffset);
             TerminologyPoll invalidTerminologyPoll = randomTerminologyPoll;
+            
             var invalidTerminologyPollException = 
                 new InvalidTerminologyPollException(
                     message: "Invalid terminologyPoll. Please correct the errors and try again.");

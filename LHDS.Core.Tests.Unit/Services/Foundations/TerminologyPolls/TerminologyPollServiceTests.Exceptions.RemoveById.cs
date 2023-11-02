@@ -1,6 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
@@ -58,6 +60,59 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
+                    Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationOnRemoveIfDatabaseUpdateConcurrencyErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someTerminologyPollId = Guid.NewGuid();
+
+            var databaseUpdateConcurrencyException =
+                new DbUpdateConcurrencyException();
+
+            var lockedTerminologyPollException =
+                new LockedTerminologyPollException(
+                    message: "Locked terminologyPoll record exception, please try again later",
+                    innerException: databaseUpdateConcurrencyException);
+
+            var expectedTerminologyPollDependencyValidationException =
+                new TerminologyPollDependencyValidationException(
+                    message: "TerminologyPoll dependency validation occurred, please try again.",
+                    innerException: lockedTerminologyPollException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectTerminologyPollByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<TerminologyPoll> removeTerminologyPollByIdTask =
+                this.terminologyPollService.RemoveTerminologyPollByIdAsync(someTerminologyPollId);
+
+            TerminologyPollDependencyValidationException actualTerminologyPollDependencyValidationException =
+                await Assert.ThrowsAsync<TerminologyPollDependencyValidationException>(
+                    removeTerminologyPollByIdTask.AsTask);
+
+            // then
+            actualTerminologyPollDependencyValidationException.Should()
+                .BeEquivalentTo(expectedTerminologyPollDependencyValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectTerminologyPollByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTerminologyPollDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.DeleteTerminologyPollAsync(It.IsAny<TerminologyPoll>()),
                     Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

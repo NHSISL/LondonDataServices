@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             });
 
         public IQueryable<TerminologyPoll> RetrieveAllTerminologyPolls() =>
-            throw new System.NotImplementedException();
+            this.storageBroker.SelectAllTerminologyPolls();
     }
 }

@@ -64,6 +64,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static TerminologyPoll CreateRandomModifyTerminologyPoll(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll(dateTimeOffset);
+
+            randomTerminologyPoll.CreatedDate =
+                randomTerminologyPoll.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomTerminologyPoll;
+        }
+
         private static IQueryable<TerminologyPoll> CreateRandomTerminologyPolls()
         {
             return CreateTerminologyPollFiller(dateTimeOffset: GetRandomDateTimeOffset())

@@ -33,8 +33,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
                 List<string> unZippedInputFilePaths =
                     new List<string> {
-                    Path.Combine(Path.GetDirectoryName(assembly), @"Resources/TestCsv1.csv"),
                     Path.Combine(Path.GetDirectoryName(assembly), @"Resources/TestCsv2.csv")
+                    Path.Combine(Path.GetDirectoryName(assembly), @"Resources/TestCsv1.csv"),
                     };
 
                 List<Address> outputAddresses = new List<Address>();
@@ -84,8 +84,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     ? string.Join(", ", actualAddresses.Select(a => a.ToString()))
                     : "Not set";
 
-                output.WriteLine($"Error: {ex.Message}, Inner ex: {ex.InnerException.Message}, Inner inner ex: {ex.InnerException.InnerException.Message}, actualAddress: {actualAddressesStr}");
-                Assert.Fail();
+                var message = $"Error: {ex.Message}, Inner ex: {ex.InnerException.Message}, Inner inner ex: {ex.InnerException.InnerException.Message}, actualAddress: {actualAddressesStr}";
+                output.WriteLine(message);
+                Assert.Fail(message);
             }
         }
     }

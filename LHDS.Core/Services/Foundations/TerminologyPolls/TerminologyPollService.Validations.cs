@@ -38,6 +38,14 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
         public void ValidateTerminologyPollId(Guid terminologyPollId) =>
             Validate((Rule: IsInvalid(terminologyPollId), Parameter: nameof(TerminologyPoll.Id)));
 
+        private static void ValidateStorageTerminologyPoll(TerminologyPoll maybeTerminologyPoll, Guid terminologyPollId)
+        {
+            if (maybeTerminologyPoll is null)
+            {
+                throw new NotFoundTerminologyPollException(terminologyPollId);
+            }
+        }
+
         private static void ValidateTerminologyPollIsNotNull(TerminologyPoll terminologyPoll)
         {
             if (terminologyPoll is null)

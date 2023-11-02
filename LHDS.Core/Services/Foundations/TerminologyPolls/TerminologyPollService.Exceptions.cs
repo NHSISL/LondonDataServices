@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
@@ -33,6 +34,15 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
 
                 throw CreateAndLogCriticalDependencyException(failedTerminologyPollStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsTerminologyPollException =
+                    new AlreadyExistsTerminologyPollException(
+                        message: "TerminologyPoll with the same Id already exists.",
+                        innerException: duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsTerminologyPollException);
+            }
         }
 
         private TerminologyPollValidationException CreateAndLogValidationException(Xeption exception)
@@ -57,6 +67,18 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             this.loggingBroker.LogCritical(terminologyPollDependencyException);
 
             return terminologyPollDependencyException;
+        }
+
+        private TerminologyPollDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var terminologyPollDependencyValidationException =
+                new TerminologyPollDependencyValidationException(
+                    message: "TerminologyPoll dependency validation occurred, please try again.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(terminologyPollDependencyValidationException);
+
+            return terminologyPollDependencyValidationException;
         }
     }
 }

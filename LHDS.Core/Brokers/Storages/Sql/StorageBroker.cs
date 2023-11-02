@@ -39,17 +39,17 @@ namespace LHDS.Core.Brokers.Storages.Sql
             AddDataTypeConfigurations(modelBuilder);
             AddSupplierConfigurations(modelBuilder);
             AddIngestionTrackingConfigurations(modelBuilder);
+            AddIngestionTrackingAuditConfigurations(modelBuilder);
             AddOptOutConfigurations(modelBuilder);
             AddObjectColumnConfigurations(modelBuilder);
             AddPdsAuditConfigurations(modelBuilder);
             AddSpecificationObjectConfigurations(modelBuilder);
+            AddOntologyCodeSystemConfigurations(modelBuilder);
+            AddOntologyValueSetConfigurations(modelBuilder);
+            AddOntologyConceptMapConfigurations(modelBuilder);
+            AddOntologyPollConfigurations(modelBuilder);
 
             AddSupplierSeedData(modelBuilder);
-            AddDataSetSeedData(modelBuilder);
-            AddDataSetSpecificationSeedData(modelBuilder);
-            AddSpecificationObjectSeedData(modelBuilder);
-            AddObjectColumnSeedData(modelBuilder);
-            AddIngestionTrackingAuditConfigurations(modelBuilder);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

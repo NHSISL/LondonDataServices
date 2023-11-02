@@ -60,6 +60,15 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
 
                 throw CreateAndLogDependencyValidationException(invalidTerminologyArtifactReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedTerminologyArtifactException = 
+                    new LockedTerminologyArtifactException(
+                        message: "Locked terminologyArtifact record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedTerminologyArtifactException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedTerminologyArtifactStorageException =
@@ -123,7 +132,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             var terminologyArtifactDependencyException = 
                 new TerminologyArtifactDependencyException(
                     message: "TerminologyArtifact dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(terminologyArtifactDependencyException);
 
@@ -148,7 +157,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             var terminologyArtifactDependencyException = 
                 new TerminologyArtifactDependencyException(
                     message: "TerminologyArtifact dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(terminologyArtifactDependencyException);
 

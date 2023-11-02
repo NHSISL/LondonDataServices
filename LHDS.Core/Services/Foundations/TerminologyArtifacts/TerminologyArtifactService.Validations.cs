@@ -77,6 +77,16 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             }
         }
 
+        private static void ValidateAgainstStorageTerminologyArtifactOnModify(TerminologyArtifact inputTerminologyArtifact, TerminologyArtifact storageTerminologyArtifact)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputTerminologyArtifact.CreatedDate,
+                    secondDate: storageTerminologyArtifact.CreatedDate,
+                    secondDateName: nameof(TerminologyArtifact.CreatedDate)),
+                Parameter: nameof(TerminologyArtifact.CreatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

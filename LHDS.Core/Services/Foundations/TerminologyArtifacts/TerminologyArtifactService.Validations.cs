@@ -35,6 +35,11 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                 (Rule: IsNotRecent(terminologyArtifact.CreatedDate), Parameter: nameof(TerminologyArtifact.CreatedDate)));
         }
 
+        private void ValidateTerminologyArtifactOnModify(TerminologyArtifact terminologyArtifact)
+        {
+            ValidateTerminologyArtifactIsNotNull(terminologyArtifact);
+        }
+
         public void ValidateTerminologyArtifactId(Guid terminologyArtifactId) =>
             Validate((Rule: IsInvalid(terminologyArtifactId), Parameter: nameof(TerminologyArtifact.Id)));
 
@@ -89,7 +94,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
-
+        
         private static dynamic IsNotSame(
            string first,
            string second,

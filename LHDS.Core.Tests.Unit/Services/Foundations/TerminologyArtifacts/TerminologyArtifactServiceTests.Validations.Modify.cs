@@ -1,10 +1,14 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using Moq;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
@@ -62,10 +66,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             // given 
             var invalidTerminologyArtifact = new TerminologyArtifact
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                FullUrl = invalidText,
+                ResourceType = invalidText,
             };
 
-            var invalidTerminologyArtifactException = 
+            var invalidTerminologyArtifactException =
                 new InvalidTerminologyArtifactException(
                     message: "Invalid terminologyArtifact. Please correct the errors and try again.");
 
@@ -73,11 +78,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                 key: nameof(TerminologyArtifact.Id),
                 values: "Id is required");
 
-            //invalidTerminologyArtifactException.AddData(
-            //    key: nameof(TerminologyArtifact.Name),
-            //    values: "Text is required");
+            invalidTerminologyArtifactException.AddData(
+                key: nameof(TerminologyArtifact.FullUrl),
+                values: "Text is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the TerminologyArtifact model
+            invalidTerminologyArtifactException.AddData(
+                key: nameof(TerminologyArtifact.ResourceType),
+                values: "Text is required");
 
             invalidTerminologyArtifactException.AddData(
                 key: nameof(TerminologyArtifact.CreatedDate),
@@ -141,8 +148,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             TerminologyArtifact randomTerminologyArtifact = CreateRandomTerminologyArtifact(randomDateTimeOffset);
             TerminologyArtifact invalidTerminologyArtifact = randomTerminologyArtifact;
-            
-            var invalidTerminologyArtifactException = 
+
+            var invalidTerminologyArtifactException =
                 new InvalidTerminologyArtifactException(
                     message: "Invalid terminologyArtifact. Please correct the errors and try again.");
 
@@ -198,7 +205,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             TerminologyArtifact randomTerminologyArtifact = CreateRandomTerminologyArtifact(randomDateTimeOffset);
             randomTerminologyArtifact.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var invalidTerminologyArtifactException = 
+            var invalidTerminologyArtifactException =
                 new InvalidTerminologyArtifactException(
                     message: "Invalid terminologyArtifact. Please correct the errors and try again.");
 
@@ -312,8 +319,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             TerminologyArtifact storageTerminologyArtifact = invalidTerminologyArtifact.DeepClone();
             storageTerminologyArtifact.CreatedDate = storageTerminologyArtifact.CreatedDate.AddMinutes(randomMinutes);
             storageTerminologyArtifact.UpdatedDate = storageTerminologyArtifact.UpdatedDate.AddMinutes(randomMinutes);
-            
-            var invalidTerminologyArtifactException = 
+
+            var invalidTerminologyArtifactException =
                 new InvalidTerminologyArtifactException(
                     message: "Invalid terminologyArtifact. Please correct the errors and try again.");
 
@@ -375,7 +382,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             invalidTerminologyArtifact.CreatedBy = Guid.NewGuid().ToString();
             storageTerminologyArtifact.UpdatedDate = storageTerminologyArtifact.CreatedDate;
 
-            var invalidTerminologyArtifactException = 
+            var invalidTerminologyArtifactException =
                 new InvalidTerminologyArtifactException(
                     message: "Invalid terminologyArtifact. Please correct the errors and try again.");
 
@@ -434,7 +441,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             TerminologyArtifact invalidTerminologyArtifact = randomTerminologyArtifact;
             TerminologyArtifact storageTerminologyArtifact = randomTerminologyArtifact.DeepClone();
 
-            var invalidTerminologyArtifactException = 
+            var invalidTerminologyArtifactException =
                 new InvalidTerminologyArtifactException(
                     message: "Invalid terminologyArtifact. Please correct the errors and try again.");
 

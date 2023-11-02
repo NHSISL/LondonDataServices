@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
@@ -12,9 +16,8 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
 
             Validate(
                 (Rule: IsInvalid(terminologyArtifact.Id), Parameter: nameof(TerminologyArtifact.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(terminologyArtifact.FullUrl), Parameter: nameof(TerminologyArtifact.FullUrl)),
+                (Rule: IsInvalid(terminologyArtifact.ResourceType), Parameter: nameof(TerminologyArtifact.ResourceType)),
                 (Rule: IsInvalid(terminologyArtifact.CreatedDate), Parameter: nameof(TerminologyArtifact.CreatedDate)),
                 (Rule: IsInvalid(terminologyArtifact.CreatedBy), Parameter: nameof(TerminologyArtifact.CreatedBy)),
                 (Rule: IsInvalid(terminologyArtifact.UpdatedDate), Parameter: nameof(TerminologyArtifact.UpdatedDate)),
@@ -41,9 +44,8 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
 
             Validate(
                 (Rule: IsInvalid(terminologyArtifact.Id), Parameter: nameof(TerminologyArtifact.Id)),
-
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(terminologyArtifact.FullUrl), Parameter: nameof(TerminologyArtifact.FullUrl)),
+                (Rule: IsInvalid(terminologyArtifact.ResourceType), Parameter: nameof(TerminologyArtifact.ResourceType)),
                 (Rule: IsInvalid(terminologyArtifact.CreatedDate), Parameter: nameof(TerminologyArtifact.CreatedDate)),
                 (Rule: IsInvalid(terminologyArtifact.CreatedBy), Parameter: nameof(TerminologyArtifact.CreatedBy)),
                 (Rule: IsInvalid(terminologyArtifact.UpdatedDate), Parameter: nameof(TerminologyArtifact.UpdatedDate)),
@@ -61,7 +63,9 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
         public void ValidateTerminologyArtifactId(Guid terminologyArtifactId) =>
             Validate((Rule: IsInvalid(terminologyArtifactId), Parameter: nameof(TerminologyArtifact.Id)));
 
-        private static void ValidateStorageTerminologyArtifact(TerminologyArtifact maybeTerminologyArtifact, Guid terminologyArtifactId)
+        private static void ValidateStorageTerminologyArtifact(
+            TerminologyArtifact maybeTerminologyArtifact,
+            Guid terminologyArtifactId)
         {
             if (maybeTerminologyArtifact is null)
             {
@@ -77,7 +81,9 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             }
         }
 
-        private static void ValidateAgainstStorageTerminologyArtifactOnModify(TerminologyArtifact inputTerminologyArtifact, TerminologyArtifact storageTerminologyArtifact)
+        private static void ValidateAgainstStorageTerminologyArtifactOnModify(
+            TerminologyArtifact inputTerminologyArtifact,
+            TerminologyArtifact storageTerminologyArtifact)
         {
             Validate(
                 (Rule: IsNotSame(
@@ -172,7 +178,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidTerminologyArtifactException = 
+            var invalidTerminologyArtifactException =
                 new InvalidTerminologyArtifactException(
                     message: "Invalid terminologyArtifact. Please correct the errors and try again.");
 

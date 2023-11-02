@@ -1,9 +1,13 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
@@ -55,7 +59,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             // given
             var invalidTerminologyArtifact = new TerminologyArtifact
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                FullUrl = invalidText,
+                ResourceType = invalidText,
             };
 
             var invalidTerminologyArtifactException =
@@ -66,11 +71,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                 key: nameof(TerminologyArtifact.Id),
                 values: "Id is required");
 
-            //invalidTerminologyArtifactException.AddData(
-            //    key: nameof(TerminologyArtifact.Name),
-            //    values: "Text is required");
+            invalidTerminologyArtifactException.AddData(
+                key: nameof(TerminologyArtifact.FullUrl),
+                values: "Text is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the TerminologyArtifact model
+            invalidTerminologyArtifactException.AddData(
+                key: nameof(TerminologyArtifact.ResourceType),
+                values: "Text is required");
 
             invalidTerminologyArtifactException.AddData(
                 key: nameof(TerminologyArtifact.CreatedDate),
@@ -135,7 +142,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             invalidTerminologyArtifact.UpdatedDate =
                 invalidTerminologyArtifact.CreatedDate.AddDays(randomNumber);
 
-            var invalidTerminologyArtifactException = 
+            var invalidTerminologyArtifactException =
                 new InvalidTerminologyArtifactException(
                     message: "Invalid terminologyArtifact. Please correct the errors and try again.");
 

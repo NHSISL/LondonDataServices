@@ -1,14 +1,18 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
-using Microsoft.Data.SqlClient;
-using Moq;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
+using Microsoft.Data.SqlClient;
+using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
@@ -95,10 +99,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnProperty(terminologyArtifact => terminologyArtifact.CreatedBy).Use(user)
                 .OnProperty(terminologyArtifact => terminologyArtifact.UpdatedBy).Use(user);
-
-            // TODO: Complete the filler setup e.g. ignore related properties etc...
 
             return filler;
         }

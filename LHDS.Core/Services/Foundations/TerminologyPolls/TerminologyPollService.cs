@@ -62,12 +62,15 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                 return await this.storageBroker.UpdateTerminologyPollAsync(terminologyPoll);
             });
 
-        public async ValueTask<TerminologyPoll> RemoveTerminologyPollByIdAsync(Guid terminologyPollId)
-        {
-            TerminologyPoll maybeTerminologyPoll = await this.storageBroker
+        public ValueTask<TerminologyPoll> RemoveTerminologyPollByIdAsync(Guid terminologyPollId) =>
+            TryCatch(async () =>
+            {
+                ValidateTerminologyPollId(terminologyPollId);
+
+                TerminologyPoll maybeTerminologyPoll = await this.storageBroker
                     .SelectTerminologyPollByIdAsync(terminologyPollId);
 
-            return await this.storageBroker.DeleteTerminologyPollAsync(maybeTerminologyPoll);
-        }
+                return await this.storageBroker.DeleteTerminologyPollAsync(maybeTerminologyPoll);
+            });
     }
 }

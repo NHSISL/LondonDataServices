@@ -1,10 +1,14 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using Moq;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
@@ -62,10 +66,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             // given 
             var invalidTerminologyPoll = new TerminologyPoll
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                ResourceType = invalidText,
             };
 
-            var invalidTerminologyPollException = 
+            var invalidTerminologyPollException =
                 new InvalidTerminologyPollException(
                     message: "Invalid terminologyPoll. Please correct the errors and try again.");
 
@@ -73,11 +77,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 key: nameof(TerminologyPoll.Id),
                 values: "Id is required");
 
-            //invalidTerminologyPollException.AddData(
-            //    key: nameof(TerminologyPoll.Name),
-            //    values: "Text is required");
-
-            // TODO: Add or remove data here to suit the validation needs for the TerminologyPoll model
+            invalidTerminologyPollException.AddData(
+                key: nameof(TerminologyPoll.ResourceType),
+                values: "Text is required");
 
             invalidTerminologyPollException.AddData(
                 key: nameof(TerminologyPoll.CreatedDate),
@@ -141,8 +143,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll(randomDateTimeOffset);
             TerminologyPoll invalidTerminologyPoll = randomTerminologyPoll;
-            
-            var invalidTerminologyPollException = 
+
+            var invalidTerminologyPollException =
                 new InvalidTerminologyPollException(
                     message: "Invalid terminologyPoll. Please correct the errors and try again.");
 
@@ -198,7 +200,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll(randomDateTimeOffset);
             randomTerminologyPoll.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var invalidTerminologyPollException = 
+            var invalidTerminologyPollException =
                 new InvalidTerminologyPollException(
                     message: "Invalid terminologyPoll. Please correct the errors and try again.");
 
@@ -312,8 +314,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             TerminologyPoll storageTerminologyPoll = invalidTerminologyPoll.DeepClone();
             storageTerminologyPoll.CreatedDate = storageTerminologyPoll.CreatedDate.AddMinutes(randomMinutes);
             storageTerminologyPoll.UpdatedDate = storageTerminologyPoll.UpdatedDate.AddMinutes(randomMinutes);
-            
-            var invalidTerminologyPollException = 
+
+            var invalidTerminologyPollException =
                 new InvalidTerminologyPollException(
                     message: "Invalid terminologyPoll. Please correct the errors and try again.");
 
@@ -375,7 +377,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             invalidTerminologyPoll.CreatedBy = Guid.NewGuid().ToString();
             storageTerminologyPoll.UpdatedDate = storageTerminologyPoll.CreatedDate;
 
-            var invalidTerminologyPollException = 
+            var invalidTerminologyPollException =
                 new InvalidTerminologyPollException(
                     message: "Invalid terminologyPoll. Please correct the errors and try again.");
 
@@ -434,7 +436,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             TerminologyPoll invalidTerminologyPoll = randomTerminologyPoll;
             TerminologyPoll storageTerminologyPoll = randomTerminologyPoll.DeepClone();
 
-            var invalidTerminologyPollException = 
+            var invalidTerminologyPollException =
                 new InvalidTerminologyPollException(
                     message: "Invalid terminologyPoll. Please correct the errors and try again.");
 

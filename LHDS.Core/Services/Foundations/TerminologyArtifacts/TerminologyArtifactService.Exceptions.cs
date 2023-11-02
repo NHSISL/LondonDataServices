@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
@@ -33,6 +34,15 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
 
                 throw CreateAndLogCriticalDependencyException(failedTerminologyArtifactStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsTerminologyArtifactException =
+                    new AlreadyExistsTerminologyArtifactException(
+                        message: "TerminologyArtifact with the same Id already exists.",
+                        innerException: duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsTerminologyArtifactException);
+            }
         }
 
         private TerminologyArtifactValidationException CreateAndLogValidationException(Xeption exception)
@@ -57,6 +67,18 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             this.loggingBroker.LogCritical(terminologyArtifactDependencyException);
 
             return terminologyArtifactDependencyException;
+        }
+
+        private TerminologyArtifactDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var terminologyArtifactDependencyValidationException =
+                new TerminologyArtifactDependencyValidationException(
+                    message: "TerminologyArtifact dependency validation occurred, please try again.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(terminologyArtifactDependencyValidationException);
+
+            return terminologyArtifactDependencyValidationException;
         }
     }
 }

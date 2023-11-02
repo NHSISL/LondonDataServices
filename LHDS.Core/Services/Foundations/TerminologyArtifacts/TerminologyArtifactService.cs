@@ -22,7 +22,12 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<TerminologyArtifact> AddTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact) =>
-            await this.storageBroker.InsertTerminologyArtifactAsync(terminologyArtifact);
+        public ValueTask<TerminologyArtifact> AddTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact) =>
+            TryCatch(async () =>
+            {
+                ValidateTerminologyArtifactOnAdd(terminologyArtifact);
+
+                return await this.storageBroker.InsertTerminologyArtifactAsync(terminologyArtifact);
+            });
     }
 }

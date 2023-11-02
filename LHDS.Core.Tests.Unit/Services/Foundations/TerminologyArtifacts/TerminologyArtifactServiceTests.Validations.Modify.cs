@@ -184,9 +184,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                 broker.SelectTerminologyArtifactByIdAsync(invalidTerminologyArtifact.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -198,8 +198,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             TerminologyArtifact randomTerminologyArtifact = CreateRandomTerminologyArtifact(randomDateTimeOffset);
             randomTerminologyArtifact.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var invalidTerminologyArtifactException =
-                new InvalidTerminologyArtifactException();
+            var invalidTerminologyArtifactException = 
+                new InvalidTerminologyArtifactException(
+                    message: "Invalid terminologyArtifact. Please correct the errors and try again.");
 
             invalidTerminologyArtifactException.AddData(
                 key: nameof(TerminologyArtifact.UpdatedDate),
@@ -294,8 +295,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     expectedTerminologyArtifactValidationException))),
                         Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -358,8 +359,69 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                    expectedTerminologyArtifactValidationException))),
                        Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfCreatedUserDontMacthStorageAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            TerminologyArtifact randomTerminologyArtifact = CreateRandomModifyTerminologyArtifact(randomDateTimeOffset);
+            TerminologyArtifact invalidTerminologyArtifact = randomTerminologyArtifact.DeepClone();
+            TerminologyArtifact storageTerminologyArtifact = invalidTerminologyArtifact.DeepClone();
+            invalidTerminologyArtifact.CreatedBy = Guid.NewGuid().ToString();
+            storageTerminologyArtifact.UpdatedDate = storageTerminologyArtifact.CreatedDate;
+
+            var invalidTerminologyArtifactException = 
+                new InvalidTerminologyArtifactException(
+                    message: "Invalid terminologyArtifact. Please correct the errors and try again.");
+
+            invalidTerminologyArtifactException.AddData(
+                key: nameof(TerminologyArtifact.CreatedBy),
+                values: $"Text is not the same as {nameof(TerminologyArtifact.CreatedBy)}");
+
+            var expectedTerminologyArtifactValidationException =
+                new TerminologyArtifactValidationException(
+                    message: "TerminologyArtifact validation errors occurred, please try again.",
+                    innerException: invalidTerminologyArtifactException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectTerminologyArtifactByIdAsync(invalidTerminologyArtifact.Id))
+                .ReturnsAsync(storageTerminologyArtifact);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<TerminologyArtifact> modifyTerminologyArtifactTask =
+                this.terminologyArtifactService.ModifyTerminologyArtifactAsync(invalidTerminologyArtifact);
+
+            TerminologyArtifactValidationException actualTerminologyArtifactValidationException =
+                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(
+                    modifyTerminologyArtifactTask.AsTask);
+
+            // then
+            actualTerminologyArtifactValidationException.Should().BeEquivalentTo(expectedTerminologyArtifactValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectTerminologyArtifactByIdAsync(invalidTerminologyArtifact.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedTerminologyArtifactValidationException))),
+                       Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

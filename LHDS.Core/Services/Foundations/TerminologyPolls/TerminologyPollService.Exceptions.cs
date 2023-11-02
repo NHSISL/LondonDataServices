@@ -43,6 +43,15 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsTerminologyPollException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidTerminologyPollReferenceException =
+                    new InvalidTerminologyPollReferenceException(
+                        message: "Invalid terminologyPoll reference error occurred.", 
+                        innerException: foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidTerminologyPollReferenceException);
+            }
         }
 
         private TerminologyPollValidationException CreateAndLogValidationException(Xeption exception)
@@ -62,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             var terminologyPollDependencyException = 
                 new TerminologyPollDependencyException(
                     message: "TerminologyPoll dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(terminologyPollDependencyException);
 

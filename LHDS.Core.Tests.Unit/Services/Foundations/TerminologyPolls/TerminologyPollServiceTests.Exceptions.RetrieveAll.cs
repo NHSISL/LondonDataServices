@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             var expectedTerminologyPollDependencyException =
                 new TerminologyPollDependencyException(
                     message: "TerminologyPoll dependency error occurred, contact support.",
-                    innerException: failedTerminologyPollStorageException); 
+                    innerException: failedTerminologyPollStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllTerminologyPolls())
@@ -52,6 +52,51 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomString();
+            var serviceException = new Exception(exceptionMessage);
+
+            var failedTerminologyPollServiceException =
+                new FailedTerminologyPollServiceException(
+                    message: "Failed terminologyPoll service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedTerminologyPollServiceException =
+                new TerminologyPollServiceException(
+                    message: "TerminologyPoll service error occurred, contact support.",
+                    innerException: failedTerminologyPollServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllTerminologyPolls())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllTerminologyPollsAction = () =>
+                this.terminologyPollService.RetrieveAllTerminologyPolls();
+
+            TerminologyPollServiceException actualTerminologyPollServiceException =
+                Assert.Throws<TerminologyPollServiceException>(retrieveAllTerminologyPollsAction);
+
+            // then
+            actualTerminologyPollServiceException.Should()
+                .BeEquivalentTo(expectedTerminologyPollServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllTerminologyPolls(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTerminologyPollServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

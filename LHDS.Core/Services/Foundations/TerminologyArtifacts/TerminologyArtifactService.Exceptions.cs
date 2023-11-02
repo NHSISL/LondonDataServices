@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
 using Xeptions;
@@ -23,6 +24,15 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             {
                 throw CreateAndLogValidationException(invalidTerminologyArtifactException);
             }
+            catch (SqlException sqlException)
+            {
+                var failedTerminologyArtifactStorageException =
+                    new FailedTerminologyArtifactStorageException(
+                        message: "Failed terminologyArtifact storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedTerminologyArtifactStorageException);
+            }
         }
 
         private TerminologyArtifactValidationException CreateAndLogValidationException(Xeption exception)
@@ -35,6 +45,18 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             this.loggingBroker.LogError(terminologyArtifactValidationException);
 
             return terminologyArtifactValidationException;
+        }
+
+        private TerminologyArtifactDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        {
+            var terminologyArtifactDependencyException = 
+                new TerminologyArtifactDependencyException(
+                    message: "TerminologyArtifact dependency error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogCritical(terminologyArtifactDependencyException);
+
+            return terminologyArtifactDependencyException;
         }
     }
 }

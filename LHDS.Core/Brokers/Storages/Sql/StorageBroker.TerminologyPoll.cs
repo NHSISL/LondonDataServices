@@ -5,7 +5,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.OntologyPolls;
+using LHDS.Core.Models.Foundations.TerminologyPolls;
 using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.Core.Brokers.Storages.Sql
@@ -14,21 +14,21 @@ namespace LHDS.Core.Brokers.Storages.Sql
     {
         public DbSet<TerminologyPoll> TerminologyPolls { get; set; }
 
-        public async ValueTask<TerminologyPoll> InsertOntologyPollAsync(
+        public async ValueTask<TerminologyPoll> InsertTerminologyPollAsync(
             TerminologyPoll terminologyPoll) =>
                 await InsertAsync(terminologyPoll);
 
-        public IQueryable<TerminologyPoll> SelectAllOntologyPolls() => ReadAll<TerminologyPoll>();
+        public IQueryable<TerminologyPoll> SelectAllTerminologyPolls() => ReadAll<TerminologyPoll>();
 
-        public async ValueTask<TerminologyPoll> SelectOntologyPollByIdAsync(
+        public async ValueTask<TerminologyPoll> SelectTerminologyPollByIdAsync(
             Guid terminologyPollId) =>
                 await ReadAsync<TerminologyPoll>(terminologyPollId);
 
-        public async ValueTask<TerminologyPoll> UpdateOntologyPollAsync(
+        public async ValueTask<TerminologyPoll> UpdateTerminologyPollAsync(
             TerminologyPoll terminologyPoll) =>
                 await UpdateAsync(terminologyPoll);
 
-        public async ValueTask<TerminologyPoll> DeleteOntologyPollAsync(
+        public async ValueTask<TerminologyPoll> DeleteTerminologyPollAsync(
             TerminologyPoll terminologyPoll) =>
                 await DeleteAsync(terminologyPoll);
     }

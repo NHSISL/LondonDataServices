@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             var expectedTerminologyArtifactDependencyException =
                 new TerminologyArtifactDependencyException(
                     message: "TerminologyArtifact dependency error occurred, contact support.",
-                    innerException: failedTerminologyArtifactStorageException);             
+                    innerException: failedTerminologyArtifactStorageException); 
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -115,6 +115,60 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            TerminologyArtifact someTerminologyArtifact = CreateRandomTerminologyArtifact();
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidTerminologyArtifactReferenceException =
+                new InvalidTerminologyArtifactReferenceException(
+                    message: "Invalid terminologyArtifact reference error occurred.", 
+                    innerException: foreignKeyConstraintConflictException);
+
+            var expectedTerminologyArtifactValidationException =
+                new TerminologyArtifactDependencyValidationException(
+                    message: "TerminologyArtifact dependency validation occurred, please try again.",
+                    innerException: invalidTerminologyArtifactReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<TerminologyArtifact> addTerminologyArtifactTask =
+                this.terminologyArtifactService.AddTerminologyArtifactAsync(someTerminologyArtifact);
+
+            // then
+            TerminologyArtifactDependencyValidationException actualTerminologyArtifactDependencyValidationException =
+                await Assert.ThrowsAsync<TerminologyArtifactDependencyValidationException>(
+                    addTerminologyArtifactTask.AsTask);
+
+            actualTerminologyArtifactDependencyValidationException.Should().BeEquivalentTo(expectedTerminologyArtifactValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTerminologyArtifactValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertTerminologyArtifactAsync(someTerminologyArtifact),
+                    Times.Never());
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

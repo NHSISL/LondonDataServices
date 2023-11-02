@@ -70,6 +70,8 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                 TerminologyPoll maybeTerminologyPoll = await this.storageBroker
                     .SelectTerminologyPollByIdAsync(terminologyPollId);
 
+                ValidateStorageTerminologyPoll(maybeTerminologyPoll, terminologyPollId);
+
                 return await this.storageBroker.DeleteTerminologyPollAsync(maybeTerminologyPoll);
             });
     }

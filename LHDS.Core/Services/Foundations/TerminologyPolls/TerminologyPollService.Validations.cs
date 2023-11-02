@@ -27,10 +27,12 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                 Parameter: nameof(TerminologyPoll.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    firstId: terminologyPoll.UpdatedBy,
-                    secondId: terminologyPoll.CreatedBy,
-                    secondIdName: nameof(TerminologyPoll.CreatedBy)),
-                Parameter: nameof(TerminologyPoll.UpdatedBy)));
+                    first: terminologyPoll.UpdatedBy,
+                    second: terminologyPoll.CreatedBy,
+                    secondName: nameof(TerminologyPoll.CreatedBy)),
+                Parameter: nameof(TerminologyPoll.UpdatedBy)),
+
+                (Rule: IsNotRecent(terminologyPoll.CreatedDate), Parameter: nameof(TerminologyPoll.CreatedDate)));
         }
 
         private static void ValidateTerminologyPollIsNotNull(TerminologyPoll terminologyPoll)
@@ -85,6 +87,23 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                Condition = first != second,
                Message = $"Text is not the same as {secondName}"
            };
+
+        private dynamic IsNotRecent(DateTimeOffset date) => new
+        {
+            Condition = IsDateNotRecent(date),
+            Message = "Date is not recent"
+        };
+
+        private bool IsDateNotRecent(DateTimeOffset date)
+        {
+            DateTimeOffset currentDateTime =
+                this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+            TimeSpan timeDifference = currentDateTime.Subtract(date);
+            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+
+            return timeDifference.Duration() > oneMinute;
+        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

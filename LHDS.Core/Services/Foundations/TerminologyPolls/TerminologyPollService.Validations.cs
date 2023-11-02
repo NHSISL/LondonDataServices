@@ -53,7 +53,9 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                     firstDate: terminologyPoll.UpdatedDate,
                     secondDate: terminologyPoll.CreatedDate,
                     secondDateName: nameof(TerminologyPoll.CreatedDate)),
-                Parameter: nameof(TerminologyPoll.UpdatedDate)));
+                Parameter: nameof(TerminologyPoll.UpdatedDate)),
+
+                (Rule: IsNotRecent(terminologyPoll.UpdatedDate), Parameter: nameof(terminologyPoll.UpdatedDate)));
         }
 
         public void ValidateTerminologyPollId(Guid terminologyPollId) =>

@@ -1,6 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
@@ -58,6 +60,59 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
+                    Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationOnRemoveIfDatabaseUpdateConcurrencyErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someTerminologyArtifactId = Guid.NewGuid();
+
+            var databaseUpdateConcurrencyException =
+                new DbUpdateConcurrencyException();
+
+            var lockedTerminologyArtifactException =
+                new LockedTerminologyArtifactException(
+                    message: "Locked terminologyArtifact record exception, please try again later",
+                    innerException: databaseUpdateConcurrencyException);
+
+            var expectedTerminologyArtifactDependencyValidationException =
+                new TerminologyArtifactDependencyValidationException(
+                    message: "TerminologyArtifact dependency validation occurred, please try again.",
+                    innerException: lockedTerminologyArtifactException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectTerminologyArtifactByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<TerminologyArtifact> removeTerminologyArtifactByIdTask =
+                this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(someTerminologyArtifactId);
+
+            TerminologyArtifactDependencyValidationException actualTerminologyArtifactDependencyValidationException =
+                await Assert.ThrowsAsync<TerminologyArtifactDependencyValidationException>(
+                    removeTerminologyArtifactByIdTask.AsTask);
+
+            // then
+            actualTerminologyArtifactDependencyValidationException.Should()
+                .BeEquivalentTo(expectedTerminologyArtifactDependencyValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectTerminologyArtifactByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTerminologyArtifactDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.DeleteTerminologyArtifactAsync(It.IsAny<TerminologyArtifact>()),
                     Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

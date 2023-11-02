@@ -13,6 +13,7 @@ using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits;
 using LHDS.Core.Services.Foundations.AddressExtractionAudits;
 using LHDS.Core.Services.Foundations.AddressParsers;
+using Renci.SshNet.Common;
 
 namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 {
@@ -100,6 +101,12 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                                 {
                                     entryStream.CopyTo(nestedMemoryStream);
                                     nestedZipData = nestedMemoryStream.ToArray();
+                                }
+
+                                if (nestedZipData.Length <= 0)
+                                {
+                                    Console.WriteLine($"nestedZipData is null");
+                                    throw new Exception($"nestedZipData is null");
                                 }
 
                                 List<Address> nestedAddresses = await ProcessAddressDataAsync(nestedZipData);

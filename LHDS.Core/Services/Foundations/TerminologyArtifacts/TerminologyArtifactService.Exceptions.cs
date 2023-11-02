@@ -38,6 +38,10 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
 
                 throw CreateAndLogCriticalDependencyException(failedTerminologyArtifactStorageException);
             }
+            catch (NotFoundTerminologyArtifactException notFoundTerminologyArtifactException)
+            {
+                throw CreateAndLogValidationException(notFoundTerminologyArtifactException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsTerminologyArtifactException =

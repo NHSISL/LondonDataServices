@@ -38,6 +38,14 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
         public void ValidateTerminologyArtifactId(Guid terminologyArtifactId) =>
             Validate((Rule: IsInvalid(terminologyArtifactId), Parameter: nameof(TerminologyArtifact.Id)));
 
+        private static void ValidateStorageTerminologyArtifact(TerminologyArtifact maybeTerminologyArtifact, Guid terminologyArtifactId)
+        {
+            if (maybeTerminologyArtifact is null)
+            {
+                throw new NotFoundTerminologyArtifactException(terminologyArtifactId);
+            }
+        }
+
         private static void ValidateTerminologyArtifactIsNotNull(TerminologyArtifact terminologyArtifact)
         {
             if (terminologyArtifact is null)

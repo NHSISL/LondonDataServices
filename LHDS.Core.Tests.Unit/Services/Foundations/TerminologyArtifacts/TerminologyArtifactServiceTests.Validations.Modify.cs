@@ -88,7 +88,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             invalidTerminologyArtifactException.AddData(
                 key: nameof(TerminologyArtifact.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(TerminologyArtifact.CreatedDate)}"
+                });
 
             invalidTerminologyArtifactException.AddData(
                 key: nameof(TerminologyArtifact.UpdatedBy),
@@ -131,6 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             TerminologyArtifact randomTerminologyArtifact = CreateRandomTerminologyArtifact(randomDateTimeOffset);
             TerminologyArtifact invalidTerminologyArtifact = randomTerminologyArtifact;
+            
             var invalidTerminologyArtifactException = 
                 new InvalidTerminologyArtifactException(
                     message: "Invalid terminologyArtifact. Please correct the errors and try again.");

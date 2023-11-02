@@ -22,7 +22,12 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<TerminologyPoll> AddTerminologyPollAsync(TerminologyPoll terminologyPoll) =>
-            await this.storageBroker.InsertTerminologyPollAsync(terminologyPoll);
+        public ValueTask<TerminologyPoll> AddTerminologyPollAsync(TerminologyPoll terminologyPoll) =>
+            TryCatch(async () =>
+            {
+                ValidateTerminologyPollOnAdd(terminologyPoll);
+
+                return await this.storageBroker.InsertTerminologyPollAsync(terminologyPoll);
+            });
     }
 }

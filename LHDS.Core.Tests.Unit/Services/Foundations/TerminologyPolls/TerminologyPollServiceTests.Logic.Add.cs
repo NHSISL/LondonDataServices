@@ -22,6 +22,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             TerminologyPoll storageTerminologyPoll = inputTerminologyPoll;
             TerminologyPoll expectedTerminologyPoll = storageTerminologyPoll.DeepClone();
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertTerminologyPollAsync(inputTerminologyPoll))
                     .ReturnsAsync(storageTerminologyPoll);
@@ -33,13 +37,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             // then
             actualTerminologyPoll.Should().BeEquivalentTo(expectedTerminologyPoll);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertTerminologyPollAsync(inputTerminologyPoll),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

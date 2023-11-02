@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
     public partial class TerminologyArtifactService
     {
         private delegate ValueTask<TerminologyArtifact> ReturningTerminologyArtifactFunction();
+        private delegate IQueryable<TerminologyArtifact> ReturningTerminologyArtifactsFunction();
 
         private async ValueTask<TerminologyArtifact> TryCatch(ReturningTerminologyArtifactFunction returningTerminologyArtifactFunction)
         {
@@ -74,6 +76,23 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             }
         }
 
+        private IQueryable<TerminologyArtifact> TryCatch(ReturningTerminologyArtifactsFunction returningTerminologyArtifactsFunction)
+        {
+            try
+            {
+                return returningTerminologyArtifactsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedTerminologyArtifactStorageException =
+                    new FailedTerminologyArtifactStorageException(
+                        message: "Failed terminologyArtifact storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedTerminologyArtifactStorageException);
+            }
+        }
+
         private TerminologyArtifactValidationException CreateAndLogValidationException(Xeption exception)
         {
             var terminologyArtifactValidationException =
@@ -91,7 +110,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             var terminologyArtifactDependencyException = 
                 new TerminologyArtifactDependencyException(
                     message: "TerminologyArtifact dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(terminologyArtifactDependencyException);
 
@@ -116,7 +135,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             var terminologyArtifactDependencyException = 
                 new TerminologyArtifactDependencyException(
                     message: "TerminologyArtifact dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(terminologyArtifactDependencyException);
 

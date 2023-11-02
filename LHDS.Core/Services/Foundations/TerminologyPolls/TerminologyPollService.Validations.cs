@@ -18,7 +18,13 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                 (Rule: IsInvalid(terminologyPoll.CreatedDate), Parameter: nameof(TerminologyPoll.CreatedDate)),
                 (Rule: IsInvalid(terminologyPoll.CreatedBy), Parameter: nameof(TerminologyPoll.CreatedBy)),
                 (Rule: IsInvalid(terminologyPoll.UpdatedDate), Parameter: nameof(TerminologyPoll.UpdatedDate)),
-                (Rule: IsInvalid(terminologyPoll.UpdatedBy), Parameter: nameof(TerminologyPoll.UpdatedBy)));
+                (Rule: IsInvalid(terminologyPoll.UpdatedBy), Parameter: nameof(TerminologyPoll.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    firstDate: terminologyPoll.UpdatedDate,
+                    secondDate: terminologyPoll.CreatedDate,
+                    secondDateName: nameof(TerminologyPoll.CreatedDate)),
+                Parameter: nameof(TerminologyPoll.UpdatedDate)));
         }
 
         private static void ValidateTerminologyPollIsNotNull(TerminologyPoll terminologyPoll)
@@ -46,6 +52,15 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsNotSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate != secondDate,
+                Message = $"Date is not the same as {secondDateName}"
+            };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

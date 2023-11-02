@@ -33,8 +33,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
                 List<string> unZippedInputFilePaths =
                     new List<string> {
-                    Path.Combine(Path.GetDirectoryName(assembly), @"Resources/TestCsv2.csv")
-                    Path.Combine(Path.GetDirectoryName(assembly), @"Resources/TestCsv1.csv"),
+                    Path.Combine(Path.GetDirectoryName(assembly), @"Resources/TestCsv2.csv"),
+                    Path.Combine(Path.GetDirectoryName(assembly), @"Resources/TestCsv1.csv")
                     };
 
                 List<Address> outputAddresses = new List<Address>();

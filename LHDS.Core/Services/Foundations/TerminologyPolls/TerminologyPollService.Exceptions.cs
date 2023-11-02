@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using Xeptions;
@@ -52,6 +53,15 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
 
                 throw CreateAndLogDependencyValidationException(invalidTerminologyPollReferenceException);
             }
+            catch (DbUpdateException databaseUpdateException)
+            {
+                var failedTerminologyPollStorageException =
+                    new FailedTerminologyPollStorageException(
+                    message: "Failed terminologyPoll storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+                throw CreateAndLogDependencyException(failedTerminologyPollStorageException);
+            }
         }
 
         private TerminologyPollValidationException CreateAndLogValidationException(Xeption exception)
@@ -88,6 +98,19 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             this.loggingBroker.LogError(terminologyPollDependencyValidationException);
 
             return terminologyPollDependencyValidationException;
+        }
+
+        private TerminologyPollDependencyException CreateAndLogDependencyException(
+            Xeption exception)
+        {
+            var terminologyPollDependencyException = 
+                new TerminologyPollDependencyException(
+                    message: "TerminologyPoll dependency error occurred, contact support.",
+                    innerException: exception); 
+
+            this.loggingBroker.LogError(terminologyPollDependencyException);
+
+            return terminologyPollDependencyException;
         }
     }
 }

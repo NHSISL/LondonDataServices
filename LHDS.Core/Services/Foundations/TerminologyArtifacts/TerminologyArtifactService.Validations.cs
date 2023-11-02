@@ -53,7 +53,9 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                     firstDate: terminologyArtifact.UpdatedDate,
                     secondDate: terminologyArtifact.CreatedDate,
                     secondDateName: nameof(TerminologyArtifact.CreatedDate)),
-                Parameter: nameof(TerminologyArtifact.UpdatedDate)));
+                Parameter: nameof(TerminologyArtifact.UpdatedDate)),
+
+                (Rule: IsNotRecent(terminologyArtifact.UpdatedDate), Parameter: nameof(terminologyArtifact.UpdatedDate)));
         }
 
         public void ValidateTerminologyArtifactId(Guid terminologyArtifactId) =>

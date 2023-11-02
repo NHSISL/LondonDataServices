@@ -1,62 +1,65 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
-using FluentAssertions;
-using Force.DeepCloner;
-using Moq;
+using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
-using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
+namespace LHDS.Core.Services.Foundations.TerminologyPolls
 {
-    public partial class TerminologyPollServiceTests
+    public partial class TerminologyPollService : ITerminologyPollService
     {
-        [Fact]
-        public async Task ShouldModifyTerminologyPollAsync()
+        private readonly IStorageBroker storageBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ILoggingBroker loggingBroker;
+
+        public TerminologyPollService(
+            IStorageBroker storageBroker,
+            IDateTimeBroker dateTimeBroker,
+            ILoggingBroker loggingBroker)
         {
-            // given
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            TerminologyPoll randomTerminologyPoll = CreateRandomModifyTerminologyPoll(randomDateTimeOffset);
-            TerminologyPoll inputTerminologyPoll = randomTerminologyPoll;
-            TerminologyPoll storageTerminologyPoll = inputTerminologyPoll.DeepClone();
-            storageTerminologyPoll.UpdatedDate = randomTerminologyPoll.CreatedDate;
-            TerminologyPoll updatedTerminologyPoll = inputTerminologyPoll;
-            TerminologyPoll expectedTerminologyPoll = updatedTerminologyPoll.DeepClone();
-            Guid terminologyPollId = inputTerminologyPoll.Id;
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
-
-            this.storageBrokerMock.Setup(broker =>
-                broker.SelectTerminologyPollByIdAsync(terminologyPollId))
-                    .ReturnsAsync(storageTerminologyPoll);
-
-            this.storageBrokerMock.Setup(broker =>
-                broker.UpdateTerminologyPollAsync(inputTerminologyPoll))
-                    .ReturnsAsync(updatedTerminologyPoll);
-
-            // when
-            TerminologyPoll actualTerminologyPoll =
-                await this.terminologyPollService.ModifyTerminologyPollAsync(inputTerminologyPoll);
-
-            // then
-            actualTerminologyPoll.Should().BeEquivalentTo(expectedTerminologyPoll);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectTerminologyPollByIdAsync(inputTerminologyPoll.Id),
-                    Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.UpdateTerminologyPollAsync(inputTerminologyPoll),
-                    Times.Once);
-
-            this.storageBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBroker = storageBroker;
+            this.dateTimeBroker = dateTimeBroker;
+            this.loggingBroker = loggingBroker;
         }
+
+        public ValueTask<TerminologyPoll> AddTerminologyPollAsync(TerminologyPoll terminologyPoll) =>
+            TryCatch(async () =>
+            {
+                ValidateTerminologyPollOnAdd(terminologyPoll);
+
+                return await this.storageBroker.InsertTerminologyPollAsync(terminologyPoll);
+            });
+
+        public IQueryable<TerminologyPoll> RetrieveAllTerminologyPolls() =>
+            TryCatch(() => this.storageBroker.SelectAllTerminologyPolls());
+
+        public ValueTask<TerminologyPoll> RetrieveTerminologyPollByIdAsync(Guid terminologyPollId) =>
+            TryCatch(async () =>
+            {
+                ValidateTerminologyPollId(terminologyPollId);
+
+                TerminologyPoll maybeTerminologyPoll = await this.storageBroker
+                    .SelectTerminologyPollByIdAsync(terminologyPollId);
+
+                ValidateStorageTerminologyPoll(maybeTerminologyPoll, terminologyPollId);
+
+                return maybeTerminologyPoll;
+            });
+
+        public ValueTask<TerminologyPoll> ModifyTerminologyPollAsync(TerminologyPoll terminologyPoll) =>
+            TryCatch(async () =>
+            {
+                ValidateTerminologyPollOnModify(terminologyPoll);
+
+                TerminologyPoll maybeTerminologyPoll =
+                    await this.storageBroker.SelectTerminologyPollByIdAsync(terminologyPoll.Id);
+
+                ValidateStorageTerminologyPoll(maybeTerminologyPoll, terminologyPoll.Id);
+                ValidateAgainstStorageTerminologyPollOnModify(inputTerminologyPoll: terminologyPoll, storageTerminologyPoll: maybeTerminologyPoll);
+
+                return await this.storageBroker.UpdateTerminologyPollAsync(terminologyPoll);
+            });
     }
 }

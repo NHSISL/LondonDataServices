@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -58,6 +59,64 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateTerminologyPollAsync(randomTerminologyPoll),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            TerminologyPoll someTerminologyPoll = CreateRandomTerminologyPoll();
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidTerminologyPollReferenceException =
+                new InvalidTerminologyPollReferenceException(
+                    message: "Invalid terminologyPoll reference error occurred.", 
+                    innerException: foreignKeyConstraintConflictException);
+
+            TerminologyPollDependencyValidationException expectedTerminologyPollDependencyValidationException =
+                new TerminologyPollDependencyValidationException(
+                    message: "TerminologyPoll dependency validation occurred, please try again.",
+                    innerException: invalidTerminologyPollReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<TerminologyPoll> modifyTerminologyPollTask =
+                this.terminologyPollService.ModifyTerminologyPollAsync(someTerminologyPoll);
+
+            TerminologyPollDependencyValidationException actualTerminologyPollDependencyValidationException =
+                await Assert.ThrowsAsync<TerminologyPollDependencyValidationException>(
+                    modifyTerminologyPollTask.AsTask);
+
+            // then
+            actualTerminologyPollDependencyValidationException.Should()
+                .BeEquivalentTo(expectedTerminologyPollDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectTerminologyPollByIdAsync(someTerminologyPoll.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(expectedTerminologyPollDependencyValidationException))),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateTerminologyPollAsync(someTerminologyPoll),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
@@ -8,5 +9,6 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
     {
         ValueTask<TerminologyArtifact> AddTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact);
         IQueryable<TerminologyArtifact> RetrieveAllTerminologyArtifacts();
+        ValueTask<TerminologyArtifact> RetrieveTerminologyArtifactByIdAsync(Guid terminologyArtifactId);
     }
 }

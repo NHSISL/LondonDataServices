@@ -18,7 +18,13 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                 (Rule: IsInvalid(terminologyArtifact.CreatedDate), Parameter: nameof(TerminologyArtifact.CreatedDate)),
                 (Rule: IsInvalid(terminologyArtifact.CreatedBy), Parameter: nameof(TerminologyArtifact.CreatedBy)),
                 (Rule: IsInvalid(terminologyArtifact.UpdatedDate), Parameter: nameof(TerminologyArtifact.UpdatedDate)),
-                (Rule: IsInvalid(terminologyArtifact.UpdatedBy), Parameter: nameof(TerminologyArtifact.UpdatedBy)));
+                (Rule: IsInvalid(terminologyArtifact.UpdatedBy), Parameter: nameof(TerminologyArtifact.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    firstDate: terminologyArtifact.UpdatedDate,
+                    secondDate: terminologyArtifact.CreatedDate,
+                    secondDateName: nameof(TerminologyArtifact.CreatedDate)),
+                Parameter: nameof(TerminologyArtifact.UpdatedDate)));
         }
 
         private static void ValidateTerminologyArtifactIsNotNull(TerminologyArtifact terminologyArtifact)
@@ -46,6 +52,15 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsNotSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate != secondDate,
+                Message = $"Date is not the same as {secondDateName}"
+            };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

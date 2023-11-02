@@ -84,7 +84,13 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                     firstDate: inputTerminologyPoll.CreatedDate,
                     secondDate: storageTerminologyPoll.CreatedDate,
                     secondDateName: nameof(TerminologyPoll.CreatedDate)),
-                Parameter: nameof(TerminologyPoll.CreatedDate)));
+                Parameter: nameof(TerminologyPoll.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    first: inputTerminologyPoll.CreatedBy,
+                    second: storageTerminologyPoll.CreatedBy,
+                    secondName: nameof(TerminologyPoll.CreatedBy)),
+                Parameter: nameof(TerminologyPoll.CreatedBy)));
         }
 
         private static dynamic IsInvalid(Guid id) => new

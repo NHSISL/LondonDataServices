@@ -5,22 +5,22 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.OntologyPolls;
+using LHDS.Core.Models.Foundations.TerminologyPolls;
 
 namespace LHDS.Core.Brokers.Storages.Sql
 {
     public partial interface IStorageBroker
     {
-        ValueTask<TerminologyPoll> InsertOntologyPollAsync(
-            TerminologyPoll ontologyPoll);
+        ValueTask<TerminologyPoll> InsertTerminologyPollAsync(
+            TerminologyPoll terminologyPoll);
 
-        IQueryable<TerminologyPoll> SelectAllOntologyPolls();
-        ValueTask<TerminologyPoll> SelectOntologyPollByIdAsync(Guid ontologyPollId);
+        IQueryable<TerminologyPoll> SelectAllTerminologyPolls();
+        ValueTask<TerminologyPoll> SelectTerminologyPollByIdAsync(Guid terminologyPollId);
 
-        ValueTask<TerminologyPoll> UpdateOntologyPollAsync(
-            TerminologyPoll ontologyPoll);
+        ValueTask<TerminologyPoll> UpdateTerminologyPollAsync(
+            TerminologyPoll terminologyPoll);
 
-        ValueTask<TerminologyPoll> DeleteOntologyPollAsync(
-            TerminologyPoll ontologyPoll);
+        ValueTask<TerminologyPoll> DeleteTerminologyPollAsync(
+            TerminologyPoll terminologyPoll);
     }
 }

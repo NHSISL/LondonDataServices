@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
     public partial class TerminologyPollService
     {
         private delegate ValueTask<TerminologyPoll> ReturningTerminologyPollFunction();
+        private delegate IQueryable<TerminologyPoll> ReturningTerminologyPollsFunction();
 
         private async ValueTask<TerminologyPoll> TryCatch(ReturningTerminologyPollFunction returningTerminologyPollFunction)
         {
@@ -74,6 +76,23 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             }
         }
 
+        private IQueryable<TerminologyPoll> TryCatch(ReturningTerminologyPollsFunction returningTerminologyPollsFunction)
+        {
+            try
+            {
+                return returningTerminologyPollsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedTerminologyPollStorageException =
+                    new FailedTerminologyPollStorageException(
+                        message: "Failed terminologyPoll storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedTerminologyPollStorageException);
+            }
+        }
+
         private TerminologyPollValidationException CreateAndLogValidationException(Xeption exception)
         {
             var terminologyPollValidationException =
@@ -91,7 +110,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             var terminologyPollDependencyException = 
                 new TerminologyPollDependencyException(
                     message: "TerminologyPoll dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(terminologyPollDependencyException);
 
@@ -116,7 +135,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             var terminologyPollDependencyException = 
                 new TerminologyPollDependencyException(
                     message: "TerminologyPoll dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(terminologyPollDependencyException);
 

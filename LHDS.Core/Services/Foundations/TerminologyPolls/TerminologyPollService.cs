@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             });
 
         public IQueryable<TerminologyPoll> RetrieveAllTerminologyPolls() =>
-            this.storageBroker.SelectAllTerminologyPolls();
+            TryCatch(() => this.storageBroker.SelectAllTerminologyPolls());
     }
 }

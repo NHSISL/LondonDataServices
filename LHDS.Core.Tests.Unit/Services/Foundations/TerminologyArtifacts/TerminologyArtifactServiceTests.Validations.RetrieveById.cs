@@ -54,5 +54,49 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfTerminologyArtifactIsNotFoundAndLogItAsync()
+        {
+            //given
+            Guid someTerminologyArtifactId = Guid.NewGuid();
+            TerminologyArtifact noTerminologyArtifact = null;
+
+            var notFoundTerminologyArtifactException =
+                new NotFoundTerminologyArtifactException(someTerminologyArtifactId);
+
+            var expectedTerminologyArtifactValidationException =
+                new TerminologyArtifactValidationException(
+                    message: "TerminologyArtifact validation errors occurred, please try again.",
+                    innerException: notFoundTerminologyArtifactException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectTerminologyArtifactByIdAsync(It.IsAny<Guid>()))
+                    .ReturnsAsync(noTerminologyArtifact);
+
+            //when
+            ValueTask<TerminologyArtifact> retrieveTerminologyArtifactByIdTask =
+                this.terminologyArtifactService.RetrieveTerminologyArtifactByIdAsync(someTerminologyArtifactId);
+
+            TerminologyArtifactValidationException actualTerminologyArtifactValidationException =
+                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(
+                    retrieveTerminologyArtifactByIdTask.AsTask);
+
+            //then
+            actualTerminologyArtifactValidationException.Should().BeEquivalentTo(expectedTerminologyArtifactValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectTerminologyArtifactByIdAsync(It.IsAny<Guid>()),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTerminologyArtifactValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

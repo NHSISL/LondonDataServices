@@ -11,5 +11,6 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
         IQueryable<TerminologyPoll> RetrieveAllTerminologyPolls();
         ValueTask<TerminologyPoll> RetrieveTerminologyPollByIdAsync(Guid terminologyPollId);
         ValueTask<TerminologyPoll> ModifyTerminologyPollAsync(TerminologyPoll terminologyPoll);
+        ValueTask<TerminologyPoll> RemoveTerminologyPollByIdAsync(Guid terminologyPollId);
     }
 }

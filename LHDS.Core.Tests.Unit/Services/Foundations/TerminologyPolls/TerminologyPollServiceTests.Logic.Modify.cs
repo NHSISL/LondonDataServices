@@ -28,6 +28,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
+                broker.SelectTerminologyPollByIdAsync(terminologyPollId))
+                    .ReturnsAsync(storageTerminologyPoll);
+
+            this.storageBrokerMock.Setup(broker =>
                 broker.UpdateTerminologyPollAsync(inputTerminologyPoll))
                     .ReturnsAsync(updatedTerminologyPoll);
 
@@ -43,12 +47,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
+                broker.SelectTerminologyPollByIdAsync(inputTerminologyPoll.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
                 broker.UpdateTerminologyPollAsync(inputTerminologyPoll),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

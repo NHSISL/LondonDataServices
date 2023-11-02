@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -25,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             var expectedTerminologyPollDependencyException =
                 new TerminologyPollDependencyException(
                     message: "TerminologyPoll dependency error occurred, contact support.",
-                    innerException: failedTerminologyPollStorageException);
+                    innerException: failedTerminologyPollStorageException);             
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -54,6 +55,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
                     expectedTerminologyPollDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfTerminologyPollAlreadyExsitsAndLogItAsync()
+        {
+            // given
+            TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll();
+            TerminologyPoll alreadyExistsTerminologyPoll = randomTerminologyPoll;
+            string randomMessage = GetRandomString();
+
+            var duplicateKeyException =
+                new DuplicateKeyException(randomMessage);
+
+            var alreadyExistsTerminologyPollException =
+                new AlreadyExistsTerminologyPollException(
+                    message: "TerminologyPoll with the same Id already exists.",
+                    innerException: duplicateKeyException);
+
+            var expectedTerminologyPollDependencyValidationException =
+                new TerminologyPollDependencyValidationException(
+                    message: "TerminologyPoll dependency validation occurred, please try again.",
+                    innerException: alreadyExistsTerminologyPollException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(duplicateKeyException);
+
+            // when
+            ValueTask<TerminologyPoll> addTerminologyPollTask =
+                this.terminologyPollService.AddTerminologyPollAsync(alreadyExistsTerminologyPoll);
+
+            // then
+            TerminologyPollDependencyValidationException actualTerminologyPollDependencyValidationException =
+                await Assert.ThrowsAsync<TerminologyPollDependencyValidationException>(
+                    addTerminologyPollTask.AsTask);
+
+            actualTerminologyPollDependencyValidationException.Should()
+                .BeEquivalentTo(expectedTerminologyPollDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertTerminologyPollAsync(It.IsAny<TerminologyPoll>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTerminologyPollDependencyValidationException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

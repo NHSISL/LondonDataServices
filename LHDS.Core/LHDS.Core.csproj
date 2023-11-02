@@ -16,6 +16,7 @@
 	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNames.sql" />
 	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNamesTypecasted.sql" />
 	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNamesWithDataTypes.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNamesWithDataTypes.sql" />
 	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNamesWithVarchar.sql" />
 	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetVersionHashElements.sql" />
 	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\DataSpecification_ListObjectsToCreate.sql" />

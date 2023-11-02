@@ -35,6 +35,9 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                 (Rule: IsNotRecent(terminologyPoll.CreatedDate), Parameter: nameof(TerminologyPoll.CreatedDate)));
         }
 
+        public void ValidateTerminologyPollId(Guid terminologyPollId) =>
+            Validate((Rule: IsInvalid(terminologyPollId), Parameter: nameof(TerminologyPoll.Id)));
+
         private static void ValidateTerminologyPollIsNotNull(TerminologyPoll terminologyPoll)
         {
             if (terminologyPoll is null)

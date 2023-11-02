@@ -35,6 +35,11 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                 (Rule: IsNotRecent(terminologyPoll.CreatedDate), Parameter: nameof(TerminologyPoll.CreatedDate)));
         }
 
+        private void ValidateTerminologyPollOnModify(TerminologyPoll terminologyPoll)
+        {
+            ValidateTerminologyPollIsNotNull(terminologyPoll);
+        }
+
         public void ValidateTerminologyPollId(Guid terminologyPollId) =>
             Validate((Rule: IsInvalid(terminologyPollId), Parameter: nameof(TerminologyPoll.Id)));
 
@@ -89,7 +94,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
-
+        
         private static dynamic IsNotSame(
            string first,
            string second,

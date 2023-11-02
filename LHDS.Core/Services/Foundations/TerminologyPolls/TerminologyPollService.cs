@@ -48,7 +48,12 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
                 return maybeTerminologyPoll;
             });
 
-        public async ValueTask<TerminologyPoll> ModifyTerminologyPollAsync(TerminologyPoll terminologyPoll) =>
-            await this.storageBroker.UpdateTerminologyPollAsync(terminologyPoll);
+        public ValueTask<TerminologyPoll> ModifyTerminologyPollAsync(TerminologyPoll terminologyPoll) =>
+            TryCatch(async () =>
+            {
+                ValidateTerminologyPollOnModify(terminologyPoll);
+
+                return await this.storageBroker.UpdateTerminologyPollAsync(terminologyPoll);
+            });
     }
 }

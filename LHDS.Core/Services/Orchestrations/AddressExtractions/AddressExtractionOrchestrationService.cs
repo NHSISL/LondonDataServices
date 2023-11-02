@@ -13,7 +13,6 @@ using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits;
 using LHDS.Core.Services.Foundations.AddressExtractionAudits;
 using LHDS.Core.Services.Foundations.AddressParsers;
-using Renci.SshNet.Common;
 
 namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 {
@@ -71,7 +70,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                                         throw new Exception($"Csv data is null");
                                     }
 
-                                    List<Address> csvAddresses = 
+                                    List<Address> csvAddresses =
                                         await this.addressParserService.ProcessCsvAsync(csvData);
 
                                     Console.WriteLine($"csv address list count is: {csvAddresses.Count}");

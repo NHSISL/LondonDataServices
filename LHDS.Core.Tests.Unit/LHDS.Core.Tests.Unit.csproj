@@ -9,13 +9,21 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\NestedCsvZip.zip" />
 	  <None Remove="Resources\TestCsv1.csv" />
 	  <None Remove="Resources\TestCsv2.csv" />
+	  <None Remove="Resources\TestCsv2.zip" />
 	  <None Remove="Resources\TestNestedZip.zip" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Content Include="Resources\NestedCsvZip.zip">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	  <Content Include="Resources\TestCsv1.csv">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\TestCsv2.zip">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="Resources\TestCsv2.csv">

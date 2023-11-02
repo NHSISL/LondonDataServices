@@ -38,6 +38,10 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
 
                 throw CreateAndLogCriticalDependencyException(failedTerminologyPollStorageException);
             }
+            catch (NotFoundTerminologyPollException notFoundTerminologyPollException)
+            {
+                throw CreateAndLogValidationException(notFoundTerminologyPollException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsTerminologyPollException =

@@ -60,6 +60,15 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
 
                 throw CreateAndLogDependencyValidationException(invalidTerminologyPollReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedTerminologyPollException = 
+                    new LockedTerminologyPollException(
+                        message: "Locked terminologyPoll record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedTerminologyPollException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedTerminologyPollStorageException =
@@ -123,7 +132,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             var terminologyPollDependencyException = 
                 new TerminologyPollDependencyException(
                     message: "TerminologyPoll dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(terminologyPollDependencyException);
 
@@ -148,7 +157,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             var terminologyPollDependencyException = 
                 new TerminologyPollDependencyException(
                     message: "TerminologyPoll dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(terminologyPollDependencyException);
 

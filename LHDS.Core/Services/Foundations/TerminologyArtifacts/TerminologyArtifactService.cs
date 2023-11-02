@@ -1,59 +1,62 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages.Sql;
+using FluentAssertions;
+using Force.DeepCloner;
+using Moq;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
+using Xunit;
 
-namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
+namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 {
-    public partial class TerminologyArtifactService : ITerminologyArtifactService
+    public partial class TerminologyArtifactServiceTests
     {
-        private readonly IStorageBroker storageBroker;
-        private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ILoggingBroker loggingBroker;
-
-        public TerminologyArtifactService(
-            IStorageBroker storageBroker,
-            IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker)
+        [Fact]
+        public async Task ShouldModifyTerminologyArtifactAsync()
         {
-            this.storageBroker = storageBroker;
-            this.dateTimeBroker = dateTimeBroker;
-            this.loggingBroker = loggingBroker;
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            TerminologyArtifact randomTerminologyArtifact = CreateRandomModifyTerminologyArtifact(randomDateTimeOffset);
+            TerminologyArtifact inputTerminologyArtifact = randomTerminologyArtifact;
+            TerminologyArtifact storageTerminologyArtifact = inputTerminologyArtifact.DeepClone();
+            storageTerminologyArtifact.UpdatedDate = randomTerminologyArtifact.CreatedDate;
+            TerminologyArtifact updatedTerminologyArtifact = inputTerminologyArtifact;
+            TerminologyArtifact expectedTerminologyArtifact = updatedTerminologyArtifact.DeepClone();
+            Guid terminologyArtifactId = inputTerminologyArtifact.Id;
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectTerminologyArtifactByIdAsync(terminologyArtifactId))
+                    .ReturnsAsync(storageTerminologyArtifact);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.UpdateTerminologyArtifactAsync(inputTerminologyArtifact))
+                    .ReturnsAsync(updatedTerminologyArtifact);
+
+            // when
+            TerminologyArtifact actualTerminologyArtifact =
+                await this.terminologyArtifactService.ModifyTerminologyArtifactAsync(inputTerminologyArtifact);
+
+            // then
+            actualTerminologyArtifact.Should().BeEquivalentTo(expectedTerminologyArtifact);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectTerminologyArtifactByIdAsync(inputTerminologyArtifact.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateTerminologyArtifactAsync(inputTerminologyArtifact),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
-
-        public ValueTask<TerminologyArtifact> AddTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact) =>
-            TryCatch(async () =>
-            {
-                ValidateTerminologyArtifactOnAdd(terminologyArtifact);
-
-                return await this.storageBroker.InsertTerminologyArtifactAsync(terminologyArtifact);
-            });
-
-        public IQueryable<TerminologyArtifact> RetrieveAllTerminologyArtifacts() =>
-            TryCatch(() => this.storageBroker.SelectAllTerminologyArtifacts());
-
-        public ValueTask<TerminologyArtifact> RetrieveTerminologyArtifactByIdAsync(Guid terminologyArtifactId) =>
-            TryCatch(async () =>
-            {
-                ValidateTerminologyArtifactId(terminologyArtifactId);
-
-                TerminologyArtifact maybeTerminologyArtifact = await this.storageBroker
-                    .SelectTerminologyArtifactByIdAsync(terminologyArtifactId);
-
-                ValidateStorageTerminologyArtifact(maybeTerminologyArtifact, terminologyArtifactId);
-
-                return maybeTerminologyArtifact;
-            });
-
-        public ValueTask<TerminologyArtifact> ModifyTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact) =>
-            TryCatch(async () =>
-            {
-                ValidateTerminologyArtifactOnModify(terminologyArtifact);
-
-                return await this.storageBroker.UpdateTerminologyArtifactAsync(terminologyArtifact);
-            });
     }
 }

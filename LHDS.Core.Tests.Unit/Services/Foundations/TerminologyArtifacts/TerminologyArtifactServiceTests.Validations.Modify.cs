@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -65,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             var invalidTerminologyArtifactException = 
                 new InvalidTerminologyArtifactException(
-                        message: "Invalid terminologyArtifact. Please correct the errors and try again.");
+                    message: "Invalid terminologyArtifact. Please correct the errors and try again.");
 
             invalidTerminologyArtifactException.AddData(
                 key: nameof(TerminologyArtifact.Id),
@@ -116,6 +117,51 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateTerminologyArtifactAsync(It.IsAny<TerminologyArtifact>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            TerminologyArtifact randomTerminologyArtifact = CreateRandomTerminologyArtifact(randomDateTimeOffset);
+            TerminologyArtifact invalidTerminologyArtifact = randomTerminologyArtifact;
+            var invalidTerminologyArtifactException = 
+                new InvalidTerminologyArtifactException(
+                    message: "Invalid terminologyArtifact. Please correct the errors and try again.");
+
+            invalidTerminologyArtifactException.AddData(
+                key: nameof(TerminologyArtifact.UpdatedDate),
+                values: $"Date is the same as {nameof(TerminologyArtifact.CreatedDate)}");
+
+            var expectedTerminologyArtifactValidationException =
+                new TerminologyArtifactValidationException(
+                    message: "TerminologyArtifact validation errors occurred, please try again.",
+                    innerException: invalidTerminologyArtifactException);
+
+            // when
+            ValueTask<TerminologyArtifact> modifyTerminologyArtifactTask =
+                this.terminologyArtifactService.ModifyTerminologyArtifactAsync(invalidTerminologyArtifact);
+
+            TerminologyArtifactValidationException actualTerminologyArtifactValidationException =
+                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(
+                    modifyTerminologyArtifactTask.AsTask);
+
+            // then
+            actualTerminologyArtifactValidationException.Should().BeEquivalentTo(expectedTerminologyArtifactValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTerminologyArtifactValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectTerminologyArtifactByIdAsync(invalidTerminologyArtifact.Id),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

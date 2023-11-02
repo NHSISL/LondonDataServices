@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
@@ -151,7 +152,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 await Assert.ThrowsAsync<TerminologyPollDependencyValidationException>(
                     addTerminologyPollTask.AsTask);
 
-            actualTerminologyPollDependencyValidationException.Should().BeEquivalentTo(expectedTerminologyPollValidationException);
+            actualTerminologyPollDependencyValidationException.Should()
+                .BeEquivalentTo(expectedTerminologyPollValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -169,6 +171,59 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnAddIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            TerminologyPoll someTerminologyPoll = CreateRandomTerminologyPoll();
+
+            var databaseUpdateException =
+                new DbUpdateException();
+
+            var failedTerminologyPollStorageException =
+                new FailedTerminologyPollStorageException(
+                    message: "Failed terminologyPoll storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+            var expectedTerminologyPollDependencyException =
+                new TerminologyPollDependencyException(
+                    message: "TerminologyPoll dependency error occurred, contact support.",
+                    innerException: failedTerminologyPollStorageException); 
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<TerminologyPoll> addTerminologyPollTask =
+                this.terminologyPollService.AddTerminologyPollAsync(someTerminologyPoll);
+
+            TerminologyPollDependencyException actualTerminologyPollDependencyException =
+                await Assert.ThrowsAsync<TerminologyPollDependencyException>(
+                    addTerminologyPollTask.AsTask);
+
+            // then
+            actualTerminologyPollDependencyException.Should()
+                .BeEquivalentTo(expectedTerminologyPollDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertTerminologyPollAsync(It.IsAny<TerminologyPoll>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTerminologyPollDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

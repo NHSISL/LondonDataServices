@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -57,10 +58,19 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             {
                 var failedTerminologyArtifactStorageException =
                     new FailedTerminologyArtifactStorageException(
-                    message: "Failed terminologyArtifact storage error occurred, contact support.",
-                    innerException: databaseUpdateException);
+                        message: "Failed terminologyArtifact storage error occurred, contact support.",
+                        innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedTerminologyArtifactStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedTerminologyArtifactServiceException =
+                    new FailedTerminologyArtifactServiceException(
+                        message: "Failed terminologyArtifact service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedTerminologyArtifactServiceException);
             }
         }
 
@@ -111,6 +121,19 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             this.loggingBroker.LogError(terminologyArtifactDependencyException);
 
             return terminologyArtifactDependencyException;
+        }
+
+        private TerminologyArtifactServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var terminologyArtifactServiceException = 
+                new TerminologyArtifactServiceException(
+                    message: "TerminologyArtifact service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(terminologyArtifactServiceException);
+
+            return terminologyArtifactServiceException;
         }
     }
 }

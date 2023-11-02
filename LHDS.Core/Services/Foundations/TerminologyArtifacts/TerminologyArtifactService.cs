@@ -48,7 +48,12 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                 return maybeTerminologyArtifact;
             });
 
-        public async ValueTask<TerminologyArtifact> ModifyTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact) =>
-            await this.storageBroker.UpdateTerminologyArtifactAsync(terminologyArtifact);
+        public ValueTask<TerminologyArtifact> ModifyTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact) =>
+            TryCatch(async () =>
+            {
+                ValidateTerminologyArtifactOnModify(terminologyArtifact);
+
+                return await this.storageBroker.UpdateTerminologyArtifactAsync(terminologyArtifact);
+            });
     }
 }

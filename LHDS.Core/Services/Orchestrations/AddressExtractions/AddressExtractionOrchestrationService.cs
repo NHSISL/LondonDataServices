@@ -53,6 +53,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                     using (ZipArchive archive = new ZipArchive(memoryStream))
 
                     {
+                        Console.WriteLine($"Zip entries: {archive.Entries.Count}");
                         foreach (ZipArchiveEntry entry in archive.Entries)
                         {
                             if (entry.Name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
@@ -62,8 +63,16 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                                 {
                                     await entryStream.CopyToAsync(tempMemoryStream);
                                     byte[] csvData = tempMemoryStream.ToArray();
-                                    Console.WriteLine($"csvData is: {csvData}");
-                                    List<Address> csvAddresses = await this.addressParserService.ProcessCsvAsync(csvData);
+
+                                    if (csvData.Length <= 0)
+                                    {
+                                        Console.WriteLine($"Csv data is null");
+                                        throw new Exception($"Csv data is null");
+                                    }
+
+                                    List<Address> csvAddresses = 
+                                        await this.addressParserService.ProcessCsvAsync(csvData);
+
                                     Console.WriteLine($"csv address list count is: {csvAddresses.Count}");
                                     addresses.AddRange(csvAddresses);
 

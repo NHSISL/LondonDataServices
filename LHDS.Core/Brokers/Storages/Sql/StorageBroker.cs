@@ -44,10 +44,8 @@ namespace LHDS.Core.Brokers.Storages.Sql
             AddObjectColumnConfigurations(modelBuilder);
             AddPdsAuditConfigurations(modelBuilder);
             AddSpecificationObjectConfigurations(modelBuilder);
-            AddOntologyCodeSystemConfigurations(modelBuilder);
-            AddOntologyValueSetConfigurations(modelBuilder);
-            AddOntologyConceptMapConfigurations(modelBuilder);
-            AddOntologyPollConfigurations(modelBuilder);
+            AddTerminologyArtifactConfigurations(modelBuilder);
+            AddTerminologyPollConfigurations(modelBuilder);
 
             AddSupplierSeedData(modelBuilder);
         }

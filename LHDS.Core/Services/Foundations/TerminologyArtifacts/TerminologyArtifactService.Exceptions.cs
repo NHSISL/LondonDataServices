@@ -19,6 +19,10 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             {
                 throw CreateAndLogValidationException(nullTerminologyArtifactException);
             }
+            catch (InvalidTerminologyArtifactException invalidTerminologyArtifactException)
+            {
+                throw CreateAndLogValidationException(invalidTerminologyArtifactException);
+            }
         }
 
         private TerminologyArtifactValidationException CreateAndLogValidationException(Xeption exception)

@@ -32,7 +32,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     addTerminologyArtifactTask.AsTask);
 
             // then
-            actualTerminologyArtifactValidationException.Should().BeEquivalentTo(expectedTerminologyArtifactValidationException);
+            actualTerminologyArtifactValidationException.Should()
+                .BeEquivalentTo(expectedTerminologyArtifactValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -42,6 +43,79 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnAddIfTerminologyArtifactIsInvalidAndLogItAsync(string invalidText)
+        {
+            // given
+            var invalidTerminologyArtifact = new TerminologyArtifact
+            {
+                // TODO:  Add default values for your properties i.e. Name = invalidText
+            };
+
+            var invalidTerminologyArtifactException =
+                new InvalidTerminologyArtifactException(
+                    message: "Invalid terminologyArtifact. Please correct the errors and try again.");
+
+            invalidTerminologyArtifactException.AddData(
+                key: nameof(TerminologyArtifact.Id),
+                values: "Id is required");
+
+            //invalidTerminologyArtifactException.AddData(
+            //    key: nameof(TerminologyArtifact.Name),
+            //    values: "Text is required");
+
+            // TODO: Add or remove data here to suit the validation needs for the TerminologyArtifact model
+
+            invalidTerminologyArtifactException.AddData(
+                key: nameof(TerminologyArtifact.CreatedDate),
+                values: "Date is required");
+
+            invalidTerminologyArtifactException.AddData(
+                key: nameof(TerminologyArtifact.CreatedBy),
+                values: "Text is required");
+
+            invalidTerminologyArtifactException.AddData(
+                key: nameof(TerminologyArtifact.UpdatedDate),
+                values: "Date is required");
+
+            invalidTerminologyArtifactException.AddData(
+                key: nameof(TerminologyArtifact.UpdatedBy),
+                values: "Text is required");
+
+            var expectedTerminologyArtifactValidationException =
+                new TerminologyArtifactValidationException(
+                    message: "TerminologyArtifact validation errors occurred, please try again.",
+                    innerException: invalidTerminologyArtifactException);
+
+            // when
+            ValueTask<TerminologyArtifact> addTerminologyArtifactTask =
+                this.terminologyArtifactService.AddTerminologyArtifactAsync(invalidTerminologyArtifact);
+
+            TerminologyArtifactValidationException actualTerminologyArtifactValidationException =
+                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(
+                    addTerminologyArtifactTask.AsTask);
+
+            // then
+            actualTerminologyArtifactValidationException.Should()
+                .BeEquivalentTo(expectedTerminologyArtifactValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTerminologyArtifactValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertTerminologyArtifactAsync(It.IsAny<TerminologyArtifact>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

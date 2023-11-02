@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -57,10 +58,19 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             {
                 var failedTerminologyPollStorageException =
                     new FailedTerminologyPollStorageException(
-                    message: "Failed terminologyPoll storage error occurred, contact support.",
-                    innerException: databaseUpdateException);
+                        message: "Failed terminologyPoll storage error occurred, contact support.",
+                        innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedTerminologyPollStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedTerminologyPollServiceException =
+                    new FailedTerminologyPollServiceException(
+                        message: "Failed terminologyPoll service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedTerminologyPollServiceException);
             }
         }
 
@@ -111,6 +121,19 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             this.loggingBroker.LogError(terminologyPollDependencyException);
 
             return terminologyPollDependencyException;
+        }
+
+        private TerminologyPollServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var terminologyPollServiceException = 
+                new TerminologyPollServiceException(
+                    message: "TerminologyPoll service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(terminologyPollServiceException);
+
+            return terminologyPollServiceException;
         }
     }
 }

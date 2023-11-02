@@ -179,5 +179,60 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyErrorOccursAndLogAsync()
+        {
+            // given
+            TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll();
+            var databaseUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedTerminologyPollException =
+                new LockedTerminologyPollException(
+                    message: "Locked terminologyPoll record exception, please try again later",
+                    innerException: databaseUpdateConcurrencyException);
+
+            var expectedTerminologyPollDependencyValidationException =
+                new TerminologyPollDependencyValidationException(
+                    message: "TerminologyPoll dependency validation occurred, please try again.",
+                    innerException: lockedTerminologyPollException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<TerminologyPoll> modifyTerminologyPollTask =
+                this.terminologyPollService.ModifyTerminologyPollAsync(randomTerminologyPoll);
+
+            TerminologyPollDependencyValidationException actualTerminologyPollDependencyValidationException =
+                await Assert.ThrowsAsync<TerminologyPollDependencyValidationException>(
+                    modifyTerminologyPollTask.AsTask);
+
+            // then
+            actualTerminologyPollDependencyValidationException.Should()
+                .BeEquivalentTo(expectedTerminologyPollDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectTerminologyPollByIdAsync(randomTerminologyPoll.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTerminologyPollDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateTerminologyPollAsync(randomTerminologyPoll),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

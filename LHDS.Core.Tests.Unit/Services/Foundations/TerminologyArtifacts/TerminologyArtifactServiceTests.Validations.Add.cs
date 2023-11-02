@@ -29,8 +29,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                 this.terminologyArtifactService.AddTerminologyArtifactAsync(nullTerminologyArtifact);
 
             TerminologyArtifactValidationException actualTerminologyArtifactValidationException =
-                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(
-                    addTerminologyArtifactTask.AsTask);
+                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(() =>
+                    addTerminologyArtifactTask.AsTask());
 
             // then
             actualTerminologyArtifactValidationException.Should()
@@ -98,12 +98,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                 this.terminologyArtifactService.AddTerminologyArtifactAsync(invalidTerminologyArtifact);
 
             TerminologyArtifactValidationException actualTerminologyArtifactValidationException =
-                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(
-                    addTerminologyArtifactTask.AsTask);
+                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(() =>
+                    addTerminologyArtifactTask.AsTask());
 
             // then
             actualTerminologyArtifactValidationException.Should()
                 .BeEquivalentTo(expectedTerminologyArtifactValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -144,17 +148,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     message: "TerminologyArtifact validation errors occurred, please try again.",
                     innerException: invalidTerminologyArtifactException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<TerminologyArtifact> addTerminologyArtifactTask =
                 this.terminologyArtifactService.AddTerminologyArtifactAsync(invalidTerminologyArtifact);
 
             TerminologyArtifactValidationException actualTerminologyArtifactValidationException =
-                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(
-                    addTerminologyArtifactTask.AsTask);
+                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(() =>
+                    addTerminologyArtifactTask.AsTask());
 
             // then
             actualTerminologyArtifactValidationException.Should()
                 .BeEquivalentTo(expectedTerminologyArtifactValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -165,9 +177,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                 broker.InsertTerminologyArtifactAsync(It.IsAny<TerminologyArtifact>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -192,17 +204,25 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                     message: "TerminologyArtifact validation errors occurred, please try again.",
                     innerException: invalidTerminologyArtifactException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<TerminologyArtifact> addTerminologyArtifactTask =
                 this.terminologyArtifactService.AddTerminologyArtifactAsync(invalidTerminologyArtifact);
 
             TerminologyArtifactValidationException actualTerminologyArtifactValidationException =
-                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(
-                    addTerminologyArtifactTask.AsTask);
+                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(() =>
+                    addTerminologyArtifactTask.AsTask());
 
             // then
             actualTerminologyArtifactValidationException.Should()
                 .BeEquivalentTo(expectedTerminologyArtifactValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -254,8 +274,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
                 this.terminologyArtifactService.AddTerminologyArtifactAsync(invalidTerminologyArtifact);
 
             TerminologyArtifactValidationException actualTerminologyArtifactValidationException =
-                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(
-                    addTerminologyArtifactTask.AsTask);
+                await Assert.ThrowsAsync<TerminologyArtifactValidationException>(() =>
+                    addTerminologyArtifactTask.AsTask());
 
             // then
             actualTerminologyArtifactValidationException.Should()

@@ -27,10 +27,12 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                 Parameter: nameof(TerminologyArtifact.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    firstId: terminologyArtifact.UpdatedBy,
-                    secondId: terminologyArtifact.CreatedBy,
-                    secondIdName: nameof(TerminologyArtifact.CreatedBy)),
-                Parameter: nameof(TerminologyArtifact.UpdatedBy)));
+                    first: terminologyArtifact.UpdatedBy,
+                    second: terminologyArtifact.CreatedBy,
+                    secondName: nameof(TerminologyArtifact.CreatedBy)),
+                Parameter: nameof(TerminologyArtifact.UpdatedBy)),
+
+                (Rule: IsNotRecent(terminologyArtifact.CreatedDate), Parameter: nameof(TerminologyArtifact.CreatedDate)));
         }
 
         private static void ValidateTerminologyArtifactIsNotNull(TerminologyArtifact terminologyArtifact)
@@ -85,6 +87,23 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                Condition = first != second,
                Message = $"Text is not the same as {secondName}"
            };
+
+        private dynamic IsNotRecent(DateTimeOffset date) => new
+        {
+            Condition = IsDateNotRecent(date),
+            Message = "Date is not recent"
+        };
+
+        private bool IsDateNotRecent(DateTimeOffset date)
+        {
+            DateTimeOffset currentDateTime =
+                this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+            TimeSpan timeDifference = currentDateTime.Subtract(date);
+            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+
+            return timeDifference.Duration() > oneMinute;
+        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

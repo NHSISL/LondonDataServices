@@ -43,6 +43,15 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsTerminologyArtifactException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidTerminologyArtifactReferenceException =
+                    new InvalidTerminologyArtifactReferenceException(
+                        message: "Invalid terminologyArtifact reference error occurred.", 
+                        innerException: foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidTerminologyArtifactReferenceException);
+            }
         }
 
         private TerminologyArtifactValidationException CreateAndLogValidationException(Xeption exception)
@@ -62,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
             var terminologyArtifactDependencyException = 
                 new TerminologyArtifactDependencyException(
                     message: "TerminologyArtifact dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(terminologyArtifactDependencyException);
 

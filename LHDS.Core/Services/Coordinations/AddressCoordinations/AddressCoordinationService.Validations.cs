@@ -3,8 +3,8 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
-using Hl7.Fhir.Model;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
+using LHDS.Core.Models.Foundations.Addresses;
 
 namespace LHDS.Core.Services.Coordinations.AddressCoordinations
 {

@@ -13,7 +13,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
     public partial class AddressNormalisationServiceTests
     {
         [Fact]
-        public async Task ShouldParseAddress()
+        public Task ShouldParseAddress()
         {
             // given
             List<KeyValuePair<string, string>> inputAddress =
@@ -40,14 +40,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
             var expectedAddress = outputAddress;
 
             var service = new AddressNormalisationService(
-                addressNormalisationBroker: this.addressNormalisationBrokerMock.Object,
-                loggingBroker: this.loggingBrokerMock.Object);
+                addressNormalisationBroker: addressNormalisationBrokerMock.Object,
+                loggingBroker: loggingBrokerMock.Object);
 
             // when
             string actualAddress = service.ParseAddressToJson(inputAddress);
 
             // then
             actualAddress.Should().BeEquivalentTo(expectedAddress);
+            return Task.CompletedTask;
         }
     }
 }

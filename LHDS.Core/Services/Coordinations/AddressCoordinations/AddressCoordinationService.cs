@@ -35,6 +35,8 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 List<Address> extractedAddress = 
                     await this.addressExtractionOrchestrationService.ProcessDataAsync(data);
 
+                ValidateAddressListIsNotNull(extractedAddress);
+
                 return await this.addressPersistanceOrchestrationService.ProcessAsync(extractedAddress);
             });
     }

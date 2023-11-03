@@ -50,4 +50,8 @@
 	  <ProjectReference Include="..\LHDS.Core\LHDS.Core.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Resources\Services\Foundations\AddressParser\" />
+	</ItemGroup>
+
 </Project>

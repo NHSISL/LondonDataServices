@@ -26,39 +26,42 @@ namespace LHDS.Core.Services.Foundations.AddressParsers
             {
                 ValidateAddressParserOnProcessCSV(data);
                 this.loggingBroker.LogInformation("Data validation complete.");
-                string stringData = Encoding.UTF8.GetString(data);
-                List<string> recods = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
-                List<Address> returnedAddresses = new List<Address>();
+                return await Task.Run(() =>
+                { 
+                    string stringData = Encoding.UTF8.GetString(data);
+                    List<string> recods = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+                    List<Address> returnedAddresses = new List<Address>();
 
-                foreach (string record in recods)
-                {
-                    if (record.StartsWith("28,"))
+                    foreach (string record in recods)
                     {
-                        string[] index = record.Split(",");
-
-                        Address address = new Address
+                        if (record.StartsWith("28,"))
                         {
-                            Id = Guid.NewGuid(),
-                            UPRN = index[3],
-                            UPSN = index[4],
-                            OrganisationName = index[5],
-                            DepartmentName = index[6],
-                            SubBuildingName = index[7],
-                            BuildingName = index[8],
-                            BuildingNumber = index[9],
-                            DependentThoroughfare = index[10],
-                            Thoroughfare = index[11],
-                            DoubleDependentLocality = index[12],
-                            DependentLocality = index[13],
-                            PostTown = index[14],
-                            PostCode = index[15],
-                        };
+                            string[] index = record.Split(",");
 
-                        returnedAddresses.Add(address);
+                            Address address = new Address
+                            {
+                                Id = Guid.NewGuid(),
+                                UPRN = index[3],
+                                UPSN = index[4],
+                                OrganisationName = index[5],
+                                DepartmentName = index[6],
+                                SubBuildingName = index[7],
+                                BuildingName = index[8],
+                                BuildingNumber = index[9],
+                                DependentThoroughfare = index[10],
+                                Thoroughfare = index[11],
+                                DoubleDependentLocality = index[12],
+                                DependentLocality = index[13],
+                                PostTown = index[14],
+                                PostCode = index[15],
+                            };
+
+                            returnedAddresses.Add(address);
+                        }
                     }
-                }
 
-                return returnedAddresses;
+                    return returnedAddresses;
+                });
             });
     }
 }

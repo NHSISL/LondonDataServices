@@ -56,7 +56,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
+        public Task ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
@@ -65,13 +65,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     message: "IngestionTracking processing dependency error occurred, please try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
-            this.ingestionTrackingServiceMock.Setup(service =>
+            ingestionTrackingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackings())
                     .Throws(dependencyException);
 
             // when
             Action ingestionTrackingRetrieveAction = () =>
-                this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings();
+                ingestionTrackingProcessingService.RetrieveAllIngestionTrackings();
 
             IngestionTrackingProcessingDependencyException actualException =
                 Assert.Throws<IngestionTrackingProcessingDependencyException>(ingestionTrackingRetrieveAction);
@@ -79,21 +79,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             // then
             actualException.Should().BeEquivalentTo(expectedIngestionTrackingProcessingDependencyException);
 
-            this.ingestionTrackingServiceMock.Verify(service =>
+            ingestionTrackingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackings(),
                     Times.Once);
 
-            this.loggingBrokerMock.Verify(broker =>
+            loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedIngestionTrackingProcessingDependencyException))),
                          Times.Once);
 
-            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
+            ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            loggingBrokerMock.VerifyNoOtherCalls();
+            return Task.CompletedTask;
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
+        public Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
         {
             // given
             var serviceException = new Exception();
@@ -108,13 +109,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
                     message: "IngestionTracking processing service error occurred, contact support.",
                     innerException: failedIngestionTrackingProcessingServiceException);
 
-            this.ingestionTrackingServiceMock.Setup(service =>
+            ingestionTrackingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackings())
                     .Throws(serviceException);
 
             // when
             Action ingestionTrackingRetrieveAction = () =>
-                this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings();
+                ingestionTrackingProcessingService.RetrieveAllIngestionTrackings();
 
             IngestionTrackingProcessingServiceException actualException =
                 Assert.Throws<IngestionTrackingProcessingServiceException>(ingestionTrackingRetrieveAction);
@@ -122,17 +123,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackings
             // then
             actualException.Should().BeEquivalentTo(expectedIngestionTrackingProcessingServiveException);
 
-            this.ingestionTrackingServiceMock.Verify(service =>
+            ingestionTrackingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackings(),
                     Times.Once);
 
-            this.loggingBrokerMock.Verify(broker =>
+            loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedIngestionTrackingProcessingServiveException))),
                          Times.Once);
 
-            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
+            ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            loggingBrokerMock.VerifyNoOtherCalls();
+            return Task.CompletedTask;
         }
     }
 }

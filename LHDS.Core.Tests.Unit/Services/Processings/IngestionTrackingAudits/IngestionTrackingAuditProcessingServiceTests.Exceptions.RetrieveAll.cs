@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
+        public Task ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -25,13 +25,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
                     message: "IngestionTrackingAudit processing dependency validation error occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
-            this.ingestionTrackingAuditServiceMock.Setup(service =>
+            ingestionTrackingAuditServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackingAudits())
                     .Throws(dependencyValidationException);
 
             // when
             Action ingestionTrackingAuditRetrieveAllAction = () =>
-                this.ingestionTrackingAuditProcessingService.RetrieveAllIngestionTrackingAudits();
+                ingestionTrackingAuditProcessingService.RetrieveAllIngestionTrackingAudits();
 
             IngestionTrackingAuditProcessingDependencyValidationException actualException =
                 Assert.Throws<IngestionTrackingAuditProcessingDependencyValidationException>(
@@ -41,17 +41,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.IngestionTrackingAudits
             actualException.Should()
                 .BeEquivalentTo(expectedIngestionTrackingAuditProcessingDependencyValidationException);
 
-            this.ingestionTrackingAuditServiceMock.Verify(service =>
+            ingestionTrackingAuditServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackingAudits(),
                     Times.Once);
 
-            this.loggingBrokerMock.Verify(broker =>
+            loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedIngestionTrackingAuditProcessingDependencyValidationException))),
                          Times.Once);
 
-            this.ingestionTrackingAuditServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
+            ingestionTrackingAuditServiceMock.VerifyNoOtherCalls();
+            loggingBrokerMock.VerifyNoOtherCalls();
+            return Task.CompletedTask;
         }
 
         [Theory]

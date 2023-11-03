@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
+        public Task ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -25,13 +25,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     message: "DataSetSpecification processing dependency validation error occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
-            this.dataSetSpecificationServiceMock.Setup(service =>
+            dataSetSpecificationServiceMock.Setup(service =>
                 service.RetrieveAllDataSetSpecifications())
                     .Throws(dependencyValidationException);
 
             // when
             Action dataSetSpecificationRetrieveAction = () =>
-                this.dataSetSpecificationProcessingService.RetrieveAllDataSetSpecifications();
+                dataSetSpecificationProcessingService.RetrieveAllDataSetSpecifications();
 
             DataSetSpecificationProcessingDependencyValidationException actualException =
                 Assert.Throws<DataSetSpecificationProcessingDependencyValidationException>(
@@ -40,17 +40,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetSpecificationProcessingDependencyValidationException);
 
-            this.dataSetSpecificationServiceMock.Verify(service =>
+            dataSetSpecificationServiceMock.Verify(service =>
                 service.RetrieveAllDataSetSpecifications(),
                     Times.Once);
 
-            this.loggingBrokerMock.Verify(broker =>
+            loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedDataSetSpecificationProcessingDependencyValidationException))),
                          Times.Once);
 
-            this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
+            dataSetSpecificationServiceMock.VerifyNoOtherCalls();
+            loggingBrokerMock.VerifyNoOtherCalls();
+            return Task.CompletedTask;
         }
 
         [Theory]

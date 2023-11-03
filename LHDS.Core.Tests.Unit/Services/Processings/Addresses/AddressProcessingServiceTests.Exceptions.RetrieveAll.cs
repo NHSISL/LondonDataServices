@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
+        public Task ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -25,13 +25,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
                     message: "Address processing dependency validation error occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
-            this.addressServiceMock.Setup(service =>
+            addressServiceMock.Setup(service =>
                 service.RetrieveAllAddresses())
                     .Throws(dependencyValidationException);
 
             // when
             Action addressRetrieveAction = () =>
-                this.addressProcessingService.RetrieveAllAddresses();
+                addressProcessingService.RetrieveAllAddresses();
 
             AddressProcessingDependencyValidationException actualException =
                 Assert.Throws<AddressProcessingDependencyValidationException>(addressRetrieveAction);
@@ -39,17 +39,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
             // then
             actualException.Should().BeEquivalentTo(expectedAddressProcessingDependencyValidationException);
 
-            this.addressServiceMock.Verify(service =>
+            addressServiceMock.Verify(service =>
                 service.RetrieveAllAddresses(),
                     Times.Once);
 
-            this.loggingBrokerMock.Verify(broker =>
+            loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedAddressProcessingDependencyValidationException))),
                          Times.Once);
 
-            this.addressServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
+            addressServiceMock.VerifyNoOtherCalls();
+            loggingBrokerMock.VerifyNoOtherCalls();
+            return Task.CompletedTask;
         }
 
         [Theory]

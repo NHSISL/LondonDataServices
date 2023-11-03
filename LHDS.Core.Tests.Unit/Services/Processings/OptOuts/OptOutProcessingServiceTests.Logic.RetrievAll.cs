@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
     public partial class OptOutProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldRetrieveOptOutProcessingAllAsync()
+        public Task ShouldRetrieveOptOutProcessingAllAsync()
         {
             // given
             IQueryable<OptOut> randomOptOuts = CreateRandomOptOuts();
@@ -24,23 +24,24 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             List<OptOut> expectedOptOuts = retrievedOptOuts.ToList();
 
-            this.optOutServiceMock.Setup(service =>
+            optOutServiceMock.Setup(service =>
                 service.RetrieveAllOptOuts())
                     .Returns(retrievedOptOuts);
 
             // when
             IQueryable<OptOut> actualOptOuts =
-                this.optOutProcessingService.RetrieveAllOptOutsAsync();
+                optOutProcessingService.RetrieveAllOptOutsAsync();
 
             // then
             actualOptOuts.Should().BeEquivalentTo(expectedOptOuts);
 
-            this.optOutServiceMock.Verify(service =>
+            optOutServiceMock.Verify(service =>
                 service.RetrieveAllOptOuts(),
                     Times.Once);
 
-            this.optOutServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
+            optOutServiceMock.VerifyNoOtherCalls();
+            loggingBrokerMock.VerifyNoOtherCalls();
+            return Task.CompletedTask;
         }
     }
 }

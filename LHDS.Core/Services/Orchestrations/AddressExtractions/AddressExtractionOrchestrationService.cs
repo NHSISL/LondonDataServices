@@ -48,78 +48,66 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 
         private async ValueTask<List<Address>> ProcessAddressDataAsync(byte[] data)
         {
-            try
+            List<Address> addresses = new List<Address>();
+            using (MemoryStream memoryStream = new MemoryStream(data))
+            using (ZipArchive archive = new ZipArchive(memoryStream))
             {
-                List<Address> addresses = new List<Address>();
-                using (MemoryStream memoryStream = new MemoryStream(data))
-                using (ZipArchive archive = new ZipArchive(memoryStream))
+                foreach (ZipArchiveEntry entry in archive.Entries)
                 {
-                    Console.WriteLine($"Zip entries: {archive.Entries.Count}");
-                    foreach (ZipArchiveEntry entry in archive.Entries)
+                    if (entry.Name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
                     {
-                        if (entry.Name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+                        using (var entryStream = entry.Open())
+                        using (var tempMemoryStream = new MemoryStream())
                         {
-                            using (var entryStream = entry.Open())
-                            using (var tempMemoryStream = new MemoryStream())
+                            await entryStream.CopyToAsync(tempMemoryStream);
+                            byte[] csvData = tempMemoryStream.ToArray();
+
+                            List<Address> csvAddresses =
+                                await this.addressParserService.ProcessCsvAsync(csvData);
+
+                            addresses.AddRange(csvAddresses);
+                            var dateStamp = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                            var audit = new AddressExtractionAudit
                             {
-                                await entryStream.CopyToAsync(tempMemoryStream);
-                                byte[] csvData = tempMemoryStream.ToArray();
+                                Id = this.identifierBroker.GetIdentifier(),
+                                CorrelationId = this.identifierBroker.GetIdentifier(),
+                                FileName = $"{entry}",
+                                Message = "Success",
+                                MessageId = "",
+                                CreatedBy = "System",
+                                UpdatedBy = "System",
+                                UpdatedDate = dateStamp,
+                                CreatedDate = dateStamp,
+                            };
 
-                                Console.WriteLine($"Csv name is: {entry.Name}");
-
-                                List<Address> csvAddresses =
-                                    await this.addressParserService.ProcessCsvAsync(csvData);
-
-                                Console.WriteLine($"csv address list count is: {csvAddresses.Count}");
-                                addresses.AddRange(csvAddresses);
-
-                                var dateStamp = this.dateTimeBroker.GetCurrentDateTimeOffset();
-
-                                var audit = new AddressExtractionAudit
-                                {
-                                    Id = this.identifierBroker.GetIdentifier(),
-                                    CorrelationId = this.identifierBroker.GetIdentifier(),
-                                    FileName = $"{entry}",
-                                    Message = "Success",
-                                    MessageId = "",
-                                    CreatedBy = "System",
-                                    UpdatedBy = "System",
-                                    UpdatedDate = dateStamp,
-                                    CreatedDate = dateStamp,
-                                };
-
-                                await this.addressExtractionAuditService.AddAddressExtractionAuditAsync(audit);
-                            }
-                        }
-                        else if (entry.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
-                        {
-                            byte[] nestedZipData;
-                            Console.WriteLine($"Csv name is: {entry.Name}");
-                            using (MemoryStream nestedMemoryStream = new MemoryStream())
-                            using (Stream entryStream = entry.Open())
-                            {
-                                entryStream.CopyTo(nestedMemoryStream);
-                                nestedZipData = nestedMemoryStream.ToArray();
-                            }
-
-                            if (nestedZipData.Length <= 0)
-                            {
-                                Console.WriteLine($"nestedZipData is null");
-                                throw new Exception($"nestedZipData is null");
-                            }
-
-                            List<Address> nestedAddresses = await ProcessAddressDataAsync(nestedZipData);
-                            addresses.AddRange(nestedAddresses);
+                            await this.addressExtractionAuditService.AddAddressExtractionAuditAsync(audit);
                         }
                     }
-                }
+                    else if (entry.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+                    {
+                        byte[] nestedZipData;
+                        Console.WriteLine($"Csv name is: {entry.Name}");
+                        using (MemoryStream nestedMemoryStream = new MemoryStream())
+                        using (Stream entryStream = entry.Open())
+                        {
+                            entryStream.CopyTo(nestedMemoryStream);
+                            nestedZipData = nestedMemoryStream.ToArray();
+                        }
 
-                return addresses;
+                        if (nestedZipData.Length <= 0)
+                        {
+                            Console.WriteLine($"nestedZipData is null");
+                            throw new Exception($"nestedZipData is null");
+                        }
+
+                        List<Address> nestedAddresses = await ProcessAddressDataAsync(nestedZipData);
+                        addresses.AddRange(nestedAddresses);
+                    }
+                }
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+
+            return addresses;
         }
     }
 }

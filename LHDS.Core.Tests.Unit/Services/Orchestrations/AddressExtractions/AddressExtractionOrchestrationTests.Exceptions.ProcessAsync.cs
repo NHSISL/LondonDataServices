@@ -26,7 +26,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         {
             // given
             string assembly = Assembly.GetExecutingAssembly().Location;
-            string inputFilePath = Path.Combine(Path.GetDirectoryName(assembly), @"Resources/TestNestedZip.zip");
+
+            string inputFilePath = Path.Combine(Path.GetDirectoryName(assembly),
+                @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessZipFileWithOnlyCsvAddressesData.zip");
+
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
 
             var expectedDependencyException =
@@ -77,7 +80,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         {
             // given
             string assembly = Assembly.GetExecutingAssembly().Location;
-            string inputFilePath = Path.Combine(Path.GetDirectoryName(assembly), @"Resources/TestNestedZip.zip");
+
+            string inputFilePath = Path.Combine(Path.GetDirectoryName(assembly),
+                @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessZipFileWithOnlyCsvAddressesData.zip");
+
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
 
             var expectedDependencyException =
@@ -126,7 +132,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         {
             // given
             string assembly = Assembly.GetExecutingAssembly().Location;
-            string inputFilePath = Path.Combine(Path.GetDirectoryName(assembly), @"Resources/TestNestedZip.zip");
+
+            string inputFilePath = Path.Combine(Path.GetDirectoryName(assembly),
+                @"Resources/Services/Orchestrations/AddressExtractions/ShouldProcessZipFileWithOnlyCsvAddressesData.zip");
+
             byte[] inputData = await File.ReadAllBytesAsync(inputFilePath);
             var serviceException = new Exception();
 

@@ -52,47 +52,5 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
-
-        //[Fact]
-        //public async Task ShouldThrowValidationExceptionOnProcessDataIfCsvDataIsNullAndLogItAsync()
-        //{
-        //    // given
-        //    byte[] inputData = Encoding.UTF8.GetBytes(GetRandomString());
-
-        //    var invalidArchiveAddressExctractionOrchestrationException =
-        //        new InvalidArchiveAddressExtractionOrchestrationException(
-        //            message: "Invalid address extraction orchestration archive, " +
-        //                "please correct the errors and try again.");
-
-        //    invalidArchiveAddressExctractionOrchestrationException.AddData(
-        //       key: "MemoryStream",
-        //       values: "File(s) required");
-
-        //    var expectedAddressExtractionOrchestrationValidationException =
-        //        new AddressExtractionOrchestrationValidationException(
-        //            message: "Address extraction orchestration validation error occurred, please try again.",
-        //            innerException: invalidArchiveAddressExctractionOrchestrationException);
-
-        //    // when
-        //    ValueTask<List<Address>> processDataTask =
-        //        this.addressExtractionOrchestrationService.ProcessDataAsync(inputData);
-
-        //    AddressExtractionOrchestrationValidationException actualException =
-        //        await Assert.ThrowsAsync<AddressExtractionOrchestrationValidationException>(processDataTask.AsTask);
-
-        //    // then
-        //    actualException.Should()
-        //        .BeEquivalentTo(expectedAddressExtractionOrchestrationValidationException);
-
-        //    this.loggingBrokerMock.Verify(broker =>
-        //        broker.LogError(It.Is(SameExceptionAs(
-        //            expectedAddressExtractionOrchestrationValidationException))),
-        //                Times.Once);
-
-        //    this.addressParserServiceMock.VerifyNoOtherCalls();
-        //    this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
-        //    this.dateTimeBrokerMock.VerifyNoOtherCalls();
-        //    this.loggingBrokerMock.VerifyNoOtherCalls();
-        //}
     }
 }

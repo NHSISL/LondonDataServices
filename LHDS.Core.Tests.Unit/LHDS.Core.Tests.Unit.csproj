@@ -9,6 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Services\Foundations\AddressParser\TestCsv3.csv" />
 	  <None Remove="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessZipFileWithCsvAddressesData.zip" />
 	  <None Remove="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessZipFileWithOnlyCsvAddressesData.zip" />
 	  <None Remove="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessZipFileWithZippedCsvAddressesData.zip" />
@@ -16,6 +17,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Content Include="Resources\Services\Foundations\AddressParser\TestCsv3.csv">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	  <Content Include="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessZipFileWithOnlyCsvAddressesData.zip">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
@@ -48,10 +52,6 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\LHDS.Core\LHDS.Core.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Resources\Services\Foundations\AddressParser\" />
 	</ItemGroup>
 
 </Project>

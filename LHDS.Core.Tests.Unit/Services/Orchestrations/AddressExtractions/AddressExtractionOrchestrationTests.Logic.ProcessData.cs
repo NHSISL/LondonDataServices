@@ -104,112 +104,112 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
-    }
 
-    private async ValueTask<List<Address>> SetupMocksForProvidedZips(
-        byte[] inputData,
-        List<Address> randomAddresses)
-    {
-        List<Address> addresses = new List<Address>();
-
-        using (MemoryStream memoryStream = new MemoryStream(inputData))
+        private async ValueTask<List<Address>> SetupMocksForProvidedZips(
+            byte[] inputData,
+            List<Address> randomAddresses)
         {
-            using (ZipArchive archive = new ZipArchive(memoryStream))
+            List<Address> addresses = new List<Address>();
+
+            using (MemoryStream memoryStream = new MemoryStream(inputData))
             {
-                foreach (ZipArchiveEntry entry in archive.Entries)
+                using (ZipArchive archive = new ZipArchive(memoryStream))
                 {
-                    if (entry.Name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+                    foreach (ZipArchiveEntry entry in archive.Entries)
                     {
-                        using (var entryStream = entry.Open())
-                        using (var tempMemoryStream = new MemoryStream())
+                        if (entry.Name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
                         {
-                            addresses.AddRange(randomAddresses);
-                            await entryStream.CopyToAsync(tempMemoryStream);
-                            byte[] csvData = tempMemoryStream.ToArray();
+                            using (var entryStream = entry.Open())
+                            using (var tempMemoryStream = new MemoryStream())
+                            {
+                                addresses.AddRange(randomAddresses);
+                                await entryStream.CopyToAsync(tempMemoryStream);
+                                byte[] csvData = tempMemoryStream.ToArray();
 
-                            this.addressParserServiceMock.Setup(service =>
-                                service.ProcessCsvAsync(csvData))
-                                    .ReturnsAsync(randomAddresses);
+                                this.addressParserServiceMock.Setup(service =>
+                                    service.ProcessCsvAsync(csvData))
+                                        .ReturnsAsync(randomAddresses);
+                            }
                         }
-                    }
-                    else if (entry.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
-                    {
-                        byte[] zipFile;
-                        using (MemoryStream nestedMemoryStream = new MemoryStream())
-                        using (Stream entryStream = entry.Open())
+                        else if (entry.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
                         {
-                            entryStream.CopyTo(nestedMemoryStream);
-                            zipFile = nestedMemoryStream.ToArray();
-                        }
+                            byte[] zipFile;
+                            using (MemoryStream nestedMemoryStream = new MemoryStream())
+                            using (Stream entryStream = entry.Open())
+                            {
+                                entryStream.CopyTo(nestedMemoryStream);
+                                zipFile = nestedMemoryStream.ToArray();
+                            }
 
-                        List<Address> childAddresses = await SetupMocksForProvidedZips(zipFile, randomAddresses);
-                        addresses.AddRange(childAddresses);
+                            List<Address> childAddresses = await SetupMocksForProvidedZips(zipFile, randomAddresses);
+                            addresses.AddRange(childAddresses);
+                        }
                     }
                 }
             }
+
+            return addresses;
         }
 
-        return addresses;
-    }
-
-    private async ValueTask VerifyMocksForProvidedZips(
-        DateTimeOffset randomDateTimeOffset,
-        Guid randomId,
-        byte[] inputData)
-    {
-        using (MemoryStream memoryStream = new MemoryStream(inputData))
+        private async ValueTask VerifyMocksForProvidedZips(
+            DateTimeOffset randomDateTimeOffset,
+            Guid randomId,
+            byte[] inputData)
         {
-            using (ZipArchive archive = new ZipArchive(memoryStream))
+            using (MemoryStream memoryStream = new MemoryStream(inputData))
             {
-                foreach (ZipArchiveEntry entry in archive.Entries)
+                using (ZipArchive archive = new ZipArchive(memoryStream))
                 {
-                    if (entry.Name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+                    foreach (ZipArchiveEntry entry in archive.Entries)
                     {
-                        using (var entryStream = entry.Open())
-                        using (var tempMemoryStream = new MemoryStream())
+                        if (entry.Name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
                         {
-                            await entryStream.CopyToAsync(tempMemoryStream);
-                            byte[] csvData = tempMemoryStream.ToArray();
+                            using (var entryStream = entry.Open())
+                            using (var tempMemoryStream = new MemoryStream())
+                            {
+                                await entryStream.CopyToAsync(tempMemoryStream);
+                                byte[] csvData = tempMemoryStream.ToArray();
 
-                            this.addressParserServiceMock.Verify(service =>
-                                service.ProcessCsvAsync(csvData),
+                                this.addressParserServiceMock.Verify(service =>
+                                    service.ProcessCsvAsync(csvData),
+                                        Times.Once);
+                            }
+
+                            var audit = new AddressExtractionAudit
+                            {
+                                Id = randomId,
+                                CorrelationId = randomId,
+                                FileName = $"{entry}",
+                                Message = "Success",
+                                MessageId = "",
+                                CreatedBy = "System",
+                                UpdatedBy = "System",
+                                UpdatedDate = randomDateTimeOffset,
+                                CreatedDate = randomDateTimeOffset,
+                            };
+
+                            this.addressExtractionAuditServiceMock.Verify(service =>
+                                service.AddAddressExtractionAuditAsync(It.Is(SameAddressExtractionAuditAs(audit))),
                                     Times.Once);
                         }
-
-                        var audit = new AddressExtractionAudit
+                        else if (entry.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
                         {
-                            Id = randomId,
-                            CorrelationId = randomId,
-                            FileName = $"{entry}",
-                            Message = "Success",
-                            MessageId = "",
-                            CreatedBy = "System",
-                            UpdatedBy = "System",
-                            UpdatedDate = randomDateTimeOffset,
-                            CreatedDate = randomDateTimeOffset,
-                        };
+                            byte[] zipFile;
+                            using (MemoryStream nestedMemoryStream = new MemoryStream())
+                            using (Stream entryStream = entry.Open())
+                            {
+                                entryStream.CopyTo(nestedMemoryStream);
+                                zipFile = nestedMemoryStream.ToArray();
+                            }
 
-                        this.addressExtractionAuditServiceMock.Verify(service =>
-                            service.AddAddressExtractionAuditAsync(It.Is(SameAddressExtractionAuditAs(audit))),
-                                Times.Once);
-                    }
-                    else if (entry.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
-                    {
-                        byte[] zipFile;
-                        using (MemoryStream nestedMemoryStream = new MemoryStream())
-                        using (Stream entryStream = entry.Open())
-                        {
-                            entryStream.CopyTo(nestedMemoryStream);
-                            zipFile = nestedMemoryStream.ToArray();
+                            await VerifyMocksForProvidedZips(randomDateTimeOffset, randomId, zipFile);
                         }
-
-                        await VerifyMocksForProvidedZips(randomDateTimeOffset, randomId, zipFile);
                     }
-                }
 
-                this.dateTimeBrokerMock.Verify(broker =>
-                    broker.GetCurrentDateTimeOffset(),
-                        Times.Exactly(archive.Entries.Count));
+                    this.dateTimeBrokerMock.Verify(broker =>
+                        broker.GetCurrentDateTimeOffset(),
+                            Times.Exactly(archive.Entries.Count));
+                }
             }
         }
     }

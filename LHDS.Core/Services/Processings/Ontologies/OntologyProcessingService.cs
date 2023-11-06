@@ -22,9 +22,12 @@ namespace LHDS.Core.Services.Processings.Ontologies
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<OntologyAssets> RetrieveAllCodingSystemsAsync(string relativeUrl)
-        {
-            return this.ontologyService.RetrieveAllCodingSystemsAsync(relativeUrl);
-        }
+        public ValueTask<OntologyAssets> RetrieveAllCodingSystemsAsync(string relativeUrl) =>
+             TryCatch( () =>
+             {
+                 ValidateArgs(relativeUrl);
+
+                 return this.ontologyService.RetrieveAllCodingSystemsAsync(relativeUrl);
+             });
     }
 }

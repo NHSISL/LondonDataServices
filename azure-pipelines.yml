@@ -30,7 +30,7 @@ steps:
       fileType: 'json'
       targetFiles: |
         LHDS.AdminPortal.Api/appsettings.ContinuousIntegration.json
-        LHDS.Core.Test.Acceptance/appsettings.ContinuousIntegration.json
+        LHDS.Core.Tests.Acceptance/appsettings.ContinuousIntegration.json
 
   - task: Bash@3
     displayName: "Show AppSettings for CI"

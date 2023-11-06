@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public void Task ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
+        public void ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -55,7 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public void Task ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
+        public void ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
@@ -92,7 +92,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
         }
 
         [Fact]
-        public void Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
         {
             // given
             var serviceException = new Exception();

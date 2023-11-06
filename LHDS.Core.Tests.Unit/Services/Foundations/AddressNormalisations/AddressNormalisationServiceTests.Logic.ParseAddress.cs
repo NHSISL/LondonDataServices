@@ -13,7 +13,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
     public partial class AddressNormalisationServiceTests
     {
         [Fact]
-        public void Task ShouldParseAddress()
+        public void ShouldParseAddress()
         {
             // given
             List<KeyValuePair<string, string>> inputAddress =

@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public Task ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
+        public void Task ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -50,12 +50,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
 
             dataSetServiceMock.VerifyNoOtherCalls();
             loggingBrokerMock.VerifyNoOtherCalls();
-            return Task.CompletedTask;
         }
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public Task ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
+        public void Task ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
@@ -89,11 +88,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
 
             dataSetServiceMock.VerifyNoOtherCalls();
             loggingBrokerMock.VerifyNoOtherCalls();
-            return Task.CompletedTask;
         }
 
         [Fact]
-        public Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
+        public void Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
         {
             // given
             var serviceException = new Exception();
@@ -133,7 +131,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSets
 
             dataSetServiceMock.VerifyNoOtherCalls();
             loggingBrokerMock.VerifyNoOtherCalls();
-            return Task.CompletedTask;
         }
     }
 }

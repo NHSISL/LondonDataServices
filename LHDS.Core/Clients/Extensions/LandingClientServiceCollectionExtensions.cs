@@ -27,6 +27,7 @@ using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.Downloads;
+using LHDS.Core.Services.Processings.DataSetSpecifications;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -124,7 +125,9 @@ namespace LHDS.Core.Clients.Extensions
         }
 
         private static void AddProcessingServices(IServiceCollection services)
-        { }
+        {
+            services.AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
+        }
 
         private static void AddOrchestrations(IServiceCollection services)
         {

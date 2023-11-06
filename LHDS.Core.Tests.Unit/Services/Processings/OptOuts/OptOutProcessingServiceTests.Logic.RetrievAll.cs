@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
     public partial class OptOutProcessingServiceTests
     {
         [Fact]
-        public Task ShouldRetrieveOptOutProcessingAllAsync()
+        public void ShouldRetrieveOptOutProcessingAllAsync()
         {
             // given
             IQueryable<OptOut> randomOptOuts = CreateRandomOptOuts();
@@ -41,7 +41,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             optOutServiceMock.VerifyNoOtherCalls();
             loggingBrokerMock.VerifyNoOtherCalls();
-            return Task.CompletedTask;
         }
     }
 }

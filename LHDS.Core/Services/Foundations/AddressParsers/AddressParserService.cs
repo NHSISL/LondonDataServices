@@ -26,6 +26,7 @@ namespace LHDS.Core.Services.Foundations.AddressParsers
             {
                 ValidateAddressParserOnProcessCSV(data);
                 this.loggingBroker.LogInformation("Data validation complete.");
+                
                 return await Task.Run(() =>
                 { 
                     string stringData = Encoding.UTF8.GetString(data);

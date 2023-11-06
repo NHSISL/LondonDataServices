@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public Task ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
+        public void ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given

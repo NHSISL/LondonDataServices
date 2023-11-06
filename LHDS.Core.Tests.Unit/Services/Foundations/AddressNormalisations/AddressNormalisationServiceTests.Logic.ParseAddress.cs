@@ -13,7 +13,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
     public partial class AddressNormalisationServiceTests
     {
         [Fact]
-        public Task ShouldParseAddress()
+        public void Task ShouldParseAddress()
         {
             // given
             List<KeyValuePair<string, string>> inputAddress =
@@ -48,7 +48,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
 
             // then
             actualAddress.Should().BeEquivalentTo(expectedAddress);
-            return Task.CompletedTask;
         }
     }
 }

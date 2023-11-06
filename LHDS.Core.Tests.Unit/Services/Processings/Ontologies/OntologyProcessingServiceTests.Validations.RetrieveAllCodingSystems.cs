@@ -40,8 +40,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
             ValueTask<OntologyAssets> retrieveOntologyByRelativeUrlTask =
                 this.ontologyProcessingService.RetrieveAllCodingSystemsAsync(invalidFileName);
 
-            OntologyValidationException actualOntologyValidationException =
-                await Assert.ThrowsAsync<OntologyValidationException>(
+            OntologyProcessingValidationException actualOntologyValidationException =
+                await Assert.ThrowsAsync<OntologyProcessingValidationException>(
                     retrieveOntologyByRelativeUrlTask.AsTask);
 
             // then

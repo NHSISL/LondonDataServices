@@ -27,7 +27,6 @@ var host = new HostBuilder()
             path: "appsettings.local.json",
             optional: true,
             reloadOnChange: true)
-        .AddEnvironmentVariables();
     })
     .ConfigureServices((context, services) =>
     {

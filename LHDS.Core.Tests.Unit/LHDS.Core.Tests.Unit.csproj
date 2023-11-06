@@ -9,7 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="Resources\Services\Foundations\AddressParser\TestCsv3.csv" />
+	  <None Remove="Resources\Services\Foundations\AddressParser\ShouldProcessAddressCsvAsync.csv" />
 	  <None Remove="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessZipFileWithCsvAddressesData.zip" />
 	  <None Remove="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessZipFileWithOnlyCsvAddressesData.zip" />
 	  <None Remove="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessZipFileWithZippedCsvAddressesData.zip" />
@@ -17,7 +17,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="Resources\Services\Foundations\AddressParser\TestCsv3.csv">
+	  <Content Include="Resources\Services\Foundations\AddressParser\ShouldProcessAddressCsvAsync.csv">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessZipFileWithOnlyCsvAddressesData.zip">

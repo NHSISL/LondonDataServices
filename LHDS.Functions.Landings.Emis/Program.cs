@@ -26,7 +26,7 @@ var host = new HostBuilder()
         .AddJsonFile(
             path: "appsettings.local.json",
             optional: true,
-            reloadOnChange: true)
+            reloadOnChange: true);
     })
     .ConfigureServices((context, services) =>
     {

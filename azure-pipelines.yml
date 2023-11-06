@@ -38,7 +38,7 @@ steps:
       targetType: 'inline'
       script: |
         cat LHDS.AdminPortal.Api/appsettings.ContinuousIntegration.json
-        cat LHDS.Core.Test.Acceptance/appsettings.ContinuousIntegration.json
+        cat LHDS.Core.Tests.Acceptance/appsettings.ContinuousIntegration.json
 
 
   - task: AzureCLI@2

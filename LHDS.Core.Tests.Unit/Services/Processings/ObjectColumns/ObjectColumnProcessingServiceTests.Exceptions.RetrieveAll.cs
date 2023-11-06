@@ -50,12 +50,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
 
             objectColumnServiceMock.VerifyNoOtherCalls();
             loggingBrokerMock.VerifyNoOtherCalls();
-            return Task.CompletedTask;
         }
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public Task ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
+        public void ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
@@ -89,11 +88,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
 
             objectColumnServiceMock.VerifyNoOtherCalls();
             loggingBrokerMock.VerifyNoOtherCalls();
-            return Task.CompletedTask;
         }
 
         [Fact]
-        public Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
         {
             // given
             var serviceException = new Exception();
@@ -133,7 +131,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ObjectColumns
 
             objectColumnServiceMock.VerifyNoOtherCalls();
             loggingBrokerMock.VerifyNoOtherCalls();
-            return Task.CompletedTask;
         }
     }
 }

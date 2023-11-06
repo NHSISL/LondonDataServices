@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
 
             string inputFilePath = Path.Combine(
                 Path.GetDirectoryName(assembly),
-                @"Resources/Services/Foundations/AddressParser/TestCsv3.csv");
+                @"Resources/Services/Foundations/AddressParser/ShouldProcessAddressCsvAsync.csv");
 
             string randomCsvFormattedAddresses;
 

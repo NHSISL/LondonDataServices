@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Ontologies;
 using Moq;
@@ -13,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
     public partial class OntologyProcessingServiceTests
     {
         [Fact]
-        public async System.Threading.Tasks.Task ShouldRetrieveAllCodingSystemsByRelativeUrlAsync()
+        public async Task ShouldRetrieveAllCodingSystemsByRelativeUrlAsync()
         {
             // given
             string randomRelativeUrl = GetRandomString();

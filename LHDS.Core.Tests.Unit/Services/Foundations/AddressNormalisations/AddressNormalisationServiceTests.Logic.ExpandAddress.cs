@@ -13,7 +13,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
     {
         [Theory]
         [MemberData(nameof(AddressExpansionData))]
-        public Task ShouldExpandAddressAsync(string inputAddress)
+        public void ShouldExpandAddressAsync(string inputAddress)
         {
             // given
             string expectedAddress = "10 Downing Street, Westminster, London, SW1A2AA, United Kingdom";
@@ -30,7 +30,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
             output.WriteLine($"Expected/ Cleaned Address:  {expectedAddress}");
             output.WriteLine($"Actual Address:             {actualAddress}");
             actualAddress.Should().BeEquivalentTo(expectedAddress);
-            return Task.CompletedTask;
         }
     }
 }

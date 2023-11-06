@@ -13,7 +13,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 var host = new HostBuilder()
-    .ConfigureFunctionsWorkerDefaults()
     .ConfigureAppConfiguration(config =>
     {
         var env = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT");
@@ -26,7 +25,8 @@ var host = new HostBuilder()
         .AddJsonFile(
             path: "appsettings.local.json",
             optional: true,
-            reloadOnChange: true);
+            reloadOnChange: true)
+        .AddEnvironmentVariables();
     })
     .ConfigureServices((context, services) =>
     {
@@ -43,6 +43,7 @@ var host = new HostBuilder()
            .UseFtpDownloadProvider(context.Configuration, builder => builder.AddFtpDownloadProvider());
     })
     .UseDefaultServiceProvider(options => options.ValidateScopes = false)
+    .ConfigureFunctionsWorkerDefaults()
     .Build();
 
 await host.RunAsync();

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Hl7.Fhir.Model;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Ontologies;
@@ -12,6 +13,7 @@ using LHDS.Core.Services.Foundations.Ontologies;
 using LHDS.Core.Services.Processings.Ontologies;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
 {
@@ -39,6 +41,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+           actualException => actualException.SameExceptionAs(expectedException);
 
         private static OntologyAssets CreateRandomOntologys()
         {

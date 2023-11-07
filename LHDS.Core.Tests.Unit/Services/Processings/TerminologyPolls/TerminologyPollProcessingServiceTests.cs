@@ -97,10 +97,26 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             return new TheoryData<Xeption>
             {
                 new TerminologyPollValidationException(
-                    message: "Terminology poll validation errors occurred, please try again.", innerException),
+                    message: "Terminology poll validation error occurred, please try again.", innerException),
 
                 new TerminologyPollDependencyValidationException(
-                    message: "Terminology poll dependency validation occurred, please try again.", innerException)
+                    message: "Terminology poll dependency validation error occurred, please try again.", innerException)
+            };
+        }
+
+        public static TheoryData DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new TerminologyPollDependencyException(
+                    message: "Terminology poll dependency error occurred, please try again.", innerException),
+
+                new TerminologyPollServiceException(
+                    message: "Terminology poll service error occurred, please try again.", innerException)
             };
         }
     }

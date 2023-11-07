@@ -9,7 +9,9 @@ using System.Runtime.Serialization;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
+using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using LHDS.Core.Services.Foundations.TerminologyPolls;
 using LHDS.Core.Services.Processings.TerminologyPolls;
 using Microsoft.Data.SqlClient;
@@ -84,6 +86,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                 .OnProperty(terminologyPoll => terminologyPoll.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        public static TheoryData DependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new TerminologyPollValidationException(
+                    message: "Terminology poll validation errors occurred, please try again.", innerException),
+
+                new TerminologyPollDependencyValidationException(
+                    message: "Terminology poll dependency validation occurred, please try again.", innerException)
+            };
         }
     }
 }

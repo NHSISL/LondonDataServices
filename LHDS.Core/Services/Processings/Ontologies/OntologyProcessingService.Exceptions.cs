@@ -4,10 +4,8 @@
 
 using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 using LHDS.Core.Models.Foundations.Ontologies;
 using LHDS.Core.Models.Foundations.Ontologies.Exceptions;
-using LHDS.Core.Models.Processings.ObjectColumns.Exceptions;
 using LHDS.Core.Models.Processings.Ontologies.Exceptions;
 using Xeptions;
 

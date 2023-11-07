@@ -30,9 +30,12 @@ namespace LHDS.Core.Services.Processings.Ontologies
                  return this.ontologyService.RetrieveAllCodingSystemsAsync(relativeUrl);
              });
 
-        public ValueTask<OntologyAssets> RetrieveAllValueSetsAsync(string relativeUrl)
-        {
-            return this.ontologyService.RetrieveAllValueSetsAsync(relativeUrl);
-        }
-    }
+        public ValueTask<OntologyAssets> RetrieveAllValueSetsAsync(string relativeUrl) =>
+             TryCatch(() =>
+             {
+                 ValidateArgs(relativeUrl);
+                 
+                 return this.ontologyService.RetrieveAllValueSetsAsync(relativeUrl);
+             });
+    }    
 }

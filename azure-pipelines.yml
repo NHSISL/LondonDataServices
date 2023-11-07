@@ -14,13 +14,32 @@ variables:
     value: 'ubuntu-latest'
   - name: webProjectName
     value: 'LHDS.AdminPortal.Web'
+  - name: ConnectionStrings.DefaultConnection
+    value: 'Server=localhost,1433;Database=LHDS-Acceptance-$(Build.BuildId);User Id=sa;Password=1Password;TrustServerCertificate=true'
 
 pool: selfhosted-vmss-linux-lds-dev
 
 workspace:
   clean: all
 
-steps:
+steps:  
+  - task: FileTransform@1
+    displayName: "Transform AppSettings for CI"
+    inputs:
+      folderPath: '$(System.DefaultWorkingDirectory)'
+      fileType: 'json'
+      targetFiles: |
+        LHDS.AdminPortal.Api/appsettings.ContinuousIntegration.json
+        LHDS.Core.Tests.Acceptance/appsettings.ContinuousIntegration.json
+
+  - task: Bash@3
+    displayName: "Show AppSettings for CI"
+    inputs:
+      targetType: 'inline'
+      script: |
+        cat LHDS.AdminPortal.Api/appsettings.ContinuousIntegration.json
+        cat LHDS.Core.Tests.Acceptance/appsettings.ContinuousIntegration.json
+
 
   - task: AzureCLI@2
     displayName: "Add Service Connection to Environment"

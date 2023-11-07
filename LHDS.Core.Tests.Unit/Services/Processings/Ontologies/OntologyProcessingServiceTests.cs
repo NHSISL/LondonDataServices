@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
            actualException => actualException.SameExceptionAs(expectedException);
 
-        private static OntologyAssets CreateRandomOntologys()
+        private static OntologyAssets CreateRandomOntologies()
         {
             return new OntologyAssets
             {
@@ -60,7 +60,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
 
         private static Filler<OntologyAsset> CreateOntologyFiller()
         {
-            string user = Guid.NewGuid().ToString();
             DateTimeOffset dateTimeOffset = GetRandomDateTimeOffset();
 
             var filler = new Filler<OntologyAsset>();
@@ -70,53 +69,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset);
 
             return filler;
-        }
-
-        private static List<dynamic> CreateRandomArtifactProperties(string artifactType)
-        {
-            return Enumerable.Range(1, GetRandomNumber())
-                .Select(item =>
-                {
-                    return new
-                    {
-                        FullUrl = GetRandomString(),
-                        ResourceType = artifactType,
-                        Version = GetRandomString(),
-                        Name = GetRandomString(),
-                        Title = GetRandomString(),
-                        Status = "active",
-                        LastUpdated = GetRandomDateTimeOffset()
-                    };
-                })
-                .ToList<dynamic>();
-        }
-
-        private static OntologyAssets CreateArtiFactFromRandomData(
-           List<dynamic> randomArtifactProperties,
-           string nextPageUrl)
-        {
-            var ontologyAssets = new OntologyAssets
-            {
-                Assets = new List<OntologyAsset>(),
-                NextPage = nextPageUrl
-            };
-
-            foreach (var item in randomArtifactProperties)
-            {
-                ontologyAssets.Assets.Add(
-                    new OntologyAsset
-                    {
-                        FullUrl = item.FullUrl,
-                        ResourceType = item.ResourceType,
-                        Version = item.Version,
-                        Name = item.Name,
-                        Title = item.Title,
-                        Status = item.Status,
-                        LastUpdated = item.LastUpdated
-                    });
-            }
-
-            return ontologyAssets;
         }
 
         public static TheoryData DependencyValidationExceptions()

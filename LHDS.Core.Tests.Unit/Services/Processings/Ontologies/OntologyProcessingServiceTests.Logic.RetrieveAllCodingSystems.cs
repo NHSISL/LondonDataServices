@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Ontologies;
 using Moq;
 using Xunit;
@@ -22,9 +23,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
             string nextPageUrl = "http://localhost:5000/api/fhir/ValueSet?_page=2";
             string artifactType = "CodeSystem";
 
-            List<dynamic> randomArtifactProperties = CreateRandomArtifactProperties(artifactType);
-            OntologyAssets createdOntologyAssets = CreateArtiFactFromRandomData(randomArtifactProperties, nextPageUrl);
-            OntologyAssets expectedOntologyAssets = CreateArtiFactFromRandomData(randomArtifactProperties, nextPageUrl);
+            OntologyAssets createdOntologyAssets = CreateRandomOntologies();
+            OntologyAssets expectedOntologyAssets = createdOntologyAssets.DeepClone();
 
             this.ontologyServiceMock.Setup(service =>
                 service.RetrieveAllCodingSystemsAsync(inputRelativeUrl))

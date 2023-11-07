@@ -212,5 +212,57 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.terminologyPollServiceMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreatedDateIsNotRecentAndLogItAsync(
+            int minutesBeforeOrAfter)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+
+            DateTimeOffset invalidDateTime =
+                randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
+
+            TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll(invalidDateTime);
+            TerminologyPoll invalidTerminologyPoll = randomTerminologyPoll;
+
+            var invalidTerminologyPollException =
+                new InvalidTerminologyPollException(
+                    message: "Invalid terminology poll. Please correct the errors and try again.");
+
+            invalidTerminologyPollException.AddData(
+                key: nameof(TerminologyPoll.CreatedDate),
+                values: "Date is not recent");
+
+            var expectedTerminologyPollProcessingValidationException =
+                new TerminologyPollProcessingValidationException(
+                    message: "Terminology poll processing validation errors occurred, please try again.",
+                    innerException: invalidTerminologyPollException);
+
+            // when
+            ValueTask<TerminologyPoll> addTerminologyPollTask =
+                this.terminologyPollProcessingService.AddTerminologyPollAsync(invalidTerminologyPoll);
+
+            TerminologyPollProcessingValidationException actualTerminologyPollProcessingValidationException =
+                await Assert.ThrowsAsync<TerminologyPollProcessingValidationException>(() =>
+                    addTerminologyPollTask.AsTask());
+
+            // then
+            actualTerminologyPollProcessingValidationException.Should()
+                .BeEquivalentTo(expectedTerminologyPollProcessingValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTerminologyPollProcessingValidationException))),
+                        Times.Once);
+
+            this.terminologyPollServiceMock.Verify(service =>
+                service.AddTerminologyPollAsync(It.IsAny<TerminologyPoll>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.terminologyPollServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

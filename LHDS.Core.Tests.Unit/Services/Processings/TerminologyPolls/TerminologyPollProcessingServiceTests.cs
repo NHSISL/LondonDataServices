@@ -52,6 +52,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        public static TheoryData MinutesBeforeOrAfter()
+        {
+            int randomNumber = GetRandomNumber();
+            int randomNegativeNumber = GetRandomNegativeNumber();
+
+            return new TheoryData<int>
+            {
+                randomNumber,
+                randomNegativeNumber
+            };
+        }
+
         private static TerminologyPoll CreateRandomTerminologyPoll() =>
             CreateTerminologyPollFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 

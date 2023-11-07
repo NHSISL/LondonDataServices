@@ -25,6 +25,10 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             {
                 throw CreateAndLogValidationException(nullTerminologyPollException);
             }
+            catch (InvalidTerminologyPollException invalidTerminologyPollException)
+            {
+                throw CreateAndLogValidationException(invalidTerminologyPollException);
+            }
         }
 
         private TerminologyPollProcessingValidationException CreateAndLogValidationException(Xeption exception)

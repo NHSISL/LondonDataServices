@@ -26,7 +26,13 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                     firstDate: terminologyPoll.UpdatedDate,
                     secondDate: terminologyPoll.CreatedDate,
                     secondDateName: nameof(TerminologyPoll.CreatedDate)),
-                Parameter: nameof(TerminologyPoll.UpdatedDate)));
+                Parameter: nameof(TerminologyPoll.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    first: terminologyPoll.UpdatedBy,
+                    second: terminologyPoll.CreatedBy,
+                    secondName: nameof(TerminologyPoll.CreatedBy)),
+                Parameter: nameof(TerminologyPoll.UpdatedBy)));
         }
 
         public void ValidateTerminologyPollId(Guid terminologyPollId) =>
@@ -67,6 +73,15 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                 Condition = firstDate != secondDate,
                 Message = $"Date is not the same as {secondDateName}"
             };
+
+        private static dynamic IsNotSame(
+           string first,
+           string second,
+           string secondName) => new
+           {
+               Condition = first != second,
+               Message = $"Text is not the same as {secondName}"
+           };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

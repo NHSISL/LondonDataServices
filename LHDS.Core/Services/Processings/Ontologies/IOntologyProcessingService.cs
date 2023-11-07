@@ -10,5 +10,6 @@ namespace LHDS.Core.Services.Processings.Ontologies
     internal interface IOntologyProcessingService
     {
         ValueTask<OntologyAssets> RetrieveAllCodingSystemsAsync(string relativeUrl);
+        ValueTask<OntologyAssets> RetrieveAllValueSetsAsync(string relativeUrl);
     }
 }

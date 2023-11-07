@@ -15,7 +15,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
     public partial class OntologyProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldRetrieveAllCodingSystemsByRelativeUrlAsync()
+        public async Task ShouldRetrieveAllValueSetsByRelativeUrlAsync()
         {
             // given
             string randomRelativeUrl = GetRandomString();
@@ -24,18 +24,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
             OntologyAssets expectedOntologyAssets = createdOntologyAssets.DeepClone();
 
             this.ontologyServiceMock.Setup(service =>
-                service.RetrieveAllCodingSystemsAsync(inputRelativeUrl))
+                service.RetrieveAllValueSetsAsync(inputRelativeUrl))
                     .ReturnsAsync(expectedOntologyAssets);
 
             // when
             OntologyAssets actualOntologyAssets =
-                await this.ontologyProcessingService.RetrieveAllCodingSystemsAsync(inputRelativeUrl);
+                await this.ontologyProcessingService.RetrieveAllValueSetsAsync(inputRelativeUrl);
 
             // then
             actualOntologyAssets.Should().BeEquivalentTo(expectedOntologyAssets);
 
             this.ontologyServiceMock.Verify(service =>
-                service.RetrieveAllCodingSystemsAsync(inputRelativeUrl),
+                service.RetrieveAllValueSetsAsync(inputRelativeUrl),
                     Times.Once);
 
             this.ontologyServiceMock.VerifyNoOtherCalls();

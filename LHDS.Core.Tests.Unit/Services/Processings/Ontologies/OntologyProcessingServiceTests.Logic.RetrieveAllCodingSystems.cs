@@ -20,8 +20,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
             // given
             string randomRelativeUrl = GetRandomString();
             string inputRelativeUrl = randomRelativeUrl;
-            string nextPageUrl = "http://localhost:5000/api/fhir/ValueSet?_page=2";
-            string artifactType = "CodeSystem";
 
             OntologyAssets createdOntologyAssets = CreateRandomOntologies();
             OntologyAssets expectedOntologyAssets = createdOntologyAssets.DeepClone();

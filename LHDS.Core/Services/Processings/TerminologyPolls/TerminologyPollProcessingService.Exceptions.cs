@@ -3,8 +3,10 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
+using LHDS.Core.Models.Processings.ObjectColumns.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyPolls.Exceptions;
 using Xeptions;
 
@@ -29,6 +31,14 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             {
                 throw CreateAndLogValidationException(invalidTerminologyPollException);
             }
+            catch (TerminologyPollValidationException terminologyPollValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(terminologyPollValidationException);
+            }
+            catch (TerminologyPollDependencyValidationException terminologyPollDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(terminologyPollDependencyValidationException);
+            }
         }
 
         private TerminologyPollProcessingValidationException CreateAndLogValidationException(Xeption exception)
@@ -41,6 +51,19 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             this.loggingBroker.LogError(terminologyPollProcessingValidationException);
 
             return terminologyPollProcessingValidationException;
+        }
+
+        private TerminologyPollProcessingDependencyValidationException CreateAndLogDependencyValidationException(
+            Xeption exception)
+        {
+            var terminologyPollProcessingDependencyValidationException =
+                new TerminologyPollProcessingDependencyValidationException(
+                    message: "Terminology poll processing dependency validation error occurred, please try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(terminologyPollProcessingDependencyValidationException);
+
+            return terminologyPollProcessingDependencyValidationException;
         }
     }
 }

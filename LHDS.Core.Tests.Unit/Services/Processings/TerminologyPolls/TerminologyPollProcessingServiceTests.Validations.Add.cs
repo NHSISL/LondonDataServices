@@ -49,5 +49,71 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.terminologyPollServiceMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnAddIfTerminologyPollIsInvalidAndLogItAsync(string invalidText)
+        {
+            // given
+            var invalidTerminologyPoll = new TerminologyPoll
+            {
+                ResourceType = invalidText,
+            };
+
+            var invalidTerminologyPollException =
+                new InvalidTerminologyPollException(
+                    message: "Invalid terminology poll. Please correct the errors and try again.");
+
+            invalidTerminologyPollException.AddData(
+                key: nameof(TerminologyPoll.Id),
+                values: "Id is required");
+
+            invalidTerminologyPollException.AddData(
+                key: nameof(TerminologyPoll.ResourceType),
+                values: "Text is required");
+
+            invalidTerminologyPollException.AddData(
+                key: nameof(TerminologyPoll.CreatedDate),
+                values: "Date is required");
+
+            invalidTerminologyPollException.AddData(
+                key: nameof(TerminologyPoll.CreatedBy),
+                values: "Text is required");
+
+            invalidTerminologyPollException.AddData(
+                key: nameof(TerminologyPoll.UpdatedDate),
+                values: "Date is required");
+
+            invalidTerminologyPollException.AddData(
+                key: nameof(TerminologyPoll.UpdatedBy),
+                values: "Text is required");
+
+            var expectedTerminologyPollProcessingValidationException =
+                new TerminologyPollProcessingValidationException(
+                    message: "Terminology poll processing validation errors occurred, please try again.",
+                    innerException: invalidTerminologyPollException);
+
+            // when
+            ValueTask<TerminologyPoll> addTerminologyPollTask =
+                this.terminologyPollProcessingService.AddTerminologyPollAsync(invalidTerminologyPoll);
+
+            TerminologyPollProcessingValidationException actualTerminologyPollProcessingValidationException =
+                await Assert.ThrowsAsync<TerminologyPollProcessingValidationException>(() =>
+                    addTerminologyPollTask.AsTask());
+
+            // then
+            actualTerminologyPollProcessingValidationException.Should()
+                .BeEquivalentTo(expectedTerminologyPollProcessingValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTerminologyPollProcessingValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.terminologyPollServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

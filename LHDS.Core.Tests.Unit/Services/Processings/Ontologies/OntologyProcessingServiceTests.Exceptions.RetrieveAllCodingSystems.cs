@@ -2,9 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Ontologies;
+using LHDS.Core.Models.Processings.ObjectColumns.Exceptions;
 using LHDS.Core.Models.Processings.Ontologies.Exceptions;
 using Moq;
 using Xeptions;
@@ -90,6 +92,51 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedOntologyProcessingDependencyException))),
+                         Times.Once);
+
+            this.ontologyServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAsync()
+        {
+            // given
+            string relativeUrl = GetRandomString();
+            var serviceException = new Exception();
+
+            var failedOntologyProcessingServiceException =
+                new FailedOntologyProcessingServiceException(
+                    message: "Failed ontology processing service error occurred, contact support.",
+                    innerException: serviceException);
+
+            var expectedOntologyProcessingServiceException =
+                new OntologyProcessingServiceException(
+                    message: "Ontology processing service error occurred, contact support.",
+                    innerException: failedOntologyProcessingServiceException);
+
+            this.ontologyServiceMock.Setup(service =>
+                service.RetrieveAllCodingSystemsAsync(relativeUrl))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<OntologyAssets> ontologyRetrieveCodingSystemsAction =
+                this.ontologyProcessingService.RetrieveAllCodingSystemsAsync(relativeUrl);
+
+            OntologyProcessingDependencyException actualException =
+                await Assert.ThrowsAsync<OntologyProcessingDependencyException>(
+                    ontologyRetrieveCodingSystemsAction.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedOntologyProcessingServiceException);
+
+            this.ontologyServiceMock.Verify(service =>
+                service.RetrieveAllCodingSystemsAsync(relativeUrl),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedOntologyProcessingServiceException))),
                          Times.Once);
 
             this.ontologyServiceMock.VerifyNoOtherCalls();

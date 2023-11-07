@@ -34,6 +34,14 @@ namespace LHDS.Core.Services.Processings.Ontologies
             {
                 throw CreateAndLogDependencyValidationException(ontologyDependencyValidationException);
             }
+            catch (OntologyDependencyException ontologyDependencyException)
+            {
+                throw CreateAndLogDependencyException(ontologyDependencyException);
+            }
+            catch (OntologyServiceException ontologyServiceException)
+            {
+                throw CreateAndLogDependencyException(ontologyServiceException);
+            }
         }
 
         private OntologyProcessingValidationException CreateAndLogValidationException(Xeption exception)
@@ -58,6 +66,19 @@ namespace LHDS.Core.Services.Processings.Ontologies
             this.loggingBroker.LogError(ontologyProcessingDependencyValidationException);
 
             return ontologyProcessingDependencyValidationException;
+        }
+
+        private OntologyProcessingDependencyException CreateAndLogDependencyException(
+           Xeption exception)
+        {
+            var ontologyProcessingDependencyException =
+                new OntologyProcessingDependencyException(
+                    message: "Ontology processing dependency error occurred, please try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(ontologyProcessingDependencyException);
+
+            return ontologyProcessingDependencyException;
         }
     }
 }

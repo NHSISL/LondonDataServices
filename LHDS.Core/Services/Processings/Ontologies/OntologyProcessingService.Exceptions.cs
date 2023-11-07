@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 using LHDS.Core.Models.Foundations.Ontologies;
@@ -42,6 +43,15 @@ namespace LHDS.Core.Services.Processings.Ontologies
             {
                 throw CreateAndLogDependencyException(ontologyServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedOntologyProcessingServiceException =
+                    new FailedOntologyProcessingServiceException(
+                        message: "Failed ontology processing service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedOntologyProcessingServiceException);
+            }
         }
 
         private OntologyProcessingValidationException CreateAndLogValidationException(Xeption exception)
@@ -79,6 +89,18 @@ namespace LHDS.Core.Services.Processings.Ontologies
             this.loggingBroker.LogError(ontologyProcessingDependencyException);
 
             return ontologyProcessingDependencyException;
+        }
+
+        private OntologyProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var ontologyProcessingServiceException = new
+                OntologyProcessingServiceException(
+                    message: "Ontology processing service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(ontologyProcessingServiceException);
+
+            return ontologyProcessingServiceException;
         }
     }
 }

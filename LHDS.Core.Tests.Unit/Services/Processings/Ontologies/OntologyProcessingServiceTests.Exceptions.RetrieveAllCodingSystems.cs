@@ -123,8 +123,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
             ValueTask<OntologyAssets> ontologyRetrieveCodingSystemsAction =
                 this.ontologyProcessingService.RetrieveAllCodingSystemsAsync(relativeUrl);
 
-            OntologyProcessingDependencyException actualException =
-                await Assert.ThrowsAsync<OntologyProcessingDependencyException>(
+            OntologyProcessingServiceException actualException =
+                await Assert.ThrowsAsync<OntologyProcessingServiceException>(
                     ontologyRetrieveCodingSystemsAction.AsTask);
 
             // then

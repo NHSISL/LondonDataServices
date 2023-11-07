@@ -6,9 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Hl7.Fhir.Model;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 using LHDS.Core.Models.Foundations.Ontologies;
 using LHDS.Core.Models.Foundations.Ontologies.Exceptions;
 using LHDS.Core.Services.Foundations.Ontologies;
@@ -134,6 +132,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
 
                 new OntologyDependencyValidationException(
                     message: "Ontology dependency validation occurred, please try again.", innerException)
+            };
+        }
+
+        public static TheoryData DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new OntologyDependencyException(
+                    message: "Ontology dependency error occurred, please try again.", innerException),
+
+                new OntologyServiceException(
+                    message: "Ontology service error occurred, please try again.", innerException)
             };
         }
     }

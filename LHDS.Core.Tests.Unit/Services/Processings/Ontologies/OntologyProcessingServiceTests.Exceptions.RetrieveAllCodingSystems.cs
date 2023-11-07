@@ -54,5 +54,46 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
             this.ontologyServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnRetrieveAllCodingSystensIfErrorOccursAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            string relativeUrl = GetRandomString();
+
+            var expectedOntologyProcessingDependencyException =
+                new OntologyProcessingDependencyException(
+                    message: "Ontology processing dependency error occurred, please try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.ontologyServiceMock.Setup(service =>
+                service.RetrieveAllCodingSystemsAsync(relativeUrl))
+                    .ThrowsAsync(dependencyException);
+
+            // when
+            ValueTask<OntologyAssets> ontologyRetrieveCodingSystemsAction =
+                this.ontologyProcessingService.RetrieveAllCodingSystemsAsync(relativeUrl);
+
+            OntologyProcessingDependencyException actualException =
+                await Assert.ThrowsAsync<OntologyProcessingDependencyException>(
+                    ontologyRetrieveCodingSystemsAction.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedOntologyProcessingDependencyException);
+
+            this.ontologyServiceMock.Verify(service =>
+                service.RetrieveAllCodingSystemsAsync(relativeUrl),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedOntologyProcessingDependencyException))),
+                         Times.Once);
+
+            this.ontologyServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

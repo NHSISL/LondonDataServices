@@ -37,5 +37,9 @@ namespace LHDS.Core.Services.Processings.Ontologies
                  
                  return this.ontologyService.RetrieveAllValueSetsAsync(relativeUrl);
              });
+
+        public ValueTask<OntologyAssets> RetrieveAllConceptMapsAsync(string relativeUrl) =>
+            throw new System.NotImplementedException();
     }    
+
 }

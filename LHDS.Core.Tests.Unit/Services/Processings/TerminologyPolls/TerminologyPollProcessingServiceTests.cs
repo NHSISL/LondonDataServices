@@ -30,10 +30,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
         public TerminologyPollProcessingServiceTests()
         {
             this.terminologyPollServiceMock = new Mock<ITerminologyPollService>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.terminologyPollProcessingService = new TerminologyPollProcessingService(
                 terminologyPollService: this.terminologyPollServiceMock.Object,
+                dateTimeBroker: this.dateTimeBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 

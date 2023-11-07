@@ -8,12 +8,15 @@ using System.Linq;
 using System.Linq.Expressions;
 using Hl7.Fhir.Model;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 using LHDS.Core.Models.Foundations.Ontologies;
+using LHDS.Core.Models.Foundations.Ontologies.Exceptions;
 using LHDS.Core.Services.Foundations.Ontologies;
 using LHDS.Core.Services.Processings.Ontologies;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
 {
@@ -116,6 +119,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
             }
 
             return ontologyAssets;
+        }
+
+        public static TheoryData DependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new OntologyValidationException(
+                    message: "Ontology validation errors occurred, please try again.", innerException),
+
+                new OntologyDependencyValidationException(
+                    message: "Ontology dependency validation occurred, please try again.", innerException)
+            };
         }
     }
 }

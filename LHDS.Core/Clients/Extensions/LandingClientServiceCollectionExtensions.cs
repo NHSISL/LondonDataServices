@@ -20,12 +20,14 @@ using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Providers.Downloads;
+using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.Downloads;
+using LHDS.Core.Services.Processings.DataSetSpecifications;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -118,11 +120,14 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDownloadService, DownloadService>();
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddTransient<ISupplierService, SupplierService>();
+            services.AddTransient<IDataSetSpecificationService, DataSetSpecificationService>();
             services.AddSingleton<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)
-        { }
+        {
+            services.AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
+        }
 
         private static void AddOrchestrations(IServiceCollection services)
         {

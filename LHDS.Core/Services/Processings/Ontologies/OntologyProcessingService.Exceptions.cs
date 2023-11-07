@@ -3,7 +3,10 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 using LHDS.Core.Models.Foundations.Ontologies;
+using LHDS.Core.Models.Foundations.Ontologies.Exceptions;
+using LHDS.Core.Models.Processings.ObjectColumns.Exceptions;
 using LHDS.Core.Models.Processings.Ontologies.Exceptions;
 using Xeptions;
 
@@ -23,6 +26,14 @@ namespace LHDS.Core.Services.Processings.Ontologies
             {
                 throw CreateAndLogValidationException(invalidArgumentOntologyProcessingException);
             }
+            catch (OntologyValidationException ontologyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(ontologyValidationException);
+            }
+            catch (OntologyDependencyValidationException ontologyDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(ontologyDependencyValidationException);
+            }
         }
 
         private OntologyProcessingValidationException CreateAndLogValidationException(Xeption exception)
@@ -34,6 +45,19 @@ namespace LHDS.Core.Services.Processings.Ontologies
             this.loggingBroker.LogError(ontologyProcessingValidationException);
 
             return ontologyProcessingValidationException;
+        }
+
+        private OntologyProcessingDependencyValidationException CreateAndLogDependencyValidationException(
+           Xeption exception)
+        {
+            var ontologyProcessingDependencyValidationException =
+                new OntologyProcessingDependencyValidationException(
+                    message: "Ontology processing dependency validation error occurred, please try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(ontologyProcessingDependencyValidationException);
+
+            return ontologyProcessingDependencyValidationException;
         }
     }
 }

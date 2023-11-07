@@ -129,7 +129,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-
             TerminologyPoll someTerminologyPoll = CreateRandomTerminologyPoll(randomDateTimeOffset);
             TerminologyPoll inputTerminologyPoll = someTerminologyPoll.DeepClone();
 

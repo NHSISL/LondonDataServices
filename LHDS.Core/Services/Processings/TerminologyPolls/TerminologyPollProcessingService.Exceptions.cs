@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
@@ -47,6 +48,15 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             {
                 throw CreateAndLogDependencyException(terminologyPollServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedTerminologyPollProcessingServiceException =
+                    new FailedTerminologyPollProcessingServiceException(
+                        message: "Failed terminology poll processing service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedTerminologyPollProcessingServiceException);
+            }
         }
 
         private TerminologyPollProcessingValidationException CreateAndLogValidationException(Xeption exception)
@@ -85,6 +95,19 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             this.loggingBroker.LogError(terminologyPollProcessingDependencyException);
 
             return terminologyPollProcessingDependencyException;
+        }
+
+        private TerminologyPollProcessingServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var terminologyPollProcessingServiceException =
+                new TerminologyPollProcessingServiceException(
+                    message: "Terminology poll processing service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(terminologyPollProcessingServiceException);
+
+            return terminologyPollProcessingServiceException;
         }
     }
 }

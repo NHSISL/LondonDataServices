@@ -39,6 +39,14 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             {
                 throw CreateAndLogDependencyValidationException(terminologyPollDependencyValidationException);
             }
+            catch (TerminologyPollDependencyException terminologyPollDependencyException)
+            {
+                throw CreateAndLogDependencyException(terminologyPollDependencyException);
+            }
+            catch (TerminologyPollServiceException terminologyPollServiceException)
+            {
+                throw CreateAndLogDependencyException(terminologyPollServiceException);
+            }
         }
 
         private TerminologyPollProcessingValidationException CreateAndLogValidationException(Xeption exception)
@@ -64,6 +72,19 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             this.loggingBroker.LogError(terminologyPollProcessingDependencyValidationException);
 
             return terminologyPollProcessingDependencyValidationException;
+        }
+
+        private TerminologyPollProcessingDependencyException CreateAndLogDependencyException(
+            Xeption exception)
+        {
+            var terminologyPollProcessingDependencyException =
+                new TerminologyPollProcessingDependencyException(
+                    message: "Terminology poll processing dependency error occurred, please try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(terminologyPollProcessingDependencyException);
+
+            return terminologyPollProcessingDependencyException;
         }
     }
 }

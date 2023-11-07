@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
+using LHDS.Core.Models.Processings.ObjectColumns.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyPolls.Exceptions;
 using Moq;
 using Xeptions;
@@ -116,6 +117,64 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedTerminologyPollProcessingDependencyException))),
+                         Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.terminologyPollServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+
+            TerminologyPoll someTerminologyPoll = CreateRandomTerminologyPoll(randomDateTimeOffset);
+            TerminologyPoll inputTerminologyPoll = someTerminologyPoll.DeepClone();
+
+            var serviceException = new Exception();
+
+            var failedTerminologyPollProcessingServiceException =
+                new FailedTerminologyPollProcessingServiceException(
+                    message: "Failed terminology poll processing service error occurred, contact support.",
+                    innerException: serviceException);
+
+            var expectedTerminologyPollProcessingServiceException =
+                new TerminologyPollProcessingServiceException(
+                    message: "Terminology poll processing service error occurred, contact support.",
+                    innerException: failedTerminologyPollProcessingServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            this.terminologyPollServiceMock.Setup(service =>
+                service.AddTerminologyPollAsync(inputTerminologyPoll))
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<TerminologyPoll> terminologyAddTask =
+                this.terminologyPollProcessingService.AddTerminologyPollAsync(inputTerminologyPoll);
+
+            TerminologyPollProcessingServiceException actualException =
+                await Assert.ThrowsAsync<TerminologyPollProcessingServiceException>(
+                    terminologyAddTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedTerminologyPollProcessingServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.terminologyPollServiceMock.Verify(service =>
+                service.AddTerminologyPollAsync(inputTerminologyPoll),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedTerminologyPollProcessingServiceException))),
                          Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

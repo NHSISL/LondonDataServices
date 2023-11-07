@@ -23,7 +23,7 @@ namespace LHDS.Core.Services.Processings.Ontologies
         }
 
         public ValueTask<OntologyAssets> RetrieveAllCodingSystemsAsync(string relativeUrl) =>
-             TryCatch( () =>
+             TryCatch(() =>
              {
                  ValidateArgs(relativeUrl);
 
@@ -34,14 +34,17 @@ namespace LHDS.Core.Services.Processings.Ontologies
              TryCatch(() =>
              {
                  ValidateArgs(relativeUrl);
-                 
+
                  return this.ontologyService.RetrieveAllValueSetsAsync(relativeUrl);
              });
 
-        public ValueTask<OntologyAssets> RetrieveAllConceptMapsAsync(string relativeUrl)
-        {
-            return this.ontologyService.RetrieveAllConceptMapsAsync(relativeUrl);
-        }
-    }    
+        public ValueTask<OntologyAssets> RetrieveAllConceptMapsAsync(string relativeUrl) =>
+             TryCatch(() =>
+             {
+                 ValidateArgs(relativeUrl);
+
+                 return this.ontologyService.RetrieveAllConceptMapsAsync(relativeUrl);
+             });
+    }
 
 }

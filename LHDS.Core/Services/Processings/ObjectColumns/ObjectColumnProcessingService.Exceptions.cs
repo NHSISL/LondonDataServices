@@ -92,7 +92,6 @@ namespace LHDS.Core.Services.Processings.ObjectColumns
             }
         }
 
-
         private ObjectColumnProcessingValidationException CreateAndLogValidationException(Xeption exception)
         {
             var objectColumnProcessingValidationExceptionn =

@@ -42,9 +42,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
-        private static int GetRandomNegativeNumber() =>
-            -1 * new IntRange(min: 2, max: 10).GetValue();
-
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 

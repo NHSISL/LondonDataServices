@@ -14,10 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
         public async Task ShouldAddTerminologyPollAsync()
         {
             // given
-            DateTimeOffset randomDateTimeOffset =
-                GetRandomDateTimeOffset();
-
-            TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll(randomDateTimeOffset);
+            TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll();
             TerminologyPoll inputTerminologyPoll = randomTerminologyPoll;
             TerminologyPoll storageTerminologyPoll = inputTerminologyPoll;
             TerminologyPoll expectedTerminologyPoll = storageTerminologyPoll.DeepClone();

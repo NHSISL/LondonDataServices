@@ -22,10 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             Xeption dependencyValidationException)
         {
             // given
-            DateTimeOffset randomDateTimeOffset =
-               GetRandomDateTimeOffset();
-
-            TerminologyPoll someTerminologyPoll = CreateRandomTerminologyPoll(randomDateTimeOffset);
+            TerminologyPoll someTerminologyPoll = CreateRandomTerminologyPoll();
             TerminologyPoll inputTerminologyPoll = someTerminologyPoll.DeepClone();
 
             var expectedTerminologyPollProcessingDependencyValidationException =
@@ -67,9 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             Xeption dependencyException)
         {
             // given
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-
-            TerminologyPoll someTerminologyPoll = CreateRandomTerminologyPoll(randomDateTimeOffset);
+            TerminologyPoll someTerminologyPoll = CreateRandomTerminologyPoll();
             TerminologyPoll inputTerminologyPoll = someTerminologyPoll.DeepClone();
 
             var expectedTerminologyPollProcessingDependencyException =
@@ -109,8 +104,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
         public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAsync()
         {
             // given
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            TerminologyPoll someTerminologyPoll = CreateRandomTerminologyPoll(randomDateTimeOffset);
+            TerminologyPoll someTerminologyPoll = CreateRandomTerminologyPoll();
             TerminologyPoll inputTerminologyPoll = someTerminologyPoll.DeepClone();
             var serviceException = new Exception();
 

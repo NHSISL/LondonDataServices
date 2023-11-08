@@ -32,11 +32,10 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                 return await this.terminologyPollService.AddTerminologyPollAsync(terminologyPoll);
             });
 
-        public IQueryable<TerminologyPoll> RetrieveAllTerminologyPolls()
-        {
-            return this.terminologyPollService.RetrieveAllTerminologyPolls();
-        }
-            
-
+        public IQueryable<TerminologyPoll> RetrieveAllTerminologyPolls() =>
+            TryCatch(() =>
+            {
+                return this.terminologyPollService.RetrieveAllTerminologyPolls();
+            });
     }
 }

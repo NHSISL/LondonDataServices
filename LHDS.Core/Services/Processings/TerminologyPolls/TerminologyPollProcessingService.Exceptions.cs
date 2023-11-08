@@ -4,10 +4,8 @@
 
 using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
-using LHDS.Core.Models.Processings.ObjectColumns.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyPolls.Exceptions;
 using Xeptions;
 
@@ -17,7 +15,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
     {
         private delegate ValueTask<TerminologyPoll> ReturningTerminologyPollFunction();
 
-        private async ValueTask<TerminologyPoll> TryCatch(ReturningTerminologyPollFunction 
+        private async ValueTask<TerminologyPoll> TryCatch(ReturningTerminologyPollFunction
             returningTerminologyPollFunction)
         {
             try
@@ -27,10 +25,6 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             catch (NullTerminologyPollException nullTerminologyPollException)
             {
                 throw CreateAndLogValidationException(nullTerminologyPollException);
-            }
-            catch (InvalidTerminologyPollException invalidTerminologyPollException)
-            {
-                throw CreateAndLogValidationException(invalidTerminologyPollException);
             }
             catch (TerminologyPollValidationException terminologyPollValidationException)
             {

@@ -3,18 +3,13 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Runtime.Serialization;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages.Sql;
-using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using LHDS.Core.Services.Foundations.TerminologyPolls;
 using LHDS.Core.Services.Processings.TerminologyPolls;
-using Microsoft.Data.SqlClient;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -32,12 +27,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
         public TerminologyPollProcessingServiceTests()
         {
             this.terminologyPollServiceMock = new Mock<ITerminologyPollService>();
-            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
             this.terminologyPollProcessingService = new TerminologyPollProcessingService(
                 terminologyPollService: this.terminologyPollServiceMock.Object,
-                dateTimeBroker: this.dateTimeBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 

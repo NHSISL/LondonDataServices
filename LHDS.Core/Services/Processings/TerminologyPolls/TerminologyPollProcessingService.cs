@@ -13,16 +13,13 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
     public partial class TerminologyPollProcessingService : ITerminologyPollProcessingService
     {
         private readonly ITerminologyPollService terminologyPollService;
-        private readonly IDateTimeBroker dateTimeBroker;
         private readonly ILoggingBroker loggingBroker;
 
         public TerminologyPollProcessingService(
             ITerminologyPollService terminologyPollService,
-            IDateTimeBroker dateTimeBroker,
             ILoggingBroker loggingBroker)
         {
             this.terminologyPollService = terminologyPollService;
-            this.dateTimeBroker = dateTimeBroker;
             this.loggingBroker = loggingBroker;
         }
 

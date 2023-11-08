@@ -26,10 +26,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                 service.AddTerminologyPollAsync(inputTerminologyPoll))
                     .ReturnsAsync(storageTerminologyPoll);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
-
             // when
             TerminologyPoll actualTerminologyPoll = await this.terminologyPollProcessingService
                 .AddTerminologyPollAsync(inputTerminologyPoll);
@@ -37,15 +33,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             // then
             actualTerminologyPoll.Should().BeEquivalentTo(expectedTerminologyPoll);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Once());
-
             this.terminologyPollServiceMock.Verify(service =>
                 service.AddTerminologyPollAsync(inputTerminologyPoll),
                     Times.Once());
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.terminologyPollServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

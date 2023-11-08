@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Ontologies;
 using LHDS.Core.Models.Foundations.Ontologies.Exceptions;
-using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using Moq;
 using Xunit;
 

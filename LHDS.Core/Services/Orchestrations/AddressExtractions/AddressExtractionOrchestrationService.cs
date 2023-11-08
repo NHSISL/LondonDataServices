@@ -50,6 +50,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
         {
             List<Address> addresses = new List<Address>();
             using (MemoryStream memoryStream = new MemoryStream(data))
+
             using (ZipArchive archive = new ZipArchive(memoryStream))
             {
                 foreach (ZipArchiveEntry entry in archive.Entries)

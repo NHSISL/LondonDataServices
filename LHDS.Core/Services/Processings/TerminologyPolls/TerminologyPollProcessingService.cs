@@ -32,7 +32,11 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                 return await this.terminologyPollService.AddTerminologyPollAsync(terminologyPoll);
             });
 
-        public IQueryable<TerminologyPoll> RetrieveAllTerminologyPolls() =>
-            throw new System.NotImplementedException();
+        public IQueryable<TerminologyPoll> RetrieveAllTerminologyPolls()
+        {
+            return this.terminologyPollService.RetrieveAllTerminologyPolls();
+        }
+            
+
     }
 }

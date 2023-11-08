@@ -49,8 +49,8 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
         private async ValueTask<List<Address>> ProcessAddressDataAsync(byte[] data)
         {
             List<Address> addresses = new List<Address>();
-            using (MemoryStream memoryStream = new MemoryStream(data))
 
+            using (MemoryStream memoryStream = new MemoryStream(data))
             using (ZipArchive archive = new ZipArchive(memoryStream))
             {
                 foreach (ZipArchiveEntry entry in archive.Entries)
@@ -90,7 +90,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                         byte[] nestedZipData;
                         Console.WriteLine($"Csv name is: {entry.Name}");
                         using (MemoryStream nestedMemoryStream = new MemoryStream())
-                        
+
                         using (Stream entryStream = entry.Open())
                         {
                             entryStream.CopyTo(nestedMemoryStream);

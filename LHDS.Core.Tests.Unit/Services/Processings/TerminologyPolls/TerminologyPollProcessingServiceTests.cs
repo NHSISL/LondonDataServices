@@ -20,7 +20,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
     public partial class TerminologyPollProcessingServiceTests
     {
         private readonly Mock<ITerminologyPollService> terminologyPollServiceMock;
-        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly ITerminologyPollProcessingService terminologyPollProcessingService;
 

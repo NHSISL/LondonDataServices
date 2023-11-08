@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
@@ -47,16 +48,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        public static TheoryData MinutesBeforeOrAfter()
+        private static IQueryable<TerminologyPoll> CreateRandomTerminologyPolls()
         {
-            int randomNumber = GetRandomNumber();
-            int randomNegativeNumber = GetRandomNegativeNumber();
-
-            return new TheoryData<int>
-            {
-                randomNumber,
-                randomNegativeNumber
-            };
+            return CreateTerminologyPollFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
         }
 
         private static TerminologyPoll CreateRandomTerminologyPoll() =>

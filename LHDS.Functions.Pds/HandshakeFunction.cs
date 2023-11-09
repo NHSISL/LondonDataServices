@@ -11,12 +11,12 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace LHDS.Functions.Pds
 {
-    public class RetreiveMessagesFromMeshAndUpdateStorage
+    public class HandShakeFunction
     {
         private readonly ILoggingBroker loggingBroker;
         private readonly IPdsClient pdsClient;
 
-        public RetreiveMessagesFromMeshAndUpdateStorage(
+        public HandShakeFunction(
             ILoggingBroker loggingBroker,
             IPdsClient pdsClient)
         {
@@ -24,8 +24,8 @@ namespace LHDS.Functions.Pds
             this.pdsClient = pdsClient;
         }
 
-        [Function("RetreiveMessagesFromMeshAndUpdateStorage")]
-        public void Run([TimerTrigger("0 */15 * * * *")] MyInformation myTimer)
+        [Function("HandShakeFunction")]
+        public void Run([TimerTrigger("0 0 0 * * *")] MyInformation myTimer)
         {
             this.loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
@@ -33,7 +33,7 @@ namespace LHDS.Functions.Pds
             {
                 Task.Run(async () =>
                 {
-                    await pdsClient.RetreiveMessagesFromMeshAndUpdateStorage();
+                    await pdsClient.ValidateMailboxAccessAsync();
                 }).Wait();
             }
             catch (Exception ex)
@@ -46,4 +46,3 @@ namespace LHDS.Functions.Pds
         }
     }
 }
-

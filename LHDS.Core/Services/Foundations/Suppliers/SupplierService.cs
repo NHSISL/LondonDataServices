@@ -33,7 +33,15 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             {
                 ValidateSupplierOnAdd(supplier);
 
-                return await this.storageBroker.InsertSupplierAsync(supplier);
+                Supplier maybeSupplier =
+                   await this.storageBroker.SelectSupplierByIdAsync(supplier.Id);
+
+                if (maybeSupplier is null)
+                {
+                    return await this.storageBroker.InsertSupplierAsync(supplier);
+                }
+
+                return maybeSupplier;
             });
 
         public IQueryable<Supplier> RetrieveAllSuppliers() =>

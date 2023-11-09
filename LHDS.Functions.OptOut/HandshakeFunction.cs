@@ -6,26 +6,26 @@ using System;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
-using LHDS.Functions.Pds.Models;
+using LHDS.Functions.OptOut.Models;
 using Microsoft.Azure.Functions.Worker;
 
-namespace LHDS.Functions.Pds
+namespace LHDS.Functions.OptOut
 {
-    public class RetreiveMessagesFromMeshAndUpdateStorage
+    public class HandshakeFunction
     {
         private readonly ILoggingBroker loggingBroker;
-        private readonly IPdsClient pdsClient;
+        private readonly IOptOutClient optOutClient;
 
-        public RetreiveMessagesFromMeshAndUpdateStorage(
+        public HandshakeFunction(
             ILoggingBroker loggingBroker,
-            IPdsClient pdsClient)
+            IOptOutClient optOutClient)
         {
             this.loggingBroker = loggingBroker;
-            this.pdsClient = pdsClient;
+            this.optOutClient = optOutClient;
         }
 
-        [Function("RetreiveMessagesFromMeshAndUpdateStorage")]
-        public void Run([TimerTrigger("0 */15 * * * *")] MyInformation myTimer)
+        [Function("HandshakeFunction")]
+        public void Run([TimerTrigger("0 0 0 * * *")] MyInformation myTimer)
         {
             this.loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
@@ -33,7 +33,7 @@ namespace LHDS.Functions.Pds
             {
                 Task.Run(async () =>
                 {
-                    await pdsClient.RetreiveMessagesFromMeshAndUpdateStorage();
+                    await optOutClient.ValidateMailboxAccessAsync();
                 }).Wait();
             }
             catch (Exception ex)

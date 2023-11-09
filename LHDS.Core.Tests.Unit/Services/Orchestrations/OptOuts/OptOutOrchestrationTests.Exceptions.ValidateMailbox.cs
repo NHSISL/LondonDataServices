@@ -30,12 +30,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .ThrowsAsync(dependancyValidationException);
 
             // when
-            ValueTask<bool> retrieveOptOutStatusTask =
+            ValueTask<bool> validateMailboxAccessTask =
                 this.optOutOrchestrationService.ValidateMailboxAccessAsync();
 
             OptOutOrchestrationDependencyValidationException actualException =
                 await Assert.ThrowsAsync<OptOutOrchestrationDependencyValidationException>(
-                    retrieveOptOutStatusTask.AsTask);
+                    validateMailboxAccessTask.AsTask);
 
             // then
             actualException.Should()
@@ -74,11 +74,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .ThrowsAsync(dependancyException);
 
             // when
-            ValueTask<bool> retrieveOptOutStatusTask =
+            ValueTask<bool> validateMailboxAccessTask =
                 this.optOutOrchestrationService.ValidateMailboxAccessAsync();
 
             OptOutOrchestrationDependencyException actualException =
-                await Assert.ThrowsAsync<OptOutOrchestrationDependencyException>(retrieveOptOutStatusTask.AsTask);
+                await Assert.ThrowsAsync<OptOutOrchestrationDependencyException>(validateMailboxAccessTask.AsTask);
 
             // then
             actualException.Should()
@@ -122,11 +122,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<bool> retrieveOptOutStatusTask =
+            ValueTask<bool> validateMailboxAccessTask =
                 this.optOutOrchestrationService.ValidateMailboxAccessAsync();
 
             OptOutOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(retrieveOptOutStatusTask.AsTask);
+                await Assert.ThrowsAsync<OptOutOrchestrationServiceException>(validateMailboxAccessTask.AsTask);
 
             // then
             actualException.Should()

@@ -16,6 +16,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
     public partial class PdsOrchestrationService
     {
         private delegate ValueTask<PdsAudit> ReturningPdsAuditFunction();
+        private delegate ValueTask<bool> ReturningPdsAuditBoolFunction();
         private delegate ValueTask<List<PdsAudit>> ReturningPdsAuditListFunciton();
 
         private async ValueTask<PdsAudit> TryCatch(ReturningPdsAuditFunction returningPdsAuditFunction)
@@ -23,6 +24,83 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             try
             {
                 return await returningPdsAuditFunction();
+            }
+            catch (NullConfigPdsOrchestrationException nullConfigPdsOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullConfigPdsOrchestrationException);
+            }
+            catch (NullBlobContainersPdsOrchestrationException nullBlobContainersPdsOrchestrationException)
+            {
+                throw CreateAndLogValidationException(nullBlobContainersPdsOrchestrationException);
+            }
+            catch (InvalidArgumentPdsException invalidArgumentPdsException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentPdsException);
+            }
+            catch (PdsOrchestrationValidationException pdsOrchestrationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(pdsOrchestrationValidationException);
+            }
+            catch (PdsOrchestrationDependencyValidationException pdsOrchestrationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(pdsOrchestrationDependencyValidationException);
+            }
+            catch (DocumentValidationException meshValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshValidationException);
+            }
+            catch (DocumentDependencyValidationException meshDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
+            }
+            catch (MeshValidationException meshValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshValidationException);
+            }
+            catch (MeshDependencyValidationException meshDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
+            }
+            catch (PdsOrchestrationDependencyException pdsOrchestrationDependencyException)
+            {
+                throw CreateAndLogDependencyException(pdsOrchestrationDependencyException);
+            }
+            catch (PdsOrchestrationServiceException pdsOrchestrationServiceException)
+            {
+                throw CreateAndLogDependencyException(pdsOrchestrationServiceException);
+            }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                throw CreateAndLogDependencyException(documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                throw CreateAndLogDependencyException(documentServiceException);
+            }
+            catch (MeshDependencyException meshDependencyException)
+            {
+                throw CreateAndLogDependencyException(meshDependencyException);
+            }
+            catch (MeshServiceException meshServiceException)
+            {
+                throw CreateAndLogDependencyException(meshServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedPdsServiceException =
+                    new FailedPdsOrchestrationServiceException(
+                        message: "Failed PDS orchestration service occurred, please contact support",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedPdsServiceException);
+            }
+        }
+
+        private async ValueTask<bool> TryCatch(ReturningPdsAuditBoolFunction returningPdsAuditBoolFunction)
+        {
+            try
+            {
+                return await returningPdsAuditBoolFunction();
             }
             catch (NullConfigPdsOrchestrationException nullConfigPdsOrchestrationException)
             {

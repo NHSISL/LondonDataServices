@@ -3,10 +3,12 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyPolls.Exceptions;
+using Microsoft.Data.SqlClient;
 using Xeptions;
 
 namespace LHDS.Core.Services.Processings.TerminologyPolls
@@ -14,6 +16,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
     public partial class TerminologyPollProcessingService
     {
         private delegate ValueTask<TerminologyPoll> ReturningTerminologyPollFunction();
+        private delegate IQueryable<TerminologyPoll> ReturningTerminologyPollsFunction();
 
         private async ValueTask<TerminologyPoll> TryCatch(ReturningTerminologyPollFunction
             returningTerminologyPollFunction)
@@ -25,6 +28,39 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             catch (NullTerminologyPollException nullTerminologyPollException)
             {
                 throw CreateAndLogValidationException(nullTerminologyPollException);
+            }
+            catch (TerminologyPollValidationException terminologyPollValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(terminologyPollValidationException);
+            }
+            catch (TerminologyPollDependencyValidationException terminologyPollDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(terminologyPollDependencyValidationException);
+            }
+            catch (TerminologyPollDependencyException terminologyPollDependencyException)
+            {
+                throw CreateAndLogDependencyException(terminologyPollDependencyException);
+            }
+            catch (TerminologyPollServiceException terminologyPollServiceException)
+            {
+                throw CreateAndLogDependencyException(terminologyPollServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedTerminologyPollProcessingServiceException =
+                    new FailedTerminologyPollProcessingServiceException(
+                        message: "Failed terminology poll processing service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedTerminologyPollProcessingServiceException);
+            }
+        }
+
+        private IQueryable<TerminologyPoll> TryCatch(ReturningTerminologyPollsFunction returningTerminologyPollsFunction)
+        {
+            try
+            {
+                return returningTerminologyPollsFunction();
             }
             catch (TerminologyPollValidationException terminologyPollValidationException)
             {

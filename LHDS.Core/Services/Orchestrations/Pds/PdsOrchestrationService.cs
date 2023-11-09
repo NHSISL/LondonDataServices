@@ -51,6 +51,9 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             this.pdsConfiguration = pdsConfiguration;
         }
 
+        public ValueTask<bool> ValidateMailboxAccessAsync() =>
+           throw new NotImplementedException();
+
         public ValueTask<PdsAudit> PickupFileAndSendToMesh(byte[] pdsFile, string fileName) =>
         TryCatch(async () =>
         {

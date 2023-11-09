@@ -29,6 +29,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                 key: nameof(TerminologyPoll.Id),
                 values: "Id is required");
 
+            var expectedTerminologyPollProcessingValidationException =
+                new TerminologyPollProcessingValidationException(
+                    message: "Terminology poll processing validation errors occurred, please try again.",
+                    innerException: invalidTerminologyPollException);
+
             // when
             ValueTask<TerminologyPoll> retrieveTerminologyPollByIDTask =
                 this.terminologyPollProcessingService.RetrieveTerminologyPollByIdAsync(invalidTerminologyPollId);
@@ -39,16 +44,15 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
 
             // then
             actualTerminologyPollProcessingValidationException.Should()
-                .BeEquivalentTo(invalidTerminologyPollException);
+                .BeEquivalentTo(expectedTerminologyPollProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    invalidTerminologyPollException))),
+                    expectedTerminologyPollProcessingValidationException))),
                         Times.Once);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.terminologyPollServiceMock.VerifyNoOtherCalls();
         }
-
     }
 }

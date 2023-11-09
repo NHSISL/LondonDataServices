@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyPolls.Exceptions;
-using Microsoft.Data.SqlClient;
 using Xeptions;
 
 namespace LHDS.Core.Services.Processings.TerminologyPolls
@@ -28,6 +27,10 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             catch (NullTerminologyPollException nullTerminologyPollException)
             {
                 throw CreateAndLogValidationException(nullTerminologyPollException);
+            }
+            catch (InvalidTerminologyPollException invalidTerminologyPollException)
+            {
+                throw CreateAndLogValidationException(invalidTerminologyPollException);
             }
             catch (TerminologyPollValidationException terminologyPollValidationException)
             {

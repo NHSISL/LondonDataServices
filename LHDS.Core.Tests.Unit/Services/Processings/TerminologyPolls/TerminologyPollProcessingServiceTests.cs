@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
@@ -41,40 +42,24 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
-        private static int GetRandomNegativeNumber() =>
-            -1 * new IntRange(min: 2, max: 10).GetValue();
-
-        private static DateTimeOffset GetRandomDateTimeOffset() =>
-            new DateTimeRange(earliestDate: new DateTime()).GetValue();
-
-        public static TheoryData MinutesBeforeOrAfter()
+        private static IQueryable<TerminologyPoll> CreateRandomTerminologyPolls()
         {
-            int randomNumber = GetRandomNumber();
-            int randomNegativeNumber = GetRandomNegativeNumber();
-
-            return new TheoryData<int>
-            {
-                randomNumber,
-                randomNegativeNumber
-            };
+            return CreateTerminologyPollFiller()
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
         }
 
         private static TerminologyPoll CreateRandomTerminologyPoll() =>
-            CreateTerminologyPollFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+            CreateTerminologyPollFiller().Create();
 
-        private static TerminologyPoll CreateRandomTerminologyPoll(DateTimeOffset dateTimeOffset) =>
-            CreateTerminologyPollFiller(dateTimeOffset).Create();
-
-        private static Filler<TerminologyPoll> CreateTerminologyPollFiller(DateTimeOffset dateTimeOffset)
+        private static Filler<TerminologyPoll> CreateTerminologyPollFiller()
         {
-            string user = Guid.NewGuid().ToString();
+            DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             var filler = new Filler<TerminologyPoll>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(terminologyPoll => terminologyPoll.CreatedBy).Use(user)
-                .OnProperty(terminologyPoll => terminologyPoll.UpdatedBy).Use(user);
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
 
             return filler;
         }

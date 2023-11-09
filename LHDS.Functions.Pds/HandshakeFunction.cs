@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
+using LHDS.Functions.Pds.Models;
 using Microsoft.Azure.Functions.Worker;
 
 namespace LHDS.Functions.Pds
@@ -43,21 +44,5 @@ namespace LHDS.Functions.Pds
 
             this.loggingBroker.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
         }
-    }
-
-    public class MyInformation
-    {
-        public MyScheduleStatusDetail ScheduleStatus { get; set; }
-
-        public bool IsPastDue { get; set; }
-    }
-
-    public class MyScheduleStatusDetail
-    {
-        public DateTime Last { get; set; }
-
-        public DateTime Next { get; set; }
-
-        public DateTime LastUpdated { get; set; }
     }
 }

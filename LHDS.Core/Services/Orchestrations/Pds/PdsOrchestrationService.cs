@@ -51,8 +51,11 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             this.pdsConfiguration = pdsConfiguration;
         }
 
-        public async ValueTask<bool> ValidateMailboxAccessAsync() =>
-           await meshService.ValidateMailboxAccessAsync();
+        public ValueTask<bool> ValidateMailboxAccessAsync() =>
+        TryCatch(async () =>
+        {
+            return await meshService.ValidateMailboxAccessAsync();
+        });
 
         public ValueTask<PdsAudit> PickupFileAndSendToMesh(byte[] pdsFile, string fileName) =>
         TryCatch(async () =>

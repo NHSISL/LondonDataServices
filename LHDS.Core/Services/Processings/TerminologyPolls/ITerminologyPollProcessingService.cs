@@ -8,5 +8,6 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
     public interface ITerminologyPollProcessingService
     {
         ValueTask<TerminologyPoll> AddTerminologyPollAsync(TerminologyPoll terminologyPoll);
+        IQueryable<TerminologyPoll> RetrieveAllTerminologyPolls();
     }
 }

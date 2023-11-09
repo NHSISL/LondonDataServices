@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -29,6 +30,12 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                 ValidateTerminologyPollOnAdd(terminologyPoll);
 
                 return await this.terminologyPollService.AddTerminologyPollAsync(terminologyPoll);
+            });
+
+        public IQueryable<TerminologyPoll> RetrieveAllTerminologyPolls() =>
+            TryCatch(() =>
+            {
+                return this.terminologyPollService.RetrieveAllTerminologyPolls();
             });
     }
 }

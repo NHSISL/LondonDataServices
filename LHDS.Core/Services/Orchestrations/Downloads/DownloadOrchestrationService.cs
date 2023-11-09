@@ -16,26 +16,21 @@ using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
-using LHDS.Core.Services.Foundations.Documents;
-using LHDS.Core.Services.Foundations.Downloads;
-using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
-using LHDS.Core.Services.Foundations.IngestionTrackings;
-using LHDS.Core.Services.Foundations.Suppliers;
-using LHDS.Core.Services.Orchestrations.Downloads;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
+using LHDS.Core.Services.Processings.Documents;
+using LHDS.Core.Services.Processings.Downloads;
+using LHDS.Core.Services.Processings.IngestionTrackings;
 using Document = LHDS.Core.Models.Foundations.Documents.Document;
 
 namespace LHDS.Core.Services.Orchestrations.Downloads
 {
     public partial class DownloadOrchestrationService : IDownloadOrchestrationService
     {
-        private readonly IDocumentService documentService;
-        private readonly IDownloadService downloadService;
-        private readonly IIngestionTrackingService ingestionTrackingService;
-        private readonly IIngestionTrackingAuditService auditService;
+        private readonly IDocumentProcessingService documentProcessingService;
+        private readonly IDownloadProcessingService downloadProcessingService;
+        private readonly IIngestionTrackingProcessingService ingestionTrackingProcessingService;
+        private readonly IIngestionTrackingAuditProcessingService auditService;
         private readonly BlobContainers blobContainers;
-        private readonly ISupplierService supplierService;
-        private readonly IDataSetSpecificationService dataSetSpecificationService;
         private readonly IDataSetSpecificationProcessingService dataSetSpecificationProcessingService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
@@ -43,11 +38,10 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         private readonly LandingConfiguration landingConfiguration;
 
         public DownloadOrchestrationService(
-            IDocumentService documentService,
-            IDownloadService downloadService,
-            IIngestionTrackingService ingestionTrackingService,
-            IDataSetSpecificationService dataSetSpecificationService,
-            IIngestionTrackingAuditService auditService,
+            IDocumentProcessingService documentProcessingService,
+            IDownloadProcessingService downloadProcessingService,
+            IIngestionTrackingProcessingService ingestionTrackingProcessingService,
+            IIngestionTrackingAuditProcessingService auditService,
             IDataSetSpecificationProcessingService dataSetSpecificationProcessingService,
             BlobContainers blobContainers,
             ILoggingBroker loggingBroker,
@@ -55,11 +49,10 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             IIdentifierBroker identifierBroker,
             LandingConfiguration landingConfiguration)
         {
-            this.documentService = documentService;
-            this.downloadService = downloadService;
-            this.ingestionTrackingService = ingestionTrackingService;
+            this.documentProcessingService = documentProcessingService;
+            this.downloadProcessingService = downloadProcessingService;
+            this.ingestionTrackingProcessingService = ingestionTrackingProcessingService;
             this.auditService = auditService;
-            this.dataSetSpecificationService = dataSetSpecificationService;
             this.dataSetSpecificationProcessingService = dataSetSpecificationProcessingService;
             this.blobContainers = blobContainers;
             this.loggingBroker = loggingBroker;
@@ -76,7 +69,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 var exceptions = new List<Exception>();
 
                 List<Document> retrievedDocuments =
-                    await this.downloadService.RetrieveListOfDocumentsToProcessAsync();
+                    await this.downloadProcessingService.RetrieveListOfDocumentsToProcessAsync();
 
                 List<string> files = new List<string>();
 
@@ -87,14 +80,14 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         string decryptedFile = await TryCatch(async () =>
                         {
                             IngestionTracking maybeIngestionTracking =
-                                this.ingestionTrackingService.RetrieveAllIngestionTrackings()
+                                this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
                                     .FirstOrDefault(ingestionTracking =>
                                         ingestionTracking.FileName == document.FileName);
 
                             if (maybeIngestionTracking == null)
                             {
                                 Document retrievedDocument =
-                                    await this.downloadService.RetrieveDownloadByFileNameAsync(document.FileName);
+                                    await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(document.FileName);
 
                                 var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
@@ -139,9 +132,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                     FileName = newIngestionTracking.EncryptedFileName
                                 };
 
-                                await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
+                                await this.ingestionTrackingProcessingService.AddIngestionTrackingAsync(newIngestionTracking);
 
-                                await this.documentService
+                                await this.documentProcessingService
                                     .AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
 
                                 LogAudit(newIngestionTracking, document, "Landed");
@@ -154,7 +147,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                 maybeIngestionTracking.LastSeen = currentDateTime;
                                 maybeIngestionTracking.UpdatedDate = currentDateTime;
 
-                                await this.ingestionTrackingService
+                                await this.ingestionTrackingProcessingService
                                     .ModifyIngestionTrackingAsync(maybeIngestionTracking);
                             }
 
@@ -175,7 +168,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 }
 
                 List<IngestionTracking> unavailableIngestionTrackings =
-                    this.ingestionTrackingService.RetrieveAllIngestionTrackings()
+                    this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
                         .Where(ingestionTracking =>
                             ingestionTracking.LastSeen <=
                                 this.dateTimeBroker.GetCurrentDateTimeOffset().AddMinutes(-15)).ToList();
@@ -185,7 +178,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     item.FileDeleted = true;
                     item.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
-                    await this.ingestionTrackingService.ModifyIngestionTrackingAsync(item);
+                    await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(item);
                 }
 
                 if (exceptions.Any())
@@ -203,12 +196,12 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                 ValidateFileName(fileName);
 
                 Document externalDocument =
-                        await this.downloadService.RetrieveDownloadByFileNameAsync(fileName);
+                        await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(fileName);
 
                 ValidateStorageDownload(externalDocument, fileName);
 
                 IngestionTracking maybeIngestionTracking =
-                    this.ingestionTrackingService.RetrieveAllIngestionTrackings()
+                    this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
                         .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == fileName);
 
                 if (maybeIngestionTracking != null)
@@ -220,7 +213,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
 
                     try
                     {
-                        await this.documentService.RemoveDocumentByFileNameAsync(
+                        await this.documentProcessingService.RemoveDocumentByFileNameAsync(
                             maybeIngestionTracking.EncryptedFileName, blobContainers.EmisLanding);
                     }
                     catch (DocumentDependencyException documentDependencyException)
@@ -236,8 +229,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         FileName = maybeIngestionTracking.EncryptedFileName
                     };
 
-                    await this.ingestionTrackingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);
-                    await this.documentService.AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
+                    await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);
+                    await this.documentProcessingService.AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
 
                     LogAudit(
                         ingestionTracking: maybeIngestionTracking,
@@ -261,28 +254,28 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                     IngestionTracking newIngestionTracking =
                       new IngestionTracking
                       {
-                        Id = this.identifierBroker.GetIdentifier(),
-                        FileName = externalDocument.FileName,
-                        SupplierId = landingConfiguration.LandingSupplierId,
-                        EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
+                          Id = this.identifierBroker.GetIdentifier(),
+                          FileName = externalDocument.FileName,
+                          SupplierId = landingConfiguration.LandingSupplierId,
+                          EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
 
-                        DecryptedFileName =
+                          DecryptedFileName =
                             $"/{landingConfiguration.DecryptedFolder}" +
                             $"/{retrievedDataSetSpecification.DataSet.DataSetName}" +
                             $"/{retrievedDataSetSpecification.Id}" +
                             $"/{filename.Split('_')[3]}" +
                             $"{filename.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}",
 
-                        Decrypted = false,
-                        LastSeen = currentDateTime,
-                        FileDeleted = false,
-                        RecordCount = 0,
-                        EncryptedFileSize = externalDocument.DocumentData.Length,
-                        DecryptedFileSize = 0,
-                        CreatedBy = "System",
-                        CreatedDate = currentDateTime,
-                        UpdatedBy = "System",
-                        UpdatedDate = currentDateTime
+                          Decrypted = false,
+                          LastSeen = currentDateTime,
+                          FileDeleted = false,
+                          RecordCount = 0,
+                          EncryptedFileSize = externalDocument.DocumentData.Length,
+                          DecryptedFileSize = 0,
+                          CreatedBy = "System",
+                          CreatedDate = currentDateTime,
+                          UpdatedBy = "System",
+                          UpdatedDate = currentDateTime
                       };
 
                     Document newBlobDocument = new Document
@@ -291,8 +284,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         FileName = newIngestionTracking.EncryptedFileName
                     };
 
-                    await this.ingestionTrackingService.AddIngestionTrackingAsync(newIngestionTracking);
-                    await this.documentService.AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
+                    await this.ingestionTrackingProcessingService.AddIngestionTrackingAsync(newIngestionTracking);
+                    await this.documentProcessingService.AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);
                     LogAudit(newIngestionTracking, externalDocument, "Re-Landed");
 
                     return newIngestionTracking.DecryptedFileName;

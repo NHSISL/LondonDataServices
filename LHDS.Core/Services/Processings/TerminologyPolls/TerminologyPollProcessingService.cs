@@ -38,7 +38,9 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                 return this.terminologyPollService.RetrieveAllTerminologyPolls();
             });
 
-        public ValueTask<TerminologyPoll> RetrieveTerminologyPollByIdAsync(Guid terminologyPollId) =>
-            throw new System.NotImplementedException();
+        public ValueTask<TerminologyPoll> RetrieveTerminologyPollByIdAsync(Guid terminologyPollId)
+        {
+            return this.terminologyPollService.RetrieveTerminologyPollByIdAsync(terminologyPollId);
+        }
     }
 }

@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
 
             this.ontologyServiceMock.Setup(service =>
                 service.RetrieveAllValueSetsAsync(inputRelativeUrl))
-                    .ReturnsAsync(expectedOntologyAssets);
+                    .ReturnsAsync(createdOntologyAssets);
 
             // when
             OntologyAssets actualOntologyAssets =

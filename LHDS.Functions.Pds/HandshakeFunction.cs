@@ -8,23 +8,23 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
 using Microsoft.Azure.Functions.Worker;
 
-namespace LHDS.Functions.OptOut
+namespace LHDS.Functions.Pds
 {
-    public class HandshakeFunction
+    public class HandShakeFunction
     {
         private readonly ILoggingBroker loggingBroker;
-        private readonly IOptOutClient optOutClient;
+        private readonly IPdsClient pdsClient;
 
-        public HandshakeFunction(
+        public HandShakeFunction(
             ILoggingBroker loggingBroker,
-            IOptOutClient optOutClient)
+            IPdsClient pdsClient)
         {
             this.loggingBroker = loggingBroker;
-            this.optOutClient = optOutClient;
+            this.pdsClient = pdsClient;
         }
 
-        [Function("HandshakeFunction")]
-        public void Run([TimerTrigger("0 0 0 * * *")] MyInfo myTimer)
+        [Function("HandShakeFunction")]
+        public void Run([TimerTrigger("0 0 0 * * *")] MyInformation myTimer)
         {
             this.loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
@@ -32,7 +32,7 @@ namespace LHDS.Functions.OptOut
             {
                 Task.Run(async () =>
                 {
-                    await optOutClient.ValidateMailboxAccessAsync();
+                    await pdsClient.ValidateMailboxAccessAsync();
                 }).Wait();
             }
             catch (Exception ex)
@@ -61,4 +61,3 @@ namespace LHDS.Functions.OptOut
         public DateTime LastUpdated { get; set; }
     }
 }
-

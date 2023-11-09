@@ -60,8 +60,11 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             this.meshConfiguration = meshConfiguration;
         }
 
-        public async ValueTask<bool> ValidateMailboxAccessAsync() =>
-            await meshProcessingService.ValidateMailboxAccessAsync();
+        public ValueTask<bool> ValidateMailboxAccessAsync() =>
+              TryCatch(async () =>
+              {
+                  return await meshProcessingService.ValidateMailboxAccessAsync();
+              });
 
         public ValueTask<string> RetrieveOptOutStatusAsync(byte[] optOutFile, string fileName) =>
             TryCatch(async () =>

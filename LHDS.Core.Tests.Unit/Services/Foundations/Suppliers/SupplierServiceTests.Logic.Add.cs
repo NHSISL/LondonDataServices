@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             this.storageBrokerMock.Setup(broker =>
                broker.SelectSupplierByIdAsync(inputSupplier.Id))
-                   .ReturnsAsync(storageSupplier);
+                    .ReturnsAsync(storageSupplier);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertSupplierAsync(inputSupplier))

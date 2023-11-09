@@ -29,12 +29,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     .Throws(dependancyValidationException);
 
             //when
-            ValueTask<bool> actualPdsAudit =
+            ValueTask<bool> validateMailboxAccessTask =
                 this.pdsOrchestrationService.ValidateMailboxAccessAsync();
 
             PdsOrchestrationDependencyValidationException actualException =
               await Assert.ThrowsAsync<PdsOrchestrationDependencyValidationException>(
-                  actualPdsAudit.AsTask);
+                  validateMailboxAccessTask.AsTask);
 
             // then
             actualException.Should()
@@ -73,11 +73,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                    .Throws(dependancyException);
 
             // when
-            ValueTask<bool> retrievePdsAudit =
+            ValueTask<bool> validateMailboxAccessTask =
               this.pdsOrchestrationService.ValidateMailboxAccessAsync();
 
             PdsOrchestrationDependencyException actualException =
-                await Assert.ThrowsAsync<PdsOrchestrationDependencyException>(retrievePdsAudit.AsTask);
+                await Assert.ThrowsAsync<PdsOrchestrationDependencyException>(validateMailboxAccessTask.AsTask);
 
             // then
             actualException.Should()
@@ -121,11 +121,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                     .Throws(serviceException);
 
             // when
-            ValueTask<bool> retrievePdsAudit =
+            ValueTask<bool> validateMailboxAccessTask =
                 this.pdsOrchestrationService.ValidateMailboxAccessAsync();
 
             PdsOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(retrievePdsAudit.AsTask);
+                await Assert.ThrowsAsync<PdsOrchestrationServiceException>(validateMailboxAccessTask.AsTask);
 
             // then
             actualException.Should()

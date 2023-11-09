@@ -18,16 +18,16 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
     public partial class OptOutOrchestrationService
     {
         private delegate ValueTask ReturningNothingFunction();
-        private delegate ValueTask<string> ReturningFileNameFunction();
-        private delegate ValueTask<bool> ReturningFileNameBoolFunction();
+        private delegate ValueTask<string> ReturningStringFunction();
+        private delegate ValueTask<bool> ReturningBooleanFunction();
         private delegate ValueTask<MeshMessage> ReturningMeshMessageFunction();
         private delegate ValueTask<List<MeshMessage>> ReturningMeshMessageListFunction();
 
-        private async ValueTask<string> TryCatch(ReturningFileNameFunction returningFileNameFunction)
+        private async ValueTask<string> TryCatch(ReturningStringFunction returningStringFunction)
         {
             try
             {
-                return await returningFileNameFunction();
+                return await returningStringFunction();
             }
             catch (NullConfigOptOutOrchestrationException nullConfigOptOutOrchestrationException)
             {
@@ -128,11 +128,11 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
             }
         }
 
-        private async ValueTask<bool> TryCatch(ReturningFileNameBoolFunction returningFileNameBoolFunction)
+        private async ValueTask<bool> TryCatch(ReturningBooleanFunction returningBooleanFunction)
         {
             try
             {
-                return await returningFileNameBoolFunction();
+                return await returningBooleanFunction();
             }
             catch (NullConfigOptOutOrchestrationException nullConfigOptOutOrchestrationException)
             {

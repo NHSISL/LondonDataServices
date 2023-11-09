@@ -16,7 +16,7 @@ namespace LHDS.Core.Services.Orchestrations.Pds
     public partial class PdsOrchestrationService
     {
         private delegate ValueTask<PdsAudit> ReturningPdsAuditFunction();
-        private delegate ValueTask<bool> ReturningPdsAuditBoolFunction();
+        private delegate ValueTask<bool> ReturningPdsBooleanFunction();
         private delegate ValueTask<List<PdsAudit>> ReturningPdsAuditListFunciton();
 
         private async ValueTask<PdsAudit> TryCatch(ReturningPdsAuditFunction returningPdsAuditFunction)
@@ -96,11 +96,11 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             }
         }
 
-        private async ValueTask<bool> TryCatch(ReturningPdsAuditBoolFunction returningPdsAuditBoolFunction)
+        private async ValueTask<bool> TryCatch(ReturningPdsBooleanFunction returningPdsBooleanFunction)
         {
             try
             {
-                return await returningPdsAuditBoolFunction();
+                return await returningPdsBooleanFunction();
             }
             catch (NullConfigPdsOrchestrationException nullConfigPdsOrchestrationException)
             {

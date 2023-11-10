@@ -2,14 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using Xeptions;
 
-namespace LHDS.Core.Models.Foundations.Ontologies.Exceptions
+namespace LHDS.Core.Models.Processings.Ontologies.Exceptions
 {
-    public class OntologyServiceException : Xeption
+    public class OntologyProcessingValidationException : Xeption
     {
-        public OntologyServiceException(string message, Exception innerException)
+        public OntologyProcessingValidationException(string message, Xeption innerException)
             : base(message, innerException)
         { }
     }

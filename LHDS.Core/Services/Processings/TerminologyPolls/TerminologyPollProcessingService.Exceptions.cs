@@ -24,13 +24,14 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             {
                 return await returningTerminologyPollFunction();
             }
-            catch (NullTerminologyPollException nullTerminologyPollException)
+            catch (NullTerminologyPollProcessingException nullTerminologyPollProcessingException)
             {
-                throw CreateAndLogValidationException(nullTerminologyPollException);
+                throw CreateAndLogValidationException(nullTerminologyPollProcessingException);
             }
-            catch (InvalidTerminologyPollException invalidTerminologyPollException)
+            catch (InvalidArgumentTerminologyPollsProcessingException 
+                InvalidArgumentTerminologyPollsProcessingException)
             {
-                throw CreateAndLogValidationException(invalidTerminologyPollException);
+                throw CreateAndLogValidationException(InvalidArgumentTerminologyPollsProcessingException);
             }
             catch (TerminologyPollValidationException terminologyPollValidationException)
             {

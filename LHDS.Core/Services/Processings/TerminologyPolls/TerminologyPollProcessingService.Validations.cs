@@ -5,6 +5,7 @@
 using System;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
+using LHDS.Core.Models.Processings.TerminologyPolls.Exceptions;
 
 namespace LHDS.Core.Services.Processings.TerminologyPolls
 {
@@ -19,7 +20,8 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
         {
             if (terminologyPoll is null)
             {
-                throw new NullTerminologyPollException(message: "Terminology poll is null.");
+                throw new NullTerminologyPollProcessingException(
+                    message: "Terminology poll processing is null.");
             }
         }
 
@@ -35,8 +37,8 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidTerminologyPollException =
-                new InvalidTerminologyPollException(
-                    message: "Invalid terminology poll. Please correct the errors and try again.");
+                new InvalidArgumentTerminologyPollsProcessingException(
+                    message: "Invalid argument terminology poll processing. Please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

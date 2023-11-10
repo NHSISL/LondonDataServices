@@ -20,20 +20,20 @@ namespace LHDS.Core.Services.Processings.Ontologies
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidDownloadException = new InvalidArgumentOntologyProcessingException(
+            var invalidArgumentOntologyProcessingException = new InvalidArgumentOntologyProcessingException(
                 message: "Invalid ontology processing arguments. Please correct the error and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidDownloadException.UpsertDataList(
+                    invalidArgumentOntologyProcessingException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidDownloadException.ThrowIfContainsErrors();
+            invalidArgumentOntologyProcessingException.ThrowIfContainsErrors();
         }
     }
 }

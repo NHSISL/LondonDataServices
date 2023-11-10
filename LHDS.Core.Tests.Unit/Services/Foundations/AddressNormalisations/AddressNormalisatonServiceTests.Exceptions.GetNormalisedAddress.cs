@@ -5,7 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.AddressNormalisation;
+using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using Moq;
 using Xunit;
@@ -32,8 +32,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
                     innerException: failedAddressNormalisationServiceException);
 
             this.addressNormalisationBrokerMock.Setup(broker =>
-                broker.GetNormalisedAddress(randomAddress))
-                    .Throws(serviceException);
+                broker.ExpandAddressAsync(randomAddress))
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<AddressNormalisation> addAddressNormalisationTask =
@@ -48,7 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
                 .BeEquivalentTo(expectedAddressNormalisationServiceException);
 
             this.addressNormalisationBrokerMock.Verify(broker =>
-                broker.GetNormalisedAddress(It.IsAny<string>()),
+                broker.ExpandAddressAsync(It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

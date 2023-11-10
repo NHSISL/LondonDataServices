@@ -4,12 +4,12 @@
 
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.AddressNormalisation;
+using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
 
 namespace LHDS.Core.Services.Processings.AddressNormalisations
 {
-    public class AddressNormalisationProcessingService : IAddressNormalisationProcessingService
+    public partial class AddressNormalisationProcessingService : IAddressNormalisationProcessingService
     {
         private readonly IAddressNormalisationService addressNormalisationService;
         private readonly ILoggingBroker loggingBroker;
@@ -22,9 +22,15 @@ namespace LHDS.Core.Services.Processings.AddressNormalisations
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<AddressNormalisation> GetNormalisedAddress(string address)
-        {
-            throw new System.NotImplementedException();
-        }
+        public ValueTask<AddressNormalisation> GetNormalisedAddress(string address) =>
+            TryCatch(async () =>
+            {
+                ValidateAddressNormalisationArgs(address);
+
+                AddressNormalisation normalisedAddress =
+                    await this.addressNormalisationService.GetNormalisedAddress(address);
+
+                return normalisedAddress;
+            });
     }
 }

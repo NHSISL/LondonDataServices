@@ -234,9 +234,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                         Times.Once);
             }
 
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -313,9 +313,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
                     Times.Once);
 
-            this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -411,27 +413,33 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 FileName = newIngestionTracking.EncryptedFileName
             };
 
-            this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(
-                    It.Is(SameDocumentAs(newBlobDocument)), It.IsAny<string>()),
-                    Times.Once);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Exactly(2));
-
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(
                     outputIngestionTracking))),
                         Times.Once);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Exactly(2));
+
+            this.dataSetSpecificationProcessingServiceMock.Verify(service =>
+                service.GetActiveDataSetSpecification(supplierId),
+                    Times.Once);
+
+            this.documentProcessingServiceMock.Verify(service =>
+                service.AddDocumentAsync(
+                    It.Is(SameDocumentAs(newBlobDocument)), It.IsAny<string>()),
+                    Times.Once);
+
             this.auditServiceMock.Verify(service =>
                 service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
                     Times.Once);
 
-            this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -506,9 +514,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                             Times.Once);
             }
 
-            this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

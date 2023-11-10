@@ -52,8 +52,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Ontologies
                     expectedOntologyValidationException))),
                         Times.Once);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.ontologyServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

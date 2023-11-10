@@ -22,8 +22,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             Guid invalidTerminologyPollId = Guid.Empty;
 
             var invalidTerminologyPollException =
-                new InvalidTerminologyPollException(
-                    message: "Invalid terminology poll. Please correct the errors and try again.");
+                new InvalidArgumentTerminologyPollsProcessingException(
+                    message: "Invalid argument terminology poll processing. Please correct the errors and try again.");
 
             invalidTerminologyPollException.AddData(
                 key: nameof(TerminologyPoll.Id),

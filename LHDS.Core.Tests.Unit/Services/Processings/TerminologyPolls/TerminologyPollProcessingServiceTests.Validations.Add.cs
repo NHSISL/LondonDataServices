@@ -5,7 +5,6 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
-using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyPolls.Exceptions;
 using Moq;
 using Xunit;
@@ -21,7 +20,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             TerminologyPoll nullTerminologyPoll = null;
 
             var nullTerminologyPollException =
-                new NullTerminologyPollException(message: "Terminology poll is null.");
+                new NullTerminologyPollProcessingException(
+                    message: "Terminology poll processing is null.");
 
             var expectedTerminologyPollProcessingValidationException =
                 new TerminologyPollProcessingValidationException(

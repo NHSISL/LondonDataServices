@@ -15,16 +15,7 @@ export const HomeUnAuthorised = () => {
                 <CardBase>
                     <CardBaseBody>
                         <CardBaseContent>
-                            <img src="/LHDLogo.png"
-                                height="150"
-                                width="150"
-                                alt="logo"
-                                className="mb-3 mt-3"
-                                style={{
-                                            display: 'block',  // Set the display property to block
-                                            margin: '0 auto',   // Center horizontally with auto margins
-                                    }} />
-                           
+                                <br/>                     
                             <p>Welcome to the London Data Service Admin Portal.</p>
 
                             <p>To unlock all the features of this system login,

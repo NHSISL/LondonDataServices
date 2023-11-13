@@ -14,7 +14,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 {
     public partial class TerminologyArtifactProcessingServiceTests
     {
-
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
         public void ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(

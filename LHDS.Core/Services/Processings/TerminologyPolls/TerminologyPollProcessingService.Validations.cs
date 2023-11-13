@@ -35,7 +35,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidTerminologyPollException =
+            var invalidArgumentTerminologyPollsProcessingException =
                 new InvalidArgumentTerminologyPollsProcessingException(
                     message: "Invalid argument terminology poll processing. Please correct the errors and try again.");
 
@@ -43,13 +43,13 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             {
                 if (rule.Condition)
                 {
-                    invalidTerminologyPollException.UpsertDataList(
+                    invalidArgumentTerminologyPollsProcessingException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidTerminologyPollException.ThrowIfContainsErrors();
+            invalidArgumentTerminologyPollsProcessingException.ThrowIfContainsErrors();
         }
     }
 }

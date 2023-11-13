@@ -4,6 +4,7 @@
 
 using System;
 using FluentAssertions;
+using LHDS.Core.Models.Processings.TerminologyArtifact.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyArtifacts.Exceptions;
 using Moq;
 using Xeptions;
@@ -47,6 +48,45 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedTerminologyArtifactProcessingDependencyValidationException))),
+                         Times.Once);
+
+            this.terminologyArtifactServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public void ShouldThrowDependencyExceptionOnetrieveAllIfErrorOccursAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            var expectedTerminologyArtifactProcessingDependencyException =
+                new TerminologyArtifactProcessingDependencyException(
+                    message: "Terminology artifact processing dependency error occurred, please try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.terminologyArtifactServiceMock.Setup(service =>
+                 service.RetrieveAllTerminologyArtifacts())
+                     .Throws(dependencyException);
+
+            // when
+            Action terminologyArtifactRetrieveAction = () =>
+                this.terminologyArtifactProcessingService.RetrieveAllTerminologyArtifactsAsync();
+
+            TerminologyArtifactProcessingDependencyException actualException =
+                Assert.Throws<TerminologyArtifactProcessingDependencyException>(
+                    terminologyArtifactRetrieveAction);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedTerminologyArtifactProcessingDependencyException);
+
+            this.terminologyArtifactServiceMock.Verify(service =>
+                service.RetrieveAllTerminologyArtifacts(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedTerminologyArtifactProcessingDependencyException))),
                          Times.Once);
 
             this.terminologyArtifactServiceMock.VerifyNoOtherCalls();

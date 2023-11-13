@@ -4,12 +4,16 @@
 
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Processings.TerminologyArtifacts;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 {
@@ -48,6 +52,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
         private static TerminologyArtifact CreateRandomTerminologyArtifact() =>
             CreateTerminologyArtifactFiller().Create();
 
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
+
+
         private static Filler<TerminologyArtifact> CreateTerminologyArtifactFiller()
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
@@ -58,6 +66,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset);
 
             return filler;
+        }
+
+        public static TheoryData DependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new TerminologyArtifactValidationException(
+                    message: "Terminology artifact validation error occurred, please try again.", innerException),
+
+                new TerminologyArtifactDependencyValidationException(
+                    message: "Terminology artifact dependency validation error occurred, please try again.", innerException)
+            };
         }
     }
 }

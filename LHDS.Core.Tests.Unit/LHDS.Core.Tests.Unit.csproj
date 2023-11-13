@@ -9,6 +9,18 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Content Include="Resources\Services\Foundations\AddressParser\ShouldProcessAddressCsvAsync.csv">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessZipFileWithOnlyCsvAddressesData.zip">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Services\Orchestrations\AddressExtractions\ShouldProcessZipFileWithZippedCsvAddressesData.zip">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="CompareNETObjects" Version="4.82.0" />
 		<PackageReference Include="DeepCloner" Version="0.10.4" />
 		<PackageReference Include="EFxceptions" Version="0.4.5" />
@@ -32,12 +44,6 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\LHDS.Core\LHDS.Core.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Update="Resources\TestCsv3.csv">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
 	</ItemGroup>
 
 </Project>

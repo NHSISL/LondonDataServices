@@ -5,11 +5,11 @@
 using System;
 using Xeptions;
 
-namespace LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions
+namespace LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions
 {
-    public class AddressCoordinationServiceException : Xeption
+    public class FailedAddressExtractionOrchestrationServiceException : Xeption
     {
-        public AddressCoordinationServiceException(string message, Exception innerException)
+        public FailedAddressExtractionOrchestrationServiceException(string message, Exception innerException)
             : base(message, innerException)
         { }
     }

@@ -5,7 +5,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Ontologies;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 
 namespace LHDS.Core.Services.Processings.TerminologyArtifacts
@@ -14,7 +13,7 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
     {
         IQueryable<TerminologyArtifact> RetrieveAllTerminologyArtifactsAsync();
         ValueTask<TerminologyArtifact> RetrieveAllTerminologyArtifactByIdAsync(Guid Id);
-        ValueTask<TerminologyArtifact> RetrieveOrAddTerminologyArtifactAsync(OntologyAsset ontologyAsset);
+        ValueTask<TerminologyArtifact> RetrieveOrAddTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact);
         ValueTask<TerminologyArtifact> RemoveTerminologyArtifactByIdAsync(Guid Id);
     }
 }

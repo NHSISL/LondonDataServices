@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Processings.TerminologyPolls.Exceptions;
+namespace LHDS.Core.Models.Processings.TerminologyArtifacts.Exceptions;
 
 public class TerminologyArtifactProcessingDependencyValidationException : Xeption
 {

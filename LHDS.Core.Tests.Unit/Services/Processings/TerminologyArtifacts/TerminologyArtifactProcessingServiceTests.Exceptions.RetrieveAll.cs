@@ -4,7 +4,7 @@
 
 using System;
 using FluentAssertions;
-using LHDS.Core.Models.Processings.TerminologyPolls.Exceptions;
+using LHDS.Core.Models.Processings.TerminologyArtifacts.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             // given
             var expectedTerminologyArtifactProcessingDependencyValidationException =
                 new TerminologyArtifactProcessingDependencyValidationException(
-                    message: "Terminology poll processing dependency validation error occurred, please try again.",
+                    message: "Terminology artifact processing dependency validation error occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.terminologyArtifactServiceMock.Setup(service =>

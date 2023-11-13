@@ -49,8 +49,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                    expectedDependencyException))),
                        Times.Once);
 
-            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();

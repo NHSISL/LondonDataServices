@@ -54,9 +54,12 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                 return await this.terminologyPollService.ModifyTerminologyPollAsync((TerminologyPoll)terminologyPoll);
             });
 
-        public ValueTask<TerminologyPoll> RemoveTerminologyPollByIdAsync(Guid terminologyPollId)
-        {
-            return this.terminologyPollService.RemoveTerminologyPollByIdAsync(terminologyPollId);
-        }
+        public ValueTask<TerminologyPoll> RemoveTerminologyPollByIdAsync(Guid terminologyPollId) =>
+            TryCatch(async () =>
+            {
+                ValidateTerminologyPollId(terminologyPollId);
+
+                return await this.terminologyPollService.RemoveTerminologyPollByIdAsync(terminologyPollId);
+            });
     }
 }

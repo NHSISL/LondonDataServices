@@ -56,10 +56,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             await VerifyMocksForProvidedZips(randomDateTimeOffset, randomId, inputData);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressParserServiceMock.VerifyNoOtherCalls();
-            this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -98,10 +98,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             await VerifyMocksForProvidedZips(randomDateTimeOffset, randomId, inputData);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressParserServiceMock.VerifyNoOtherCalls();
-            this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         private async ValueTask<List<Address>> SetupMocksForProvidedZips(

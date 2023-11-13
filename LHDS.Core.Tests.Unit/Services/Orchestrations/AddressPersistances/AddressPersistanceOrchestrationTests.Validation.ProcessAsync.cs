@@ -52,10 +52,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     expectedAddressPersistanceOrchestrationValidationException))),
                         Times.Once);
 
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
             this.addressLoadingAuditProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

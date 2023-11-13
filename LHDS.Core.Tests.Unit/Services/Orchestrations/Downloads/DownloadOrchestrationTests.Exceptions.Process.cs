@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     message: "Download orchestration dependency validation error occurred, fix the errors and try again.",
                     dependancyValidationException.InnerException as Xeption);
 
-            this.downloadServiceMock.Setup(service =>
+            this.downloadProcessingServiceMock.Setup(service =>
               service.RetrieveListOfDocumentsToProcessAsync())
                   .ThrowsAsync(dependancyValidationException);
 
@@ -39,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             // then
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
-            this.downloadServiceMock.Verify(service =>
+            this.downloadProcessingServiceMock.Verify(service =>
               service.RetrieveListOfDocumentsToProcessAsync(),
                 Times.Once);
 
@@ -48,10 +48,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                    expectedDependencyException))),
                        Times.Once);
 
-            this.documentServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -65,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     message: "Download orchestration dependency error occurred, fix the errors and try again.",
                     innerException: dependancyException.InnerException as Xeption);
 
-            this.downloadServiceMock.Setup(service =>
+            this.downloadProcessingServiceMock.Setup(service =>
               service.RetrieveListOfDocumentsToProcessAsync())
                   .ThrowsAsync(dependancyException);
 
@@ -78,7 +80,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             // then
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
-            this.downloadServiceMock.Verify(service =>
+            this.downloadProcessingServiceMock.Verify(service =>
               service.RetrieveListOfDocumentsToProcessAsync(),
                 Times.Once);
 
@@ -87,10 +89,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                    expectedDependencyException))),
                        Times.Once);
 
-            this.documentServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -109,7 +113,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     message: "Download orchestration service error occurred, contact support.",
                     failedDownloadOrchestrationServiceException);
 
-            this.downloadServiceMock.Setup(service =>
+            this.downloadProcessingServiceMock.Setup(service =>
                 service.RetrieveListOfDocumentsToProcessAsync())
                     .ThrowsAsync(serviceException);
 
@@ -122,7 +126,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             // then
             actualException.Should().BeEquivalentTo(expectedDownloadOrchestrationServiceException);
 
-            this.downloadServiceMock.Verify(service =>
+            this.downloadProcessingServiceMock.Verify(service =>
                 service.RetrieveListOfDocumentsToProcessAsync(),
                     Times.Once);
 
@@ -131,10 +135,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     expectedDownloadOrchestrationServiceException))),
                         Times.Once);
 
-            this.documentServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -150,7 +156,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     message: "Download orchestration dependency validation error occurred, fix the errors and try again.",
                     dependancyValidationException.InnerException as Xeption);
 
-            this.downloadServiceMock.Setup(service =>
+            this.downloadProcessingServiceMock.Setup(service =>
                 service.RetrieveDownloadByFileNameAsync(fileName))
                     .Throws(dependancyValidationException);
 
@@ -163,7 +169,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             // then
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
-            this.downloadServiceMock.Verify(service =>
+            this.downloadProcessingServiceMock.Verify(service =>
                 service.RetrieveDownloadByFileNameAsync(fileName),
                     Times.Once);
 
@@ -172,10 +178,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                    expectedDependencyException))),
                        Times.Once);
 
-            this.documentServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -191,7 +199,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     message: "Download orchestration dependency error occurred, fix the errors and try again.",
                     innerException: dependancyException.InnerException as Xeption);
 
-            this.downloadServiceMock.Setup(service =>
+            this.downloadProcessingServiceMock.Setup(service =>
                 service.RetrieveDownloadByFileNameAsync(fileName))
                     .Throws(dependancyException);
 
@@ -204,7 +212,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             // then
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
-            this.downloadServiceMock.Verify(service =>
+            this.downloadProcessingServiceMock.Verify(service =>
                 service.RetrieveDownloadByFileNameAsync(fileName),
                     Times.Once);
 
@@ -213,10 +221,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                    expectedDependencyException))),
                        Times.Once);
 
-            this.documentServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -236,7 +246,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     message: "Download orchestration service error occurred, contact support.",
                     failedDownloadOrchestrationServiceException);
 
-            this.downloadServiceMock.Setup(service =>
+            this.downloadProcessingServiceMock.Setup(service =>
                 service.RetrieveDownloadByFileNameAsync(fileName))
                     .Throws(serviceException);
 
@@ -249,7 +259,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             // then
             actualException.Should().BeEquivalentTo(expectedDownloadOrchestrationServiceException);
 
-            this.downloadServiceMock.Verify(service =>
+            this.downloadProcessingServiceMock.Verify(service =>
                 service.RetrieveDownloadByFileNameAsync(fileName),
                     Times.Once);
 
@@ -258,10 +268,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     expectedDownloadOrchestrationServiceException))),
                         Times.Once);
 
-            this.documentServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
         }
     }
 }

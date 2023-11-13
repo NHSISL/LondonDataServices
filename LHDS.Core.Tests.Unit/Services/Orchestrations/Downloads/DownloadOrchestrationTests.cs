@@ -32,17 +32,19 @@ using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
 using Xunit.Abstractions;
+using LHDS.Core.Services.Processings.Documents;
+using LHDS.Core.Services.Processings.Downloads;
+using LHDS.Core.Services.Processings.IngestionTrackings;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 {
     public partial class DownloadOrchestrationTests
     {
         private readonly ITestOutputHelper output;
-        private readonly Mock<IDocumentService> documentServiceMock;
-        private readonly Mock<IDownloadService> downloadServiceMock;
-        private readonly Mock<IIngestionTrackingService> ingestionTrackingServiceMock;
-        private readonly Mock<IIngestionTrackingAuditService> auditServiceMock;
-        private readonly Mock<IDataSetSpecificationService> dataSetSpecificationServiceMock;
+        private readonly Mock<IDocumentProcessingService> documentProcessingServiceMock;
+        private readonly Mock<IDownloadProcessingService> downloadProcessingServiceMock;
+        private readonly Mock<IIngestionTrackingProcessingService> ingestionTrackingProcessingServiceMock;
+        private readonly Mock<IIngestionTrackingAuditProcessingService> auditServiceMock;
         private readonly Mock<IDataSetSpecificationProcessingService> dataSetSpecificationProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
@@ -55,12 +57,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         public DownloadOrchestrationTests(ITestOutputHelper output)
         {
             this.output = output;
-            documentServiceMock = new Mock<IDocumentService>();
-            downloadServiceMock = new Mock<IDownloadService>();
-            ingestionTrackingServiceMock = new Mock<IIngestionTrackingService>();
-            dataSetSpecificationServiceMock = new Mock<IDataSetSpecificationService>();
+            documentProcessingServiceMock = new Mock<IDocumentProcessingService>();
+            downloadProcessingServiceMock = new Mock<IDownloadProcessingService>();
+            ingestionTrackingProcessingServiceMock = new Mock<IIngestionTrackingProcessingService>();
             dataSetSpecificationProcessingServiceMock = new Mock<IDataSetSpecificationProcessingService>();
-            auditServiceMock = new Mock<IIngestionTrackingAuditService>();
+            auditServiceMock = new Mock<IIngestionTrackingAuditProcessingService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             identifierBrokerMock = new Mock<IIdentifierBroker>();
@@ -82,10 +83,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             };
 
             downloadOrchestrationService = new DownloadOrchestrationService(
-                documentService: documentServiceMock.Object,
-                downloadService: downloadServiceMock.Object,
-                ingestionTrackingService: ingestionTrackingServiceMock.Object,
-                dataSetSpecificationService: dataSetSpecificationServiceMock.Object,
+                documentProcessingService: documentProcessingServiceMock.Object,
+                downloadProcessingService: downloadProcessingServiceMock.Object,
+                ingestionTrackingProcessingService: ingestionTrackingProcessingServiceMock.Object,
                 auditService: auditServiceMock.Object,
                 dataSetSpecificationProcessingService: dataSetSpecificationProcessingServiceMock.Object,
                 blobContainers,

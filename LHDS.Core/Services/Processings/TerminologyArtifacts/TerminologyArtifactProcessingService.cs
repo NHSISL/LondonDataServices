@@ -6,13 +6,12 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.Ontologies;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 
 namespace LHDS.Core.Services.Processings.TerminologyArtifacts
 {
-    internal partial class TerminologyArtifactProcessingService : ITerminologyArtifactProcessingService
+    public partial class TerminologyArtifactProcessingService : ITerminologyArtifactProcessingService
     {
         private readonly ITerminologyArtifactService terminologyArtifactService;
         private readonly ILoggingBroker loggingBroker;
@@ -24,16 +23,17 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             this.terminologyArtifactService = terminologyArtifactService;
             this.loggingBroker = loggingBroker;
         }
-        public IQueryable<TerminologyArtifact> RetrieveAllTerminologyArtifactsAsync()
-        {
-            return this.terminologyArtifactService.RetrieveAllTerminologyArtifacts();
-        }
+        public IQueryable<TerminologyArtifact> RetrieveAllTerminologyArtifactsAsync() =>
+            TryCatch(() =>
+            {
+                return this.terminologyArtifactService.RetrieveAllTerminologyArtifacts();
+            });
 
         public ValueTask<TerminologyArtifact> RetrieveAllTerminologyArtifactByIdAsync(Guid Id) =>
             throw new NotImplementedException();
 
         public ValueTask<TerminologyArtifact> RetrieveOrAddTerminologyArtifactAsync(
-            OntologyAsset ontologyAsset) =>
+            TerminologyArtifact terminologyArtifact) =>
             throw new NotImplementedException();
 
         public ValueTask<TerminologyArtifact> RemoveTerminologyArtifactByIdAsync(Guid Id) =>

@@ -21,18 +21,18 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             // given
             Guid invalidTerminologyPollId = Guid.Empty;
 
-            var invalidTerminologyPollException =
+            var invalidArgumentTerminologyPollsProcessingException =
                 new InvalidArgumentTerminologyPollsProcessingException(
                     message: "Invalid argument terminology poll processing. Please correct the errors and try again.");
 
-            invalidTerminologyPollException.AddData(
+            invalidArgumentTerminologyPollsProcessingException.AddData(
                 key: nameof(TerminologyPoll.Id),
                 values: "Id is required");
 
             var expectedTerminologyPollProcessingValidationException =
                 new TerminologyPollProcessingValidationException(
                     message: "Terminology poll processing validation errors occurred, please try again.",
-                    innerException: invalidTerminologyPollException);
+                    innerException: invalidArgumentTerminologyPollsProcessingException);
 
             // when
             ValueTask<TerminologyPoll> retrieveTerminologyPollByIDTask =

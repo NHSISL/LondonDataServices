@@ -29,6 +29,7 @@
 	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\RawStaged_CreateTable.sql" />
 	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Specification_GetDBName.sql" />
 	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Specification_GetObjects.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Typecasted_CreateView - Copy.sql" />
 	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Typecasted_CreateView.sql" />
 	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Lds\Batch_GetBatchID.sql" />
 	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Lds\Batch_UpdateBatchID.sql" />
@@ -58,6 +59,7 @@
 	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\RawStaged_CreateTable.sql" />
 	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Specification_GetDBName.sql" />
 	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Specification_GetObjects.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\SeedData\MetaData_SeedScript.sql" />
 	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Typecasted_CreateView.sql" />
 	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Lds\Batch_GetBatchID.sql" />
 	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Lds\Batch_UpdateBatchID.sql" />
@@ -81,7 +83,7 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
 		<PackageReference Include="Azure.Storage.Blobs" Version="12.18.0" />
 		<PackageReference Include="Azure.Storage.Files.Shares" Version="12.16.0" />
-		<PackageReference Include="Azure.Storage.Queues" Version="12.16.0" />
+		<PackageReference Include="Azure.Storage.Queues" Version="12.17.0" />
 		<PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.1" />
 		<PackageReference Include="NEL.MESH" Version="1.0.0" />
 		<PackageReference Include="RESTFulSense" Version="2.15.0" />

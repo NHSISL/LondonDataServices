@@ -29,6 +29,14 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             {
                 throw CreateAndLogDependencyValidationException(terminologyArtifactDependencyValidationException);
             }
+            catch (TerminologyArtifactDependencyException terminologyArtifactDependencyException)
+            {
+                throw CreateAndLogDependencyException(terminologyArtifactDependencyException);
+            }
+            catch (TerminologyArtifactServiceException terminologyArtifactServiceException)
+            {
+                throw CreateAndLogDependencyException(terminologyArtifactServiceException);
+            }
         }
 
         private TerminologyArtifactProcessingDependencyValidationException CreateAndLogDependencyValidationException(
@@ -42,6 +50,19 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             this.loggingBroker.LogError(terminologyArtifactProcessingDependencyValidationException);
 
             return terminologyArtifactProcessingDependencyValidationException;
+        }
+
+        private TerminologyArtifactProcessingDependencyException CreateAndLogDependencyException(
+            Xeption exception)
+        {
+            var terminologyArtifactProcessingDependencyException =
+                new TerminologyArtifactProcessingDependencyException(
+                    message: "Terminology artifact processing dependency error occurred, please try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(terminologyArtifactProcessingDependencyException);
+
+            return terminologyArtifactProcessingDependencyException;
         }
     }
 }

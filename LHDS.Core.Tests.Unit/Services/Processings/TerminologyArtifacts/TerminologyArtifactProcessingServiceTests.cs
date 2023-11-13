@@ -8,7 +8,6 @@ using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
-using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Processings.TerminologyArtifacts;
 using Moq;
@@ -93,10 +92,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 
             return new TheoryData<Xeption>
             {
-                new TerminologyPollDependencyException(
+                new TerminologyArtifactDependencyException(
                     message: "Terminology artifact dependency error occurred, please try again.", innerException),
 
-                new TerminologyPollServiceException(
+                new TerminologyArtifactServiceException(
                     message: "Terminology artifact service error occurred, please try again.", innerException)
             };
         }

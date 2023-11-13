@@ -29,6 +29,7 @@
 	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\RawStaged_CreateTable.sql" />
 	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Specification_GetDBName.sql" />
 	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Specification_GetObjects.sql" />
+	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Typecasted_CreateView - Copy.sql" />
 	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Typecasted_CreateView.sql" />
 	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Lds\Batch_GetBatchID.sql" />
 	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Lds\Batch_UpdateBatchID.sql" />
@@ -58,6 +59,7 @@
 	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\RawStaged_CreateTable.sql" />
 	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Specification_GetDBName.sql" />
 	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Specification_GetObjects.sql" />
+	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\SeedData\MetaData_SeedScript.sql" />
 	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Typecasted_CreateView.sql" />
 	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Lds\Batch_GetBatchID.sql" />
 	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Lds\Batch_UpdateBatchID.sql" />

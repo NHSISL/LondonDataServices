@@ -21,6 +21,37 @@ namespace LHDS.Core.Clients
             this.pdsOrchestrationService = pdsOrchestrationService;
         }
 
+        public async ValueTask<bool> ValidateMailboxAccessAsync()
+        {
+            try
+            {
+                return await this.pdsOrchestrationService.ValidateMailboxAccessAsync();
+            }
+            catch (PdsOrchestrationValidationException pdsOrchestrationValidationException)
+            {
+                throw new PdsClientValidationException(
+                    pdsOrchestrationValidationException.InnerException as Xeption);
+            }
+            catch (PdsOrchestrationDependencyValidationException
+                pdsOrchestrationDependencyValidationException)
+            {
+                throw new PdsClientValidationException(
+                    pdsOrchestrationDependencyValidationException.InnerException as Xeption);
+            }
+            catch (PdsOrchestrationDependencyException
+                pdsOrchestrationDependencyException)
+            {
+                throw new PdsClientDependencyException(
+                    pdsOrchestrationDependencyException.InnerException as Xeption);
+            }
+            catch (PdsOrchestrationServiceException
+                pdsOrchestrationServiceException)
+            {
+                throw new PdsClientServiceException(
+                    pdsOrchestrationServiceException.InnerException as Xeption);
+            }
+        }
+
         public async ValueTask<PdsAudit> PickupFileAndSendToMesh(byte[] pdsFile, string fileName)
         {
             try

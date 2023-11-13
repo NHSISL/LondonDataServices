@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 broker.GetIdentifier())
                     .Returns(randomGuid);
 
-            this.downloadServiceMock.Setup(service =>
+            this.downloadProcessingServiceMock.Setup(service =>
                service.RetrieveListOfDocumentsToProcessAsync())
                    .ReturnsAsync(externalDocuments);
 
@@ -53,11 +53,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
             foreach (var document in externalDocuments)
             {
-                this.ingestionTrackingServiceMock.Setup(service =>
+                this.ingestionTrackingProcessingServiceMock.Setup(service =>
                     service.RetrieveAllIngestionTrackings())
                         .Returns(externalIngestionTrackingsFound.AsQueryable());
 
-                this.downloadServiceMock.Setup(service =>
+                this.downloadProcessingServiceMock.Setup(service =>
                   service.RetrieveDownloadByFileNameAsync(document.FileName))
                       .ReturnsAsync(document);
 
@@ -94,7 +94,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
                 IngestionTracking storageIngestionTracking = newIngestionTracking.DeepClone();
 
-                this.ingestionTrackingServiceMock.Setup(service =>
+                this.ingestionTrackingProcessingServiceMock.Setup(service =>
                     service.AddIngestionTrackingAsync(newIngestionTracking))
                         .ReturnsAsync(storageIngestionTracking);
             }
@@ -103,13 +103,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             await this.downloadOrchestrationService.ProcessAsync();
 
             // then
-            this.downloadServiceMock.Verify(service =>
+            this.downloadProcessingServiceMock.Verify(service =>
                 service.RetrieveListOfDocumentsToProcessAsync(),
                     Times.Once);
 
             foreach (var document in externalDocuments)
             {
-                this.ingestionTrackingServiceMock.Verify(service =>
+                this.ingestionTrackingProcessingServiceMock.Verify(service =>
                     service.RetrieveAllIngestionTrackings(),
                         Times.Exactly(2));
 
@@ -150,12 +150,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
                 IngestionTracking storageIngestionTracking = newIngestionTracking.DeepClone();
 
-                this.ingestionTrackingServiceMock.Verify(service =>
+                this.ingestionTrackingProcessingServiceMock.Verify(service =>
                     service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(
                         storageIngestionTracking))),
                             Times.Once);
 
-                this.downloadServiceMock.Verify(service =>
+                this.downloadProcessingServiceMock.Verify(service =>
                     service.RetrieveDownloadByFileNameAsync(document.FileName),
                         Times.Once);
 
@@ -165,7 +165,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     FileName = newIngestionTracking.EncryptedFileName
                 };
 
-                this.documentServiceMock.Verify(service =>
+                this.documentProcessingServiceMock.Verify(service =>
                     service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument)), It.IsAny<string>()),
                         Times.Once);
 
@@ -174,9 +174,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                         Times.Once);
             }
 
-            this.documentServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -191,7 +193,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             List<IngestionTracking> externalIngestionTrackingsFound =
                 CreateRandomIngestionTrackings(randomDateTime, randomDocuments);
 
-            this.downloadServiceMock.Setup(service =>
+            this.downloadProcessingServiceMock.Setup(service =>
                service.RetrieveListOfDocumentsToProcessAsync())
                    .ReturnsAsync(externalDocuments);
 
@@ -201,7 +203,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
             foreach (var document in externalDocuments)
             {
-                this.ingestionTrackingServiceMock.Setup(service =>
+                this.ingestionTrackingProcessingServiceMock.Setup(service =>
                     service.RetrieveAllIngestionTrackings())
                         .Returns(externalIngestionTrackingsFound.AsQueryable());
             }
@@ -210,13 +212,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             await this.downloadOrchestrationService.ProcessAsync();
 
             // then
-            this.downloadServiceMock.Verify(service =>
+            this.downloadProcessingServiceMock.Verify(service =>
                 service.RetrieveListOfDocumentsToProcessAsync(),
                     Times.Once);
 
             foreach (var document in externalDocuments)
             {
-                this.ingestionTrackingServiceMock.Verify(service =>
+                this.ingestionTrackingProcessingServiceMock.Verify(service =>
                     service.RetrieveAllIngestionTrackings(),
                         Times.Exactly(2));
 
@@ -229,14 +231,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
                 maybeIngestionTracking.LastSeen = randomDateTime;
 
-                this.ingestionTrackingServiceMock.Verify(broker =>
+                this.ingestionTrackingProcessingServiceMock.Verify(broker =>
                     broker.ModifyIngestionTrackingAsync(maybeIngestionTracking),
                         Times.Once);
             }
 
-            this.documentServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -252,11 +256,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             List<IngestionTracking> externalIngestionTrackingsFound =
                 new List<IngestionTracking> { externalIngestionTracking };
 
-            this.ingestionTrackingServiceMock.Setup(service =>
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackings())
                     .Returns(externalIngestionTrackingsFound.AsQueryable());
 
-            this.downloadServiceMock.Setup(service =>
+            this.downloadProcessingServiceMock.Setup(service =>
                   service.RetrieveDownloadByFileNameAsync(externalIngestionTracking.FileName))
                       .ReturnsAsync(externalDocument);
 
@@ -269,7 +273,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             updatedIngestionTracking.EncryptedFileSize = externalDocument.DocumentData.Length;
             IngestionTracking outputIngestionTracking = updatedIngestionTracking.DeepClone();
 
-            this.ingestionTrackingServiceMock.Setup(service =>
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.ModifyIngestionTrackingAsync(updatedIngestionTracking))
                     .ReturnsAsync(outputIngestionTracking);
 
@@ -277,15 +281,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             await this.downloadOrchestrationService.ProcessAsync(externalIngestionTracking.FileName);
 
             // then
-            this.ingestionTrackingServiceMock.Verify(service =>
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackings(),
                     Times.Once);
 
-            this.downloadServiceMock.Verify(service =>
+            this.downloadProcessingServiceMock.Verify(service =>
                 service.RetrieveDownloadByFileNameAsync(externalIngestionTracking.FileName),
                     Times.Once);
 
-            this.documentServiceMock.Verify(service =>
+            this.documentProcessingServiceMock.Verify(service =>
                 service.RemoveDocumentByFileNameAsync(
                     externalIngestionTracking.EncryptedFileName, It.IsAny<string>()),
                     Times.Once);
@@ -296,7 +300,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 FileName = externalIngestionTracking.EncryptedFileName
             };
 
-            this.documentServiceMock.Verify(service =>
+            this.documentProcessingServiceMock.Verify(service =>
                 service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument)), It.IsAny<string>()),
                     Times.Once);
 
@@ -304,7 +308,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 broker.GetCurrentDateTimeOffset(),
                     Times.Exactly(2));
 
-            this.ingestionTrackingServiceMock.Verify(service =>
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(
                     outputIngestionTracking))),
                         Times.Once);
@@ -313,9 +317,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
                     Times.Once);
 
-            this.documentServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -371,11 +377,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
             List<IngestionTracking> externalIngestionTrackingsFound = new List<IngestionTracking>();
 
-            this.ingestionTrackingServiceMock.Setup(service =>
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackings())
                     .Returns(externalIngestionTrackingsFound.AsQueryable());
 
-            this.downloadServiceMock.Setup(service =>
+            this.downloadProcessingServiceMock.Setup(service =>
                   service.RetrieveDownloadByFileNameAsync(newIngestionTracking.FileName))
                       .ReturnsAsync(externalDocument);
 
@@ -389,7 +395,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
             IngestionTracking outputIngestionTracking = newIngestionTracking.DeepClone();
 
-            this.ingestionTrackingServiceMock.Setup(service =>
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.AddIngestionTrackingAsync(newIngestionTracking))
                     .ReturnsAsync(outputIngestionTracking);
 
@@ -397,11 +403,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             await this.downloadOrchestrationService.ProcessAsync(newIngestionTracking.FileName);
 
             // then
-            this.downloadServiceMock.Verify(service =>
+            this.downloadProcessingServiceMock.Verify(service =>
                 service.RetrieveDownloadByFileNameAsync(newIngestionTracking.FileName),
                     Times.Once);
 
-            this.ingestionTrackingServiceMock.Verify(service =>
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackings(),
                     Times.Once);
 
@@ -411,27 +417,33 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 FileName = newIngestionTracking.EncryptedFileName
             };
 
-            this.documentServiceMock.Verify(service =>
-                service.AddDocumentAsync(
-                    It.Is(SameDocumentAs(newBlobDocument)), It.IsAny<string>()),
-                    Times.Once);
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(
+                    outputIngestionTracking))),
+                        Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
                     Times.Exactly(2));
 
-            this.ingestionTrackingServiceMock.Verify(service =>
-                service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(
-                    outputIngestionTracking))),
-                        Times.Once);
+            this.dataSetSpecificationProcessingServiceMock.Verify(service =>
+                service.GetActiveDataSetSpecification(supplierId),
+                    Times.Once);
+
+            this.documentProcessingServiceMock.Verify(service =>
+                service.AddDocumentAsync(
+                    It.Is(SameDocumentAs(newBlobDocument)), It.IsAny<string>()),
+                    Times.Once);
 
             this.auditServiceMock.Verify(service =>
                 service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
                     Times.Once);
 
-            this.documentServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -466,11 +478,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 broker.GetIdentifier())
                     .Returns(randomGuid);
 
-            this.downloadServiceMock.Setup(service =>
+            this.downloadProcessingServiceMock.Setup(service =>
                service.RetrieveListOfDocumentsToProcessAsync())
                    .ReturnsAsync(externalDocuments);
 
-            this.ingestionTrackingServiceMock.Setup(service =>
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackings())
                     .Returns(externalIngestionTrackingsFound.AsQueryable());
 
@@ -478,7 +490,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             await this.downloadOrchestrationService.ProcessAsync();
 
             // then
-            this.downloadServiceMock.Verify(service =>
+            this.downloadProcessingServiceMock.Verify(service =>
                 service.RetrieveListOfDocumentsToProcessAsync(),
                     Times.Once);
 
@@ -487,7 +499,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             List<IngestionTracking> expiredIngestionTrackings = externalIngestionTrackingsFound
                 .Where(ingestionTracking => ingestionTracking.LastSeen <= expireTime).ToList();
 
-            this.ingestionTrackingServiceMock.Verify(service =>
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackings(),
                     Times.Once);
 
@@ -500,15 +512,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 ingestionTracking.FileDeleted = true;
                 ingestionTracking.UpdatedDate = randomDateTime;
 
-                this.ingestionTrackingServiceMock.Verify(service =>
+                this.ingestionTrackingProcessingServiceMock.Verify(service =>
                     service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(
                         ingestionTracking))),
                             Times.Once);
             }
 
-            this.documentServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

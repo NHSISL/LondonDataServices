@@ -24,8 +24,10 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             this.terminologyArtifactService = terminologyArtifactService;
             this.loggingBroker = loggingBroker;
         }
-        public IQueryable<TerminologyArtifact> RetrieveAllTerminologyArtifactsAsync() =>
-            throw new NotImplementedException();
+        public IQueryable<TerminologyArtifact> RetrieveAllTerminologyArtifactsAsync()
+        {
+            return this.terminologyArtifactService.RetrieveAllTerminologyArtifacts();
+        }
 
         public ValueTask<TerminologyArtifact> RetrieveAllTerminologyArtifactByIdAsync(Guid Id) =>
             throw new NotImplementedException();

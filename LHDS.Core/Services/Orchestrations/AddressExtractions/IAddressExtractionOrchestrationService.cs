@@ -3,12 +3,13 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
 
 namespace LHDS.Core.Services.Orchestrations.AddressExtractions
 {
     public interface IAddressExtractionOrchestrationService
     {
-        public List<Address> ProcessData(byte[] data);
+        public ValueTask<List<Address>> ProcessDataAsync(byte[] data);
     }
 }

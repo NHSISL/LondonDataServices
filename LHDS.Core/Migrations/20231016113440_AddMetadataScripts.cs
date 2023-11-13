@@ -17,14 +17,23 @@ namespace LHDS.Core.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            var schemaScript = @"
+            var metadataSchemaScript = @"
                 IF NOT EXISTS (SELECT schema_name FROM information_schema.schemata WHERE schema_name = 'Metadata')
                 BEGIN
                     EXEC('CREATE SCHEMA Metadata');
                 END;";
 
-            schemaScript = schemaScript.Replace("'", "''");
-            migrationBuilder.Sql($"EXEC(N'{schemaScript}')");
+            metadataSchemaScript = metadataSchemaScript.Replace("'", "''");
+            migrationBuilder.Sql($"EXEC(N'{metadataSchemaScript}')");
+
+            var seedDataSchemaScript = @"
+                IF NOT EXISTS (SELECT schema_name FROM information_schema.schemata WHERE schema_name = 'SeedData')
+                BEGIN
+                    EXEC('CREATE SCHEMA SeedData');
+                END;";
+
+            seedDataSchemaScript = seedDataSchemaScript.Replace("'", "''");
+            migrationBuilder.Sql($"EXEC(N'{seedDataSchemaScript}')");
 
             var assembly = Assembly.GetExecutingAssembly();
             var sqlFiles = assembly.GetManifestResourceNames().Where(file => file.EndsWith(".sql"));

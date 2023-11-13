@@ -5,7 +5,7 @@
 using System;
 using Xeptions;
 
-namespace LHDS.Core.Models.Foundations.Suppliers.Exceptions
+namespace LHDS.Core.Models.Foundations.Ontologies.Exceptions
 {
     public class FailedOntologyServiceException : Xeption
     {

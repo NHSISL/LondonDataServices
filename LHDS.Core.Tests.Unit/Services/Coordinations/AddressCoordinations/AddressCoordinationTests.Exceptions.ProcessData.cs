@@ -54,8 +54,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                        Times.Once);
 
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -95,8 +95,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                        Times.Once);
 
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -139,8 +139,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                         Times.Once);
 
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
         }
     }
 }

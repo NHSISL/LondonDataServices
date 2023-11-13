@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
 
             this.terminologyPollServiceMock.Setup(service =>
                 service.ModifyTerminologyPollAsync(inputTerminologyPoll))
-                    .Throws(dependencyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<TerminologyPoll> terminologyAddTask =
@@ -74,7 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
 
             this.terminologyPollServiceMock.Setup(service =>
                 service.ModifyTerminologyPollAsync(inputTerminologyPoll))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<TerminologyPoll> terminologyAddTask =
@@ -120,7 +120,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
 
             this.terminologyPollServiceMock.Setup(service =>
                 service.ModifyTerminologyPollAsync(inputTerminologyPoll))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<TerminologyPoll> terminologyAddTask =

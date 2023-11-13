@@ -2,9 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Services.Foundations.TerminologyPolls;
@@ -27,7 +27,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
         public ValueTask<TerminologyPoll> AddTerminologyPollAsync(TerminologyPoll terminologyPoll) =>
             TryCatch(async () =>
             {
-                ValidateTerminologyPollOnAdd(terminologyPoll);
+                ValidateTerminologyPollIsNotNull(terminologyPoll);
 
                 return await this.terminologyPollService.AddTerminologyPollAsync(terminologyPoll);
             });
@@ -36,6 +36,22 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             TryCatch(() =>
             {
                 return this.terminologyPollService.RetrieveAllTerminologyPolls();
+            });
+
+        public ValueTask<TerminologyPoll> RetrieveTerminologyPollByIdAsync(Guid terminologyPollId) =>
+            TryCatch(async() =>
+            {
+                ValidateTerminologyPollId(terminologyPollId);
+
+                return await this.terminologyPollService.RetrieveTerminologyPollByIdAsync(terminologyPollId);
+            });
+
+        public ValueTask<TerminologyPoll> ModifyTerminologyPollAsync(TerminologyPoll terminologyPoll) =>
+            TryCatch(async () =>
+            {
+                ValidateTerminologyPollIsNotNull(terminologyPoll);
+
+                return await this.terminologyPollService.ModifyTerminologyPollAsync((TerminologyPoll)terminologyPoll);
             });
     }
 }

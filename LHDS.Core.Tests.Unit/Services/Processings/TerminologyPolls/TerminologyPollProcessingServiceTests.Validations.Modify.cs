@@ -5,6 +5,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
+using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyPolls.Exceptions;
 using Moq;
 using Xunit;
@@ -14,27 +15,24 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
     public partial class TerminologyPollProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnAddIfTerminologyPollIsNullAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnModifyIfTerminologyPollIsNullAndLogItAsync()
         {
             // given
             TerminologyPoll nullTerminologyPoll = null;
-
-            var nullTerminologyPollException =
-                new NullTerminologyPollProcessingException(
-                    message: "Terminology poll is null.");
+            var nullTerminologyPollProcessingException = new NullTerminologyPollProcessingException(message: "Terminology poll is null.");
 
             var expectedTerminologyPollProcessingValidationException =
                 new TerminologyPollProcessingValidationException(
                     message: "Terminology poll processing validation errors occurred, please try again.",
-                    innerException: nullTerminologyPollException);
+                    innerException: nullTerminologyPollProcessingException);
 
             // when
-            ValueTask<TerminologyPoll> addTerminologyPollTask =
-                this.terminologyPollProcessingService.AddTerminologyPollAsync(nullTerminologyPoll);
+            ValueTask<TerminologyPoll> modifyTerminologyPollTask =
+                this.terminologyPollProcessingService.ModifyTerminologyPollAsync(nullTerminologyPoll);
 
             TerminologyPollProcessingValidationException actualTerminologyPollProcessingValidationException =
-                await Assert.ThrowsAsync<TerminologyPollProcessingValidationException>(() =>
-                    addTerminologyPollTask.AsTask());
+                await Assert.ThrowsAsync<TerminologyPollProcessingValidationException>(
+                    modifyTerminologyPollTask.AsTask);
 
             // then
             actualTerminologyPollProcessingValidationException.Should()
@@ -45,9 +43,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                     expectedTerminologyPollProcessingValidationException))),
                         Times.Once);
 
+            this.terminologyPollServiceMock.Verify(service =>
+                service.ModifyTerminologyPollAsync(It.IsAny<TerminologyPoll>()),
+                    Times.Never);
+
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.terminologyPollServiceMock.VerifyNoOtherCalls();
         }
-
     }
 }

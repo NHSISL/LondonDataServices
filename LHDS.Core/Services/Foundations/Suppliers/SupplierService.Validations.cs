@@ -79,6 +79,14 @@ namespace LHDS.Core.Services.Foundations.Suppliers
             }
         }
 
+        private static void ValidateStorageSupplierExist(Supplier maybeSupplier, Guid supplierId)
+        {
+            if (maybeSupplier is not null)
+            {
+                //throw new NotFoundSupplierException(supplierId);
+            }
+        }
+
         private static void ValidateAgainstStorageSupplierOnModify(Supplier inputSupplier, Supplier storageSupplier)
         {
             Validate(

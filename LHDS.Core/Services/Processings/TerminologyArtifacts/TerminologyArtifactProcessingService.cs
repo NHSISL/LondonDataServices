@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Ontologies;
@@ -23,8 +24,17 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             this.terminologyArtifactService = terminologyArtifactService;
             this.loggingBroker = loggingBroker;
         }
+        public IQueryable<TerminologyArtifact> RetrieveAllTerminologyArtifactsAsync() =>
+            throw new NotImplementedException();
 
-        public ValueTask<TerminologyArtifact> RetrieveAllTerminologyArtifactsAsync(OntologyAsset ontologyAsset) =>
+        public ValueTask<TerminologyArtifact> RetrieveAllTerminologyArtifactByIdAsync(Guid Id) =>
+            throw new NotImplementedException();
+
+        public ValueTask<TerminologyArtifact> RetrieveOrAddTerminologyArtifactAsync(
+            OntologyAsset ontologyAsset) =>
+            throw new NotImplementedException();
+
+        public ValueTask<TerminologyArtifact> RemoveTerminologyArtifactByIdAsync(Guid Id) =>
             throw new NotImplementedException();
     }
 }

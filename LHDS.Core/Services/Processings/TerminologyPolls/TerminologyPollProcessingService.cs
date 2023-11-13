@@ -27,7 +27,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
         public ValueTask<TerminologyPoll> AddTerminologyPollAsync(TerminologyPoll terminologyPoll) =>
             TryCatch(async () =>
             {
-                ValidateTerminologyPollOnAdd(terminologyPoll);
+                ValidateTerminologyPollIsNotNull(terminologyPoll);
 
                 return await this.terminologyPollService.AddTerminologyPollAsync(terminologyPoll);
             });
@@ -46,9 +46,12 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                 return await this.terminologyPollService.RetrieveTerminologyPollByIdAsync(terminologyPollId);
             });
 
-        public ValueTask<TerminologyPoll> ModifyTerminologyPollAsync(TerminologyPoll terminologyPoll) 
-        {
-            return this.terminologyPollService.ModifyTerminologyPollAsync((TerminologyPoll)terminologyPoll);
-        }
+        public ValueTask<TerminologyPoll> ModifyTerminologyPollAsync(TerminologyPoll terminologyPoll) =>
+            TryCatch(async () =>
+            {
+                ValidateTerminologyPollIsNotNull(terminologyPoll);
+
+                return await this.terminologyPollService.ModifyTerminologyPollAsync((TerminologyPoll)terminologyPoll);
+            });
     }
 }

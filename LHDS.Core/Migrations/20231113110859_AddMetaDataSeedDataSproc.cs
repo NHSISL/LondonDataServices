@@ -12,20 +12,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LHDS.Core.Migrations
 {
     /// <inheritdoc />
-    public partial class AddMetadataScripts : Migration
+    public partial class AddMetaDataSeedDataSproc : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            var metadataSchemaScript = @"
-                IF NOT EXISTS (SELECT schema_name FROM information_schema.schemata WHERE schema_name = 'Metadata')
-                BEGIN
-                    EXEC('CREATE SCHEMA Metadata');
-                END;";
-
-            metadataSchemaScript = metadataSchemaScript.Replace("'", "''");
-            migrationBuilder.Sql($"EXEC(N'{metadataSchemaScript}')");
-
             var seedDataSchemaScript = @"
                 IF NOT EXISTS (SELECT schema_name FROM information_schema.schemata WHERE schema_name = 'SeedData')
                 BEGIN
@@ -48,6 +39,12 @@ namespace LHDS.Core.Migrations
                     migrationBuilder.Sql($"EXEC(N'{sqlScript}')");
                 }
             }
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+
         }
     }
 }

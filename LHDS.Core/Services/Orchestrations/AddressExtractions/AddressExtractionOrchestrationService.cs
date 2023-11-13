@@ -88,9 +88,8 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
                     else if (entry.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
                     {
                         byte[] nestedZipData;
-                        Console.WriteLine($"Csv name is: {entry.Name}");
-                        using (MemoryStream nestedMemoryStream = new MemoryStream())
 
+                        using (MemoryStream nestedMemoryStream = new MemoryStream())
                         using (Stream entryStream = entry.Open())
                         {
                             entryStream.CopyTo(nestedMemoryStream);

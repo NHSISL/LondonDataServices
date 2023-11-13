@@ -47,10 +47,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     expectedAddressExtractionValidationOrchestrationException))),
                         Times.Once);
 
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressParserServiceMock.VerifyNoOtherCalls();
             this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

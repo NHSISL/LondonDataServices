@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
 
             var expectedAddressPersistanceOrchestrationValidationException =
                 new AddressPersistanceOrchestrationValidationException(
-                    message: "Address persistance orchestration validation errors occured, please try again",
+                    message: "Address persistance orchestration validation error occured, please try again",
                     innerException: invalidArgumentAddressPersistanceOrchestrationException);
 
             // when
@@ -52,10 +52,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressPersistances
                     expectedAddressPersistanceOrchestrationValidationException))),
                         Times.Once);
 
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
             this.addressProcessingServiceMock.VerifyNoOtherCalls();
             this.addressLoadingAuditProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

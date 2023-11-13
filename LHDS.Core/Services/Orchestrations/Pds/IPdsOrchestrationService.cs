@@ -12,5 +12,6 @@ namespace LHDS.Core.Services.Orchestrations.Pds
     {
         ValueTask<PdsAudit> PickupFileAndSendToMesh(byte[] pdsFile, string fileName);
         ValueTask<List<PdsAudit>> RetreiveMessagesFromMeshAndUpdateStorage();
+        ValueTask<bool> ValidateMailboxAccessAsync();
     }
 }

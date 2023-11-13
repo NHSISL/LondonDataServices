@@ -29,7 +29,7 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
                 return this.terminologyArtifactService.RetrieveAllTerminologyArtifacts();
             });
 
-        public ValueTask<TerminologyArtifact> RetrieveAllTerminologyArtifactByIdAsync(Guid Id) =>
+        public ValueTask<TerminologyArtifact> RetrieveTerminologyArtifactByIdAsync(Guid Id) =>
             throw new NotImplementedException();
 
         public ValueTask<TerminologyArtifact> RetrieveOrAddTerminologyArtifactAsync(

@@ -10,11 +10,6 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
 {
     public partial class TerminologyPollProcessingService
     {
-        private void ValidateTerminologyPollOnAdd(TerminologyPoll terminologyPoll)
-        {
-            ValidateTerminologyPollIsNotNull(terminologyPoll);
-        }
-
         private static void ValidateTerminologyPollIsNotNull(TerminologyPoll terminologyPoll)
         {
             if (terminologyPoll is null)

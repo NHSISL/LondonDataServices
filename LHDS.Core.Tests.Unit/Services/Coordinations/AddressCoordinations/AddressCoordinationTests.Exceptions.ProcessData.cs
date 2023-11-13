@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
                 service.ProcessDataAsync(randomData))
-                    .Throws(dependancyValidationException);
+                    .ThrowsAsync(dependancyValidationException);
 
             // when
             ValueTask<List<Address>> processDataTask = this.addressCoordinationService.ProcessData(randomData);
@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
                 service.ProcessDataAsync(randomData))
-                    .Throws(dependencyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<List<Address>> processDataTask = this.addressCoordinationService.ProcessData(randomData);
@@ -118,7 +118,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
                 service.ProcessDataAsync(randomData))
-                    .Throws(serviceException);
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<List<Address>> processDataTask = this.addressCoordinationService.ProcessData(randomData);

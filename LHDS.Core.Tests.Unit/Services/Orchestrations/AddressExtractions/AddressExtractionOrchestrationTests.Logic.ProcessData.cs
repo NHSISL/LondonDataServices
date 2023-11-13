@@ -56,16 +56,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             await VerifyMocksForProvidedZips(randomDateTimeOffset, randomId, inputData);
 
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressParserServiceMock.VerifyNoOtherCalls();
             this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
         public async Task ShouldProcessZipFileWithZippedCsvAddressesDataAndLogAsync()
         {
-
             // Given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Guid randomId = Guid.NewGuid();
@@ -99,10 +98,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             await VerifyMocksForProvidedZips(randomDateTimeOffset, randomId, inputData);
 
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.addressParserServiceMock.VerifyNoOtherCalls();
             this.addressExtractionAuditServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         private async ValueTask<List<Address>> SetupMocksForProvidedZips(
@@ -134,6 +133,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                         else if (entry.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
                         {
                             byte[] zipFile;
+
                             using (MemoryStream nestedMemoryStream = new MemoryStream())
                             using (Stream entryStream = entry.Open())
                             {
@@ -195,6 +195,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                         else if (entry.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
                         {
                             byte[] zipFile;
+
                             using (MemoryStream nestedMemoryStream = new MemoryStream())
                             using (Stream entryStream = entry.Open())
                             {

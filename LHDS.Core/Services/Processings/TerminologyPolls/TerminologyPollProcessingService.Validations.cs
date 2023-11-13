@@ -21,7 +21,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             if (terminologyPoll is null)
             {
                 throw new NullTerminologyPollProcessingException(
-                    message: "Terminology poll processing is null.");
+                    message: "Terminology poll is null.");
             }
         }
 

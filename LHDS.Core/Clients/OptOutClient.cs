@@ -22,6 +22,37 @@ namespace LHDS.Core.Clients
             this.optOutOrchestrationService = optOutOrchestrationService;
         }
 
+        public async ValueTask<bool> ValidateMailboxAccessAsync()
+        {
+            try
+            {
+                return await this.optOutOrchestrationService.ValidateMailboxAccessAsync();
+            }
+            catch (OptOutOrchestrationValidationException optOutOrchestrationValidationException)
+            {
+                throw new OptOutClientValidationException(
+                    optOutOrchestrationValidationException.InnerException as Xeption);
+            }
+            catch (OptOutOrchestrationDependencyValidationException
+                optOutOrchestrationDependencyValidationException)
+            {
+                throw new OptOutClientValidationException(
+                    optOutOrchestrationDependencyValidationException.InnerException as Xeption);
+            }
+            catch (OptOutOrchestrationDependencyException
+                optOutOrchestrationDependencyException)
+            {
+                throw new OptOutClientDependencyException(
+                    optOutOrchestrationDependencyException.InnerException as Xeption);
+            }
+            catch (OptOutOrchestrationServiceException
+                optOutOrchestrationServiceException)
+            {
+                throw new OptOutClientServiceException(
+                    optOutOrchestrationServiceException.InnerException as Xeption);
+            }
+        }
+
         public async ValueTask<string> RetrieveOptOutStatusAsync(byte[] optOutFile, string fileName)
         {
             try

@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -32,8 +31,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: dependancyValidationException);
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
-                service.ProcessData(randomData))
-                    .Throws(dependancyValidationException);
+                service.ProcessDataAsync(randomData))
+                    .ThrowsAsync(dependancyValidationException);
 
             // when
             ValueTask<List<Address>> processDataTask = this.addressCoordinationService.ProcessData(randomData);
@@ -46,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                  .BeEquivalentTo(expectedDependencyException);
 
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
-             service.ProcessData(randomData),
+             service.ProcessDataAsync(randomData),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -55,8 +54,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                        Times.Once);
 
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -73,8 +72,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: dependencyException);
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
-                service.ProcessData(randomData))
-                    .Throws(dependencyException);
+                service.ProcessDataAsync(randomData))
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<List<Address>> processDataTask = this.addressCoordinationService.ProcessData(randomData);
@@ -87,7 +86,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                  .BeEquivalentTo(expectedDependencyException);
 
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
-             service.ProcessData(randomData),
+             service.ProcessDataAsync(randomData),
                  Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -96,8 +95,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                        Times.Once);
 
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -118,8 +117,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                     innerException: failedAddressCoordinationServiceException);
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
-                service.ProcessData(randomData))
-                    .Throws(serviceException);
+                service.ProcessDataAsync(randomData))
+                    .ThrowsAsync(serviceException);
 
             // when
             ValueTask<List<Address>> processDataTask = this.addressCoordinationService.ProcessData(randomData);
@@ -131,7 +130,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             actualException.Should().BeEquivalentTo(expectedAddressCoordinationServiceException);
 
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
-                service.ProcessData(randomData),
+                service.ProcessDataAsync(randomData),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -140,8 +139,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
                         Times.Once);
 
             this.addressExtractionOrchestrationServiceMock.VerifyNoOtherCalls();
-            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.addressPersistanceOrchestrationServiceMock.VerifyNoOtherCalls();
         }
     }
 }

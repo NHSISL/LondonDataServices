@@ -4,6 +4,7 @@
 
 using System;
 using FluentAssertions;
+using LHDS.Core.Models.Processings.TerminologyArtifact.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyArtifacts.Exceptions;
 using Moq;
 using Xeptions;
@@ -91,5 +92,50 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             this.terminologyArtifactServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
+        {
+            // given
+            var serviceException = new Exception();
+
+            var failedTerminologyArtifactProcessingServiceException =
+                new FailedTerminologyArtifactProcessingServiceException(
+                    message: "Failed terminology artifact processing service error occurred, contact support.",
+                    innerException: serviceException);
+
+            var expectedTerminologyArtifactProcessingServiceException =
+                new TerminologyArtifactProcessingServiceException(
+                    message: "Terminology artifact processing service error occurred, contact support.",
+                    innerException: failedTerminologyArtifactProcessingServiceException);
+
+            this.terminologyArtifactServiceMock.Setup(service =>
+                 service.RetrieveAllTerminologyArtifacts())
+                     .Throws(serviceException);
+
+            // when
+            Action terminologyArtifactRetrieveAction = () =>
+                this.terminologyArtifactProcessingService.RetrieveAllTerminologyArtifactsAsync();
+
+            TerminologyArtifactProcessingServiceException actualException =
+                Assert.Throws<TerminologyArtifactProcessingServiceException>(
+                    terminologyArtifactRetrieveAction);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedTerminologyArtifactProcessingServiceException);
+
+            this.terminologyArtifactServiceMock.Verify(service =>
+                service.RetrieveAllTerminologyArtifacts(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedTerminologyArtifactProcessingServiceException))),
+                         Times.Once);
+
+            this.terminologyArtifactServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
     }
 }

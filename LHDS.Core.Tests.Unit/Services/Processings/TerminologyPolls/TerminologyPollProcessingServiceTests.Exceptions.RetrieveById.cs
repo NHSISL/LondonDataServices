@@ -5,7 +5,6 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Processings.TerminologyPolls.Exceptions;
 using Moq;
@@ -18,12 +17,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnAddIfErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveByIdIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
-            TerminologyPoll someTerminologyPoll = CreateRandomTerminologyPoll();
-            TerminologyPoll inputTerminologyPoll = someTerminologyPoll.DeepClone();
+            Guid terminologyPollId = Guid.NewGuid();
 
             var expectedTerminologyPollProcessingDependencyValidationException =
                 new TerminologyPollProcessingDependencyValidationException(
@@ -31,22 +29,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.terminologyPollServiceMock.Setup(service =>
-                service.AddTerminologyPollAsync(inputTerminologyPoll))
+                service.RetrieveTerminologyPollByIdAsync(terminologyPollId))
                     .ThrowsAsync(dependencyValidationException);
 
             // when
-            ValueTask<TerminologyPoll> terminologyAddTask =
-                this.terminologyPollProcessingService.AddTerminologyPollAsync(inputTerminologyPoll);
+            ValueTask<TerminologyPoll> terminologyRetrieveTask =
+                this.terminologyPollProcessingService.RetrieveTerminologyPollByIdAsync(terminologyPollId);
 
             TerminologyPollProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<TerminologyPollProcessingDependencyValidationException>(
-                    terminologyAddTask.AsTask);
+                    terminologyRetrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyPollProcessingDependencyValidationException);
 
             this.terminologyPollServiceMock.Verify(service =>
-                service.AddTerminologyPollAsync(inputTerminologyPoll),
+                service.RetrieveTerminologyPollByIdAsync(terminologyPollId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -60,12 +58,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnAddIfErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnRetrieveByIdIfErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
-            TerminologyPoll someTerminologyPoll = CreateRandomTerminologyPoll();
-            TerminologyPoll inputTerminologyPoll = someTerminologyPoll.DeepClone();
+            Guid terminologyPollId = Guid.NewGuid();
 
             var expectedTerminologyPollProcessingDependencyException =
                 new TerminologyPollProcessingDependencyException(
@@ -73,22 +70,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                     innerException: dependencyException.InnerException as Xeption);
 
             this.terminologyPollServiceMock.Setup(service =>
-                service.AddTerminologyPollAsync(inputTerminologyPoll))
-                    .ThrowsAsync(dependencyException);
+                 service.RetrieveTerminologyPollByIdAsync(terminologyPollId))
+                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<TerminologyPoll> terminologyAddTask =
-                this.terminologyPollProcessingService.AddTerminologyPollAsync(inputTerminologyPoll);
+            ValueTask<TerminologyPoll> terminologyRetrieveTask =
+                this.terminologyPollProcessingService.RetrieveTerminologyPollByIdAsync(terminologyPollId);
 
             TerminologyPollProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<TerminologyPollProcessingDependencyException>(
-                    terminologyAddTask.AsTask);
+                    terminologyRetrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyPollProcessingDependencyException);
 
             this.terminologyPollServiceMock.Verify(service =>
-                service.AddTerminologyPollAsync(inputTerminologyPoll),
+                service.RetrieveTerminologyPollByIdAsync(terminologyPollId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -101,11 +98,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAsync()
         {
             // given
-            TerminologyPoll someTerminologyPoll = CreateRandomTerminologyPoll();
-            TerminologyPoll inputTerminologyPoll = someTerminologyPoll.DeepClone();
+            Guid terminologyPollId = Guid.NewGuid();
             var serviceException = new Exception();
 
             var failedTerminologyPollProcessingServiceException =
@@ -119,22 +115,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                     innerException: failedTerminologyPollProcessingServiceException);
 
             this.terminologyPollServiceMock.Setup(service =>
-                service.AddTerminologyPollAsync(inputTerminologyPoll))
-                    .ThrowsAsync(serviceException);
+                 service.RetrieveTerminologyPollByIdAsync(terminologyPollId))
+                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<TerminologyPoll> terminologyAddTask =
-                this.terminologyPollProcessingService.AddTerminologyPollAsync(inputTerminologyPoll);
+            ValueTask<TerminologyPoll> terminologyRetrieveTask =
+                this.terminologyPollProcessingService.RetrieveTerminologyPollByIdAsync(terminologyPollId);
 
             TerminologyPollProcessingServiceException actualException =
                 await Assert.ThrowsAsync<TerminologyPollProcessingServiceException>(
-                    terminologyAddTask.AsTask);
+                    terminologyRetrieveTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyPollProcessingServiceException);
 
             this.terminologyPollServiceMock.Verify(service =>
-                service.AddTerminologyPollAsync(inputTerminologyPoll),
+                service.RetrieveTerminologyPollByIdAsync(terminologyPollId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

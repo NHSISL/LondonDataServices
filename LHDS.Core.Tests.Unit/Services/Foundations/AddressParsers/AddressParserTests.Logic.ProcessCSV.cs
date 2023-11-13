@@ -23,10 +23,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
         {
             // given
             string assembly = Assembly.GetExecutingAssembly().Location;
-            string filePath = Path.Combine(Path.GetDirectoryName(assembly), @"Resources/TestCsv3.csv");
+
+            string inputFilePath = Path.Combine(
+                Path.GetDirectoryName(assembly),
+                @"Resources/Services/Foundations/AddressParser/ShouldProcessAddressCsvAsync.csv");
+
             string randomCsvFormattedAddresses;
 
-            using (StreamReader reader = new StreamReader(filePath))
+            using (StreamReader reader = new StreamReader(inputFilePath))
             {
                 randomCsvFormattedAddresses = reader.ReadToEnd();
             }

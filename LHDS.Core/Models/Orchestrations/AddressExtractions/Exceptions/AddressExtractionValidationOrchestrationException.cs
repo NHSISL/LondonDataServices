@@ -6,10 +6,10 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions
 {
-    public class AddressExtractionOrchestrationValidationException : Xeption
+    public class AddressExtractionValidationOrchestrationException : Xeption
     {
-        public AddressExtractionOrchestrationValidationException(string message, Xeption innerException)
-            : base(message,innerException)
+        public AddressExtractionValidationOrchestrationException(string message, Xeption innerException)
+            : base(message, innerException)
         { }
     }
 }

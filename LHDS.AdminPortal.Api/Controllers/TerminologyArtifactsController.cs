@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
@@ -39,6 +40,26 @@ namespace LHDS.AdminPortal.Api.Controllers
                when (terminologyArtifactDependencyValidationException.InnerException is AlreadyExistsTerminologyArtifactException)
             {
                 return Conflict(terminologyArtifactDependencyValidationException.InnerException);
+            }
+            catch (TerminologyArtifactDependencyException terminologyArtifactDependencyException)
+            {
+                return InternalServerError(terminologyArtifactDependencyException);
+            }
+            catch (TerminologyArtifactServiceException terminologyArtifactServiceException)
+            {
+                return InternalServerError(terminologyArtifactServiceException);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult<IQueryable<TerminologyArtifact>> GetAllTerminologyArtifacts()
+        {
+            try
+            {
+                IQueryable<TerminologyArtifact> retrievedTerminologyArtifacts =
+                    this.terminologyArtifactService.RetrieveAllTerminologyArtifacts();
+
+                return Ok(retrievedTerminologyArtifacts);
             }
             catch (TerminologyArtifactDependencyException terminologyArtifactDependencyException)
             {

@@ -30,11 +30,11 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             });
 
         public ValueTask<TerminologyArtifact> RetrieveTerminologyArtifactByIdAsync(Guid Id) =>
-            TryCatch(async () =>
-                {
-                    TerminologyArtifact blah = await this.terminologyArtifactService.RetrieveTerminologyArtifactByIdAsync(Id);
-                    return blah;
-                });
+        TryCatch(async () =>
+        {
+            ValidateId(Id);
+            return await this.terminologyArtifactService.RetrieveTerminologyArtifactByIdAsync(Id);
+        });
 
         public ValueTask<TerminologyArtifact> RetrieveOrAddTerminologyArtifactAsync(
             TerminologyArtifact terminologyArtifact) =>

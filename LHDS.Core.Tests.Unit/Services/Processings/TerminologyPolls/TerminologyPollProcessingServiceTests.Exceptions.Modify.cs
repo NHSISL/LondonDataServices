@@ -18,7 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnAddIfErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -31,12 +31,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.terminologyPollServiceMock.Setup(service =>
-                service.AddTerminologyPollAsync(inputTerminologyPoll))
+                service.ModifyTerminologyPollAsync(inputTerminologyPoll))
                     .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<TerminologyPoll> terminologyAddTask =
-                this.terminologyPollProcessingService.AddTerminologyPollAsync(inputTerminologyPoll);
+                this.terminologyPollProcessingService.ModifyTerminologyPollAsync(inputTerminologyPoll);
 
             TerminologyPollProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<TerminologyPollProcessingDependencyValidationException>(
@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             actualException.Should().BeEquivalentTo(expectedTerminologyPollProcessingDependencyValidationException);
 
             this.terminologyPollServiceMock.Verify(service =>
-                service.AddTerminologyPollAsync(inputTerminologyPoll),
+                service.ModifyTerminologyPollAsync(inputTerminologyPoll),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -60,7 +60,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnAddIfErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnModifyIfErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
@@ -73,12 +73,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                     innerException: dependencyException.InnerException as Xeption);
 
             this.terminologyPollServiceMock.Setup(service =>
-                service.AddTerminologyPollAsync(inputTerminologyPoll))
+                service.ModifyTerminologyPollAsync(inputTerminologyPoll))
                     .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<TerminologyPoll> terminologyAddTask =
-                this.terminologyPollProcessingService.AddTerminologyPollAsync(inputTerminologyPoll);
+                this.terminologyPollProcessingService.ModifyTerminologyPollAsync(inputTerminologyPoll);
 
             TerminologyPollProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<TerminologyPollProcessingDependencyException>(
@@ -88,7 +88,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             actualException.Should().BeEquivalentTo(expectedTerminologyPollProcessingDependencyException);
 
             this.terminologyPollServiceMock.Verify(service =>
-                service.AddTerminologyPollAsync(inputTerminologyPoll),
+                service.ModifyTerminologyPollAsync(inputTerminologyPoll),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -101,7 +101,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnModifyIfServiceErrorOccursAsync()
         {
             // given
             TerminologyPoll someTerminologyPoll = CreateRandomTerminologyPoll();
@@ -119,12 +119,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                     innerException: failedTerminologyPollProcessingServiceException);
 
             this.terminologyPollServiceMock.Setup(service =>
-                service.AddTerminologyPollAsync(inputTerminologyPoll))
+                service.ModifyTerminologyPollAsync(inputTerminologyPoll))
                     .ThrowsAsync(serviceException);
 
             // when
             ValueTask<TerminologyPoll> terminologyAddTask =
-                this.terminologyPollProcessingService.AddTerminologyPollAsync(inputTerminologyPoll);
+                this.terminologyPollProcessingService.ModifyTerminologyPollAsync(inputTerminologyPoll);
 
             TerminologyPollProcessingServiceException actualException =
                 await Assert.ThrowsAsync<TerminologyPollProcessingServiceException>(
@@ -134,7 +134,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             actualException.Should().BeEquivalentTo(expectedTerminologyPollProcessingServiceException);
 
             this.terminologyPollServiceMock.Verify(service =>
-                service.AddTerminologyPollAsync(inputTerminologyPoll),
+                service.ModifyTerminologyPollAsync(inputTerminologyPoll),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

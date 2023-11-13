@@ -13,14 +13,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
     {
         [Theory]
         [MemberData(nameof(AddressExpansionData))]
-        public async Task ShouldExpandAddressAsync(string inputAddress)
+        public void ShouldExpandAddressAsync(string inputAddress)
         {
             // given
             string expectedAddress = "10 Downing Street, Westminster, London, SW1A2AA, United Kingdom";
 
             var service = new AddressNormalisationService(
-                addressNormalisationBroker: this.addressNormalisationBrokerMock.Object,
-                loggingBroker: this.loggingBrokerMock.Object);
+                addressNormalisationBroker: addressNormalisationBrokerMock.Object,
+                loggingBroker: loggingBrokerMock.Object);
 
             // when
             string actualAddress = service.CleanupAddress(inputAddress);

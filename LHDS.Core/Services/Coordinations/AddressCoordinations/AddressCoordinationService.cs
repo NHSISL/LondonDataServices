@@ -31,7 +31,11 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             TryCatch(async () =>
             {
                 ValidateDataOnProcessData(data);
-                List<Address> extractedAddress = this.addressExtractionOrchestrationService.ProcessData(data);
+
+                List<Address> extractedAddress = 
+                    await this.addressExtractionOrchestrationService.ProcessDataAsync(data);
+
+                ValidateAddressListIsNotNull(extractedAddress);
 
                 return await this.addressPersistanceOrchestrationService.ProcessAsync(extractedAddress);
             });

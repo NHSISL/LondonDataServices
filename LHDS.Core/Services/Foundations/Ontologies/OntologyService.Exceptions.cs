@@ -6,7 +6,6 @@ using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Ontologies;
 using LHDS.Core.Models.Foundations.Ontologies.Exceptions;
-using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.Ontologies
@@ -29,7 +28,7 @@ namespace LHDS.Core.Services.Foundations.Ontologies
             {
                 var failedOntologyServiceException =
                     new FailedOntologyServiceException(
-                        message: "Failed ontology service occurred, please contact support",
+                        message: "Failed ontology service error occurred, please contact support",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedOntologyServiceException);

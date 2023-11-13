@@ -6,7 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Ontologies;
-using LHDS.Core.Models.Foundations.Suppliers.Exceptions;
+using LHDS.Core.Models.Foundations.Ontologies.Exceptions;
 using Moq;
 using Xunit;
 
@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologys
 
             var failedOntologyServiceException =
                 new FailedOntologyServiceException(
-                    message: "Failed ontology service occurred, please contact support",
+                    message: "Failed ontology service error occurred, please contact support",
                     innerException: serviceException);
 
             var expectedOntologyServiceException =

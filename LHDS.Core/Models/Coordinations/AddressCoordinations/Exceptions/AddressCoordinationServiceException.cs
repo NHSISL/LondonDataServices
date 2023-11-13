@@ -5,7 +5,7 @@
 using System;
 using Xeptions;
 
-namespace LHDS.Core.Models.Orchestrations.Decryptions.Exceptions
+namespace LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions
 {
     public class AddressCoordinationServiceException : Xeption
     {

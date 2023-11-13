@@ -2,9 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Linq;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
+using LHDS.Core.Models.Processings.TerminologyArtifact.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyArtifacts.Exceptions;
 using Xeptions;
 
@@ -37,6 +39,15 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             {
                 throw CreateAndLogDependencyException(terminologyArtifactServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedTerminologyArtifactProcessingServiceException =
+                    new FailedTerminologyArtifactProcessingServiceException(
+                        message: "Failed terminology artifact processing service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedTerminologyArtifactProcessingServiceException);
+            }
         }
 
         private TerminologyArtifactProcessingDependencyValidationException CreateAndLogDependencyValidationException(
@@ -63,6 +74,19 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             this.loggingBroker.LogError(terminologyArtifactProcessingDependencyException);
 
             return terminologyArtifactProcessingDependencyException;
+        }
+
+        private TerminologyArtifactProcessingServiceException CreateAndLogServiceException(
+           Xeption exception)
+        {
+            var terminologyArtifactProcessingServiceException =
+                new TerminologyArtifactProcessingServiceException(
+                    message: "Terminology artifact processing service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(terminologyArtifactProcessingServiceException);
+
+            return terminologyArtifactProcessingServiceException;
         }
     }
 }

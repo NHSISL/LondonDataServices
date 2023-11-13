@@ -36,9 +36,9 @@ namespace LHDS.Core.Brokers.AddressNormalisations
         }
 
         public async ValueTask<string[]> ExpandAddressAsync(string address) =>
-            await this.libPostalClient.ExpandAddressAsync(address);
+            await libPostalClient.ExpandAddressAsync(address);
 
         public async ValueTask<List<KeyValuePair<string, string>>> ParseAddressAsync(string address) =>
-            await this.libPostalClient.ParseAddressAsync(address);
+            await libPostalClient.ParseAddressAsync(address);
     }
 }

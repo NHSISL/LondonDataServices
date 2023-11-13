@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
 
             var nullTerminologyPollException =
                 new NullTerminologyPollProcessingException(
-                    message: "Terminology poll processing is null.");
+                    message: "Terminology poll is null.");
 
             var expectedTerminologyPollProcessingValidationException =
                 new TerminologyPollProcessingValidationException(

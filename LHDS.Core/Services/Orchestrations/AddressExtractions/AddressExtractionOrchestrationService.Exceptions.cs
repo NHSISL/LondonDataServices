@@ -28,11 +28,6 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressExtractionOrchestrationException);
             }
-            catch (InvalidArchiveAddressExtractionOrchestrationException
-                invalidArchiveAddressExtractionOrchestrationException)
-            {
-                throw CreateAndLogValidationException(invalidArchiveAddressExtractionOrchestrationException);
-            }
             catch (AddressParserValidationException addressParserValidationException)
             {
                 throw CreateAndLogDependencyValidationException(addressParserValidationException);
@@ -78,16 +73,16 @@ namespace LHDS.Core.Services.Orchestrations.AddressExtractions
             }
         }
 
-        private AddressExtractionOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
+        private AddressExtractionValidationOrchestrationException CreateAndLogValidationException(Xeption exception)
         {
-            var addressExtractionOrchestrationValidationException =
-                new AddressExtractionOrchestrationValidationException(
+            var addressExtractionValidationOrchestrationException =
+                new AddressExtractionValidationOrchestrationException(
                     message: "Address extraction orchestration validation error occurred, please try again.",
                     innerException: exception);
 
-            this.loggingBroker.LogError(addressExtractionOrchestrationValidationException);
+            this.loggingBroker.LogError(addressExtractionValidationOrchestrationException);
 
-            return addressExtractionOrchestrationValidationException;
+            return addressExtractionValidationOrchestrationException;
         }
 
         private AddressExtractionOrchestrationDependencyValidationException

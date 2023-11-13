@@ -84,7 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
 
             return new TheoryData<Xeption>
             {
-                new AddressExtractionOrchestrationValidationException(
+                new AddressExtractionValidationOrchestrationException(
                     message: "Address extraction orchestration validation error occured, please try again",
                     innerException),
 

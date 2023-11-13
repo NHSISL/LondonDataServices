@@ -7,7 +7,6 @@ using FluentAssertions;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
-using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using Moq;
 using Xunit;
@@ -25,10 +24,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             LandingConfiguration invalidLandingConfiguration = null;
 
             var invalidDownloadOrchestrationService = new DownloadOrchestrationService(
-                documentService: documentServiceMock.Object,
-                downloadService: downloadServiceMock.Object,
-                ingestionTrackingService: ingestionTrackingServiceMock.Object,
-                dataSetSpecificationService: dataSetSpecificationServiceMock.Object,
+                documentProcessingService: documentProcessingServiceMock.Object,
+                downloadProcessingService: downloadProcessingServiceMock.Object,
+                ingestionTrackingProcessingService: ingestionTrackingProcessingServiceMock.Object,
                 auditService: auditServiceMock.Object,
                 dataSetSpecificationProcessingService: dataSetSpecificationProcessingServiceMock.Object,
                 blobContainers,
@@ -62,10 +60,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     expectedDownloadOrchestrationValidationException))),
                         Times.Once);
 
-            this.documentServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -77,10 +77,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             BlobContainers invalidBlobContainers = null;
 
             var invalidDownloadOrchestrationService = new DownloadOrchestrationService(
-                documentService: documentServiceMock.Object,
-                downloadService: downloadServiceMock.Object,
-                ingestionTrackingService: ingestionTrackingServiceMock.Object,
-                dataSetSpecificationService: dataSetSpecificationServiceMock.Object,
+                documentProcessingService: documentProcessingServiceMock.Object,
+                downloadProcessingService: downloadProcessingServiceMock.Object,
+                ingestionTrackingProcessingService: ingestionTrackingProcessingServiceMock.Object,
                 auditService: auditServiceMock.Object,
                 dataSetSpecificationProcessingService: dataSetSpecificationProcessingServiceMock.Object,
                 blobContainers: invalidBlobContainers,
@@ -114,10 +113,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     expectedDownloadOrchestrationValidationException))),
                         Times.Once);
 
-            this.documentServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -156,10 +157,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     expectedDownloadOrchestrationValidationException))),
                         Times.Once);
 
-            this.documentServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -178,7 +181,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     message: "Download orchestration validation errors occurred, please try again.",
                     innerException: notFoundDownloadOrchestrationException);
 
-            this.downloadServiceMock.Setup(service =>
+            this.downloadProcessingServiceMock.Setup(service =>
                   service.RetrieveDownloadByFileNameAsync(inputFileName))
                       .Returns(null);
 
@@ -189,7 +192,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 await Assert.ThrowsAsync<DownloadOrchestrationValidationException>(DownloadTask.AsTask);
 
             // then
-            this.downloadServiceMock.Verify(service =>
+            this.downloadProcessingServiceMock.Verify(service =>
                 service.RetrieveDownloadByFileNameAsync(inputFileName),
                     Times.Once);
 
@@ -198,10 +201,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     expectedDownloadOrchestrationValidationException))),
                         Times.Once);
 
-            this.documentServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
         }
     }
 }

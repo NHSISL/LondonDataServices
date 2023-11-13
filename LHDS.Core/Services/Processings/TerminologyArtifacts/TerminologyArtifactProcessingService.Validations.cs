@@ -20,6 +20,7 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             Condition = id == Guid.Empty,
             Message = "Id is required"
         };
+
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {

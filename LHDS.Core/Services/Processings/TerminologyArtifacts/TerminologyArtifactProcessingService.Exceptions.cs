@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
+using LHDS.Core.Models.Processings.TerminologyArtifact.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyArtifacts.Exceptions;
 using Xeptions;
 
@@ -58,6 +59,10 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             {
                 return await returningTerminologyArtifactProcessingFunction();
             }
+            catch (InvalidArgumentTerminologyArtifactProcessingException invalidArgumentTerminologyArtifactProcessingException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentTerminologyArtifactProcessingException);
+            }
             catch (TerminologyArtifactValidationException terminologyArtifactValidationException)
             {
                 throw CreateAndLogDependencyValidationException(terminologyArtifactValidationException);
@@ -83,6 +88,18 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
 
                 throw CreateAndLogServiceException(failedTerminologyArtifactProcessingServiceException);
             }
+        }
+
+        private TerminologyArtifactProcessingValidationException CreateAndLogValidationException(Xeption exception)
+        {
+            var terminologyArtifactProcessingValidationExceptionn =
+                new TerminologyArtifactProcessingValidationException(
+                    message: "Terminology artifact processing validation error occurred, please try again.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(terminologyArtifactProcessingValidationExceptionn);
+
+            return terminologyArtifactProcessingValidationExceptionn;
         }
 
         private TerminologyArtifactProcessingDependencyValidationException CreateAndLogDependencyValidationException(

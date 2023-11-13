@@ -1,11 +1,15 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
+using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
-using LHDS.AdminPortal.Api.Models.Foundations.TerminologyArtifacts;
-using LHDS.AdminPortal.Api.Models.Foundations.TerminologyArtifacts.Exceptions;
-using LHDS.AdminPortal.Api.Services.Foundations.TerminologyArtifacts;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
@@ -19,7 +23,8 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.terminologyArtifactService = terminologyArtifactService;
 
         [HttpPost]
-        public async ValueTask<ActionResult<TerminologyArtifact>> PostTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact)
+        public async ValueTask<ActionResult<TerminologyArtifact>> PostTerminologyArtifactAsync(
+            TerminologyArtifact terminologyArtifact)
         {
             try
             {
@@ -33,12 +38,14 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return BadRequest(terminologyArtifactValidationException.InnerException);
             }
             catch (TerminologyArtifactDependencyValidationException terminologyArtifactValidationException)
-                when (terminologyArtifactValidationException.InnerException is InvalidTerminologyArtifactReferenceException)
+                when (terminologyArtifactValidationException.InnerException
+                    is InvalidTerminologyArtifactReferenceException)
             {
                 return FailedDependency(terminologyArtifactValidationException.InnerException);
             }
             catch (TerminologyArtifactDependencyValidationException terminologyArtifactDependencyValidationException)
-               when (terminologyArtifactDependencyValidationException.InnerException is AlreadyExistsTerminologyArtifactException)
+                when (terminologyArtifactDependencyValidationException.InnerException
+                    is AlreadyExistsTerminologyArtifactException)
             {
                 return Conflict(terminologyArtifactDependencyValidationException.InnerException);
             }
@@ -73,11 +80,13 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet("{terminologyArtifactId}")]
-        public async ValueTask<ActionResult<TerminologyArtifact>> GetTerminologyArtifactByIdAsync(Guid terminologyArtifactId)
+        public async ValueTask<ActionResult<TerminologyArtifact>> GetTerminologyArtifactByIdAsync(
+            Guid terminologyArtifactId)
         {
             try
             {
-                TerminologyArtifact terminologyArtifact = await this.terminologyArtifactService.RetrieveTerminologyArtifactByIdAsync(terminologyArtifactId);
+                TerminologyArtifact terminologyArtifact = await this.terminologyArtifactService
+                    .RetrieveTerminologyArtifactByIdAsync(terminologyArtifactId);
 
                 return Ok(terminologyArtifact);
             }
@@ -101,7 +110,8 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpPut]
-        public async ValueTask<ActionResult<TerminologyArtifact>> PutTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact)
+        public async ValueTask<ActionResult<TerminologyArtifact>> PutTerminologyArtifactAsync(
+            TerminologyArtifact terminologyArtifact)
         {
             try
             {
@@ -120,12 +130,14 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return BadRequest(terminologyArtifactValidationException.InnerException);
             }
             catch (TerminologyArtifactDependencyValidationException terminologyArtifactValidationException)
-                when (terminologyArtifactValidationException.InnerException is InvalidTerminologyArtifactReferenceException)
+                when (terminologyArtifactValidationException.InnerException
+                    is InvalidTerminologyArtifactReferenceException)
             {
                 return FailedDependency(terminologyArtifactValidationException.InnerException);
             }
             catch (TerminologyArtifactDependencyValidationException terminologyArtifactDependencyValidationException)
-               when (terminologyArtifactDependencyValidationException.InnerException is AlreadyExistsTerminologyArtifactException)
+                when (terminologyArtifactDependencyValidationException.InnerException
+                    is AlreadyExistsTerminologyArtifactException)
             {
                 return Conflict(terminologyArtifactDependencyValidationException.InnerException);
             }
@@ -140,7 +152,8 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpDelete("{terminologyArtifactId}")]
-        public async ValueTask<ActionResult<TerminologyArtifact>> DeleteTerminologyArtifactByIdAsync(Guid terminologyArtifactId)
+        public async ValueTask<ActionResult<TerminologyArtifact>> DeleteTerminologyArtifactByIdAsync(
+            Guid terminologyArtifactId)
         {
             try
             {
@@ -159,7 +172,8 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return BadRequest(terminologyArtifactValidationException.InnerException);
             }
             catch (TerminologyArtifactDependencyValidationException terminologyArtifactDependencyValidationException)
-                when (terminologyArtifactDependencyValidationException.InnerException is LockedTerminologyArtifactException)
+                when (terminologyArtifactDependencyValidationException.InnerException
+                    is LockedTerminologyArtifactException)
             {
                 return Locked(terminologyArtifactDependencyValidationException.InnerException);
             }

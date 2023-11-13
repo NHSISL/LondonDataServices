@@ -9,7 +9,6 @@ using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
-using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Coordinations.AddressCoordinations
@@ -28,9 +27,9 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressCoordinationException);
             }
-            catch (AddressExtractionOrchestrationValidationException addressExtractionOrchestrationValidationException)
+            catch (AddressExtractionValidationOrchestrationException addressExtractionValidationOrchestrationException)
             {
-                throw CreateAndLogDependencyValidationException(addressExtractionOrchestrationValidationException);
+                throw CreateAndLogDependencyValidationException(addressExtractionValidationOrchestrationException);
             }
             catch (AddressExtractionOrchestrationDependencyValidationException
                 addressExtractionOrchestrationDependencyValidationException)
@@ -38,12 +37,12 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
                 throw CreateAndLogDependencyValidationException(
                     addressExtractionOrchestrationDependencyValidationException);
             }
-            catch (AddressPersistanceOrchestrationValidationException 
+            catch (AddressPersistanceOrchestrationValidationException
                 addressPersistanceOrchestrationValidationException)
             {
                 throw CreateAndLogDependencyValidationException(addressPersistanceOrchestrationValidationException);
             }
-            catch (AddressPersistanceOrchestrationDependencyValidationException 
+            catch (AddressPersistanceOrchestrationDependencyValidationException
                 addressPersistanceOrchestrationDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(
@@ -90,7 +89,7 @@ namespace LHDS.Core.Services.Coordinations.AddressCoordinations
             return addressCoordinationValidationException;
         }
 
-        private AddressCoordinationDependencyValidationException 
+        private AddressCoordinationDependencyValidationException
             CreateAndLogDependencyValidationException(Xeption exception)
         {
             var addressCoordinationDependencyValidationException =

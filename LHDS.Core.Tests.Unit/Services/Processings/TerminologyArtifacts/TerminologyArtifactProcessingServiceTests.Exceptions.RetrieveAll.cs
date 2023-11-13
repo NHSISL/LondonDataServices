@@ -46,9 +46,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                 broker.LogError(It.Is(SameExceptionAs(
-                     expectedTerminologyArtifactProcessingDependencyValidationException))),
-                         Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTerminologyArtifactProcessingDependencyValidationException))),
+                        Times.Once);
 
             this.terminologyArtifactServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -66,8 +66,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                     innerException: dependencyException.InnerException as Xeption);
 
             this.terminologyArtifactServiceMock.Setup(service =>
-                 service.RetrieveAllTerminologyArtifacts())
-                     .Throws(dependencyException);
+                service.RetrieveAllTerminologyArtifacts())
+                    .Throws(dependencyException);
 
             // when
             Action terminologyArtifactRetrieveAction = () =>
@@ -86,8 +86,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
-                     expectedTerminologyArtifactProcessingDependencyException))),
-                         Times.Once);
+                    expectedTerminologyArtifactProcessingDependencyException))),
+                        Times.Once);
 
             this.terminologyArtifactServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -111,7 +111,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 
             this.terminologyArtifactServiceMock.Setup(service =>
                  service.RetrieveAllTerminologyArtifacts())
-                     .Throws(serviceException);
+                    .Throws(serviceException);
 
             // when
             Action terminologyArtifactRetrieveAction = () =>
@@ -131,7 +131,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedTerminologyArtifactProcessingServiceException))),
-                         Times.Once);
+                        Times.Once);
 
             this.terminologyArtifactServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

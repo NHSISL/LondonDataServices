@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
+        public void ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -25,13 +25,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     message: "DataSetSpecification processing dependency validation error occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
-            this.dataSetSpecificationServiceMock.Setup(service =>
+            dataSetSpecificationServiceMock.Setup(service =>
                 service.RetrieveAllDataSetSpecifications())
                     .Throws(dependencyValidationException);
 
             // when
             Action dataSetSpecificationRetrieveAction = () =>
-                this.dataSetSpecificationProcessingService.RetrieveAllDataSetSpecifications();
+                dataSetSpecificationProcessingService.RetrieveAllDataSetSpecifications();
 
             DataSetSpecificationProcessingDependencyValidationException actualException =
                 Assert.Throws<DataSetSpecificationProcessingDependencyValidationException>(
@@ -40,22 +40,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetSpecificationProcessingDependencyValidationException);
 
-            this.dataSetSpecificationServiceMock.Verify(service =>
+            dataSetSpecificationServiceMock.Verify(service =>
                 service.RetrieveAllDataSetSpecifications(),
                     Times.Once);
 
-            this.loggingBrokerMock.Verify(broker =>
+            loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedDataSetSpecificationProcessingDependencyValidationException))),
                          Times.Once);
 
-            this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
+            dataSetSpecificationServiceMock.VerifyNoOtherCalls();
+            loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
+        public void ShouldThrowDependencyExceptionOnRetrieveAllIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
@@ -64,13 +64,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     message: "DataSetSpecification processing dependency error occurred, please try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
-            this.dataSetSpecificationServiceMock.Setup(service =>
+            dataSetSpecificationServiceMock.Setup(service =>
                 service.RetrieveAllDataSetSpecifications())
                     .Throws(dependencyException);
 
             // when
             Action dataSetSpecificationRetrieveAction = () =>
-                this.dataSetSpecificationProcessingService.RetrieveAllDataSetSpecifications();
+                dataSetSpecificationProcessingService.RetrieveAllDataSetSpecifications();
 
             DataSetSpecificationProcessingDependencyException actualException =
                 Assert.Throws<DataSetSpecificationProcessingDependencyException>(dataSetSpecificationRetrieveAction);
@@ -78,21 +78,21 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetSpecificationProcessingDependencyException);
 
-            this.dataSetSpecificationServiceMock.Verify(service =>
+            dataSetSpecificationServiceMock.Verify(service =>
                 service.RetrieveAllDataSetSpecifications(),
                     Times.Once);
 
-            this.loggingBrokerMock.Verify(broker =>
+            loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedDataSetSpecificationProcessingDependencyException))),
                          Times.Once);
 
-            this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
+            dataSetSpecificationServiceMock.VerifyNoOtherCalls();
+            loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
         {
             // given
             var serviceException = new Exception();
@@ -107,13 +107,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
                     message: "DataSetSpecification processing service error occurred, contact support.",
                     innerException: failedDataSetSpecificationProcessingServiceException);
 
-            this.dataSetSpecificationServiceMock.Setup(service =>
+            dataSetSpecificationServiceMock.Setup(service =>
                 service.RetrieveAllDataSetSpecifications())
                     .Throws(serviceException);
 
             // when
             Action dataSetSpecificationRetrieveAction = () =>
-                this.dataSetSpecificationProcessingService.RetrieveAllDataSetSpecifications();
+                dataSetSpecificationProcessingService.RetrieveAllDataSetSpecifications();
 
             DataSetSpecificationProcessingServiceException actualException =
                 Assert.Throws<DataSetSpecificationProcessingServiceException>(dataSetSpecificationRetrieveAction);
@@ -121,17 +121,17 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.DataSetSpecifications
             // then
             actualException.Should().BeEquivalentTo(expectedDataSetSpecificationProcessingServiveException);
 
-            this.dataSetSpecificationServiceMock.Verify(service =>
+            dataSetSpecificationServiceMock.Verify(service =>
                 service.RetrieveAllDataSetSpecifications(),
                     Times.Once);
 
-            this.loggingBrokerMock.Verify(broker =>
+            loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedDataSetSpecificationProcessingServiveException))),
                          Times.Once);
 
-            this.dataSetSpecificationServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
+            dataSetSpecificationServiceMock.VerifyNoOtherCalls();
+            loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

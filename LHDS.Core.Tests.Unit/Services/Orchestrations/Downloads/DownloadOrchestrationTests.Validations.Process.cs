@@ -60,12 +60,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     expectedDownloadOrchestrationValidationException))),
                         Times.Once);
 
-            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -113,12 +113,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     expectedDownloadOrchestrationValidationException))),
                         Times.Once);
 
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -157,12 +157,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     expectedDownloadOrchestrationValidationException))),
                         Times.Once);
 
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -201,12 +201,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     expectedDownloadOrchestrationValidationException))),
                         Times.Once);
 
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

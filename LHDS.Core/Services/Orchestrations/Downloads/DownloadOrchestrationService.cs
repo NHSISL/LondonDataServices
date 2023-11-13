@@ -132,7 +132,8 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                     FileName = newIngestionTracking.EncryptedFileName
                                 };
 
-                                await this.ingestionTrackingProcessingService.AddIngestionTrackingAsync(newIngestionTracking);
+                                await this.ingestionTrackingProcessingService
+                                    .AddIngestionTrackingAsync(newIngestionTracking);
 
                                 await this.documentProcessingService
                                     .AddDocumentAsync(newBlobDocument, blobContainers.EmisLanding);

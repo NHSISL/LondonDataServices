@@ -138,5 +138,43 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(terminologyArtifactServiceException);
             }
         }
+
+        [HttpDelete("{terminologyArtifactId}")]
+        public async ValueTask<ActionResult<TerminologyArtifact>> DeleteTerminologyArtifactByIdAsync(Guid terminologyArtifactId)
+        {
+            try
+            {
+                TerminologyArtifact deletedTerminologyArtifact =
+                    await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(terminologyArtifactId);
+
+                return Ok(deletedTerminologyArtifact);
+            }
+            catch (TerminologyArtifactValidationException terminologyArtifactValidationException)
+                when (terminologyArtifactValidationException.InnerException is NotFoundTerminologyArtifactException)
+            {
+                return NotFound(terminologyArtifactValidationException.InnerException);
+            }
+            catch (TerminologyArtifactValidationException terminologyArtifactValidationException)
+            {
+                return BadRequest(terminologyArtifactValidationException.InnerException);
+            }
+            catch (TerminologyArtifactDependencyValidationException terminologyArtifactDependencyValidationException)
+                when (terminologyArtifactDependencyValidationException.InnerException is LockedTerminologyArtifactException)
+            {
+                return Locked(terminologyArtifactDependencyValidationException.InnerException);
+            }
+            catch (TerminologyArtifactDependencyValidationException terminologyArtifactDependencyValidationException)
+            {
+                return BadRequest(terminologyArtifactDependencyValidationException);
+            }
+            catch (TerminologyArtifactDependencyException terminologyArtifactDependencyException)
+            {
+                return InternalServerError(terminologyArtifactDependencyException);
+            }
+            catch (TerminologyArtifactServiceException terminologyArtifactServiceException)
+            {
+                return InternalServerError(terminologyArtifactServiceException);
+            }
+        }
     }
 }

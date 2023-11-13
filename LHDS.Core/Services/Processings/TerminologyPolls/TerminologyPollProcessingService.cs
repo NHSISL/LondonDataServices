@@ -46,9 +46,9 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                 return await this.terminologyPollService.RetrieveTerminologyPollByIdAsync(terminologyPollId);
             });
 
-        public ValueTask<TerminologyPoll> ModifyTerminologyPollAsync(TerminologyPoll terminologyPoll)
+        public ValueTask<TerminologyPoll> ModifyTerminologyPollAsync(TerminologyPoll terminologyPoll) 
         {
-            throw new NotImplementedException();
+            return this.terminologyPollService.ModifyTerminologyPollAsync((TerminologyPoll)terminologyPoll);
         }
     }
 }

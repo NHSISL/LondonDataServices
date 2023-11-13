@@ -26,8 +26,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
                     message: "Invalid argument address extraction orchestration exception, " +
                         "please correct the errors and try again.");
 
-            var expectedAddressExtractionOrchestrationValidationException =
-                new AddressExtractionOrchestrationValidationException(
+            var expectedAddressExtractionValidationOrchestrationException =
+                new AddressExtractionValidationOrchestrationException(
                     message: "Address extraction orchestration validation error occurred, please try again.",
                     innerException: invalidArgumentAddressExtractionOrchestrationException);
 
@@ -35,16 +35,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             ValueTask<List<Address>> processDataTask =
                 this.addressExtractionOrchestrationService.ProcessDataAsync(someData);
 
-            AddressExtractionOrchestrationValidationException actualException =
-                await Assert.ThrowsAsync<AddressExtractionOrchestrationValidationException>(processDataTask.AsTask);
+            AddressExtractionValidationOrchestrationException actualException =
+                await Assert.ThrowsAsync<AddressExtractionValidationOrchestrationException>(processDataTask.AsTask);
 
             // then
             actualException.Should()
-                .BeEquivalentTo(expectedAddressExtractionOrchestrationValidationException);
+                .BeEquivalentTo(expectedAddressExtractionValidationOrchestrationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    expectedAddressExtractionOrchestrationValidationException))),
+                    expectedAddressExtractionValidationOrchestrationException))),
                         Times.Once);
 
             this.addressParserServiceMock.VerifyNoOtherCalls();

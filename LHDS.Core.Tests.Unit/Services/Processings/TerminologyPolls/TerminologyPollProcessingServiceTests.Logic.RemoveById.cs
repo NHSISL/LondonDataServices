@@ -15,24 +15,24 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
         {
             // given
             Guid randomId = Guid.NewGuid();
-            Guid inputOptOutId = randomId;
+            Guid inputTerminologyPollId = randomId;
             TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll();
             TerminologyPoll deletedTerminologyPoll = randomTerminologyPoll;
             TerminologyPoll expectedTerminologyPoll = deletedTerminologyPoll.DeepClone();
 
             this.terminologyPollServiceMock.Setup(service =>
-                service.RemoveTerminologyPollByIdAsync(inputOptOutId))
+                service.RemoveTerminologyPollByIdAsync(inputTerminologyPollId))
                     .ReturnsAsync(deletedTerminologyPoll);
 
             // when
             TerminologyPoll actualTerminologyPoll =
-                await this.terminologyPollProcessingService.RemoveTerminologyPollByIdAsync(inputOptOutId);
+                await this.terminologyPollProcessingService.RemoveTerminologyPollByIdAsync(inputTerminologyPollId);
 
             // then
             actualTerminologyPoll.Should().BeEquivalentTo(expectedTerminologyPoll);
 
             this.terminologyPollServiceMock.Verify(service =>
-                service.RemoveTerminologyPollByIdAsync(inputOptOutId),
+                service.RemoveTerminologyPollByIdAsync(inputTerminologyPollId),
                     Times.Once);
 
             this.terminologyPollServiceMock.VerifyNoOtherCalls();

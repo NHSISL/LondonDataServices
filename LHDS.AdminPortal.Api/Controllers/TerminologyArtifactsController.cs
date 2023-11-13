@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,34 @@ namespace LHDS.AdminPortal.Api.Controllers
                     this.terminologyArtifactService.RetrieveAllTerminologyArtifacts();
 
                 return Ok(retrievedTerminologyArtifacts);
+            }
+            catch (TerminologyArtifactDependencyException terminologyArtifactDependencyException)
+            {
+                return InternalServerError(terminologyArtifactDependencyException);
+            }
+            catch (TerminologyArtifactServiceException terminologyArtifactServiceException)
+            {
+                return InternalServerError(terminologyArtifactServiceException);
+            }
+        }
+
+        [HttpGet("{terminologyArtifactId}")]
+        public async ValueTask<ActionResult<TerminologyArtifact>> GetTerminologyArtifactByIdAsync(Guid terminologyArtifactId)
+        {
+            try
+            {
+                TerminologyArtifact terminologyArtifact = await this.terminologyArtifactService.RetrieveTerminologyArtifactByIdAsync(terminologyArtifactId);
+
+                return Ok(terminologyArtifact);
+            }
+            catch (TerminologyArtifactValidationException terminologyArtifactValidationException)
+                when (terminologyArtifactValidationException.InnerException is NotFoundTerminologyArtifactException)
+            {
+                return NotFound(terminologyArtifactValidationException.InnerException);
+            }
+            catch (TerminologyArtifactValidationException terminologyArtifactValidationException)
+            {
+                return BadRequest(terminologyArtifactValidationException.InnerException);
             }
             catch (TerminologyArtifactDependencyException terminologyArtifactDependencyException)
             {

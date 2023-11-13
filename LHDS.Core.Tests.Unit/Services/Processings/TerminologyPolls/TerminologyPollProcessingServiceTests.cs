@@ -42,6 +42,20 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
+        private static int GetRandomNegativeNumber() =>
+            -1 * new IntRange(min: 2, max: 10).GetValue();
+
+        private static TerminologyPoll CreateRandomModifyTerminologyPoll()
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll();
+
+            randomTerminologyPoll.CreatedDate =
+                randomTerminologyPoll.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomTerminologyPoll;
+        }
+
         private static IQueryable<TerminologyPoll> CreateRandomTerminologyPolls()
         {
             return CreateTerminologyPollFiller()

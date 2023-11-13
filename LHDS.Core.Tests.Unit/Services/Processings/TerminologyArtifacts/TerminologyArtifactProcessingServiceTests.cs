@@ -3,8 +3,9 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.Ontologies;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Processings.TerminologyArtifacts;
 using Moq;
@@ -37,15 +38,20 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-        private static OntologyAsset CreateRandomOntologyAssets() =>
-           CreateOntologyFiller().Create();
-
-        private static Filler<OntologyAsset> CreateOntologyFiller()
+        private static IQueryable<TerminologyArtifact> CreateRandomTerminologyArtifacts()
         {
-            string user = Guid.NewGuid().ToString();
-            DateTimeOffset dateTimeOffset = GetRandomDateTimeOffset();
+            return CreateTerminologyArtifactFiller()
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
 
-            var filler = new Filler<OntologyAsset>();
+        private static TerminologyArtifact CreateRandomTerminologyArtifact() =>
+            CreateTerminologyArtifactFiller().Create();
+
+        private static Filler<TerminologyArtifact> CreateTerminologyArtifactFiller()
+        {
+            DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
+            var filler = new Filler<TerminologyArtifact>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)

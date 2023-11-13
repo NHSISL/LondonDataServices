@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             TerminologyArtifact expectedTerminologyArtifacts = storageTerminologyArtifacts.DeepClone();
 
             this.terminologyArtifactServiceMock.Setup(service =>
-                service.RemoveTerminologyArtifactByIdAsync(randomTerminologyArtifacts.Id))
+                service.RetrieveTerminologyArtifactByIdAsync(randomTerminologyArtifacts.Id))
                     .ReturnsAsync(storageTerminologyArtifacts);
 
             // when
@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             actualTerminologyArtifacts.Should().BeEquivalentTo(expectedTerminologyArtifacts);
 
             this.terminologyArtifactServiceMock.Verify(service =>
-                service.RemoveTerminologyArtifactByIdAsync(randomTerminologyArtifacts.Id),
+                service.RetrieveTerminologyArtifactByIdAsync(randomTerminologyArtifacts.Id),
                     Times.Once());
 
             this.terminologyArtifactServiceMock.VerifyNoOtherCalls();

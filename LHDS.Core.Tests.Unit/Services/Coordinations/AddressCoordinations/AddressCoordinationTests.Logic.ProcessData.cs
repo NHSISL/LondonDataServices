@@ -26,8 +26,8 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             List<Address> persistedAddresses = extractedAddresses.DeepClone();
 
             this.addressExtractionOrchestrationServiceMock.Setup(service =>
-                service.ProcessData(inputData))
-                    .Returns(extractedAddresses);
+                service.ProcessDataAsync(inputData))
+                    .ReturnsAsync(extractedAddresses);
 
             this.addressPersistanceOrchestrationServiceMock.Setup(service =>
                 service.ProcessAsync(extractedAddresses))
@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Coordinations.AddressCoordinations
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);
 
             this.addressExtractionOrchestrationServiceMock.Verify(service =>
-                service.ProcessData(inputData),
+                service.ProcessDataAsync(inputData),
                     Times.Once());
 
             this.addressPersistanceOrchestrationServiceMock.Verify(service =>

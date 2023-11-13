@@ -4,7 +4,6 @@
 
 using System;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
-using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyPolls.Exceptions;
 
 namespace LHDS.Core.Services.Processings.TerminologyPolls

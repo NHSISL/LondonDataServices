@@ -4,9 +4,9 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
-using LHDS.Core.Models.Processings.TerminologyArtifact.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyArtifacts.Exceptions;
 using Xeptions;
 
@@ -14,6 +14,7 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
 {
     public partial class TerminologyArtifactProcessingService
     {
+        private delegate ValueTask<TerminologyArtifact> ReturningTerminologyArtifactProcessingFunction();
         private delegate IQueryable<TerminologyArtifact> ReturningTerminologyArtifactsFunction();
 
         private IQueryable<TerminologyArtifact> TryCatch(
@@ -22,6 +23,40 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             try
             {
                 return returningTerminologyArtifactsFunction();
+            }
+            catch (TerminologyArtifactValidationException terminologyArtifactValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(terminologyArtifactValidationException);
+            }
+            catch (TerminologyArtifactDependencyValidationException terminologyArtifactDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(terminologyArtifactDependencyValidationException);
+            }
+            catch (TerminologyArtifactDependencyException terminologyArtifactDependencyException)
+            {
+                throw CreateAndLogDependencyException(terminologyArtifactDependencyException);
+            }
+            catch (TerminologyArtifactServiceException terminologyArtifactServiceException)
+            {
+                throw CreateAndLogDependencyException(terminologyArtifactServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedTerminologyArtifactProcessingServiceException =
+                    new FailedTerminologyArtifactProcessingServiceException(
+                        message: "Failed terminology artifact processing service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedTerminologyArtifactProcessingServiceException);
+            }
+        }
+
+        private async ValueTask<TerminologyArtifact> TryCatch(
+            ReturningTerminologyArtifactProcessingFunction returningTerminologyArtifactProcessingFunction)
+        {
+            try
+            {
+                return await returningTerminologyArtifactProcessingFunction();
             }
             catch (TerminologyArtifactValidationException terminologyArtifactValidationException)
             {

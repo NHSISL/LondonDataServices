@@ -52,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
 
             this.terminologyPollServiceMock.Verify(service =>
                 service.RemoveTerminologyPollByIdAsync(invalidTerminologyPollId),
-                    Times.Once);
+                    Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.terminologyPollServiceMock.VerifyNoOtherCalls();

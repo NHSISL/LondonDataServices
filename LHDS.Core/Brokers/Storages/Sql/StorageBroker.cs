@@ -48,6 +48,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
             AddTerminologyPollConfigurations(modelBuilder);
 
             AddSupplierSeedData(modelBuilder);
+            AddDataSetSeedData(modelBuilder);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

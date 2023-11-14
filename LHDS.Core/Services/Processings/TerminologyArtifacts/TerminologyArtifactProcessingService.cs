@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
@@ -15,13 +16,16 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
     {
         private readonly ITerminologyArtifactService terminologyArtifactService;
         private readonly ILoggingBroker loggingBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
 
         public TerminologyArtifactProcessingService(
             ITerminologyArtifactService terminologyArtifactService,
-            ILoggingBroker loggingBroker)
+            ILoggingBroker loggingBroker,
+            IDateTimeBroker dateTimeBroker)
         {
             this.terminologyArtifactService = terminologyArtifactService;
             this.loggingBroker = loggingBroker;
+            this.dateTimeBroker = dateTimeBroker;
         }
         public IQueryable<TerminologyArtifact> RetrieveAllTerminologyArtifactsAsync() =>
             TryCatch(() =>
@@ -45,11 +49,11 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             if (maybeTerminologyArtifact != null)
             {
                 terminologyArtifact.IsDownloaded = false;
+                terminologyArtifact.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
                 return await this.terminologyArtifactService.ModifyTerminologyArtifactAsync(terminologyArtifact);
             }
             else
             {
-                terminologyArtifact.IsCore = false;
                 terminologyArtifact.IsDownloaded = false;
                 return await this.terminologyArtifactService.AddTerminologyArtifactAsync(terminologyArtifact);
             }

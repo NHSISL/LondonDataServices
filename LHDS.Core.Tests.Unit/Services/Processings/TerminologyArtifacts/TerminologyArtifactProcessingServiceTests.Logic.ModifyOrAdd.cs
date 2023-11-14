@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
@@ -12,17 +13,22 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 {
     public partial class TerminologyArtifactProcessingServiceTests
     {
-
         [Fact]
         public async Task ShouldModifyTerminologyArtifactIfOneExistsAndNotAddAsync()
         {
             // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             TerminologyArtifact randomTerminologyArtifacts = CreateRandomTerminologyArtifact();
             TerminologyArtifact storageTerminologyArtifacts = randomTerminologyArtifacts;
             TerminologyArtifact modifiedTerminologyArtifact = storageTerminologyArtifacts.DeepClone();
             modifiedTerminologyArtifact.Name = modifiedTerminologyArtifact.Name + "Modified";
+            modifiedTerminologyArtifact.UpdatedDate = randomDateTimeOffset;
             modifiedTerminologyArtifact.IsDownloaded = false;
             TerminologyArtifact updatedTerminologyArtifacts = modifiedTerminologyArtifact.DeepClone();
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
 
             this.terminologyArtifactServiceMock.Setup(service =>
                 service.RetrieveTerminologyArtifactByIdAsync(modifiedTerminologyArtifact.Id))
@@ -37,6 +43,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                 ModifyOrAddTerminologyArtifactAsync(modifiedTerminologyArtifact);
 
             // then
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.terminologyArtifactServiceMock.Verify(service =>
                 service.RetrieveTerminologyArtifactByIdAsync(modifiedTerminologyArtifact.Id),
                     Times.Once);
@@ -59,7 +70,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             // Given
             TerminologyArtifact randomTerminologyArtifact = CreateRandomTerminologyArtifact();
             TerminologyArtifact inputTerminologyArtifact = randomTerminologyArtifact;
-            inputTerminologyArtifact.IsCore = false;
             inputTerminologyArtifact.IsDownloaded = false;
             TerminologyArtifact storageTerminologyArtifact = inputTerminologyArtifact.DeepClone();
 

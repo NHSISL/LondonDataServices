@@ -65,7 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
         }
 
         [Fact]
-        public async Task ShouldAddTerminologyArtifactIfDataSetDoesNotExistsAsync()
+        public async Task ShouldAddTerminologyArtifactIfTerminologyArtifactDoesNotExistsAsync()
         {
             // Given
             TerminologyArtifact randomTerminologyArtifact = CreateRandomTerminologyArtifact();

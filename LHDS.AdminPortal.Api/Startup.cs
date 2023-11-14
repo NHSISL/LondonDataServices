@@ -41,7 +41,11 @@ using LHDS.Core.Services.Foundations.OptOuts;
 using LHDS.Core.Services.Foundations.PdsAudits;
 using LHDS.Core.Services.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.Suppliers;
+using LHDS.Core.Services.Orchestrations.Downloads;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
+using LHDS.Core.Services.Processings.Documents;
+using LHDS.Core.Services.Processings.Downloads;
+using LHDS.Core.Services.Processings.IngestionTrackings;
 using LHDS.Core.Services.Processings.OptOuts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -272,12 +276,18 @@ namespace LHDS.AdminPortal.Api
         }
 
         private static void AddOrchestrationServices(IServiceCollection services, IConfiguration configuration)
-        { }
+        {
+            services.AddTransient<IDownloadOrchestrationService, DownloadOrchestrationService>();
+        }
 
         private static void AddProcessingServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IOptOutProcessingService, OptOutProcessingService>();
             services.AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
+            services.AddTransient<IDocumentProcessingService, DocumentProcessingService>();
+            services.AddTransient<IDownloadProcessingService, DownloadProcessingService>();
+            services.AddTransient<IIngestionTrackingProcessingService, IngestionTrackingProcessingService>();
+            services.AddTransient<IIngestionTrackingAuditProcessingService, IngestionTrackingAuditProcessingService>();
         }
 
 

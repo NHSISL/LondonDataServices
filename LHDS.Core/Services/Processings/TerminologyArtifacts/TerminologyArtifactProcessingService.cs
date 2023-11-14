@@ -41,23 +41,26 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             });
 
         public async ValueTask<TerminologyArtifact> ModifyOrAddTerminologyArtifactAsync(
-            TerminologyArtifact terminologyArtifact)
-        {
-            var maybeTerminologyArtifact =
-                await this.terminologyArtifactService.RetrieveTerminologyArtifactByIdAsync(terminologyArtifact.Id);
+            TerminologyArtifact terminologyArtifact) =>
+            await TryCatch(async () =>
+            {
+                ValidateTerminologyArtifact(terminologyArtifact);
 
-            if (maybeTerminologyArtifact != null)
-            {
-                terminologyArtifact.IsDownloaded = false;
-                terminologyArtifact.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                return await this.terminologyArtifactService.ModifyTerminologyArtifactAsync(terminologyArtifact);
-            }
-            else
-            {
-                terminologyArtifact.IsDownloaded = false;
-                return await this.terminologyArtifactService.AddTerminologyArtifactAsync(terminologyArtifact);
-            }
-        }
+                var maybeTerminologyArtifact =
+                    await this.terminologyArtifactService.RetrieveTerminologyArtifactByIdAsync(terminologyArtifact.Id);
+
+                if (maybeTerminologyArtifact != null)
+                {
+                    terminologyArtifact.IsDownloaded = false;
+                    terminologyArtifact.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                    return await this.terminologyArtifactService.ModifyTerminologyArtifactAsync(terminologyArtifact);
+                }
+                else
+                {
+                    terminologyArtifact.IsDownloaded = false;
+                    return await this.terminologyArtifactService.AddTerminologyArtifactAsync(terminologyArtifact);
+                }
+            });
 
         public ValueTask<TerminologyArtifact> RemoveTerminologyArtifactByIdAsync(Guid Id) =>
             TryCatch(async () =>

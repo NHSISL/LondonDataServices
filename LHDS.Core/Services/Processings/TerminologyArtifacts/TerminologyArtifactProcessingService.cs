@@ -46,6 +46,7 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             await TryCatch(async () =>
             {
                 ValidateTerminologyArtifact(terminologyArtifact);
+                ValidateId(terminologyArtifact.Id);
 
                 var maybeTerminologyArtifact =
                     await this.terminologyArtifactService.RetrieveTerminologyArtifactByIdAsync(terminologyArtifact.Id);

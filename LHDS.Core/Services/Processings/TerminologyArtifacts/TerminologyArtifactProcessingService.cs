@@ -49,7 +49,9 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             }
             else
             {
-                throw new NotImplementedException();
+                terminologyArtifact.IsCore = false;
+                terminologyArtifact.IsDownloaded = false;
+                return await this.terminologyArtifactService.AddTerminologyArtifactAsync(terminologyArtifact);
             }
         }
 

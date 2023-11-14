@@ -56,11 +56,40 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
         [Fact]
         public async Task ShouldAddTerminologyArtifactIfDataSetDoesNotExistsAsync()
         {
-            // given
+            // Given
+            TerminologyArtifact randomTerminologyArtifact = CreateRandomTerminologyArtifact();
+            TerminologyArtifact inputTerminologyArtifact = randomTerminologyArtifact;
+            inputTerminologyArtifact.IsCore = false;
+            inputTerminologyArtifact.IsDownloaded = false;
+            TerminologyArtifact storageTerminologyArtifact = inputTerminologyArtifact.DeepClone();
 
-            // when
+            this.terminologyArtifactServiceMock.Setup(service =>
+                service.RetrieveTerminologyArtifactByIdAsync(inputTerminologyArtifact.Id))
+                    .ReturnsAsync(value: null);
 
-            // then
+            this.terminologyArtifactServiceMock.Setup(service =>
+                service.AddTerminologyArtifactAsync(inputTerminologyArtifact))
+                    .ReturnsAsync(value: storageTerminologyArtifact);
+
+            // When
+            await this.terminologyArtifactProcessingService.
+                ModifyOrAddTerminologyArtifactAsync(inputTerminologyArtifact);
+
+            // Then
+            this.terminologyArtifactServiceMock.Verify(service =>
+                service.RetrieveTerminologyArtifactByIdAsync(inputTerminologyArtifact.Id),
+                    Times.Once);
+
+            this.terminologyArtifactServiceMock.Verify(service =>
+            service.AddTerminologyArtifactAsync(inputTerminologyArtifact),
+            Times.Once);
+
+            this.terminologyArtifactServiceMock.Verify(service =>
+                service.ModifyTerminologyArtifactAsync(inputTerminologyArtifact),
+                    Times.Never);
+
+            this.terminologyArtifactServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

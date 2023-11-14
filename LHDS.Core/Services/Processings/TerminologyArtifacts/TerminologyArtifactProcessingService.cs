@@ -36,9 +36,22 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
                 return await this.terminologyArtifactService.RetrieveTerminologyArtifactByIdAsync(Id);
             });
 
-        public ValueTask<TerminologyArtifact> ModifyOrAddTerminologyArtifactAsync(
-            TerminologyArtifact terminologyArtifact) =>
+        public async ValueTask<TerminologyArtifact> ModifyOrAddTerminologyArtifactAsync(
+            TerminologyArtifact terminologyArtifact)
+        {
+            var maybeTerminologyArtifact =
+                await this.terminologyArtifactService.RetrieveTerminologyArtifactByIdAsync(terminologyArtifact.Id);
+
+            if (maybeTerminologyArtifact != null)
+            {
+                terminologyArtifact.IsDownloaded = false;
+                return await this.terminologyArtifactService.ModifyTerminologyArtifactAsync(terminologyArtifact);
+            }
+            else
+            {
                 throw new NotImplementedException();
+            }
+        }
 
         public ValueTask<TerminologyArtifact> RemoveTerminologyArtifactByIdAsync(Guid Id) =>
             TryCatch(async () =>

@@ -290,7 +290,6 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IIngestionTrackingAuditProcessingService, IngestionTrackingAuditProcessingService>();
         }
 
-
         private IEdmModel GetEdmModel()
         {
             ODataConventionModelBuilder builder =

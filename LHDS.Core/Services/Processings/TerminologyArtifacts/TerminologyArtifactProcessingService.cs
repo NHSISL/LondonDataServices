@@ -29,6 +29,13 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
                 return this.terminologyArtifactService.RetrieveAllTerminologyArtifacts();
             });
 
+        public ValueTask<TerminologyArtifact> RetrieveTerminologyArtifactByIdAsync(Guid Id) =>
+            TryCatch(async () =>
+            {
+                ValidateId(Id);
+                return await this.terminologyArtifactService.RetrieveTerminologyArtifactByIdAsync(Id);
+            });
+
         public ValueTask<TerminologyArtifact> RetrieveOrAddTerminologyArtifactAsync(
             TerminologyArtifact terminologyArtifact) =>
                 throw new NotImplementedException();

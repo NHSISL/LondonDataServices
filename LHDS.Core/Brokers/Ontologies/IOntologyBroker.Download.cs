@@ -5,10 +5,9 @@
 namespace LHDS.Core.Brokers.Ontologies
 {
     using System.Threading.Tasks;
-    using Hl7.Fhir.Model;
 
     internal partial interface IOntologyBroker
     {
-        ValueTask<Bundle> GetAllCodingSystemsAsync(string relativeUrl);
+        ValueTask<string> GetArtifactDetailsAsync(string relativeUrl);
     }
 }

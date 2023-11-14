@@ -37,6 +37,7 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             TryCatch(async () =>
             {
                 ValidateId(Id);
+
                 return await this.terminologyArtifactService.RetrieveTerminologyArtifactByIdAsync(Id);
             });
 
@@ -53,11 +54,13 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
                 {
                     terminologyArtifact.IsDownloaded = false;
                     terminologyArtifact.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
                     return await this.terminologyArtifactService.ModifyTerminologyArtifactAsync(terminologyArtifact);
                 }
                 else
                 {
                     terminologyArtifact.IsDownloaded = false;
+
                     return await this.terminologyArtifactService.AddTerminologyArtifactAsync(terminologyArtifact);
                 }
             });
@@ -66,6 +69,7 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             TryCatch(async () =>
             {
                 ValidateId(Id);
+
                 return await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(Id);
             });
     }

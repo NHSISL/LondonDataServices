@@ -93,7 +93,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedTerminologyArtifactProcessingDependencyException))),
-                         Times.Once);
+                        Times.Once);
 
             this.terminologyArtifactServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -111,7 +111,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             var failedTerminologyArtifactProcessingServiceException =
                new FailedTerminologyArtifactProcessingServiceException(
                     message: "Failed terminology artifact processing service error occurred, contact support.",
-                   innerException: serviceException);
+                    innerException: serviceException);
 
             var expectedTerminologyArtifactProcessingServiveException =
                 new TerminologyArtifactProcessingServiceException(

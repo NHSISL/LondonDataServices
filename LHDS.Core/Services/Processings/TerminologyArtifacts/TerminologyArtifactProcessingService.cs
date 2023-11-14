@@ -43,6 +43,7 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
         public ValueTask<TerminologyArtifact> RemoveTerminologyArtifactByIdAsync(Guid Id) =>
             TryCatch(async () =>
             {
+                ValidateId(Id);
                 return await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(Id);
             });
     }

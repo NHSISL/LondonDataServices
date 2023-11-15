@@ -2,15 +2,14 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using Xeptions;
 
 namespace LHDS.Core.Models.Processings.TerminologyArtifacts.Exceptions
 {
-    public class FailedTerminologyArtifactProcessingServiceException : Xeption
+    public class InvalidArgumentTerminologyArtifactProcessingException : Xeption
     {
-        public FailedTerminologyArtifactProcessingServiceException(string message, Exception innerException)
-          : base(message, innerException)
+        public InvalidArgumentTerminologyArtifactProcessingException(string message)
+           : base(message)
         { }
     }
 }

@@ -4,7 +4,6 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Ontologies;
 using LHDS.Core.Models.Foundations.Ontologies.Exceptions;
 using Moq;
 using Xunit;
@@ -17,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologies
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnRetrieveAllValueSetsIfUrlIsInvalidAndLogItAsync(
+        public async Task ShouldThrowValidationExceptionOnRetrieveArtifactDetailsIfUrlIsInvalidAndLogItAsync(
             string invalidText)
         {
             string invalidFileName = invalidText;
@@ -36,12 +35,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologies
                     innerException: invalidArgumentOntologyException);
 
             // when
-            ValueTask<OntologyAssets> retrieveOntologyByRelativeUrlTask =
-                this.ontologyService.RetrieveAllValueSetsAsync(invalidFileName);
+            ValueTask<string> retrieveArtifactDetailsTask =
+                this.ontologyService.RetrieveArtifactDetailsAsync(invalidFileName);
 
             OntologyValidationException actualOntologyValidationException =
                 await Assert.ThrowsAsync<OntologyValidationException>(
-                    retrieveOntologyByRelativeUrlTask.AsTask);
+                    retrieveArtifactDetailsTask.AsTask);
 
             // then
             actualOntologyValidationException.Should()
@@ -51,6 +50,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologies
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedOntologyValidationException))),
                         Times.Once);
+
+            this.ontologyBrokerMock.Verify(broker =>
+                broker.GetArtifactDetailsAsync(It.IsAny<string>()),
+                        Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.ontologyBrokerMock.VerifyNoOtherCalls();

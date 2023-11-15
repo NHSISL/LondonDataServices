@@ -15,7 +15,7 @@ using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologys
+namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologies
 {
     public partial class OntologyServiceTests
     {

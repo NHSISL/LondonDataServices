@@ -58,9 +58,8 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                     DocumentData = artifactDetailData
                 };
 
-                await this.documentProcessingService.AddDocumentAsync(artifactDetailDocument, blobContainers.Terminology);
+                await this.documentProcessingService.AddDocumentAsync(artifactDetailDocument, "Terminology");
             }
-
         }
     }
 }

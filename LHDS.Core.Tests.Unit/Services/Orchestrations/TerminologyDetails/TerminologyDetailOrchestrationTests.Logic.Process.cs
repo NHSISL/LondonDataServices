@@ -28,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             IQueryable<TerminologyArtifact> undownloadedTerminologyArtifacts = inputTerminologyArtifacts;
             TerminologyArtifact undownloadedTerminologyArtifact = undownloadedTerminologyArtifacts.First();
             string inputFullUrl = undownloadedTerminologyArtifact.FullUrl;
-            string inputFileName = GetRandomString();
+            string inputFileName = undownloadedTerminologyArtifact.Id.ToString();
             string outputFileName = inputFileName;
             string outputArtifactDetail = GetRandomString();
 

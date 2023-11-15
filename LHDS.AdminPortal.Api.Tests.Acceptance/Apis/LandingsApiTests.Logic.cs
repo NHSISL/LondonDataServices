@@ -57,44 +57,65 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         [Fact]
         public async Task ShouldLandDocumentByFileNameForNewIngestionTrackingAsync()
         {
-            //Given
-            List<Document> retrievedDocuments =
-                await this.apiBroker.downloadService.RetrieveListOfDocumentsToProcessAsync();
-
-            byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
-            byte[] encryptedData = await this.apiBroker.cryptographyProvider.EncryptAsync(documentData);
-            Document retrievedDocument = retrievedDocuments[1];
-            retrievedDocument.DocumentData = encryptedData;
-            string decryptedFilePath = decryptedFolder;
-            await CleanupTask(retrievedDocument.FileName);
-            bool hasExisitingSupplier = (await this.apiBroker.FindSupplierByIdAsync(supplierId)).Any();
-
-            if (!hasExisitingSupplier)
+            try
             {
-                await PostLandingSupplierAsync(supplierId);
-                await PostDataSetAsync(supplierId, dataSetId);
+                //Given
+                List<Document> retrievedDocuments =
+                    await this.apiBroker.downloadService.RetrieveListOfDocumentsToProcessAsync();
+
+                byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
+                byte[] encryptedData = await this.apiBroker.cryptographyProvider.EncryptAsync(documentData);
+                Document retrievedDocument = retrievedDocuments[1];
+                retrievedDocument.DocumentData = encryptedData;
+                string decryptedFilePath = decryptedFolder;
+                await CleanupTask(retrievedDocument.FileName);
+                bool hasExisitingSupplier = (await this.apiBroker.FindSupplierByIdAsync(supplierId)).Any();
+                bool hasExisitingDataSet = (await this.apiBroker.FindDataSetByIdAsync(dataSetId)).Any();
+
+                bool hasExistingDataSetSpecification =
+                    (await this.apiBroker.FindtDataSetSpecificationByIdAsync(dataSetSpecificationId)).Any();
+
+                if (!hasExisitingSupplier)
+                {
+                    await PostLandingSupplierAsync(supplierId);
+                }
+
+                if (!hasExisitingDataSet)
+                {
+                    await PostDataSetAsync(supplierId, dataSetId);
+                }
+
+                if (!hasExistingDataSetSpecification)
+                {
+                    await PostDataSetSpecificationAsync(dataSetSpecificationId, dataSetId);
+                }
+
+
+                DataSet activeDataSet = await this.apiBroker.GetDataSetByIdAsync(dataSetId);
+
+                DataSetSpecification activeDataSetSpecification =
+                    await this.apiBroker.GetDataSetSpecificationByIdAsync(dataSetSpecificationId);
+
+                string expectedDecryptedFileName =
+                    $"/{decryptedFilePath}" +
+                    $"/{activeDataSet.DataSetName}" +
+                    $"/{activeDataSetSpecification.Id}" +
+                    $"/{retrievedDocument.FileName.Split('_')[3]}" +
+                    $"{retrievedDocument.FileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
+
+                //When
+                string actualDecryptedFileName =
+                    await this.apiBroker.GetLandingDocumentByFileNameAsync(retrievedDocument.FileName);
+
+                //Then 
+                actualDecryptedFileName.Should().BeEquivalentTo(expectedDecryptedFileName);
+                await CleanupTask(retrievedDocument.FileName);
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
 
-            DataSet activeDataSet = await this.apiBroker.GetDataSetByIdAsync(dataSetId);
-
-            DataSetSpecification activeDataSetSpecification =
-                await PostRandomActiveDataSetSpecificationAsync(activeDataSet.Id);
-
-            string expectedDecryptedFileName =
-                $"/{decryptedFilePath}" +
-                $"/{activeDataSet.DataSetName}" +
-                $"/{activeDataSetSpecification.Id}" +
-                $"/{retrievedDocument.FileName.Split('_')[3]}" +
-                $"{retrievedDocument.FileName.Replace(".gpg", "", StringComparison.InvariantCultureIgnoreCase)}";
-
-            //When
-            string actualDecryptedFileName =
-                await this.apiBroker.GetLandingDocumentByFileNameAsync(retrievedDocument.FileName);
-
-            //Then 
-            actualDecryptedFileName.Should().BeEquivalentTo(expectedDecryptedFileName);
-            await CleanupTask(retrievedDocument.FileName);
-            await this.apiBroker.DeleteDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
         }
 
         private async ValueTask CleanupTask(string fileName)

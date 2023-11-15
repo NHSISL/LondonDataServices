@@ -22,6 +22,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         private readonly string decryptedFolder;
         private readonly Guid supplierId;
         private readonly Guid dataSetId;
+        private readonly Guid dataSetSpecificationId;
 
         public LandingsApiTests(
             ApiBroker apiBroker)
@@ -29,6 +30,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             this.apiBroker = apiBroker;
             this.supplierId = this.apiBroker.landingConfiguration.LandingSupplierId;
             this.dataSetId = Guid.Parse("6a62313a-7442-462e-b6e8-dec541ddd0ba");
+            this.dataSetSpecificationId = Guid.Parse("e8ebce80-e619-40ca-b45f-9c3ac0328143");
             this.encryptedFolder = this.apiBroker.landingConfiguration.EncryptedFolder;
             this.decryptedFolder = this.apiBroker.landingConfiguration.DecryptedFolder;
         }
@@ -129,6 +131,39 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             return landingsSupplier;
         }
 
+        private async ValueTask<DataSetSpecification> PostDataSetSpecificationAsync(Guid dataSetSpecificationId, Guid dataSetId)
+        {
+            var now = DateTimeOffset.UtcNow;
+
+            var dataSetSpecification = new DataSetSpecification
+            {
+                Id = dataSetSpecificationId,
+                DataSetId = dataSetId,
+                SupplierSpecificationVersion = "7.0",
+                OurSpecificationVersion = "1.0",
+                Notes = "This is a test dataset specification",
+                IsMultiAuthorPerBatch = true,
+                EntityChangeSynchronisation = "",
+                DateReleased = new DateTime(year: 2023, month: 1, day: 1, hour: 0, minute: 0, second: 0),
+                DateImplemented = new DateTime(year: 2023, month: 1, day: 1, hour: 0, minute: 0, second: 0),
+                DateSuperseded = null,
+                IsPublished = true,
+                PresededById = null,
+                SupersededById = null,
+                CreatedBy = "System",
+                CreatedDate = new DateTime(year: 2023, month: 1, day: 1, hour: 0, minute: 0, second: 0),
+                UpdatedBy = "System",
+                UpdatedDate = new DateTime(year: 2023, month: 1, day: 1, hour: 0, minute: 0, second: 0),
+                ActiveFrom = new DateTime(year: 2023, month: 1, day: 1, hour: 0, minute: 0, second: 0),
+                ActiveTo = new DateTime(year: 2123, month: 1, day: 1, hour: 0, minute: 0, second: 0),
+                IsActive = true,
+            };
+
+            await this.apiBroker.PostDataSetSpecificationAsync(dataSetSpecification);
+
+            return dataSetSpecification;
+        }
+
         private async ValueTask<DataSet> PostDataSetAsync(Guid supplierId, Guid dataSetId)
         {
             var now = DateTimeOffset.UtcNow;
@@ -138,13 +173,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 Id = dataSetId,
                 SupplierId = supplierId,
                 DataSetName = "PrimaryCareEMISDEV",
-                DataSetAliases = "",
+                DataSetAliases = "PrimaryCareEMISDEV",
                 DataSetAuthor = "EMISDEV",
                 SpecifiedBy = "EMIS",
                 IsNationallySpecified = false,
                 CollectedBy = "EMIS",
                 IsNationallyCollected = false,
-                DataSourceType = "",
+                DataSourceType = "PrimaryCareEMISDEV",
                 CreatedBy = "System",
                 CreatedDate = now,
                 UpdatedBy = "System",

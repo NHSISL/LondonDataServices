@@ -104,7 +104,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }
-      
+
+        [Fact]
         public async Task ShouldPutDataSetSpecificationAsync()
         {
             // Given
@@ -117,13 +118,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             DataSetSpecification inputDataSetSpecification = randomDataSetSpecification;
             await this.apiBroker.PostDataSetSpecificationAsync(inputDataSetSpecification);
 
-            DataSetSpecification modifiedDataSetSpecification = 
+            DataSetSpecification modifiedDataSetSpecification =
                 UpdateDataSetSpecificationWithRandomValues(inputDataSetSpecification);
 
             // When
             await this.apiBroker.PutDataSetSpecificationAsync(modifiedDataSetSpecification);
 
-            DataSetSpecification actualDataSetSpecification = 
+            DataSetSpecification actualDataSetSpecification =
                 await this.apiBroker.GetDataSetSpecificationByIdAsync(inputDataSetSpecification.Id);
 
             // Then
@@ -134,7 +135,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSetSpecifications
             await this.apiBroker.DeleteDataSetByIdAsync(randomDataSet.Id);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }
-      
+
         [Fact]
         public async Task ShouldDeleteDataSetSpecificationAsync()
         {

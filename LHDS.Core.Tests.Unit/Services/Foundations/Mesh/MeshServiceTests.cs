@@ -262,7 +262,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             return actualMessage =>
                 this.compareLogic.Compare(expectedMessage, actualMessage)
                     .AreEqual;
-
         }
 
         private static string GetRandomString() =>

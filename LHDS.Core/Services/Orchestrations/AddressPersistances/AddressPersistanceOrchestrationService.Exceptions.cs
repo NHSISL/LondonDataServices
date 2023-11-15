@@ -8,12 +8,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisation.Exceptions;
-using LHDS.Core.Models.Foundations.Decryptions.Exceptions;
-using LHDS.Core.Models.Foundations.Documents.Exceptions;
-using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
-using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
-using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
 using LHDS.Core.Models.Processings.AddressLoadingAudits.Exceptions;
 using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
@@ -21,7 +16,7 @@ using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.AddressPersistances
 {
-    public partial class AddressPersistanceOrchestrationService
+    internal partial class AddressPersistanceOrchestrationService
     {
         private delegate ValueTask<List<Address>> ReturningAddressListFunction();
 
@@ -56,7 +51,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             {
                 throw CreateAndLogDependencyValidationException(addressLoadingAuditValidationException);
             }
-            catch (AddressLoadingAuditProcessingDependencyValidationException 
+            catch (AddressLoadingAuditProcessingDependencyValidationException
                 addressLoadingAuditProcessingDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(
@@ -88,19 +83,20 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             }
             catch (Exception exception)
             {
-                var failedDecryptServiceException =
+                var failedAddressPersistanceOrchestrationServiceException =
                     new FailedAddressPersistanceOrchestrationServiceException(
-                        message: "Failed address persistance orchestration service occurred, please contact support",
+                        message: "Failed address persistance orchestration service error occurred, " +
+                        "please contact support",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedDecryptServiceException);
+                throw CreateAndLogServiceException(failedAddressPersistanceOrchestrationServiceException);
             }
         }
         private AddressPersistanceOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
             var addressPersistanceOrchestrationValidationException =
                 new AddressPersistanceOrchestrationValidationException(
-                    message: "Address persistance orchestration validation errors occured, please try again",
+                    message: "Address persistance orchestration validation error occured, please try again",
                     innerException: exception);
 
             this.loggingBroker.LogError(addressPersistanceOrchestrationValidationException);

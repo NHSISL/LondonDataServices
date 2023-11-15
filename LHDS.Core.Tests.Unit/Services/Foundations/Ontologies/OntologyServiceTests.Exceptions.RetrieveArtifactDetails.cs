@@ -15,7 +15,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologies
     public partial class OntologyServiceTests
     {
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnRetrieveAllCodingSystemsIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveArtifactDetailsIfServiceErrorOccursAndLogItAsync()
         {
             // given
             string someRelativeUrl = GetRandomString();
@@ -32,23 +32,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologies
                     innerException: failedOntologyServiceException);
 
             this.ontologyBrokerMock.Setup(broker =>
-                broker.GetAllCodingSystemsAsync(It.IsAny<string>()))
+                broker.GetArtifactDetailsAsync(It.IsAny<string>()))
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<OntologyAssets> retrieveOntologyByRelativeUrlTask =
-                this.ontologyService.RetrieveAllCodingSystemsAsync(someRelativeUrl);
+            ValueTask<string> retrieveArtifactDetailTask =
+                this.ontologyService.RetrieveArtifactDetailsAsync(someRelativeUrl);
 
             OntologyServiceException actualOntologyServiceException =
                 await Assert.ThrowsAsync<OntologyServiceException>(
-                    retrieveOntologyByRelativeUrlTask.AsTask);
+                    retrieveArtifactDetailTask.AsTask);
 
             // then
             actualOntologyServiceException.Should()
                 .BeEquivalentTo(expectedOntologyServiceException);
 
             this.ontologyBrokerMock.Verify(broker =>
-                broker.GetAllCodingSystemsAsync(It.IsAny<string>()),
+                broker.GetArtifactDetailsAsync(It.IsAny<string>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>

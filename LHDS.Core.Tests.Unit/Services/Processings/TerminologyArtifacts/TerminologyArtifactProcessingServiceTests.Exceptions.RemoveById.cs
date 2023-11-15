@@ -3,7 +3,9 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Processings.TerminologyArtifacts.Exceptions;
 using Moq;
 using Xeptions;
@@ -15,32 +17,34 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public void ShouldThrowDependencyValidationExceptionOnRetrieveAllIfErrorOccursAndLogItAsync(
-            Xeption dependencyValidationException)
+        public async Task ShouldThrowDependencyValidationExceptionOnRemoveByIdIfErrorOccursAndLogItAsync(
+           Xeption dependencyValidationException)
         {
             // given
+            Guid someId = Guid.NewGuid();
+
             var expectedTerminologyArtifactProcessingDependencyValidationException =
                 new TerminologyArtifactProcessingDependencyValidationException(
                     message: "Terminology artifact processing dependency validation error occurred, please try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
 
             this.terminologyArtifactServiceMock.Setup(service =>
-                service.RetrieveAllTerminologyArtifacts())
-                    .Throws(dependencyValidationException);
+                service.RemoveTerminologyArtifactByIdAsync(someId))
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
-            Action terminologyArtifactRetrieveAction = () =>
-                this.terminologyArtifactProcessingService.RetrieveAllTerminologyArtifactsAsync();
+            ValueTask<TerminologyArtifact> terminologyArtifactRemoveByIdTask =
+                this.terminologyArtifactProcessingService.RemoveTerminologyArtifactByIdAsync(someId);
 
             TerminologyArtifactProcessingDependencyValidationException actualException =
-                Assert.Throws<TerminologyArtifactProcessingDependencyValidationException>(
-                    terminologyArtifactRetrieveAction);
+                await Assert.ThrowsAsync<TerminologyArtifactProcessingDependencyValidationException>(
+                    terminologyArtifactRemoveByIdTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyArtifactProcessingDependencyValidationException);
 
             this.terminologyArtifactServiceMock.Verify(service =>
-                service.RetrieveAllTerminologyArtifacts(),
+                service.RemoveTerminologyArtifactByIdAsync(someId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -54,86 +58,87 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public void ShouldThrowDependencyExceptionOnetrieveAllIfErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnRemoveByIdIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
+            Guid someId = Guid.NewGuid();
+
             var expectedTerminologyArtifactProcessingDependencyException =
                 new TerminologyArtifactProcessingDependencyException(
                     message: "Terminology artifact processing dependency error occurred, please try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
             this.terminologyArtifactServiceMock.Setup(service =>
-                service.RetrieveAllTerminologyArtifacts())
+                service.RemoveTerminologyArtifactByIdAsync(someId))
                     .Throws(dependencyException);
 
             // when
-            Action terminologyArtifactRetrieveAction = () =>
-                this.terminologyArtifactProcessingService.RetrieveAllTerminologyArtifactsAsync();
+            ValueTask<TerminologyArtifact> terminologyArtifactRemoveByIdTask =
+                this.terminologyArtifactProcessingService.RemoveTerminologyArtifactByIdAsync(someId);
 
             TerminologyArtifactProcessingDependencyException actualException =
-                Assert.Throws<TerminologyArtifactProcessingDependencyException>(
-                    terminologyArtifactRetrieveAction);
+                await Assert.ThrowsAsync<TerminologyArtifactProcessingDependencyException>(terminologyArtifactRemoveByIdTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTerminologyArtifactProcessingDependencyException);
 
             this.terminologyArtifactServiceMock.Verify(service =>
-                service.RetrieveAllTerminologyArtifacts(),
+                service.RemoveTerminologyArtifactByIdAsync(someId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
-                    expectedTerminologyArtifactProcessingDependencyException))),
-                        Times.Once);
+                     expectedTerminologyArtifactProcessingDependencyException))),
+                         Times.Once);
 
             this.terminologyArtifactServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnRemoveByIdIfServiceErrorOccursAsync()
         {
             // given
+            Guid someId = Guid.NewGuid();
+
             var serviceException = new Exception();
 
             var failedTerminologyArtifactProcessingServiceException =
-                new FailedTerminologyArtifactProcessingServiceException(
+               new FailedTerminologyArtifactProcessingServiceException(
                     message: "Failed terminology artifact processing service error occurred, contact support.",
-                    innerException: serviceException);
+                   innerException: serviceException);
 
-            var expectedTerminologyArtifactProcessingServiceException =
+            var expectedTerminologyArtifactProcessingServiveException =
                 new TerminologyArtifactProcessingServiceException(
                     message: "Terminology artifact processing service error occurred, contact support.",
                     innerException: failedTerminologyArtifactProcessingServiceException);
 
             this.terminologyArtifactServiceMock.Setup(service =>
-                 service.RetrieveAllTerminologyArtifacts())
+                service.RemoveTerminologyArtifactByIdAsync(someId))
                     .Throws(serviceException);
 
             // when
-            Action terminologyArtifactRetrieveAction = () =>
-                this.terminologyArtifactProcessingService.RetrieveAllTerminologyArtifactsAsync();
+            ValueTask<TerminologyArtifact> removeTerminologyArtifactTask =
+                this.terminologyArtifactProcessingService.RemoveTerminologyArtifactByIdAsync(someId);
 
             TerminologyArtifactProcessingServiceException actualException =
-                Assert.Throws<TerminologyArtifactProcessingServiceException>(
-                    terminologyArtifactRetrieveAction);
+                await Assert.ThrowsAsync<TerminologyArtifactProcessingServiceException>(removeTerminologyArtifactTask.AsTask);
 
             // then
-            actualException.Should().BeEquivalentTo(expectedTerminologyArtifactProcessingServiceException);
+            actualException.Should().BeEquivalentTo(expectedTerminologyArtifactProcessingServiveException);
 
             this.terminologyArtifactServiceMock.Verify(service =>
-                service.RetrieveAllTerminologyArtifacts(),
+                service.RemoveTerminologyArtifactByIdAsync(someId),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
-                     expectedTerminologyArtifactProcessingServiceException))),
+                    expectedTerminologyArtifactProcessingServiveException))),
                         Times.Once);
 
             this.terminologyArtifactServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
-
     }
 }

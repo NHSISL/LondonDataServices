@@ -123,5 +123,13 @@ namespace LHDS.Core.Services.Foundations.Ontologies
 
                 return ontologyAssets;
             });
+
+        public ValueTask<string> RetrieveArtifactDetailsAsync(string relativeUrl) =>
+            TryCatch(async () =>
+            {
+                ValidateArgs(relativeUrl);
+
+                return await this.ontologyBroker.GetArtifactDetailsAsync(relativeUrl);
+            });
     }
 }

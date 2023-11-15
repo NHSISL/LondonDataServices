@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Processings.TerminologyArtifacts.Exceptions;
 using Xeptions;
 
@@ -10,6 +11,19 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
 {
     public partial class TerminologyArtifactProcessingService
     {
+        private void ValidateTerminologyArtifact(TerminologyArtifact terminologyArtifact)
+        {
+            ValidateTerminologyArtifactIsNotNull(terminologyArtifact);
+        }
+
+        private static void ValidateTerminologyArtifactIsNotNull(TerminologyArtifact terminologyArtifact)
+        {
+            if (terminologyArtifact is null)
+            {
+                throw new NullTerminologyArtifactProcessingException(message: "Terminology artifact is null.");
+            }
+        }
+
         public void ValidateId(Guid Id) =>
            Validate<InvalidArgumentTerminologyArtifactProcessingException>(
                message: "Invalid argument(s). Please correct the errors and try again.",

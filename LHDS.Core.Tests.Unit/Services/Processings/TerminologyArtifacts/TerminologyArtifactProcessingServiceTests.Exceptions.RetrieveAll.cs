@@ -4,7 +4,6 @@
 
 using System;
 using FluentAssertions;
-using LHDS.Core.Models.Processings.TerminologyArtifact.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyArtifacts.Exceptions;
 using Moq;
 using Xeptions;

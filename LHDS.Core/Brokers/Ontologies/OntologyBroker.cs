@@ -33,7 +33,14 @@ namespace LHDS.Core.Brokers.Ontologies
                 await SetupApiClient();
             }
 
-            return await this.apiClient.GetContentAsync<T>(relativeUrl);
+            if (typeof(T) == typeof(string))
+            {
+                return (T)(object)await this.apiClient.GetContentStringAsync(relativeUrl);
+            }
+            else
+            {
+                return await this.apiClient.GetContentAsync<T>(relativeUrl);
+            }
         }
 
         private async ValueTask GetAccessTokenAsync()

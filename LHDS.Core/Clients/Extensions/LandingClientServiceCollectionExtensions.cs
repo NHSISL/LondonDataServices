@@ -28,6 +28,7 @@ using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
+using LHDS.Core.Services.Processings.OptOuts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -126,6 +127,7 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddProcessingServices(IServiceCollection services)
         {
+            services.AddTransient<IOptOutProcessingService, OptOutProcessingService>();
             services.AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
         }
 

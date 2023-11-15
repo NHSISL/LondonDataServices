@@ -46,6 +46,7 @@
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.optout.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.pds.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.suppliers.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.terminologyArtifacts.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\toastBroker.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\audit\auditRow.tsx" />
@@ -146,6 +147,7 @@
     <TypeScriptCompile Remove="ClientApp\src\models\pds\pdsHomeView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\specificationObjects\specificationObject.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\suppliers\supplier.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\terminologyArtifacts\terminologyArtifact.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\audit\auditView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\dataSetSpecifications\dataSetSpecificationView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\dataSets\dataSetView.ts" />

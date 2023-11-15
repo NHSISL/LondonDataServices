@@ -2,10 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Ontologies;
+using Force.DeepCloner;
 using Moq;
 using Xunit;
 
@@ -19,27 +18,23 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologys
             // given
             string randomRelativeUrl = GetRandomString();
             string inputRelativeUrl = randomRelativeUrl;
-            string nextPageUrl = "http://localhost:5000/api/fhir/ValueSet?_page=2";
-            string artifactType = "ValueSet";
-
-            List<dynamic> randomArtifactProperties = CreateRandomArtifactProperties(artifactType);
-
-            var remoteValueSetBundle = CreateValueSetBundleFromRandomData(randomArtifactProperties, nextPageUrl);
-            var expectedOntologyAssets = CreateArtiFactFromRandomData(randomArtifactProperties, nextPageUrl);
+            string randomArtifactDetail = GetRandomString();
+            string outputArtifactDetail = randomArtifactDetail;
+            string expectedArtifactDetail = outputArtifactDetail.DeepClone();
 
             this.ontologyBrokerMock.Setup(broker =>
-                broker.GetAllValueSetsAsync(inputRelativeUrl))
-                    .ReturnsAsync(remoteValueSetBundle);
+                broker.GetArtifactDetailsAsync(inputRelativeUrl))
+                    .ReturnsAsync(outputArtifactDetail);
 
             // when
-            OntologyAssets actualOntologyAssets =
-                await this.ontologyService.RetrieveAllValueSetsAsync(inputRelativeUrl);
+            string actualArtifactDetail =
+                await this.ontologyService.RetrieveArtifactDetailsAsync(inputRelativeUrl);
 
             // then
-            actualOntologyAssets.Should().BeEquivalentTo(expectedOntologyAssets);
+            actualArtifactDetail.Should().BeEquivalentTo(expectedArtifactDetail);
 
             this.ontologyBrokerMock.Verify(broker =>
-                broker.GetAllValueSetsAsync(inputRelativeUrl),
+                broker.GetArtifactDetailsAsync(inputRelativeUrl),
                     Times.Once);
 
             this.ontologyBrokerMock.VerifyNoOtherCalls();

@@ -155,6 +155,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                         storageIngestionTracking))),
                             Times.Once);
 
+                this.dataSetSpecificationProcessingServiceMock.Verify(service =>
+                    service.GetActiveDataSetSpecification(supplierId),
+                        Times.Once);
+
                 this.downloadProcessingServiceMock.Verify(service =>
                     service.RetrieveDownloadByFileNameAsync(document.FileName),
                         Times.Once);
@@ -307,6 +311,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
                     Times.Exactly(2));
+
+
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(

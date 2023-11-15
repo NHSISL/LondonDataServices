@@ -3,7 +3,7 @@ import ApiBroker from "./apiBroker";
 import { TerminologyArtifact } from "../models/terminologyArtifacts/terminologyArtifact";
 
 class TerminologyArtifactBroker {
-    relativeTerminologyArtifactUrl = '/api/terminologyartifact';
+    relativeTerminologyArtifactUrl = '/api/TerminologyArtifacts';
 
     private apiBroker: ApiBroker = new ApiBroker();
 
@@ -12,8 +12,8 @@ class TerminologyArtifactBroker {
             .then(result => new TerminologyArtifact(result.data));
     }
 
-    async GetAllTerminologyArtifactssAsync(queryString: string) {
-        var url = this.relativeTerminologyArtifactUrl + queryString;
+    async GetAllTerminologyArtifactsAsync(queryString: string) {
+        let url = this.relativeTerminologyArtifactUrl + queryString;
 
         return await this.apiBroker.GetAsync(url)
             .then(result => result.data.map((terminologyArtifact: any) => new TerminologyArtifact(terminologyArtifact)));

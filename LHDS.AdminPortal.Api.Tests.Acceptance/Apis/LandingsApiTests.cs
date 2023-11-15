@@ -11,6 +11,7 @@ using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using Tynamix.ObjectFiller;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 {
@@ -23,9 +24,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         private readonly Guid supplierId;
         private readonly Guid dataSetId;
         private readonly Guid dataSetSpecificationId;
+        private readonly ITestOutputHelper output;
 
         public LandingsApiTests(
-            ApiBroker apiBroker)
+            ApiBroker apiBroker,
+            ITestOutputHelper output)
         {
             this.apiBroker = apiBroker;
             this.supplierId = this.apiBroker.landingConfiguration.LandingSupplierId;
@@ -33,6 +36,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             this.dataSetSpecificationId = Guid.Parse("e8ebce80-e619-40ca-b45f-9c3ac0328143");
             this.encryptedFolder = this.apiBroker.landingConfiguration.EncryptedFolder;
             this.decryptedFolder = this.apiBroker.landingConfiguration.DecryptedFolder;
+            this.output = output;
         }
 
         private static int GetRandomNumber() =>

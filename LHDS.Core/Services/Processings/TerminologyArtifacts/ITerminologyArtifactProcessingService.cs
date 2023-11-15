@@ -15,5 +15,6 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
         ValueTask<TerminologyArtifact> RetrieveTerminologyArtifactByIdAsync(Guid Id);
         ValueTask<TerminologyArtifact> ModifyOrAddTerminologyArtifactAsync(TerminologyArtifact terminologyArtifact);
         ValueTask<TerminologyArtifact> RemoveTerminologyArtifactByIdAsync(Guid Id);
+        ValueTask<TerminologyArtifact> GetNonDownloadedArtifactAsync();
     }
 }

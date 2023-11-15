@@ -124,7 +124,7 @@ namespace LHDS.Core.Services.Foundations.Ontologies
                 return ontologyAssets;
             });
 
-        public async ValueTask<string> GetArtifactDetailsAsync(string relativeUrl) =>
+        public async ValueTask<string> RetrieveArtifactDetailsAsync(string relativeUrl) =>
             throw new System.NotImplementedException();
     }
 }

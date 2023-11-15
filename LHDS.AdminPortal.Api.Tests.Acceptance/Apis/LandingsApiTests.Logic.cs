@@ -66,20 +66,19 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             Document retrievedDocument = retrievedDocuments[1];
             retrievedDocument.DocumentData = encryptedData;
             string decryptedFilePath = decryptedFolder;
-            Guid landingSupplierId = supplierId;
             await CleanupTask(retrievedDocument.FileName);
-            List<Supplier> exisitingSuppliers = await this.apiBroker.FindSupplierByIdAsync(landingSupplierId);
+            bool hasExisitingSupplier = (await this.apiBroker.FindSupplierByIdAsync(supplierId)).Any();
 
-            if (!exisitingSuppliers.Any())
+            if (!hasExisitingSupplier)
             {
-                await PostLandingSupplierAsync(landingSupplierId);
+                await PostLandingSupplierAsync(supplierId);
+                await PostDataSetAsync(supplierId, dataSetId);
             }
 
-            DataSet activeDataSet = await PostRandomActiveDataSetAsync(landingSupplierId);
+            DataSet activeDataSet = await this.apiBroker.GetDataSetByIdAsync(dataSetId);
 
-            DataSetSpecification activeDataSetSpecification = 
+            DataSetSpecification activeDataSetSpecification =
                 await PostRandomActiveDataSetSpecificationAsync(activeDataSet.Id);
-
 
             string expectedDecryptedFileName =
                 $"/{decryptedFilePath}" +
@@ -96,8 +95,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             actualDecryptedFileName.Should().BeEquivalentTo(expectedDecryptedFileName);
             await CleanupTask(retrievedDocument.FileName);
             await this.apiBroker.DeleteDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
-            await this.apiBroker.DeleteDataSetByIdAsync(activeDataSet.Id);
-            await this.apiBroker.DeleteSupplierByIdAsync(landingSupplierId);
         }
 
         private async ValueTask CleanupTask(string fileName)
@@ -137,12 +134,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             foreach (var audit in audits)
             {
                 await this.apiBroker.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
-            }
-
-            if (this.apiBroker.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-                .Any(audit => audit.IngestionTrackingId == ingestionTracking.Id))
-            {
-                await this.RemoveAuditRecords(ingestionTracking);
             }
         }
     }

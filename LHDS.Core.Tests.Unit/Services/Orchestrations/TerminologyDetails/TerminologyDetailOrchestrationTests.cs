@@ -44,6 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                 terminologyArtifactProcessingService: terminologyArtifactProcessingServiceMock.Object,
                 ontologyProcessingService: ontologyProcessingServiceMock.Object,
                 documentProcessingService: documentProcessingServiceMock.Object,
+                blobContainers: this.blobContainers,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object);
 

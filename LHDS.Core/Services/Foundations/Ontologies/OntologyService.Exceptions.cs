@@ -13,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.Ontologies
     internal partial class OntologyService
     {
         private delegate ValueTask<OntologyAssets> ReturningOntologyAssetsFunction();
+        private delegate ValueTask<string> ReturningStringFunction();
 
         private async ValueTask<OntologyAssets> TryCatch(ReturningOntologyAssetsFunction returningOntologyAssetsFunction)
         {
@@ -32,6 +33,18 @@ namespace LHDS.Core.Services.Foundations.Ontologies
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedOntologyServiceException);
+            }
+        }
+
+        private async ValueTask<string> TryCatch(ReturningStringFunction returningStringFunction)
+        {
+            try
+            {
+                return await returningStringFunction();
+            }
+            catch (InvalidArgumentOntologyException invalidArgumentOntologyException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentOntologyException);
             }
         }
 

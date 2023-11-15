@@ -160,6 +160,7 @@
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\pds\pdsView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\specificationObjects\specificationObjectView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\suppliers\supplierView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\views\components\terminologyArtifacts\terminologyArtifactsView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\configHomePage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetsListPage.tsx" />
@@ -181,6 +182,7 @@
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\optoutService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\pdsService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\supplierService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\foundations\terminologyArtifactService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\auditViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\DataSetSpecification\dataSetSpecificationViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\DataSets\dataSetViewService.ts" />
@@ -194,6 +196,7 @@
     <TypeScriptCompile Remove="ClientApp\src\services\views\Pds\pdsViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\specificationObjects\specificationObjectViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\supplierViewService .ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\TerminologyArtifacts\terminologyArtifactViewService.ts" />
   </ItemGroup>
 
   <ItemGroup>

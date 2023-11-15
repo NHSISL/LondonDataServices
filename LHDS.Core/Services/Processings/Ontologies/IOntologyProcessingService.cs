@@ -12,5 +12,6 @@ namespace LHDS.Core.Services.Processings.Ontologies
         ValueTask<OntologyAssets> RetrieveAllCodingSystemsAsync(string relativeUrl);
         ValueTask<OntologyAssets> RetrieveAllValueSetsAsync(string relativeUrl);
         ValueTask<OntologyAssets> RetrieveAllConceptMapsAsync(string relativeUrl);
+        ValueTask<string> RetrieveArtifactDetailsAsync(string relativeUrl);
     }
 }

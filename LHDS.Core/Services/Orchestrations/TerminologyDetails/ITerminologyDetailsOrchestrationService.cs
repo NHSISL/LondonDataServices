@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
 {
-    public interface ITerminologyDetailsOrchestrationService
+    public interface ITerminologyDetailOrchestrationService
     {
-        ValueTask<string> RetrieveArtifactDetailsAsync();
+        ValueTask RetrieveArtifactDetailsAsync();
     }
 }

@@ -6,35 +6,35 @@ using System;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Services.Foundations.Documents;
-using LHDS.Core.Services.Foundations.Ontologies;
-using LHDS.Core.Services.Foundations.TerminologyArtifacts;
+using LHDS.Core.Services.Processings.Documents;
+using LHDS.Core.Services.Processings.Ontologies;
+using LHDS.Core.Services.Processings.TerminologyArtifacts;
 
 namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
 {
-    internal partial class TerminologyDetailsOrchestration : ITerminologyDetailsOrchestrationService
+    internal partial class TerminologyDetailOrchestrationService : ITerminologyDetailOrchestrationService
     {
-        private readonly ITerminologyArtifactService terminologyArtifactService;
-        private readonly IOntologyService ontologyService;
-        private readonly IDocumentService documentService;
+        private readonly ITerminologyArtifactProcessingService terminologyArtifactProcessingService;
+        private readonly IOntologyProcessingService ontologyProcessingService;
+        private readonly IDocumentProcessingService documentProcessingService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
 
-        public TerminologyDetailsOrchestration(
-            ITerminologyArtifactService terminologyArtifactService,
-            IOntologyService ontologyService,
-            IDocumentService documentService,
+        public TerminologyDetailOrchestrationService(
+            ITerminologyArtifactProcessingService terminologyArtifactProcessingService,
+            IOntologyProcessingService ontologyProcessingService,
+            IDocumentProcessingService documentProcessingService,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker)
         {
-            this.terminologyArtifactService = terminologyArtifactService;
-            this.ontologyService = ontologyService;
-            this.documentService = documentService;
+            this.terminologyArtifactProcessingService = terminologyArtifactProcessingService;
+            this.ontologyProcessingService = ontologyProcessingService;
+            this.documentProcessingService = documentProcessingService;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public ValueTask<string> RetrieveArtifactDetailsAsync() =>
+        public ValueTask RetrieveArtifactDetailsAsync() =>
             throw new NotImplementedException();
     }
 }

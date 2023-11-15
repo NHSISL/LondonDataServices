@@ -43,7 +43,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
                 ModifyOrAddTerminologyArtifactAsync(modifiedTerminologyArtifact);
 
             // then
-
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
                     Times.Once);

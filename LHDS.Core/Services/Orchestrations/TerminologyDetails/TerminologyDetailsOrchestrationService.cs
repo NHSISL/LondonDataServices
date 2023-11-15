@@ -54,11 +54,13 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
 
                 Document artifactDetailDocument = new Document
                 {
-                    FileName = artifact.Id.ToString(),
+                    FileName = $"{artifact.ResourceType}/{artifact.Name}.txt",
                     DocumentData = artifactDetailData
                 };
 
                 await this.documentProcessingService.AddDocumentAsync(artifactDetailDocument, "Terminology");
+
+                artifact.IsDownloaded = true;
             }
         }
     }

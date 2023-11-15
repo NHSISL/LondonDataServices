@@ -1,14 +1,11 @@
 ﻿// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
-using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Force.DeepCloner;
+using FluentAssertions;
 using LHDS.Core.Models.Foundations.Documents;
-using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
-using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using Moq;
 using Xunit;
@@ -45,29 +42,33 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
 
             Document artifactDetailDocument = new Document
             {
-                FileName = inputFileName,
+                FileName = $"{undownloadedTerminologyArtifact.ResourceType}/{undownloadedTerminologyArtifact.Name}.txt",
                 DocumentData = outputArtifactDetailData
             };
 
             this.documentProcessingServiceMock.Setup(service =>
-                service.AddDocumentAsync(artifactDetailDocument, It.IsAny<string>()))
+                service.AddDocumentAsync(artifactDetailDocument, "Termminology"))
                     .ReturnsAsync(outputFileName);
 
             // when
             await this.terminologyDetailOrchestrationService.RetrieveArtifactDetailsAsync();
 
             // then
+            undownloadedTerminologyArtifact.IsDownloaded.Should().BeTrue();
+
             this.terminologyArtifactProcessingServiceMock.Verify(service =>
-                service.GetNonDownloadedArtifactAsync(), 
+                service.GetNonDownloadedArtifactAsync(),
                     Times.Exactly(2));
 
             this.ontologyProcessingServiceMock.Verify(service =>
-                service.RetrieveArtifactDetailsAsync(inputFullUrl), 
+                service.RetrieveArtifactDetailsAsync(inputFullUrl),
                     Times.Once());
 
             this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(artifactDetailDocument, It.IsAny<string>()),
-                    Times.Once());
+                service.AddDocumentAsync(It.Is<Document>(d =>
+                        d.FileName == artifactDetailDocument.FileName &&
+                        d.DocumentData.SequenceEqual(artifactDetailDocument.DocumentData)), It.IsAny<string>()),
+                    Times.Once);
 
             this.terminologyArtifactProcessingServiceMock.VerifyNoOtherCalls();
             this.ontologyProcessingServiceMock.VerifyNoOtherCalls();

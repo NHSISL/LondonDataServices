@@ -46,6 +46,15 @@ namespace LHDS.Core.Services.Foundations.Ontologies
             {
                 throw CreateAndLogValidationException(invalidArgumentOntologyException);
             }
+            catch (Exception exception)
+            {
+                var failedOntologyServiceException =
+                    new FailedOntologyServiceException(
+                        message: "Failed ontology service error occurred, please contact support",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedOntologyServiceException);
+            }
         }
 
         private OntologyValidationException CreateAndLogValidationException(Xeption exception)

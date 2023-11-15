@@ -9,7 +9,7 @@ using LHDS.Core.Models.Foundations.Ontologies.Exceptions;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologys
+namespace LHDS.Core.Tests.Unit.Services.Foundations.Ontologies
 {
     public partial class OntologyServiceTests
     {

@@ -22,36 +22,47 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         [Fact]
         public async Task ShouldLandDocumentByFileNameForExistingIngestionTrackingAsync()
         {
-            //Given
-            List<Document> retrievedDocuments =
-                await this.apiBroker.downloadService.RetrieveListOfDocumentsToProcessAsync();
+            try
+            {
+                //Given
+                List<Document> retrievedDocuments =
+                    await this.apiBroker.downloadService.RetrieveListOfDocumentsToProcessAsync();
 
-            byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
-            byte[] encryptedData = await this.apiBroker.cryptographyProvider.EncryptAsync(documentData);
-            Document retrievedDocument = retrievedDocuments[0];
-            retrievedDocument.DocumentData = encryptedData;
-            Supplier randomSupplier = await PostRandomSupplierAsync();
-            string encryptedFilePath = encryptedFolder;
-            string decryptedFilePath = decryptedFolder;
-            await CleanupTask(retrievedDocument.FileName);
+                byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
+                byte[] encryptedData = await this.apiBroker.cryptographyProvider.EncryptAsync(documentData);
+                Document retrievedDocument = retrievedDocuments[0];
+                retrievedDocument.DocumentData = encryptedData;
+                Supplier randomSupplier = await PostRandomSupplierAsync();
+                string encryptedFilePath = encryptedFolder;
+                string decryptedFilePath = decryptedFolder;
+                await CleanupTask(retrievedDocument.FileName);
 
-            IngestionTracking randomIngestionTracking =
-                await PostRandomIngestionTrackingAsync(
-                    randomSupplier.Id,
-                    retrievedDocument.FileName,
-                    encryptedFilePath,
-                    decryptedFilePath);
+                IngestionTracking randomIngestionTracking =
+                    await PostRandomIngestionTrackingAsync(
+                        randomSupplier.Id,
+                        retrievedDocument.FileName,
+                        encryptedFilePath,
+                        decryptedFilePath);
 
-            IngestionTracking inputIngestionTracking = randomIngestionTracking;
-            IngestionTracking expectedIngestionTracking = inputIngestionTracking;
+                IngestionTracking inputIngestionTracking = randomIngestionTracking;
+                IngestionTracking expectedIngestionTracking = inputIngestionTracking;
 
-            //When
-            string actualDecryptedFileName =
-                await this.apiBroker.GetLandingDocumentByFileNameAsync(retrievedDocument.FileName);
+                //When
+                string actualDecryptedFileName =
+                    await this.apiBroker.GetLandingDocumentByFileNameAsync(retrievedDocument.FileName);
 
-            //Then
-            actualDecryptedFileName.Should().BeEquivalentTo(expectedIngestionTracking.DecryptedFileName);
-            await CleanupTask(expectedIngestionTracking.Id);
+                //Then
+                actualDecryptedFileName.Should().BeEquivalentTo(expectedIngestionTracking.DecryptedFileName);
+                await CleanupTask(expectedIngestionTracking.Id);
+            }
+            catch (Exception ex)
+            {
+                output.WriteLine($"Error: {ex.Message}{Environment.NewLine}" +
+                    $"{ex.InnerException.Message}{Environment.NewLine}" +
+                    $"{ex.InnerException.StackTrace}");
+
+                throw ex.InnerException;
+            }
         }
 
         [Fact]
@@ -113,7 +124,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             }
             catch (Exception ex)
             {
-                throw;
+                output.WriteLine($"Error: {ex.Message}{Environment.NewLine}" +
+                    $"{ex.InnerException.Message}{Environment.NewLine}" +
+                    $"{ex.InnerException.StackTrace}");
+
+                throw ex.InnerException;
             }
 
         }

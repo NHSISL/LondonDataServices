@@ -2,13 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Threading.Tasks;
+
 namespace LHDS.Core.Brokers.Ontologies
 {
-    using System.Threading.Tasks;
-    using Hl7.Fhir.Model;
-
-    internal partial interface IOntologyBroker
+    internal partial class OntologyBroker
     {
-        ValueTask<Bundle> GetAllCodingSystemsAsync(string relativeUrl);
+        public async ValueTask<string> GetArtifactDetailsAsync(string relativeUrl) =>
+            await GetAsync<string>(relativeUrl);
     }
 }

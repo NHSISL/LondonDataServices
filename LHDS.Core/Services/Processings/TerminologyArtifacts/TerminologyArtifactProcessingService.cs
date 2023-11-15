@@ -41,6 +41,10 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
                 throw new NotImplementedException();
 
         public ValueTask<TerminologyArtifact> RemoveTerminologyArtifactByIdAsync(Guid Id) =>
-            throw new NotImplementedException();
+            TryCatch(async () =>
+            {
+                ValidateId(Id);
+                return await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(Id);
+            });
     }
 }

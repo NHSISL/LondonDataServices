@@ -31,6 +31,7 @@ using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Downloads;
 using LHDS.Core.Services.Processings.IngestionTrackings;
+using LHDS.Core.Services.Processings.OptOuts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

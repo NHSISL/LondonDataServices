@@ -5,18 +5,28 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.Downloads.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
+using LHDS.Core.Models.Processings.Documents.Exceptions;
+using LHDS.Core.Models.Processings.Ontologies.Exceptions;
+using LHDS.Core.Models.Processings.TerminologyArtifacts.Exceptions;
 using LHDS.Core.Services.Orchestrations.TerminologyDetails;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Ontologies;
 using LHDS.Core.Services.Processings.TerminologyArtifacts;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
 {
@@ -123,6 +133,77 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                 .OnProperty(terminologyArtifact => terminologyArtifact.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+          actualException => actualException.SameExceptionAs(expectedException);
+
+        public static TheoryData TerminologyDetailOrchestrationDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DocumentProcessingValidationException(
+                    message: "Document processing validation errors occured, please try again",
+                    innerException),
+
+                new DocumentProcessingDependencyValidationException(
+                    message: "Document processing dependency validation occurred, please try again.",
+                    innerException),
+
+                new TerminologyArtifactProcessingValidationException(
+                    message: "Terminology artifact processing validation errors occurred, please try again.",
+                    innerException),
+
+                new TerminologyArtifactProcessingDependencyValidationException(
+                    message: "Terminology artifact processing dependency validation occurred, please try again.",
+                    innerException),
+
+                new OntologyProcessingValidationException(
+                    message: "Ontology processing validation errors occurred, fix the errors and try again.",
+                    innerException),
+
+                new OntologyProcessingDependencyValidationException(
+                    message: "Ontology processing dependency validation occurred, please try again.",
+                    innerException),
+            };
+        }
+
+        public static TheoryData TerminologyDetailOrchestrationDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DocumentProcessingDependencyException(
+                    message: "Document processing dependency error occurred, contact support.",
+                    innerException),
+
+                new DocumentProcessingServiceException(
+                    message: "Document processing service error occurred, contact support.",
+                    innerException),
+
+                new TerminologyArtifactProcessingDependencyException(
+                    message: "Terminology artifact processing dependency error occurred, contact support.",
+                    innerException),
+
+                new TerminologyArtifactProcessingServiceException(
+                    message: "Terminology artifact processing service error occurred, contact support.",
+                    innerException),
+
+                new OntologyProcessingDependencyException(
+                    message: "Ontology processing dependency error occurred, contact support.",
+                    innerException),
+
+                new OntologyProcessingServiceException(
+                    message: "Ontology processing service error occurred, contact support.",
+                    innerException),
+            };
         }
     }
 }

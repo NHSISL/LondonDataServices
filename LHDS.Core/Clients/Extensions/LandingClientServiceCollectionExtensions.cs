@@ -80,7 +80,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
+            services.AddScoped<IStorageBroker, StorageBroker>();
             var landingConfiguration = configuration.GetSection("landingSettings").Get<LandingConfiguration>();
             ValidateLandingConfiguration(landingConfiguration);
 

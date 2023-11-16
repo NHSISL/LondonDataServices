@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -51,7 +50,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                 {
                     string relativeUrl = artifact.FullUrl;
 
-                    string artifactDetail = 
+                    string artifactDetail =
                         await this.ontologyProcessingService.RetrieveArtifactDetailsAsync(relativeUrl);
 
                     byte[] artifactDetailData = Encoding.UTF8.GetBytes(artifactDetail);

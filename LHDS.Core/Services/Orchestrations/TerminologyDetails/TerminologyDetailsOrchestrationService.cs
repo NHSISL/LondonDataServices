@@ -41,27 +41,28 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public async ValueTask RetrieveArtifactDetailsAsync()
-        {
-            TerminologyArtifact artifact = null;
-
-            while ((artifact = 
-                await this.terminologyArtifactProcessingService.GetNonDownloadedArtifactAsync()) != null)
+        public ValueTask RetrieveArtifactDetailsAsync() =>
+            TryCatch(async () =>
             {
-                string relativeUrl = artifact.FullUrl;
-                string artifactDetail = await this.ontologyProcessingService.RetrieveArtifactDetailsAsync(relativeUrl);
-                byte[] artifactDetailData = Encoding.UTF8.GetBytes(artifactDetail);
+                TerminologyArtifact artifact = null;
 
-                Document artifactDetailDocument = new Document
+                while ((artifact =
+                    await this.terminologyArtifactProcessingService.GetNonDownloadedArtifactAsync()) != null)
                 {
-                    FileName = $"{artifact.ResourceType}/{artifact.Name}.txt",
-                    DocumentData = artifactDetailData
-                };
+                    string relativeUrl = artifact.FullUrl;
+                    string artifactDetail = await this.ontologyProcessingService.RetrieveArtifactDetailsAsync(relativeUrl);
+                    byte[] artifactDetailData = Encoding.UTF8.GetBytes(artifactDetail);
 
-                await this.documentProcessingService.AddDocumentAsync(artifactDetailDocument, "Terminology");
-                artifact.IsDownloaded = true;
-                await this.terminologyArtifactProcessingService.ModifyOrAddTerminologyArtifactAsync(artifact);
-            }
-        }
+                    Document artifactDetailDocument = new Document
+                    {
+                        FileName = $"{artifact.ResourceType}/{artifact.Name}.txt",
+                        DocumentData = artifactDetailData
+                    };
+
+                    await this.documentProcessingService.AddDocumentAsync(artifactDetailDocument, "Terminology");
+                    artifact.IsDownloaded = true;
+                    await this.terminologyArtifactProcessingService.ModifyOrAddTerminologyArtifactAsync(artifact);
+                }
+            });
     }
 }

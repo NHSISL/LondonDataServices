@@ -58,8 +58,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             catch (Exception ex)
             {
                 output.WriteLine($"Error: {ex.Message}{Environment.NewLine}" +
-                    $"{ex.InnerException.Message}{Environment.NewLine}" +
-                    $"{ex.InnerException.StackTrace}");
+                    $"{ex?.InnerException?.Message}{Environment.NewLine}" +
+                    $"{ex?.InnerException?.StackTrace}");
 
                 throw ex.InnerException;
             }

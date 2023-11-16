@@ -53,11 +53,12 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
 
                     string artifactDetail = 
                         await this.ontologyProcessingService.RetrieveArtifactDetailsAsync(relativeUrl);
+
                     byte[] artifactDetailData = Encoding.UTF8.GetBytes(artifactDetail);
 
                     Document artifactDetailDocument = new Document
                     {
-                        FileName = $"{artifact.ResourceType}/{artifact.Name}.txt",
+                        FileName = $"{artifact.ResourceType}/{artifact.Name}.json",
                         DocumentData = artifactDetailData
                     };
 

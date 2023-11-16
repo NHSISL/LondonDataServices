@@ -1,11 +1,10 @@
-﻿//---------------------------------------------------------------
-//Copyright(c) North East London ICB. All rights reserved.
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
 using LHDS.Core.Models.Orchestrations.TerminologyDetails.Exceptions;
 using Moq;
 using Xeptions;

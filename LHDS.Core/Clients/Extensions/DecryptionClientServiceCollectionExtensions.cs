@@ -90,7 +90,7 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration, bool acceptanceTest)
         {
-            services.AddTransient<IStorageBroker, StorageBroker>();
+            services.AddScoped<IStorageBroker, StorageBroker>();
             services.AddTransient<IDecryptionBroker, DecryptionBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();

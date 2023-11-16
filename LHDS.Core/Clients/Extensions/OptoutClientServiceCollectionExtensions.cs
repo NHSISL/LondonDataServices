@@ -108,7 +108,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ICsvMapperBroker, CsvMapperBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
+            services.AddScoped<IStorageBroker, StorageBroker>();
 
             if (!acceptanceTest)
             {

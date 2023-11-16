@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
-using LHDS.Core.Models.Processings.TerminologyArtifact.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyArtifacts.Exceptions;
 using Xeptions;
 
@@ -58,6 +57,10 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
             try
             {
                 return await returningTerminologyArtifactProcessingFunction();
+            }
+            catch (NullTerminologyArtifactProcessingException nullTerminologyArtifactException)
+            {
+                throw CreateAndLogValidationException(nullTerminologyArtifactException);
             }
             catch (InvalidArgumentTerminologyArtifactProcessingException invalidArgumentTerminologyArtifactProcessingException)
             {

@@ -58,10 +58,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             catch (Exception ex)
             {
                 output.WriteLine($"Error: {ex.Message}{Environment.NewLine}" +
+                    $"{ex?.StackTrace}{Environment.NewLine}" +
                     $"{ex?.InnerException?.Message}{Environment.NewLine}" +
                     $"{ex?.InnerException?.StackTrace}");
 
-                throw ex.InnerException;
+                throw;
             }
         }
 
@@ -125,10 +126,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             catch (Exception ex)
             {
                 output.WriteLine($"Error: {ex.Message}{Environment.NewLine}" +
-                    $"{ex.InnerException.Message}{Environment.NewLine}" +
-                    $"{ex.InnerException.StackTrace}");
+                    $"{ex?.StackTrace}{Environment.NewLine}" +
+                    $"{ex?.InnerException?.Message}{Environment.NewLine}" +
+                    $"{ex?.InnerException?.StackTrace}");
 
-                throw ex.InnerException;
+                throw;
             }
 
         }
@@ -156,6 +158,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             {
                 await RemoveAuditRecords(maybeIngestionTracking);
 
+                var x = this.apiBroker.ingestionTrackingService
+                    .RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
+
                 await this.apiBroker.ingestionTrackingService
                     .RemoveIngestionTrackingByIdAsync(ingestionTrackingId);
             }
@@ -167,9 +172,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             var audits = this.apiBroker.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
                 .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
 
+            output.WriteLine($"Found {audits.Count()} audits for ingestion tracking {ingestionTracking.Id}");
+
             foreach (var audit in audits)
             {
                 await this.apiBroker.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
+                output.WriteLine($"Removed audit {audit.Id} for ingestion tracking {ingestionTracking.Id}");
             }
         }
     }

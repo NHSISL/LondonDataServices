@@ -98,7 +98,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
             return terminologyDetailOrchestrationDependencyValidationException;
         }
 
-        private DownloadOrchestrationDependencyException
+        private TerminologyDetailOrchestrationDependencyException
             CreateAndLogDependencyException(Xeption exception)
         {
             var terminologyDetailOrchestrationDependencyException =
@@ -111,7 +111,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
             throw terminologyDetailOrchestrationDependencyException;
         }
 
-        private DownloadOrchestrationServiceException
+        private TerminologyDetailOrchestrationServiceException
             CreateAndLogServiceException(Xeption exception)
         {
             var terminologyDetailOrchestrationServiceException =

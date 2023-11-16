@@ -37,7 +37,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
 
             Document artifactDetailDocument = new Document
             {
-                FileName = $"{undownloadedTerminologyArtifact.ResourceType}/{undownloadedTerminologyArtifact.Name}.txt",
+                FileName = $"{undownloadedTerminologyArtifact.ResourceType}/" +
+                    $"{undownloadedTerminologyArtifact.Name}.json",
                 DocumentData = outputArtifactDetailData
             };
 
@@ -64,15 +65,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                     Times.Once());
 
             this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.Is<Document>(document =>
-                        document.FileName == artifactDetailDocument.FileName &&
-                        document.DocumentData.SequenceEqual(artifactDetailDocument.DocumentData)), "Terminology"),
+                service.AddDocumentAsync(It.Is(SameDocumentAs(artifactDetailDocument)), "Terminology"),
                     Times.Once);
 
             this.terminologyArtifactProcessingServiceMock.Verify(service =>
-                service.ModifyOrAddTerminologyArtifactAsync(It.Is<TerminologyArtifact>(artifact =>
-                        artifact.Id == downloadedTerminologyArtifact.Id &&
-                        artifact.IsDownloaded == downloadedTerminologyArtifact.IsDownloaded)),
+                service.ModifyOrAddTerminologyArtifactAsync(It.Is(SameTerminologyArtifactAs(
+                    downloadedTerminologyArtifact))),
                     Times.Once);
 
             this.terminologyArtifactProcessingServiceMock.VerifyNoOtherCalls();

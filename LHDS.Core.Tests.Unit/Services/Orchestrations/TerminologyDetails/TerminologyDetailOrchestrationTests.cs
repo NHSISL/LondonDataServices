@@ -11,10 +11,6 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
-using LHDS.Core.Models.Foundations.Documents.Exceptions;
-using LHDS.Core.Models.Foundations.Downloads.Exceptions;
-using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
-using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.Ontologies.Exceptions;
@@ -68,8 +64,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             };
         }
 
-    private static int GetRandomNumber() =>
-            new IntRange(min: 2, max: 10).GetValue();
+        private static int GetRandomNumber() =>
+                new IntRange(min: 2, max: 10).GetValue();
 
         private static List<Document> CreateRandomDocuments()
         {
@@ -105,6 +101,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
 
         private static string GetRandomMessage() =>
            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+
+        private Expression<Func<Document, bool>> SameDocumentAs(
+            Document expectedDocument)
+        {
+            return actualDocument =>
+                this.compareLogic.Compare(expectedDocument, actualDocument)
+                    .AreEqual;
+        }
+
+        private Expression<Func<TerminologyArtifact, bool>> SameTerminologyArtifactAs(
+            TerminologyArtifact expectedTerminologyArtifact)
+        {
+            return actualTerminologyArtifact =>
+                this.compareLogic.Compare(expectedTerminologyArtifact, actualTerminologyArtifact)
+                    .AreEqual;
+        }
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();

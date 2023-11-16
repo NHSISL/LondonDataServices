@@ -4,7 +4,7 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FluentAssertions;
+using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using Moq;
@@ -50,12 +50,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                 service.AddDocumentAsync(artifactDetailDocument, "Termminology"))
                     .ReturnsAsync(outputFileName);
 
+            TerminologyArtifact downloadedTerminologyArtifact = undownloadedTerminologyArtifact.DeepClone();
+            downloadedTerminologyArtifact.IsDownloaded = true;
+
+            this.terminologyArtifactProcessingServiceMock.Setup(service =>
+                service.ModifyOrAddTerminologyArtifactAsync(downloadedTerminologyArtifact));
+
             // when
             await this.terminologyDetailOrchestrationService.RetrieveArtifactDetailsAsync();
 
             // then
-            undownloadedTerminologyArtifact.IsDownloaded.Should().BeTrue();
-
             this.terminologyArtifactProcessingServiceMock.Verify(service =>
                 service.GetNonDownloadedArtifactAsync(),
                     Times.Exactly(2));
@@ -65,9 +69,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                     Times.Once());
 
             this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.Is<Document>(d =>
-                        d.FileName == artifactDetailDocument.FileName &&
-                        d.DocumentData.SequenceEqual(artifactDetailDocument.DocumentData)), It.IsAny<string>()),
+                service.AddDocumentAsync(It.Is<Document>(document =>
+                        document.FileName == artifactDetailDocument.FileName &&
+                        document.DocumentData.SequenceEqual(artifactDetailDocument.DocumentData)), It.IsAny<string>()),
+                    Times.Once);
+
+            this.terminologyArtifactProcessingServiceMock.Verify(service =>
+                service.ModifyOrAddTerminologyArtifactAsync(It.Is<TerminologyArtifact>(artifact =>
+                        artifact.Id == downloadedTerminologyArtifact.Id &&
+                        artifact.IsDownloaded == downloadedTerminologyArtifact.IsDownloaded)),
                     Times.Once);
 
             this.terminologyArtifactProcessingServiceMock.VerifyNoOtherCalls();

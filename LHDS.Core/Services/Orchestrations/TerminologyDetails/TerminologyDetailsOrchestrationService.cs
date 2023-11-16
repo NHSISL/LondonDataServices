@@ -59,8 +59,8 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                 };
 
                 await this.documentProcessingService.AddDocumentAsync(artifactDetailDocument, "Terminology");
-
                 artifact.IsDownloaded = true;
+                await this.terminologyArtifactProcessingService.ModifyOrAddTerminologyArtifactAsync(artifact);
             }
         }
     }

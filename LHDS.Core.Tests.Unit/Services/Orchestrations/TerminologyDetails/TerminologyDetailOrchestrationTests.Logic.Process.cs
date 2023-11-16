@@ -18,13 +18,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
         public async Task ShouldProcessRetrieveArtifactDetailsAsync()
         {
             // given
-            IQueryable<TerminologyArtifact> randomTerminologyArtifacts =
-                CreateRandomUndownloadedTerminologyArtifacts();
-
-            IQueryable<TerminologyArtifact> inputTerminologyArtifacts = randomTerminologyArtifacts;
-            IQueryable<TerminologyArtifact> undownloadedTerminologyArtifacts = inputTerminologyArtifacts;
-            TerminologyArtifact undownloadedTerminologyArtifact = undownloadedTerminologyArtifacts.First();
-            string inputFullUrl = undownloadedTerminologyArtifact.FullUrl;
+            TerminologyArtifact randomTerminologyArtifacts = CreateRandomUndownloadedTerminologyArtifact();
+            TerminologyArtifact undownloadedTerminologyArtifact = randomTerminologyArtifacts;
             string inputFileName = undownloadedTerminologyArtifact.Id.ToString();
             string outputFileName = inputFileName;
             string outputArtifactDetail = GetRandomString();
@@ -35,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                     .ReturnsAsync((TerminologyArtifact)null);
 
             this.ontologyProcessingServiceMock.Setup(service =>
-                service.RetrieveArtifactDetailsAsync(inputFullUrl))
+                service.RetrieveArtifactDetailsAsync(undownloadedTerminologyArtifact.FullUrl))
                     .ReturnsAsync(outputArtifactDetail);
 
             byte[] outputArtifactDetailData = Encoding.UTF8.GetBytes(outputArtifactDetail);
@@ -47,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             };
 
             this.documentProcessingServiceMock.Setup(service =>
-                service.AddDocumentAsync(artifactDetailDocument, "Termminology"))
+                service.AddDocumentAsync(artifactDetailDocument, "Terminology"))
                     .ReturnsAsync(outputFileName);
 
             TerminologyArtifact downloadedTerminologyArtifact = undownloadedTerminologyArtifact.DeepClone();
@@ -65,13 +60,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                     Times.Exactly(2));
 
             this.ontologyProcessingServiceMock.Verify(service =>
-                service.RetrieveArtifactDetailsAsync(inputFullUrl),
+                service.RetrieveArtifactDetailsAsync(undownloadedTerminologyArtifact.FullUrl),
                     Times.Once());
 
             this.documentProcessingServiceMock.Verify(service =>
                 service.AddDocumentAsync(It.Is<Document>(document =>
                         document.FileName == artifactDetailDocument.FileName &&
-                        document.DocumentData.SequenceEqual(artifactDetailDocument.DocumentData)), It.IsAny<string>()),
+                        document.DocumentData.SequenceEqual(artifactDetailDocument.DocumentData)), "Terminology"),
                     Times.Once);
 
             this.terminologyArtifactProcessingServiceMock.Verify(service =>

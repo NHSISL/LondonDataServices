@@ -50,7 +50,9 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                     await this.terminologyArtifactProcessingService.GetNonDownloadedArtifactAsync()) != null)
                 {
                     string relativeUrl = artifact.FullUrl;
-                    string artifactDetail = await this.ontologyProcessingService.RetrieveArtifactDetailsAsync(relativeUrl);
+
+                    string artifactDetail = 
+                        await this.ontologyProcessingService.RetrieveArtifactDetailsAsync(relativeUrl);
                     byte[] artifactDetailData = Encoding.UTF8.GetBytes(artifactDetail);
 
                     Document artifactDetailDocument = new Document

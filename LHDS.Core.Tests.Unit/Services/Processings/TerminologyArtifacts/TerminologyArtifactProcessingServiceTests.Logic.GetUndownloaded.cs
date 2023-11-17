@@ -5,7 +5,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using Moq;
 using Xunit;
@@ -22,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             IQueryable<TerminologyArtifact> outputTerminologyArtifacts = randomTerminologyArtifacts;
             TerminologyArtifact randomTerminologyArtifact = CreateRandomTerminologyArtifact();
             TerminologyArtifact downloadedTerminologyArtifact = randomTerminologyArtifact;
-            downloadedTerminologyArtifact.IsDownloaded = true;
+            downloadedTerminologyArtifact.IsDownloaded = false;
             outputTerminologyArtifacts.Append(downloadedTerminologyArtifact);
 
             this.terminologyArtifactServiceMock.Setup(service =>

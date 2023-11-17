@@ -74,7 +74,9 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
                 return await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(Id);
             });
 
-        public ValueTask<TerminologyArtifact> GetNonDownloadedArtifactAsync() =>
-            throw new NotImplementedException();
+        public ValueTask<TerminologyArtifact> GetNonDownloadedArtifactAsync()
+        {
+            return this.terminologyArtifactService.RetrieveAllTerminologyArtifacts(where terminologyArtifact.IsDownloaded == true);
+        }
     }
 }

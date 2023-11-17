@@ -63,6 +63,31 @@ namespace LHDS.Core.Services.Processings.Ontologies
             {
                 throw CreateAndLogValidationException(invalidArgumentOntologyProcessingException);
             }
+            catch (OntologyValidationException ontologyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(ontologyValidationException);
+            }
+            catch (OntologyDependencyValidationException ontologyDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(ontologyDependencyValidationException);
+            }
+            catch (OntologyDependencyException ontologyDependencyException)
+            {
+                throw CreateAndLogDependencyException(ontologyDependencyException);
+            }
+            catch (OntologyServiceException ontologyServiceException)
+            {
+                throw CreateAndLogDependencyException(ontologyServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedOntologyProcessingServiceException =
+                    new FailedOntologyProcessingServiceException(
+                        message: "Failed ontology processing service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedOntologyProcessingServiceException);
+            }
         }
 
         private OntologyProcessingValidationException CreateAndLogValidationException(Xeption exception)

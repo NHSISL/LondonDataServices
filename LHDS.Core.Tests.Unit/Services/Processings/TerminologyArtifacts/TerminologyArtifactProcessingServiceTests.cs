@@ -65,7 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             var filler = new Filler<TerminologyArtifact>();
 
             filler.Setup()
-                .OnProperty(terminologyArtifact => terminologyArtifact.IsDownloaded).Use(false)
+                .OnProperty(terminologyArtifact => terminologyArtifact.IsDownloaded).Use(true)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset);
 

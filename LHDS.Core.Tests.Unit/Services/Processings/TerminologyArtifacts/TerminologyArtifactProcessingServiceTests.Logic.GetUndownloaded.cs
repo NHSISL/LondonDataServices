@@ -20,8 +20,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             // given
             IQueryable<TerminologyArtifact> randomTerminologyArtifacts = CreateRandomTerminologyArtifacts();
             List<TerminologyArtifact> artifactsList = randomTerminologyArtifacts.ToList();
-            artifactsList[0].IsDownloaded = false;
-            TerminologyArtifact expectedTerminologyArtifact = artifactsList[0];
+            artifactsList.Last().IsDownloaded = false;
+            TerminologyArtifact expectedTerminologyArtifact = artifactsList.Last();
             IQueryable<TerminologyArtifact> outputTerminologyArtifacts = artifactsList.AsQueryable();
 
             this.terminologyArtifactServiceMock.Setup(service =>

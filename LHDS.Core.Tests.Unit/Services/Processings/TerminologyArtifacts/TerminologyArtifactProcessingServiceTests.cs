@@ -59,13 +59,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
-
         private static Filler<TerminologyArtifact> CreateTerminologyArtifactFiller()
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             var filler = new Filler<TerminologyArtifact>();
 
             filler.Setup()
+                .OnProperty(terminologyArtifact => terminologyArtifact.IsDownloaded).Use(false)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset);
 

@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -18,20 +19,17 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
         {
             // given
             IQueryable<TerminologyArtifact> randomTerminologyArtifacts = CreateRandomTerminologyArtifacts();
-            IQueryable<TerminologyArtifact> outputTerminologyArtifacts = randomTerminologyArtifacts;
-            TerminologyArtifact randomTerminologyArtifact = CreateRandomTerminologyArtifact();
-            TerminologyArtifact downloadedTerminologyArtifact = randomTerminologyArtifact;
-            downloadedTerminologyArtifact.IsDownloaded = false;
-            outputTerminologyArtifacts.Append(downloadedTerminologyArtifact);
+            List<TerminologyArtifact> artifactsList = randomTerminologyArtifacts.ToList();
+            artifactsList[0].IsDownloaded = false;
+            TerminologyArtifact expectedTerminologyArtifact = artifactsList[0];
+            IQueryable<TerminologyArtifact> outputTerminologyArtifacts = artifactsList.AsQueryable();
 
             this.terminologyArtifactServiceMock.Setup(service =>
                 service.RetrieveAllTerminologyArtifacts())
                     .Returns(outputTerminologyArtifacts);
 
-            TerminologyArtifact expectedTerminologyArtifact = downloadedTerminologyArtifact;
-
             // when
-            TerminologyArtifact actualTerminologyArtifact =
+            TerminologyArtifact? actualTerminologyArtifact =
                 await this.terminologyArtifactProcessingService.GetNonDownloadedArtifactAsync();
 
             // then

@@ -14,6 +14,7 @@ namespace LHDS.Core.Services.Processings.Ontologies
     internal partial class OntologyProcessingService
     {
         private delegate ValueTask<OntologyAssets> ReturningOntologyAssetsFunction();
+        private delegate ValueTask<String> ReturningStringFunction();
 
         private async ValueTask<OntologyAssets> TryCatch(ReturningOntologyAssetsFunction returningOntologyAssetsFunction)
         {
@@ -49,6 +50,18 @@ namespace LHDS.Core.Services.Processings.Ontologies
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedOntologyProcessingServiceException);
+            }
+        }
+
+        private async ValueTask<String> TryCatch(ReturningStringFunction returningStringFunction)
+        {
+            try
+            {
+                return await returningStringFunction();
+            }
+            catch (InvalidArgumentOntologyProcessingException invalidArgumentOntologyProcessingException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentOntologyProcessingException);
             }
         }
 

@@ -47,9 +47,12 @@ namespace LHDS.Core.Services.Processings.Ontologies
                  return this.ontologyService.RetrieveAllConceptMapsAsync(relativeUrl);
              });
 
-        public ValueTask<string> RetrieveArtifactDetailsAsync(string relativeUrl)
-        {
-            return this.ontologyService.RetrieveArtifactDetailsAsync(relativeUrl);
-        }
+        public ValueTask<string> RetrieveArtifactDetailsAsync(string relativeUrl) =>
+            TryCatch(() =>
+            {
+                ValidateArgs(relativeUrl);
+
+                return this.ontologyService.RetrieveArtifactDetailsAsync(relativeUrl);
+            });
     }
 }

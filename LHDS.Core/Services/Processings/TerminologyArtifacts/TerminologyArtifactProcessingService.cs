@@ -78,13 +78,12 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
 
         public ValueTask<TerminologyArtifact?> GetNonDownloadedArtifactAsync() =>
             TryCatch(async () =>
-            { 
-                List<TerminologyArtifact> nonDownloadedArtifacts = 
+            {
+                TerminologyArtifact nonDownloadedArtifact =
                      this.terminologyArtifactService.RetrieveAllTerminologyArtifacts()
-                        .Where(terminologyArtifact => !terminologyArtifact.IsDownloaded)
-                            .ToList();
+                        .FirstOrDefault(terminologyArtifact => !terminologyArtifact.IsDownloaded);
 
-                return nonDownloadedArtifacts.FirstOrDefault();
+                return nonDownloadedArtifact;
             });
     }
 }

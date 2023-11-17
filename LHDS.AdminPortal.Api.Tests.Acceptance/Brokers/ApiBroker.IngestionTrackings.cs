@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Web;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.OdataResponses;
 
@@ -28,6 +29,15 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
                 await this.apiFactoryClient.GetContentAsync<OdataResponse<IngestionTracking>>($"{ingestionTrackingsRelativeOdataUrl}/");
 
             return response.Items;
+        }
+
+        public async ValueTask<IngestionTracking> FindIngestionTrackingByFileNameAsync(
+            string fileName)
+        {
+            string encodedFileName = HttpUtility.UrlEncode(fileName);
+
+            return await this.apiFactoryClient.GetContentAsync<IngestionTracking>(
+                $"{ingestionTrackingsRelativeUrl}/byfilename/{encodedFileName}");
         }
 
         public async ValueTask<IngestionTracking> PutIngestionTrackingAsync(IngestionTracking ingestionTracking) =>

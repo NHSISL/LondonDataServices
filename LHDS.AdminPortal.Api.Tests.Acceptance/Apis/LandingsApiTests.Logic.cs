@@ -137,48 +137,43 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
         private async ValueTask CleanupTask(string fileName)
         {
-            var maybeIngestionTracking = await this.apiBroker.ingestionTrackingService
-                .RetrieveIngestionTrackingByFileNameAsync(fileName);
+            IngestionTracking? maybeIngestionTracking =
+                await this.apiBroker.FindIngestionTrackingByFileNameAsync(fileName);
 
-            if (maybeIngestionTracking != null)
+            if (maybeIngestionTracking == null)
             {
-                await RemoveAuditRecords(maybeIngestionTracking);
-
-                await this.apiBroker.ingestionTrackingService
-                    .RemoveIngestionTrackingByIdAsync(maybeIngestionTracking.Id);
+                return;
             }
+
+            var ingestionTrackingAudits = await this.apiBroker
+                .FindIngestionTrackingAuditByIngestionTrackingIdAsync(maybeIngestionTracking.Id);
+
+            foreach (var ingestionTrackingAudit in ingestionTrackingAudits)
+            {
+                await this.apiBroker.DeleteIngestionTrackingAuditByIdAsync(ingestionTrackingAudit.Id);
+            }
+
+            await this.apiBroker.DeleteIngestionTrackingByIdAsync(maybeIngestionTracking.Id);
         }
 
         private async ValueTask CleanupTask(Guid ingestionTrackingId)
         {
-            var maybeIngestionTracking = await this.apiBroker.ingestionTrackingService
-                .RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
+            var maybeIngestionTracking = await this.apiBroker.GetIngestionTrackingByIdAsync(ingestionTrackingId);
 
-            if (maybeIngestionTracking != null)
+            if (maybeIngestionTracking == null)
             {
-                await RemoveAuditRecords(maybeIngestionTracking);
-
-                var x = this.apiBroker.ingestionTrackingService
-                    .RetrieveIngestionTrackingByIdAsync(ingestionTrackingId);
-
-                await this.apiBroker.ingestionTrackingService
-                    .RemoveIngestionTrackingByIdAsync(ingestionTrackingId);
+                return;
             }
-        }
 
-        private async Task RemoveAuditRecords(
-            Core.Models.Foundations.IngestionTrackings.IngestionTracking ingestionTracking)
-        {
-            var audits = this.apiBroker.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+            var ingestionTrackingAudits = await this.apiBroker
+                .FindIngestionTrackingAuditByIngestionTrackingIdAsync(maybeIngestionTracking.Id);
 
-            output.WriteLine($"Found {audits.Count()} audits for ingestion tracking {ingestionTracking.Id}");
-
-            foreach (var audit in audits)
+            foreach (var ingestionTrackingAudit in ingestionTrackingAudits)
             {
-                await this.apiBroker.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
-                output.WriteLine($"Removed audit {audit.Id} for ingestion tracking {ingestionTracking.Id}");
+                await this.apiBroker.DeleteIngestionTrackingAuditByIdAsync(ingestionTrackingAudit.Id);
             }
+
+            await this.apiBroker.DeleteIngestionTrackingByIdAsync(maybeIngestionTracking.Id);
         }
     }
 }

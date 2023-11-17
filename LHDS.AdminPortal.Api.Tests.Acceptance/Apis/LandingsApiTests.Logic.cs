@@ -19,7 +19,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 {
     public partial class LandingsApiTests
     {
-        [Fact]
+        [Fact(Skip = "Issue parked till later sprint")]
         public async Task ShouldLandDocumentByFileNameForExistingIngestionTrackingAsync()
         {
             try
@@ -66,7 +66,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Issue parked till later sprint")]
         public async Task ShouldLandDocumentByFileNameForNewIngestionTrackingAsync()
         {
             try

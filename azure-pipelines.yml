@@ -7,7 +7,7 @@ trigger:
 - main
 
 variables:
-  - group: global-variables
+  - group: global-variables-lds
   - name: solution
     value: '**/*.sln'
   - name: vmImage

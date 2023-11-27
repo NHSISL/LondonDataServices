@@ -48,9 +48,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             randomConsentedIdentifiers.Should().BeEquivalentTo(consentedIdentifiers);
 
-            meshProcessingServiceMock.Setup(processings =>
+            meshProcessingServiceMock.SetupSequence(processings =>
                 processings.RetrieveMessageIdsFromInboxAsync())
-                    .ReturnsAsync(outputMessageIds);
+                    .ReturnsAsync(outputMessageIds)
+                    .ReturnsAsync(new List<string>());
 
             List<MeshMessage> meshMessageList = new List<MeshMessage>();
 
@@ -108,7 +109,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             meshProcessingServiceMock.Verify(Processings =>
                 Processings.RetrieveMessageIdsFromInboxAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
 
             foreach (string messageId in outputMessageIds)
             {
@@ -193,9 +194,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
                     message.Headers["mex-workflowid"] = new List<string> { this.optOutConfiguration.WorkflowId };
                 }
 
-                meshProcessingServiceMock.Setup(processings =>
+                meshProcessingServiceMock.SetupSequence(processings =>
                     processings.RetrieveMessageIdsFromInboxAsync())
-                        .ReturnsAsync(outputMessageIds);
+                        .ReturnsAsync(outputMessageIds)
+                        .ReturnsAsync(new List<string>());
 
                 List<MeshMessage> meshMessageList = new List<MeshMessage>();
 
@@ -336,9 +338,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             randomConsentedIdentifiers.Should().BeEquivalentTo(consentedIdentifiers);
 
-            meshProcessingServiceMock.Setup(processings =>
+            meshProcessingServiceMock.SetupSequence(processings =>
                 processings.RetrieveMessageIdsFromInboxAsync())
-                    .ReturnsAsync(outputMessageIds);
+                    .ReturnsAsync(outputMessageIds)
+                    .ReturnsAsync(new List<string>());
 
             foreach (string messageId in outputMessageIds)
             {
@@ -360,7 +363,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
 
             meshProcessingServiceMock.Verify(Processings =>
                 Processings.RetrieveMessageIdsFromInboxAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
 
             foreach (string messageId in outputMessageIds)
             {

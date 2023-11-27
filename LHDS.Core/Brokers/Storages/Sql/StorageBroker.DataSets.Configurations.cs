@@ -67,7 +67,8 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
             modelBuilder.Entity<DataSet>()
                 .Property(dataSet => dataSet.IsActive)
-                .IsRequired(false);
+                .HasDefaultValue(false)
+                .IsRequired();
 
             modelBuilder.Entity<DataSet>()
                 .Property(dataSet => dataSet.ActiveFrom)

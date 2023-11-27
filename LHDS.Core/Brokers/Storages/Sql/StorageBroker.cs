@@ -53,7 +53,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-            optionsBuilder.EnableSensitiveDataLogging();
             string connectionString = this.configuration.GetConnectionString(name: "DefaultConnection");
             optionsBuilder.UseSqlServer(connectionString);
         }

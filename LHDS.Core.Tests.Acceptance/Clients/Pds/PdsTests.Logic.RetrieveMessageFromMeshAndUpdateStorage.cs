@@ -44,9 +44,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
             message.MessageId = messageId;
             List<Message> messages = new List<Message> { message };
 
-            this.meshBrokerMock.Setup(broker =>
+            this.meshBrokerMock.SetupSequence(broker =>
                 broker.RetrieveMessageIdsAsync())
-                    .ReturnsAsync(messageIds);
+                    .ReturnsAsync(messageIds)
+                    .ReturnsAsync(new List<string>());
 
             foreach (var id in messageIds)
             {
@@ -63,7 +64,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Pds
 
             this.meshBrokerMock.Verify(broker =>
                 broker.RetrieveMessageIdsAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
 
             foreach (var item in actualList)
             {

@@ -14,12 +14,50 @@ namespace LHDS.Core.Services.Processings.Ontologies
     internal partial class OntologyProcessingService
     {
         private delegate ValueTask<OntologyAssets> ReturningOntologyAssetsFunction();
+        private delegate ValueTask<String> ReturningStringFunction();
 
         private async ValueTask<OntologyAssets> TryCatch(ReturningOntologyAssetsFunction returningOntologyAssetsFunction)
         {
             try
             {
                 return await returningOntologyAssetsFunction();
+            }
+            catch (InvalidArgumentOntologyProcessingException invalidArgumentOntologyProcessingException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentOntologyProcessingException);
+            }
+            catch (OntologyValidationException ontologyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(ontologyValidationException);
+            }
+            catch (OntologyDependencyValidationException ontologyDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(ontologyDependencyValidationException);
+            }
+            catch (OntologyDependencyException ontologyDependencyException)
+            {
+                throw CreateAndLogDependencyException(ontologyDependencyException);
+            }
+            catch (OntologyServiceException ontologyServiceException)
+            {
+                throw CreateAndLogDependencyException(ontologyServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedOntologyProcessingServiceException =
+                    new FailedOntologyProcessingServiceException(
+                        message: "Failed ontology processing service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedOntologyProcessingServiceException);
+            }
+        }
+
+        private async ValueTask<String> TryCatch(ReturningStringFunction returningStringFunction)
+        {
+            try
+            {
+                return await returningStringFunction();
             }
             catch (InvalidArgumentOntologyProcessingException invalidArgumentOntologyProcessingException)
             {

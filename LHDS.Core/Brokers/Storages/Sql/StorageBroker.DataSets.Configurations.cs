@@ -35,7 +35,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .HasMaxLength(250)
                 .IsRequired();
 
-
             modelBuilder.Entity<DataSet>()
                 .Property(dataSet => dataSet.DataSetAuthor)
                 .HasMaxLength(150)
@@ -64,6 +63,11 @@ namespace LHDS.Core.Brokers.Storages.Sql
             modelBuilder.Entity<DataSet>()
                 .Property(dataSet => dataSet.DataSourceType)
                 .HasMaxLength(50)
+                .IsRequired();
+
+            modelBuilder.Entity<DataSet>()
+                .Property(dataSet => dataSet.IsActive)
+                .HasDefaultValue(false)
                 .IsRequired();
 
             modelBuilder.Entity<DataSet>()

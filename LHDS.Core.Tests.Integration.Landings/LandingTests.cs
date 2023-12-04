@@ -9,9 +9,12 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Providers.Downloads.Extensions;
+using LHDS.Core.Services.Foundations.DataSets;
+using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
@@ -31,6 +34,8 @@ namespace LHDS.Core.Tests.Integration.Landings
         private readonly LandingConfiguration landingConfiguration;
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly ISupplierService supplierService;
+        private readonly IDataSetService dataSetService;
+        private readonly IDataSetSpecificationService dataSetSpecificationService;
         private readonly IIngestionTrackingAuditService auditService;
 
         public LandingTests(ITestOutputHelper output)
@@ -63,6 +68,8 @@ namespace LHDS.Core.Tests.Integration.Landings
             ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
             supplierService = serviceProvider.GetService<ISupplierService>();
+            dataSetService = serviceProvider.GetService<IDataSetService>();
+            dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
             landingClient = serviceProvider.GetService<ILandingClient>();
         }
 
@@ -92,5 +99,40 @@ namespace LHDS.Core.Tests.Integration.Landings
 
             return maybeSupplier;
         }
+
+        private async ValueTask<DataSet> SetupDataSet()
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+
+            DataSet dataSet = new DataSet
+            {
+                Id = Guid.Parse("6a62313a-7442-462e-b6e8-dec541ddd0ba"),
+                SupplierId = this.landingConfiguration.LandingSupplierId,
+                DataSetName = "PrimaryCareEMISDEV",
+                DataSetAliases = "",
+                DataSetAuthor = "EMISDEV",
+                SpecifiedBy = "EMIS",
+                IsNationallySpecified = false,
+                CollectedBy = "EMIS",
+                IsNationallyCollected = false,
+                DataSourceType = "",
+                IsActive = true,
+                CreatedBy = "System",
+                CreatedDate = new DateTime(year: 2023, month: 1, day: 1, hour: 0, minute: 0, second: 0),
+                UpdatedBy = "System",
+                UpdatedDate = new DateTime(year: 2023, month: 1, day: 1, hour: 0, minute: 0, second: 0)
+            }
+
+            DataSet maybeDataSet = dataSetService.RetrieveAllDataSets()
+                .FirstOrDefault(s => s.Id == supplier.Id);
+
+            if (maybeDataSet == null)
+            {
+                return await supplierService.AddSupplierAsync(supplier);
+            }
+
+            return maybeDataSet;
+        }
+
     }
 }

@@ -29,9 +29,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.OptOuts
             MeshMessage retrievedMessage = randomMessage;
             List<string> retrievedMessageIds = new List<string> { retrievedMessage.MessageId };
 
-            this.meshProcessingServiceMock.Setup(service =>
+            this.meshProcessingServiceMock.SetupSequence(service =>
                 service.RetrieveMessageIdsFromInboxAsync())
-                    .ReturnsAsync(retrievedMessageIds);
+                    .ReturnsAsync(retrievedMessageIds)
+                    .ReturnsAsync(new List<string>());
 
             retrievedMessage.Headers.Remove("mex-localid");
 

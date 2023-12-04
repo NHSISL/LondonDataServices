@@ -44,7 +44,7 @@ export const PageLayout = ({ children }: PageLayoutParameters) => {
     }, []);
 
     return (<>
-        <div id="wrapper" className="toggled">
+        <div id="wrapper" className="">
             <SidebarBase>
                 <SidebarBaseNav>
                     <NavigationBar />

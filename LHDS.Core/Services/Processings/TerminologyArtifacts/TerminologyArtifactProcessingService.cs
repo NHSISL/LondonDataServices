@@ -3,12 +3,14 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
+using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.Core.Services.Processings.TerminologyArtifacts
 {
@@ -74,7 +76,14 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
                 return await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(Id);
             });
 
-        public ValueTask<TerminologyArtifact> GetNonDownloadedArtifactAsync() =>
-            throw new NotImplementedException();
+        public ValueTask<TerminologyArtifact?> GetNonDownloadedArtifactAsync() =>
+            TryCatch(async () =>
+            {
+                TerminologyArtifact nonDownloadedArtifact =
+                     this.terminologyArtifactService.RetrieveAllTerminologyArtifacts()
+                        .FirstOrDefault(terminologyArtifact => !terminologyArtifact.IsDownloaded);
+
+                return nonDownloadedArtifact;
+            });
     }
 }

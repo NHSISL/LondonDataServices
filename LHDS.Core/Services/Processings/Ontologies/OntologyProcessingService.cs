@@ -48,7 +48,11 @@ namespace LHDS.Core.Services.Processings.Ontologies
              });
 
         public ValueTask<string> RetrieveArtifactDetailsAsync(string relativeUrl) =>
-            throw new NotImplementedException();
-    }
+            TryCatch(() =>
+            {
+                ValidateArgs(relativeUrl);
 
+                return this.ontologyService.RetrieveArtifactDetailsAsync(relativeUrl);
+            });
+    }
 }

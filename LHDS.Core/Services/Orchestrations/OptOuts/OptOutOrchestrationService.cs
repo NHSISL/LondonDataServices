@@ -186,72 +186,74 @@ namespace LHDS.Core.Services.Orchestrations.OptOuts
                 ValidateConfigurationSettings();
                 bool withHeader = this.optOutConfiguration.OptOutFileHasHeader;
 
-                List<string> messageIds = await
-                    this.meshProcessingService.RetrieveMessageIdsFromInboxAsync();
-
+                List<string> messageIds;
                 List<MeshMessage> meshMessageList = new List<MeshMessage>();
 
-                foreach (string messageId in messageIds)
+                while ((messageIds = await this.meshProcessingService.RetrieveMessageIdsFromInboxAsync()).Count > 0)
                 {
-                    MeshMessage message = await meshProcessingService.RetrieveMessageByIdAsync(messageId);
-
-                    if (GetKeyStringValue("mex-workflowid", message.Headers) != this.optOutConfiguration.WorkflowId)
+                    foreach (string messageId in messageIds)
                     {
-                        continue;
-                    }
+                        MeshMessage message = await meshProcessingService.RetrieveMessageByIdAsync(messageId);
 
-                    meshMessageList.Add(message);
-                    string[] delimiters = { "\r\n", "\n" };
-
-                    List<string> consentedIdentifiers = Encoding.UTF8
-                        .GetString(message.FileContent)
-                            .Replace(",", string.Empty)
-                                .Split(delimiters, StringSplitOptions.RemoveEmptyEntries).ToList();
-
-                    ValidateLocalIdHeaderExists(message);
-
-                    string batchReference = GetHeaderValue(message, "mex-localid");
-
-                    ValidateBacthReferenceExists(batchReference);
-
-                    List<OptOut> originalBatch = await this.optOutProcessingService
-                        .RetrieveAllOptOutsByBatchReferenceAsync(batchReference);
-
-                    List<OptOut> delta = await this.optOutProcessingService
-                        .ConsolidateOptOutChangesAndReturnChangesOnly(originalBatch, consentedIdentifiers);
-
-                    if (delta?.Count > 0)
-                    {
-                        List<OptOutIdentifier> differentIdentifiers = delta
-                            .Select(identifier => new OptOutIdentifier
-                            {
-                                NhsNumber = identifier.NhsNumber,
-                                UniqueReference = identifier.UniqueReference,
-                                Status = identifier.Status,
-                                StatusChangedDateTime = identifier.CacheTime
-                            }).ToList();
-
-                        string csvDifferences = await this.csvMapperProcessingService
-                            .MapObjectToCsvAsync(
-                                @object: differentIdentifiers,
-                                addHeaderRecord: this.optOutConfiguration.OptOutFileHasHeader,
-                                shouldAddTrailingComma: this.optOutConfiguration.OptOutFileRequireTrailingComma);
-
-                        string fileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv";
-
-                        ValidateDocumentRequirements(csvDifferences, fileName);
-
-                        Document document = new Document
+                        if (GetKeyStringValue("mex-workflowid", message.Headers) != this.optOutConfiguration.WorkflowId)
                         {
-                            DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
-                            FileName = fileName
-                        };
+                            continue;
+                        }
 
-                        await this.documentProcessingService.AddDocumentAsync(document, blobContainers.OptOut);
+                        meshMessageList.Add(message);
+                        string[] delimiters = { "\r\n", "\n" };
+
+                        List<string> consentedIdentifiers = Encoding.UTF8
+                            .GetString(message.FileContent)
+                                .Replace(",", string.Empty)
+                                    .Split(delimiters, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+                        ValidateLocalIdHeaderExists(message);
+
+                        string batchReference = GetHeaderValue(message, "mex-localid");
+
+                        ValidateBacthReferenceExists(batchReference);
+
+                        List<OptOut> originalBatch = await this.optOutProcessingService
+                            .RetrieveAllOptOutsByBatchReferenceAsync(batchReference);
+
+                        List<OptOut> delta = await this.optOutProcessingService
+                            .ConsolidateOptOutChangesAndReturnChangesOnly(originalBatch, consentedIdentifiers);
+
+                        if (delta?.Count > 0)
+                        {
+                            List<OptOutIdentifier> differentIdentifiers = delta
+                                .Select(identifier => new OptOutIdentifier
+                                {
+                                    NhsNumber = identifier.NhsNumber,
+                                    UniqueReference = identifier.UniqueReference,
+                                    Status = identifier.Status,
+                                    StatusChangedDateTime = identifier.CacheTime
+                                }).ToList();
+
+                            string csvDifferences = await this.csvMapperProcessingService
+                                .MapObjectToCsvAsync(
+                                    @object: differentIdentifiers,
+                                    addHeaderRecord: this.optOutConfiguration.OptOutFileHasHeader,
+                                    shouldAddTrailingComma: this.optOutConfiguration.OptOutFileRequireTrailingComma);
+
+                            string fileName = $"{optOutConfiguration.OutputFolder}/{batchReference}_deltaresponse.csv";
+
+                            ValidateDocumentRequirements(csvDifferences, fileName);
+
+                            Document document = new Document
+                            {
+                                DocumentData = Encoding.ASCII.GetBytes(csvDifferences),
+                                FileName = fileName
+                            };
+
+                            await this.documentProcessingService.AddDocumentAsync(document, blobContainers.OptOut);
+                        }
+
+                        await this.meshProcessingService.AcknowledgeMessageByIdAsync(messageId);
                     }
-
-                    await this.meshProcessingService.AcknowledgeMessageByIdAsync(messageId);
                 }
+
 
                 return meshMessageList;
             });

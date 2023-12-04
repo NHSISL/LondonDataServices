@@ -104,64 +104,69 @@ namespace LHDS.Core.Services.Orchestrations.Pds
             ValidateConfigurationSettings();
             ValidateBlobContainers();
 
-            var exceptions = new List<Exception>();
-            var messageIds = await this.meshService.RetrieveMessageIdsFromInboxAsync();
+            List<string> messageIds;
             var pdsAudits = new List<PdsAudit>();
 
-            foreach (var id in messageIds)
+            var exceptions = new List<Exception>();
+
+            while ((messageIds = await this.meshService.RetrieveMessageIdsFromInboxAsync()).Count > 0)
             {
-                try
+                foreach (var id in messageIds)
                 {
-                    var message = await this.meshService.RetrieveMessageByIdAsync(id);
-
-                    if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
+                    try
                     {
-                        continue;
+                        var message = await this.meshService.RetrieveMessageByIdAsync(id);
+
+                        if (message.Headers["mex-workflowid"].FirstOrDefault() != this.pdsConfiguration.WorkflowId)
+                        {
+                            continue;
+                        }
+
+                        string filename = message.Headers["mex-filename"].FirstOrDefault();
+                        string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
+                        string[] fileNameParts = fileNameWithoutExtension.Split('_');
+
+                        string fileNameOutput =
+                            $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
+
+                        fileNameOutput += Path.GetExtension(filename);
+
+                        var document = new Models.Foundations.Documents.Document
+                        {
+                            FileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}",
+                            DocumentData = message.FileContent,
+                        };
+
+                        await this.documentService.AddDocumentAsync(document, blobContainers.Pds);
+                        var correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
+                        var fileName = message.Headers["mex-filename"].FirstOrDefault();
+                        DateTimeOffset currentDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                        var pdsAudit = new PdsAudit
+                        {
+                            Id = this.identifierBroker.GetIdentifier(),
+                            CorrelationId = correlationId,
+                            FileName = document.FileName,
+                            Message = $"Received message from mesh with id {message.MessageId}",
+                            MessageId = message.MessageId,
+                            CreatedDate = currentDate,
+                            UpdatedDate = currentDate,
+                            CreatedBy = "System",
+                            UpdatedBy = "System"
+                        };
+
+                        await this.pdsAuditService.AddPdsAuditAsync(pdsAudit);
+                        pdsAudits.Add(pdsAudit);
                     }
-
-                    string filename = message.Headers["mex-filename"].FirstOrDefault();
-                    string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
-                    string[] fileNameParts = fileNameWithoutExtension.Split('_');
-
-                    string fileNameOutput =
-                        $"{fileNameParts[1]}_{fileNameParts[2]}_{fileNameParts[0]}_{fileNameParts[3]}";
-
-                    fileNameOutput += Path.GetExtension(filename);
-
-                    var document = new Models.Foundations.Documents.Document
+                    catch (Exception ex)
                     {
-                        FileName = $"{pdsConfiguration.OutputFolder}/{fileNameOutput}",
-                        DocumentData = message.FileContent,
-                    };
-
-                    await this.documentService.AddDocumentAsync(document, blobContainers.Pds);
-                    var correlationId = Guid.Parse(message.Headers["mex-localid"].FirstOrDefault());
-                    var fileName = message.Headers["mex-filename"].FirstOrDefault();
-                    DateTimeOffset currentDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
-
-                    var pdsAudit = new PdsAudit
-                    {
-                        Id = this.identifierBroker.GetIdentifier(),
-                        CorrelationId = correlationId,
-                        FileName = document.FileName,
-                        Message = $"Received message from mesh with id {message.MessageId}",
-                        MessageId = message.MessageId,
-                        CreatedDate = currentDate,
-                        UpdatedDate = currentDate,
-                        CreatedBy = "System",
-                        UpdatedBy = "System"
-                    };
-
-                    await this.pdsAuditService.AddPdsAuditAsync(pdsAudit);
-                    pdsAudits.Add(pdsAudit);
-                }
-                catch (Exception ex)
-                {
-                    this.loggingBroker.LogError(ex);
-                    Console.WriteLine($"Unable to retrieve messages {id}");
-                    exceptions.Add(ex);
+                        this.loggingBroker.LogError(ex);
+                        Console.WriteLine($"Unable to retrieve messages {id}");
+                        exceptions.Add(ex);
+                    }
                 }
             }
+
 
             return pdsAudits;
         });

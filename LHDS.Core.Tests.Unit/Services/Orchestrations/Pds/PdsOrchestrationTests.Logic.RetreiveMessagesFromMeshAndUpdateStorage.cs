@@ -38,9 +38,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
                 broker.GetIdentifier())
                     .Returns(identifier);
 
-            this.meshServiceMock.Setup(service =>
+            this.meshServiceMock.SetupSequence(service =>
                 service.RetrieveMessageIdsFromInboxAsync())
-                    .ReturnsAsync(randomMessageIds);
+                    .ReturnsAsync(randomMessageIds)
+                    .ReturnsAsync(new List<string>());
 
             List<PdsAudit> pdsAuditsList = new List<PdsAudit>();
 
@@ -110,7 +111,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.meshServiceMock.Verify(service =>
                 service.RetrieveMessageIdsFromInboxAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
 
             foreach (var message in retrievedMessages)
             {
@@ -175,9 +176,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
             string mexWorkflowId = GetRandomString();
             List<MeshMessage> retrievedMessages = GetRandomMessages(randomMessageIds, mexWorkflowId);
 
-            this.meshServiceMock.Setup(service =>
+            this.meshServiceMock.SetupSequence(service =>
                 service.RetrieveMessageIdsFromInboxAsync())
-                    .ReturnsAsync(randomMessageIds);
+                    .ReturnsAsync(randomMessageIds)
+                    .ReturnsAsync(new List<string>());
 
             List<PdsAudit> pdsAuditsList = new List<PdsAudit>();
 
@@ -204,7 +206,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Pds
 
             this.meshServiceMock.Verify(service =>
                 service.RetrieveMessageIdsFromInboxAsync(),
-                    Times.Once);
+                    Times.Exactly(2));
 
             foreach (var message in retrievedMessages)
             {

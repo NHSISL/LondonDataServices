@@ -83,19 +83,20 @@ namespace LHDS.Core.Services.Orchestrations.AddressPersistances
             }
             catch (Exception exception)
             {
-                var failedDecryptServiceException =
+                var failedAddressPersistanceOrchestrationServiceException =
                     new FailedAddressPersistanceOrchestrationServiceException(
-                        message: "Failed address persistance orchestration service occurred, please contact support",
+                        message: "Failed address persistance orchestration service error occurred, " +
+                        "please contact support",
                         innerException: exception);
 
-                throw CreateAndLogServiceException(failedDecryptServiceException);
+                throw CreateAndLogServiceException(failedAddressPersistanceOrchestrationServiceException);
             }
         }
         private AddressPersistanceOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
             var addressPersistanceOrchestrationValidationException =
                 new AddressPersistanceOrchestrationValidationException(
-                    message: "Address persistance orchestration validation errors occured, please try again",
+                    message: "Address persistance orchestration validation error occured, please try again",
                     innerException: exception);
 
             this.loggingBroker.LogError(addressPersistanceOrchestrationValidationException);

@@ -3,10 +3,17 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Numerics;
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
+using LHDS.Core.Models.Clients.LibPostalClient.Exceptions;
+using LHDS.Core.Models.Foundations.AddressNormalisation.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
+using LHDS.Core.Models.Foundations.DataSets.Exceptions;
+using NEL.LibPostalClient.Models.Clients.LibPostal.Exceptions;
 using Xeptions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace LHDS.Core.Services.Foundations.AddressNormalisations
 {
@@ -25,6 +32,34 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
             catch (InvalidAddressNormalisationArgumentException invalidAddressNormalisationArgumentException)
             {
                 throw CreateAndLogValidationException(invalidAddressNormalisationArgumentException);
+            }
+            catch (LibPostalClientValidationException libPostalClientValidationException)
+            {
+                var invalidLibPostalValidationException =
+                    new InvalidLibPostalValidationException(
+                        message: "Invalid lib poastal validation error occurred.",
+                        innerException: libPostalClientValidationException,
+                        data: libPostalClientValidationException.Data);
+
+                throw CreateAndLogDependencyValidationException(libPostalClientValidationException);
+            }
+            catch (LibPostalClientDependencyException libPostalClientDependencyException)
+            {
+                var invalidLibPostalDependencyException =
+                    new InvalidLibPostalDependencyException(
+                        message: "Invalid lib poastal dependency error occurred.",
+                        innerException: libPostalClientDependencyException);
+
+                throw CreateAndLogDependencyException(libPostalClientDependencyException);
+            }
+            catch (LibPostalClientServiceException libPostalClientServiceException)
+            {
+                var invalidLibPostalDependencyException =
+                    new InvalidLibPostalDependencyException(
+                        message: "Invalid lib poastal dependency error occurred.",
+                        innerException: libPostalClientServiceException);
+
+                throw CreateAndLogDependencyException(libPostalClientServiceException);
             }
             catch (Exception exception)
             {
@@ -62,13 +97,38 @@ namespace LHDS.Core.Services.Foundations.AddressNormalisations
         private AddressNormalisationValidationException CreateAndLogValidationException(Xeption exception)
         {
             var addressLoadingAuditValidationException =
-                new AddressNormalisationValidationException(
+            new AddressNormalisationValidationException(
                     message: "Address normalisation validation errors occurred, please try again.",
                     innerException: exception);
 
             this.loggingBroker.LogError(addressLoadingAuditValidationException);
 
             return addressLoadingAuditValidationException;
+        }
+
+        private AddressNormalisationDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var addressNormalisationDependencyValidationException =
+                new AddressNormalisationDependencyValidationException(
+                    message: "Address normalisation dependency validation error occurred, " +
+                    "fix the errors and try again.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(addressNormalisationDependencyValidationException);
+
+            return addressNormalisationDependencyValidationException;
+        }
+
+        private AddressNormalisationDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var addressNormalisationDependencyException =
+                new AddressNormalisationDependencyException(
+                    message: "Address normalisation dependency error occurred, fix the errors and try again.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(addressNormalisationDependencyException);
+
+            return addressNormalisationDependencyException;
         }
 
         private AddressNormalisationServiceException CreateAndLogServiceException(

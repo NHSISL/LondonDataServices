@@ -9,5 +9,8 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
     {
         ValueTask<TerminologyPoll> AddTerminologyPollAsync(TerminologyPoll terminologyPoll);
         IQueryable<TerminologyPoll> RetrieveAllTerminologyPolls();
+        ValueTask<TerminologyPoll> RetrieveTerminologyPollByIdAsync(Guid terminologyPollId);
+        ValueTask<TerminologyPoll> ModifyTerminologyPollAsync(TerminologyPoll terminologyPoll);
+        ValueTask<TerminologyPoll> RemoveTerminologyPollByIdAsync(Guid terminologyPollId);
     }
 }

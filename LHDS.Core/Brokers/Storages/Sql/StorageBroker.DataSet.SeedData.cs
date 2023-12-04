@@ -34,7 +34,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
                     UpdatedDate = new DateTime(year: 2023, month: 1, day: 1,hour: 0,minute: 0, second: 0),
                     ActiveFrom = new DateTime(year: 2023, month: 1, day: 1,hour: 0,minute: 0, second: 0),
                     ActiveTo = new DateTime(year: 2123, month: 1, day: 1,hour: 0,minute: 0, second: 0),
-                    IsActive = true,
                 }
             };
 

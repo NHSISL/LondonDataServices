@@ -47,13 +47,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                 service.AddDocumentAsync(artifactDetailDocument, "Terminology"))
                     .ReturnsAsync(outputFileName);
 
-            TerminologyArtifact downloadedTerminologyArtifact = undownloadedTerminologyArtifact.DeepClone();
-            downloadedTerminologyArtifact.IsDownloaded = true;
-
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
                     .Returns(randomDateTimeOffset);
 
+            TerminologyArtifact downloadedTerminologyArtifact = undownloadedTerminologyArtifact.DeepClone();
+            downloadedTerminologyArtifact.IsDownloaded = true;
             downloadedTerminologyArtifact.UpdatedDate = randomDateTimeOffset;
 
             this.terminologyArtifactProcessingServiceMock.Setup(service =>

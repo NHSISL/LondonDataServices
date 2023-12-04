@@ -1,7 +1,7 @@
 ﻿// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
-using System.Linq;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using Force.DeepCloner;
@@ -18,6 +18,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
         public async Task ShouldProcessRetrieveArtifactDetailsAsync()
         {
             // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             TerminologyArtifact randomTerminologyArtifacts = CreateRandomUndownloadedTerminologyArtifact();
             TerminologyArtifact undownloadedTerminologyArtifact = randomTerminologyArtifacts;
             string inputFileName = undownloadedTerminologyArtifact.Id.ToString();
@@ -49,6 +50,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             TerminologyArtifact downloadedTerminologyArtifact = undownloadedTerminologyArtifact.DeepClone();
             downloadedTerminologyArtifact.IsDownloaded = true;
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            downloadedTerminologyArtifact.UpdatedDate = randomDateTimeOffset;
+
             this.terminologyArtifactProcessingServiceMock.Setup(service =>
                 service.ModifyOrAddTerminologyArtifactAsync(downloadedTerminologyArtifact));
 
@@ -68,6 +75,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                 service.AddDocumentAsync(It.Is(SameDocumentAs(artifactDetailDocument)), "Terminology"),
                     Times.Once);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.terminologyArtifactProcessingServiceMock.Verify(service =>
                 service.ModifyOrAddTerminologyArtifactAsync(It.Is(SameTerminologyArtifactAs(
                     downloadedTerminologyArtifact))),
@@ -76,6 +87,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             this.terminologyArtifactProcessingServiceMock.VerifyNoOtherCalls();
             this.ontologyProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

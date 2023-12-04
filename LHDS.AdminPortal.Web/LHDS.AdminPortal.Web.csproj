@@ -22,7 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="7.0.13" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="8.0.0" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.2.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -46,6 +46,7 @@
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.optout.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.pds.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.suppliers.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.terminologyArtifacts.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\toastBroker.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\audit\auditRow.tsx" />
@@ -155,6 +156,7 @@
     <TypeScriptCompile Remove="ClientApp\src\models\pds\pdsHomeView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\specificationObjects\specificationObject.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\suppliers\supplier.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\terminologyArtifacts\terminologyArtifact.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\audit\auditView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\dataSetSpecifications\dataSetSpecificationView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\dataSets\dataSetView.ts" />
@@ -167,6 +169,7 @@
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\pds\pdsView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\specificationObjects\specificationObjectView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\suppliers\supplierView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\views\components\terminologyArtifacts\terminologyArtifactsView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\configHomePage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\configuration\dataSetsListPage.tsx" />
@@ -189,6 +192,7 @@
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\optoutService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\pdsService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\supplierService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\foundations\terminologyArtifactService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\auditViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\DataSetSpecification\dataSetSpecificationViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\DataSets\dataSetViewService.ts" />
@@ -202,6 +206,7 @@
     <TypeScriptCompile Remove="ClientApp\src\services\views\Pds\pdsViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\specificationObjects\specificationObjectViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\supplierViewService .ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\TerminologyArtifacts\terminologyArtifactViewService.ts" />
   </ItemGroup>
 
   <ItemGroup>

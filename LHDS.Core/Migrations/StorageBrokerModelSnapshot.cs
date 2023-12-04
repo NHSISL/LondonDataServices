@@ -17,7 +17,7 @@ namespace LHDS.Core.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.11")
+                .HasAnnotation("ProductVersion", "7.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -402,7 +402,9 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsNationallyCollected")
                         .ValueGeneratedOnAdd()
@@ -456,6 +458,26 @@ namespace LHDS.Core.Migrations
                                     .HasPeriodEnd("PeriodEnd")
                                     .HasColumnName("PeriodEnd");
                             }));
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("6a62313a-7442-462e-b6e8-dec541ddd0ba"),
+                            CollectedBy = "EMIS",
+                            CreatedBy = "System",
+                            CreatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DataSetAliases = "",
+                            DataSetAuthor = "EMISDEV",
+                            DataSetName = "PrimaryCareEMISDEV",
+                            DataSourceType = "",
+                            IsActive = true,
+                            IsNationallyCollected = false,
+                            IsNationallySpecified = false,
+                            SpecifiedBy = "EMIS",
+                            SupplierId = new Guid("67680f17-9d0c-4474-8b35-56ca8f9df1f6"),
+                            UpdatedBy = "System",
+                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                        });
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.DataTypes.DataType", b =>
@@ -785,44 +807,6 @@ namespace LHDS.Core.Migrations
                             }));
                 });
 
-            modelBuilder.Entity("LHDS.Core.Models.Foundations.OntologyPolls.TerminologyPoll", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<DateTimeOffset>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset?>("LastPoll")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("ResourceType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<DateTimeOffset>("UpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ResourceType")
-                        .IsUnique();
-
-                    b.ToTable("TerminologyPolls", "Terminology");
-                });
-
             modelBuilder.Entity("LHDS.Core.Models.Foundations.OptOuts.OptOut", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1137,6 +1121,44 @@ namespace LHDS.Core.Migrations
                         .IsUnique();
 
                     b.ToTable("TerminologyArtifacts", "Ontology");
+                });
+
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.TerminologyPolls.TerminologyPoll", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("LastPoll")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ResourceType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTimeOffset>("UpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResourceType")
+                        .IsUnique();
+
+                    b.ToTable("TerminologyPolls", "Terminology");
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSetSpecifications.DataSetSpecification", b =>

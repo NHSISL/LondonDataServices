@@ -39,6 +39,11 @@ namespace LHDS.Core.Providers.Downloads.Extensions
 
         private static void ValidateFtpProviderSettings(IFtpDownloadProviderSettings ftpDownloadProviderSettings)
         {
+            if (ftpDownloadProviderSettings is null)
+            {
+                throw new InvalidConfigurationException("ftpDownload configuration section missing");
+            }
+
             Validate(
                 (Rule: IsInvalid(ftpDownloadProviderSettings.FtpPort),
                     Parameter: "ftpDownload__ftpPort"),

@@ -9,6 +9,6 @@ namespace LHDS.Core.Brokers.Ontologies
 
     internal partial interface IOntologyBroker
     {
-        ValueTask<Bundle> GetAllCodingSystemsAsync(string url);
+        ValueTask<Bundle> GetAllCodingSystemsAsync(string relativeUrl);
     }
 }

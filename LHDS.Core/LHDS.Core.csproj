@@ -95,6 +95,7 @@
 	<ItemGroup>
 	  <Folder Include="Brokers\Storages\Sql\Views\" />
 	  <Folder Include="Migrations\" />
+	  <Folder Include="Services\Orchestrations\TerminologyMetadata\" />
 	</ItemGroup>
 
 	<ItemGroup>

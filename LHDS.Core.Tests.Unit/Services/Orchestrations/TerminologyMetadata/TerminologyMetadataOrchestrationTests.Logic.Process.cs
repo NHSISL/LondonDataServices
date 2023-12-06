@@ -39,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                     .Returns(randomDateTimeOffset);
 
             this.terminologyPollProcessingServiceMock.Setup(service =>
-                service.AddTerminologyPollAsync(terminologyPolls.First)).
+                service.AddTerminologyPollAsync(retrievedTerminologyPoll)).
                     ReturnsAsync(terminologyPoll);
 
             // when
@@ -59,7 +59,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                     Times.Once);
 
             this.terminologyPollProcessingServiceMock.Verify(service =>
-                service.AddTerminologyPollAsync(),
+                service.AddTerminologyPollAsync(retrievedTerminologyPoll),
                     Times.Once);
 
             this.terminologyPollProcessingServiceMock.VerifyNoOtherCalls();

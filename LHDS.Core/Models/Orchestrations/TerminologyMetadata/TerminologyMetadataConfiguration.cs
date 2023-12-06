@@ -8,6 +8,6 @@ namespace LHDS.Core.Models.Orchestrations.TerminologyMedata
 {
     public class TerminologyMetadataConfiguration
     {
-        public string resourceURL { get; set; }
+        public string ResourceURL { get; set; }
     }
 }

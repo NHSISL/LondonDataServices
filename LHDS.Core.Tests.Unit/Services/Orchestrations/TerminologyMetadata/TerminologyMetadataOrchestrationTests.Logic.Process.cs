@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Ontologies;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
-using Microsoft.Identity.Client;
 using Moq;
 using Xunit;
 
@@ -24,19 +23,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             string randomString = GetRandomString();
             string resourceType = randomString;
 
-            IQueryable<TerminologyPoll> terminologyPolls = 
+            IQueryable<TerminologyPoll> terminologyPolls =
                 CreateRandomTerminologyPolls(resourceType, lastPoll: randomDateTimeOffset.AddDays(-3));
 
             TerminologyPoll retrievedTerminologyPoll = terminologyPolls.First();
             string relativeUrl = this.terminologyMetadataConfiguration.ResourceURL;
             relativeUrl = relativeUrl.Replace("{{resourceType}}", resourceType);
-            relativeUrl = relativeUrl.Replace("{{datestamp}}", randomDateTimeOffset.ToString());
+            string dateTimeString = randomDateTimeOffset.ToString();
+            relativeUrl = relativeUrl.Replace("{{datestamp}}", dateTimeString);
             dynamic randomArtifactProperties = CreateRandomArtifactProperties(resourceType);
 
-            OntologyAssets retrievedOntologyAssets = 
+            OntologyAssets retrievedOntologyAssets =
                 CreateArtiFactFromRandomData(randomArtifactProperties);
 
-            List<TerminologyArtifact> outputTerminologyArtifacts = 
+            List<TerminologyArtifact> outputTerminologyArtifacts =
                 CreateTerminologyArtiFactFromRandomData(randomArtifactProperties);
 
             this.terminologyPollProcessingServiceMock.Setup(service =>
@@ -52,11 +52,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                     .ReturnsAsync(retrievedOntologyAssets);
 
             for (int i = 0; i < retrievedOntologyAssets.Assets.Count; i++)
-
             {
                 var item = retrievedOntologyAssets.Assets[i];
                 string user = GetRandomString();
-                DateTimeOffset 
 
                 TerminologyArtifact terminologyArtifact = new TerminologyArtifact
                 {
@@ -69,15 +67,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                     LastUpdated = item.LastUpdated,
                     IsCore = false,
                     IsDownloaded = false,
-                    CreatedBy = item.LastUpdated,
-                    UpdatedBy = item.UpdatedBy,
-                    UpdatedDate = item.UpdatedDate,
-                    CreatedDate = item.CreatedDate
+                    CreatedBy = user,
+                    UpdatedBy = user,
+                    UpdatedDate = randomDateTimeOffset,
+                    CreatedDate = randomDateTimeOffset
                 };
-                
+
                 this.terminologyArtifactProcessingServiceMock.Setup(service =>
-                    service.ModifyOrAddTerminologyArtifactAsync(terminologyArtifact)
-                    .Returns(Task.CompletedTask);
+                    service.ModifyOrAddTerminologyArtifactAsync(terminologyArtifact))
+                        .ReturnsAsync(outputTerminologyArtifacts[i]);
             }
 
             this.terminologyPollProcessingServiceMock.Setup(service =>
@@ -99,6 +97,33 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
                     Times.Once);
+
+            for (int i = 0; i < retrievedOntologyAssets.Assets.Count; i++)
+            {
+                var item = retrievedOntologyAssets.Assets[i];
+                string user = GetRandomString();
+
+                TerminologyArtifact terminologyArtifact = new TerminologyArtifact
+                {
+                    FullUrl = item.FullUrl,
+                    ResourceType = item.ResourceType,
+                    Version = item.Version,
+                    Name = item.Name,
+                    Title = item.Title,
+                    Status = item.Status,
+                    LastUpdated = item.LastUpdated,
+                    IsCore = false,
+                    IsDownloaded = false,
+                    CreatedBy = user,
+                    UpdatedBy = user,
+                    UpdatedDate = randomDateTimeOffset,
+                    CreatedDate = randomDateTimeOffset
+                };
+
+                this.terminologyArtifactProcessingServiceMock.Verify(service =>
+                    service.ModifyOrAddTerminologyArtifactAsync(terminologyArtifact),
+                        Times.Once());
+            }
 
             this.terminologyPollProcessingServiceMock.Verify(service =>
                 service.AddTerminologyPollAsync(retrievedTerminologyPoll),

@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                     Returns(terminologyPolls);
 
             string url = $"{{terminology-server}}/{resourceType}?_lastUpdated=ge{{datestamp}}" +
-            "&_name=dm+dCOMBINATION_PACK_IND&_elements=name,title,url,version,status&_count=10";
+                        "&_name=dm+dCOMBINATION_PACK_IND&_elements=name,title,url,version,status&_count=10";
 
             this.ontologyProcessingServiceMock.Setup(service =>
                 service.RetrieveAllCodingSystemsAsync(url))

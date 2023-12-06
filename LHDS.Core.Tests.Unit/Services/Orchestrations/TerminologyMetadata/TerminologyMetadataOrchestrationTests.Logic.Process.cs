@@ -27,8 +27,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                 service.RetrieveAllTerminologyPolls()).
                     Returns(terminologyPolls);
 
-            string url = $"{{terminology-server}}/{resourceType}?_lastUpdated=ge{{datestamp}}" +
-                        "&_name=dm+dCOMBINATION_PACK_IND&_elements=name,title,url,version,status&_count=10";
+            string url = this.terminologyMetadataConfiguration.ResourceURL;
+            url = url.Replace("{{resourceType}}", resourceType);
+            url = url.Replace("{{datestamp}}", randomDateTimeOffset);
+
+
+
+
+
 
             this.ontologyProcessingServiceMock.Setup(service =>
                 service.RetrieveAllCodingSystemsAsync(url))

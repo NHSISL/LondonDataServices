@@ -30,9 +30,9 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker)
         {
+            this.terminologyPollProcessingService = terminologyPollProcessingService;
             this.terminologyArtifactProcessingService = terminologyArtifactProcessingService;
             this.ontologyProcessingService = ontologyProcessingService;
-            this.terminologyPollProcessingService = terminologyPollProcessingService;
             this.terminologyMetadataConfiguration = terminologyMetadataConfiguration;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;

@@ -129,24 +129,23 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                         Status = "active",
                         LastUpdated = dateTimeOffset,
                         IsCore = false,
-                        IsDownloaded = true,
+                        IsDownloaded = false,
                         CreatedBy = user,
                         UpdateBy = user,
                         UpdatedDate = dateTimeOffset,
-                        CreatedDate = dateTimeOffset
-                        };
+                        CreatedDate = dateTimeOffset,
+                        NextPage = string.Empty
+                    };
                 })
                 .ToList<dynamic>();
         }
 
-        private static OntologyAssets CreateArtiFactFromRandomData(
-           List<dynamic> randomArtifactProperties,
-           string nextPageUrl)
+        private static OntologyAssets CreateArtiFactFromRandomData(List<dynamic> randomArtifactProperties)
         {
             var ontologyAssets = new OntologyAssets
             {
                 Assets = new List<OntologyAsset>(),
-                NextPage = nextPageUrl
+                NextPage = randomArtifactProperties.First().NextPage,
             };
 
             foreach (var item in randomArtifactProperties)
@@ -164,7 +163,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                     });
 
                 ontologyAssets.NextPage = item.NextPage;
-
             }
 
             return ontologyAssets;

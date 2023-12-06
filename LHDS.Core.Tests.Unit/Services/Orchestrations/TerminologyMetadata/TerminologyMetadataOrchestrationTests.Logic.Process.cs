@@ -2,11 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Ontologies;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
+using Microsoft.Identity.Client;
 using Moq;
 using Xunit;
 
@@ -23,32 +25,60 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             string resourceType = randomString;
 
             IQueryable<TerminologyPoll> terminologyPolls = 
-                CreateRandomTerminologyPolls(resourceType, lastPoll: randomDateTimeOffset);
+                CreateRandomTerminologyPolls(resourceType, lastPoll: randomDateTimeOffset.AddDays(-3));
 
             TerminologyPoll retrievedTerminologyPoll = terminologyPolls.First();
             string relativeUrl = this.terminologyMetadataConfiguration.ResourceURL;
             relativeUrl = relativeUrl.Replace("{{resourceType}}", resourceType);
             relativeUrl = relativeUrl.Replace("{{datestamp}}", randomDateTimeOffset.ToString());
             dynamic randomArtifactProperties = CreateRandomArtifactProperties(resourceType);
-            string nextPageUrl = "";
 
             OntologyAssets retrievedOntologyAssets = 
-                CreateArtiFactFromRandomData(randomArtifactProperties, nextPageUrl);
+                CreateArtiFactFromRandomData(randomArtifactProperties);
 
-            TerminologyArtifact outputTerminologyArtifact = 
+            List<TerminologyArtifact> outputTerminologyArtifacts = 
                 CreateTerminologyArtiFactFromRandomData(randomArtifactProperties);
 
             this.terminologyPollProcessingServiceMock.Setup(service =>
                 service.RetrieveAllTerminologyPolls()).
                     Returns(terminologyPolls);
 
-            this.ontologyProcessingServiceMock.Setup(service =>
-                service.RetrieveAllCodingSystemsAsync(relativeUrl))
-                    .ReturnsAsync(retrievedOntologyAssets);
-
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
                     .Returns(randomDateTimeOffset);
+
+            this.ontologyProcessingServiceMock.SetupSequence(service =>
+                service.RetrieveAllCodingSystemsAsync(relativeUrl))
+                    .ReturnsAsync(retrievedOntologyAssets);
+
+            for (int i = 0; i < retrievedOntologyAssets.Assets.Count; i++)
+
+            {
+                var item = retrievedOntologyAssets.Assets[i];
+                string user = GetRandomString();
+                DateTimeOffset 
+
+                TerminologyArtifact terminologyArtifact = new TerminologyArtifact
+                {
+                    FullUrl = item.FullUrl,
+                    ResourceType = item.ResourceType,
+                    Version = item.Version,
+                    Name = item.Name,
+                    Title = item.Title,
+                    Status = item.Status,
+                    LastUpdated = item.LastUpdated,
+                    IsCore = false,
+                    IsDownloaded = false,
+                    CreatedBy = item.LastUpdated,
+                    UpdatedBy = item.UpdatedBy,
+                    UpdatedDate = item.UpdatedDate,
+                    CreatedDate = item.CreatedDate
+                };
+                
+                this.terminologyArtifactProcessingServiceMock.Setup(service =>
+                    service.ModifyOrAddTerminologyArtifactAsync(terminologyArtifact)
+                    .Returns(Task.CompletedTask);
+            }
 
             this.terminologyPollProcessingServiceMock.Setup(service =>
                 service.AddTerminologyPollAsync(retrievedTerminologyPoll)).

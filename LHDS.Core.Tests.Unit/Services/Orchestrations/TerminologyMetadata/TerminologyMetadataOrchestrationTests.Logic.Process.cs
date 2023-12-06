@@ -4,6 +4,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.Ontologies;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using Moq;
 using Xunit;
@@ -19,26 +21,30 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             string randomString = GetRandomString();
             string resourceType = randomString;
-            IQueryable<TerminologyPoll> terminologyPolls = CreateRandomTerminologyPolls(resourceType);
+
+            IQueryable<TerminologyPoll> terminologyPolls = 
+                CreateRandomTerminologyPolls(resourceType, lastPoll: randomDateTimeOffset);
+
             TerminologyPoll retrievedTerminologyPoll = terminologyPolls.First();
-            retrievedTerminologyPoll.LastPoll;
+            string relativeUrl = this.terminologyMetadataConfiguration.ResourceURL;
+            relativeUrl = relativeUrl.Replace("{{resourceType}}", resourceType);
+            relativeUrl = relativeUrl.Replace("{{datestamp}}", randomDateTimeOffset.ToString());
+            dynamic randomArtifactProperties = CreateRandomArtifactProperties(resourceType);
+            string nextPageUrl = "";
+
+            OntologyAssets retrievedOntologyAssets = 
+                CreateArtiFactFromRandomData(randomArtifactProperties, nextPageUrl);
+
+            TerminologyArtifact outputTerminologyArtifact = 
+                CreateTerminologyArtiFactFromRandomData(randomArtifactProperties);
 
             this.terminologyPollProcessingServiceMock.Setup(service =>
                 service.RetrieveAllTerminologyPolls()).
                     Returns(terminologyPolls);
 
-            string url = this.terminologyMetadataConfiguration.ResourceURL;
-            url = url.Replace("{{resourceType}}", resourceType);
-            url = url.Replace("{{datestamp}}", randomDateTimeOffset);
-
-
-
-
-
-
             this.ontologyProcessingServiceMock.Setup(service =>
-                service.RetrieveAllCodingSystemsAsync(url))
-                    .ReturnsAsync(ontolgyAsset);
+                service.RetrieveAllCodingSystemsAsync(relativeUrl))
+                    .ReturnsAsync(retrievedOntologyAssets);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -46,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
             this.terminologyPollProcessingServiceMock.Setup(service =>
                 service.AddTerminologyPollAsync(retrievedTerminologyPoll)).
-                    ReturnsAsync(terminologyPoll);
+                    ReturnsAsync(retrievedTerminologyPoll);
 
             // when
             await this.terminologyMetadataOrchestrationService.RetrieveArtifacMetadataAsync(resourceType);
@@ -57,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                     Times.Once);
 
             this.ontologyProcessingServiceMock.Verify(service =>
-                service.RetrieveArtifactDetailsAsync(url),
+                service.RetrieveArtifactDetailsAsync(relativeUrl),
                     Times.Once());
 
             this.dateTimeBrokerMock.Verify(broker =>

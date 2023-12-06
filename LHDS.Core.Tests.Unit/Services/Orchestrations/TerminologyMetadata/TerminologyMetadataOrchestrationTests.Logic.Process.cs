@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             string resourceType = randomString;
             IQueryable<TerminologyPoll> terminologyPolls = CreateRandomTerminologyPolls(resourceType);
             TerminologyPoll retrievedTerminologyPoll = terminologyPolls.First();
-            DateTimeOffset? lastPoll = retrievedTerminologyPoll.LastPoll;
+            retrievedTerminologyPoll.LastPoll;
 
             this.terminologyPollProcessingServiceMock.Setup(service =>
                 service.RetrieveAllTerminologyPolls()).

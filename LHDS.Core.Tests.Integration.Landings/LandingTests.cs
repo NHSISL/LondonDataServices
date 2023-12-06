@@ -121,7 +121,7 @@ namespace LHDS.Core.Tests.Integration.Landings
                 CreatedDate = new DateTime(year: 2023, month: 1, day: 1, hour: 0, minute: 0, second: 0),
                 UpdatedBy = "System",
                 UpdatedDate = new DateTime(year: 2023, month: 1, day: 1, hour: 0, minute: 0, second: 0)
-            }
+            };
 
             DataSet maybeDataSet = dataSetService.RetrieveAllDataSets()
                 .FirstOrDefault(s => s.Id == supplier.Id);

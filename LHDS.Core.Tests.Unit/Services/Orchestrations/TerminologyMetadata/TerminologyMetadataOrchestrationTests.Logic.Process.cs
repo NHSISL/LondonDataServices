@@ -21,14 +21,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             string resourceType = randomString;
             IQueryable<TerminologyPoll> terminologyPolls = CreateRandomTerminologyPolls(resourceType);
 
-
             this.terminologyPollProcessingServiceMock.Setup(service =>
                 service.RetrieveAllTerminologyPolls()).
                     Returns(terminologyPolls);
 
             string url = $"{{terminology-server}}/{resourceType}?_lastUpdated=ge{{datestamp}}" +
             "&_name=dm+dCOMBINATION_PACK_IND&_elements=name,title,url,version,status&_count=10";
-
 
             this.ontologyProcessingServiceMock.Setup(service =>
                 service.RetrieveAllCodingSystemsAsync(url))
@@ -39,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                     .Returns(randomDateTimeOffset);
 
             this.terminologyPollProcessingServiceMock.Setup(service =>
-                service.AddTerminologyPollAsync(TerminologyPoll));
+                service.AddTerminologyPollAsync(terminologyPolls.First))..ReturnsAsync(terminologyPoll);
 
             // when
             await this.terminologyMetadataOrchestrationService.RetrieveArtifacMetadataAsync(resourceType);

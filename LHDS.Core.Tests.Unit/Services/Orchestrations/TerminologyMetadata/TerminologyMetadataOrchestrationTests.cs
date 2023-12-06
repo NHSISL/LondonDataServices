@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
             terminologyMetadataConfiguration = new TerminologyMetadataConfiguration
             {
-                ResourceUrl = $"/authoring/fhir/{resourceType}?_lastUpdated=ge{{datestamp}}" +
+                ResourceUrl = "/authoring/fhir/{{resourceType}}?_lastUpdated=ge{{datestamp}}" +
                         "&_name=dm+dCOMBINATION_PACK_IND&_elements=name,title,url,version,status&_count=10"
             }
 
@@ -113,7 +113,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             return filler;
         }
 
-        private static dynamic CreateRandomArtifactProperties(string resourceType)
+        private static list<dynamic> CreateRandomArtifactProperties(string resourceType)
         {
             string user = GetRandomString();
             DateTimeOffset dateTimeOffset = GetRandomDateTimeOffset();
@@ -164,24 +164,26 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
         }
 
         private static TerminologyArtifact CreateTerminologyArtiFactFromRandomData(
-            dynamic randomArtifactProperties)
+            List<dynamic> randomArtifactProperties)
         {
-            TerminologyArtifact terminologyArtifact =
+            foreach (var item in randomArtifactProperties)
+            {
+                TerminologyArtifact terminologyArtifact =
                 new TerminologyArtifact
                 {
-                    FullUrl = randomArtifactProperties.FullUrl,
-                    ResourceType = randomArtifactProperties.ResourceType,
-                    Version = randomArtifactProperties.Version,
-                    Name = randomArtifactProperties.Name,
-                    Title = randomArtifactProperties.Title,
-                    Status = randomArtifactProperties.Status,
-                    LastUpdated = randomArtifactProperties.LastUpdated,
-                    IsCore = randomArtifactProperties.IsCore,
-                    IsDownloaded = randomArtifactProperties.IsDownloaded,
-                    CreatedBy = randomArtifactProperties.LastUpdated,
-                    UpdatedBy = randomArtifactProperties.UpdatedBy,
-                    UpdatedDate = randomArtifactProperties.UpdatedDate,
-                    CreatedDate = randomArtifactProperties.CreatedDate
+                    FullUrl = item.FullUrl,
+                    ResourceType = item.ResourceType,
+                    Version = item.Version,
+                    Name = item.Name,
+                    Title = item.Title,
+                    Status = item.Status,
+                    LastUpdated = item.LastUpdated,
+                    IsCore = item.IsCore,
+                    IsDownloaded = item.IsDownloaded,
+                    CreatedBy = item.LastUpdated,
+                    UpdatedBy = item.UpdatedBy,
+                    UpdatedDate = item.UpdatedDate,
+                    CreatedDate = item.CreatedDate
                 });
 
             return terminologyArtifact;

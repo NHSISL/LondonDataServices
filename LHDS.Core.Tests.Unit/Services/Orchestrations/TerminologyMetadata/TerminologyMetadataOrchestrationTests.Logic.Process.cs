@@ -20,6 +20,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             string randomString = GetRandomString();
             string resourceType = randomString;
             IQueryable<TerminologyPoll> terminologyPolls = CreateRandomTerminologyPolls(resourceType);
+            TerminologyPoll retrievedTerminologyPoll = terminologyPolls.First();
+            DateTimeOffset? lastPoll = retrievedTerminologyPoll.LastPoll;
 
             this.terminologyPollProcessingServiceMock.Setup(service =>
                 service.RetrieveAllTerminologyPolls()).
@@ -37,7 +39,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                     .Returns(randomDateTimeOffset);
 
             this.terminologyPollProcessingServiceMock.Setup(service =>
-                service.AddTerminologyPollAsync(terminologyPolls.First))..ReturnsAsync(terminologyPoll);
+                service.AddTerminologyPollAsync(terminologyPolls.First)).
+                    ReturnsAsync(terminologyPoll);
 
             // when
             await this.terminologyMetadataOrchestrationService.RetrieveArtifacMetadataAsync(resourceType);

@@ -11,7 +11,6 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Ontologies;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
-using LHDS.Core.Models.Orchestrations.Ontologies;
 using LHDS.Core.Models.Orchestrations.TerminologyMedata;
 using LHDS.Core.Services.Orchestrations.TerminologyMetadata;
 using LHDS.Core.Services.Processings.Ontologies;
@@ -44,15 +43,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
             terminologyMetadataConfiguration = new TerminologyMetadataConfiguration
             {
-                ResourceUrl = "/authoring/fhir/{{resourceType}}?_lastUpdated=ge{{datestamp}}" +
+                ResourceURL = "/authoring/fhir/{{resourceType}}?_lastUpdated=ge{{datestamp}}" +
                         "&_name=dm+dCOMBINATION_PACK_IND&_elements=name,title,url,version,status&_count=10"
-            }
+            };
 
             terminologyMetadataOrchestrationService = new TerminologyMetadataOrchestrationService(
                 terminologyPollProcessingService: terminologyPollProcessingServiceMock.Object,
                 terminologyArtifactProcessingService: terminologyArtifactProcessingServiceMock.Object,
                 ontologyProcessingService: ontologyProcessingServiceMock.Object,
-                terminologyMetadataConfiguration: terminologyMetadataConfiguration.Object,
+                terminologyMetadataConfiguration: terminologyMetadataConfiguration,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object
                 );
@@ -71,7 +70,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
         private static IQueryable<TerminologyPoll> CreateRandomTerminologyPolls(
-            string resourceType, 
+            string resourceType,
             DateTimeOffset lastPoll)
         {
             return CreateTerminologyPollFiller(resourceType, lastPoll)
@@ -88,10 +87,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             var filler = new Filler<TerminologyPoll>();
 
             filler.Setup()
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(terminologyMetadata => terminologyMetadata.ResourceType).Use(resourceType)
-                .OnProperty(terminologyMetadata => terminologyMetadata.LastPoll).Use(lastPoll)
+                .OnProperty(terminologyMetadata => terminologyMetadata.LastPoll).Use(lastPoll);
 
             return filler;
         }
@@ -113,26 +112,31 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             return filler;
         }
 
-        private static list<dynamic> CreateRandomArtifactProperties(string resourceType)
+        private static List<dynamic> CreateRandomArtifactProperties(string resourceType)
         {
             string user = GetRandomString();
             DateTimeOffset dateTimeOffset = GetRandomDateTimeOffset();
-            return new
-            {
-                FullUrl = GetRandomString(),
-                ResourceType = resourceType,
-                Version = GetRandomString(),
-                Name = GetRandomString(),
-                Title = GetRandomString(),
-                Status = "active",
-                LastUpdated = dateTimeOffset,
-                IsCore = false,
-                IsDownloaded = true,
-                CreatedBy = user,
-                UpdateBy = user,
-                UpdatedDate = dateTimeOffset,
-                CreatedDate = dateTimeOffset
-            };
+            return Enumerable.Range(1, GetRandomNumber())
+                .Select(item =>
+                {
+                    return new
+                    {
+                        FullUrl = GetRandomString(),
+                        ResourceType = resourceType,
+                        Version = GetRandomString(),
+                        Name = GetRandomString(),
+                        Title = GetRandomString(),
+                        Status = "active",
+                        LastUpdated = dateTimeOffset,
+                        IsCore = false,
+                        IsDownloaded = true,
+                        CreatedBy = user,
+                        UpdateBy = user,
+                        UpdatedDate = dateTimeOffset,
+                        CreatedDate = dateTimeOffset
+                        };
+                })
+                .ToList<dynamic>();
         }
 
         private static OntologyAssets CreateArtiFactFromRandomData(
@@ -158,35 +162,41 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                         Status = item.Status,
                         LastUpdated = item.LastUpdated
                     });
+
+                ontologyAssets.NextPage = item.NextPage;
+
             }
 
             return ontologyAssets;
         }
 
-        private static TerminologyArtifact CreateTerminologyArtiFactFromRandomData(
+        private static List<TerminologyArtifact> CreateTerminologyArtiFactFromRandomData(
             List<dynamic> randomArtifactProperties)
         {
+            var terminologyArtifacts = new List<TerminologyArtifact>();
+
             foreach (var item in randomArtifactProperties)
             {
-                TerminologyArtifact terminologyArtifact =
-                new TerminologyArtifact
-                {
-                    FullUrl = item.FullUrl,
-                    ResourceType = item.ResourceType,
-                    Version = item.Version,
-                    Name = item.Name,
-                    Title = item.Title,
-                    Status = item.Status,
-                    LastUpdated = item.LastUpdated,
-                    IsCore = item.IsCore,
-                    IsDownloaded = item.IsDownloaded,
-                    CreatedBy = item.LastUpdated,
-                    UpdatedBy = item.UpdatedBy,
-                    UpdatedDate = item.UpdatedDate,
-                    CreatedDate = item.CreatedDate
-                });
+                terminologyArtifacts.Add(
+                    new TerminologyArtifact
+                    {
+                        FullUrl = item.FullUrl,
+                        ResourceType = item.ResourceType,
+                        Version = item.Version,
+                        Name = item.Name,
+                        Title = item.Title,
+                        Status = item.Status,
+                        LastUpdated = item.LastUpdated,
+                        IsCore = item.IsCore,
+                        IsDownloaded = item.IsDownloaded,
+                        CreatedBy = item.LastUpdated,
+                        UpdatedBy = item.UpdatedBy,
+                        UpdatedDate = item.UpdatedDate,
+                        CreatedDate = item.CreatedDate
+                    });
+            }
 
-            return terminologyArtifact;
+            return terminologyArtifacts;
         }
     }
 }

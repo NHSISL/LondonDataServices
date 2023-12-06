@@ -4,9 +4,9 @@
 
 using System;
 
-namespace LHDS.Core.Models.Orchestrations.Ontologies
+namespace LHDS.Core.Models.Orchestrations.TerminologyMedata
 {
-    public class OntologyConfiguration
+    public class TerminologyMetadataConfiguration
     {
         public string resourceURL { get; set; }
     }

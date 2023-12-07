@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -68,6 +69,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private Expression<Func<TerminologyArtifact, bool>> SameTerminologyArtifactAs(
+            TerminologyArtifact expectedTerminologyArtifact)
+        {
+            return actualTerminologyArtifact =>
+                this.compareLogic.Compare(expectedTerminologyArtifact, actualTerminologyArtifact)
+                    .AreEqual;
+        }
 
         private static IQueryable<TerminologyPoll> CreateRandomTerminologyPolls(
             string resourceType,

@@ -44,22 +44,50 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
 
         public async ValueTask RetrieveArtifacMetadataAsync(string resourceType) 
         {
-            IQueryable<TerminologyPoll> terminologyPolls = 
-                this.terminologyPollProcessingService.RetrieveAllTerminologyPolls();
+            IQueryable<TerminologyPoll> terminologyPolls =
+                this.terminologyPollProcessingService.RetrieveAllTerminologyPolls()
+                    .Where(terminologyPoll => terminologyPoll.ResourceType == resourceType);
 
             TerminologyPoll retrievedTerminologyPoll = terminologyPolls.First();
             await this.terminologyPollProcessingService.AddTerminologyPollAsync(retrievedTerminologyPoll);
 
-            string relativeUrl = ...; // Construct the URL based on resourceType and current date
+            string relativeUrl = this.terminologyMetadataConfiguration.ResourceURL;
+
+            DateTimeOffset currentDateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
             OntologyAssets retrievedOntologyAssets = 
                 await this.ontologyProcessingService.RetrieveAllCodingSystemsAsync(relativeUrl);
 
+            retrievedOntologyAssets.Assets = retrievedOntologyAssets.Assets
+                .Where(asset => asset.LastUpdated.HasValue && asset.LastUpdated.Value < currentDateTimeOffset)
+                    .ToList();
+
             foreach (var asset in retrievedOntologyAssets.Assets)
             {
-                TerminologyArtifact terminologyArtifact = ...; // Create a TerminologyArtifact from the asset
+                DateTimeOffset dateTimeOffset= this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                TerminologyArtifact terminologyArtifact = new TerminologyArtifact
+                {
+                    FullUrl = asset.FullUrl,
+                    ResourceType = asset.ResourceType,
+                    Version = asset.Version,
+                    Name = asset.Name,
+                    Title = asset.Title,
+                    Status = asset.Status,
+                    LastUpdated = asset.LastUpdated,
+                    IsCore = false,
+                    IsDownloaded = false,
+                    CreatedBy = "System",
+                    UpdatedBy = "System",
+                    UpdatedDate = dateTimeOffset,
+                    CreatedDate = dateTimeOffset
+                };
+
                 await this.terminologyArtifactProcessingService.
                     ModifyOrAddTerminologyArtifactAsync(terminologyArtifact);
             }
+
+            await this.terminologyPollProcessingService.AddTerminologyPollAsync(retrievedTerminologyPoll);
         }
     }
 }

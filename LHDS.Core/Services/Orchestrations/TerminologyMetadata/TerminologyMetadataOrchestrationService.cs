@@ -3,9 +3,13 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.Ontologies;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts;
+using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Orchestrations.TerminologyMedata;
 using LHDS.Core.Services.Processings.Ontologies;
 using LHDS.Core.Services.Processings.TerminologyArtifacts;
@@ -38,7 +42,24 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public ValueTask RetrieveArtifacMetadataAsync(string resourceType) =>
-            throw new NotImplementedException();
+        public async ValueTask RetrieveArtifacMetadataAsync(string resourceType) 
+        {
+            IQueryable<TerminologyPoll> terminologyPolls = 
+                this.terminologyPollProcessingService.RetrieveAllTerminologyPolls();
+
+            TerminologyPoll retrievedTerminologyPoll = terminologyPolls.First();
+            await this.terminologyPollProcessingService.AddTerminologyPollAsync(retrievedTerminologyPoll);
+
+            string relativeUrl = ...; // Construct the URL based on resourceType and current date
+            OntologyAssets retrievedOntologyAssets = 
+                await this.ontologyProcessingService.RetrieveAllCodingSystemsAsync(relativeUrl);
+
+            foreach (var asset in retrievedOntologyAssets.Assets)
+            {
+                TerminologyArtifact terminologyArtifact = ...; // Create a TerminologyArtifact from the asset
+                await this.terminologyArtifactProcessingService.
+                    ModifyOrAddTerminologyArtifactAsync(terminologyArtifact);
+            }
+        }
     }
 }

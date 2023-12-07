@@ -121,7 +121,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                 };
 
                 this.terminologyArtifactProcessingServiceMock.Verify(service =>
-                    service.ModifyOrAddTerminologyArtifactAsync(terminologyArtifact),
+                    service.ModifyOrAddTerminologyArtifactAsync(SameTerminologyArtifactAs(terminologyArtifact)),
                         Times.Once());
             }
 

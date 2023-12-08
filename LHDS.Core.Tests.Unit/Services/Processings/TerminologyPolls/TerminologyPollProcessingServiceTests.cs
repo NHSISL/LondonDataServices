@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -26,6 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly ITerminologyPollProcessingService terminologyPollProcessingService;
+        private readonly ICompareLogic compareLogic;
 
         public TerminologyPollProcessingServiceTests()
         {
@@ -33,6 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            compareLogic = new CompareLogic();
 
             this.terminologyPollProcessingService = new TerminologyPollProcessingService(
                 terminologyPollService: this.terminologyPollServiceMock.Object,
@@ -55,6 +58,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
 
         private static int GetRandomNegativeNumber() =>
             -1 * new IntRange(min: 2, max: 10).GetValue();
+
+        private Expression<Func<TerminologyPoll, bool>> SameTerminologyPollAs(
+            TerminologyPoll expectedTerminologyPoll)
+        {
+            return actualTerminologyPoll =>
+                this.compareLogic.Compare(expectedTerminologyPoll, actualTerminologyPoll)
+                    .AreEqual;
+        }
 
         private static TerminologyPoll CreateRandomModifyTerminologyPoll()
         {

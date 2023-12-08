@@ -121,12 +121,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                 };
 
                 this.terminologyArtifactProcessingServiceMock.Verify(service =>
-                    service.ModifyOrAddTerminologyArtifactAsync(SameTerminologyArtifactAs(terminologyArtifact)),
+                    service.ModifyOrAddTerminologyArtifactAsync(It.Is(SameTerminologyArtifactAs(terminologyArtifact))),
                         Times.Once());
             }
 
             this.terminologyPollProcessingServiceMock.Verify(service =>
-                service.AddTerminologyPollAsync(retrievedTerminologyPoll),
+                service.AddTerminologyPollAsync(It.Is(SameTerminologyPollAs(retrievedTerminologyPoll))),
                     Times.Once);
 
             this.terminologyPollProcessingServiceMock.VerifyNoOtherCalls();

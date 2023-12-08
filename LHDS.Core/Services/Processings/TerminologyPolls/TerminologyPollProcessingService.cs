@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Services.Foundations.TerminologyPolls;
@@ -15,14 +17,20 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
     public partial class TerminologyPollProcessingService : ITerminologyPollProcessingService
     {
         private readonly ITerminologyPollService terminologyPollService;
+        private readonly IIdentifierBroker identifierBroker;
         private readonly ILoggingBroker loggingBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
 
         public TerminologyPollProcessingService(
             ITerminologyPollService terminologyPollService,
-            ILoggingBroker loggingBroker)
+            IIdentifierBroker identifierBroker,
+            ILoggingBroker loggingBroker,
+            IDateTimeBroker dateTimeBroker)
         {
             this.terminologyPollService = terminologyPollService;
+            this.identifierBroker = identifierBroker;
             this.loggingBroker = loggingBroker;
+            this.dateTimeBroker = dateTimeBroker;
         }
 
         public ValueTask<TerminologyPoll> AddTerminologyPollAsync(TerminologyPoll terminologyPoll) =>

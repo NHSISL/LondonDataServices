@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
@@ -71,7 +72,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                 return await this.terminologyPollService.RemoveTerminologyPollByIdAsync(terminologyPollId);
             });
 
-        public ValueTask<TerminologyPoll> RetrieveOrAddTerminologyPollAsync(string resourceType)
+        public async ValueTask<TerminologyPoll> RetrieveOrAddTerminologyPollAsync(string resourceType)
         {
             IQueryable<TerminologyPoll> allTerminologyPolls = this.terminologyPollService.RetrieveAllTerminologyPolls();
 
@@ -79,7 +80,30 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                 .Where(terminologyPoll => terminologyPoll.ResourceType == resourceType)
                     .FirstOrDefault();
 
-            return new ValueTask<TerminologyPoll>(maybeTerminologyPoll);
+            if (maybeTerminologyPoll == null)
+            {
+                DateTimeOffset dateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                TerminologyPoll terminologyPoll = new TerminologyPoll
+                {
+                    Id = this.identifierBroker.GetIdentifier(),
+                    ResourceType = resourceType,
+                    LastPoll = dateTimeOffset,
+                    CreatedBy = "System",
+                    UpdatedBy = "System",
+                    UpdatedDate = dateTimeOffset,
+                    CreatedDate = dateTimeOffset
+                };
+
+                TerminologyPoll addedTerminologyPoll = 
+                    await this.terminologyPollService.AddTerminologyPollAsync(terminologyPoll);
+
+                return addedTerminologyPoll;
+            }
+            else
+            {
+                return maybeTerminologyPoll;
+            }
         }
     }
 }

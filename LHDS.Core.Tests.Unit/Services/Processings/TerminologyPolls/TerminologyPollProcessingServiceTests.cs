@@ -38,7 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                 terminologyPollService: this.terminologyPollServiceMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object,
-                dateTimeBroker: dateTimeBrokerMock.Object));
+                dateTimeBroker: dateTimeBrokerMock.Object);
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>

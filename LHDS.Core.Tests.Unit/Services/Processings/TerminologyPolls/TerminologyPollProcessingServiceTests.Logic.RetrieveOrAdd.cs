@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             IQueryable<TerminologyPoll> inputTerminologyPolls = randomTerminologyPolls;
             IQueryable<TerminologyPoll> storageTerminologyPolls = inputTerminologyPolls;
             TerminologyPoll inputTerminologyPoll = inputTerminologyPolls.First();
-            TerminologyPoll storageTerminologyPoll = inputTerminologyPoll;
+            TerminologyPoll storageTerminologyPoll = inputTerminologyPoll.DeepClone();
             TerminologyPoll expectedTerminologyPoll = storageTerminologyPoll;
 
             this.terminologyPollServiceMock.Setup(service =>
@@ -87,7 +87,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                     .Returns(storageTerminologyPolls);
 
             this.terminologyPollServiceMock.Setup(service =>
-                service.AddTerminologyPollAsync(inputTerminologyPoll))
+                service.AddTerminologyPollAsync(It.Is(SameTerminologyPollAs(inputTerminologyPoll))))
                     .ReturnsAsync(storageTerminologyPoll);
 
             // when
@@ -110,7 +110,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                     Times.Once());
 
             this.terminologyPollServiceMock.Verify(service =>
-                service.AddTerminologyPollAsync(inputTerminologyPoll),
+                service.AddTerminologyPollAsync(It.Is(SameTerminologyPollAs(inputTerminologyPoll))),
                     Times.Once());
 
             this.identifierBrokerMock.VerifyNoOtherCalls();

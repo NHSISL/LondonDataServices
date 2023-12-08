@@ -78,6 +78,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                     .AreEqual;
         }
 
+        private Expression<Func<TerminologyPoll, bool>> SameTerminologyPollAs(
+            TerminologyPoll expectedTerminologyPoll)
+        {
+            return actualTerminologyPoll =>
+                this.compareLogic.Compare(expectedTerminologyPoll, actualTerminologyPoll)
+                    .AreEqual;
+        }
+
         private static IQueryable<TerminologyPoll> CreateRandomTerminologyPolls(
             string resourceType,
             DateTimeOffset lastPoll)

@@ -47,6 +47,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
 
             this.terminologyPollServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]

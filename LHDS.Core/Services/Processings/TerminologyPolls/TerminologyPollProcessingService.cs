@@ -61,5 +61,8 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
 
                 return await this.terminologyPollService.RemoveTerminologyPollByIdAsync(terminologyPollId);
             });
+
+        public ValueTask<TerminologyPoll> RetrieveOrAddTerminologyPollAsync(string resourceType) =>
+            throw new NotImplementedException();
     }
 }

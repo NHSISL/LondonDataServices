@@ -29,10 +29,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                 service.RetrieveAllTerminologyPolls())
                     .Returns(storageTerminologyPolls);
 
-            this.terminologyPollServiceMock.Setup(service =>
-                service.RetrieveTerminologyPollByIdAsync(inputTerminologyPoll.Id))
-                    .ReturnsAsync(storageTerminologyPoll);
-
             // when
             TerminologyPoll actualTerminologyPoll = await this.terminologyPollProcessingService
                 .RetrieveOrAddTerminologyPollAsync(resouceType);
@@ -41,12 +37,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             actualTerminologyPoll.Should().BeEquivalentTo(expectedTerminologyPoll);
 
             this.terminologyPollServiceMock.Verify(service =>
-                service.AddTerminologyPollAsync(inputTerminologyPoll),
+                service.RetrieveAllTerminologyPolls(),
                     Times.Once());
 
             this.terminologyPollServiceMock.Verify(service =>
                 service.AddTerminologyPollAsync(inputTerminologyPoll),
-                    Times.Once());
+                    Times.Never());
 
             this.terminologyPollServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

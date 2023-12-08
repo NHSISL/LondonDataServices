@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
@@ -39,7 +40,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             });
 
         public ValueTask<TerminologyPoll> RetrieveTerminologyPollByIdAsync(Guid terminologyPollId) =>
-            TryCatch(async() =>
+            TryCatch(async () =>
             {
                 ValidateTerminologyPollId(terminologyPollId);
 
@@ -62,7 +63,15 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                 return await this.terminologyPollService.RemoveTerminologyPollByIdAsync(terminologyPollId);
             });
 
-        public ValueTask<TerminologyPoll> RetrieveOrAddTerminologyPollAsync(string resourceType) =>
-            throw new NotImplementedException();
+        public ValueTask<TerminologyPoll> RetrieveOrAddTerminologyPollAsync(string resourceType)
+        {
+            IQueryable<TerminologyPoll> allTerminologyPolls = this.terminologyPollService.RetrieveAllTerminologyPolls();
+
+            TerminologyPoll maybeTerminologyPoll = allTerminologyPolls
+                .Where(terminologyPoll => terminologyPoll.ResourceType == resourceType)
+                    .FirstOrDefault();
+
+            return new ValueTask<TerminologyPoll>(maybeTerminologyPoll);
+        }
     }
 }

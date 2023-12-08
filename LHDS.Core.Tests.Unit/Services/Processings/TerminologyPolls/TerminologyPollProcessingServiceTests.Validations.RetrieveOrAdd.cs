@@ -31,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
 
             var invalidArgumentTerminologyPollsProcessingException =
                 new InvalidArgumentTerminologyPollsProcessingException(
-                    message: "Invalid terminology poll processing argument. Please correct the errors and try again.");
+                    message: "Invalid argument terminology poll processing. Please correct the errors and try again.");
 
             invalidArgumentTerminologyPollsProcessingException.AddData(
                 key: "resourceType",
@@ -39,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
 
             var expectedTerminologyPollProcessingValidationException =
             new TerminologyPollProcessingValidationException(
-                message: "Terminology poll processing validation errors occured, please try again",
+                message: "Terminology poll processing validation errors occurred, please try again.",
                 innerException: invalidArgumentTerminologyPollsProcessingException);
 
             // when

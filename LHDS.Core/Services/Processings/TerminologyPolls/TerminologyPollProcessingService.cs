@@ -72,38 +72,42 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                 return await this.terminologyPollService.RemoveTerminologyPollByIdAsync(terminologyPollId);
             });
 
-        public async ValueTask<TerminologyPoll> RetrieveOrAddTerminologyPollAsync(string resourceType)
-        {
-            IQueryable<TerminologyPoll> allTerminologyPolls = this.terminologyPollService.RetrieveAllTerminologyPolls();
-
-            TerminologyPoll maybeTerminologyPoll = allTerminologyPolls
-                .Where(terminologyPoll => terminologyPoll.ResourceType == resourceType)
-                    .FirstOrDefault();
-
-            if (maybeTerminologyPoll == null)
+        public ValueTask<TerminologyPoll> RetrieveOrAddTerminologyPollAsync(string resourceType) =>
+            TryCatch(async () =>
             {
-                DateTimeOffset dateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
+                ValidateResourceType(resourceType);
 
-                TerminologyPoll terminologyPoll = new TerminologyPoll
+                IQueryable<TerminologyPoll> allTerminologyPolls = 
+                    this.terminologyPollService.RetrieveAllTerminologyPolls();
+
+                TerminologyPoll maybeTerminologyPoll = allTerminologyPolls
+                    .Where(terminologyPoll => terminologyPoll.ResourceType == resourceType)
+                        .FirstOrDefault();
+
+                if (maybeTerminologyPoll == null)
                 {
-                    Id = this.identifierBroker.GetIdentifier(),
-                    ResourceType = resourceType,
-                    LastPoll = dateTimeOffset,
-                    CreatedBy = "System",
-                    UpdatedBy = "System",
-                    UpdatedDate = dateTimeOffset,
-                    CreatedDate = dateTimeOffset
-                };
+                    DateTimeOffset dateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
-                TerminologyPoll addedTerminologyPoll = 
-                    await this.terminologyPollService.AddTerminologyPollAsync(terminologyPoll);
+                    TerminologyPoll terminologyPoll = new TerminologyPoll
+                    {
+                        Id = this.identifierBroker.GetIdentifier(),
+                        ResourceType = resourceType,
+                        LastPoll = dateTimeOffset,
+                        CreatedBy = "System",
+                        UpdatedBy = "System",
+                        UpdatedDate = dateTimeOffset,
+                        CreatedDate = dateTimeOffset
+                    };
 
-                return addedTerminologyPoll;
-            }
-            else
-            {
-                return maybeTerminologyPoll;
-            }
-        }
+                    TerminologyPoll addedTerminologyPoll =
+                        await this.terminologyPollService.AddTerminologyPollAsync(terminologyPoll);
+
+                    return addedTerminologyPoll;
+                }
+                else
+                {
+                    return maybeTerminologyPoll;
+                }
+            });
     }
 }

@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<AzureFunctionsVersion>v4</AzureFunctionsVersion>
 		<OutputType>Exe</OutputType>
 		<Nullable>disable</Nullable>
@@ -17,12 +17,12 @@
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Storage.Queues" Version="5.2.0" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Tables" Version="1.2.1" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Timer" Version="4.3.0" />
-		<PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.16.2" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.13" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.16.4" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.21.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.22.0" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -13,12 +13,34 @@ namespace LHDS.Core.Services.Foundations.Ontologies
     internal partial class OntologyService
     {
         private delegate ValueTask<OntologyAssets> ReturningOntologyAssetsFunction();
+        private delegate ValueTask<string> ReturningStringFunction();
 
         private async ValueTask<OntologyAssets> TryCatch(ReturningOntologyAssetsFunction returningOntologyAssetsFunction)
         {
             try
             {
                 return await returningOntologyAssetsFunction();
+            }
+            catch (InvalidArgumentOntologyException invalidArgumentOntologyException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentOntologyException);
+            }
+            catch (Exception exception)
+            {
+                var failedOntologyServiceException =
+                    new FailedOntologyServiceException(
+                        message: "Failed ontology service error occurred, please contact support",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedOntologyServiceException);
+            }
+        }
+
+        private async ValueTask<string> TryCatch(ReturningStringFunction returningStringFunction)
+        {
+            try
+            {
+                return await returningStringFunction();
             }
             catch (InvalidArgumentOntologyException invalidArgumentOntologyException)
             {

@@ -17,7 +17,7 @@ namespace LHDS.Core.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.11")
+                .HasAnnotation("ProductVersion", "7.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -402,7 +402,9 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsNationallyCollected")
                         .ValueGeneratedOnAdd()
@@ -468,7 +470,7 @@ namespace LHDS.Core.Migrations
                             DataSetAuthor = "EMISDEV",
                             DataSetName = "PrimaryCareEMISDEV",
                             DataSourceType = "",
-                            IsActive = false,
+                            IsActive = true,
                             IsNationallyCollected = false,
                             IsNationallySpecified = false,
                             SpecifiedBy = "EMIS",

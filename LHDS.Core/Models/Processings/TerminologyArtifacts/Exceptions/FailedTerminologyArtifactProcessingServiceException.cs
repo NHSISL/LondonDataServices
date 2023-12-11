@@ -5,7 +5,7 @@
 using System;
 using Xeptions;
 
-namespace LHDS.Core.Models.Processings.TerminologyArtifact.Exceptions
+namespace LHDS.Core.Models.Processings.TerminologyArtifacts.Exceptions
 {
     public class FailedTerminologyArtifactProcessingServiceException : Xeption
     {

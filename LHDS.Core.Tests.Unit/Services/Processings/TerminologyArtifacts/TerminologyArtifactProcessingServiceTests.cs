@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
@@ -21,16 +22,19 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
     {
         private readonly Mock<ITerminologyArtifactService> terminologyArtifactServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly ITerminologyArtifactProcessingService terminologyArtifactProcessingService;
 
         public TerminologyArtifactProcessingServiceTests()
         {
             this.terminologyArtifactServiceMock = new Mock<ITerminologyArtifactService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
 
             this.terminologyArtifactProcessingService = new TerminologyArtifactProcessingService(
                 terminologyArtifactService: this.terminologyArtifactServiceMock.Object,
-                loggingBroker: this.loggingBrokerMock.Object);
+                loggingBroker: this.loggingBrokerMock.Object,
+                dateTimeBroker: dateTimeBrokerMock.Object);
         }
 
         private static string GetRandomString() =>
@@ -55,13 +59,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);
 
-
         private static Filler<TerminologyArtifact> CreateTerminologyArtifactFiller()
         {
             DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
             var filler = new Filler<TerminologyArtifact>();
 
             filler.Setup()
+                .OnProperty(terminologyArtifact => terminologyArtifact.IsDownloaded).Use(true)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset?>().Use(dateTimeOffset);
 

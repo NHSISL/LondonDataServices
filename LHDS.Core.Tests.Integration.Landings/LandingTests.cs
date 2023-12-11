@@ -12,6 +12,8 @@ using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Providers.Downloads.Extensions;
+using LHDS.Core.Services.Foundations.DataSets;
+using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
@@ -31,6 +33,8 @@ namespace LHDS.Core.Tests.Integration.Landings
         private readonly LandingConfiguration landingConfiguration;
         private readonly IIngestionTrackingService ingestionTrackingService;
         private readonly ISupplierService supplierService;
+        private readonly IDataSetService dataSetService;
+        private readonly IDataSetSpecificationService dataSetSpecificationService;
         private readonly IIngestionTrackingAuditService auditService;
 
         public LandingTests(ITestOutputHelper output)
@@ -63,6 +67,8 @@ namespace LHDS.Core.Tests.Integration.Landings
             ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
             auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
             supplierService = serviceProvider.GetService<ISupplierService>();
+            dataSetService = serviceProvider.GetService<IDataSetService>();
+            dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
             landingClient = serviceProvider.GetService<ILandingClient>();
         }
 

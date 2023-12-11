@@ -3,11 +3,14 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
+using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.Core.Services.Processings.TerminologyArtifacts
 {
@@ -15,13 +18,16 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
     {
         private readonly ITerminologyArtifactService terminologyArtifactService;
         private readonly ILoggingBroker loggingBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
 
         public TerminologyArtifactProcessingService(
             ITerminologyArtifactService terminologyArtifactService,
-            ILoggingBroker loggingBroker)
+            ILoggingBroker loggingBroker,
+            IDateTimeBroker dateTimeBroker)
         {
             this.terminologyArtifactService = terminologyArtifactService;
             this.loggingBroker = loggingBroker;
+            this.dateTimeBroker = dateTimeBroker;
         }
         public IQueryable<TerminologyArtifact> RetrieveAllTerminologyArtifactsAsync() =>
             TryCatch(() =>
@@ -29,14 +35,55 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
                 return this.terminologyArtifactService.RetrieveAllTerminologyArtifacts();
             });
 
-        public ValueTask<TerminologyArtifact> RetrieveAllTerminologyArtifactByIdAsync(Guid Id) =>
-            throw new NotImplementedException();
+        public ValueTask<TerminologyArtifact> RetrieveTerminologyArtifactByIdAsync(Guid Id) =>
+            TryCatch(async () =>
+            {
+                ValidateId(Id);
 
-        public ValueTask<TerminologyArtifact> RetrieveOrAddTerminologyArtifactAsync(
+                return await this.terminologyArtifactService.RetrieveTerminologyArtifactByIdAsync(Id);
+            });
+
+        public async ValueTask<TerminologyArtifact> ModifyOrAddTerminologyArtifactAsync(
             TerminologyArtifact terminologyArtifact) =>
-                throw new NotImplementedException();
+            await TryCatch(async () =>
+            {
+                ValidateTerminologyArtifact(terminologyArtifact);
+                ValidateId(terminologyArtifact.Id);
+
+                var maybeTerminologyArtifact =
+                    await this.terminologyArtifactService.RetrieveTerminologyArtifactByIdAsync(terminologyArtifact.Id);
+
+                if (maybeTerminologyArtifact != null)
+                {
+                    terminologyArtifact.IsDownloaded = false;
+                    terminologyArtifact.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                    return await this.terminologyArtifactService.ModifyTerminologyArtifactAsync(terminologyArtifact);
+                }
+                else
+                {
+                    terminologyArtifact.IsDownloaded = false;
+
+                    return await this.terminologyArtifactService.AddTerminologyArtifactAsync(terminologyArtifact);
+                }
+            });
 
         public ValueTask<TerminologyArtifact> RemoveTerminologyArtifactByIdAsync(Guid Id) =>
-            throw new NotImplementedException();
+            TryCatch(async () =>
+            {
+                ValidateId(Id);
+
+                return await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(Id);
+            });
+
+        public ValueTask<TerminologyArtifact?> GetNonDownloadedArtifactAsync() =>
+            TryCatch(async () =>
+            {
+                TerminologyArtifact nonDownloadedArtifact =
+                     this.terminologyArtifactService.RetrieveAllTerminologyArtifacts()
+                        .FirstOrDefault(terminologyArtifact => !terminologyArtifact.IsDownloaded);
+
+                return nonDownloadedArtifact;
+            });
     }
 }

@@ -6,8 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Ontologies;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
@@ -18,6 +20,7 @@ using LHDS.Core.Services.Processings.Ontologies;
 using LHDS.Core.Services.Processings.TerminologyArtifacts;
 using LHDS.Core.Services.Processings.TerminologyPolls;
 using Moq;
+using Org.BouncyCastle.Tls;
 using Tynamix.ObjectFiller;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
@@ -29,6 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
         private readonly Mock<IOntologyProcessingService> ontologyProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly TerminologyMetadataConfiguration terminologyMetadataConfiguration;
         private readonly ITerminologyMetadataOrchestrationService terminologyMetadataOrchestrationService;
         private readonly ICompareLogic compareLogic;
@@ -41,6 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             compareLogic = new CompareLogic();
+            identifierBrokerMock = new Mock<IIdentifierBroker>();
 
             terminologyMetadataConfiguration = new TerminologyMetadataConfiguration
             {
@@ -84,15 +89,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             return actualTerminologyPoll =>
                 this.compareLogic.Compare(expectedTerminologyPoll, actualTerminologyPoll)
                     .AreEqual;
-        }
-
-        private static IQueryable<TerminologyPoll> CreateRandomTerminologyPolls(
-            string resourceType,
-            DateTimeOffset lastPoll)
-        {
-            return CreateTerminologyPollFiller(resourceType, lastPoll)
-                .Create(count: 1)
-                    .AsQueryable();
         }
 
         private static TerminologyPoll CreateRandomTerminologyPoll(string resourceType, DateTimeOffset lastPoll) =>
@@ -151,13 +147,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                         UpdateBy = user,
                         UpdatedDate = dateTimeOffset,
                         CreatedDate = dateTimeOffset,
-                        NextPage = string.Empty
+                        NextPage = GetRandomString()
                     };
                 })
                 .ToList<dynamic>();
         }
 
-        private static OntologyAssets CreateArtiFactFromRandomData(List<dynamic> randomArtifactProperties)
+        private static OntologyAssets CreateOntologyAssetFromRandomData(List<dynamic> randomArtifactProperties)
         {
             var ontologyAssets = new OntologyAssets
             {

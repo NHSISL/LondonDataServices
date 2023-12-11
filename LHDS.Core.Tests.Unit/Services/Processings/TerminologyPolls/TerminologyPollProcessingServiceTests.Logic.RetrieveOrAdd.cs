@@ -62,13 +62,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             IQueryable<TerminologyPoll> randomTerminologyPolls = CreateRandomTerminologyPolls();
             IQueryable<TerminologyPoll> storageTerminologyPolls = randomTerminologyPolls;
 
-            this.identifierBrokerMock.Setup(broker =>
-                broker.GetIdentifier())
-                    .Returns(randomId);
 
             this.dateTimeBrokerMock.Setup(broker => 
                 broker.GetCurrentDateTimeOffset())
                     .Returns(randomDateTimeOffset);
+
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifier())
+                    .Returns(randomId);
 
             TerminologyPoll inputTerminologyPoll = new TerminologyPoll
             {
@@ -99,12 +100,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             // then
             actualTerminologyPoll.Should().BeEquivalentTo(expectedTerminologyPoll);
 
-            this.identifierBrokerMock.Verify(broker =>
-                broker.GetIdentifier(),
-                    Times.Once());
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
                     Times.Once());
 
             this.terminologyPollServiceMock.Verify(service =>
@@ -115,8 +117,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
                 service.AddTerminologyPollAsync(It.Is(SameTerminologyPollAs(inputTerminologyPoll))),
                     Times.Once());
 
-            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
             this.terminologyPollServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

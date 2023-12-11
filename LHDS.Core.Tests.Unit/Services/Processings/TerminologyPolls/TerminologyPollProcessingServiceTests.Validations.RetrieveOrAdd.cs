@@ -2,15 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.CsvMappers.Exceptions;
-using LHDS.Core.Models.Foundations.Mesh;
-using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
-using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyPolls.Exceptions;
 using Moq;
 using Xunit;

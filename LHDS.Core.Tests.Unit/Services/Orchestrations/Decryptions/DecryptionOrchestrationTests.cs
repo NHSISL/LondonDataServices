@@ -6,6 +6,7 @@ using System;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Decryptions.Exceptions;
@@ -34,6 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
         private readonly Mock<IIngestionTrackingAuditService> auditServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<IHashBroker> hashBrokerMock;
         private readonly IDecryptionOrchestrationService decryptionOrchestrationService;
         private readonly ICompareLogic compareLogic;
         private readonly BlobContainers blobContainers;
@@ -46,6 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             auditServiceMock = new Mock<IIngestionTrackingAuditService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            hashBrokerMock = new Mock<IHashBroker>();
             this.compareLogic = new CompareLogic();
 
             this.blobContainers = new BlobContainers
@@ -60,9 +63,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 auditService: auditServiceMock.Object,
                 blobContainers,
                 loggingBroker: loggingBrokerMock.Object,
-                dateTimeBroker: dateTimeBrokerMock.Object
-                );
+                dateTimeBroker: dateTimeBrokerMock.Object,
+                hashBroker: hashBrokerMock.Object);
         }
+
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
@@ -79,6 +83,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
         private static string GetRandomString() =>
           new MnemonicString().GetValue();
+
+        private static string GetRandomString(int length) =>
+            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
         private static string GetRandomMessage() =>
            new MnemonicString(wordCount: GetRandomNumber()).GetValue();

@@ -28,6 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTimeOffset);
             randomIngestionTracking.FileName = randomFileName;
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
+            string randomHash = GetRandomString(64);
 
             Document randomDocument =
                 new Document { FileName = randomFileName, DocumentData = randomEncryptedBytes };
@@ -39,6 +40,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 DocumentData = randomDecryptedBytes,
                 FileName = storageIngestionTracking.DecryptedFileName
             };
+
+            this.hashBrokerMock.Setup(broker =>
+                broker.GenerateSha256Hash(decryptedDocument.DocumentData))
+                    .Returns(randomHash);
 
             this.ingestionTrackingServiceMock.Setup(service =>
                service.RetrieveIngestionTrackingByFileNameAsync(randomFileName))
@@ -65,6 +70,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
             updatedIngestionTracking.Decrypted = true;
             updatedIngestionTracking.RecordCount = lines.Length - 2;
             updatedIngestionTracking.DecryptedFileSize = decryptedDocument.DocumentData.Length;
+            updatedIngestionTracking.DecryptedFileSha256Hash = randomHash;
             updatedIngestionTracking.UpdatedDate = randomDateTimeOffset;
 
             var outputIngestionTracking = updatedIngestionTracking.DeepClone();
@@ -101,6 +107,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 service.ModifyIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(updatedIngestionTracking))),
                     Times.Once);
 
+            this.hashBrokerMock.Verify(broker =>
+                broker.GenerateSha256Hash(decryptedDocument.DocumentData),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
                     Times.Once);
@@ -109,8 +119,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                 service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
                     Times.Once);
 
-            this.documentServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
+            this.documentServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }

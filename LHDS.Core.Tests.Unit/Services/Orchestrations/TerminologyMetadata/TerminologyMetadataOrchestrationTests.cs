@@ -59,8 +59,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                 ontologyProcessingService: ontologyProcessingServiceMock.Object,
                 terminologyMetadataConfiguration: terminologyMetadataConfiguration,
                 loggingBroker: loggingBrokerMock.Object,
-                dateTimeBroker: dateTimeBrokerMock.Object
-                );
+                dateTimeBroker: dateTimeBrokerMock.Object,
+                identifierBroker: identifierBrokerMock.Object);
         }
 
         private static int GetRandomNumber() =>
@@ -184,7 +184,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
         private static List<TerminologyArtifact> CreateTerminologyArtiFactFromRandomData(
             List<dynamic> randomArtifactProperties)
         {
-            var terminologyArtifacts = new List<TerminologyArtifact>();
+            List<TerminologyArtifact> terminologyArtifacts = new List<TerminologyArtifact>();
 
             foreach (var item in randomArtifactProperties)
             {

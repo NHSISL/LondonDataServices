@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             this.terminologyPollProcessingServiceMock.Setup(service =>
                 service.RetrieveOrAddTerminologyPollAsync(resourceType)).
                     ReturnsAsync(retrievedTerminologyPoll);
-
+          
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
                     .Returns(randomDateTimeOffset);

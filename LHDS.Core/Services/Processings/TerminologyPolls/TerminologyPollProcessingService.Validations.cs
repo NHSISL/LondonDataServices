@@ -28,6 +28,15 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             Message = "Id is required"
         };
 
+        public void ValidateResourceType(string resourceType) =>
+            Validate((Rule: IsInvalid(resourceType), Parameter: "resourceType"));
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
+        };
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidArgumentTerminologyPollsProcessingException =

@@ -8,7 +8,7 @@ interface FooterBaseProps {
 
 const FooterBase: FunctionComponent<FooterBaseProps> = (props) => {
     return (
-        <footer className={props.classes + " toggled"}>
+        <footer className={props.classes}>
             {props.children}
         </footer>
     )

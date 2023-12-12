@@ -8,6 +8,7 @@ import CardBase from '../components/bases/components/Card/CardBase';
 import CardBaseContent from '../components/bases/components/Card/CardBase.Content';
 import CardBaseBody from '../components/bases/components/Card/CardBase.Body';
 import { HomeUnAuthorised } from './homeUnAuth';
+import { PageLayout } from '../components/PageLayout';
 
 export const Home = () => {
     const isAuthenticated = useIsAuthenticated();
@@ -16,6 +17,7 @@ export const Home = () => {
             <section>
                 <div>
                     {isAuthenticated ? (
+                        <PageLayout>
                         <div className="container-fluid">
                             <div className="container-fluid py-5 bg-primary text-white">
                                 <h1 className="display-5 fw-bold">London Data Service</h1>
@@ -77,6 +79,7 @@ export const Home = () => {
                                 </div>
                             </FeatureSwitch>
                         </div>
+                         </PageLayout>
                     ) : (
                         <div className="container-fluid mt-5">
                                 <HomeUnAuthorised></HomeUnAuthorised>

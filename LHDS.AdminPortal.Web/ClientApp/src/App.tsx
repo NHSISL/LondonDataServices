@@ -2,7 +2,7 @@ import React from 'react';
 import { MsalProvider } from '@azure/msal-react';
 import { ReactQueryDevtools } from 'react-query/devtools'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { PageLayout } from './components/PageLayout';
+
 import { Route, Routes } from 'react-router-dom';
 import { Home } from './pages/home';
 import { QueryClientProvider } from 'react-query';
@@ -28,7 +28,7 @@ const App = ({ msalInstance }: any) => {
     return (
         <MsalProvider instance={msalInstance}>
             <QueryClientProvider client={queryClientGlobalOptions}>
-                <PageLayout>
+               
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/ingestionTracking" element={<SecuredRoute allowedRoles={securityPoints.ingestionTracking.view}><IngestionTrackingHomepage /></SecuredRoute>} />
@@ -53,7 +53,7 @@ const App = ({ msalInstance }: any) => {
                         <Route path="/pds" element={<SecuredRoute allowedRoles={securityPoints.pds.view}>< PdsSearch /></SecuredRoute >} />
                         <Route path="/pdsUpload" element={<SecuredRoute allowedRoles={securityPoints.pds.view}>< PdsUpload /></SecuredRoute >} />
                     </Routes>
-                </PageLayout>
+                
                 <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
         </MsalProvider>

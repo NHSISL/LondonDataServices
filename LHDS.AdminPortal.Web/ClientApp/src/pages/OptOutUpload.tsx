@@ -3,9 +3,10 @@ import 'nhsuk-frontend/dist/nhsuk.min'
 import 'nhsuk-frontend/packages/polyfills';
 import { Container } from 'nhsuk-react-components'
 import OptOutUploadDetail from "../components/optOut/upload/optOutUploadDetail";
+import { PageLayout } from '../components/PageLayout';
 
 export const OptOutUpload = () => {
-    return <div>
+    return <PageLayout>
         <section >
             <Container>
                 <main id="maincontent" className="NELTopPadding" role="main">
@@ -15,5 +16,5 @@ export const OptOutUpload = () => {
                 </main>
             </Container>
         </section>
-    </div>
+    </PageLayout>
 }

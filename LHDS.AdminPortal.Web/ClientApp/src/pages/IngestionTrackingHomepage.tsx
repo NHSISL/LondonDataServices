@@ -1,8 +1,9 @@
 import React from "react";
 import IngestionTrackingTable from "../components/ingestionTracking/ingestionTrackingTable";
+import { PageLayout } from '../components/PageLayout';
 
 export const IngestionTrackingHomepage = () => {
-    return <div>
+    return <PageLayout>
         <section>
             <div className="container-fluis">
                 <main id="maincontent" className="NELTopPadding" role="main">
@@ -12,5 +13,5 @@ export const IngestionTrackingHomepage = () => {
                 </main>
             </div>
         </section>
-    </div>
+    </PageLayout>
 }

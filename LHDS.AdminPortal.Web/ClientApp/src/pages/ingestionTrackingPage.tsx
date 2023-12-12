@@ -2,13 +2,14 @@ import React from "react"
 import { useParams } from 'react-router-dom';
 import IngestionTrackingDetail from "../components/ingestionTracking/ingestionTrackingDetail";
 import BreadCrumbBase from "../components/bases/layouts/Breadcrumb/BreadCrumbBase";
+import { PageLayout } from '../components/PageLayout';
 
 export const IngestionTrackingPage = () => {
 
     const { ingestionTrackingId } = useParams();
 
-    return <div>
-        <section >
+    return <PageLayout>
+        <section>
             <div className="container-fluid">
                 <main role="main">
 
@@ -25,5 +26,5 @@ export const IngestionTrackingPage = () => {
                 </main>
             </div>
         </section>
-    </div>
+    </PageLayout>
 }

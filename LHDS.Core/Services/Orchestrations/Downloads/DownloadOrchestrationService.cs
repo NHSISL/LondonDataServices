@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -15,7 +16,6 @@ using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Downloads;
-using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Downloads;
@@ -35,6 +35,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
+        private readonly IHashBroker hashBroker;
         private readonly LandingConfiguration landingConfiguration;
 
         public DownloadOrchestrationService(
@@ -47,6 +48,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker,
+            IHashBroker hashBroker,
             LandingConfiguration landingConfiguration)
         {
             this.documentProcessingService = documentProcessingService;
@@ -58,6 +60,7 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
+            this.hashBroker = hashBroker;
             this.landingConfiguration = landingConfiguration;
         }
 
@@ -87,7 +90,11 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                             if (maybeIngestionTracking == null)
                             {
                                 Document retrievedDocument =
-                                    await this.downloadProcessingService.RetrieveDownloadByFileNameAsync(document.FileName);
+                                    await this.downloadProcessingService
+                                        .RetrieveDownloadByFileNameAsync(document.FileName);
+
+                                string encryptedFileSha256Hash =
+                                    this.hashBroker.GenerateSha256Hash(retrievedDocument.DocumentData);
 
                                 var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
@@ -119,7 +126,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                                       FileDeleted = false,
                                       RecordCount = 0,
                                       EncryptedFileSize = retrievedDocument.DocumentData.Length,
+                                      EncryptedFileSha256Hash = encryptedFileSha256Hash,
                                       DecryptedFileSize = 0,
+                                      DecryptedFileSha256Hash = string.Empty,
                                       CreatedBy = "System",
                                       CreatedDate = currentDateTime,
                                       UpdatedBy = "System",
@@ -248,6 +257,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                         ? externalDocument.FileName
                         : "/" + externalDocument.FileName;
 
+                    string encryptedFileSha256Hash =
+                        this.hashBroker.GenerateSha256Hash(externalDocument.DocumentData);
+
                     DataSetSpecification retrievedDataSetSpecification = await
                         this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
                             landingConfiguration.LandingSupplierId);
@@ -272,7 +284,9 @@ namespace LHDS.Core.Services.Orchestrations.Downloads
                           FileDeleted = false,
                           RecordCount = 0,
                           EncryptedFileSize = externalDocument.DocumentData.Length,
+                          EncryptedFileSha256Hash = encryptedFileSha256Hash,
                           DecryptedFileSize = 0,
+                          DecryptedFileSha256Hash = string.Empty,
                           CreatedBy = "System",
                           CreatedDate = currentDateTime,
                           UpdatedBy = "System",

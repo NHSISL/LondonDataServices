@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Linq;
+using System.Collections.Generic;
 using LHDS.Core.Brokers.Storages.Sql;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
@@ -13,12 +13,16 @@ namespace LHDS.Core
     {
         public StorageBroker CreateDbContext(string[] args)
         {
-            var environmentName = args.FirstOrDefault() ?? "Development";
+            List<KeyValuePair<string, string>> config = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>(
+                    key: "ConnectionStrings:DefaultConnection",
+                    value: "Server=(localdb)\\MSSQLLocalDB;Database=LHDS;" +
+                        "Trusted_Connection=True;MultipleActiveResultSets=true"),
+            };
 
             var configurationBuilder = new ConfigurationBuilder()
-                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true);
+                .AddInMemoryCollection(initialData: config);
 
             IConfiguration configuration = configurationBuilder.Build();
             return new StorageBroker(configuration);

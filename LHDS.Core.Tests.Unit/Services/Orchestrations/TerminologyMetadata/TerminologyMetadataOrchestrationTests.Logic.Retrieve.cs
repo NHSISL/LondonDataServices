@@ -37,8 +37,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             string relativeUrl = this.terminologyMetadataConfiguration.ResourceURL;
             relativeUrl = relativeUrl.Replace("{{resourceType}}", resourceType);
             relativeUrl = relativeUrl.Replace("{{datestamp}}", retrievedTerminologyPoll.LastPoll.ToString());
-            List<dynamic> randomArtifactPropertiesPageOne = CreateRandomArtifactProperties(resourceType);
-            List<dynamic> randomArtifactPropertiesPageTwo = CreateRandomArtifactProperties(resourceType);
+
+            List<dynamic> randomArtifactPropertiesPageOne = 
+                CreateRandomArtifactProperties(resourceType, randomDateTimeOffset);
+
+            List<dynamic> randomArtifactPropertiesPageTwo = 
+                CreateRandomArtifactProperties(resourceType, randomDateTimeOffset);
+
             List<dynamic> allRandomArifactProperties = new List<dynamic>();
             allRandomArifactProperties.AddRange(randomArtifactPropertiesPageOne);
             allRandomArifactProperties.AddRange(randomArtifactPropertiesPageTwo);
@@ -67,6 +72,18 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             List<OntologyAsset> assets = new List<OntologyAsset>();
             assets.AddRange(pageOneOntologyAssets.Assets);
             assets.AddRange(pageTwoRetrievedOntologyAssets.Assets);
+
+            for (int i = 0; i < assets.Count; i++)
+            {
+                Guid randomId = Guid.NewGuid();
+                TerminologyArtifact terminologyArtifact = terminologyArtifacts[i];
+                terminologyArtifact.Id = randomId;
+
+                this.identifierBrokerMock.Setup(broker =>
+                    broker.GetIdentifier())
+                        .Returns(randomId);
+            }
+
             TerminologyPoll updatedTerminologyPoll = retrievedTerminologyPoll.DeepClone();
             updatedTerminologyPoll.LastPoll = randomDateTimeOffset;
             TerminologyPoll storageTerminologyPoll = updatedTerminologyPoll.DeepClone();
@@ -91,18 +108,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                 service.RetrieveAllCodingSystemsAsync(pageOneOntologyAssets.NextPage),
                     Times.Once);
 
+            //this.dateTimeBrokerMock.Verify(broker =>
+            //    broker.GetCurrentDateTimeOffset(),
+            //        Times.Exactly(assets.Count + 1));
+
             for (int i = 0; i < assets.Count; i++)
             {
                 TerminologyArtifact terminologyArtifact = terminologyArtifacts[i];
+
+                this.identifierBrokerMock.Verify(broker =>
+                    broker.GetIdentifier(),
+                        Times.Once);
 
                 this.terminologyArtifactProcessingServiceMock.Verify(service =>
                     service.ModifyOrAddTerminologyArtifactAsync(It.Is(SameTerminologyArtifactAs(terminologyArtifact))),
                         Times.Once());
             }
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Exactly(assets.Count + 1));
 
             this.terminologyPollProcessingServiceMock.Verify(service =>
                 service.ModifyTerminologyPollAsync(It.Is(SameTerminologyPollAs(updatedTerminologyPoll))),

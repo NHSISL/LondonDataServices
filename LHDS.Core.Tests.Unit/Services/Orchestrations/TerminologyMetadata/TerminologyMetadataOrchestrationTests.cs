@@ -125,10 +125,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             return filler;
         }
 
-        private static List<dynamic> CreateRandomArtifactProperties(string resourceType)
+        private static List<dynamic> CreateRandomArtifactProperties(string resourceType, DateTimeOffset dateTimeOffset)
         {
             string user = GetRandomString();
-            DateTimeOffset dateTimeOffset = GetRandomDateTimeOffset();
             return Enumerable.Range(1, GetRandomNumber())
                 .Select(item =>
                 {
@@ -143,8 +142,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                         LastUpdated = dateTimeOffset,
                         IsCore = false,
                         IsDownloaded = false,
-                        CreatedBy = user,
-                        UpdateBy = user,
+                        CreatedBy = "System",
+                        UpdatedBy = "System",
                         UpdatedDate = dateTimeOffset,
                         CreatedDate = dateTimeOffset,
                         NextPage = GetRandomString()
@@ -200,7 +199,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                         LastUpdated = item.LastUpdated,
                         IsCore = item.IsCore,
                         IsDownloaded = item.IsDownloaded,
-                        CreatedBy = item.LastUpdated,
+                        CreatedBy = item.CreatedBy,
                         UpdatedBy = item.UpdatedBy,
                         UpdatedDate = item.UpdatedDate,
                         CreatedDate = item.CreatedDate

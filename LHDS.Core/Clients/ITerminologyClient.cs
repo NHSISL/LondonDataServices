@@ -9,5 +9,6 @@ namespace LHDS.Core.Clients
     public interface ITerminologyClient
     {
         public ValueTask RetrieveArtifactMetadataAsync(string resourceType);
+        public ValueTask RetrieveArtifactDetailsAsync();
     }
 }

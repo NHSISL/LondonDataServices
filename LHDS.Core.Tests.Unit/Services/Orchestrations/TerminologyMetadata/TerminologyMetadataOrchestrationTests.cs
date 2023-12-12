@@ -6,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
-using Hl7.Fhir.Model;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
@@ -21,8 +19,8 @@ using LHDS.Core.Services.Processings.Ontologies;
 using LHDS.Core.Services.Processings.TerminologyArtifacts;
 using LHDS.Core.Services.Processings.TerminologyPolls;
 using Moq;
-using Org.BouncyCastle.Tls;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 {
@@ -91,6 +89,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                 this.compareLogic.Compare(expectedTerminologyPoll, actualTerminologyPoll)
                     .AreEqual;
         }
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static TerminologyPoll CreateRandomTerminologyPoll(string resourceType, DateTimeOffset lastPoll) =>
             CreateTerminologyPollFiller(resourceType, lastPoll).Create();

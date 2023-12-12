@@ -1,0 +1,40 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using LHDS.Core.Models.Orchestrations.TerminologyMedata.Exceptions;
+
+namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
+{
+    public partial class TerminologyMetadataOrchestrationService
+    {
+        public void ValidateResourceType(string resourceType) =>
+            Validate((Rule: IsInvalid(resourceType), Parameter: "resourceType"));
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
+        };
+
+        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        {
+            var invalidArgumentTerminologyMetaDataOrchestrationException =
+                new InvalidArgumentTerminologyMetaDataOrchestrationException(
+                    message: "Invalid argument terminology metadata orchestration. " +
+                    "Please correct the errors and try again.");
+
+            foreach ((dynamic rule, string parameter) in validations)
+            {
+                if (rule.Condition)
+                {
+                    invalidArgumentTerminologyMetaDataOrchestrationException.UpsertDataList(
+                        key: parameter,
+                        value: rule.Message);
+                }
+            }
+
+            invalidArgumentTerminologyMetaDataOrchestrationException.ThrowIfContainsErrors();
+        }
+    }
+}

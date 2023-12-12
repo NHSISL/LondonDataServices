@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
@@ -96,7 +95,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
                     .ModifyOrAddTerminologyArtifactAsync(terminologyArtifact);
             }
 
-            if (!string.IsNullOrWhiteSpace(retrievedOntologyAssets.NextPage)) 
+            if (!string.IsNullOrWhiteSpace(retrievedOntologyAssets.NextPage))
             {
                 await ProcessArtifacts(retrievedOntologyAssets.NextPage);
             }

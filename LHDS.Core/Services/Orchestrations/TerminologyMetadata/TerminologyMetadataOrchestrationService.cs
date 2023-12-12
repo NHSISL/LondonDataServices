@@ -51,6 +51,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
             TryCatch(async () =>
             {
                 ValidateResourceType(resourceType);
+
                 TerminologyPoll retrievedTerminologyPoll =
                     await this.terminologyPollProcessingService.RetrieveOrAddTerminologyPollAsync(resourceType);
 

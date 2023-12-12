@@ -78,6 +78,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             TerminologyPoll termionologyPoll = CreateRandomTerminologyPoll(resourceType, dateTimeOffset);
             this.terminologyMetadataConfiguration.ResourceURL = invalidResourceURL;
 
+            this.terminologyPollProcessingServiceMock.Setup(service =>
+                service.RetrieveOrAddTerminologyPollAsync(resourceType))
+                    .ReturnsAsync(termionologyPoll);
+
             var invalidArgumentTerminologyMetaDataProcessingException =
                 new InvalidArgumentTerminologyMetaDataOrchestrationException(
                     message: "Invalid argument terminology metadata orchestration. " +
@@ -88,9 +92,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                 values: "Text is required");
 
             var expectedTerminologyMetadataOrchestrationValidationException =
-            new TerminologyMetadataOrchestrationValidationException(
-                message: "Terminology metadata orchestration validation errors occurred, please try again.",
-                innerException: invalidArgumentTerminologyMetaDataProcessingException);
+                new TerminologyMetadataOrchestrationValidationException(
+                    message: "Terminology metadata orchestration validation errors occurred, please try again.",
+                    innerException: invalidArgumentTerminologyMetaDataProcessingException);
 
             // when
             ValueTask retrieveTerminologyMetadataTask =
@@ -104,6 +108,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             //then
             actualTerminologyMetadataOrchestrationValidationException.Should()
                 .BeEquivalentTo(expectedTerminologyMetadataOrchestrationValidationException);
+
+            this.terminologyPollProcessingServiceMock.Verify(service =>
+                service.RetrieveOrAddTerminologyPollAsync(resourceType), 
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

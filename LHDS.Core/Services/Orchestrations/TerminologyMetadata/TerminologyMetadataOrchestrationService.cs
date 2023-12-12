@@ -56,6 +56,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
                     await this.terminologyPollProcessingService.RetrieveOrAddTerminologyPollAsync(resourceType);
 
                 string relativeUrl = this.terminologyMetadataConfiguration.ResourceURL;
+                ValidateResourceURL(relativeUrl);
                 relativeUrl = relativeUrl.Replace("{{resourceType}}", resourceType);
                 relativeUrl = relativeUrl.Replace("{{datestamp}}", retrievedTerminologyPoll.LastPoll.ToString());
                 await ProcessArtifacts(relativeUrl);

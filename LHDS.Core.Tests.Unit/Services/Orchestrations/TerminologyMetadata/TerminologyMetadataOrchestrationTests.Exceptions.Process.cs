@@ -109,8 +109,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
         }
 
         [Fact]
-        public async Task
-            ShouldThrowServiceExceptionOnRetrieveArtifactMetadatasIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnRetrieveArtifactMetadatasIfServiceErrorOccursAndLogItAsync()
         {
             //Given
             string resourceType = GetRandomString();

@@ -33,6 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object,
+                hashBroker: hashBrokerMock.Object,
                 landingConfiguration: invalidLandingConfiguration);
 
             var nullLandingConfigurationDownloadOrchestrationException =
@@ -86,6 +87,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object,
+                hashBroker: hashBrokerMock.Object,
                 landingConfiguration: landingConfiguration);
 
             var nullBlobContainersDownloadOrchestrationException =
@@ -119,6 +121,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -163,6 +166,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -207,6 +211,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

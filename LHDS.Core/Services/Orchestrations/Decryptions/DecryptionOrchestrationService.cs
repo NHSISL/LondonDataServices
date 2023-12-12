@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
@@ -26,6 +27,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
         private readonly BlobContainers blobContainers;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
+        private readonly IHashBroker hashBroker;
 
         public DecryptionOrchestrationService(
             IDocumentService documentService,
@@ -34,7 +36,8 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             IIngestionTrackingAuditService auditService,
             BlobContainers blobContainers,
             ILoggingBroker loggingBroker,
-            IDateTimeBroker dateTimeBroker)
+            IDateTimeBroker dateTimeBroker,
+            IHashBroker hashBroker)
         {
             this.documentService = documentService;
             this.decryptionService = decryptionService;
@@ -43,6 +46,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             this.blobContainers = blobContainers;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
+            this.hashBroker = hashBroker;
         }
 
         public ValueTask<string> DecryptAsync(string fileName) =>
@@ -61,6 +65,9 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
 
                 byte[] decryptedData = await this.decryptionService.DecryptAsync(document.DocumentData);
 
+                string decryptedFileSha256Hash =
+                    this.hashBroker.GenerateSha256Hash(decryptedData);
+
                 string[] lines = System.Text.Encoding.UTF8.GetString(decryptedData)
                     .Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 
@@ -78,6 +85,7 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
                 ingestionTracking.Decrypted = true;
                 ingestionTracking.RecordCount = lines.Length - 2;
                 ingestionTracking.DecryptedFileSize = newDecryptedDocument.DocumentData.Length;
+                ingestionTracking.DecryptedFileSha256Hash = decryptedFileSha256Hash;
                 ingestionTracking.UpdatedDate = currentDateTime;
 
                 await this.ingestionTrackingService

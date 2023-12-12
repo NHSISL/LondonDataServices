@@ -8,11 +8,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
-using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.Downloads.Exceptions;
@@ -20,21 +21,16 @@ using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Orchestrations.Downloads;
-using LHDS.Core.Services.Foundations.DataSetSpecifications;
-using LHDS.Core.Services.Foundations.Documents;
-using LHDS.Core.Services.Foundations.Downloads;
-using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
-using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
+using LHDS.Core.Services.Processings.Documents;
+using LHDS.Core.Services.Processings.Downloads;
+using LHDS.Core.Services.Processings.IngestionTrackings;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
 using Xunit.Abstractions;
-using LHDS.Core.Services.Processings.Documents;
-using LHDS.Core.Services.Processings.Downloads;
-using LHDS.Core.Services.Processings.IngestionTrackings;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 {
@@ -49,6 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
+        private readonly Mock<IHashBroker> hashBrokerMock;
         private readonly LandingConfiguration landingConfiguration;
         private readonly BlobContainers blobContainers;
         private readonly IDownloadOrchestrationService downloadOrchestrationService;
@@ -65,6 +62,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             identifierBrokerMock = new Mock<IIdentifierBroker>();
+            hashBrokerMock = new Mock<IHashBroker>();
             compareLogic = new CompareLogic();
 
             landingConfiguration = new LandingConfiguration
@@ -92,6 +90,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object,
                 identifierBroker: identifierBrokerMock.Object,
+                hashBroker: hashBrokerMock.Object,
                 landingConfiguration: landingConfiguration);
         }
 
@@ -207,7 +206,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 .OnProperty(dataSetSpecification => dataSetSpecification.ActiveFrom).Use(now.AddDays(-2))
                 .OnProperty(dataSetSpecification => dataSetSpecification.ActiveTo).Use(now.AddDays(2))
 
-                .OnProperty(dataSetSpecification => 
+                .OnProperty(dataSetSpecification =>
                     dataSetSpecification.OurSpecificationVersion).Use(GetRandomString(10))
 
                 .OnProperty(dataSetSpecification =>

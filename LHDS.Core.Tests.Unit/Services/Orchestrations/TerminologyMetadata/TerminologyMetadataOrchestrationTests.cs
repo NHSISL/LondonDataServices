@@ -105,7 +105,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             var filler = new Filler<TerminologyPoll>();
 
             filler.Setup()
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(terminologyMetadata => terminologyMetadata.ResourceType).Use(resourceType)
                 .OnProperty(terminologyMetadata => terminologyMetadata.LastPoll).Use(lastPoll);

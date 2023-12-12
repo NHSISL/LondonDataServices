@@ -14,6 +14,9 @@ using LHDS.Core.Models.Foundations.Ontologies;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Orchestrations.TerminologyMedata;
+using LHDS.Core.Models.Processings.Ontologies.Exceptions;
+using LHDS.Core.Models.Processings.TerminologyArtifacts.Exceptions;
+using LHDS.Core.Models.Processings.TerminologyPolls.Exceptions;
 using LHDS.Core.Services.Orchestrations.TerminologyMetadata;
 using LHDS.Core.Services.Processings.Ontologies;
 using LHDS.Core.Services.Processings.TerminologyArtifacts;
@@ -21,6 +24,7 @@ using LHDS.Core.Services.Processings.TerminologyPolls;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 {
@@ -211,6 +215,74 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             }
 
             return terminologyArtifacts;
+        }
+
+        public static TheoryData TerminologyMetadataOrchestrationDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new TerminologyPollProcessingValidationException(
+                    message: "Terminology poll processing validation errors occured, please try again",
+                    innerException),
+
+                new TerminologyPollProcessingDependencyValidationException(
+                    message: "Terminology poll processing dependency validation occurred, please try again.",
+                    innerException),
+
+                new TerminologyArtifactProcessingValidationException(
+                    message: "Terminology artifact processing validation errors occurred, please try again.",
+                    innerException),
+
+                new TerminologyArtifactProcessingDependencyValidationException(
+                    message: "Terminology artifact processing dependency validation occurred, please try again.",
+                    innerException),
+
+                new OntologyProcessingValidationException(
+                    message: "Ontology processing validation errors occurred, fix the errors and try again.",
+                    innerException),
+
+                new OntologyProcessingDependencyValidationException(
+                    message: "Ontology processing dependency validation occurred, please try again.",
+                    innerException),
+            };
+        }
+
+        public static TheoryData TerminologyMetadataOrchestrationDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new TerminologyPollProcessingDependencyException(
+                    message: "Terminology poll processing dependency error occurred, contact support.",
+                    innerException),
+
+                new TerminologyPollProcessingServiceException(
+                    message: "Terminology poll processing service error occurred, contact support.",
+                    innerException),
+
+                new TerminologyArtifactProcessingDependencyException(
+                    message: "Terminology artifact processing dependency error occurred, contact support.",
+                    innerException),
+
+                new TerminologyArtifactProcessingServiceException(
+                    message: "Terminology artifact processing service error occurred, contact support.",
+                    innerException),
+
+                new OntologyProcessingDependencyException(
+                    message: "Ontology processing dependency error occurred, contact support.",
+                    innerException),
+
+                new OntologyProcessingServiceException(
+                    message: "Ontology processing service error occurred, contact support.",
+                    innerException),
+            };
         }
     }
 }

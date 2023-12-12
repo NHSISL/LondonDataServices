@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using Hl7.Fhir.Model;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
@@ -125,7 +126,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             return filler;
         }
 
-        private static List<dynamic> CreateRandomArtifactProperties(string resourceType, DateTimeOffset dateTimeOffset)
+        private static List<dynamic> CreateRandomArtifactProperties(
+            string resourceType, DateTimeOffset dateTimeOffset, Guid id)
         {
             string user = GetRandomString();
             return Enumerable.Range(1, GetRandomNumber())
@@ -133,6 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                 {
                     return new
                     {
+                        Id = id,
                         FullUrl = GetRandomString(),
                         ResourceType = resourceType,
                         Version = GetRandomString(),
@@ -190,6 +193,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                 terminologyArtifacts.Add(
                     new TerminologyArtifact
                     {
+                        Id = item.Id,
                         FullUrl = item.FullUrl,
                         ResourceType = item.ResourceType,
                         Version = item.Version,

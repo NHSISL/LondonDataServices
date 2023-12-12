@@ -19,6 +19,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
         public async Task ShouldRetrieveArtifactMetadataAsync()
         {
             // given
+            Guid randomId = Guid.NewGuid();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             string randomString = GetRandomString();
             string resourceType = randomString;
@@ -39,10 +40,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             relativeUrl = relativeUrl.Replace("{{datestamp}}", retrievedTerminologyPoll.LastPoll.ToString());
 
             List<dynamic> randomArtifactPropertiesPageOne = 
-                CreateRandomArtifactProperties(resourceType, randomDateTimeOffset);
+                CreateRandomArtifactProperties(resourceType, randomDateTimeOffset, randomId);
 
             List<dynamic> randomArtifactPropertiesPageTwo = 
-                CreateRandomArtifactProperties(resourceType, randomDateTimeOffset);
+                CreateRandomArtifactProperties(resourceType, randomDateTimeOffset, randomId);
 
             List<dynamic> allRandomArifactProperties = new List<dynamic>();
             allRandomArifactProperties.AddRange(randomArtifactPropertiesPageOne);
@@ -53,8 +54,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
             OntologyAssets pageOneOntologyAssets =
                 CreateOntologyAssetFromRandomData(randomArtifactPropertiesPageOne);
-
-            pageOneOntologyAssets.NextPage = relativeUrl;
 
             OntologyAssets pageTwoRetrievedOntologyAssets = 
                 CreateOntologyAssetFromRandomData(randomArtifactPropertiesPageTwo);
@@ -73,16 +72,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             assets.AddRange(pageOneOntologyAssets.Assets);
             assets.AddRange(pageTwoRetrievedOntologyAssets.Assets);
 
-            for (int i = 0; i < assets.Count; i++)
-            {
-                Guid randomId = Guid.NewGuid();
-                TerminologyArtifact terminologyArtifact = terminologyArtifacts[i];
-                terminologyArtifact.Id = randomId;
-
-                this.identifierBrokerMock.Setup(broker =>
-                    broker.GetIdentifier())
-                        .Returns(randomId);
-            }
+            this.identifierBrokerMock.Setup(broker =>
+                broker.GetIdentifier())
+                    .Returns(randomId);
 
             TerminologyPoll updatedTerminologyPoll = retrievedTerminologyPoll.DeepClone();
             updatedTerminologyPoll.LastPoll = randomDateTimeOffset;
@@ -108,22 +100,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                 service.RetrieveAllCodingSystemsAsync(pageOneOntologyAssets.NextPage),
                     Times.Once);
 
-            //this.dateTimeBrokerMock.Verify(broker =>
-            //    broker.GetCurrentDateTimeOffset(),
-            //        Times.Exactly(assets.Count + 1));
-
             for (int i = 0; i < assets.Count; i++)
             {
                 TerminologyArtifact terminologyArtifact = terminologyArtifacts[i];
-
-                this.identifierBrokerMock.Verify(broker =>
-                    broker.GetIdentifier(),
-                        Times.Once);
 
                 this.terminologyArtifactProcessingServiceMock.Verify(service =>
                     service.ModifyOrAddTerminologyArtifactAsync(It.Is(SameTerminologyArtifactAs(terminologyArtifact))),
                         Times.Once());
             }
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Exactly(assets.Count + 1));
+
+            this.identifierBrokerMock.Verify(broker =>
+                broker.GetIdentifier(),
+                    Times.Exactly(assets.Count));
 
             this.terminologyPollProcessingServiceMock.Verify(service =>
                 service.ModifyTerminologyPollAsync(It.Is(SameTerminologyPollAs(updatedTerminologyPoll))),

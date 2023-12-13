@@ -54,8 +54,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                    expectedDependencyException))),
                        Times.Once);
 
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.terminologyPollProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.ontologyProcessingServiceMock.VerifyNoOtherCalls();
             this.terminologyArtifactProcessingServiceMock.VerifyNoOtherCalls();
             this.identifierBrokerMock.VerifyNoOtherCalls();

@@ -53,7 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             terminologyMetadataConfiguration = new TerminologyMetadataConfiguration
             {
                 ResourceURL = "/authoring/fhir/{{resourceType}}?_lastUpdated=ge{{datestamp}}" +
-                        "&_name=dm+dCOMBINATION_PACK_IND&_elements=name,title,url,version,status&_count=10"
+                    "&_name=dm+dCOMBINATION_PACK_IND&_elements=name,title,url,version,status&_count=10"
             };
 
             terminologyMetadataOrchestrationService = new TerminologyMetadataOrchestrationService(
@@ -67,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
         }
 
         private static int GetRandomNumber() =>
-                new IntRange(min: 2, max: 10).GetValue();
+            new IntRange(min: 2, max: 10).GetValue();
 
         private static string GetRandomString() =>
           new MnemonicString().GetValue();

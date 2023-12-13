@@ -7,6 +7,9 @@ export class SupplierView {
     public description?: string;
     public landingManualTriggerUrl?: string;
     public decryptionManualTriggerUrl?: string;
+    public canDecryptIngestionTracking?: boolean;
+    public canDownloadIngestionTracking?: boolean;
+    public canRelandIngestionTracking?: boolean;
     public createdBy?: string;
     public createdDate?: Date;
     public updatedBy?: string;
@@ -19,6 +22,9 @@ export class SupplierView {
         description?: string,
         landingManualTriggerUrl?: string,
         decryptionManualTriggerUrl?: string,
+        canDecryptIngestionTracking?: boolean,
+        canDownloadIngestionTracking?: boolean,
+        canRelandIngestionTracking?: boolean,
         createdBy?: string,
         createdDate?: Date,
         updatedBy?: string,
@@ -30,7 +36,10 @@ export class SupplierView {
         this.friendlyName = friendlyName || "";
         this.description = description || "";
         this.landingManualTriggerUrl = landingManualTriggerUrl || "";
-        this.decryptionManualTriggerUrl = decryptionManualTriggerUrl || ""
+        this.decryptionManualTriggerUrl = decryptionManualTriggerUrl || "";
+        this.canDecryptIngestionTracking = canDecryptIngestionTracking;
+        this.canDownloadIngestionTracking = canDownloadIngestionTracking;
+        this.canRelandIngestionTracking = canRelandIngestionTracking;
         this.createdBy = createdBy !== undefined ? createdBy : '';
         this.createdDate = createdDate ;
         this.updatedBy = updatedBy !== undefined ? updatedBy : ''

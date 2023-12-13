@@ -1,5 +1,5 @@
 import React, { FunctionComponent, ChangeEvent } from "react";
-import { Label, Select } from 'nhsuk-react-components'
+import { Label } from 'nhsuk-react-components'
 import { InputGroup, Form } from "react-bootstrap"
 import { Option } from "../../../models/options/option";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

@@ -7,7 +7,7 @@ import CardBaseTitle from '../../components/bases/components/Card/CardBase.Title
 
 export const ConfigHomePage = () => {
     return (
-        <>
+        <div>
             <div className="container-fluid py-5 bg-primary text-white">
                 <h1 className="display-5 fw-bold">Configuration</h1>
                 <p className="col-md-8 fs-4">Area to manage configuration items.</p>
@@ -56,6 +56,6 @@ export const ConfigHomePage = () => {
                     </CardBase>
                 </div>
             </section>
-        </>
+        </div>
     );
 };

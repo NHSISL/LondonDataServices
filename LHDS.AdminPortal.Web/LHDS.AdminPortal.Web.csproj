@@ -92,9 +92,11 @@
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetailCard.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetailCardView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingFilter.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRow.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingTable.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\supplierValidations.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnDetailCard.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\objectColumns\objectColumnDetailCardEdit.tsx" />

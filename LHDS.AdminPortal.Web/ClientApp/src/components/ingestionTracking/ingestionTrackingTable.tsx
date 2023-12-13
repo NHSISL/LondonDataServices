@@ -17,13 +17,19 @@ import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTrac
 import { Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase, faFilter, faRefresh } from "@fortawesome/free-solid-svg-icons";
+import IngestionFilterModal from "./ingestionTrackingFilter"; 
+import { SupplierView } from "../../models/views/components/suppliers/supplierView";
 
 type IngestionTrackingTableProps = {};
 
 const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (props) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
+
+    const [debouncedSupplierTerm, setDebouncedSupplierTerm] = useState<string>("");
+
     const [showSpinner, setShowSpinner] = useState(false);
+    const [showModal, setShowModal] = useState(false);
 
     const {
         mappedIngestionTrackings: ingestionTrackingsRetrieved,
@@ -34,7 +40,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         data,
         refetch
     } = ingestionTrackingHomeViewService.useGetAllIngestionTrackings(
-        debouncedTerm
+        debouncedTerm, debouncedSupplierTerm
     );
 
     const handleSearchChange = (value: string) => {
@@ -46,6 +52,14 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         () =>
             debounce((value: string) => {
                 setDebouncedTerm(value);
+            }, 500),
+        []
+    );
+
+    const handleSupplierDebounce = useMemo(
+        () =>
+            debounce((value: string) => {
+                setDebouncedSupplierTerm(value);
             }, 500),
         []
     );
@@ -91,6 +105,12 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         });
     };
 
+    const handleFilter = (supplier: SupplierView) => {
+        //alert(supplier.id);
+        setSearchTerm(debouncedTerm);
+        handleSupplierDebounce(supplier.id.toString());
+    };
+
     const hasNoMorePages = () => {
         return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
     };
@@ -121,8 +141,12 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                                         onChange={(e) => {handleSearchChange(e.currentTarget.value)}} />
 
                                     <div className="input-group-append">
-                                        <button className="btn btn-outline-secondary" id="filterButton">
-                                            <FontAwesomeIcon icon={faFilter} /> Filter
+                                        <button
+                                            className="btn btn-outline-secondary"
+                                            id="filterButton"
+                                            onClick={() => setShowModal(true)}>
+
+                                            <FontAwesomeIcon icon={faFilter}/> Filter
                                         </button>
                                     </div>
 
@@ -177,6 +201,10 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                     </CardBaseContent>
                 </CardBaseBody>
             </CardBase>
+            {
+                showModal && (
+                    <IngestionFilterModal onClose={() => setShowModal(false)} onAddFilter={handleFilter} />
+                )}
         </div >
     );
 };

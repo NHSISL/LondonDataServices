@@ -2,7 +2,7 @@ import { Audit } from "../models/audits/audit";
 import ApiBroker from "./apiBroker";
 
 class AuditBroker {
-    relativeAuditUrl = '/api/audits';
+    relativeAuditUrl = '/api/ingestionTrackingAudits';
 
     private apiBroker: ApiBroker = new ApiBroker();
 

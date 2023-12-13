@@ -29,6 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             List<Document> externalDocuments = randomDocuments;
             List<IngestionTracking> externalIngestionTrackingsFound = new List<IngestionTracking>();
             DataSet randomDataSet = CreateRandomDataSet(supplierId);
+            string randomHash = GetRandomString(64);
 
             IQueryable<DataSetSpecification> randomDataSetSpecificationList =
                 CreateRandomDataSetSpecifications(dataSet: randomDataSet);
@@ -61,6 +62,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                   service.RetrieveDownloadByFileNameAsync(document.FileName))
                       .ReturnsAsync(document);
 
+                this.hashBrokerMock.Setup(broker =>
+                    broker.GenerateSha256Hash(document.DocumentData))
+                        .Returns(randomHash);
+
                 var filename = document.FileName.StartsWith('/')
                     ? document.FileName
                     : "/" + document.FileName;
@@ -85,7 +90,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                         FileDeleted = false,
                         RecordCount = 0,
                         EncryptedFileSize = document.DocumentData.Length,
+                        EncryptedFileSha256Hash = randomHash,
                         DecryptedFileSize = 0,
+                        DecryptedFileSha256Hash = string.Empty,
                         CreatedBy = "System",
                         CreatedDate = randomDateTime,
                         UpdatedBy = "System",
@@ -95,7 +102,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 IngestionTracking storageIngestionTracking = newIngestionTracking.DeepClone();
 
                 this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                    service.AddIngestionTrackingAsync(newIngestionTracking))
+                    service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(newIngestionTracking))))
                         .ReturnsAsync(storageIngestionTracking);
             }
 
@@ -112,6 +119,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 this.ingestionTrackingProcessingServiceMock.Verify(service =>
                     service.RetrieveAllIngestionTrackings(),
                         Times.Exactly(2));
+
+                this.hashBrokerMock.Verify(broker =>
+                    broker.GenerateSha256Hash(document.DocumentData),
+                        Times.Once);
 
                 this.dateTimeBrokerMock.Verify(broker =>
                     broker.GetCurrentDateTimeOffset(),
@@ -141,7 +152,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                       FileDeleted = false,
                       RecordCount = 0,
                       EncryptedFileSize = document.DocumentData.Length,
+                      EncryptedFileSha256Hash = randomHash,
                       DecryptedFileSize = 0,
+                      DecryptedFileSha256Hash = string.Empty,
                       CreatedBy = "System",
                       CreatedDate = randomDateTime,
                       UpdatedBy = "System",
@@ -179,6 +192,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             }
 
             this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
@@ -193,6 +207,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
             List<Document> randomDocuments = CreateRandomDocuments();
             List<Document> externalDocuments = randomDocuments;
+            string randomHash = GetRandomString(64);
 
             List<IngestionTracking> externalIngestionTrackingsFound =
                 CreateRandomIngestionTrackings(randomDateTime, randomDocuments);
@@ -200,6 +215,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             this.downloadProcessingServiceMock.Setup(service =>
                service.RetrieveListOfDocumentsToProcessAsync())
                    .ReturnsAsync(externalDocuments);
+
+            this.hashBrokerMock.Setup(broker =>
+                broker.GenerateSha256Hash(It.IsAny<byte[]>()))
+                    .Returns(randomHash);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -242,6 +261,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
             this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
@@ -325,6 +345,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
             this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
@@ -341,6 +362,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             Document randomDocument = CreateRandomDocument();
             Document externalDocument = randomDocument;
             DataSet randomDataSet = CreateRandomDataSet(supplierId);
+            string randomHash = GetRandomString(64);
 
             IQueryable<DataSetSpecification> randomDataSetSpecificationList =
                 CreateRandomDataSetSpecifications(dataSet: randomDataSet);
@@ -354,6 +376,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             this.dataSetSpecificationProcessingServiceMock.Setup(service =>
                 service.GetActiveDataSetSpecification(supplierId))
                     .Returns(ValueTask.FromResult(randomDataSetSpecificationList.FirstOrDefault()));
+
+            this.hashBrokerMock.Setup(broker =>
+                broker.GenerateSha256Hash(externalDocument.DocumentData))
+                    .Returns(randomHash);
 
             IngestionTracking newIngestionTracking = new IngestionTracking
             {
@@ -374,7 +400,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 FileDeleted = false,
                 RecordCount = 0,
                 EncryptedFileSize = externalDocument.DocumentData.Length,
+                EncryptedFileSha256Hash = randomHash,
                 DecryptedFileSize = 0,
+                DecryptedFileSha256Hash = string.Empty,
                 CreatedBy = "System",
                 CreatedDate = randomDateTime,
                 UpdatedBy = "System",
@@ -402,7 +430,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             IngestionTracking outputIngestionTracking = newIngestionTracking.DeepClone();
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.AddIngestionTrackingAsync(newIngestionTracking))
+                service.AddIngestionTrackingAsync(It.Is(SameIngestionTrackingAs(newIngestionTracking))))
                     .ReturnsAsync(outputIngestionTracking);
 
             // when
@@ -428,6 +456,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                     outputIngestionTracking))),
                         Times.Once);
 
+            this.hashBrokerMock.Verify(broker =>
+                broker.GenerateSha256Hash(externalDocument.DocumentData),
+                    Times.Once);
+
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
                     Times.Exactly(2));
@@ -447,6 +479,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
             this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
@@ -525,6 +558,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             }
 
             this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();

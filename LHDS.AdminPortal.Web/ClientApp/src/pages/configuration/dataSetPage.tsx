@@ -2,12 +2,13 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import DataSetDetail from "../../components/dataSets/dataSetDetail";
 import BreadCrumbBase from "../../components/bases/layouts/Breadcrumb/BreadCrumbBase";
+import { PageLayout } from "../../components/PageLayout";
 
 export const DataSetPage = () => {
 
     const { dataSetId } = useParams();
 
-    return <div>
+    return <PageLayout>
         <section >
             <div className="container-fluid">
                 <main id="maincontent" className="NELTopPadding" role="main">
@@ -22,5 +23,5 @@ export const DataSetPage = () => {
                 </main>
             </div>
         </section>
-    </div>
+    </PageLayout>
 }

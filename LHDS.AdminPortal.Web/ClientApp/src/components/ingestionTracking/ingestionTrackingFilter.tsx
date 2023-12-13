@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FunctionComponent, useEffect, useState } from "react";
+import React, { ChangeEvent, FunctionComponent, useState } from "react";
 import { Modal} from "react-bootstrap"
 import '../../styles/base.scss';
 import ButtonBase from "./../bases/buttons/ButtonBase";
@@ -8,22 +8,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { lookupViewService } from "../../services/views/lookups/lookupViewService";
 import { SupplierView } from "../../models/views/components/suppliers/supplierView";
 import { Option } from "../../models/options/option";
-import { useValidation } from "../../hooks/useValidation";
-import { supplierValidations } from "./supplierValidations";
-import { supplierErrors } from "../suppliers/supplierErrors";
 import { Guid } from "guid-typescript";
 
 interface FilterModalProps {
     onClose: () => void;
     onAddFilter: (supplier: SupplierView) => void;
-    apiError?: any;
 }
 
 const IngestionFilterModal: FunctionComponent<FilterModalProps> = (props) => {
     const {
         onClose,
-        onAddFilter,
-        apiError
+        onAddFilter
     } = props;
 
     let { mappedSuppliers: suppliersRetrieved } = lookupViewService.useGetSupplierList("");

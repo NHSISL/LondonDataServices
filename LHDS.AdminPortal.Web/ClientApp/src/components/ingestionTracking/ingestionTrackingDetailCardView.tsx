@@ -103,36 +103,44 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
                     </CardBase>
                 </GridBase>
 
-                <GridBase size="One-Third">
-                    <CardBase>
-                        <CardBaseBody>
-                            <CardBaseTitle>
-                                Actions
-                            </CardBaseTitle>
-                            <CardBaseContent>
-                                <ul className="ps-0 mb-4">
-                                    <li>
-                                        <span>1</span> Re-Encrypt
-                                        <p>Use this option to re-encrypt a file.</p>
-                                    </li>
-                                    <li>
-                                        <span>2</span> Re-Decrypt
-                                        <p>Use this option to re-decrypt a file.</p>
-                                    </li>
-                                    <li>
-                                        <span>3</span> Download Decrypted
-                                        <p>Use this option to download a successfully decrypted file.</p>
-                                    </li>
-                                </ul>
-                                <ButtonBase onClick={() => onReLand(ingestionTracking)} add>&nbsp;Re-Land</ButtonBase>&nbsp;
-                                <ButtonBase onClick={() => onReDecrypt(ingestionTracking)} add>&nbsp;Re-Decrypt</ButtonBase>&nbsp;
-                                <ButtonBase onClick={() => onDownload(ingestionTracking)} add>
-                                    <FontAwesomeIcon icon={faFileDownload} />&nbsp;Download
-                                </ButtonBase>&nbsp;
-                            </CardBaseContent>
-                        </CardBaseBody>
-                    </CardBase>
-                </GridBase>
+                {ingestionTracking.supplier?.canDecryptIngestionTracking && (
+                    <>
+                        <GridBase size="One-Third">
+                            <CardBase>
+                                <CardBaseBody>
+                                    <CardBaseTitle>
+                                        Actions
+                                    </CardBaseTitle>
+                                    <CardBaseContent>
+
+
+                                        <ul className="ps-0 mb-4">
+                                            <li>
+                                                <span>1</span> Re-Encrypt
+                                                <p>Use this option to re-encrypt a file.</p>
+                                            </li>
+                                            <li>
+                                                <span>2</span> Re-Decrypt
+                                                <p>Use this option to re-decrypt a file.</p>
+                                            </li>
+                                            <li>
+                                                <span>3</span> Download Decrypted
+                                                <p>Use this option to download a successfully decrypted file.</p>
+                                            </li>
+                                        </ul>
+                                        <ButtonBase onClick={() => onReLand(ingestionTracking)} add>&nbsp;Re-Land</ButtonBase>&nbsp;
+                                        <ButtonBase onClick={() => onReDecrypt(ingestionTracking)} add>&nbsp;Re-Decrypt</ButtonBase>&nbsp;
+                                        <ButtonBase onClick={() => onDownload(ingestionTracking)} add>
+                                            <FontAwesomeIcon icon={faFileDownload} />&nbsp;Download
+                                        </ButtonBase>&nbsp;
+
+
+                                    </CardBaseContent>
+                                </CardBaseBody>
+                            </CardBase>
+                        </GridBase>
+                    </>
+                )}
             </div>
         </>
     );

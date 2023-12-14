@@ -6,7 +6,7 @@
     --success-background: #21D19F;
     --warning-background: #EF767A;
     --hero-background: #E3B505;
-    --hero-color: #E3B505
+    --hero-color: #00869f; /*#E3B505*/
 }
 
 .bg-dark {
@@ -36,7 +36,7 @@
 
 .bg-hero {
     color: #FBF7F4 !important;
-    background: #E3B505 !important;
+    background: #00869f !important;
 }
 
 .text-dark {
@@ -59,3 +59,6 @@
     color: #EF767A !important;
 }
 
+.text-hero {
+    color: #00869f !important;
+}

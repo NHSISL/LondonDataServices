@@ -42,12 +42,12 @@ a.linkVisited:visited {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: calc(100vh - 500px);
+    height: calc(100vh - 50px);
     
 }
 
 .max-width-400 {
-    max-width: 400px;
+    max-width: 500px;
 }
 
 .min-height-600{min-height: 600px;}
@@ -77,4 +77,18 @@ a.linkVisited:visited {
 
 .nhsuk-select {
     min-width: 235px;
+}
+
+.logo-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.copyright {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 12px;
+    color: #ffffff;
 }

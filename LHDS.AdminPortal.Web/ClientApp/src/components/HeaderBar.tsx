@@ -11,7 +11,10 @@ export const HeaderBar = () => {
         </a>
 
         <span className="navbar-brand me-auto ms-4">
-            <strong>The <span className="text-hero">London</span> Data Service</strong>
+            <img src="LHDLogoRound.png" alt="London Data Service logo" height="30" width="30" />
+            <span style={{marginLeft : "10px"} }>
+                <strong>The <span className="text-hero">London</span> Data Service</strong>
+            </span>
         </span>
 
         <ul className="nav justify-content-end">

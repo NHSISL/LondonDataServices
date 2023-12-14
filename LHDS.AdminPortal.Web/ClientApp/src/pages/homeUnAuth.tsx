@@ -13,18 +13,23 @@ export const HomeUnAuthorised = () => {
 
     return (
         <>
-            <div className="container center max-width-400 min-height-600">
-                <CardBase classes="border ">
+            <div className="container center max-width-400 min-height-600 vh-100">
+                
+                <CardBase classes="border">
+                    <div className="logo-container">
+                        <img src="LHDLogoRound.png" alt="London Data Service logo" className="logo" height="50" width="50" />
+                    </div>
                     <CardBaseBody classes="">
                         <CardBaseHeader>
                             <CardBaseTitle>Login</CardBaseTitle>
                         </CardBaseHeader>
-                        <CardBaseContent >
-                                <br/>                     
-                            <p>Welcome to the London Data Service Admin Portal.</p>
-
-                            <p>To unlock all the features of this system login,
-                                For access requests, please contact your Manager.
+                        <CardBaseContent>
+                            <br />                  
+                            <p className="welcome-text">
+                                <strong className="lead text-hero">Welcome!</strong> You've reached the <span className="lead text-hero">London Data Service</span> Admin Portal.
+                            </p>
+                            <p>
+                                To access all system features, please log in. For access requests, kindly contact your Manager.
                             </p>
 
                             <ButtonBase
@@ -35,6 +40,8 @@ export const HomeUnAuthorised = () => {
                         </CardBaseContent>
                     </CardBaseBody>
                 </CardBase>
+
+                <div className="copyright">&copy; 2023 North East London ICB</div>
             </div>
         </>
     );

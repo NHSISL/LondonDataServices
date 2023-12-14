@@ -3,9 +3,10 @@ import 'nhsuk-frontend/dist/nhsuk.min'
 import 'nhsuk-frontend/packages/polyfills';
 import { Container } from 'nhsuk-react-components'
 import DataTypeTable from "../../components/dataTypes/dataTypeTable";
+import { PageLayout } from "../../components/PageLayout";
 
 export const DataTypesPage = () => {
-    return <div>
+    return <PageLayout>
         <section >
             <Container>
                 <main id="maincontent" className="NELTopPadding" role="main">
@@ -15,5 +16,5 @@ export const DataTypesPage = () => {
                 </main>
             </Container>
         </section>
-    </div>
+    </PageLayout>
 }

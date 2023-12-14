@@ -22,9 +22,9 @@ export class Supplier {
         this.description = supplier.description;
         this.landingManualTriggerUrl = supplier.landingManualTriggerUrl;
         this.decryptionManualTriggerUrl = supplier.decryptionManualTriggerUrl;
-        this.canDecryptIngestionTracking = supplier.canDecryptIngestionTracking;
-        this.canDownloadIngestionTracking = supplier.canDownloadIngestionTracking;
-        this.canRelandIngestionTracking = supplier.canRelandIngestionTracking;
+        this.canDecryptIngestionTracking = supplier.canDecryptIngestionTracking === true ? true : false;
+        this.canDownloadIngestionTracking = supplier.canDownloadIngestionTracking === true ? true : false;
+        this.canRelandIngestionTracking = supplier.canRelandIngestionTracking === true ? true : false;
         this.createdBy = supplier.createdBy;
         this.createdDate = new Date(supplier.createdDate);
         this.updatedBy = supplier.updatedBy;

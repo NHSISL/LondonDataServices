@@ -8,6 +8,8 @@ import { useValidation } from "../../hooks/useValidation";
 import { supplierErrors } from "./supplierErrors";
 import { supplierValidations } from "./supplierValidations";
 import TextAreaInputBase from "../bases/inputs/TextAreaInputBase";
+import CheckboxBase from "../bases/inputs/CheckboxBase";
+
 
 interface SupplierRowEditProps {
     supplier: SupplierView;
@@ -88,7 +90,7 @@ const SupplierRowEdit: FunctionComponent<SupplierRowEditProps> = (props) => {
                     onChange={handleChange}
                     rows={3}
                 />
-               
+
             </TableBaseData>
             <TableBaseData>
                 <TextInputBase
@@ -109,6 +111,13 @@ const SupplierRowEdit: FunctionComponent<SupplierRowEditProps> = (props) => {
                     required={true}
                     error={errors.name}
                     onChange={handleChange} />
+                {/*<CheckboxBase*/}
+                {/*    id="canDecryptIngestionTracking"*/}
+                {/*    name="canDecryptIngestionTracking"*/}
+                {/*    label="canDecryptIngestionTracking"*/}
+                {/*    checked={editSupplier.canDecryptIngestionTracking}*/}
+                {/*    error={errors.canDecryptIngestionTracking}*/}
+                {/*    onChange={handleChange} />*/}
             </TableBaseData>
             <TableBaseData classes="text-end">
                 <ButtonBase onClick={() => handleCancel()} cancel>Cancel</ButtonBase>&nbsp;

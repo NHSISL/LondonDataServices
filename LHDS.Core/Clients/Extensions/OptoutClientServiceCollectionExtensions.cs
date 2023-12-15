@@ -1,0 +1,344 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using Azure.Core.Pipeline;
+using Azure.Identity;
+using Azure.Storage.Blobs;
+using LHDS.Core.Brokers.CsvMappers;
+using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
+using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Mesh;
+using LHDS.Core.Brokers.Storages.Blobs;
+using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Brokers.Mesh;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Configurations;
+using LHDS.Core.Models.Orchestrations.OptOuts;
+using LHDS.Core.Services.Foundations.CsvMappers;
+using LHDS.Core.Services.Foundations.Documents;
+using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
+using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.Mesh;
+using LHDS.Core.Services.Foundations.OptOuts;
+using LHDS.Core.Services.Orchestrations.OptOuts;
+using LHDS.Core.Services.Processings.CsvMappers;
+using LHDS.Core.Services.Processings.Documents;
+using LHDS.Core.Services.Processings.Mesh;
+using LHDS.Core.Services.Processings.OptOuts;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace LHDS.Core.Clients.Extensions
+{
+    public static class OptOutClientServiceCollectionExtensions
+    {
+        public static IServiceCollection AddOptOutClient(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            return AddOptOutClient(services, configuration, acceptanceTest: false);
+        }
+
+        internal static IServiceCollection AddOptOutClientForAcceptance(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            return AddOptOutClient(services, configuration, acceptanceTest: true);
+        }
+
+        private static IServiceCollection AddOptOutClient(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            bool acceptanceTest)
+        {
+            services.AddSingleton<IConfiguration>(_ => configuration);
+
+            var meshConfigurationSettings =
+                configuration.GetSection("meshConfiguration").Get<MeshConfigurationSettings>();
+
+            ValidateMeshConfigurationSettings(meshConfigurationSettings, acceptanceTest);
+
+            var meshConfig = new MeshConfiguration
+            {
+                MailboxId = meshConfigurationSettings.MailboxId,
+                Password = meshConfigurationSettings.Password,
+                Key = meshConfigurationSettings.Key,
+                Url = meshConfigurationSettings.Url,
+                MexClientVersion = meshConfigurationSettings.MexClientVersion,
+                MexOSName = meshConfigurationSettings.MexOSName,
+                MexOSVersion = meshConfigurationSettings.MexOSVersion,
+                MaxChunkSizeInMegabytes = meshConfigurationSettings.MaxChunkSizeInMegabytes,
+            };
+
+            if (!acceptanceTest)
+            {
+                meshConfig.RootCertificate =
+                    GetCertificate(value: meshConfigurationSettings.RootCertificate);
+
+                meshConfig.IntermediateCertificates =
+                    GetCertificates(values: meshConfigurationSettings.IntermediateCertificates);
+
+                meshConfig.ClientCertificate =
+                    GetCertificate(value: meshConfigurationSettings.ClientCertificate);
+            }
+
+            services.AddSingleton(meshConfig);
+
+            AddBrokers(services, acceptanceTest);
+            AddServices(services);
+            AddProcessingServices(services);
+            AddOrchestrations(services);
+            AddClients(services, configuration);
+
+            return services;
+        }
+
+        private static void AddBrokers(IServiceCollection services, bool acceptanceTest)
+        {
+            services.AddTransient<ILoggingBroker, LoggingBroker>();
+            services.AddTransient<ICsvMapperBroker, CsvMapperBroker>();
+            services.AddTransient<IDateTimeBroker, DateTimeBroker>();
+            services.AddTransient<IIdentifierBroker, IdentifierBroker>();
+            services.AddTransient<IStorageBroker, StorageBroker>();
+
+            if (!acceptanceTest)
+            {
+                services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
+                services.AddTransient<IMeshBroker, MeshBroker>();
+            }
+        }
+
+        private static void AddServices(IServiceCollection services)
+        {
+            services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
+            services.AddTransient<ICsvMapperService, CsvMapperService>();
+            services.AddTransient<IDocumentService, DocumentService>();
+            services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
+            services.AddTransient<IMeshService, MeshService>();
+            services.AddTransient<IOptOutService, OptOutService>();
+        }
+
+        private static void AddProcessingServices(IServiceCollection services)
+        {
+            services.AddTransient<ICsvMapperProcessingService, CsvMapperProcessingService>();
+            services.AddTransient<IDocumentProcessingService, DocumentProcessingService>();
+            services.AddTransient<IMeshProcessingService, MeshProcessingService>();
+            services.AddTransient<IOptOutProcessingService, OptOutProcessingService>();
+        }
+
+        private static void AddOrchestrations(IServiceCollection services)
+        {
+            services.AddTransient<IOptOutOrchestrationService, OptOutOrchestrationService>();
+        }
+
+        private static void AddClients(IServiceCollection services, IConfiguration configuration)
+        {
+            var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
+            ValidateBlobStorageSettings(blobStorageSettings);
+            services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
+            var optOptOutConfiguration = configuration.GetSection("optOutSettings").Get<OptOutConfiguration>();
+            ValidateOptOutConfigurationSettings(optOptOutConfiguration);
+
+            var blobServiceClientOptions = new BlobClientOptions()
+            {
+                Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
+                Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
+                EnableTenantDiscovery = true
+            };
+
+            services.AddSingleton(
+                new BlobServiceClient(
+                    serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
+                    credential: new DefaultAzureCredential(
+                        new DefaultAzureCredentialOptions
+                        {
+                            VisualStudioTenantId = blobStorageSettings.AzureTenantId,
+                        }),
+                    options: blobServiceClientOptions));
+
+            services.AddSingleton(optOptOutConfiguration);
+            services.AddTransient<IOptOutClient, OptOutClient>();
+            services.AddTransient<IAzureBlobClient, AzureBlobClient>();
+        }
+
+        private static X509Certificate2 GetCertificate(string value)
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                byte[] certBytes = Convert.FromBase64String(value);
+
+                return new X509Certificate2(certBytes);
+            }
+
+            return null;
+        }
+
+        private static X509Certificate2Collection GetCertificates(List<string> values)
+        {
+            values ??= new List<string>();
+
+            var certificates = new X509Certificate2Collection();
+
+            if (values.Any())
+            {
+                foreach (string item in values)
+                {
+                    byte[] certBytes = Convert.FromBase64String(item);
+                    certificates.Add(new X509Certificate2(certBytes));
+                }
+            }
+
+            return certificates;
+        }
+
+        private static void ValidateMeshConfigurationSettings(
+            MeshConfigurationSettings meshConfigurationSettings,
+            bool acceptanceTest)
+        {
+            if (meshConfigurationSettings == null)
+            {
+                throw new InvalidConfigurationException(
+                    "Configuration section 'meshConfiguration' not defined.");
+            }
+
+            Validate(
+                (Rule: IsInvalid(meshConfigurationSettings.MailboxId),
+                    Parameter: "meshConfiguration__mailboxId"),
+
+                (Rule: IsInvalid(meshConfigurationSettings.Password),
+                    Parameter: "meshConfiguration__password"),
+
+                (Rule: IsInvalid(meshConfigurationSettings.Key),
+                    Parameter: "meshConfiguration__key"),
+
+                (Rule: IsInvalid(meshConfigurationSettings.Url),
+                    Parameter: "meshConfiguration__url"),
+
+                (Rule: IsInvalid(meshConfigurationSettings.MexClientVersion),
+                    Parameter: "meshConfiguration__mexClientVersion"),
+
+                (Rule: IsInvalid(meshConfigurationSettings.MexOSName),
+                    Parameter: "meshConfiguration__mexOSName"),
+
+                (Rule: IsInvalid(meshConfigurationSettings.MexOSVersion),
+                    Parameter: "meshConfiguration__mexOSVersion"));
+
+            if (acceptanceTest)
+            {
+                Validate(
+                    (Rule: IsInvalid(meshConfigurationSettings.RootCertificate),
+                        Parameter: "meshConfiguration__rootCertificate"),
+
+                    (Rule: IsInvalid(meshConfigurationSettings.Password),
+                        Parameter: "meshConfiguration__intermediateCertificates"),
+
+                    (Rule: IsInvalid(meshConfigurationSettings.MexOSVersion),
+                        Parameter: "meshConfiguration__clientCertificate"));
+            }
+        }
+
+        private static void ValidateOptOutConfigurationSettings(OptOutConfiguration optOutConfiguration)
+        {
+            if (optOutConfiguration == null)
+            {
+                throw new InvalidConfigurationException(
+                    "Configuration section 'optOutSettings' not defined.");
+            }
+
+            Validate(
+                (Rule: IsInvalid(optOutConfiguration.ExpiredAfterDays),
+                    Parameter: "optOutSettings__expiredAfterDays"),
+
+                (Rule: IsInvalid(optOutConfiguration.InputFolder),
+                    Parameter: "optOutSettings__inputFolder"),
+
+                (Rule: IsInvalid(optOutConfiguration.OutputFolder),
+                    Parameter: "optOutSettings__outputFolder"),
+
+                (Rule: IsInvalid(optOutConfiguration.OptOutFileHasHeader),
+                    Parameter: "optOutSettings__optOutFileHasHeader"),
+
+                (Rule: IsInvalid(optOutConfiguration.OptOutFileRequireTrailingComma),
+                    Parameter: "optOutSettings__optOutFileRequireTrailingComma"),
+
+                (Rule: IsInvalid(optOutConfiguration.To),
+                    Parameter: "optOutSettings__to"),
+
+                (Rule: IsInvalid(optOutConfiguration.WorkflowId),
+                    Parameter: "optOutSettings__workflowId"));
+        }
+
+        private static void ValidateBlobStorageSettings(BlobStorageSettings blobStorageSettings)
+        {
+            if (blobStorageSettings == null)
+            {
+                throw new InvalidConfigurationException(
+                    "Configuration section 'blobStorage' not defined.");
+            }
+
+            Validate(
+                (Rule: IsInvalid(blobStorageSettings.AzureBlobServiceUri),
+                    Parameter: "blobStorage__azureBlobServiceUri"),
+
+                (Rule: IsInvalid(blobStorageSettings.AzureTenantId),
+                    Parameter: "blobStorage__azureTenantId"));
+        }
+
+        private static dynamic IsInvalid(int number) => new
+        {
+            Condition = number <= 0,
+            Message = "Configuration value does not exist"
+        };
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Configuration value does not exist"
+        };
+
+        private static dynamic IsInvalid(bool value) => new
+        {
+            Condition = value == null,
+            Message = "Configuration value does not exist"
+        };
+
+        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        {
+            StringBuilder validationErrors = new StringBuilder();
+            validationErrors.AppendLine("Configuration error(s):");
+            IDictionary errors = new Dictionary<string, List<string>>();
+
+            foreach ((dynamic rule, string parameter) in validations)
+            {
+                if (rule.Condition)
+                {
+                    validationErrors.AppendLine(
+                        $"{parameter} -> Configuration value does not exist or does not meet validation criteria");
+
+                    if (errors.Contains(parameter))
+                    {
+                        (errors[parameter] as List<string>)?.Add(rule.Message);
+                        return;
+                    }
+
+                    errors.Add(parameter, new List<string> { rule.Message });
+                }
+            }
+
+            var invalidConfigurationException = new InvalidConfigurationException(
+                message: validationErrors.ToString(),
+                data: errors);
+
+            invalidConfigurationException.ThrowIfContainsErrors();
+        }
+    }
+}

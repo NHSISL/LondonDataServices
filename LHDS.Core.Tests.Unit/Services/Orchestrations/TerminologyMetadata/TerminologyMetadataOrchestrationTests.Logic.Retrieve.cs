@@ -122,9 +122,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                     Times.Once);
 
             this.terminologyPollProcessingServiceMock.VerifyNoOtherCalls();
-            this.ontologyProcessingServiceMock.VerifyNoOtherCalls();
-            this.terminologyArtifactProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ontologyProcessingServiceMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.terminologyArtifactProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

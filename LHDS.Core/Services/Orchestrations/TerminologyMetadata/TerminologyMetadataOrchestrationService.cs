@@ -70,7 +70,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
         private async ValueTask ProcessArtifacts(string relativeUrl)
         {
             OntologyAssets retrievedOntologyAssets =
-                            await this.ontologyProcessingService.RetrieveAllCodingSystemsAsync(relativeUrl);
+                await this.ontologyProcessingService.RetrieveAllCodingSystemsAsync(relativeUrl);
 
             foreach (var asset in retrievedOntologyAssets.Assets)
             {

@@ -94,7 +94,6 @@
 
 	<ItemGroup>
 	  <Folder Include="Brokers\Storages\Sql\Views\" />
-	  <Folder Include="Clients\Extensions\" />
 	  <Folder Include="Migrations\" />
 	</ItemGroup>
 

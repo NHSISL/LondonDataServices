@@ -98,40 +98,5 @@ namespace LHDS.Core.Tests.Integration.Landings
 
             return maybeSupplier;
         }
-
-        private async ValueTask<DataSet> SetupDataSet()
-        {
-            DateTimeOffset now = DateTimeOffset.UtcNow;
-
-            DataSet dataSet = new DataSet
-            {
-                Id = Guid.Parse("6a62313a-7442-462e-b6e8-dec541ddd0ba"),
-                SupplierId = this.landingConfiguration.LandingSupplierId,
-                DataSetName = "PrimaryCareEMISDEV",
-                DataSetAliases = "",
-                DataSetAuthor = "EMISDEV",
-                SpecifiedBy = "EMIS",
-                IsNationallySpecified = false,
-                CollectedBy = "EMIS",
-                IsNationallyCollected = false,
-                DataSourceType = "",
-                IsActive = true,
-                CreatedBy = "System",
-                CreatedDate = new DateTime(year: 2023, month: 1, day: 1, hour: 0, minute: 0, second: 0),
-                UpdatedBy = "System",
-                UpdatedDate = new DateTime(year: 2023, month: 1, day: 1, hour: 0, minute: 0, second: 0)
-            };
-
-            DataSet maybeDataSet = dataSetService.RetrieveAllDataSets()
-                .FirstOrDefault(s => s.Id == supplier.Id);
-
-            if (maybeDataSet == null)
-            {
-                return await supplierService.AddSupplierAsync(supplier);
-            }
-
-            return maybeDataSet;
-        }
-
     }
 }

@@ -70,6 +70,7 @@ const SupplierRowEdit: FunctionComponent<SupplierRowEditProps> = (props) => {
                     required={true}
                     error={errors.name}
                     onChange={handleChange} />
+                <br />
                 <TextInputBase
                     id="friendlyName"
                     name="friendlyName"
@@ -79,6 +80,7 @@ const SupplierRowEdit: FunctionComponent<SupplierRowEditProps> = (props) => {
                     required={true}
                     error={errors.name}
                     onChange={handleChange} />
+                <br />
                 <TextAreaInputBase
                     id="description"
                     name="description"
@@ -90,9 +92,7 @@ const SupplierRowEdit: FunctionComponent<SupplierRowEditProps> = (props) => {
                     onChange={handleChange}
                     rows={3}
                 />
-
-            </TableBaseData>
-            <TableBaseData>
+                <br />
                 <TextInputBase
                     id="landingManualTriggerUrl"
                     name="landingManualTriggerUrl"
@@ -102,6 +102,10 @@ const SupplierRowEdit: FunctionComponent<SupplierRowEditProps> = (props) => {
                     required={true}
                     error={errors.name}
                     onChange={handleChange} />
+                
+            </TableBaseData>
+            <TableBaseData>
+               
                 <TextInputBase
                     id="decryptionManualTriggerUrl"
                     name="decryptionManualTriggerUrl"
@@ -111,13 +115,30 @@ const SupplierRowEdit: FunctionComponent<SupplierRowEditProps> = (props) => {
                     required={true}
                     error={errors.name}
                     onChange={handleChange} />
-                {/*<CheckboxBase*/}
-                {/*    id="canDecryptIngestionTracking"*/}
-                {/*    name="canDecryptIngestionTracking"*/}
-                {/*    label="canDecryptIngestionTracking"*/}
-                {/*    checked={editSupplier.canDecryptIngestionTracking}*/}
-                {/*    error={errors.canDecryptIngestionTracking}*/}
-                {/*    onChange={handleChange} />*/}
+                <br />
+                <CheckboxBase
+                    id="canDecryptIngestionTracking"
+                    name="canDecryptIngestionTracking"
+                    label="Can Decrypt Ingestion Tracking"
+                    checked={editSupplier.canDecryptIngestionTracking === true ? true : false}
+                    error={errors.canDecryptIngestionTracking}
+                    onChange={handleChange} />
+                <br />
+                <CheckboxBase
+                    id="canDownloadIngestionTracking"
+                    name="canDownloadIngestionTracking"
+                    label="Can Download Ingestion Tracking"
+                    checked={editSupplier.canDownloadIngestionTracking === true ? true : false}
+                    error={errors.canDownloadIngestionTracking}
+                    onChange={handleChange} />
+                <br />
+                <CheckboxBase
+                    id="canRelandIngestionTracking"
+                    name="canRelandIngestionTracking"
+                    label="Can Reland Ingestion Tracking"
+                    checked={editSupplier.canRelandIngestionTracking === true ? true : false}
+                    error={errors.canRelandIngestionTracking}
+                    onChange={handleChange} />
             </TableBaseData>
             <TableBaseData classes="text-end">
                 <ButtonBase onClick={() => handleCancel()} cancel>Cancel</ButtonBase>&nbsp;

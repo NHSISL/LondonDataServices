@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
     public partial class TerminologyMetadataOrchestrationTests
     {
         [Fact]
-        public async Task ShouldRetrieveArtifactMetadataAsync()
+        public async Task ShouldRetrievePagedArtifactMetadataAsync()
         {
             // given
             Guid randomId = Guid.NewGuid();
@@ -122,9 +122,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                     Times.Once);
 
             this.terminologyPollProcessingServiceMock.VerifyNoOtherCalls();
-            this.ontologyProcessingServiceMock.VerifyNoOtherCalls();
-            this.terminologyArtifactProcessingServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ontologyProcessingServiceMock.VerifyNoOtherCalls();
+            this.identifierBrokerMock.VerifyNoOtherCalls();
+            this.terminologyArtifactProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

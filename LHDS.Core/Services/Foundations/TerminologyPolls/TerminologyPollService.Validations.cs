@@ -17,6 +17,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             Validate(
                 (Rule: IsInvalid(terminologyPoll.Id), Parameter: nameof(TerminologyPoll.Id)),
                 (Rule: IsInvalid(terminologyPoll.ResourceType), Parameter: nameof(TerminologyPoll.ResourceType)),
+                (Rule: IsInvalid(terminologyPoll.LastPoll), Parameter: nameof(TerminologyPoll.LastPoll)),
                 (Rule: IsInvalid(terminologyPoll.CreatedDate), Parameter: nameof(TerminologyPoll.CreatedDate)),
                 (Rule: IsInvalid(terminologyPoll.CreatedBy), Parameter: nameof(TerminologyPoll.CreatedBy)),
                 (Rule: IsInvalid(terminologyPoll.UpdatedDate), Parameter: nameof(TerminologyPoll.UpdatedDate)),
@@ -44,6 +45,7 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             Validate(
                 (Rule: IsInvalid(terminologyPoll.Id), Parameter: nameof(TerminologyPoll.Id)),
                 (Rule: IsInvalid(terminologyPoll.ResourceType), Parameter: nameof(TerminologyPoll.ResourceType)),
+                (Rule: IsInvalid(terminologyPoll.LastPoll), Parameter: nameof(TerminologyPoll.LastPoll)),
                 (Rule: IsInvalid(terminologyPoll.CreatedDate), Parameter: nameof(TerminologyPoll.CreatedDate)),
                 (Rule: IsInvalid(terminologyPoll.CreatedBy), Parameter: nameof(TerminologyPoll.CreatedBy)),
                 (Rule: IsInvalid(terminologyPoll.UpdatedDate), Parameter: nameof(TerminologyPoll.UpdatedDate)),

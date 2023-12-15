@@ -11,5 +11,7 @@ namespace LHDS.Core.Models.Brokers.Storages.Blobs
         public string OptOut { get; set; } = string.Empty;
         public string Pds { get; set; } = string.Empty;
         public string Terminology { get; set; } = string.Empty;
+        public string TppLanding { get; set; } = string.Empty;
+
     }
 }

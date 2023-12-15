@@ -58,8 +58,11 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
                 ValidateResourceURL(relativeUrl);
                 relativeUrl = relativeUrl.Replace("{{resourceType}}", resourceType);
                 relativeUrl = relativeUrl.Replace("{{datestamp}}", retrievedTerminologyPoll.LastPoll.ToString());
+
+                DateTimeOffset currentDateTimeOffset = 
+                    this.dateTimeBroker.GetCurrentDateTimeOffset();
+                    
                 await ProcessArtifacts(relativeUrl);
-                DateTimeOffset currentDateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
                 retrievedTerminologyPoll.LastPoll = currentDateTimeOffset;
                 await this.terminologyPollProcessingService.ModifyTerminologyPollAsync(retrievedTerminologyPoll);
             });
@@ -67,7 +70,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
         private async ValueTask ProcessArtifacts(string relativeUrl)
         {
             OntologyAssets retrievedOntologyAssets =
-                            await this.ontologyProcessingService.RetrieveAllCodingSystemsAsync(relativeUrl);
+                await this.ontologyProcessingService.RetrieveAllCodingSystemsAsync(relativeUrl);
 
             foreach (var asset in retrievedOntologyAssets.Assets)
             {

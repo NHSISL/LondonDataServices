@@ -15,7 +15,11 @@ using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.Downloads.Exceptions;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
+using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Services.Orchestrations.Tpp;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
@@ -25,6 +29,7 @@ using LHDS.Core.Services.Processings.IngestionTrackings;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
@@ -138,7 +143,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
 
             return items;
         }
-
         private static IngestionTracking CreateRandomIngestionTracking(DateTimeOffset dateTimeOffset) =>
             CreateIngestionTrackingFiller(dateTimeOffset).Create();
 
@@ -222,6 +226,47 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
 
+        public static TheoryData TppDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DocumentValidationException(
+                    message: "Document validation errors occured, please try again",
+                    innerException),
+
+                new DocumentDependencyValidationException(
+                    message: "Document dependency validation occurred, please try again.",
+                    innerException),
+
+                new DownloadValidationException(
+                    message: "Download validation errors occurred, please try again.",
+                    innerException),
+
+                new DownloadDependencyValidationException(
+                    message: "Download dependency validation occurred, please try again.",
+                    innerException),
+
+                new IngestionTrackingValidationException(
+                    message: "Ingestion tracking validation errors occurred, fix the errors and try again.",
+                    innerException),
+
+                new IngestionTrackingDependencyValidationException(
+                    message: "Ingestion tracking dependency validation occurred, please try again.",
+                    innerException),
+
+                new IngestionTrackingAuditValidationException(
+                    message: "Audit validation errors occurred, please try again.",
+                    innerException),
+
+                new IngestionTrackingAuditDependencyValidationException(
+                    message: "Audit dependency validation occurred, please try again.",
+                    innerException)
+            };
+        }
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(DateTimeOffset dateTimeOffset)
         {

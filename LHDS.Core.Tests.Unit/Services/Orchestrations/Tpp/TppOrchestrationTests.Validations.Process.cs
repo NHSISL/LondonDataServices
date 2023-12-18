@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
 
             var expectedDocumentValidationException =
                new TppDocumentValidationException(
-                   message: "Tpp Document validation errors occured, please try again",
+                   message: "Tpp Document validation errors occured, please try again.",
                    innerException: nullDocumentException);
 
             // when
@@ -41,6 +41,54 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedDocumentValidationException))),
+                        Times.Once);
+
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionIfDocumentFileNameIsNullAndLogItAsync(string invalidText)
+        {
+            // given
+            Models.Foundations.Documents.Document randomDocument = CreateRandomDocument();
+            randomDocument.FileName = invalidText;
+
+            var invalidArgumentException =
+                new InvalidArgumentException(
+                    message: "Invalid tpp orchestration argument(s), please correct the errors and try again.");
+
+            invalidArgumentException.AddData(
+               key: "FileName",
+               values: "Text is required");
+
+            var expectedTppOrchestrationValidationException =
+                new TppDocumentValidationException(
+                    message: "Tpp Document validation errors occured, please try again.",
+                    innerException: invalidArgumentException);
+
+            // when
+            ValueTask<Guid> returnedGuidTask = this.tppOrchestrationService.ProcessAsync(randomDocument);
+
+            TppDocumentValidationException actualException =
+               await Assert.ThrowsAsync<TppDocumentValidationException>(returnedGuidTask.AsTask);
+
+            // then
+            actualException.Should()
+               .BeEquivalentTo(expectedTppOrchestrationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTppOrchestrationValidationException))),
                         Times.Once);
 
             this.documentProcessingServiceMock.VerifyNoOtherCalls();

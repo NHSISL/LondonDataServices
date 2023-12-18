@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
@@ -10,6 +11,8 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
@@ -23,7 +26,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
         private readonly IDocumentProcessingService documentProcessingService;
         private readonly IDownloadProcessingService downloadProcessingService;
         private readonly IIngestionTrackingProcessingService ingestionTrackingProcessingService;
-        private readonly IIngestionTrackingAuditProcessingService auditService;
+        private readonly IIngestionTrackingAuditProcessingService ingestionTrackingProcessingAuditService;
         private readonly BlobContainers blobContainers;
         private readonly IDataSetSpecificationProcessingService dataSetSpecificationProcessingService;
         private readonly ILoggingBroker loggingBroker;
@@ -36,7 +39,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             IDocumentProcessingService documentProcessingService,
             IDownloadProcessingService downloadProcessingService,
             IIngestionTrackingProcessingService ingestionTrackingProcessingService,
-            IIngestionTrackingAuditProcessingService auditService,
+            IIngestionTrackingAuditProcessingService ingestionTrackingProcessingAuditService,
             IDataSetSpecificationProcessingService dataSetSpecificationProcessingService,
             BlobContainers blobContainers,
             ILoggingBroker loggingBroker,
@@ -48,7 +51,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             this.documentProcessingService = documentProcessingService;
             this.downloadProcessingService = downloadProcessingService;
             this.ingestionTrackingProcessingService = ingestionTrackingProcessingService;
-            this.auditService = auditService;
+            this.ingestionTrackingProcessingAuditService = ingestionTrackingProcessingAuditService;
             this.dataSetSpecificationProcessingService = dataSetSpecificationProcessingService;
             this.blobContainers = blobContainers;
             this.loggingBroker = loggingBroker;
@@ -58,7 +61,30 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             this.landingConfiguration = landingConfiguration;
         }
 
-        public ValueTask<Guid> ProcessAsync(Document fileName) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<Guid> ProcessAsync(Document document)
+        {
+            //TODO: Validate Document FileName
+
+            IngestionTracking? maybeIngestionTracking =
+                this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
+                    .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == document.FileName);
+
+            document.SHA256Hash = this.hashBroker.GenerateSha256Hash(document.DocumentData);
+
+            await this.documentProcessingService.AddDocumentAsync(document, blobContainers.TppLanding);
+            maybeIngestionTracking.DecryptedFileSha256Hash = document.SHA256Hash;
+            await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);
+
+            IngestionTrackingAudit audit = new IngestionTrackingAudit
+            {
+                Id = this.identifierBroker.GetIdentifier(),
+                IngestionTrackingId = maybeIngestionTracking.Id,
+                Message = "Updated TPP Hash"
+            };
+
+            await this.ingestionTrackingProcessingAuditService.AddIngestionTrackingAuditAsync(audit);
+
+            return maybeIngestionTracking.Id;
+        }
     }
 }

@@ -17,7 +17,7 @@ using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Downloads;
-using LHDS.Core.Services.Orchestrations.Downloads;
+using LHDS.Core.Services.Orchestrations.Tpp;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Downloads;
@@ -35,7 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
         private readonly Mock<IDocumentProcessingService> documentProcessingServiceMock;
         private readonly Mock<IDownloadProcessingService> downloadProcessingServiceMock;
         private readonly Mock<IIngestionTrackingProcessingService> ingestionTrackingProcessingServiceMock;
-        private readonly Mock<IIngestionTrackingAuditProcessingService> auditServiceMock;
+        private readonly Mock<IIngestionTrackingAuditProcessingService> ingestionTrackingAuditServiceMock;
         private readonly Mock<IDataSetSpecificationProcessingService> dataSetSpecificationProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
         private readonly Mock<IHashBroker> hashBrokerMock;
         private readonly LandingConfiguration landingConfiguration;
         private readonly BlobContainers blobContainers;
-        private readonly IDownloadOrchestrationService downloadOrchestrationService;
+        private readonly ITppOrchestrationService tppOrchestrationService;
         private readonly ICompareLogic compareLogic;
 
         public TppOrchestrationTests(ITestOutputHelper output)
@@ -53,7 +53,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             downloadProcessingServiceMock = new Mock<IDownloadProcessingService>();
             ingestionTrackingProcessingServiceMock = new Mock<IIngestionTrackingProcessingService>();
             dataSetSpecificationProcessingServiceMock = new Mock<IDataSetSpecificationProcessingService>();
-            auditServiceMock = new Mock<IIngestionTrackingAuditProcessingService>();
+            ingestionTrackingAuditServiceMock = new Mock<IIngestionTrackingAuditProcessingService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             identifierBrokerMock = new Mock<IIdentifierBroker>();
@@ -63,8 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             landingConfiguration = new LandingConfiguration
             {
                 LandingSupplierId = Guid.NewGuid(),
-                EncryptedFolder = "encrypted",
-                DecryptedFolder = "inbox/landings"
+                DecryptedFolder = ""
             };
 
             blobContainers = new BlobContainers
@@ -76,11 +75,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                 TppLanding = "tpp"
             };
 
-            downloadOrchestrationService = new DownloadOrchestrationService(
+            tppOrchestrationService = new TppOrchestrationService(
                 documentProcessingService: documentProcessingServiceMock.Object,
                 downloadProcessingService: downloadProcessingServiceMock.Object,
                 ingestionTrackingProcessingService: ingestionTrackingProcessingServiceMock.Object,
-                auditService: auditServiceMock.Object,
+                auditService: ingestionTrackingAuditServiceMock.Object,
                 dataSetSpecificationProcessingService: dataSetSpecificationProcessingServiceMock.Object,
                 blobContainers,
                 loggingBroker: loggingBrokerMock.Object,
@@ -93,10 +92,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
-        private static List<Document> CreateRandomDocuments()
+        private static List<Document> CreateRandomDocuments(int count)
         {
             return CreateDocumentFiller()
-                .Create(count: 1)
+                .Create(count)
                     .ToList();
         }
 
@@ -106,15 +105,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
         private static Filler<Document> CreateDocumentFiller()
         {
             var filler = new Filler<Document>();
-            string filename = GetRandomString(10);
-
-            for (int i = 0; i < 6; i++)
-            {
-                filename = $"{filename}_{GetRandomString(10)}";
-            }
+            string filename = GetRandomString();
 
             filler.Setup()
-                .OnProperty(dataSet => dataSet.FileName).Use(filename);
+                .OnProperty(dataSet => dataSet.FileName).Use(() => filename);
 
             return filler;
         }
@@ -228,89 +222,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
 
-        //public static TheoryData DownloadDependencyValidationExceptions()
-        //{
-        //    string randomMessage = GetRandomString();
-        //    string exceptionMessage = randomMessage;
-        //    var innerException = new Xeption(exceptionMessage);
-
-        //    return new TheoryData<Xeption>
-        //    {
-        //        new DocumentValidationException(
-        //            message: "Document validation errors occured, please try again",
-        //            innerException),
-
-        //        new DocumentDependencyValidationException(
-        //            message: "Document dependency validation occurred, please try again.",
-        //            innerException),
-
-        //        new DownloadValidationException(
-        //            message: "Download validation errors occurred, please try again.",
-        //            innerException),
-
-        //        new DownloadDependencyValidationException(
-        //            message: "Download dependency validation occurred, please try again.",
-        //            innerException),
-
-        //        new IngestionTrackingValidationException(
-        //            message: "Ingestion tracking validation errors occurred, fix the errors and try again.",
-        //            innerException),
-
-        //        new IngestionTrackingDependencyValidationException(
-        //            message: "Ingestion tracking dependency validation occurred, please try again.",
-        //            innerException),
-
-        //        new IngestionTrackingAuditValidationException(
-        //            message: "Audit validation errors occurred, please try again.",
-        //            innerException),
-
-        //        new IngestionTrackingAuditDependencyValidationException(
-        //            message: "Audit dependency validation occurred, please try again.",
-        //            innerException)
-        //    };
-        //}
-
-        //public static TheoryData DownloadDependencyExceptions()
-        //{
-        //    string randomMessage = GetRandomString();
-        //    string exceptionMessage = randomMessage;
-        //    var innerException = new Xeption(exceptionMessage);
-
-        //    return new TheoryData<Xeption>
-        //    {
-        //        new DocumentDependencyException(
-        //            message: "Document dependency error occurred, contact support.",
-        //            innerException),
-
-        //        new DocumentServiceException(
-        //            message: "Document service error occurred, contact support.",
-        //            innerException),
-
-        //        new DownloadDependencyException(
-        //            message: "Download dependency error occurred, contact support.",
-        //            innerException),
-
-        //        new DownloadServiceException(
-        //            message: "Download service error occurred, contact support.",
-        //            innerException),
-
-        //        new IngestionTrackingDependencyException(
-        //            message: "Failed ingestion tracking storage error occurred, contact support.",
-        //            innerException),
-
-        //        new IngestionTrackingServiceException(
-        //            message: "Ingestion tracking service error occurred, contact support.",
-        //            innerException),
-
-        //        new IngestionTrackingAuditDependencyException(
-        //            message: "Audit dependency error occurred, contact support.",
-        //            innerException),
-
-        //        new IngestionTrackingAuditServiceException(
-        //            message: "Audit service error occurred, contact support.",
-        //            innerException)
-        //    };
-        //}
 
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(DateTimeOffset dateTimeOffset)
         {

@@ -40,8 +40,53 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             actualException.Should().BeEquivalentTo(expectedDependencyException);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-              service.RetrieveAllIngestionTrackings(),
-                Times.Once);
+                service.RetrieveAllIngestionTrackings(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDependencyException))),
+                       Times.Once);
+
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(TppDependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnProcessIfDependencyExceptionOccursAndLogItAsync(
+          Xeption dependancyException)
+        {
+            // given
+            Models.Foundations.Documents.Document randomDocument = CreateRandomDocument();
+
+            var expectedDependencyException =
+                new TppOrchestrationDependencyException(
+                    message: "Tpp Orchestration dependency error occurred, fix the errors and try again.",
+                    innerException: dependancyException.InnerException as Xeption);
+
+
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+              service.RetrieveAllIngestionTrackings())
+                  .Throws(dependancyException);
+
+            // when
+            ValueTask<Guid> processTask = this.tppOrchestrationService.ProcessAsync(randomDocument);
+
+            TppOrchestrationDependencyException actualException =
+                await Assert.ThrowsAsync<TppOrchestrationDependencyException>(processTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedDependencyException);
+
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.RetrieveAllIngestionTrackings(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                broker.LogError(It.Is(SameExceptionAs(

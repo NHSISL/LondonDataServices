@@ -268,6 +268,48 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             };
         }
 
+        public static TheoryData TppDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new DocumentDependencyException(
+                    message: "Document dependency error occurred, contact support.",
+                    innerException),
+
+                new DocumentServiceException(
+                    message: "Document service error occurred, contact support.",
+                    innerException),
+
+                new DownloadDependencyException(
+                    message: "Download dependency error occurred, contact support.",
+                    innerException),
+
+                new DownloadServiceException(
+                    message: "Download service error occurred, contact support.",
+                    innerException),
+
+                new IngestionTrackingDependencyException(
+                    message: "Failed ingestion tracking storage error occurred, contact support.",
+                    innerException),
+
+                new IngestionTrackingServiceException(
+                    message: "Ingestion tracking service error occurred, contact support.",
+                    innerException),
+
+                new IngestionTrackingAuditDependencyException(
+                    message: "Audit dependency error occurred, contact support.",
+                    innerException),
+
+                new IngestionTrackingAuditServiceException(
+                    message: "Audit service error occurred, contact support.",
+                    innerException)
+            };
+        }
+
         private static Filler<IngestionTracking> CreateIngestionTrackingFiller(DateTimeOffset dateTimeOffset)
         {
             var filler = new Filler<IngestionTracking>();

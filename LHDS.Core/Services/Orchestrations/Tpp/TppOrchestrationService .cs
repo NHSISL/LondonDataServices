@@ -66,6 +66,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             {
                 //TODO: Validate Document and Document FileName
                 ValidateDocumentIsNotNull(document);
+                ValidateDocumentFileNameIsNotNull(document.FileName);
 
                 IngestionTracking? maybeIngestionTracking =
                     this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()

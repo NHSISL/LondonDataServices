@@ -18,22 +18,33 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             }
         }
 
+        private static void ValidateDocumentFileNameIsNotNull(string fileName)
+        {
+            Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));
+        }
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
+        };
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidArgumentTppOrchestrationException = new InvalidArgumentTppOrchestrationException(
+            var invalidArgumentException = new InvalidArgumentException(
                 message: "Invalid tpp orchestration argument(s), please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidArgumentTppOrchestrationException.UpsertDataList(
+                    invalidArgumentException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
 
-            invalidArgumentTppOrchestrationException.ThrowIfContainsErrors();
+            invalidArgumentException.ThrowIfContainsErrors();
         }
 
     }

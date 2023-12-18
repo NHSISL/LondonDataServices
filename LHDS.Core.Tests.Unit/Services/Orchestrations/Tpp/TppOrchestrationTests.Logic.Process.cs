@@ -107,6 +107,56 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             this.hashBrokerMock.VerifyNoOtherCalls();
         }
 
+
+        [Fact]
+        public async Task ShouldNotProcessExistingDocumentAsync()
+        {
+            // given
+            DateTimeOffset randomDateTime = GetRandomDateTimeOffset();
+            Models.Foundations.Documents.Document randomDocument = CreateRandomDocument();
+            string randomHash = GetRandomString(64);
+            randomDocument.SHA256Hash = randomHash;
+            int randomNumber = GetRandomNumber();
+
+            List<Models.Foundations.Documents.Document> randomDocuments = CreateRandomDocuments(randomNumber);
+            randomDocuments[randomNumber - 1].FileName = randomDocument.FileName;
+
+            List<IngestionTracking> randomIngestionTrackings =
+                CreateRandomIngestionTrackings(randomDateTime, randomDocuments);
+
+            IngestionTracking randomIngestionTracking = randomIngestionTrackings[randomNumber - 1];
+
+            this.dateTimeBrokerMock.Setup(broker =>
+               broker.GetCurrentDateTimeOffset())
+                   .Returns(randomDateTime);
+
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.RetrieveAllIngestionTrackings())
+                    .Returns(randomIngestionTrackings.AsQueryable());
+
+            // when
+            ValueTask<Guid> returnedGuid = this.tppOrchestrationService.ProcessAsync(randomDocument);
+
+            // then
+            this.dateTimeBrokerMock.Verify(broker =>
+               broker.GetCurrentDateTimeOffset(),
+                   Times.Never);
+
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.RetrieveAllIngestionTrackings(),
+                    Times.Once);
+
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+
+        }
+
         //DecryptedFileName =
         //    $"/{randonIngestionTracking..DataSet.DataSetName}" +
         //    $"/{retrievedDataSetSpecification.Id}" +

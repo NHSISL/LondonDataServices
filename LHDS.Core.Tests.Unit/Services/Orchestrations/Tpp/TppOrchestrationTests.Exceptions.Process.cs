@@ -4,7 +4,6 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
 using LHDS.Core.Models.Orchestrations.Tpp.Exceptions;
 using Moq;
 using Xeptions;
@@ -127,8 +126,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             // when
             ValueTask<Guid> processTask = this.tppOrchestrationService.ProcessAsync(randomDocument);
 
-            DownloadOrchestrationServiceException actualException =
-                await Assert.ThrowsAsync<DownloadOrchestrationServiceException>(processTask.AsTask);
+            TppOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<TppOrchestrationServiceException>(processTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedTppOrchestrationServiceException);

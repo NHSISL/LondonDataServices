@@ -100,6 +100,15 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             {
                 throw CreateAndLogDependencyException(auditServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedTppServiceException =
+                    new FailedTppOrchestrationServiceException(
+                        message: "Failed tpp orchestration service occurred, please contact support",
+                        exception);
+
+                throw CreateAndLogServiceException(failedTppServiceException);
+            }
         }
 
         private TppDocumentValidationException CreateAndLogValidationException(Xeption exception)
@@ -138,6 +147,20 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             this.loggingBroker.LogError(tppOrchestrationDependencyException);
 
             throw tppOrchestrationDependencyException;
+        }
+
+        private TppOrchestrationServiceException
+           CreateAndLogServiceException(Xeption exception)
+        {
+            var
+                tppOrchestrationServiceException =
+                new TppOrchestrationServiceException(
+                    message: "Tpp Orchestration service error occurred, contact support.",
+                    exception);
+
+            this.loggingBroker.LogError(tppOrchestrationServiceException);
+
+            throw tppOrchestrationServiceException;
         }
     }
 }

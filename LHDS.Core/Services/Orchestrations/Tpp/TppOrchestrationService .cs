@@ -71,7 +71,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
                         .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == document.FileName);
 
-                if (maybeIngestionTracking != null)
+                if (maybeIngestionTracking.DecryptedFileSha256Hash != document.SHA256Hash)
                 {
                     return maybeIngestionTracking.Id;
                 }

@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
 using LHDS.Core.Models.Orchestrations.Tpp.Exceptions;
 using Moq;
 using Xeptions;
@@ -101,5 +102,54 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnProcessIfServiceErrorOccursAndLogItAsync()
+        {
+            //Given
+            Models.Foundations.Documents.Document randomDocument = CreateRandomDocument();
+            var serviceException = new Exception();
+
+            var failedTppOrchestrationServiceException =
+                new FailedTppOrchestrationServiceException(
+                    message: "Failed tpp orchestration service occurred, please contact support",
+                    serviceException);
+
+            var expectedTppOrchestrationServiceException =
+                new TppOrchestrationServiceException(
+                    message: "Tpp Orchestration service error occurred, contact support.",
+                    failedTppOrchestrationServiceException);
+
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+              service.RetrieveAllIngestionTrackings())
+                  .Throws(serviceException);
+
+            // when
+            ValueTask<Guid> processTask = this.tppOrchestrationService.ProcessAsync(randomDocument);
+
+            DownloadOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<DownloadOrchestrationServiceException>(processTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedTppOrchestrationServiceException);
+
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.RetrieveAllIngestionTrackings(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedTppOrchestrationServiceException))),
+                        Times.Once);
+
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+        }
+
     }
 }

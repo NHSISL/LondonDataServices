@@ -49,7 +49,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                     .Returns(randomIngestionTrackings.AsQueryable());
 
             this.documentProcessingServiceMock.Setup(service =>
-                    service.AddDocumentAsync(randomDocument, landingConfiguration.DecryptedFolder))
+                service.AddDocumentAsync(
+                    It.Is(SameDocumentAs(randomDocument)),
+                    landingConfiguration.DecryptedFolder))
                         .ReturnsAsync(randomDocument.FileName);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
@@ -59,10 +61,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             IngestionTrackingAudit ingestionTrackingAudit = new IngestionTrackingAudit();
             ingestionTrackingAudit.Id = Guid.NewGuid();
             ingestionTrackingAudit.IngestionTrackingId = updatedIngestionTracking.Id;
-            ingestionTrackingAudit.Message = "Updated Hash";
+            ingestionTrackingAudit.Message = "Updated TPP Hash";
 
-            this.ingestionTrackingAuditServiceMock.Setup(service =>
-               service.ModifyIngestionTrackingAuditAsync(ingestionTrackingAudit))
+            this.ingestionTrackingProcessingAuditServiceMock.Setup(service =>
+               service.AddIngestionTrackingAuditAsync(ingestionTrackingAudit))
                    .ReturnsAsync(value: ingestionTrackingAudit);
 
             // when
@@ -75,30 +77,30 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
-                    Times.Once);
+                    Times.Never);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackings(),
                     Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.Is(SameDocumentAs(randomDocument)), It.IsAny<string>()),
+                service.AddDocumentAsync(
+                    It.Is(SameDocumentAs(randomDocument)),
+                    It.IsAny<string>()),
                     Times.Once);
 
-            this.ingestionTrackingAuditServiceMock.Verify(service =>
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+               service.ModifyIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
+                   Times.Once);
+
+            this.ingestionTrackingProcessingAuditServiceMock.Verify(service =>
                 service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
                     Times.Once);
-
-            this.documentProcessingServiceMock.Verify(service =>
-                    service.RemoveDocumentByFileNameAsync(
-                        storageIngestionTracking.DecryptedFileName,
-                        landingConfiguration.DecryptedFolder),
-                        Times.Once);
 
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.ingestionTrackingAuditServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

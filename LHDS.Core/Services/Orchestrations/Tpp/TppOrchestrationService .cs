@@ -61,30 +61,32 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             this.landingConfiguration = landingConfiguration;
         }
 
-        public async ValueTask<Guid> ProcessAsync(Document document)
-        {
-            //TODO: Validate Document FileName
-
-            IngestionTracking? maybeIngestionTracking =
-                this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
-                    .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == document.FileName);
-
-            document.SHA256Hash = this.hashBroker.GenerateSha256Hash(document.DocumentData);
-
-            await this.documentProcessingService.AddDocumentAsync(document, blobContainers.TppLanding);
-            maybeIngestionTracking.DecryptedFileSha256Hash = document.SHA256Hash;
-            await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);
-
-            IngestionTrackingAudit audit = new IngestionTrackingAudit
+        public async ValueTask<Guid> ProcessAsync(Document document) =>
+            await TryCatch(async () =>
             {
-                Id = this.identifierBroker.GetIdentifier(),
-                IngestionTrackingId = maybeIngestionTracking.Id,
-                Message = "Updated TPP Hash"
-            };
+                //TODO: Validate Document and Document FileName
+                ValidateDocumentIsNotNull(document);
 
-            await this.ingestionTrackingProcessingAuditService.AddIngestionTrackingAuditAsync(audit);
+                IngestionTracking? maybeIngestionTracking =
+                    this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
+                        .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == document.FileName);
 
-            return maybeIngestionTracking.Id;
-        }
+                document.SHA256Hash = this.hashBroker.GenerateSha256Hash(document.DocumentData);
+
+                await this.documentProcessingService.AddDocumentAsync(document, blobContainers.TppLanding);
+                maybeIngestionTracking.DecryptedFileSha256Hash = document.SHA256Hash;
+                await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);
+
+                IngestionTrackingAudit audit = new IngestionTrackingAudit
+                {
+                    Id = this.identifierBroker.GetIdentifier(),
+                    IngestionTrackingId = maybeIngestionTracking.Id,
+                    Message = "Updated TPP Hash"
+                };
+
+                await this.ingestionTrackingProcessingAuditService.AddIngestionTrackingAuditAsync(audit);
+
+                return maybeIngestionTracking.Id;
+            });
     }
 }

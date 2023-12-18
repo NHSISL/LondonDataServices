@@ -68,6 +68,38 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             {
                 throw CreateAndLogDependencyValidationException(auditDependencyValidationException);
             }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                throw CreateAndLogDependencyException(documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                throw CreateAndLogDependencyException(documentServiceException);
+            }
+            catch (DownloadDependencyException downloadDependencyException)
+            {
+                throw CreateAndLogDependencyException(downloadDependencyException);
+            }
+            catch (DownloadServiceException downloadServiceException)
+            {
+                throw CreateAndLogDependencyException(downloadServiceException);
+            }
+            catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
+            {
+                throw CreateAndLogDependencyException(ingestionTrackingDependencyException);
+            }
+            catch (IngestionTrackingServiceException ingestionTrackingServiceException)
+            {
+                throw CreateAndLogDependencyException(ingestionTrackingServiceException);
+            }
+            catch (IngestionTrackingAuditDependencyException auditDependencyException)
+            {
+                throw CreateAndLogDependencyException(auditDependencyException);
+            }
+            catch (IngestionTrackingAuditServiceException auditServiceException)
+            {
+                throw CreateAndLogDependencyException(auditServiceException);
+            }
         }
 
         private TppDocumentValidationException CreateAndLogValidationException(Xeption exception)
@@ -93,6 +125,19 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             this.loggingBroker.LogError(tppOrchestrationDependencyValidationException);
 
             return tppOrchestrationDependencyValidationException;
+        }
+
+        private TppOrchestrationDependencyException
+            CreateAndLogDependencyException(Xeption exception)
+        {
+            var tppOrchestrationDependencyException =
+                new TppOrchestrationDependencyException(
+                    message: "Tpp Orchestration dependency error occurred, fix the errors and try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(tppOrchestrationDependencyException);
+
+            throw tppOrchestrationDependencyException;
         }
     }
 }

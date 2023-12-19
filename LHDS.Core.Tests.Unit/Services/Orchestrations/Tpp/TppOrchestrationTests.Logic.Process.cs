@@ -184,7 +184,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                CreateRandomDataSetSpecifications(dataSet: randomDataSet);
 
             DataSetSpecification randomDataSetSpecification = randomDataSetSpecificationList.First();
-
             IngestionTracking randomIngestionTracking = randomIngestionTrackings[randomNumber - 1];
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();

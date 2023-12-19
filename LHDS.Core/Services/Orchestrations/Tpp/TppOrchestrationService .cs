@@ -69,7 +69,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                         .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == document.FileName);
 
                 string encryptedFileSha256Hash =
-                        this.hashBroker.GenerateSha256Hash(document.DocumentData);
+                    this.hashBroker.GenerateSha256Hash(document.DocumentData);
 
                 if (maybeIngestionTracking == null)
                 {

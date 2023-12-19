@@ -11,6 +11,7 @@ using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Orchestrations.TerminologyMedata;
+using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -25,6 +26,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
     {
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly Mock<OntologyBroker> ontologyBrokerMock;
+        private readonly ITerminologyArtifactService terminologyArtifactService;
         private readonly TerminologyMetadataConfiguration terminologyMetadataConfiguration;
         private readonly ITerminologyClient terminologyClient;
         private readonly DependencyBroker dependencyBroker;
@@ -53,6 +55,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
             serviceCollection.AddTerminologyClientForAcceptance(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
+            terminologyArtifactService = serviceProvider.GetService<ITerminologyArtifactService>();
             terminologyClient = serviceProvider.GetService<ITerminologyClient>();
         }
 

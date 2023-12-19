@@ -27,7 +27,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             {
                 throw CreateAndLogValidationException(nullTppDocumentException);
             }
-            catch (InvalidArgumentException invalidArgumentException)
+            catch (InvalidArgumentTppOrchestrationException invalidArgumentException)
             {
                 throw CreateAndLogValidationException(invalidArgumentException);
             }

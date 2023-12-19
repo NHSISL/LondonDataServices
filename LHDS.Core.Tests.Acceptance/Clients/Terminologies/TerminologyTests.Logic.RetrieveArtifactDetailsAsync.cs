@@ -12,6 +12,7 @@ using System.IO;
 using System.Reflection;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Documents;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
 {
@@ -23,33 +24,19 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
             // given
             DateTimeOffset randomDateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
             string assembly = Assembly.GetExecutingAssembly().Location;
+            TerminologyArtifact undownloadedTerminologyArtifact = CreateRandomUndownloadedTerminologyArtifact();
 
             string inputFilePath = Path.Combine(
                 Path.GetDirectoryName(assembly),
                 @"Resources/Clients/Terminology/AddressExtractions/ShouldRetrieveArtifactDetailsAsync.json");
 
-            string randomArtifactDetail;
-
-            using (StreamReader reader = new StreamReader(inputFilePath))
-            {
-                randomArtifactDetail = reader.ReadToEnd();
-            }
-
-            TerminologyArtifact undownloadedTerminologyArtifact = 
-                await this.terminologyArtifactProcessingService.GetNonDownloadedArtifactAsync();
+            string randomArtifactDetail = await File.ReadAllTextAsync(inputFilePath);
+            await this.terminologyArtifactService.AddTerminologyArtifactAsync(undownloadedTerminologyArtifact);
 
             this.ontologyBrokerMock.Setup(broker =>
                 broker.GetArtifactDetailsAsync(undownloadedTerminologyArtifact.FullUrl))
                     .ReturnsAsync(randomArtifactDetail);
-
-            byte[] outputArtifactDetailData = Encoding.UTF8.GetBytes(randomArtifactDetail);
-
-            Document artifactDetailDocument = new Document
-            {
-                FileName = $"{undownloadedTerminologyArtifact.ResourceType}/" +
-                    $"{undownloadedTerminologyArtifact.Name}.json",
-                DocumentData = outputArtifactDetailData
-            };
+           
 
             this.documentProcessingServiceMock.Setup(service =>
                 service.AddDocumentAsync(artifactDetailDocument, "Terminology"))

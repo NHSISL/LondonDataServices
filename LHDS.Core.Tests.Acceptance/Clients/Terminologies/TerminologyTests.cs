@@ -8,6 +8,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Ontologies;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Orchestrations.TerminologyMedata;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
@@ -79,6 +80,25 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(terminologyMetadata => terminologyMetadata.ResourceType).Use(resourceType)
                 .OnProperty(terminologyMetadata => terminologyMetadata.LastPoll).Use(lastPoll);
+
+            return filler;
+        }
+
+        private static TerminologyArtifact CreateRandomUndownloadedTerminologyArtifact() =>
+            CreateUndownloadedTerminologyArtifactFiller().Create();
+
+        private static Filler<TerminologyArtifact> CreateUndownloadedTerminologyArtifactFiller()
+        {
+            string user = Guid.NewGuid().ToString();
+            DateTimeOffset dateTimeOffset = DateTimeOffset.Now;
+            var filler = new Filler<TerminologyArtifact>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
+                .OnProperty(terminologyArtifact => terminologyArtifact.IsDownloaded).Use(false)
+                .OnProperty(terminologyArtifact => terminologyArtifact.CreatedBy).Use(user)
+                .OnProperty(terminologyArtifact => terminologyArtifact.UpdatedBy).Use(user);
 
             return filler;
         }

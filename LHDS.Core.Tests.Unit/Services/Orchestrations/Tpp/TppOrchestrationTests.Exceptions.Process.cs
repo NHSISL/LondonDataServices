@@ -27,8 +27,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                     dependancyValidationException.InnerException as Xeption);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-              service.RetrieveAllIngestionTrackings())
-                  .Throws(dependancyValidationException);
+                service.RetrieveAllIngestionTrackings())
+                    .Throws(dependancyValidationException);
 
             // when
             ValueTask<Guid> processTask = this.tppOrchestrationService.ProcessAsync(randomDocument);
@@ -71,8 +71,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                     innerException: dependancyException.InnerException as Xeption);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-              service.RetrieveAllIngestionTrackings())
-                  .Throws(dependancyException);
+                service.RetrieveAllIngestionTrackings())
+                    .Throws(dependancyException);
 
             // when
             ValueTask<Guid> processTask = this.tppOrchestrationService.ProcessAsync(randomDocument);
@@ -88,9 +88,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-               broker.LogError(It.Is(SameExceptionAs(
-                   expectedDependencyException))),
-                       Times.Once);
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDependencyException))),
+                        Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
@@ -119,8 +119,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                     failedTppOrchestrationServiceException);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-              service.RetrieveAllIngestionTrackings())
-                  .Throws(serviceException);
+                service.RetrieveAllIngestionTrackings())
+                    .Throws(serviceException);
 
             // when
             ValueTask<Guid> processTask = this.tppOrchestrationService.ProcessAsync(randomDocument);

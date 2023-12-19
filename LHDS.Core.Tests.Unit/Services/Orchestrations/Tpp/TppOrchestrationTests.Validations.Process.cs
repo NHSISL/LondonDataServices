@@ -24,15 +24,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                      message: "Document is Null");
 
             var expectedDocumentValidationException =
-               new TppDocumentValidationException(
-                   message: "TPP Document validation errors occured, please try again.",
-                   innerException: nullDocumentException);
+                new TppDocumentValidationException(
+                    message: "TPP Document validation errors occured, please try again.",
+                    innerException: nullDocumentException);
 
             // when
             ValueTask<Guid> returnedGuidTask = this.tppOrchestrationService.ProcessAsync(randonNullDocument);
 
             TppDocumentValidationException actualException =
-               await Assert.ThrowsAsync<TppDocumentValidationException>(returnedGuidTask.AsTask);
+                await Assert.ThrowsAsync<TppDocumentValidationException>(returnedGuidTask.AsTask);
 
             // then
             actualException.Should()

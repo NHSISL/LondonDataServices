@@ -275,15 +275,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
-                    Times.Never);
+                    Times.AtLeast(1));
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackings(),
                     Times.Once);
 
+            Models.Foundations.Documents.Document newDocument = new Models.Foundations.Documents.Document
+            {
+                DocumentData = randomDocument.DocumentData,
+                FileName = newIngestionTracking.EncryptedFileName
+            };
+
             this.documentProcessingServiceMock.Verify(service =>
                 service.AddDocumentAsync(
-                    It.Is(SameDocumentAs(randomDocument)),
+                    It.Is(SameDocumentAs(newDocument)),
                     It.IsAny<string>()),
                     Times.Once);
 

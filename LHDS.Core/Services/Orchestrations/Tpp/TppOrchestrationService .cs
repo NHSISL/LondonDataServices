@@ -10,6 +10,7 @@ using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
@@ -71,29 +72,109 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
                         .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == document.FileName);
 
-                if (maybeIngestionTracking.DecryptedFileSha256Hash != document.SHA256Hash)
+                if (maybeIngestionTracking == null)
                 {
-                    return maybeIngestionTracking.Id;
+                    var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+                    DataSetSpecification retrievedDataSetSpecification = await
+                        this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
+                            landingConfiguration.LandingSupplierId);
+
+                    string encryptedFileSha256Hash =
+                       this.hashBroker.GenerateSha256Hash(document.DocumentData);
+
+                    var filename = document.FileName.StartsWith('/')
+                                    ? document.FileName
+                                    : "/" + document.FileName;
+
+                    IngestionTracking newIngestionTracking =
+                        new IngestionTracking
+                        {
+                            Id = this.identifierBroker.GetIdentifier(),
+                            FileName = document.FileName,
+                            SupplierId = landingConfiguration.LandingSupplierId,
+                            EncryptedFileName = $"/{landingConfiguration.EncryptedFolder}{filename}",
+
+                            DecryptedFileName =
+                            $"/{landingConfiguration.DecryptedFolder}"
+                               + $"/{retrievedDataSetSpecification.DataSet.DataSetName}"
+                               + $"/{retrievedDataSetSpecification.Id}"
+                               + $"/{filename}",
+
+                            Decrypted = false,
+                            LastSeen = currentDateTime,
+                            FileDeleted = false,
+                            RecordCount = 0,
+                            EncryptedFileSize = 0,
+                            EncryptedFileSha256Hash = "Not Encrypted",
+                            DecryptedFileSize = 0,
+                            DecryptedFileSha256Hash = encryptedFileSha256Hash,
+                            CreatedBy = "System",
+                            CreatedDate = currentDateTime,
+                            UpdatedBy = "System",
+                            UpdatedDate = currentDateTime
+                        };
+
+                    Document newBlobDocument = new Document
+                    {
+                        DocumentData = document.DocumentData,
+                        FileName = newIngestionTracking.EncryptedFileName
+                    };
+
+                    await this.ingestionTrackingProcessingService.AddIngestionTrackingAsync(newIngestionTracking);
+                    await this.documentProcessingService.AddDocumentAsync(newBlobDocument, blobContainers.TppLanding);
+                    LogAudit(newIngestionTracking, "Landed");
+
+                    return newIngestionTracking.Id;
+
                 }
                 else
                 {
-                    document.SHA256Hash = this.hashBroker.GenerateSha256Hash(document.DocumentData);
-
-                    await this.documentProcessingService.AddDocumentAsync(document, blobContainers.TppLanding);
-                    maybeIngestionTracking.DecryptedFileSha256Hash = document.SHA256Hash;
-                    await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);
-
-                    IngestionTrackingAudit audit = new IngestionTrackingAudit
+                    if (maybeIngestionTracking.DecryptedFileSha256Hash != document.SHA256Hash)
                     {
-                        Id = this.identifierBroker.GetIdentifier(),
-                        IngestionTrackingId = maybeIngestionTracking.Id,
-                        Message = "Updated TPP Hash"
-                    };
+                        return maybeIngestionTracking.Id;
+                    }
+                    else
+                    {
+                        document.SHA256Hash = this.hashBroker.GenerateSha256Hash(document.DocumentData);
 
-                    await this.ingestionTrackingProcessingAuditService.AddIngestionTrackingAuditAsync(audit);
+                        await this.documentProcessingService.AddDocumentAsync(document, blobContainers.TppLanding);
+                        maybeIngestionTracking.DecryptedFileSha256Hash = document.SHA256Hash;
+                        await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);
 
-                    return maybeIngestionTracking.Id;
+                        IngestionTrackingAudit audit = new IngestionTrackingAudit
+                        {
+                            Id = this.identifierBroker.GetIdentifier(),
+                            IngestionTrackingId = maybeIngestionTracking.Id,
+                            Message = "Updated TPP Hash"
+                        };
+
+                        await this.ingestionTrackingProcessingAuditService.AddIngestionTrackingAuditAsync(audit);
+
+                        return maybeIngestionTracking.Id;
+                    }
                 }
             });
+
+        private void LogAudit(
+           IngestionTracking ingestionTracking,
+           string message)
+        {
+            var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+            IngestionTrackingAudit newAudit =
+                new IngestionTrackingAudit
+                {
+                    Id = Guid.NewGuid(),
+                    IngestionTrackingId = ingestionTracking.Id,
+                    Message = $"{message} document",
+                    CreatedBy = "TppOrchestrationService",
+                    CreatedDate = currentDateTime,
+                    UpdatedBy = "TppOrchestrationService",
+                    UpdatedDate = currentDateTime
+                };
+
+            this.ingestionTrackingProcessingAuditService.AddIngestionTrackingAuditAsync(newAudit);
+        }
     }
 }

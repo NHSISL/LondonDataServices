@@ -6,9 +6,9 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Orchestrations.Tpp.Exceptions
 {
-    public class InvalidArgumentException : Xeption
+    public class InvalidArgumentTppOrchestrationException : Xeption
     {
-        public InvalidArgumentException(string message)
+        public InvalidArgumentTppOrchestrationException(string message)
             : base(message)
         { }
     }

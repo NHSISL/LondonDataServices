@@ -6,12 +6,14 @@ using System;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Ontologies;
+using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Orchestrations.TerminologyMedata;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
+using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -25,9 +27,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
     public partial class TerminologyTests
     {
         private readonly IDateTimeBroker dateTimeBroker;
-        private readonly Mock<OntologyBroker> ontologyBrokerMock;
+        private readonly Mock<IOntologyBroker> ontologyBrokerMock;
         private readonly ITerminologyArtifactService terminologyArtifactService;
         private readonly TerminologyMetadataConfiguration terminologyMetadataConfiguration;
+        private readonly IDocumentProcessingService documentProcessingService;
         private readonly ITerminologyClient terminologyClient;
         private readonly DependencyBroker dependencyBroker;
 
@@ -41,7 +44,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
                 builder.AddConsole();
             });
 
-            Mock<IOntologyBroker> ontologyBrokerMock = new Mock<IOntologyBroker>();
+            this.ontologyBrokerMock = new Mock<IOntologyBroker>();
 
             terminologyMetadataConfiguration = new TerminologyMetadataConfiguration
             {
@@ -49,12 +52,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
                     "&_name=dm+dCOMBINATION_PACK_IND&_elements=name,title,url,version,status&_count=10"
             };
 
+            serviceCollection.AddTerminologyClientForAcceptance(this.dependencyBroker.Configuration);
+
             serviceCollection
                 .AddTransient<IOntologyBroker>(serviceProvider => ontologyBrokerMock.Object);
 
-            serviceCollection.AddTerminologyClientForAcceptance(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
             dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
+            documentProcessingService = serviceProvider.GetService<IDocumentProcessingService>();
             terminologyArtifactService = serviceProvider.GetService<ITerminologyArtifactService>();
             terminologyClient = serviceProvider.GetService<ITerminologyClient>();
         }

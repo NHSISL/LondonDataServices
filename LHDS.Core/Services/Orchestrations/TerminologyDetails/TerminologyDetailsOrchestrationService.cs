@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Processings.Documents;
@@ -22,20 +21,17 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
         private readonly IDocumentProcessingService documentProcessingService;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
-        private readonly BlobContainers blobContainers;
 
         public TerminologyDetailOrchestrationService(
             ITerminologyArtifactProcessingService terminologyArtifactProcessingService,
             IOntologyProcessingService ontologyProcessingService,
             IDocumentProcessingService documentProcessingService,
-            BlobContainers blobContainers,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker)
         {
             this.terminologyArtifactProcessingService = terminologyArtifactProcessingService;
             this.ontologyProcessingService = ontologyProcessingService;
             this.documentProcessingService = documentProcessingService;
-            this.blobContainers = blobContainers;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
         }

@@ -33,7 +33,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
         private readonly Mock<IDocumentProcessingService> documentProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
-        private readonly BlobContainers blobContainers;
         private readonly ITerminologyDetailOrchestrationService terminologyDetailOrchestrationService;
         private readonly ICompareLogic compareLogic;
 
@@ -50,18 +49,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                 terminologyArtifactProcessingService: terminologyArtifactProcessingServiceMock.Object,
                 ontologyProcessingService: ontologyProcessingServiceMock.Object,
                 documentProcessingService: documentProcessingServiceMock.Object,
-                blobContainers: this.blobContainers,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object);
-
-            blobContainers = new BlobContainers
-            {
-                EmisLanding = "emislanding",
-                Versioner = "versioner",
-                OptOut = "optout",
-                Pds = "pds",
-                Terminology = "terminology",
-            };
         }
 
         private static int GetRandomNumber() =>

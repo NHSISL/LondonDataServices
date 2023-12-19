@@ -2,16 +2,23 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
+using Azure.Core.Pipeline;
+using Azure.Identity;
+using Azure.Storage.Blobs;
 using Hl7.Fhir.Specification.Terminology;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Ontologies;
+using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Orchestrations.TerminologyMedata;
 using LHDS.Core.Providers.Downloads;
@@ -58,7 +65,7 @@ namespace LHDS.Core.Clients.Extensions
             AddServices(services);
             AddProcessingServices(services);
             AddOrchestrations(services);
-            AddClients(services);
+            AddClients(services, configuration);
 
             return services;
         }
@@ -77,6 +84,7 @@ namespace LHDS.Core.Clients.Extensions
 
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
+            services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<IHashBroker, HashBroker>();
@@ -85,6 +93,7 @@ namespace LHDS.Core.Clients.Extensions
                 configuration.GetSection("terminologyMetadataSettings").Get<TerminologyMetadataConfiguration>();
 
             ValidateTerminologyConfiguration(terminologyMetdataConfiguration);
+            services.AddTransient<TerminologyMetadataConfiguration>(_ => terminologyMetdataConfiguration);
         }
 
         private static void AddServices(IServiceCollection services)
@@ -109,13 +118,34 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ITerminologyMetadataOrchestrationService, TerminologyMetadataOrchestrationService>();
         }
 
-        private static void AddClients(IServiceCollection services)
+        private static void AddClients(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddTransient<ILandingClient, LandingClient>();
+            var blobStorageSettings = configuration
+                .GetSection("blobStorage").Get<BlobStorageSettings>();
+
+            var blobServiceClientOptions = new BlobClientOptions()
+            {
+                Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),
+                Retry = { NetworkTimeout = new TimeSpan(1, 0, 0) },
+                EnableTenantDiscovery = true
+            };
+
+            services.AddSingleton(
+                new BlobServiceClient(
+                    serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),
+                    credential: new DefaultAzureCredential(
+                        new DefaultAzureCredentialOptions
+                        {
+                            VisualStudioTenantId = blobStorageSettings.AzureTenantId,
+                        }),
+                    options: blobServiceClientOptions));
+
+            services.AddTransient<IAzureBlobClient, AzureBlobClient>();
+            services.AddTransient<ITerminologyClient, TerminologyClient>();
         }
 
         private static void ValidateTerminologyConfiguration(
-            TerminologyMetadataConfiguration terminologyMetadataConfiguration)
+            TerminologyMetadataConfiguration? terminologyMetadataConfiguration)
         {
             if (terminologyMetadataConfiguration == null)
             {

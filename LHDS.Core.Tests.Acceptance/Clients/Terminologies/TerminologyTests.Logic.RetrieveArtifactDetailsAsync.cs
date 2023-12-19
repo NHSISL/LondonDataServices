@@ -5,9 +5,11 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using Moq;
 using Xunit;
@@ -26,7 +28,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
 
             string inputFilePath = Path.Combine(
                 Path.GetDirectoryName(assembly),
-                @"Resources/Clients/Terminology/AddressExtractions/ShouldRetrieveArtifactDetailsAsync.json");
+                @"Resources/Clients/Terminology/ShouldRetrieveArtifactDetailsAsync.json");
 
             string randomArtifactDetail = await File.ReadAllTextAsync(inputFilePath);
             await this.terminologyArtifactService.AddTerminologyArtifactAsync(undownloadedTerminologyArtifact);
@@ -34,6 +36,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
             this.ontologyBrokerMock.Setup(broker =>
                 broker.GetArtifactDetailsAsync(undownloadedTerminologyArtifact.FullUrl))
                     .ReturnsAsync(randomArtifactDetail);
+
+            string fileName = $"{undownloadedTerminologyArtifact.ResourceType}/" +
+                $"{undownloadedTerminologyArtifact.Name}.json";
 
             // when
             await this.terminologyClient.RetrieveArtifactDetailsAsync();
@@ -43,10 +48,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
                 broker.GetArtifactDetailsAsync(undownloadedTerminologyArtifact.FullUrl),
                     Times.Once());
 
-            undownloadedTerminologyArtifact.IsDownloaded.Should().BeTrue();
-
             await this.terminologyArtifactService.
                 RemoveTerminologyArtifactByIdAsync(undownloadedTerminologyArtifact.Id);
+
+            await this.documentProcessingService.RemoveDocumentByFileNameAsync(fileName, "Terminology");
 
             this.ontologyBrokerMock.VerifyNoOtherCalls();
         }

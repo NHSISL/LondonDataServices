@@ -98,7 +98,6 @@ namespace LHDS.Core.Clients.Extensions
                 services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
                 services.AddTransient<IDownloadBroker, DownloadBroker>();
 
-
                 var blobServiceClientOptions = new BlobClientOptions()
                 {
                     Transport = new HttpClientTransport(new HttpClient { Timeout = new TimeSpan(1, 0, 0) }),

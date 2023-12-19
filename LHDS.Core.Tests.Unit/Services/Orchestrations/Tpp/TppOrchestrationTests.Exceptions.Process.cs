@@ -49,12 +49,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                        Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.hashBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -93,12 +93,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                         Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.hashBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -141,12 +141,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                         Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.hashBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

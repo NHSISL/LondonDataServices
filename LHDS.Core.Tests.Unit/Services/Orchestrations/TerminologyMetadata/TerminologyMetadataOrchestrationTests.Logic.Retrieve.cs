@@ -22,7 +22,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             Guid randomId = Guid.NewGuid();
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             string randomString = GetRandomString();
-            string resourceType = randomString;
+            string resourceType = "CodingSystem";
 
             TerminologyPoll retrievedTerminologyPoll =
                 CreateRandomTerminologyPoll(resourceType, lastPoll: randomDateTimeOffset.AddDays(-3));

@@ -10,6 +10,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Ontologies;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Orchestrations.TerminologyMedata;
@@ -69,6 +70,11 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration, bool acceptanceTest)
         {
+            if(!acceptanceTest) 
+            {
+                services.AddTransient<IOntologyBroker, OntologyBroker>();
+            }
+
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();

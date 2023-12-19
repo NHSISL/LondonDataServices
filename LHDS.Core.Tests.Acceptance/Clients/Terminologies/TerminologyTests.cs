@@ -3,30 +3,14 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Downloads;
-using LHDS.Core.Brokers.Storages.Blobs;
+using LHDS.Core.Brokers.Ontologies;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
-using LHDS.Core.Models.Brokers.Storages.Blobs;
-using LHDS.Core.Models.Foundations.DataSets;
-using LHDS.Core.Models.Foundations.DataSetSpecifications;
-using LHDS.Core.Models.Foundations.Documents;
-using LHDS.Core.Models.Foundations.IngestionTrackings;
-using LHDS.Core.Models.Foundations.Suppliers;
-using LHDS.Core.Models.Orchestrations.Downloads;
+using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Orchestrations.TerminologyMedata;
-using LHDS.Core.Services.Foundations.DataSets;
-using LHDS.Core.Services.Foundations.DataSetSpecifications;
-using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
-using LHDS.Core.Services.Foundations.IngestionTrackings;
-using LHDS.Core.Services.Foundations.Suppliers;
-using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -38,25 +22,15 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
     [Collection(nameof(CoreTestCollection))]
     public partial class TerminologyTests
     {
-        private readonly Mock<IBlobStorageBroker> blobStorageBrokerMock;
-        private readonly Mock<IDownloadBroker> downloadBrokerMock;
         private readonly IDateTimeBroker dateTimeBroker;
-        private readonly IIngestionTrackingService ingestionTrackingService;
-        private readonly IDataSetSpecificationService dataSetSpecificationService;
-        private readonly ISupplierService supplierService;
-        private readonly IDataSetService dataSetService;
-        private readonly IDataSetSpecificationProcessingService dataSetSpecificationProcessingService;
-        private readonly ILandingClient landingClient;
+        private readonly Mock<OntologyBroker> ontologyBrokerMock;
         private readonly TerminologyMetadataConfiguration terminologyMetadataConfiguration;
-        private readonly IIngestionTrackingAuditService auditService;
-
+        private readonly ITerminologyClient terminologyClient;
         private readonly DependencyBroker dependencyBroker;
 
-        public LandingTests(DependencyBroker dependencyBroker)
+        public TerminologyTests(DependencyBroker dependencyBroker)
         {
             this.dependencyBroker = dependencyBroker;
-            this.blobStorageBrokerMock = new Mock<IBlobStorageBroker>();
-            this.downloadBrokerMock = new Mock<IDownloadBroker>();
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddLogging(builder =>
@@ -64,49 +38,25 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
                 builder.AddConsole();
             });
 
-            var blobStorageSettings = dependencyBroker.Configuration
-                .GetSection("blobStorage").Get<BlobStorageSettings>();
+            Mock<IOntologyBroker> ontologyBrokerMock = new Mock<IOntologyBroker>();
 
-            serviceCollection.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
+            terminologyMetadataConfiguration = new TerminologyMetadataConfiguration
+            {
+                ResourceURL = "/authoring/fhir/{{resourceType}}?_lastUpdated=ge{{datestamp}}" +
+                    "&_name=dm+dCOMBINATION_PACK_IND&_elements=name,title,url,version,status&_count=10"
+            };
 
             serviceCollection
-                .AddTransient<IDownloadBroker>(serviceProvider => downloadBrokerMock.Object)
-                .AddTransient<IBlobStorageBroker>(serviceProvider => blobStorageBrokerMock.Object)
-                .AddTransient<ISupplierService, SupplierService>()
-                .AddTransient<IDataSetService, DataSetService>()
-                .AddTransient<IDataSetSpecificationService, DataSetSpecificationService>()
-                .AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
+                .AddTransient<IOntologyBroker>(serviceProvider => ontologyBrokerMock.Object);
 
-            serviceCollection.AddLandingClientForAcceptance(this.dependencyBroker.Configuration);
+            serviceCollection.AddTerminologyClientForAcceptance(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
-            this.ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
-            this.supplierService = serviceProvider.GetService<ISupplierService>();
-            this.dataSetService = serviceProvider.GetService<IDataSetService>();
-            this.dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
-
-            this.dataSetSpecificationProcessingService =
-                serviceProvider.GetService<IDataSetSpecificationProcessingService>();
-
-            this.auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
-            this.landingConfiguration = serviceProvider.GetService<LandingConfiguration>();
-            this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
-            landingClient = serviceProvider.GetService<ILandingClient>();
+            dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
+            terminologyClient = serviceProvider.GetService<ITerminologyClient>();
         }
 
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
-
-        private static string GetRandomFileName()
-        {
-            string filename = GetRandomString();
-
-            for (int i = 0; i < 6; i++)
-            {
-                filename = $"{filename}_{GetRandomString(10)}";
-            }
-
-            return filename;
-        }
 
         private static string GetRandomString(int length) =>
                new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
@@ -117,132 +67,18 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime().AddDays(7)).GetValue();
 
-        private static IngestionTracking CreateRandomIngestionTracking(
-           DateTimeOffset dateTimeOffset,
-           Document document,
-           Guid supplierId)
+        private static TerminologyPoll CreateRandomTerminologyPoll(string resourceType, DateTimeOffset lastPoll) =>
+            CreateTerminologyPollFiller(resourceType, lastPoll).Create();
+
+        private static Filler<TerminologyPoll> CreateTerminologyPollFiller(string resourceType, DateTimeOffset lastPoll)
         {
-            IngestionTracking ingestionTracking = CreateIngestionTrackingFiller(
-                dateTimeOffset,
-                fileName: document.FileName,
-                supplierId)
-                    .Create();
-
-            return ingestionTracking;
-        }
-
-        private async ValueTask<List<IngestionTracking>> CreateRandomIngestionTrackings(
-            DateTimeOffset dateTimeOffset,
-            List<Document> documents,
-            Guid supplierId)
-        {
-            List<IngestionTracking> items = new List<IngestionTracking>();
-
-            foreach (var document in documents)
-            {
-                var item = CreateIngestionTrackingFiller(
-                    dateTimeOffset,
-                    fileName: document.FileName,
-                    supplierId)
-                        .Create();
-
-                await this.ingestionTrackingService.AddIngestionTrackingAsync(item);
-                items.Add(item);
-            }
-
-            return items;
-        }
-
-        private static Filler<IngestionTracking> CreateIngestionTrackingFiller(
-            DateTimeOffset dateTimeOffset, string fileName, Guid supplierId)
-        {
-            string user = "System";
-            var filler = new Filler<IngestionTracking>();
-
-            filler.Setup()
-                .OnProperty(ingestionTracking => ingestionTracking.FileName).Use(fileName)
-                .OnProperty(ingestionTracking => ingestionTracking.CreatedBy).Use(user)
-                .OnProperty(ingestionTracking => ingestionTracking.UpdatedBy).Use(user)
-                .OnProperty(ingestionTracking => ingestionTracking.SupplierId).Use(supplierId)
-                .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
-
-            return filler;
-        }
-
-        private static Supplier CreateRandomSupplier(Guid supplierId, DateTimeOffset dateTimeOffset) =>
-            CreateSupplierFiller(supplierId, dateTimeOffset).Create();
-
-        private static Filler<Supplier> CreateSupplierFiller(Guid supplierId, DateTimeOffset dateTimeOffset)
-        {
-            string user = Guid.NewGuid().ToString();
-            var filler = new Filler<Supplier>();
+            DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow;
+            var filler = new Filler<TerminologyPoll>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
-                .OnType<DateTimeOffset?>().Use(dateTimeOffset)
-                .OnProperty(supplier => supplier.Id).Use(supplierId)
-                .OnProperty(supplier => supplier.CreatedBy).Use(user)
-                .OnProperty(supplier => supplier.UpdatedBy).Use(user)
-                .OnProperty(supplier => supplier.IngestionTrackings).IgnoreIt()
-                .OnProperty(supplier => supplier.DataSets).IgnoreIt();
-
-            return filler;
-        }
-
-        private static DataSet CreateRandomDataSet(Guid supplierId) =>
-            CreateDataSetFiller(supplierId).Create();
-
-        private static Filler<DataSet> CreateDataSetFiller(Guid supplierId)
-        {
-            string user = Guid.NewGuid().ToString();
-            var filler = new Filler<DataSet>();
-            var now = DateTimeOffset.UtcNow;
-
-            filler.Setup()
-                .OnType<DateTimeOffset>().Use(now)
-                .OnType<DateTimeOffset?>().Use(now)
-                .OnProperty(dataSet => dataSet.SupplierId).Use(supplierId)
-                .OnProperty(dataSet => dataSet.IsActive).Use(true)
-                .OnProperty(dataSet => dataSet.ActiveFrom).Use(now.AddDays(-2))
-                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(2))
-                .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
-                .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)
-                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()));
-
-            return filler;
-        }
-
-        private static DataSetSpecification CreateRandomDataSetSpecification(DataSet dataSet) =>
-            CreateDataSetSpecificationFiller(dataSet).Create();
-
-        private static Filler<DataSetSpecification> CreateDataSetSpecificationFiller(DataSet dataSet)
-        {
-            string user = GetRandomString(255);
-            var filler = new Filler<DataSetSpecification>();
-            var now = DateTimeOffset.UtcNow;
-
-            filler.Setup()
-                .OnType<DateTimeOffset>().Use(now)
-                .OnType<DateTimeOffset?>().Use(now)
-
-                .OnProperty(dataSetSpecification => dataSetSpecification.DataSetId).Use(dataSet.Id)
-                .OnProperty(dataSetSpecification => dataSetSpecification.DataSet).Use(dataSet)
-                .OnProperty(dataSetSpecification => dataSetSpecification.IsActive).Use(true)
-                .OnProperty(dataSetSpecification => dataSetSpecification.ActiveFrom).Use(now.AddDays(-2))
-                .OnProperty(dataSetSpecification => dataSetSpecification.ActiveTo).Use(now.AddDays(2))
-
-                .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.OurSpecificationVersion).Use(GetRandomString(10))
-
-                .OnProperty(dataSetSpecification =>
-                    dataSetSpecification.SupplierSpecificationVersion).Use(GetRandomString(10))
-
-                .OnProperty(dataSetSpecification => dataSetSpecification.PresededById).IgnoreIt()
-                .OnProperty(dataSetSpecification => dataSetSpecification.SupersededById).IgnoreIt()
-                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
-                .OnProperty(dataSetSpecification => dataSetSpecification.CreatedBy).Use(user)
-                .OnProperty(dataSetSpecification => dataSetSpecification.UpdatedBy).Use(user);
+                .OnProperty(terminologyMetadata => terminologyMetadata.ResourceType).Use(resourceType)
+                .OnProperty(terminologyMetadata => terminologyMetadata.LastPoll).Use(lastPoll);
 
             return filler;
         }

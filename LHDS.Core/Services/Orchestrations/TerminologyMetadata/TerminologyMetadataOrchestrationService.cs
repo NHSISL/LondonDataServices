@@ -62,15 +62,32 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
                 DateTimeOffset currentDateTimeOffset = 
                     this.dateTimeBroker.GetCurrentDateTimeOffset();
                     
-                await ProcessArtifacts(relativeUrl);
+                await ProcessArtifacts(relativeUrl, resourceType);
                 retrievedTerminologyPoll.LastPoll = currentDateTimeOffset;
                 await this.terminologyPollProcessingService.ModifyTerminologyPollAsync(retrievedTerminologyPoll);
             });
 
-        private async ValueTask ProcessArtifacts(string relativeUrl)
+        private async ValueTask ProcessArtifacts(string relativeUrl, string resourceType)
         {
-            OntologyAssets retrievedOntologyAssets =
-                await this.ontologyProcessingService.RetrieveAllCodingSystemsAsync(relativeUrl);
+            OntologyAssets retrievedOntologyAssets = new OntologyAssets();
+
+            switch (resourceType)
+            {
+                case "CodingSystem":
+                    retrievedOntologyAssets =
+                        await this.ontologyProcessingService.RetrieveAllCodingSystemsAsync(relativeUrl);
+                    break;
+
+                case "ValueSet":
+                    retrievedOntologyAssets =
+                        await this.ontologyProcessingService.RetrieveAllValueSetsAsync(relativeUrl);
+                    break;
+
+                case "ConceptMap":
+                    retrievedOntologyAssets =
+                        await this.ontologyProcessingService.RetrieveAllConceptMapsAsync(relativeUrl);
+                    break;
+            }
 
             foreach (var asset in retrievedOntologyAssets.Assets)
             {
@@ -100,7 +117,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
 
             if (!string.IsNullOrWhiteSpace(retrievedOntologyAssets.NextPage))
             {
-                await ProcessArtifacts(retrievedOntologyAssets.NextPage);
+                await ProcessArtifacts(retrievedOntologyAssets.NextPage, resourceType);
             }
         }
     }

@@ -16,7 +16,6 @@ using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
-using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
@@ -24,7 +23,6 @@ using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Services.Orchestrations.Tpp;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
-using LHDS.Core.Services.Processings.Downloads;
 using LHDS.Core.Services.Processings.IngestionTrackings;
 using Moq;
 using Tynamix.ObjectFiller;
@@ -38,7 +36,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
     {
         private readonly ITestOutputHelper output;
         private readonly Mock<IDocumentProcessingService> documentProcessingServiceMock;
-        private readonly Mock<IDownloadProcessingService> downloadProcessingServiceMock;
         private readonly Mock<IIngestionTrackingProcessingService> ingestionTrackingProcessingServiceMock;
         private readonly Mock<IIngestionTrackingAuditProcessingService> ingestionTrackingProcessingAuditServiceMock;
         private readonly Mock<IDataSetSpecificationProcessingService> dataSetSpecificationProcessingServiceMock;
@@ -55,7 +52,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
         {
             this.output = output;
             documentProcessingServiceMock = new Mock<IDocumentProcessingService>();
-            downloadProcessingServiceMock = new Mock<IDownloadProcessingService>();
             ingestionTrackingProcessingServiceMock = new Mock<IIngestionTrackingProcessingService>();
             ingestionTrackingProcessingAuditServiceMock = new Mock<IIngestionTrackingAuditProcessingService>();
             dataSetSpecificationProcessingServiceMock = new Mock<IDataSetSpecificationProcessingService>();
@@ -82,7 +78,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
 
             tppOrchestrationService = new TppOrchestrationService(
                 documentProcessingService: documentProcessingServiceMock.Object,
-                downloadProcessingService: downloadProcessingServiceMock.Object,
                 ingestionTrackingProcessingService: ingestionTrackingProcessingServiceMock.Object,
                 ingestionTrackingProcessingAuditService: ingestionTrackingProcessingAuditServiceMock.Object,
                 dataSetSpecificationProcessingService: dataSetSpecificationProcessingServiceMock.Object,
@@ -117,7 +112,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
 
             return filler;
         }
-
         private static string GetRandomString() =>
           new MnemonicString().GetValue();
 
@@ -143,6 +137,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
 
             return items;
         }
+
         private static IngestionTracking CreateRandomIngestionTracking(DateTimeOffset dateTimeOffset) =>
             CreateIngestionTrackingFiller(dateTimeOffset).Create();
 
@@ -242,14 +237,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                     message: "Document dependency validation occurred, please try again.",
                     innerException),
 
-                new DownloadValidationException(
-                    message: "Download validation errors occurred, please try again.",
-                    innerException),
-
-                new DownloadDependencyValidationException(
-                    message: "Download dependency validation occurred, please try again.",
-                    innerException),
-
                 new IngestionTrackingValidationException(
                     message: "Ingestion tracking validation errors occurred, fix the errors and try again.",
                     innerException),
@@ -282,14 +269,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
 
                 new DocumentServiceException(
                     message: "Document service error occurred, contact support.",
-                    innerException),
-
-                new DownloadDependencyException(
-                    message: "Download dependency error occurred, contact support.",
-                    innerException),
-
-                new DownloadServiceException(
-                    message: "Download service error occurred, contact support.",
                     innerException),
 
                 new IngestionTrackingDependencyException(

@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
 
             var expectedDocumentValidationException =
                new TppDocumentValidationException(
-                   message: "Tpp Document validation errors occured, please try again.",
+                   message: "TPP Document validation errors occured, please try again.",
                    innerException: nullDocumentException);
 
             // when
@@ -43,11 +43,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                     expectedDocumentValidationException))),
                         Times.Once);
 
-            this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
@@ -65,7 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
 
             var invalidArgumentException =
                 new InvalidArgumentException(
-                    message: "Invalid tpp orchestration argument(s), please correct the errors and try again.");
+                    message: "Invalid TPP orchestration argument(s), please correct the errors and try again.");
 
             invalidArgumentException.AddData(
                key: "FileName",
@@ -73,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
 
             var expectedTppOrchestrationValidationException =
                 new TppDocumentValidationException(
-                    message: "Tpp Document validation errors occured, please try again.",
+                    message: "TPP Document validation errors occured, please try again.",
                     innerException: invalidArgumentException);
 
             // when
@@ -91,11 +90,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                     expectedTppOrchestrationValidationException))),
                         Times.Once);
 
-            this.documentProcessingServiceMock.VerifyNoOtherCalls();
-            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();

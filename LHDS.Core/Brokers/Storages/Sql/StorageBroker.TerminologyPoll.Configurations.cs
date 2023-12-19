@@ -29,7 +29,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
             modelBuilder.Entity<TerminologyPoll>()
                 .Property(terminologyPoll => terminologyPoll.LastPoll)
-                .IsRequired(false);
+                .IsRequired(true);
 
             modelBuilder.Entity<TerminologyPoll>()
                 .Property(terminologyPoll => terminologyPoll.CreatedBy)

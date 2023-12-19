@@ -4,11 +4,11 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Orchestrations.Tpp.Exceptions
+namespace LHDS.Core.Models.Clients.TppLandingClient.Exceptions
 {
-    public class TppDocumentValidationException : Xeption
+    public class TppLandingClientDependencyException : Xeption
     {
-        public TppDocumentValidationException(string message, Xeption innerException)
+        public TppLandingClientDependencyException(string message, Xeption innerException)
             : base(message, innerException)
         { }
     }

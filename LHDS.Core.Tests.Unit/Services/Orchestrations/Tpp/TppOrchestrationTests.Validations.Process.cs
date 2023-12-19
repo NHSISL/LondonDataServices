@@ -24,15 +24,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                      message: "Document is Null");
 
             var expectedDocumentValidationException =
-                new TppDocumentValidationException(
-                    message: "TPP Document validation errors occured, please try again.",
+                new TppOrchestrationValidationException(
+                    message: "TPP Orchestration validation errors occured, please try again.",
                     innerException: nullDocumentException);
 
             // when
             ValueTask<Guid> returnedGuidTask = this.tppOrchestrationService.ProcessAsync(randonNullDocument);
 
-            TppDocumentValidationException actualException =
-                await Assert.ThrowsAsync<TppDocumentValidationException>(returnedGuidTask.AsTask);
+            TppOrchestrationValidationException actualException =
+                await Assert.ThrowsAsync<TppOrchestrationValidationException>(returnedGuidTask.AsTask);
 
             // then
             actualException.Should()
@@ -71,15 +71,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                values: "Text is required");
 
             var expectedTppOrchestrationValidationException =
-                new TppDocumentValidationException(
-                    message: "TPP Document validation errors occured, please try again.",
+                new TppOrchestrationValidationException(
+                    message: "TPP Orchestration validation errors occured, please try again.",
                     innerException: invalidArgumentException);
 
             // when
             ValueTask<Guid> returnedGuidTask = this.tppOrchestrationService.ProcessAsync(randomDocument);
 
-            TppDocumentValidationException actualException =
-               await Assert.ThrowsAsync<TppDocumentValidationException>(returnedGuidTask.AsTask);
+            TppOrchestrationValidationException actualException =
+               await Assert.ThrowsAsync<TppOrchestrationValidationException>(returnedGuidTask.AsTask);
 
             // then
             actualException.Should()

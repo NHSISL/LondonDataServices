@@ -68,7 +68,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             landingConfiguration = new LandingConfiguration
             {
                 LandingSupplierId = Guid.NewGuid(),
-                DecryptedFolder = ""
+                DecryptedFolder = "inbox/landings"
             };
 
             blobContainers = new BlobContainers
@@ -77,7 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                 Versioner = "versioner",
                 OptOut = "optout",
                 Pds = "pds",
-                TppLanding = "tpp"
+                TppLanding = "tpplanding"
             };
 
             tppOrchestrationService = new TppOrchestrationService(

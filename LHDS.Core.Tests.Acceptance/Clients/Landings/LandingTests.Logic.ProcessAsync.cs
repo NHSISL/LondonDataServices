@@ -55,7 +55,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             await this.dataSetSpecificationProcessingService.AddDataSetSpecificationAsync(activeDataSetSpecification);
 
             DataSetSpecification retrievedDataSetSpecification =
-               await this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(supplierId);
+                await this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(supplierId);
 
             //When
             var actualStringList = await this.landingClient.ProcessAsync();
@@ -81,7 +81,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 actualFile.Should().BeEquivalentTo(expectedFile);
 
                 IngestionTracking ingestionTracking = this.ingestionTrackingService.RetrieveAllIngestionTrackings()
-                        .FirstOrDefault(ingestionTracking => ingestionTracking.DecryptedFileName == actualFile);
+                    .FirstOrDefault(ingestionTracking => ingestionTracking.DecryptedFileName == actualFile);
 
                 ingestionTracking.Should().NotBeNull();
 

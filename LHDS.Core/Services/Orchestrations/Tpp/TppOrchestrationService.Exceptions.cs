@@ -5,7 +5,6 @@
 using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
-using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Foundations.Tpp.Exceptions;
@@ -44,14 +43,14 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             {
                 throw CreateAndLogDependencyValidationException(documentDependencyValidationException);
             }
-            catch (DownloadValidationException downloadValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(downloadValidationException);
-            }
-            catch (DownloadDependencyValidationException downloadDependencyValidationException)
-            {
-                throw CreateAndLogDependencyValidationException(downloadDependencyValidationException);
-            }
+            //catch (DownloadValidationException downloadValidationException)
+            //{
+            //    throw CreateAndLogDependencyValidationException(downloadValidationException);
+            //}
+            //catch (DownloadDependencyValidationException downloadDependencyValidationException)
+            //{
+            //    throw CreateAndLogDependencyValidationException(downloadDependencyValidationException);
+            //}
             catch (IngestionTrackingValidationException ingestionTrackingValidationException)
             {
                 throw CreateAndLogDependencyValidationException(ingestionTrackingValidationException);
@@ -76,14 +75,14 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             {
                 throw CreateAndLogDependencyException(documentServiceException);
             }
-            catch (DownloadDependencyException downloadDependencyException)
-            {
-                throw CreateAndLogDependencyException(downloadDependencyException);
-            }
-            catch (DownloadServiceException downloadServiceException)
-            {
-                throw CreateAndLogDependencyException(downloadServiceException);
-            }
+            //catch (DownloadDependencyException downloadDependencyException)
+            //{
+            //    throw CreateAndLogDependencyException(downloadDependencyException);
+            //}
+            //catch (DownloadServiceException downloadServiceException)
+            //{
+            //    throw CreateAndLogDependencyException(downloadServiceException);
+            //}
             catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
             {
                 throw CreateAndLogDependencyException(ingestionTrackingDependencyException);
@@ -104,7 +103,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             {
                 var failedTppServiceException =
                     new FailedTppOrchestrationServiceException(
-                        message: "Failed tpp orchestration service occurred, please contact support",
+                        message: "Failed TPP orchestration service occurred, please contact support",
                         exception);
 
                 throw CreateAndLogServiceException(failedTppServiceException);
@@ -115,7 +114,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
         {
             var tppDocumentValidationExceptionn =
                 new TppDocumentValidationException(
-                    message: "Tpp Document validation errors occured, please try again.",
+                    message: "TPP Document validation errors occured, please try again.",
                     innerException: exception);
 
             this.loggingBroker.LogError(tppDocumentValidationExceptionn);
@@ -128,7 +127,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
         {
             var tppOrchestrationDependencyValidationException =
                 new TppOrchestrationDependencyValidationException(
-                    message: "Tpp Orchestration dependency validation error occurred, fix the errors and try again.",
+                    message: "TPP Orchestration dependency validation error occurred, fix the errors and try again.",
                     exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(tppOrchestrationDependencyValidationException);
@@ -141,7 +140,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
         {
             var tppOrchestrationDependencyException =
                 new TppOrchestrationDependencyException(
-                    message: "Tpp Orchestration dependency error occurred, fix the errors and try again.",
+                    message: "TPP Orchestration dependency error occurred, fix the errors and try again.",
                     innerException: exception.InnerException as Xeption);
 
             this.loggingBroker.LogError(tppOrchestrationDependencyException);
@@ -155,7 +154,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             var
                 tppOrchestrationServiceException =
                 new TppOrchestrationServiceException(
-                    message: "Tpp Orchestration service error occurred, contact support.",
+                    message: "TPP Orchestration service error occurred, contact support.",
                     exception);
 
             this.loggingBroker.LogError(tppOrchestrationServiceException);

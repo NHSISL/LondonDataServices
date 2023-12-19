@@ -18,10 +18,8 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             }
         }
 
-        private static void ValidateDocumentFileNameIsNotNull(string fileName)
-        {
+        private static void ValidateDocumentFileNameIsNotNull(string fileName) =>
             Validate((Rule: IsInvalid(fileName), Parameter: "FileName"));
-        }
 
         private static dynamic IsInvalid(string text) => new
         {
@@ -32,7 +30,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidArgumentException = new InvalidArgumentException(
-                message: "Invalid tpp orchestration argument(s), please correct the errors and try again.");
+                message: "Invalid TPP orchestration argument(s), please correct the errors and try again.");
 
             foreach ((dynamic rule, string parameter) in validations)
             {

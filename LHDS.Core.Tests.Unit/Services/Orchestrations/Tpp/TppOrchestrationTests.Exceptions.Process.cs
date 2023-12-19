@@ -18,12 +18,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
         public async Task ShouldThrowDependencyValidationOnProcessIfDependencyValidationOccursAndLogItAsync(
              Xeption dependancyValidationException)
         {
+            // given
             Models.Foundations.Documents.Document randomDocument = CreateRandomDocument();
 
-            // given
             var expectedDependencyException =
                 new TppOrchestrationDependencyValidationException(
-                    message: "Tpp Orchestration dependency validation error occurred, fix the errors and try again.",
+                    message: "TPP Orchestration dependency validation error occurred, fix the errors and try again.",
                     dependancyValidationException.InnerException as Xeption);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
@@ -48,12 +48,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                     expectedDependencyException))),
                        Times.Once);
 
-            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -67,9 +67,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
 
             var expectedDependencyException =
                 new TppOrchestrationDependencyException(
-                    message: "Tpp Orchestration dependency error occurred, fix the errors and try again.",
+                    message: "TPP Orchestration dependency error occurred, fix the errors and try again.",
                     innerException: dependancyException.InnerException as Xeption);
-
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
               service.RetrieveAllIngestionTrackings())
@@ -93,12 +92,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                    expectedDependencyException))),
                        Times.Once);
 
-            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -111,12 +110,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
 
             var failedTppOrchestrationServiceException =
                 new FailedTppOrchestrationServiceException(
-                    message: "Failed tpp orchestration service occurred, please contact support",
+                    message: "Failed TPP orchestration service occurred, please contact support",
                     serviceException);
 
             var expectedTppOrchestrationServiceException =
                 new TppOrchestrationServiceException(
-                    message: "Tpp Orchestration service error occurred, contact support.",
+                    message: "TPP Orchestration service error occurred, contact support.",
                     failedTppOrchestrationServiceException);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
@@ -141,12 +140,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                     expectedTppOrchestrationServiceException))),
                         Times.Once);
 
-            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
         }
 

@@ -63,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             randomDocument.FileName = invalidText;
 
             var invalidArgumentException =
-                new InvalidArgumentException(
+                new InvalidArgumentTppOrchestrationException(
                     message: "Invalid TPP orchestration argument(s), please correct the errors and try again.");
 
             invalidArgumentException.AddData(

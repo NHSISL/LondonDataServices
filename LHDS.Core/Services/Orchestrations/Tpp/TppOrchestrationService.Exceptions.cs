@@ -43,14 +43,6 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             {
                 throw CreateAndLogDependencyValidationException(documentDependencyValidationException);
             }
-            //catch (DownloadValidationException downloadValidationException)
-            //{
-            //    throw CreateAndLogDependencyValidationException(downloadValidationException);
-            //}
-            //catch (DownloadDependencyValidationException downloadDependencyValidationException)
-            //{
-            //    throw CreateAndLogDependencyValidationException(downloadDependencyValidationException);
-            //}
             catch (IngestionTrackingValidationException ingestionTrackingValidationException)
             {
                 throw CreateAndLogDependencyValidationException(ingestionTrackingValidationException);
@@ -75,14 +67,6 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             {
                 throw CreateAndLogDependencyException(documentServiceException);
             }
-            //catch (DownloadDependencyException downloadDependencyException)
-            //{
-            //    throw CreateAndLogDependencyException(downloadDependencyException);
-            //}
-            //catch (DownloadServiceException downloadServiceException)
-            //{
-            //    throw CreateAndLogDependencyException(downloadServiceException);
-            //}
             catch (IngestionTrackingDependencyException ingestionTrackingDependencyException)
             {
                 throw CreateAndLogDependencyException(ingestionTrackingDependencyException);

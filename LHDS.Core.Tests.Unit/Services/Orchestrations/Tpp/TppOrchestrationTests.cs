@@ -118,9 +118,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
         private static string GetRandomString(int length) =>
             new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
-        private static string GetRandomMessage() =>
-           new MnemonicString(wordCount: GetRandomNumber()).GetValue();
-
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 

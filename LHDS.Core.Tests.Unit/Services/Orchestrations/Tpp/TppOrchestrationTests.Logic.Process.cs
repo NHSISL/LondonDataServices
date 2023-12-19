@@ -53,8 +53,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             this.documentProcessingServiceMock.Setup(service =>
                 service.AddDocumentAsync(
                     It.Is(SameDocumentAs(randomDocument)),
-                    landingConfiguration.DecryptedFolder))
-                        .ReturnsAsync(randomDocument.FileName);
+                        landingConfiguration.DecryptedFolder))
+                            .ReturnsAsync(randomDocument.FileName);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.ModifyIngestionTrackingAsync(updatedIngestionTracking))
@@ -66,16 +66,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             ingestionTrackingAudit.Message = "Updated TPP Hash";
 
             this.ingestionTrackingProcessingAuditServiceMock.Setup(service =>
-               service.AddIngestionTrackingAuditAsync(ingestionTrackingAudit))
-                   .ReturnsAsync(value: ingestionTrackingAudit);
+                service.AddIngestionTrackingAuditAsync(ingestionTrackingAudit))
+                    .ReturnsAsync(value: ingestionTrackingAudit);
 
             // when
             ValueTask<Guid> returnedGuid = this.tppOrchestrationService.ProcessAsync(randomDocument);
 
             // then
             this.hashBrokerMock.Verify(broker =>
-               broker.GenerateSha256Hash(randomDocument.DocumentData),
-                   Times.Once);
+                broker.GenerateSha256Hash(randomDocument.DocumentData),
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -92,8 +92,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                     Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-               service.ModifyIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
-                   Times.Once);
+                service.ModifyIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
+                    Times.Once);
 
             this.ingestionTrackingProcessingAuditServiceMock.Verify(service =>
                 service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
@@ -129,7 +129,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             randomIngestionTracking.DecryptedFileSha256Hash = randomHash;
 
             this.dateTimeBrokerMock.Setup(broker =>
-               broker.GetCurrentDateTimeOffset())
+                broker.GetCurrentDateTimeOffset())
                    .Returns(randomDateTime);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
@@ -141,12 +141,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
 
             // then
             this.dateTimeBrokerMock.Verify(broker =>
-               broker.GetCurrentDateTimeOffset(),
-                   Times.Never);
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Never);
 
             this.hashBrokerMock.Verify(broker =>
-               broker.GenerateSha256Hash(randomDocument.DocumentData),
-                   Times.Never);
+                broker.GenerateSha256Hash(randomDocument.DocumentData),
+                    Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackings(),
@@ -188,7 +188,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             IngestionTracking randomIngestionTracking = randomIngestionTrackings[randomNumber - 1];
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
-            //updatedIngestionTracking.DecryptedFileSha256Hash = randomDocument.SHA256Hash;
 
             this.hashBrokerMock.Setup(broker =>
                 broker.GenerateSha256Hash(randomDocument.DocumentData))
@@ -220,10 +219,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                        EncryptedFileName = null,
 
                        DecryptedFileName =
-                       $"/{landingConfiguration.DecryptedFolder}"
-                           + $"/{randomDataSet.DataSetName}"
-                           + $"/{randomDataSetSpecification.Id}"
-                           + $"/{filename}",
+                            $"/{landingConfiguration.DecryptedFolder}"
+                            + $"/{randomDataSet.DataSetName}"
+                            + $"/{randomDataSetSpecification.Id}"
+                            + $"/{filename}",
 
                        Decrypted = false,
                        LastSeen = randomDateTime,
@@ -242,7 +241,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             IngestionTracking savedIngestionTracking = newIngestionTracking.DeepClone();
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                   service.AddIngestionTrackingAsync(newIngestionTracking))
+                    service.AddIngestionTrackingAsync(newIngestionTracking))
                        .ReturnsAsync(storageIngestionTracking);
 
             Models.Foundations.Documents.Document newBlobDocument = new Models.Foundations.Documents.Document
@@ -252,10 +251,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             };
 
             this.documentProcessingServiceMock.Setup(service =>
-               service.AddDocumentAsync(
-                   It.Is(SameDocumentAs(newBlobDocument)),
-                   landingConfiguration.DecryptedFolder))
-                       .ReturnsAsync(savedIngestionTracking.FileName);
+                service.AddDocumentAsync(
+                    It.Is(SameDocumentAs(newBlobDocument)),
+                        landingConfiguration.DecryptedFolder))
+                            .ReturnsAsync(savedIngestionTracking.FileName);
 
             IngestionTrackingAudit ingestionTrackingAudit = new IngestionTrackingAudit();
             ingestionTrackingAudit.Id = Guid.NewGuid();
@@ -263,16 +262,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             ingestionTrackingAudit.Message = "Updated TPP Hash";
 
             this.ingestionTrackingProcessingAuditServiceMock.Setup(service =>
-               service.AddIngestionTrackingAuditAsync(ingestionTrackingAudit))
-                   .ReturnsAsync(value: ingestionTrackingAudit);
+                service.AddIngestionTrackingAuditAsync(ingestionTrackingAudit))
+                    .ReturnsAsync(value: ingestionTrackingAudit);
 
             // when
             ValueTask<Guid> returnedGuid = this.tppOrchestrationService.ProcessAsync(randomDocument);
 
             // then
             this.hashBrokerMock.Verify(broker =>
-               broker.GenerateSha256Hash(randomDocument.DocumentData),
-                   Times.Once);
+                broker.GenerateSha256Hash(randomDocument.DocumentData),
+                    Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -283,12 +282,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                     Times.Once);
 
             this.dataSetSpecificationProcessingServiceMock.Verify(service =>
-                   service.GetActiveDataSetSpecification(supplierId),
-                       Times.Once);
+                service.GetActiveDataSetSpecification(supplierId),
+                    Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
-               service.AddIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
-                   Times.Once);
+                service.AddIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
+                    Times.Once);
 
             Models.Foundations.Documents.Document newDocument = new Models.Foundations.Documents.Document
             {

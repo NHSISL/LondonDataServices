@@ -24,7 +24,6 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
     public partial class TppOrchestrationService : ITppOrchestrationService
     {
         private readonly IDocumentProcessingService documentProcessingService;
-        //private readonly IDownloadProcessingService downloadProcessingService;
         private readonly IIngestionTrackingProcessingService ingestionTrackingProcessingService;
         private readonly IIngestionTrackingAuditProcessingService ingestionTrackingProcessingAuditService;
         private readonly BlobContainers blobContainers;
@@ -37,7 +36,6 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
 
         public TppOrchestrationService(
             IDocumentProcessingService documentProcessingService,
-            //IDownloadProcessingService downloadProcessingService,
             IIngestionTrackingProcessingService ingestionTrackingProcessingService,
             IIngestionTrackingAuditProcessingService ingestionTrackingProcessingAuditService,
             IDataSetSpecificationProcessingService dataSetSpecificationProcessingService,
@@ -49,7 +47,6 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             LandingConfiguration landingConfiguration)
         {
             this.documentProcessingService = documentProcessingService;
-            //this.downloadProcessingService = downloadProcessingService;
             this.ingestionTrackingProcessingService = ingestionTrackingProcessingService;
             this.ingestionTrackingProcessingAuditService = ingestionTrackingProcessingAuditService;
             this.dataSetSpecificationProcessingService = dataSetSpecificationProcessingService;
@@ -71,6 +68,9 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     this.ingestionTrackingProcessingService.RetrieveAllIngestionTrackings()
                         .FirstOrDefault(ingestionTracking => ingestionTracking.FileName == document.FileName);
 
+                string encryptedFileSha256Hash =
+                        this.hashBroker.GenerateSha256Hash(document.DocumentData);
+
                 if (maybeIngestionTracking == null)
                 {
                     var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
@@ -78,9 +78,6 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     DataSetSpecification retrievedDataSetSpecification = await
                         this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
                             landingConfiguration.LandingSupplierId);
-
-                    string encryptedFileSha256Hash =
-                        this.hashBroker.GenerateSha256Hash(document.DocumentData);
 
                     var filename = document.FileName.StartsWith('/')
                         ? document.FileName
@@ -134,7 +131,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     }
                     else
                     {
-                        document.SHA256Hash = this.hashBroker.GenerateSha256Hash(document.DocumentData);
+                        document.SHA256Hash = encryptedFileSha256Hash;
                         await this.documentProcessingService.AddDocumentAsync(document, blobContainers.TppLanding);
                         maybeIngestionTracking.DecryptedFileSha256Hash = document.SHA256Hash;
                         await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);

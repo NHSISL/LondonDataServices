@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
@@ -62,32 +63,66 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
         }
 
         [Fact]
-        public async Task ShouldProcessExistingDocumentAndUpdateHashAsync()
+        public async Task ShouldNotProcessExistingDocumentAsync()
         {
             //Given
-            // Get Random Document
-            //Models.Foundations.Documents.Document randomDocument = CreateRandomDocument();
+            DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            Document randomDocument = CreateRandomDocument();
 
+            // Add Document
+            string fileName = GetRandomFileName();
+            byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
 
-            // Create Documents
-            // Create a few records in IngestionTracking
+            Guid supplierId = landingConfiguration.LandingSupplierId;
+            Supplier landingSupplier = CreateRandomSupplier(supplierId, randomDateTime);
+            await this.supplierService.AddSupplierAsync(landingSupplier);
 
-            // Populate 1 of those records with Same SHA
+            DataSet activeDataSet = CreateRandomDataSet(supplierId);
+            DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
 
-            // Retrieve All
+            await this.supplierService.AddSupplierAsync(landingSupplier);
+            await this.dataSetService.AddDataSetAsync(activeDataSet);
+            await this.dataSetSpecificationProcessingService.AddDataSetSpecificationAsync(activeDataSetSpecification);
+
+            Document document = new Document
+            {
+                DocumentData = documentData,
+                FileName = fileName
+            };
+
+            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTime, document, supplierId);
+            randomIngestionTracking.FileName = randomDocument.FileName;
+            randomIngestionTracking.DecryptedFileSha256Hash = randomDocument.SHA256Hash;
+            await this.ingestionTrackingService.AddIngestionTrackingAsync(randomIngestionTracking);
 
             //When
-            //Guid actualGuid = await this.tppLandingClient.ProcessAsync(randomDocument)
+            Guid actualGuid = await this.tppLandingClient.ProcessAsync(randomDocument);
 
             //Then
+            IngestionTracking ingestionTracking =
+               await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
 
-            //use guid to lookup ingestion
-            //asset filename match and hash
-            // use guid delete all audits
-            // use guid delete ingestion
+            Assert.Equal(randomDocument.SHA256Hash, ingestionTracking.DecryptedFileSha256Hash);
 
-            // read bytes and match
-            // delete document
+            var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
+                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+
+            foreach (var audit in audits)
+            {
+                await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
+            }
+
+            await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+
+            await this.dataSetSpecificationProcessingService
+                .RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
+
+            await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
+            await this.supplierService.RemoveSupplierByIdAsync(landingSupplier.Id);
+
+            await this.documentProcessingService.RemoveDocumentByFileNameAsync(
+                randomDocument.FileName,
+                blobContainers.TppLanding);
 
         }
     }

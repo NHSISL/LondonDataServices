@@ -47,6 +47,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
         private readonly IDocumentProcessingService documentProcessingService;
         private readonly ITppLandingClient tppLandingClient;
         private readonly LandingConfiguration landingConfiguration;
+        private readonly BlobContainers blobContainers;
         private readonly IIngestionTrackingAuditService ingestionTrackingAuditService;
 
         private readonly DependencyBroker dependencyBroker;
@@ -88,6 +89,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             this.documentProcessingService = serviceProvider.GetService<IDocumentProcessingService>();
             this.ingestionTrackingAuditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
             this.landingConfiguration = serviceProvider.GetService<LandingConfiguration>();
+            this.blobContainers = serviceProvider.GetService<BlobContainers>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             tppLandingClient = serviceProvider.GetService<ITppLandingClient>();
         }

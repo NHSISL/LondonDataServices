@@ -89,7 +89,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                             Id = this.identifierBroker.GetIdentifier(),
                             FileName = document.FileName,
                             SupplierId = landingConfiguration.LandingSupplierId,
-                            EncryptedFileName = null,
+                            EncryptedFileName = "Not Encrypted",
 
                             DecryptedFileName =
                                 $"/{landingConfiguration.DecryptedFolder}"
@@ -97,24 +97,24 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                                 + $"/{retrievedDataSetSpecification.Id}"
                                 + $"/{filename}",
 
-                            Decrypted = false,
+                            Decrypted = true,
                             LastSeen = currentDateTime,
                             FileDeleted = false,
                             RecordCount = 0,
                             EncryptedFileSize = 0,
-                            EncryptedFileSha256Hash = "",
+                            EncryptedFileSha256Hash = "Not Encrypted",
                             DecryptedFileSize = 0,
                             DecryptedFileSha256Hash = encryptedFileSha256Hash,
                             CreatedBy = "System",
                             CreatedDate = currentDateTime,
                             UpdatedBy = "System",
-                            UpdatedDate = currentDateTime
+                            UpdatedDate = currentDateTime,
                         };
 
                     Document newBlobDocument = new Document
                     {
                         DocumentData = document.DocumentData,
-                        FileName = newIngestionTracking.EncryptedFileName
+                        FileName = newIngestionTracking.DecryptedFileName
                     };
 
                     await this.ingestionTrackingProcessingService.AddIngestionTrackingAsync(newIngestionTracking);

@@ -123,7 +123,68 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(
                 randomDocument.FileName,
                 blobContainers.TppLanding);
+        }
 
+        [Fact]
+        public async Task ShouldProcessExistingDocumentAndUpdateHashAsync()
+        {
+            //Given
+            DateTimeOffset randomDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            Document randomDocument = CreateRandomDocument();
+
+            // Add Document
+            string fileName = GetRandomFileName();
+            byte[] documentData = Encoding.UTF8.GetBytes(GetRandomString());
+
+            Guid supplierId = landingConfiguration.LandingSupplierId;
+            Supplier landingSupplier = CreateRandomSupplier(supplierId, randomDateTime);
+            await this.supplierService.AddSupplierAsync(landingSupplier);
+
+            DataSet activeDataSet = CreateRandomDataSet(supplierId);
+            DataSetSpecification activeDataSetSpecification = CreateRandomDataSetSpecification(activeDataSet);
+
+            await this.supplierService.AddSupplierAsync(landingSupplier);
+            await this.dataSetService.AddDataSetAsync(activeDataSet);
+            await this.dataSetSpecificationProcessingService.AddDataSetSpecificationAsync(activeDataSetSpecification);
+
+            Document document = new Document
+            {
+                DocumentData = documentData,
+                FileName = fileName
+            };
+
+            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTime, document, supplierId);
+            randomIngestionTracking.FileName = randomDocument.FileName;
+            await this.ingestionTrackingService.AddIngestionTrackingAsync(randomIngestionTracking);
+
+            //When
+            Guid actualGuid = await this.tppLandingClient.ProcessAsync(randomDocument);
+
+            //Then
+            IngestionTracking ingestionTracking =
+               await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
+
+            Assert.NotEqual(randomDocument.SHA256Hash, ingestionTracking.DecryptedFileSha256Hash);
+
+            var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
+                .Where(audit => audit.IngestionTrackingId == ingestionTracking.Id);
+
+            foreach (var audit in audits)
+            {
+                await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
+            }
+
+            await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+
+            await this.dataSetSpecificationProcessingService
+                .RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
+
+            await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
+            await this.supplierService.RemoveSupplierByIdAsync(landingSupplier.Id);
+
+            await this.documentProcessingService.RemoveDocumentByFileNameAsync(
+                randomDocument.FileName,
+                blobContainers.TppLanding);
         }
     }
 }

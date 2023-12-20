@@ -44,7 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             };
 
             this.documentProcessingServiceMock.Setup(service =>
-                service.AddDocumentAsync(artifactDetailDocument, "Terminology"))
+                service.AddDocumentAsync(artifactDetailDocument, "terminology"))
                     .ReturnsAsync(outputFileName);
 
             this.dateTimeBrokerMock.Setup(broker =>

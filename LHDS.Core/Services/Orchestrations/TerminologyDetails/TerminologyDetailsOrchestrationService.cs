@@ -57,10 +57,11 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                         DocumentData = artifactDetailData
                     };
 
-                    await this.documentProcessingService.AddDocumentAsync(artifactDetailDocument, "Terminology");
+                    await this.documentProcessingService.AddDocumentAsync(artifactDetailDocument, "terminology");
                     artifact.IsDownloaded = true;
                     artifact.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
-                    await this.terminologyArtifactProcessingService.ModifyOrAddTerminologyArtifactAsync(artifact);
+                    TerminologyArtifact modifiedArtifact 
+                        = await this.terminologyArtifactProcessingService.ModifyOrAddTerminologyArtifactAsync(artifact);
                 }
             });
     }

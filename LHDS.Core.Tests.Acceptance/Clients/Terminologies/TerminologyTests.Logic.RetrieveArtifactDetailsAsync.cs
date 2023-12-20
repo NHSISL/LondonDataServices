@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
             await this.terminologyArtifactService.
                 RemoveTerminologyArtifactByIdAsync(undownloadedTerminologyArtifact.Id);
 
-            await this.documentProcessingService.RemoveDocumentByFileNameAsync(fileName, "Terminology");
+            await this.documentProcessingService.RemoveDocumentByFileNameAsync(fileName, "terminology");
 
             this.ontologyBrokerMock.VerifyNoOtherCalls();
         }

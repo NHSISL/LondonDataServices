@@ -23,7 +23,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyArtifacts
             TerminologyArtifact modifiedTerminologyArtifact = storageTerminologyArtifacts.DeepClone();
             modifiedTerminologyArtifact.Name = modifiedTerminologyArtifact.Name + "Modified";
             modifiedTerminologyArtifact.UpdatedDate = randomDateTimeOffset;
-            modifiedTerminologyArtifact.IsDownloaded = false;
             TerminologyArtifact updatedTerminologyArtifacts = modifiedTerminologyArtifact.DeepClone();
 
             this.dateTimeBrokerMock.Setup(broker =>

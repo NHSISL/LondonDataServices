@@ -55,7 +55,6 @@ namespace LHDS.Core.Services.Processings.TerminologyArtifacts
 
                 if (maybeTerminologyArtifact != null)
                 {
-                    terminologyArtifact.IsDownloaded = false;
                     terminologyArtifact.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
 
                     return await this.terminologyArtifactService.ModifyTerminologyArtifactAsync(terminologyArtifact);

@@ -47,13 +47,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                 service.AddDocumentAsync(artifactDetailDocument, "terminology"))
                     .ReturnsAsync(outputFileName);
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
-
             TerminologyArtifact downloadedTerminologyArtifact = undownloadedTerminologyArtifact.DeepClone();
             downloadedTerminologyArtifact.IsDownloaded = true;
-            downloadedTerminologyArtifact.UpdatedDate = randomDateTimeOffset;
 
             this.terminologyArtifactProcessingServiceMock.Setup(service =>
                 service.ModifyOrAddTerminologyArtifactAsync(downloadedTerminologyArtifact));
@@ -71,11 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                     Times.Once());
 
             this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.Is(SameDocumentAs(artifactDetailDocument)), "Terminology"),
-                    Times.Once);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
+                service.AddDocumentAsync(It.Is(SameDocumentAs(artifactDetailDocument)), "terminology"),
                     Times.Once);
 
             this.terminologyArtifactProcessingServiceMock.Verify(service =>

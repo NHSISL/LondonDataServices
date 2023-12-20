@@ -59,7 +59,6 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
 
                     await this.documentProcessingService.AddDocumentAsync(artifactDetailDocument, "terminology");
                     artifact.IsDownloaded = true;
-                    artifact.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
                     TerminologyArtifact modifiedArtifact 
                         = await this.terminologyArtifactProcessingService.ModifyOrAddTerminologyArtifactAsync(artifact);
                 }

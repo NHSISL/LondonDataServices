@@ -19,12 +19,14 @@ using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
 using LHDS.Core.Models.Orchestrations.Downloads;
+using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.Tpp;
+using LHDS.Core.Services.Processings.DataSets;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.IngestionTrackings;
@@ -113,6 +115,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IDocumentService, DocumentService>();
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddTransient<ISupplierService, SupplierService>();
+            services.AddTransient<IDataSetService, DataSetService>();
             services.AddTransient<IDataSetSpecificationService, DataSetSpecificationService>();
             services.AddSingleton<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
         }
@@ -121,6 +124,7 @@ namespace LHDS.Core.Clients.Extensions
         {
             services.AddTransient<IOptOutProcessingService, OptOutProcessingService>();
             services.AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
+            services.AddTransient<IDataSetProcessingService, DataSetProcessingService>();
             services.AddTransient<IDocumentProcessingService, DocumentProcessingService>();
             services.AddTransient<IIngestionTrackingProcessingService, IngestionTrackingProcessingService>();
             services.AddTransient<IIngestionTrackingAuditProcessingService, IngestionTrackingAuditProcessingService>();

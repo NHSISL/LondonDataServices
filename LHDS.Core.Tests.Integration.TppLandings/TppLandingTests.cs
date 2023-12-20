@@ -1,0 +1,204 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Brokers.Storages.Blobs;
+using LHDS.Core.Clients;
+using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Models.Foundations.DataSets;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
+using LHDS.Core.Models.Foundations.Suppliers;
+using LHDS.Core.Models.Orchestrations.Downloads;
+using LHDS.Core.Providers.Downloads.Extensions;
+using LHDS.Core.Services.Foundations.DataSets;
+using LHDS.Core.Services.Foundations.DataSetSpecifications;
+using LHDS.Core.Services.Foundations.Documents;
+using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
+using LHDS.Core.Services.Foundations.IngestionTrackings;
+using LHDS.Core.Services.Foundations.Suppliers;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Xunit.Abstractions;
+
+namespace LHDS.Core.Tests.Integration.TppLandings
+{
+    public partial class TppLandingTests
+    {
+        private readonly ITestOutputHelper output;
+        private readonly ITppLandingClient tppLandingClient;
+        private readonly ILoggingBroker loggingBroker;
+        private readonly IBlobStorageBroker blobStorageBroker;
+        private readonly LandingConfiguration landingConfiguration;
+        private readonly IIngestionTrackingService ingestionTrackingService;
+        private readonly IIngestionTrackingAuditService ingestionTrackingAuditService;
+        private readonly IDocumentService documentProcessingService;
+        private readonly ISupplierService supplierService;
+        private readonly IDataSetService dataSetService;
+        private readonly IDataSetSpecificationService dataSetSpecificationService;
+        private readonly IIngestionTrackingAuditService auditService;
+
+        public TppLandingTests(ITestOutputHelper output)
+        {
+            this.output = output;
+            var environmentName = "Development";
+
+            var configurationBuilder = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
+
+            IConfiguration configuration = configurationBuilder.Build();
+
+            //setup our DI
+            var serviceProvider = new ServiceCollection()
+                .AddLogging(builder =>
+                {
+                    builder.AddConsole();
+                    builder.AddApplicationInsights();
+                })
+                .AddTppLandingClient(configuration)
+                .UseFtpDownloadProvider(configuration, builder => builder.AddFtpDownloadProvider())
+                .BuildServiceProvider();
+
+            landingConfiguration = serviceProvider.GetService<LandingConfiguration>();
+            loggingBroker = serviceProvider.GetService<ILoggingBroker>();
+            blobStorageBroker = serviceProvider.GetService<IBlobStorageBroker>();
+            ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
+            ingestionTrackingAuditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
+            documentProcessingService = serviceProvider.GetService<IDocumentService>();
+            auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
+            supplierService = serviceProvider.GetService<ISupplierService>();
+            dataSetService = serviceProvider.GetService<IDataSetService>();
+            dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
+            tppLandingClient = serviceProvider.GetService<ITppLandingClient>();
+        }
+
+        private async ValueTask<Supplier> SetupSupplier()
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+
+            Supplier supplier = new Supplier
+            {
+                Id = this.landingConfiguration.LandingSupplierId,
+                Name = "Test Supplier",
+                Description = "Test Supplier Description",
+                CreatedDate = now,
+                CreatedBy = "Test User",
+                UpdatedDate = now,
+                UpdatedBy = "Test User",
+                FriendlyName = "Test Supplier Friendly Name",
+            };
+
+            Supplier maybeSupplier = supplierService.RetrieveAllSuppliers()
+                .FirstOrDefault(s => s.Id == supplier.Id);
+
+            if (maybeSupplier == null)
+            {
+                return await supplierService.AddSupplierAsync(supplier);
+            }
+
+            return maybeSupplier;
+        }
+
+        private async ValueTask<DataSet> SetupDataSet(Guid SupplierId)
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+
+            DataSet dataSet = new DataSet
+            {
+                Id = Guid.NewGuid(),
+                SupplierId = SupplierId,
+                DataSetName = "Test Supplier",
+                DataSetAliases = "Test Dat Set Aliases",
+                DataSetAuthor = "Test Data Set Author",
+                SpecifiedBy = "Test Specified By",
+                IsNationallySpecified = true,
+                CollectedBy = "Test Collected By",
+                IsNationallyCollected = true,
+                DataSourceType = "Test Data Source Type",
+                IsActive = true,
+                ActiveFrom = now.AddDays(2),
+                ActiveTo = now.AddDays(200),
+                CreatedBy = "Test User",
+                UpdatedBy = "Test User",
+                UpdatedDate = now,
+                CreatedDate = now
+            };
+
+            DataSet maybeDataSet = dataSetService.RetrieveAllDataSets()
+                .FirstOrDefault(s => s.Id == dataSet.Id);
+
+            if (maybeDataSet == null)
+            {
+                return await dataSetService.AddDataSetAsync(dataSet);
+            }
+
+            return maybeDataSet;
+        }
+
+        private async ValueTask<DataSetSpecification> SetupDataSetSpecification(Guid dataSet)
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+
+            DataSetSpecification dataSetSpecification = new DataSetSpecification
+            {
+                Id = Guid.NewGuid(),
+                DataSetId = dataSet,
+                SupplierSpecificationVersion = "1",
+                OurSpecificationVersion = "2",
+                Notes = "Test Notes",
+                IsMultiAuthorPerBatch = true,
+                EntityChangeSynchronisation = "Test Entity Change Synchronisation",
+                DateReleased = now,
+                DateImplemented = now,
+                DateSuperseded = null,
+                SupersededById = null,
+                PresededById = null,
+                IsPublished = false,
+                IsActive = true,
+                ActiveFrom = now.AddDays(2),
+                ActiveTo = now.AddDays(200),
+                CreatedBy = "Test User",
+                UpdatedBy = "Test User",
+                UpdatedDate = now,
+                CreatedDate = now
+            };
+
+            DataSetSpecification maybeDataSetSpecification = dataSetSpecificationService.RetrieveAllDataSetSpecifications()
+                .FirstOrDefault(s => s.Id == dataSetSpecification.Id);
+
+            if (maybeDataSetSpecification == null)
+            {
+                return await dataSetSpecificationService.AddDataSetSpecificationAsync(dataSetSpecification);
+            }
+
+            return maybeDataSetSpecification;
+        }
+
+
+        // Helper method to calculate SHA256 hash from byte array
+        private static string CalculateSHA256Hash(byte[] data)
+        {
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] hashBytes = sha256.ComputeHash(data);
+                StringBuilder builder = new StringBuilder();
+
+                for (int i = 0; i < hashBytes.Length; i++)
+                {
+                    builder.Append(hashBytes[i].ToString("x2"));
+                }
+
+                return builder.ToString();
+            }
+        }
+    }
+}

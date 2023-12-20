@@ -23,6 +23,7 @@ using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
+using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,7 +32,7 @@ using Moq;
 using Tynamix.ObjectFiller;
 using Xunit;
 
-namespace LHDS.Core.Tests.Acceptance.Clients.Landings
+namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 {
     [Collection(nameof(CoreTestCollection))]
     public partial class TppLandingTests
@@ -43,6 +44,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         private readonly ISupplierService supplierService;
         private readonly IDataSetService dataSetService;
         private readonly IDataSetSpecificationProcessingService dataSetSpecificationProcessingService;
+        private readonly IDocumentProcessingService documentProcessingService;
         private readonly ITppLandingClient tppLandingClient;
         private readonly LandingConfiguration landingConfiguration;
         private readonly IIngestionTrackingAuditService ingestionTrackingAuditService;
@@ -70,7 +72,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                 .AddTransient<ISupplierService, SupplierService>()
                 .AddTransient<IDataSetService, DataSetService>()
                 .AddTransient<IDataSetSpecificationService, DataSetSpecificationService>()
-                .AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>();
+                .AddTransient<IDataSetSpecificationProcessingService, DataSetSpecificationProcessingService>()
+                .AddTransient<IDocumentProcessingService, DocumentProcessingService>();
 
             serviceCollection.AddTppLandingClientForAcceptance(this.dependencyBroker.Configuration);
             var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -82,6 +85,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             this.dataSetSpecificationProcessingService =
                 serviceProvider.GetService<IDataSetSpecificationProcessingService>();
 
+            this.documentProcessingService = serviceProvider.GetService<IDocumentProcessingService>();
             this.ingestionTrackingAuditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
             this.landingConfiguration = serviceProvider.GetService<LandingConfiguration>();
             this.dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
@@ -111,6 +115,20 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime().AddDays(7)).GetValue();
+
+        private static Document CreateRandomDocument() =>
+          CreateDocumentFiller().Create();
+
+        private static Filler<Document> CreateDocumentFiller()
+        {
+            var filler = new Filler<Document>();
+            string filename = GetRandomString();
+
+            filler.Setup()
+                .OnProperty(dataSet => dataSet.FileName).Use(() => filename);
+
+            return filler;
+        }
 
         private static IngestionTracking CreateRandomIngestionTracking(
            DateTimeOffset dateTimeOffset,

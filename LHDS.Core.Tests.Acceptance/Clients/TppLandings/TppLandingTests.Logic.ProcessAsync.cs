@@ -55,7 +55,10 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 
             await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
             await this.supplierService.RemoveSupplierByIdAsync(landingSupplier.Id);
-            await this.documentProcessingService.RemoveDocumentByFileNameAsync(randomDocument.FileName, "tpplanding");
+
+            await this.documentProcessingService.RemoveDocumentByFileNameAsync(
+                randomDocument.FileName,
+                blobContainers.TppLanding);
         }
 
         [Fact]

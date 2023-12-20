@@ -19,14 +19,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             // given
             Models.Foundations.Documents.Document randonNullDocument = null;
 
-            var nullDocumentException =
+            var nullTppDocumentException =
                 new NullTppDocumentException(
                      message: "Document is Null");
 
-            var expectedDocumentValidationException =
+            var expectepOrchestrationValidationException =
                 new TppOrchestrationValidationException(
                     message: "TPP Orchestration validation errors occured, please try again.",
-                    innerException: nullDocumentException);
+                    innerException: nullTppDocumentException);
 
             // when
             ValueTask<Guid> returnedGuidTask = this.tppOrchestrationService.ProcessAsync(randonNullDocument);
@@ -36,11 +36,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
 
             // then
             actualException.Should()
-               .BeEquivalentTo(expectedDocumentValidationException);
+               .BeEquivalentTo(expectepOrchestrationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    expectedDocumentValidationException))),
+                    expectepOrchestrationValidationException))),
                         Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();

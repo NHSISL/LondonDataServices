@@ -38,17 +38,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
             updatedIngestionTracking.DecryptedFileSha256Hash = randomDocument.SHA256Hash;
 
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.RetrieveAllIngestionTrackings())
+                    .Returns(randomIngestionTrackings.AsQueryable());
+
             this.hashBrokerMock.Setup(broker =>
-                broker.GenerateSha256Hash(randomDocument.DocumentData))
-                    .Returns(randomHash);
+               broker.GenerateSha256Hash(randomDocument.DocumentData))
+                   .Returns(randomHash);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
                     .Returns(randomDateTime);
-
-            this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
-                    .Returns(randomIngestionTrackings.AsQueryable());
 
             this.documentProcessingServiceMock.Setup(service =>
                 service.AddDocumentAsync(
@@ -73,6 +73,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             ValueTask<Guid> returnedGuid = this.tppOrchestrationService.ProcessAsync(randomDocument);
 
             // then
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+                service.RetrieveAllIngestionTrackings(),
+                    Times.Once);
+
             this.hashBrokerMock.Verify(broker =>
                 broker.GenerateSha256Hash(randomDocument.DocumentData),
                     Times.Once);
@@ -80,10 +84,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
                     Times.AtLeast(2));
-
-            this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
-                    Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
                 service.AddDocumentAsync(
@@ -99,9 +99,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                 service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
                     Times.Once);
 
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
@@ -128,13 +128,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             IngestionTracking randomIngestionTracking = randomIngestionTrackings[randomNumber - 1];
             randomIngestionTracking.DecryptedFileSha256Hash = randomHash;
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                   .Returns(randomDateTime);
-
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
                 service.RetrieveAllIngestionTrackings())
                     .Returns(randomIngestionTrackings.AsQueryable());
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                   .Returns(randomDateTime);
 
             // when
             ValueTask<Guid> returnedGuid = this.tppOrchestrationService.ProcessAsync(randomDocument);
@@ -144,20 +144,20 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                 broker.GetCurrentDateTimeOffset(),
                     Times.Once);
 
-            this.hashBrokerMock.Verify(broker =>
-                broker.GenerateSha256Hash(randomDocument.DocumentData),
-                    Times.Once);
-
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackings(),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.hashBrokerMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.Verify(broker =>
+                broker.GenerateSha256Hash(randomDocument.DocumentData),
+                    Times.Once);
+
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
-            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
 
         }
@@ -188,6 +188,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             IngestionTracking storageIngestionTracking = randomIngestionTracking;
             IngestionTracking updatedIngestionTracking = storageIngestionTracking.DeepClone();
 
+            this.ingestionTrackingProcessingServiceMock.Setup(service =>
+                service.RetrieveAllIngestionTrackings())
+                    .Returns(randomIngestionTrackings.AsQueryable());
+
             this.hashBrokerMock.Setup(broker =>
                 broker.GenerateSha256Hash(randomDocument.DocumentData))
                     .Returns(randomHash);
@@ -196,11 +200,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                 broker.GetCurrentDateTimeOffset())
                     .Returns(randomDateTime);
 
-            this.ingestionTrackingProcessingServiceMock.Setup(service =>
-                service.RetrieveAllIngestionTrackings())
-                    .Returns(randomIngestionTrackings.AsQueryable());
-
-            // Lookup DataSetSpec for Active Spec for TPP
             this.dataSetSpecificationProcessingServiceMock.Setup(service =>
                service.GetActiveDataSetSpecification(supplierId))
                    .Returns(ValueTask.FromResult(randomDataSetSpecificationList.FirstOrDefault()));
@@ -270,6 +269,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             ValueTask<Guid> returnedGuid = this.tppOrchestrationService.ProcessAsync(randomDocument);
 
             // then
+
+            this.ingestionTrackingProcessingServiceMock.Verify(service =>
+               service.RetrieveAllIngestionTrackings(),
+                   Times.Once);
+
             this.hashBrokerMock.Verify(broker =>
                 broker.GenerateSha256Hash(randomDocument.DocumentData),
                     Times.Once);
@@ -277,10 +281,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
                     Times.AtLeast(2));
-
-            this.ingestionTrackingProcessingServiceMock.Verify(service =>
-                service.RetrieveAllIngestionTrackings(),
-                    Times.Once);
 
             this.dataSetSpecificationProcessingServiceMock.Verify(service =>
                 service.GetActiveDataSetSpecification(supplierId),
@@ -306,9 +306,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                 service.AddIngestionTrackingAuditAsync(It.IsAny<IngestionTrackingAudit>()),
                     Times.Once);
 
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.hashBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
             this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
             this.documentProcessingServiceMock.VerifyNoOtherCalls();
             this.ingestionTrackingProcessingAuditServiceMock.VerifyNoOtherCalls();

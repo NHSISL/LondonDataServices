@@ -249,10 +249,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             };
 
             this.documentProcessingServiceMock.Setup(service =>
-                service.AddDocumentAsync(
-                    It.Is(SameDocumentAs(newBlobDocument)),
-                        landingConfiguration.DecryptedFolder))
-                            .ReturnsAsync(savedIngestionTracking.FileName);
+                service.AddDocumentAsync(newBlobDocument, It.IsAny<string>()));
 
             IngestionTrackingAudit ingestionTrackingAudit = new IngestionTrackingAudit();
             ingestionTrackingAudit.Id = Guid.NewGuid();
@@ -290,16 +287,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                 service.AddIngestionTrackingAsync(It.IsAny<IngestionTracking>()),
                     Times.Once);
 
-            Models.Foundations.Documents.Document newDocument = new Models.Foundations.Documents.Document
-            {
-                DocumentData = randomDocument.DocumentData,
-                FileName = newIngestionTracking.EncryptedFileName
-            };
-
             this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(
-                    It.Is(SameDocumentAs(newDocument)),
-                    It.IsAny<string>()),
+                service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument)), It.IsAny<string>()),
                     Times.Once);
 
             this.ingestionTrackingProcessingAuditServiceMock.Verify(service =>

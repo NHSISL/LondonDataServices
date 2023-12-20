@@ -31,11 +31,13 @@ namespace LHDS.Core.Clients
             catch (TppOrchestrationValidationException tppOrchestrationValidationException)
             {
                 throw new TppLandingClientValidationException(
+                    message: "TPP Landing client dependency validation error occurred, contact support.",
                     tppOrchestrationValidationException.InnerException as Xeption);
             }
             catch (TppOrchestrationDependencyValidationException tppOrchestrationDependencyValidationException)
             {
                 throw new TppLandingClientValidationException(
+                    message: "TPP Landing client dependency validation error occurred, contact support.",
                     innerException: tppOrchestrationDependencyValidationException.InnerException as Xeption);
             }
             catch (TppOrchestrationDependencyException tppOrchestrationDependencyException)

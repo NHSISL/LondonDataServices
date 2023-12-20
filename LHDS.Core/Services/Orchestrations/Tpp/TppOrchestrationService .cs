@@ -11,13 +11,13 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.IngestionTrackings;
+using Document = LHDS.Core.Models.Foundations.Documents.Document;
 
 namespace LHDS.Core.Services.Orchestrations.Tpp
 {
@@ -71,10 +71,10 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                 string encryptedFileSha256Hash =
                     this.hashBroker.GenerateSha256Hash(document.DocumentData);
 
+                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
                 if (maybeIngestionTracking == null)
                 {
-                    var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-
                     DataSetSpecification retrievedDataSetSpecification = await
                         this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
                             landingConfiguration.LandingSupplierId);
@@ -134,16 +134,14 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                         document.SHA256Hash = encryptedFileSha256Hash;
                         await this.documentProcessingService.AddDocumentAsync(document, blobContainers.TppLanding);
                         maybeIngestionTracking.DecryptedFileSha256Hash = document.SHA256Hash;
-                        await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(maybeIngestionTracking);
+                        maybeIngestionTracking.UpdatedDate = currentDateTime;
 
-                        IngestionTrackingAudit audit = new IngestionTrackingAudit
-                        {
-                            Id = this.identifierBroker.GetIdentifier(),
-                            IngestionTrackingId = maybeIngestionTracking.Id,
-                            Message = "Updated TPP Hash"
-                        };
+                        await this.ingestionTrackingProcessingService.ModifyIngestionTrackingAsync(
+                            maybeIngestionTracking);
 
-                        await this.ingestionTrackingProcessingAuditService.AddIngestionTrackingAuditAsync(audit);
+                        LogAudit(
+                            maybeIngestionTracking,
+                            "Received and updated file from TPP which has now been uploaded to the blob store");
 
                         return maybeIngestionTracking.Id;
                     }

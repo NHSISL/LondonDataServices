@@ -79,7 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
-                    Times.Never);
+                    Times.AtLeast(2));
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackings(),
@@ -142,7 +142,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             // then
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
-                    Times.Never);
+                    Times.Once);
 
             this.hashBrokerMock.Verify(broker =>
                 broker.GenerateSha256Hash(randomDocument.DocumentData),
@@ -258,7 +258,9 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             IngestionTrackingAudit ingestionTrackingAudit = new IngestionTrackingAudit();
             ingestionTrackingAudit.Id = Guid.NewGuid();
             ingestionTrackingAudit.IngestionTrackingId = updatedIngestionTracking.Id;
-            ingestionTrackingAudit.Message = "Updated TPP Hash";
+
+            ingestionTrackingAudit.Message =
+                "Received and updated file from TPP which has now been uploaded to the blob store";
 
             this.ingestionTrackingProcessingAuditServiceMock.Setup(service =>
                 service.AddIngestionTrackingAuditAsync(ingestionTrackingAudit))
@@ -274,7 +276,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
-                    Times.AtLeast(1));
+                    Times.AtLeast(2));
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackings(),

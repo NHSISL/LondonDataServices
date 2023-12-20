@@ -5,11 +5,7 @@
 using System;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
-using FluentAssertions;
-using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using Moq;
 using Xunit;

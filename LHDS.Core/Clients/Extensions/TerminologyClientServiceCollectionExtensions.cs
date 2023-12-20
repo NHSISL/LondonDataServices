@@ -155,7 +155,7 @@ namespace LHDS.Core.Clients.Extensions
 
             Validate(
                 (Rule: IsInvalid(terminologyMetadataConfiguration.ResourceURL),
-                    Parameter: "landingSettings__landingSupplierId"));
+                    Parameter: "terminologyMetadataSettings__ResourceURL"));
         }
 
         private static dynamic IsInvalid(string text) => new

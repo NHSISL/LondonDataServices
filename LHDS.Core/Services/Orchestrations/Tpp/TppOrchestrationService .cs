@@ -118,7 +118,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     };
 
                     await this.ingestionTrackingProcessingService.AddIngestionTrackingAsync(newIngestionTracking);
-                    await this.documentProcessingService.AddDocumentAsync(newBlobDocument, blobContainers.TppLanding);
+                    await this.documentProcessingService.AddDocumentAsync(newBlobDocument, blobContainers.Versioner);
                     LogAudit(newIngestionTracking, "Landed");
 
                     return newIngestionTracking.Id;
@@ -132,7 +132,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     else
                     {
                         document.SHA256Hash = encryptedFileSha256Hash;
-                        await this.documentProcessingService.AddDocumentAsync(document, blobContainers.TppLanding);
+                        await this.documentProcessingService.AddDocumentAsync(document, blobContainers.Versioner);
                         maybeIngestionTracking.DecryptedFileSha256Hash = document.SHA256Hash;
                         maybeIngestionTracking.UpdatedDate = currentDateTime;
 

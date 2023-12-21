@@ -43,7 +43,6 @@ namespace LHDS.Core.Tests.Integration.TppLandings
             // then
             actualGuid.Should().NotBe(Guid.Empty);
 
-            //Remove Logic
             var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
                 .Where(audit => audit.IngestionTrackingId == actualGuid);
 
@@ -60,10 +59,9 @@ namespace LHDS.Core.Tests.Integration.TppLandings
             await this.dataSetService.RemoveDataSetByIdAsync(dataSet.Id);
             await this.supplierService.RemoveSupplierByIdAsync(supplier.Id);
 
-            await this.documentProcessingService.RemoveDocumentByFileNameAsync(
+            await this.documentService.RemoveDocumentByFileNameAsync(
                 document.FileName,
-                "tpplanding");
-
+                "versioner/inbox");
         }
     }
 }

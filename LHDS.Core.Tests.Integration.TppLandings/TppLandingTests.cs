@@ -18,10 +18,10 @@ using LHDS.Core.Models.Orchestrations.Downloads;
 using LHDS.Core.Providers.Downloads.Extensions;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
-using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
-using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
+using LHDS.Core.Services.Processings.Documents;
+using LHDS.Core.Services.Processings.IngestionTrackings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -36,13 +36,13 @@ namespace LHDS.Core.Tests.Integration.TppLandings
         private readonly ILoggingBroker loggingBroker;
         private readonly IBlobStorageBroker blobStorageBroker;
         private readonly LandingConfiguration landingConfiguration;
-        private readonly IIngestionTrackingService ingestionTrackingService;
+        private readonly IIngestionTrackingProcessingService ingestionTrackingService;
         private readonly IIngestionTrackingAuditService ingestionTrackingAuditService;
-        private readonly IDocumentService documentProcessingService;
+        private readonly IDocumentProcessingService documentService;
         private readonly ISupplierService supplierService;
         private readonly IDataSetService dataSetService;
         private readonly IDataSetSpecificationService dataSetSpecificationService;
-        private readonly IIngestionTrackingAuditService auditService;
+        private readonly IIngestionTrackingAuditProcessingService auditService;
 
         public TppLandingTests(ITestOutputHelper output)
         {
@@ -71,10 +71,10 @@ namespace LHDS.Core.Tests.Integration.TppLandings
             landingConfiguration = serviceProvider.GetService<LandingConfiguration>();
             loggingBroker = serviceProvider.GetService<ILoggingBroker>();
             blobStorageBroker = serviceProvider.GetService<IBlobStorageBroker>();
-            ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingService>();
+            ingestionTrackingService = serviceProvider.GetService<IIngestionTrackingProcessingService>();
             ingestionTrackingAuditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
-            documentProcessingService = serviceProvider.GetService<IDocumentService>();
-            auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
+            documentService = serviceProvider.GetService<IDocumentProcessingService>();
+            auditService = serviceProvider.GetService<IIngestionTrackingAuditProcessingService>();
             supplierService = serviceProvider.GetService<ISupplierService>();
             dataSetService = serviceProvider.GetService<IDataSetService>();
             dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
@@ -116,7 +116,7 @@ namespace LHDS.Core.Tests.Integration.TppLandings
             {
                 Id = Guid.NewGuid(),
                 SupplierId = SupplierId,
-                DataSetName = "Test Supplier",
+                DataSetName = "TPP",
                 DataSetAliases = "Test Dat Set Aliases",
                 DataSetAuthor = "Test Data Set Author",
                 SpecifiedBy = "Test Specified By",

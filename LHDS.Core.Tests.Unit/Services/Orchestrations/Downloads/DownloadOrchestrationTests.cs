@@ -69,7 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             {
                 LandingSupplierId = Guid.NewGuid(),
                 EncryptedFolder = "encrypted",
-                DecryptedFolder = "inbox/landings"
+                DecryptedFolder = "inbox/landing"
             };
 
             blobContainers = new BlobContainers

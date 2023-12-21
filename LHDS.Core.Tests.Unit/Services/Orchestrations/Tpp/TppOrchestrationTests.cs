@@ -64,7 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             landingConfiguration = new LandingConfiguration
             {
                 LandingSupplierId = Guid.NewGuid(),
-                DecryptedFolder = "inbox/landings"
+                DecryptedFolder = "inbox/landing"
             };
 
             blobContainers = new BlobContainers

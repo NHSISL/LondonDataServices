@@ -4,17 +4,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
-using LHDS.Core.Models.Foundations.DataSets;
-using LHDS.Core.Models.Foundations.DataSetSpecifications;
-using LHDS.Core.Models.Foundations.Documents;
-using LHDS.Core.Models.Foundations.IngestionTrackings;
-using LHDS.Core.Models.Foundations.Suppliers;
-using LHDS.Core.Models.Foundations.TerminologyPolls;
+using Hl7.Fhir.Model;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using Moq;
 using Xunit;
 
@@ -22,40 +14,37 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
 {
     public partial class TerminologyTests
     {
-        //[Fact]
-        //public async Task ShouldRetrieveArtifactMetadataAsync()
-        //{
-        //    //Given
-        //    DateTimeOffset randomDateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
-        //    string resourceType = "CodingSystem";
+        [Fact]
+        public async System.Threading.Tasks.Task ShouldRetrieveArtifactMetadataAsync()
+        {
+            //Given
+            DateTimeOffset randomDateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
+            string resourceType = "CodingSystem";
+            string nextPageUrl = "";
+            List<dynamic> randomArtifactProperties = CreateRandomArtifactProperties(resourceType);
+            Bundle randomCodingSystemBundle = CreateCodeSystemBundleFromRandomData(randomArtifactProperties, nextPageUrl);
 
-        //    TerminologyPoll retrievedTerminologyPoll =
-        //        CreateRandomTerminologyPoll(resourceType, lastPoll: randomDateTimeOffset.AddDays(-3));
+            this.ontologyBrokerMock.Setup(broker =>
+                broker.GetAllCodingSystemsAsync(It.IsAny<string>()))
+                    .ReturnsAsync(randomCodingSystemBundle);
 
-            
+            //When
+            await this.terminologyClient.RetrieveArtifactMetadataAsync(resourceType);
 
-        //    string relativeUrl = this.terminologyMetadataConfiguration.ResourceURL;
-        //    relativeUrl = relativeUrl.Replace("{{resourceType}}", resourceType);
-        //    relativeUrl = relativeUrl.Replace("{{datestamp}}", retrievedTerminologyPoll.LastPoll.ToString());
+            //Then
+            this.ontologyBrokerMock.Verify(broker =>
+                broker.GetAllCodingSystemsAsync(It.IsAny<string>()),
+                    Times.Once);
 
-        //    this.ontologyBrokerMock.Setup(broker =>
-        //        broker.GetAllCodingSystemsAsync(relativeUrl)).ReturnsAsync();
+            IQueryable<TerminologyArtifact> terminologyArtifacts =
+                this.terminologyArtifactService.RetrieveAllTerminologyArtifacts();
 
+            foreach (TerminologyArtifact terminologyArtifact in terminologyArtifacts)
+            {
+                await this.terminologyArtifactService.RemoveTerminologyArtifactByIdAsync(terminologyArtifact.Id);
+            }
 
-        //    //When
-        //    await this.terminologyClient.RetrieveArtifactMetadataAsync(resourceType);
-
-        //    //Then
-        //    this.ontologyBrokerMock.Verify(broker =>
-        //        broker.GetAllCodingSystemsAsync(relativeUrl),
-        //            Times.Once);
-
-            
-
-        //    await this.dataSetSpecificationProcessingService
-        //        .RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
-
-        //    this.ontologyBrokerMock.VerifyNoOtherCalls();
-        //}
+            this.ontologyBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

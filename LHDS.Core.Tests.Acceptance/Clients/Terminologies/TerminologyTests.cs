@@ -3,12 +3,16 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Hl7.Fhir.Model;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Ontologies;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Models.Foundations.Ontologies;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Orchestrations.TerminologyMedata;
@@ -109,6 +113,104 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
                 .OnProperty(terminologyArtifact => terminologyArtifact.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        private static OntologyAssets CreateRandomOntologyAssets()
+        {
+            OntologyAssets ontologyAssets = new OntologyAssets
+            {
+                Assets = CreateRandomOntologyAssetList(),
+                NextPage = ""
+            };
+
+            return ontologyAssets;
+        }
+
+        private static List<OntologyAsset> CreateRandomOntologyAssetList() =>
+            CreateOntologyFiller().Create(count: GetRandomNumber()).ToList();
+
+        private static Filler<OntologyAsset> CreateOntologyFiller()
+        {
+            string user = Guid.NewGuid().ToString();
+            DateTimeOffset dateTimeOffset = GetRandomDateTimeOffset();
+
+            var filler = new Filler<OntologyAsset>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnType<DateTimeOffset?>().Use(dateTimeOffset);
+
+            return filler;
+        }
+
+        private static List<dynamic> CreateRandomArtifactProperties(string artifactType)
+        {
+            return Enumerable.Range(1, GetRandomNumber())
+                .Select(item =>
+                {
+                    return new
+                    {
+                        FullUrl = GetRandomString(),
+                        ResourceType = artifactType,
+                        Version = GetRandomString(),
+                        Name = GetRandomString(),
+                        Title = GetRandomString(),
+                        Status = "active",
+                        LastUpdated = GetRandomDateTimeOffset()
+                    };
+                })
+                .ToList<dynamic>();
+        }
+
+        private static Bundle CreateCodeSystemBundleFromRandomData(
+            List<dynamic> randomArtifactProperties,
+            string nextPageUrl)
+        {
+            Bundle externalBundleResult = new Bundle
+            {
+                Id = Guid.NewGuid().ToString(),
+                Type = Bundle.BundleType.Searchset,
+                Total = randomArtifactProperties.Count,
+                Link = new List<Bundle.LinkComponent>
+                {
+                    new Bundle.LinkComponent
+                    {
+                        Relation = "self",
+                        Url = "http://localhost:5000/api/fhir/ValueSet"
+                    },
+                    new Bundle.LinkComponent
+                    {
+                        Relation = "next",
+                        Url = nextPageUrl
+                    }
+                },
+                Entry = new List<Bundle.EntryComponent>()
+            };
+
+            foreach (var item in randomArtifactProperties)
+            {
+                externalBundleResult.Entry.Add(
+                    new Bundle.EntryComponent
+                    {
+                        FullUrl = item.FullUrl,
+                        Resource = new CodeSystem
+                        {
+                            Meta = new Meta
+                            {
+                                LastUpdated = item.LastUpdated,
+                            },
+
+                            Version = item.Version,
+                            Name = item.Name,
+                            Title = item.Title,
+
+                            Status = (PublicationStatus)Enum.Parse(
+                                typeof(PublicationStatus), item.Status, ignoreCase: true),
+                        }
+                    });
+            }
+
+            return externalBundleResult;
         }
     }
 }

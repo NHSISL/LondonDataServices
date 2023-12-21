@@ -115,7 +115,7 @@ namespace LHDS.Core.Clients.Extensions
         private static void AddOrchestrations(IServiceCollection services)
         {
             services.AddTransient<ITerminologyDetailOrchestrationService, TerminologyDetailOrchestrationService>();
-            //services.AddTransient<ITerminologyMetadataOrchestrationService, TerminologyMetadataOrchestrationService>();
+            services.AddTransient<ITerminologyMetadataOrchestrationService, TerminologyMetadataOrchestrationService>();
         }
 
         private static void AddClients(IServiceCollection services, IConfiguration configuration)

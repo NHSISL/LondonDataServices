@@ -249,7 +249,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             };
 
             this.documentProcessingServiceMock.Setup(service =>
-                service.AddDocumentAsync(newBlobDocument, It.IsAny<string>()));
+                service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument)), It.IsAny<string>()));
 
             IngestionTrackingAudit ingestionTrackingAudit = new IngestionTrackingAudit();
             ingestionTrackingAudit.Id = Guid.NewGuid();

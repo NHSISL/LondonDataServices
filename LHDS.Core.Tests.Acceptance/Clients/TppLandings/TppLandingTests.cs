@@ -114,7 +114,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             new DateTimeRange(earliestDate: new DateTime().AddDays(7)).GetValue();
 
         private static Document CreateRandomDocument() =>
-          CreateDocumentFiller().Create();
+            CreateDocumentFiller().Create();
 
         private static Filler<Document> CreateDocumentFiller()
         {
@@ -235,7 +235,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
                 .OnType<DateTimeOffset?>().Use(now)
-
                 .OnProperty(dataSetSpecification => dataSetSpecification.DataSetId).Use(dataSet.Id)
                 .OnProperty(dataSetSpecification => dataSetSpecification.DataSet).Use(dataSet)
                 .OnProperty(dataSetSpecification => dataSetSpecification.IsActive).Use(true)

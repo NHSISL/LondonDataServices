@@ -2,42 +2,48 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Net;
+using System;
 using System.Threading.Tasks;
+using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Extensions.Logging;
 
 namespace LHDS.Functions.Landings.Tpp
 {
     public class TppLandingFunction
     {
-        private readonly ILogger _logger;
-        private readonly ILandingClient landingClient;
+        private readonly ILoggingBroker loggingBroker;
+        private readonly ITppLandingClient tppLandingClient;
 
-        public TppLandingFunction(ILoggerFactory loggerFactory, ILandingClient landingClient)
+        public TppLandingFunction(
+            ILoggingBroker loggingBroker,
+            ITppLandingClient tppLandingClient)
         {
-            _logger = loggerFactory.CreateLogger<TppLandingFunction>();
-            this.landingClient = landingClient;
+            this.loggingBroker = loggingBroker;
+            this.tppLandingClient = tppLandingClient;
         }
 
         [Function("TppLandingFunction")]
-        public async ValueTask<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
+        public void Run(
+            [BlobTrigger("pds/in/{name}", Connection = "BlobStorage")] Core.Models.Foundations.Documents.Document document)
         {
-            _logger.LogInformation("C# HTTP trigger function processed a request.");
+            this.loggingBroker
+                .LogInformation(
+                    $"C# Blob trigger function Processing document\n " +
+                    $"Name: tpp/in/{{name}} \n FielName: {document.FileName}");
 
-            var response = req.CreateResponse(HttpStatusCode.OK);
-            response.Headers.Add("content-type", "text/plain; charset=utf-8");
-
-            response.WriteString("Processing TPP documents");
-
-            if (landingClient != null)
+            try
             {
-                await this.landingClient.ProcessAsync();
+                Task.Run(async () =>
+                {
+                    await tppLandingClient.ProcessAsync(document);
+                }).Wait();
             }
-
-            return response;
+            catch (Exception ex)
+            {
+                this.loggingBroker.LogError(ex);
+                throw;
+            }
         }
     }
 }

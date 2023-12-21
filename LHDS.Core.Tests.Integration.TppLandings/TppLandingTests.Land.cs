@@ -55,16 +55,16 @@ namespace LHDS.Core.Tests.Integration.TppLandings
                 await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
             }
 
+            await this.dataSetSpecificationService
+               .RemoveDataSetSpecificationByIdAsync(dataSetSpecification.Id);
+
+            await this.dataSetService.RemoveDataSetByIdAsync(dataSet.Id);
+
             await this.documentService.RemoveDocumentByFileNameAsync(
                 document.FileName,
                     actualIngestionTracking.DecryptedFileName);
 
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(actualGuid);
-
-            await this.dataSetSpecificationService
-                .RemoveDataSetSpecificationByIdAsync(dataSetSpecification.Id);
-
-            await this.dataSetService.RemoveDataSetByIdAsync(dataSet.Id);
             await this.supplierService.RemoveSupplierByIdAsync(supplier.Id);
         }
     }

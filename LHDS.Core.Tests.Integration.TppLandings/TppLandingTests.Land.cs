@@ -60,10 +60,6 @@ namespace LHDS.Core.Tests.Integration.TppLandings
 
             await this.dataSetService.RemoveDataSetByIdAsync(dataSet.Id);
 
-            //await this.documentService.RemoveDocumentByFileNameAsync(
-            //    document.FileName,
-            //        actualIngestionTracking.DecryptedFileName);
-
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(actualGuid);
             await this.supplierService.RemoveSupplierByIdAsync(supplier.Id);
         }

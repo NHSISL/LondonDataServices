@@ -83,6 +83,8 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                         ? document.FileName
                         : "/" + document.FileName;
 
+                    var processingtimestamp = this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmmss");
+
                     IngestionTracking newIngestionTracking =
                         new IngestionTracking
                         {
@@ -95,6 +97,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                                 $"/{landingConfiguration.DecryptedFolder}"
                                 + $"/{retrievedDataSetSpecification.DataSet.DataSetName}"
                                 + $"/{retrievedDataSetSpecification.Id}"
+                                + $"/{processingtimestamp}"
                                 + $"/{filename}",
 
                             Decrypted = true,

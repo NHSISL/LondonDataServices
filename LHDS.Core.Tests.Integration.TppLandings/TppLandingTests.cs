@@ -11,6 +11,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Suppliers;
@@ -43,6 +44,7 @@ namespace LHDS.Core.Tests.Integration.TppLandings
         private readonly IDataSetService dataSetService;
         private readonly IDataSetSpecificationService dataSetSpecificationService;
         private readonly IIngestionTrackingAuditProcessingService auditService;
+        private readonly BlobContainers blobContainers;
 
         public TppLandingTests(ITestOutputHelper output)
         {
@@ -79,6 +81,7 @@ namespace LHDS.Core.Tests.Integration.TppLandings
             dataSetService = serviceProvider.GetService<IDataSetService>();
             dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
             tppLandingClient = serviceProvider.GetService<ITppLandingClient>();
+            this.blobContainers = serviceProvider.GetService<BlobContainers>();
         }
 
         private async ValueTask<Supplier> SetupSupplier()

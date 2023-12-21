@@ -10,6 +10,7 @@ using FluentAssertions;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
 using Xunit;
 
@@ -43,6 +44,9 @@ namespace LHDS.Core.Tests.Integration.TppLandings
             // then
             actualGuid.Should().NotBe(Guid.Empty);
 
+            IngestionTracking actualIngestionTracking =
+                await this.ingestionTrackingService.RetrieveIngestionTrackingByIdAsync(actualGuid);
+
             var audits = this.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
                 .Where(audit => audit.IngestionTrackingId == actualGuid);
 
@@ -51,6 +55,11 @@ namespace LHDS.Core.Tests.Integration.TppLandings
                 await this.ingestionTrackingAuditService.RemoveIngestionTrackingAuditByIdAsync(audit.Id);
             }
 
+            await this.documentService.RemoveDocumentByFileNameAsync(
+                document.FileName,
+                    actualIngestionTracking.DecryptedFileName);
+            //"versioner/" + actualIngestionTracking.DecryptedFileName);
+
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(actualGuid);
 
             await this.dataSetSpecificationService
@@ -58,10 +67,6 @@ namespace LHDS.Core.Tests.Integration.TppLandings
 
             await this.dataSetService.RemoveDataSetByIdAsync(dataSet.Id);
             await this.supplierService.RemoveSupplierByIdAsync(supplier.Id);
-
-            await this.documentService.RemoveDocumentByFileNameAsync(
-                document.FileName,
-                "versioner/inbox");
         }
     }
 }

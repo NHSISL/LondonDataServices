@@ -95,7 +95,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                                 $"/{landingConfiguration.DecryptedFolder}"
                                 + $"/{retrievedDataSetSpecification.DataSet.DataSetName}"
                                 + $"/{retrievedDataSetSpecification.Id}"
-                                + $"/{filename}",
+                                + $"{filename}",
 
                             Decrypted = true,
                             LastSeen = currentDateTime,

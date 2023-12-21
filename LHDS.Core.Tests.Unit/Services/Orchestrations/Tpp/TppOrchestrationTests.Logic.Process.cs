@@ -208,6 +208,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                    ? randomDocument.FileName
                    : "/" + randomDocument.FileName;
 
+            var processingtimestamp = randomDateTime.ToString("yyyyMMddHHmmss");
+
             IngestionTracking newIngestionTracking =
                    new IngestionTracking
                    {
@@ -217,10 +219,11 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                        EncryptedFileName = null,
 
                        DecryptedFileName =
-                            $"/{landingConfiguration.DecryptedFolder}"
-                            + $"/{randomDataSet.DataSetName}"
-                            + $"/{randomDataSetSpecification.Id}"
-                            + $"/{filename}",
+                                $"/{landingConfiguration.DecryptedFolder}"
+                                + $"/{randomDataSet.DataSetName}"
+                                + $"/{randomDataSetSpecification.Id}"
+                                + $"/{processingtimestamp}"
+                                + $"/{filename}",
 
                        Decrypted = false,
                        LastSeen = randomDateTime,

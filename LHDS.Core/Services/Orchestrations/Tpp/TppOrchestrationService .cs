@@ -92,6 +92,8 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                             FileName = document.FileName,
                             SupplierId = landingConfiguration.LandingSupplierId,
                             EncryptedFileName = "Not Encrypted",
+                            EncryptedFileSize = 0,
+                            EncryptedFileSha256Hash = "Not Encrypted",
 
                             DecryptedFileName =
                                 $"/{landingConfiguration.DecryptedFolder}"
@@ -101,12 +103,10 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                                 + $"/{filename}",
 
                             Decrypted = true,
-                            FileDeleted = false,
-                            RecordCount = 0,
-                            EncryptedFileSize = 0,
-                            EncryptedFileSha256Hash = "Not Encrypted",
                             DecryptedFileSize = 0,
                             DecryptedFileSha256Hash = encryptedFileSha256Hash,
+                            FileDeleted = false,
+                            RecordCount = 0,
                             CreatedBy = "System",
                             CreatedDate = currentDateTime,
                             UpdatedBy = "System",

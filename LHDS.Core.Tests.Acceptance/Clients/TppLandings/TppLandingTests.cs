@@ -43,7 +43,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
         private readonly IDataSetSpecificationService dataSetSpecificationService;
         private readonly ISupplierService supplierService;
         private readonly IDataSetService dataSetService;
-        private readonly IDataSetSpecificationProcessingService dataSetSpecificationProcessingService;
         private readonly IDocumentProcessingService documentProcessingService;
         private readonly ITppLandingClient tppLandingClient;
         private readonly LandingConfiguration landingConfiguration;
@@ -82,10 +81,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             this.supplierService = serviceProvider.GetService<ISupplierService>();
             this.dataSetService = serviceProvider.GetService<IDataSetService>();
             this.dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
-
-            this.dataSetSpecificationProcessingService =
-                serviceProvider.GetService<IDataSetSpecificationProcessingService>();
-
             this.documentProcessingService = serviceProvider.GetService<IDocumentProcessingService>();
             this.ingestionTrackingAuditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
             this.landingConfiguration = serviceProvider.GetService<LandingConfiguration>();

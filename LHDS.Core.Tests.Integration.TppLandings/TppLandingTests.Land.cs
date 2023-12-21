@@ -58,7 +58,6 @@ namespace LHDS.Core.Tests.Integration.TppLandings
             await this.documentService.RemoveDocumentByFileNameAsync(
                 document.FileName,
                     actualIngestionTracking.DecryptedFileName);
-            //"versioner/" + actualIngestionTracking.DecryptedFileName);
 
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(actualGuid);
 

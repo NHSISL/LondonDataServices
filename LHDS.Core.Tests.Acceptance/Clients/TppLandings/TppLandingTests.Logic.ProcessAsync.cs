@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 
             await this.supplierService.AddSupplierAsync(landingSupplier);
             await this.dataSetService.AddDataSetAsync(activeDataSet);
-            await this.dataSetSpecificationProcessingService.AddDataSetSpecificationAsync(activeDataSetSpecification);
+            await this.dataSetSpecificationService.AddDataSetSpecificationAsync(activeDataSetSpecification);
 
             //When
             Guid actualGuid = await this.tppLandingClient.ProcessAsync(randomDocument);
@@ -50,16 +50,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             }
 
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
-
-            await this.dataSetSpecificationProcessingService
-                .RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
-
+            await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
             await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
             await this.supplierService.RemoveSupplierByIdAsync(landingSupplier.Id);
 
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(
                 randomDocument.FileName,
-                blobContainers.TppLanding);
+                blobContainers.Versioner);
         }
 
         [Fact]
@@ -82,7 +79,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 
             await this.supplierService.AddSupplierAsync(landingSupplier);
             await this.dataSetService.AddDataSetAsync(activeDataSet);
-            await this.dataSetSpecificationProcessingService.AddDataSetSpecificationAsync(activeDataSetSpecification);
+            await this.dataSetSpecificationService.AddDataSetSpecificationAsync(activeDataSetSpecification);
 
             Document document = new Document
             {
@@ -90,7 +87,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 FileName = fileName
             };
 
-            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTime, document, supplierId);
+            IngestionTracking randomIngestionTracking =
+                CreateRandomIngestionTracking(randomDateTime, document, supplierId);
+
             randomIngestionTracking.FileName = randomDocument.FileName;
             randomIngestionTracking.DecryptedFileSha256Hash = randomDocument.SHA256Hash;
             await this.ingestionTrackingService.AddIngestionTrackingAsync(randomIngestionTracking);
@@ -113,16 +112,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             }
 
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
-
-            await this.dataSetSpecificationProcessingService
-                .RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
-
+            await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
             await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
             await this.supplierService.RemoveSupplierByIdAsync(landingSupplier.Id);
 
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(
                 randomDocument.FileName,
-                blobContainers.TppLanding);
+                blobContainers.Versioner);
         }
 
         [Fact]
@@ -145,7 +141,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
 
             await this.supplierService.AddSupplierAsync(landingSupplier);
             await this.dataSetService.AddDataSetAsync(activeDataSet);
-            await this.dataSetSpecificationProcessingService.AddDataSetSpecificationAsync(activeDataSetSpecification);
+            await this.dataSetSpecificationService.AddDataSetSpecificationAsync(activeDataSetSpecification);
 
             Document document = new Document
             {
@@ -153,7 +149,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
                 FileName = fileName
             };
 
-            IngestionTracking randomIngestionTracking = CreateRandomIngestionTracking(randomDateTime, document, supplierId);
+            IngestionTracking randomIngestionTracking =
+                CreateRandomIngestionTracking(randomDateTime, document, supplierId);
+
             randomIngestionTracking.FileName = randomDocument.FileName;
             await this.ingestionTrackingService.AddIngestionTrackingAsync(randomIngestionTracking);
 
@@ -175,16 +173,13 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             }
 
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
-
-            await this.dataSetSpecificationProcessingService
-                .RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
-
+            await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
             await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
             await this.supplierService.RemoveSupplierByIdAsync(landingSupplier.Id);
 
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(
                 randomDocument.FileName,
-                blobContainers.TppLanding);
+                blobContainers.Versioner);
         }
     }
 }

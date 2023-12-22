@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
+using LHDS.Core.Models.Foundations.Documents;
 using Microsoft.Azure.Functions.Worker;
 
 namespace LHDS.Functions.Landings.Tpp
@@ -25,12 +26,12 @@ namespace LHDS.Functions.Landings.Tpp
 
         [Function("TppLandingFunction")]
         public void Run(
-            [BlobTrigger("pds/in/{name}", Connection = "BlobStorage")] Core.Models.Foundations.Documents.Document document)
+            [BlobTrigger("tpplanding", Connection = "BlobStorage")] Document document)
         {
             this.loggingBroker
                 .LogInformation(
                     $"C# Blob trigger function Processing document\n " +
-                    $"Name: tpp/in/{{name}} \n FielName: {document.FileName}");
+                    $"Name: FileName: {document.FileName}");
 
             try
             {

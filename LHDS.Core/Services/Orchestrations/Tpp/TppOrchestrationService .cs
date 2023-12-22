@@ -71,10 +71,10 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                 string encryptedFileSha256Hash =
                     this.hashBroker.GenerateSha256Hash(document.DocumentData);
 
-                var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-
                 if (maybeIngestionTracking == null)
                 {
+                    var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
+
                     DataSetSpecification retrievedDataSetSpecification = await
                         this.dataSetSpecificationProcessingService.GetActiveDataSetSpecification(
                             landingConfiguration.LandingSupplierId);
@@ -83,6 +83,12 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                         ? document.FileName
                         : "/" + document.FileName;
 
+                    var decryptedFileName =
+                                $"/{landingConfiguration.DecryptedFolder}"
+                                + $"/{retrievedDataSetSpecification.DataSet.DataSetName}"
+                                + $"/{retrievedDataSetSpecification.Id}"
+                                + $"{filename}";
+
                     IngestionTracking newIngestionTracking =
                         new IngestionTracking
                         {
@@ -90,35 +96,29 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                             FileName = document.FileName,
                             SupplierId = landingConfiguration.LandingSupplierId,
                             EncryptedFileName = "Not Encrypted",
-
-                            DecryptedFileName =
-                                $"/{landingConfiguration.DecryptedFolder}"
-                                + $"/{retrievedDataSetSpecification.DataSet.DataSetName}"
-                                + $"/{retrievedDataSetSpecification.Id}"
-                                + $"/{filename}",
-
-                            Decrypted = true,
-                            FileDeleted = false,
-                            RecordCount = 0,
                             EncryptedFileSize = 0,
                             EncryptedFileSha256Hash = "Not Encrypted",
+                            DecryptedFileName = decryptedFileName,
+                            Decrypted = true,
                             DecryptedFileSize = 0,
                             DecryptedFileSha256Hash = encryptedFileSha256Hash,
+                            FileDeleted = false,
+                            RecordCount = 0,
                             CreatedBy = "System",
                             CreatedDate = currentDateTime,
                             UpdatedBy = "System",
                             UpdatedDate = currentDateTime,
                         };
 
-                    Document newBlobDocument = new Document
+                    Document blobDocument = new Document
                     {
                         DocumentData = document.DocumentData,
                         FileName = newIngestionTracking.DecryptedFileName
                     };
 
                     await this.ingestionTrackingProcessingService.AddIngestionTrackingAsync(newIngestionTracking);
-                    await this.documentProcessingService.AddDocumentAsync(newBlobDocument, blobContainers.Versioner);
-                    LogAudit(newIngestionTracking, "Landed");
+                    await this.documentProcessingService.AddDocumentAsync(blobDocument, blobContainers.Versioner);
+                    LogAudit(newIngestionTracking, "Landed", currentDateTime);
 
                     return newIngestionTracking.Id;
                 }
@@ -130,6 +130,7 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                     }
                     else
                     {
+                        var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
                         document.SHA256Hash = encryptedFileSha256Hash;
                         await this.documentProcessingService.AddDocumentAsync(document, blobContainers.Versioner);
                         maybeIngestionTracking.DecryptedFileSha256Hash = document.SHA256Hash;
@@ -140,7 +141,8 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
 
                         LogAudit(
                             maybeIngestionTracking,
-                            "Received and updated file from TPP which has now been uploaded to the blob store");
+                            "Received and updated file from TPP which has now been uploaded to the blob store",
+                            currentDateTime);
 
                         return maybeIngestionTracking.Id;
                     }
@@ -149,10 +151,9 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
 
         private void LogAudit(
            IngestionTracking ingestionTracking,
-           string message)
+           string message,
+           DateTimeOffset currentDateTime)
         {
-            var currentDateTime = this.dateTimeBroker.GetCurrentDateTimeOffset();
-
             IngestionTrackingAudit newAudit =
                 new IngestionTrackingAudit
                 {

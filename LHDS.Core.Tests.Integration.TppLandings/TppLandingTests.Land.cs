@@ -22,8 +22,8 @@ namespace LHDS.Core.Tests.Integration.TppLandings
         public async Task ShouldLandTPPFileAsync()
         {
             // given
-            byte[] fileBytes = File.ReadAllBytes(@"Resources\foo.txt");
-            FileInfo fi = new FileInfo(@"Resources\foo.txt");
+            byte[] fileBytes = File.ReadAllBytes(@"Resources\TppLandingTests\ShouldLandTPPFileAsync.txt");
+            FileInfo fi = new FileInfo(@"Resources\TppLandingTests\ShouldLandTPPFileAsync.txt");
             var fileNameWithoutExtension = fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length);
             string sha256Hash = CalculateSHA256Hash(fileBytes);
 
@@ -59,11 +59,6 @@ namespace LHDS.Core.Tests.Integration.TppLandings
                .RemoveDataSetSpecificationByIdAsync(dataSetSpecification.Id);
 
             await this.dataSetService.RemoveDataSetByIdAsync(dataSet.Id);
-
-            //await this.documentService.RemoveDocumentByFileNameAsync(
-            //    document.FileName,
-            //        actualIngestionTracking.DecryptedFileName);
-
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(actualGuid);
             await this.supplierService.RemoveSupplierByIdAsync(supplier.Id);
         }

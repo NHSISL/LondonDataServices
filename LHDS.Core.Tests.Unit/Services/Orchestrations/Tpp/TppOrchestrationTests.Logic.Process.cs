@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
+using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using Moq;
@@ -83,7 +84,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
-                    Times.AtLeast(2));
+                    Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
                 service.AddDocumentAsync(
@@ -142,7 +143,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             // then
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
-                    Times.Once);
+                    Times.Never);
 
             this.ingestionTrackingProcessingServiceMock.Verify(service =>
                 service.RetrieveAllIngestionTrackings(),
@@ -170,12 +171,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             Guid randomGuid = Guid.NewGuid();
             Guid supplierId = landingConfiguration.LandingSupplierId;
             DataSet randomDataSet = CreateRandomDataSet(supplierId);
-            Models.Foundations.Documents.Document randomDocument = CreateRandomDocument();
+            Document randomDocument = CreateRandomDocument();
             string randomHash = GetRandomString(64);
             randomDocument.SHA256Hash = randomHash;
             int randomNumber = GetRandomNumber();
 
-            List<Models.Foundations.Documents.Document> randomDocuments = CreateRandomDocuments(randomNumber);
+            List<Document> randomDocuments = CreateRandomDocuments(randomNumber);
 
             List<IngestionTracking> randomIngestionTrackings =
                 CreateRandomIngestionTrackings(randomDateTime, randomDocuments);
@@ -222,8 +223,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                                 $"/{landingConfiguration.DecryptedFolder}"
                                 + $"/{randomDataSet.DataSetName}"
                                 + $"/{randomDataSetSpecification.Id}"
-                                + $"/{processingtimestamp}"
-                                + $"/{filename}",
+                                + $"{filename}",
 
                        Decrypted = false,
                        LastSeen = randomDateTime,
@@ -245,14 +245,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                     service.AddIngestionTrackingAsync(newIngestionTracking))
                        .ReturnsAsync(storageIngestionTracking);
 
-            Models.Foundations.Documents.Document newBlobDocument = new Models.Foundations.Documents.Document
+            Document newBlobDocument = new Document
             {
                 DocumentData = randomDocument.DocumentData,
                 FileName = savedIngestionTracking.DecryptedFileName
             };
 
             this.documentProcessingServiceMock.Setup(service =>
-                service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument)), It.IsAny<string>()));
+                service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument)), blobContainers.Versioner));
 
             IngestionTrackingAudit ingestionTrackingAudit = new IngestionTrackingAudit();
             ingestionTrackingAudit.Id = Guid.NewGuid();
@@ -280,7 +280,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
-                    Times.AtLeast(2));
+                    Times.Once);
 
             this.dataSetSpecificationProcessingServiceMock.Verify(service =>
                 service.GetActiveDataSetSpecification(supplierId),
@@ -291,7 +291,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                     Times.Once);
 
             this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument)), It.IsAny<string>()),
+                service.AddDocumentAsync(It.Is(SameDocumentAs(newBlobDocument)), blobContainers.Versioner),
                     Times.Once);
 
             this.ingestionTrackingProcessingAuditServiceMock.Verify(service =>

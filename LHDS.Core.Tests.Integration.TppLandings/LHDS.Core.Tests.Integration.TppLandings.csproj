@@ -43,7 +43,7 @@
 		<None Update="local.appsettings.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Resources\foo.txt">
+		<None Update="Resources\TppLandingTests\ShouldLandTPPFileAsync.txt">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>

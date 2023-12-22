@@ -58,7 +58,6 @@ namespace LHDS.Core.Clients.Extensions
             bool acceptanceTest)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
-
             AddBrokers(services, configuration, acceptanceTest);
             AddServices(services);
             AddProcessingServices(services);

@@ -25,7 +25,7 @@ namespace LHDS.Functions.Landings.Tpp
         }
 
         [Function("TppLandingFunction")]
-        public void Run(
+        public async Task Run(
             [BlobTrigger("tpplanding", Connection = "BlobStorage")] Document document)
         {
             this.loggingBroker
@@ -35,10 +35,7 @@ namespace LHDS.Functions.Landings.Tpp
 
             try
             {
-                Task.Run(async () =>
-                {
-                    await tppLandingClient.ProcessAsync(document);
-                }).Wait();
+                await tppLandingClient.ProcessAsync(document);
             }
             catch (Exception ex)
             {
@@ -47,4 +44,3 @@ namespace LHDS.Functions.Landings.Tpp
             }
         }
     }
-}

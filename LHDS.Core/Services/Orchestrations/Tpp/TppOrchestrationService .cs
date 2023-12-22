@@ -83,7 +83,6 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
                         ? document.FileName
                         : "/" + document.FileName;
 
-                    var processingtimestamp = currentDateTime.ToString("yyyyMMddHHmmss");
                     var decryptedFileName =
                                 $"/{landingConfiguration.DecryptedFolder}"
                                 + $"/{retrievedDataSetSpecification.DataSet.DataSetName}"

@@ -64,7 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             landingConfiguration = new LandingConfiguration
             {
                 LandingSupplierId = Guid.NewGuid(),
-                DecryptedFolder = "inbox/landings"
+                DecryptedFolder = "inbox/landing"
             };
 
             blobContainers = new BlobContainers
@@ -105,13 +105,14 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
         private static Filler<Document> CreateDocumentFiller()
         {
             var filler = new Filler<Document>();
-            string filename = GetRandomString();
+            string filename = $"{GetRandomString()}/{GetRandomString()}.csv";
 
             filler.Setup()
                 .OnProperty(dataSet => dataSet.FileName).Use(() => filename);
 
             return filler;
         }
+
         private static string GetRandomString() =>
           new MnemonicString().GetValue();
 

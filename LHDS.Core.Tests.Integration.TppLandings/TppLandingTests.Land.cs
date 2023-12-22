@@ -59,7 +59,6 @@ namespace LHDS.Core.Tests.Integration.TppLandings
                .RemoveDataSetSpecificationByIdAsync(dataSetSpecification.Id);
 
             await this.dataSetService.RemoveDataSetByIdAsync(dataSet.Id);
-
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(actualGuid);
             await this.supplierService.RemoveSupplierByIdAsync(supplier.Id);
         }

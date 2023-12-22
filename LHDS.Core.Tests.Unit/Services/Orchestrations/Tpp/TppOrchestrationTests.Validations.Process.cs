@@ -79,7 +79,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             ValueTask<Guid> returnedGuidTask = this.tppOrchestrationService.ProcessAsync(randomDocument);
 
             TppOrchestrationValidationException actualException =
-               await Assert.ThrowsAsync<TppOrchestrationValidationException>(returnedGuidTask.AsTask);
+                await Assert.ThrowsAsync<TppOrchestrationValidationException>(returnedGuidTask.AsTask);
 
             // then
             actualException.Should()

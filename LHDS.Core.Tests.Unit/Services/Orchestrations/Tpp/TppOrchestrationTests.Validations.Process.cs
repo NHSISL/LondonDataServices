@@ -19,28 +19,28 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
             // given
             Models.Foundations.Documents.Document randonNullDocument = null;
 
-            var nullDocumentException =
+            var nullTppDocumentException =
                 new NullTppDocumentException(
                      message: "Document is Null");
 
-            var expectedDocumentValidationException =
-                new TppDocumentValidationException(
-                    message: "TPP Document validation errors occured, please try again.",
-                    innerException: nullDocumentException);
+            var expectepOrchestrationValidationException =
+                new TppOrchestrationValidationException(
+                    message: "TPP Orchestration validation errors occured, please try again.",
+                    innerException: nullTppDocumentException);
 
             // when
             ValueTask<Guid> returnedGuidTask = this.tppOrchestrationService.ProcessAsync(randonNullDocument);
 
-            TppDocumentValidationException actualException =
-                await Assert.ThrowsAsync<TppDocumentValidationException>(returnedGuidTask.AsTask);
+            TppOrchestrationValidationException actualException =
+                await Assert.ThrowsAsync<TppOrchestrationValidationException>(returnedGuidTask.AsTask);
 
             // then
             actualException.Should()
-               .BeEquivalentTo(expectedDocumentValidationException);
+               .BeEquivalentTo(expectepOrchestrationValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    expectedDocumentValidationException))),
+                    expectepOrchestrationValidationException))),
                         Times.Once);
 
             this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
@@ -71,15 +71,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
                values: "Text is required");
 
             var expectedTppOrchestrationValidationException =
-                new TppDocumentValidationException(
-                    message: "TPP Document validation errors occured, please try again.",
+                new TppOrchestrationValidationException(
+                    message: "TPP Orchestration validation errors occured, please try again.",
                     innerException: invalidArgumentException);
 
             // when
             ValueTask<Guid> returnedGuidTask = this.tppOrchestrationService.ProcessAsync(randomDocument);
 
-            TppDocumentValidationException actualException =
-               await Assert.ThrowsAsync<TppDocumentValidationException>(returnedGuidTask.AsTask);
+            TppOrchestrationValidationException actualException =
+                await Assert.ThrowsAsync<TppOrchestrationValidationException>(returnedGuidTask.AsTask);
 
             // then
             actualException.Should()

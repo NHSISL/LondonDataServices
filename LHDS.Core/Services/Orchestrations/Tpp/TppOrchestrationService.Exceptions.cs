@@ -31,10 +31,6 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             {
                 throw CreateAndLogValidationException(invalidArgumentException);
             }
-            catch (TppDocumentValidationException tppDocumentValidationException)
-            {
-                throw CreateAndLogValidationException(tppDocumentValidationException);
-            }
             catch (DocumentValidationException documentValidationException)
             {
                 throw CreateAndLogDependencyValidationException(documentValidationException);
@@ -94,11 +90,11 @@ namespace LHDS.Core.Services.Orchestrations.Tpp
             }
         }
 
-        private TppDocumentValidationException CreateAndLogValidationException(Xeption exception)
+        private TppOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
             var tppDocumentValidationExceptionn =
-                new TppDocumentValidationException(
-                    message: "TPP Document validation errors occured, please try again.",
+                new TppOrchestrationValidationException(
+                    message: "TPP Orchestration validation errors occured, please try again.",
                     innerException: exception);
 
             this.loggingBroker.LogError(tppDocumentValidationExceptionn);

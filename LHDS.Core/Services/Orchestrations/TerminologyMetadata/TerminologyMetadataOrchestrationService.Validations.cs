@@ -6,7 +6,7 @@ using LHDS.Core.Models.Orchestrations.TerminologyMedata.Exceptions;
 
 namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
 {
-    public partial class TerminologyMetadataOrchestrationService
+    internal partial class TerminologyMetadataOrchestrationService
     {
         public void ValidateResourceType(string resourceType) =>
             Validate((Rule: IsInvalid(resourceType), Parameter: "resourceType"));

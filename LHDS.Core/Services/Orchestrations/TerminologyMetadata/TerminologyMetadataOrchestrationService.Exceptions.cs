@@ -4,10 +4,8 @@
 
 using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Orchestrations.TerminologyDetails.Exceptions;
 using LHDS.Core.Models.Orchestrations.TerminologyMedata.Exceptions;
 using LHDS.Core.Models.Orchestrations.TerminologyMetadata.Exceptions;
-using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.Ontologies.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyArtifacts.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyPolls.Exceptions;
@@ -15,7 +13,7 @@ using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
 {
-    public partial class TerminologyMetadataOrchestrationService
+    internal partial class TerminologyMetadataOrchestrationService
     {
         private delegate ValueTask ReturningNothingFunction();
 
@@ -34,7 +32,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
             {
                 throw CreateAndLogDependencyValidationException(terminologyPollProcessingValidationException);
             }
-            catch (TerminologyPollProcessingDependencyValidationException 
+            catch (TerminologyPollProcessingDependencyValidationException
                 terminologyPollProcessingDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(terminologyPollProcessingDependencyValidationException);

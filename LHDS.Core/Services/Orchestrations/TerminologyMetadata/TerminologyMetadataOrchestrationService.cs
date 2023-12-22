@@ -17,7 +17,7 @@ using LHDS.Core.Services.Processings.TerminologyPolls;
 
 namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
 {
-    public partial class TerminologyMetadataOrchestrationService : ITerminologyMetadataOrchestrationService
+    internal partial class TerminologyMetadataOrchestrationService : ITerminologyMetadataOrchestrationService
     {
         private readonly ITerminologyPollProcessingService terminologyPollProcessingService;
         private readonly ITerminologyArtifactProcessingService terminologyArtifactProcessingService;
@@ -28,7 +28,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
         private readonly IIdentifierBroker identifierBroker;
 
 
-        internal TerminologyMetadataOrchestrationService(
+        public TerminologyMetadataOrchestrationService(
             ITerminologyPollProcessingService terminologyPollProcessingService,
             ITerminologyArtifactProcessingService terminologyArtifactProcessingService,
             IOntologyProcessingService ontologyProcessingService,

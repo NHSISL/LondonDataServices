@@ -17,6 +17,7 @@ using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Orchestrations.TerminologyMedata;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
+using LHDS.Core.Services.Orchestrations.TerminologyMetadata;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +36,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
         private readonly ITerminologyArtifactService terminologyArtifactService;
         private readonly TerminologyMetadataConfiguration terminologyMetadataConfiguration;
         private readonly IDocumentProcessingService documentProcessingService;
+        private readonly ITerminologyMetadataOrchestrationService terminologyMetadataOrchestrationService;
         private readonly ITerminologyClient terminologyClient;
         private readonly DependencyBroker dependencyBroker;
 
@@ -59,12 +61,17 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
             serviceCollection.AddTerminologyClientForAcceptance(this.dependencyBroker.Configuration);
 
             serviceCollection
-                .AddTransient<IOntologyBroker>(serviceProvider => ontologyBrokerMock.Object);
+                .AddTransient<IOntologyBroker>(serviceProvider => ontologyBrokerMock.Object)
+                .AddTransient<ITerminologyMetadataOrchestrationService, TerminologyMetadataOrchestrationService>();
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             documentProcessingService = serviceProvider.GetService<IDocumentProcessingService>();
             terminologyArtifactService = serviceProvider.GetService<ITerminologyArtifactService>();
+
+            var terminologyMetadataOrchestrationService =
+                serviceProvider.GetService<ITerminologyMetadataOrchestrationService>();
+
             terminologyClient = serviceProvider.GetService<ITerminologyClient>();
         }
 

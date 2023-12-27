@@ -73,7 +73,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
 
             switch (resourceType)
             {
-                case "CodingSystem":
+                case "CodeSystem":
                     retrievedOntologyAssets =
                         await this.ontologyProcessingService.RetrieveAllCodingSystemsAsync(relativeUrl);
                     break;

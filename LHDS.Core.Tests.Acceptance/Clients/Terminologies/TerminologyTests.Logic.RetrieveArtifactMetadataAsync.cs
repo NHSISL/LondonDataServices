@@ -19,7 +19,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
         {
             //Given
             DateTimeOffset randomDateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
-            string resourceType = "CodingSystem";
+            string resourceType = "CodeSystem";
             string nextPageUrl = "";
             List<dynamic> randomArtifactProperties = CreateRandomArtifactProperties(resourceType);
             Bundle randomCodingSystemBundle = CreateCodeSystemBundleFromRandomData(randomArtifactProperties, nextPageUrl);

@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
             await this.terminologyArtifactService.AddTerminologyArtifactAsync(undownloadedTerminologyArtifact);
 
             this.ontologyBrokerMock.Setup(broker =>
-                broker.GetArtifactDetailsAsync(undownloadedTerminologyArtifact.FullUrl))
+                broker.GetArtifactDetailsAsync(It.IsAny<string>()))
                     .ReturnsAsync(randomArtifactDetail);
 
             string fileName = $"{undownloadedTerminologyArtifact.ResourceType}/" +

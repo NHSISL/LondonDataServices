@@ -11,6 +11,9 @@ using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
+#if RELEASE
+using Microsoft.AspNetCore.Authorization;
+#endif
 
 namespace LHDS.AdminPortal.Api.Controllers
 {
@@ -68,7 +71,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         [EnableQuery(PageSize = 5000)]
 #endif
 #if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Pds, ISL.LDS.AdminApi.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.TerminologyArtifact, ISL.LDS.AdminApi.ReadOnly")]
 #endif
         public ActionResult<IQueryable<TerminologyArtifact>> Get()
         {

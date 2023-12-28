@@ -1,4 +1,4 @@
-import { Validation } from "../../models/validations/validation";
+﻿import { Validation } from "../../models/validations/validation";
 
 export const supplierValidations: Array<Validation> = [
     {

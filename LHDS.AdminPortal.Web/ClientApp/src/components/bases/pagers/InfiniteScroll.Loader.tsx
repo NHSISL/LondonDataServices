@@ -5,16 +5,18 @@ interface InfiniteScrollLoaderProps {
     loading: boolean;
     spinner: ReactElement;
     noMorePages: boolean;
-    noMorePagesMessage: ReactElement
+    noMorePagesMessage?: ReactElement;
+    totalPages?: number;
 }
 
 const InfiniteScrollLoader: FunctionComponent<InfiniteScrollLoaderProps> = (props) => {
-   
+    const showNoMorePagesMessage = props.noMorePages && props.totalPages && props.totalPages > 1;
+
     return (
         <>
             {props.children}
             {props.loading && props.spinner}
-            {props.noMorePages && props.noMorePagesMessage}
+            {showNoMorePagesMessage && props.noMorePagesMessage}
         </>
     )
 }

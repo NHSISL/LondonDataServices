@@ -94,6 +94,12 @@ export const NavigationBar: React.FC = () => {
                 {submenuItems.map((item, index) => (
                     <Submenu key={index} items={item} allowedRoles={item.allowedRoles} />
                 ))}
+
+                <li className="">
+                    <SecuredComponents allowedRoles={securityPoints.terminologyArtifact.view}>
+                        <SecuredLink icon="" to="/terminologyArtifact">Terminology Artifacts</SecuredLink>
+                    </SecuredComponents>
+                </li>
             </ul>
         </>
     );

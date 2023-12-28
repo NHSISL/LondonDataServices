@@ -19,7 +19,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 {
     public partial class LandingsApiTests
     {
-        [Fact]
+        [Fact(Skip = "Ftp Down")]
         public async Task ShouldLandDocumentByFileNameForExistingIngestionTrackingAsync()
         {
             //Given
@@ -54,7 +54,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             await CleanupTask(expectedIngestionTracking.Id);
         }
 
-        [Fact]
+        [Fact(Skip = "Ftp Down")]
         public async Task ShouldLandDocumentByFileNameForNewIngestionTrackingAsync()
         {
             //Given
@@ -77,7 +77,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
             DataSet activeDataSet = await PostRandomActiveDataSetAsync(landingSupplierId);
 
-            DataSetSpecification activeDataSetSpecification = 
+            DataSetSpecification activeDataSetSpecification =
                 await PostRandomActiveDataSetSpecificationAsync(activeDataSet.Id);
 
 

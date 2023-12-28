@@ -16,15 +16,13 @@ using LHDS.Core.Models.Foundations.DataSets;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
-using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
 using LHDS.Core.Models.Orchestrations.Downloads;
-using LHDS.Core.Services.Orchestrations.Downloads;
+using LHDS.Core.Services.Orchestrations.Tpp;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
-using LHDS.Core.Services.Processings.Downloads;
 using LHDS.Core.Services.Processings.IngestionTrackings;
 using Moq;
 using Tynamix.ObjectFiller;
@@ -32,15 +30,14 @@ using Xeptions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
+namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Tpp
 {
-    public partial class DownloadOrchestrationTests
+    public partial class TppOrchestrationTests
     {
         private readonly ITestOutputHelper output;
         private readonly Mock<IDocumentProcessingService> documentProcessingServiceMock;
-        private readonly Mock<IDownloadProcessingService> downloadProcessingServiceMock;
         private readonly Mock<IIngestionTrackingProcessingService> ingestionTrackingProcessingServiceMock;
-        private readonly Mock<IIngestionTrackingAuditProcessingService> auditServiceMock;
+        private readonly Mock<IIngestionTrackingAuditProcessingService> ingestionTrackingProcessingAuditServiceMock;
         private readonly Mock<IDataSetSpecificationProcessingService> dataSetSpecificationProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
@@ -48,17 +45,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         private readonly Mock<IHashBroker> hashBrokerMock;
         private readonly LandingConfiguration landingConfiguration;
         private readonly BlobContainers blobContainers;
-        private readonly IDownloadOrchestrationService downloadOrchestrationService;
+        private readonly ITppOrchestrationService tppOrchestrationService;
         private readonly ICompareLogic compareLogic;
 
-        public DownloadOrchestrationTests(ITestOutputHelper output)
+        public TppOrchestrationTests(ITestOutputHelper output)
         {
             this.output = output;
             documentProcessingServiceMock = new Mock<IDocumentProcessingService>();
-            downloadProcessingServiceMock = new Mock<IDownloadProcessingService>();
             ingestionTrackingProcessingServiceMock = new Mock<IIngestionTrackingProcessingService>();
+            ingestionTrackingProcessingAuditServiceMock = new Mock<IIngestionTrackingAuditProcessingService>();
             dataSetSpecificationProcessingServiceMock = new Mock<IDataSetSpecificationProcessingService>();
-            auditServiceMock = new Mock<IIngestionTrackingAuditProcessingService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             identifierBrokerMock = new Mock<IIdentifierBroker>();
@@ -68,7 +64,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             landingConfiguration = new LandingConfiguration
             {
                 LandingSupplierId = Guid.NewGuid(),
-                EncryptedFolder = "encrypted",
                 DecryptedFolder = "inbox/landing"
             };
 
@@ -78,13 +73,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
                 Versioner = "versioner",
                 OptOut = "optout",
                 Pds = "pds",
+                TppLanding = "tpplanding"
             };
 
-            downloadOrchestrationService = new DownloadOrchestrationService(
+            tppOrchestrationService = new TppOrchestrationService(
                 documentProcessingService: documentProcessingServiceMock.Object,
-                downloadProcessingService: downloadProcessingServiceMock.Object,
                 ingestionTrackingProcessingService: ingestionTrackingProcessingServiceMock.Object,
-                auditService: auditServiceMock.Object,
+                ingestionTrackingProcessingAuditService: ingestionTrackingProcessingAuditServiceMock.Object,
                 dataSetSpecificationProcessingService: dataSetSpecificationProcessingServiceMock.Object,
                 blobContainers,
                 loggingBroker: loggingBrokerMock.Object,
@@ -97,10 +92,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
-        private static List<Document> CreateRandomDocuments()
+        private static List<Document> CreateRandomDocuments(int count)
         {
             return CreateDocumentFiller()
-                .Create(count: 1)
+                .Create(count)
                     .ToList();
         }
 
@@ -110,15 +105,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         private static Filler<Document> CreateDocumentFiller()
         {
             var filler = new Filler<Document>();
-            string filename = GetRandomString(10);
-
-            for (int i = 0; i < 6; i++)
-            {
-                filename = $"{filename}_{GetRandomString(10)}";
-            }
+            string filename = $"{GetRandomString()}/{GetRandomString()}.csv";
 
             filler.Setup()
-                .OnProperty(dataSet => dataSet.FileName).Use(filename);
+                .OnProperty(dataSet => dataSet.FileName).Use(() => filename);
 
             return filler;
         }
@@ -128,9 +118,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
         private static string GetRandomString(int length) =>
             new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
-
-        private static string GetRandomMessage() =>
-           new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
@@ -232,7 +219,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
 
-        public static TheoryData DownloadDependencyValidationExceptions()
+        public static TheoryData TppDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -246,14 +233,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
                 new DocumentDependencyValidationException(
                     message: "Document dependency validation occurred, please try again.",
-                    innerException),
-
-                new DownloadValidationException(
-                    message: "Download validation errors occurred, please try again.",
-                    innerException),
-
-                new DownloadDependencyValidationException(
-                    message: "Download dependency validation occurred, please try again.",
                     innerException),
 
                 new IngestionTrackingValidationException(
@@ -274,7 +253,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
             };
         }
 
-        public static TheoryData DownloadDependencyExceptions()
+        public static TheoryData TppDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
@@ -288,14 +267,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Downloads
 
                 new DocumentServiceException(
                     message: "Document service error occurred, contact support.",
-                    innerException),
-
-                new DownloadDependencyException(
-                    message: "Download dependency error occurred, contact support.",
-                    innerException),
-
-                new DownloadServiceException(
-                    message: "Download service error occurred, contact support.",
                     innerException),
 
                 new IngestionTrackingDependencyException(

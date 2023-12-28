@@ -92,7 +92,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
                     {
                         Id = this.identifierBroker.GetIdentifier(),
                         ResourceType = resourceType,
-                        LastPoll = DateTimeOffset.MinValue,
+                        LastPoll = DateTimeOffset.MinValue.AddDays(1),
                         CreatedBy = "System",
                         UpdatedBy = "System",
                         UpdatedDate = dateTimeOffset,

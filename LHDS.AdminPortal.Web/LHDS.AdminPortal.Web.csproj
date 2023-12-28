@@ -139,6 +139,12 @@
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\suppliers\supplierValidations.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\terminologyArtifacts\terminologyArtifactDetail.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\terminologyArtifacts\terminologyArtifactDetailCard.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\terminologyArtifacts\terminologyArtifactDetailCardView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\terminologyArtifacts\terminologyArtifactRow.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\terminologyArtifacts\terminologyArtifactRowView.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\terminologyArtifacts\terminologyArtifactTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\hooks\useValidation.ts" />
     <TypeScriptCompile Remove="ClientApp\src\hooks\validation.test.ts" />
     <TypeScriptCompile Remove="ClientApp\src\hooks\validationMessages.ts" />
@@ -159,6 +165,7 @@
     <TypeScriptCompile Remove="ClientApp\src\models\specificationObjects\specificationObject.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\suppliers\supplier.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\terminologyArtifacts\terminologyArtifact.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\terminologyArtifacts\terminologyArtifactHomeView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\audit\auditView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\dataSetSpecifications\dataSetSpecificationView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\dataSets\dataSetView.ts" />
@@ -187,6 +194,8 @@
     <TypeScriptCompile Remove="ClientApp\src\pages\ownershipsPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\PdsSearch.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\PdsUpload.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\terminologyArtifactDetailPage.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\pages\terminologyArtifactPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\auditService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\documentService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\featureService.ts" />
@@ -208,7 +217,8 @@
     <TypeScriptCompile Remove="ClientApp\src\services\views\Pds\pdsViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\specificationObjects\specificationObjectViewService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\views\supplierViewService .ts" />
-    <TypeScriptCompile Remove="ClientApp\src\services\views\TerminologyArtifacts\terminologyArtifactViewService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\terminologyArtifacts\terminologyArtifactHomeViewService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\views\terminologyArtifacts\terminologyArtifactViewService.ts" />
   </ItemGroup>
 
   <ItemGroup>

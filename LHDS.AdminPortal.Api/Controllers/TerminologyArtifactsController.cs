@@ -9,6 +9,7 @@ using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using RESTFulSense.Controllers;
 
 namespace LHDS.AdminPortal.Api.Controllers
@@ -60,7 +61,16 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IQueryable<TerminologyArtifact>> GetAllTerminologyArtifacts()
+#if !DEBUG
+        [EnableQuery(PageSize = 50)]
+#endif
+#if DEBUG
+        [EnableQuery(PageSize = 5000)]
+#endif
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.Pds, ISL.LDS.AdminApi.ReadOnly")]
+#endif
+        public ActionResult<IQueryable<TerminologyArtifact>> Get()
         {
             try
             {

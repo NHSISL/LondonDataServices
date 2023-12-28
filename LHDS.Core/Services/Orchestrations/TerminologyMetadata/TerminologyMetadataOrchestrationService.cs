@@ -64,6 +64,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
                     
                 await ProcessArtifacts(relativeUrl, resourceType);
                 retrievedTerminologyPoll.LastPoll = currentDateTimeOffset;
+                retrievedTerminologyPoll.UpdatedDate = currentDateTimeOffset;
                 await this.terminologyPollProcessingService.ModifyTerminologyPollAsync(retrievedTerminologyPoll);
             });
 

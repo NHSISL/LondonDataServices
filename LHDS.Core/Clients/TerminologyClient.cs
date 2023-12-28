@@ -80,7 +80,7 @@ namespace LHDS.Core.Clients
                 terminologyDetailOrchestrationDependencyValidationException)
             {
                 throw new TerminologyClientValidationException(
-                    message: "Terminology client validation error occurred, fix errors and try again.",
+                    message: "Terminology client dependency validation error occurred, fix errors and try again.",
                     innerException:
                         terminologyDetailOrchestrationDependencyValidationException.InnerException as Xeption);
             }

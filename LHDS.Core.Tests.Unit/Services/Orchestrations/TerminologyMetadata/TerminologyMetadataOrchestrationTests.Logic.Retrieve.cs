@@ -78,6 +78,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
 
             TerminologyPoll updatedTerminologyPoll = retrievedTerminologyPoll.DeepClone();
             updatedTerminologyPoll.LastPoll = randomDateTimeOffset;
+            updatedTerminologyPoll.UpdatedDate = randomDateTimeOffset;
             TerminologyPoll storageTerminologyPoll = updatedTerminologyPoll.DeepClone();
 
             this.terminologyPollProcessingServiceMock.Setup(service =>

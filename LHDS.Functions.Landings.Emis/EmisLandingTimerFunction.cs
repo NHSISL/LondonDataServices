@@ -28,8 +28,9 @@ namespace LHDS.Functions.Landings.Emis
         }
 
         [Function("EmisLandingTimerFunction")]
-        public void Run([TimerTrigger("0 */15 * * * *")] MyInfo myTimer)
+        public void Run([TimerTrigger("0 0 */3 * * *")] MyInfo myTimer)
         {
+
             this.loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
             try

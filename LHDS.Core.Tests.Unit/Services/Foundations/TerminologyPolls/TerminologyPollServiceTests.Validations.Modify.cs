@@ -82,6 +82,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
                 values: "Text is required");
 
             invalidTerminologyPollException.AddData(
+                key: nameof(TerminologyPoll.LastPoll),
+                values: "Date is required");
+
+            invalidTerminologyPollException.AddData(
                 key: nameof(TerminologyPoll.CreatedDate),
                 values: "Date is required");
 

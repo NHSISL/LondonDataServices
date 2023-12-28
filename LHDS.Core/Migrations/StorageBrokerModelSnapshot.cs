@@ -1159,7 +1159,7 @@ namespace LHDS.Core.Migrations
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTimeOffset?>("LastPoll")
+                    b.Property<DateTimeOffset>("LastPoll")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("ResourceType")

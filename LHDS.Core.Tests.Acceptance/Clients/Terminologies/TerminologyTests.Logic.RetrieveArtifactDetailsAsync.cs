@@ -20,12 +20,14 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
             // given
             DateTimeOffset dateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
             string assembly = Assembly.GetExecutingAssembly().Location;
+            TerminologyArtifact undownloadedTerminologyArtifact = CreateRandomUndownloadedTerminologyArtifact();
 
             string inputFilePath = Path.Combine(
                 Path.GetDirectoryName(assembly),
                 @"Resources/Clients/Terminology/ShouldRetrieveArtifactDetailsAsync.json");
 
             string randomArtifactDetail = await File.ReadAllTextAsync(inputFilePath);
+            await this.terminologyArtifactService.AddTerminologyArtifactAsync(undownloadedTerminologyArtifact);
 
             this.ontologyBrokerMock.Setup(broker =>
                 broker.GetArtifactDetailsAsync(It.IsAny<string>()))
@@ -41,7 +43,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
             this.ontologyBrokerMock.Verify(broker =>
                 broker.GetArtifactDetailsAsync(It.IsAny<string>()),
                     Times.Once());
-       
+
+            await this.terminologyArtifactService.
+                RemoveTerminologyArtifactByIdAsync(undownloadedTerminologyArtifact.Id);
+
+            await this.documentProcessingService.RemoveDocumentByFileNameAsync(fileName, "terminology");
+
             this.ontologyBrokerMock.VerifyNoOtherCalls();
         }
     }

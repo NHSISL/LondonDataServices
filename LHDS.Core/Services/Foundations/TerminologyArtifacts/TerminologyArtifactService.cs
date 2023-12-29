@@ -47,7 +47,6 @@ namespace LHDS.Core.Services.Foundations.TerminologyArtifacts
                 TerminologyArtifact maybeTerminologyArtifact = await this.storageBroker
                     .SelectTerminologyArtifactByIdAsync(terminologyArtifactId);
 
-                //ValidateStorageTerminologyArtifact(maybeTerminologyArtifact, terminologyArtifactId);
 
                 return maybeTerminologyArtifact;
             });

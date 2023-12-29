@@ -22,7 +22,9 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
             string resourceType = "CodeSystem";
             string nextPageUrl = "";
             List<dynamic> randomArtifactProperties = CreateRandomArtifactProperties(resourceType);
-            Bundle randomCodingSystemBundle = CreateCodeSystemBundleFromRandomData(randomArtifactProperties, nextPageUrl);
+
+            Bundle randomCodingSystemBundle = 
+                CreateCodeSystemBundleFromRandomData(randomArtifactProperties, nextPageUrl);
 
             this.ontologyBrokerMock.Setup(broker =>
                 broker.GetAllCodingSystemsAsync(It.IsAny<string>()))

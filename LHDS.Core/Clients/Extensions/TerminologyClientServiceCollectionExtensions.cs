@@ -179,6 +179,7 @@ namespace LHDS.Core.Clients.Extensions
                     if (errors.Contains(parameter))
                     {
                         (errors[parameter] as List<string>)?.Add(rule.Message);
+                        
                         return;
                     }
 

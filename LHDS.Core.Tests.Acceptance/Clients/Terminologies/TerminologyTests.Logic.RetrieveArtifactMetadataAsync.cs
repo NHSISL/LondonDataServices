@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Hl7.Fhir.Model;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using Moq;
@@ -14,29 +15,64 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
 {
     public partial class TerminologyTests
     {
-        [Fact]
-        public async System.Threading.Tasks.Task ShouldRetrieveArtifactMetadataAsync()
+        [Theory]
+        [InlineData("CodeSystem")]
+        [InlineData("ValueSet")]
+        [InlineData("ConceptMap")]
+        public async System.Threading.Tasks.Task ShouldRetrievePagedArtifactMetadataAsync(string inputResourceType)
         {
             //Given
             DateTimeOffset randomDateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
-            string resourceType = "CodeSystem";
+            string resourceType = inputResourceType;
             string nextPageUrl = "";
             List<dynamic> randomArtifactProperties = CreateRandomArtifactProperties(resourceType);
 
-            Bundle randomCodingSystemBundle = 
+            Bundle randomCodeSystemBundle = 
                 CreateCodeSystemBundleFromRandomData(randomArtifactProperties, nextPageUrl);
+
+            Bundle randomConceptMapBundle =
+                CreateConceptMapBundleFromRandomData(randomArtifactProperties, nextPageUrl);
+
+            Bundle randomValueSetBundle =
+                CreateValueSetBundleFromRandomData(randomArtifactProperties, nextPageUrl);
 
             this.ontologyBrokerMock.Setup(broker =>
                 broker.GetAllCodingSystemsAsync(It.IsAny<string>()))
-                    .ReturnsAsync(randomCodingSystemBundle);
+                    .ReturnsAsync(randomCodeSystemBundle);
+
+            this.ontologyBrokerMock.Setup(broker =>
+                broker.GetAllValueSetsAsync(It.IsAny<string>()))
+                    .ReturnsAsync(randomValueSetBundle);
+
+            this.ontologyBrokerMock.Setup(broker =>
+                broker.GetAllConceptMapsAsync(It.IsAny<string>()))
+                    .ReturnsAsync(randomConceptMapBundle);
+
 
             //When
             await this.terminologyClient.RetrieveArtifactMetadataAsync(resourceType);
 
             //Then
-            this.ontologyBrokerMock.Verify(broker =>
-                broker.GetAllCodingSystemsAsync(It.IsAny<string>()),
-                    Times.Once);
+            if(resourceType == "CodeSystem")
+            {
+                this.ontologyBrokerMock.Verify(broker =>
+                    broker.GetAllCodingSystemsAsync(It.IsAny<string>()),
+                        Times.Once);
+            }
+
+            if (resourceType == "ValueSet")
+            {
+                this.ontologyBrokerMock.Verify(broker =>
+                    broker.GetAllValueSetsAsync(It.IsAny<string>()),
+                        Times.Once);
+            }
+
+            if (resourceType == "ConceptMap")
+            {
+                this.ontologyBrokerMock.Verify(broker =>
+                    broker.GetAllConceptMapsAsync(It.IsAny<string>()),
+                        Times.Once);
+            }
 
             IQueryable<TerminologyArtifact> terminologyArtifacts =
                 this.terminologyArtifactService.RetrieveAllTerminologyArtifacts();

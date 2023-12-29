@@ -170,6 +170,57 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
         }
 
         private static Bundle CreateCodeSystemBundleFromRandomData(
+             List<dynamic> randomArtifactProperties,
+             string nextPageUrl)
+        {
+            Bundle externalBundleResult = new Bundle
+            {
+                Id = Guid.NewGuid().ToString(),
+                Type = Bundle.BundleType.Searchset,
+                Total = randomArtifactProperties.Count,
+                Link = new List<Bundle.LinkComponent>
+                {
+                    new Bundle.LinkComponent
+                    {
+                        Relation = "self",
+                        Url = "http://localhost:5000/api/fhir/ValueSet"
+                    },
+                    new Bundle.LinkComponent
+                    {
+                        Relation = "next",
+                        Url = nextPageUrl
+                    }
+                },
+                Entry = new List<Bundle.EntryComponent>()
+            };
+
+            foreach (var item in randomArtifactProperties)
+            {
+                externalBundleResult.Entry.Add(
+                    new Bundle.EntryComponent
+                    {
+                        FullUrl = item.FullUrl,
+                        Resource = new CodeSystem
+                        {
+                            Meta = new Meta
+                            {
+                                LastUpdated = item.LastUpdated,
+                            },
+
+                            Version = item.Version,
+                            Name = item.Name,
+                            Title = item.Title,
+
+                            Status = (PublicationStatus)Enum.Parse(
+                                typeof(PublicationStatus), item.Status, ignoreCase: true),
+                        }
+                    });
+            }
+
+            return externalBundleResult;
+        }
+
+        private static Bundle CreateValueSetBundleFromRandomData(
             List<dynamic> randomArtifactProperties,
             string nextPageUrl)
         {
@@ -200,7 +251,58 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
                     new Bundle.EntryComponent
                     {
                         FullUrl = item.FullUrl,
-                        Resource = new CodeSystem
+                        Resource = new ValueSet
+                        {
+                            Meta = new Meta
+                            {
+                                LastUpdated = item.LastUpdated,
+                            },
+
+                            Version = item.Version,
+                            Name = item.Name,
+                            Title = item.Title,
+
+                            Status = (PublicationStatus)Enum.Parse(
+                                typeof(PublicationStatus), item.Status, ignoreCase: true),
+                        }
+                    });
+            }
+
+            return externalBundleResult;
+        }
+
+        private static Bundle CreateConceptMapBundleFromRandomData(
+            List<dynamic> randomArtifactProperties,
+            string nextPageUrl)
+        {
+            Bundle externalBundleResult = new Bundle
+            {
+                Id = Guid.NewGuid().ToString(),
+                Type = Bundle.BundleType.Searchset,
+                Total = randomArtifactProperties.Count,
+                Link = new List<Bundle.LinkComponent>
+                {
+                    new Bundle.LinkComponent
+                    {
+                        Relation = "self",
+                        Url = "http://localhost:5000/api/fhir/ValueSet"
+                    },
+                    new Bundle.LinkComponent
+                    {
+                        Relation = "next",
+                        Url = nextPageUrl
+                    }
+                },
+                Entry = new List<Bundle.EntryComponent>()
+            };
+
+            foreach (var item in randomArtifactProperties)
+            {
+                externalBundleResult.Entry.Add(
+                    new Bundle.EntryComponent
+                    {
+                        FullUrl = item.FullUrl,
+                        Resource = new ConceptMap
                         {
                             Meta = new Meta
                             {

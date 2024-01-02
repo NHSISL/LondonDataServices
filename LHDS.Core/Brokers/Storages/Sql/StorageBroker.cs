@@ -33,7 +33,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
             AddAddressConfigurations(modelBuilder);
             AddAddressExtractionAuditConfigurations(modelBuilder);
             AddAddressLoadingAuditConfigurations(modelBuilder);
-            AddBatchConfigurations(modelBuilder);
             AddDataSetConfigurations(modelBuilder);
             AddDataSetSpecificationConfigurations(modelBuilder);
             AddDataTypeConfigurations(modelBuilder);

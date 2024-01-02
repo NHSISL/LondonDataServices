@@ -48,7 +48,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
                 broker.GetAllConceptMapsAsync(It.IsAny<string>()))
                     .ReturnsAsync(randomConceptMapBundle);
 
-
             //When
             await this.terminologyClient.RetrieveArtifactMetadataAsync(resourceType);
 

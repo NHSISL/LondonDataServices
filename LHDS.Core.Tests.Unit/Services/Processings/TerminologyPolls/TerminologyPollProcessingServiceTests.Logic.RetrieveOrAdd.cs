@@ -78,7 +78,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
             {
                 Id = randomId,
                 ResourceType = resouceType,
-                LastPoll = randomDateTimeOffset,
+                LastPoll = DateTimeOffset.MinValue,
                 CreatedBy = "System",
                 UpdatedBy = "System",
                 UpdatedDate = randomDateTimeOffset,

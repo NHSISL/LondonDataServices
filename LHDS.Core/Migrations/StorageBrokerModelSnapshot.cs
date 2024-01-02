@@ -17,7 +17,7 @@ namespace LHDS.Core.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.13")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -616,6 +616,11 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("DecryptedFileSha256Hash")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
                     b.Property<int>("DecryptedFileSize")
                         .HasColumnType("int");
 
@@ -623,6 +628,11 @@ namespace LHDS.Core.Migrations
                         .IsRequired()
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("EncryptedFileSha256Hash")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<int>("EncryptedFileSize")
                         .HasColumnType("int");
@@ -1026,6 +1036,12 @@ namespace LHDS.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("CanDecryptIngestionTracking")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("CanDownloadIngestionTracking")
+                        .HasColumnType("bit");
+
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -1056,6 +1072,9 @@ namespace LHDS.Core.Migrations
                     b.Property<DateTimeOffset>("UpdatedDate")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<bool>("canRelandIngestionTracking")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.ToTable("Suppliers", "Configuration");
@@ -1064,13 +1083,16 @@ namespace LHDS.Core.Migrations
                         new
                         {
                             Id = new Guid("67680f17-9d0c-4474-8b35-56ca8f9df1f6"),
+                            CanDecryptIngestionTracking = false,
+                            CanDownloadIngestionTracking = false,
                             CreatedBy = "System",
                             CreatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "Emis Supplier",
                             FriendlyName = "EMIS",
                             Name = "EMIS",
                             UpdatedBy = "System",
-                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            canRelandIngestionTracking = false
                         });
                 });
 
@@ -1161,7 +1183,7 @@ namespace LHDS.Core.Migrations
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTimeOffset?>("LastPoll")
+                    b.Property<DateTimeOffset>("LastPoll")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("ResourceType")

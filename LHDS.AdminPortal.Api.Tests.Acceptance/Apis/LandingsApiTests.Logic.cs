@@ -19,7 +19,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 {
     public partial class LandingsApiTests
     {
-        [Fact(Skip = "Issue parked till later sprint")]
+
+        [Fact(Skip = "Ftp Down")]
         public async Task ShouldLandDocumentByFileNameForExistingIngestionTrackingAsync()
         {
             try
@@ -66,7 +67,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             }
         }
 
-        [Fact(Skip = "Issue parked till later sprint")]
+        [Fact(Skip = "Ftp Down")]
         public async Task ShouldLandDocumentByFileNameForNewIngestionTrackingAsync()
         {
             try
@@ -132,7 +133,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 
                 throw;
             }
-
         }
 
         private async ValueTask CleanupTask(string fileName)

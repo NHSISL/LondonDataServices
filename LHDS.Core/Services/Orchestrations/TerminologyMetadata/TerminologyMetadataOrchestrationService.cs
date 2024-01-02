@@ -11,6 +11,7 @@ using LHDS.Core.Models.Foundations.Ontologies;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Orchestrations.TerminologyMedata;
+using LHDS.Core.Models.Orchestrations.TerminologyMedata.Exceptions;
 using LHDS.Core.Services.Processings.Ontologies;
 using LHDS.Core.Services.Processings.TerminologyArtifacts;
 using LHDS.Core.Services.Processings.TerminologyPolls;
@@ -88,6 +89,10 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
                     retrievedOntologyAssets =
                         await this.ontologyProcessingService.RetrieveAllConceptMapsAsync(relativeUrl);
                     break;
+
+                default:
+                    throw new TerminologyMetadataOrchestrationResourceTypeException(
+                        message: $"Unsupported resource type: {resourceType}");
             }
 
             foreach (var asset in retrievedOntologyAssets.Assets)

@@ -26,7 +26,7 @@
 	  <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.1" />
 	  <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
 	  <PackageReference Include="Microsoft.Identity.Web" Version="2.16.0" />
-	  <PackageReference Include="RESTFulSense" Version="2.15.0" />
+	  <PackageReference Include="RESTFulSense" Version="2.16.0" />
 	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 	  <PackageReference Include="Xeption" Version="2.6.0" />
 	  <PackageReference Include="xunit.extensibility.core" Version="2.6.4" />

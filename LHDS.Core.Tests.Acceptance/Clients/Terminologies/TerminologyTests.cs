@@ -12,9 +12,11 @@ using LHDS.Core.Brokers.Ontologies;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Clients;
 using LHDS.Core.Clients.Extensions;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Ontologies;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
+using LHDS.Core.Models.Orchestrations.OptOuts;
 using LHDS.Core.Models.Orchestrations.TerminologyMedata;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Orchestrations.TerminologyMetadata;
@@ -39,6 +41,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
         private readonly ITerminologyMetadataOrchestrationService terminologyMetadataOrchestrationService;
         private readonly ITerminologyClient terminologyClient;
         private readonly DependencyBroker dependencyBroker;
+        private readonly BlobContainers blobContainers;
 
         public TerminologyTests(DependencyBroker dependencyBroker)
         {
@@ -68,7 +71,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
             dateTimeBroker = serviceProvider.GetService<IDateTimeBroker>();
             documentProcessingService = serviceProvider.GetService<IDocumentProcessingService>();
             terminologyArtifactService = serviceProvider.GetService<ITerminologyArtifactService>();
-
+            blobContainers = serviceProvider.GetService<BlobContainers>();
             var terminologyMetadataOrchestrationService =
                 serviceProvider.GetService<ITerminologyMetadataOrchestrationService>();
 

@@ -129,6 +129,8 @@ namespace LHDS.Core.Clients.Extensions
                 EnableTenantDiscovery = true
             };
 
+            services.AddSingleton<BlobContainers>(blobStorageSettings.BlobContainers);
+
             services.AddSingleton(
                 new BlobServiceClient(
                     serviceUri: new Uri(blobStorageSettings.AzureBlobServiceUri),

@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using Moq;
 using Xunit;
@@ -47,7 +48,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
             await this.terminologyArtifactService.
                 RemoveTerminologyArtifactByIdAsync(undownloadedTerminologyArtifact.Id);
 
-            await this.documentProcessingService.RemoveDocumentByFileNameAsync(fileName, "terminology");
+            await this.documentProcessingService.RemoveDocumentByFileNameAsync(fileName, blobContainers.Terminology);
 
             this.ontologyBrokerMock.VerifyNoOtherCalls();
         }

@@ -24,6 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             string inputFileName = undownloadedTerminologyArtifact.Id.ToString();
             string outputFileName = inputFileName;
             string outputArtifactDetail = GetRandomString();
+            string terminologyContainer = blobContainers.Terminology;
 
             this.terminologyArtifactProcessingServiceMock.SetupSequence(service =>
                 service.GetNonDownloadedArtifactAsync())
@@ -44,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             };
 
             this.documentProcessingServiceMock.Setup(service =>
-                service.AddDocumentAsync(artifactDetailDocument, "terminology"))
+                service.AddDocumentAsync(artifactDetailDocument, terminologyContainer))
                     .ReturnsAsync(outputFileName);
 
             TerminologyArtifact downloadedTerminologyArtifact = undownloadedTerminologyArtifact.DeepClone();
@@ -66,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
                     Times.Once());
 
             this.documentProcessingServiceMock.Verify(service =>
-                service.AddDocumentAsync(It.Is(SameDocumentAs(artifactDetailDocument)), "terminology"),
+                service.AddDocumentAsync(It.Is(SameDocumentAs(artifactDetailDocument)), terminologyContainer),
                     Times.Once);
 
             this.terminologyArtifactProcessingServiceMock.Verify(service =>

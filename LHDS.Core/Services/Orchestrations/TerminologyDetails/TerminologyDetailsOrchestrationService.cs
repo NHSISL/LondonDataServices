@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Processings.Documents;
@@ -19,6 +20,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
         private readonly ITerminologyArtifactProcessingService terminologyArtifactProcessingService;
         private readonly IOntologyProcessingService ontologyProcessingService;
         private readonly IDocumentProcessingService documentProcessingService;
+        private readonly BlobContainers blobContainers;
         private readonly ILoggingBroker loggingBroker;
         private readonly IDateTimeBroker dateTimeBroker;
 
@@ -26,12 +28,14 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
             ITerminologyArtifactProcessingService terminologyArtifactProcessingService,
             IOntologyProcessingService ontologyProcessingService,
             IDocumentProcessingService documentProcessingService,
+            BlobContainers blobContainers,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker)
         {
             this.terminologyArtifactProcessingService = terminologyArtifactProcessingService;
             this.ontologyProcessingService = ontologyProcessingService;
             this.documentProcessingService = documentProcessingService;
+            this.blobContainers = blobContainers;
             this.loggingBroker = loggingBroker;
             this.dateTimeBroker = dateTimeBroker;
         }
@@ -57,8 +61,10 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyDetails
                         DocumentData = artifactDetailData
                     };
 
-                    await this.documentProcessingService.AddDocumentAsync(artifactDetailDocument, "terminology");
-                        artifact.IsDownloaded = true;
+                    await this.documentProcessingService.AddDocumentAsync(
+                        artifactDetailDocument, blobContainers.Terminology);
+
+                    artifact.IsDownloaded = true;
 
                     TerminologyArtifact modifiedArtifact 
                         = await this.terminologyArtifactProcessingService.ModifyOrAddTerminologyArtifactAsync(artifact);

@@ -35,6 +35,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly ITerminologyDetailOrchestrationService terminologyDetailOrchestrationService;
         private readonly ICompareLogic compareLogic;
+        private readonly BlobContainers blobContainers;
 
         public TerminologyDetailOrchestrationTests()
         {
@@ -45,10 +46,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyDetails
             dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             compareLogic = new CompareLogic();
 
+            this.blobContainers = new BlobContainers
+            {
+                Terminology = "terminology"
+            };
+
             terminologyDetailOrchestrationService = new TerminologyDetailOrchestrationService(
                 terminologyArtifactProcessingService: terminologyArtifactProcessingServiceMock.Object,
                 ontologyProcessingService: ontologyProcessingServiceMock.Object,
                 documentProcessingService: documentProcessingServiceMock.Object,
+                blobContainers,
                 loggingBroker: loggingBrokerMock.Object,
                 dateTimeBroker: dateTimeBrokerMock.Object);
         }

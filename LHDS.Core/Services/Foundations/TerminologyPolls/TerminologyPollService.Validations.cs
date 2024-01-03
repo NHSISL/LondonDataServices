@@ -79,7 +79,8 @@ namespace LHDS.Core.Services.Foundations.TerminologyPolls
             }
         }
 
-        private static void ValidateAgainstStorageTerminologyPollOnModify(TerminologyPoll inputTerminologyPoll, TerminologyPoll storageTerminologyPoll)
+        private static void ValidateAgainstStorageTerminologyPollOnModify(TerminologyPoll inputTerminologyPoll, 
+            TerminologyPoll storageTerminologyPoll)
         {
             Validate(
                 (Rule: IsNotSame(

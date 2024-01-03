@@ -61,7 +61,7 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
                 relativeUrl = relativeUrl.Replace("{{datestamp}}", retrievedTerminologyPoll.LastPoll.ToString());
                 await ProcessArtifacts(relativeUrl, resourceType);
                 DateTimeOffset currentDateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                await Task.Delay(10000);
+                await Task.Delay(1000);
                 retrievedTerminologyPoll.LastPoll = currentDateTimeOffset;
                 retrievedTerminologyPoll.UpdatedDate = currentDateTimeOffset;
                 await this.terminologyPollProcessingService.ModifyTerminologyPollAsync(retrievedTerminologyPoll);

@@ -59,11 +59,10 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
                 ValidateResourceURL(relativeUrl);
                 relativeUrl = relativeUrl.Replace("{{resourceType}}", resourceType);
                 relativeUrl = relativeUrl.Replace("{{datestamp}}", retrievedTerminologyPoll.LastPoll.ToString());
-                await ProcessArtifacts(relativeUrl, resourceType);
                 DateTimeOffset currentDateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
-                await Task.Delay(1000);
+                await ProcessArtifacts(relativeUrl, resourceType);
                 retrievedTerminologyPoll.LastPoll = currentDateTimeOffset;
-                retrievedTerminologyPoll.UpdatedDate = currentDateTimeOffset;
+                retrievedTerminologyPoll.UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset();
                 await this.terminologyPollProcessingService.ModifyTerminologyPollAsync(retrievedTerminologyPoll);
             });
 

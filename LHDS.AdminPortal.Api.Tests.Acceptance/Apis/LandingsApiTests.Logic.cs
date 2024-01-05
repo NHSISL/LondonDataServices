@@ -19,7 +19,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 {
     public partial class LandingsApiTests
     {
-
         [Fact(Skip = "Ftp Down")]
         public async Task ShouldLandDocumentByFileNameForExistingIngestionTrackingAsync()
         {

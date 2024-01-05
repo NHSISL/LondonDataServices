@@ -3,9 +3,9 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
-using System.Web;
-using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
-using LHDS.Core.Services.Orchestrations.Downloads;
+using LHDS.Core.Models.Foundations.Documents;
+using LHDS.Core.Models.Orchestrations.TppLandings.Exceptions;
+using LHDS.Core.Services.Orchestrations.TppLandings;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 #if RELEASE
@@ -18,62 +18,35 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
     [Route("api/[controller]")]
     public class TppLandingsController : RESTFulController
     {
-        private readonly IDownloadOrchestrationService downloadOrchestrationService;
+        private readonly ITppLandingOrchestrationService tppLandingOrchestrationService;
 
-        public TppLandingsController(IDownloadOrchestrationService downloadOrchestrationService) =>
-            this.downloadOrchestrationService = downloadOrchestrationService;
-
-        [HttpPut]
-#if RELEASE
-[Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.TppLandings")]
-#endif
-        public async ValueTask<ActionResult<string>> ProcessDocuments()
-        {
-            try
-            {
-                var returnFilePath = await downloadOrchestrationService
-                    .ProcessAsync();
-
-                return Ok(returnFilePath);
-            }
-            catch (DownloadOrchestrationValidationException downloadOrchestrationValidationException)
-            {
-                return BadRequest(downloadOrchestrationValidationException.InnerException);
-            }
-            catch (DownloadOrchestrationDependencyException downloadOrchestrationDependencyException)
-            {
-                return InternalServerError(downloadOrchestrationDependencyException);
-            }
-            catch (DownloadOrchestrationServiceException downloadOrchestrationServiceException)
-            {
-                return InternalServerError(downloadOrchestrationServiceException);
-            }
-        }
+        public TppLandingsController(ITppLandingOrchestrationService tppLandingOrchestrationService) =>
+            this.tppLandingOrchestrationService = tppLandingOrchestrationService;
 
         [HttpPut]
 #if RELEASE
 [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.TppLandings")]
 #endif
-        public async ValueTask<ActionResult<string>> ProcessDocumentByFileNameAsync([FromBody] string fileName)
+        public async ValueTask<ActionResult<string>> ProcessDocumentByFileNameAsync([FromBody] Document document)
         {
             try
             {
-                var returnFilePath = await downloadOrchestrationService
-                    .ProcessAsync(fileName);
+                var returnFilePath = await tppLandingOrchestrationService
+                    .ProcessAsync(document);
 
                 return Ok(returnFilePath);
             }
-            catch (DownloadOrchestrationValidationException downloadOrchestrationValidationException)
+            catch (TppLandingOrchestrationValidationException TppLandingOrchestrationValidationException)
             {
-                return BadRequest(downloadOrchestrationValidationException.InnerException);
+                return BadRequest(TppLandingOrchestrationValidationException.InnerException);
             }
-            catch (DownloadOrchestrationDependencyException downloadOrchestrationDependencyException)
+            catch (TppLandingOrchestrationDependencyException tppLandingOrchestrationDependencyException)
             {
-                return InternalServerError(downloadOrchestrationDependencyException);
+                return InternalServerError(tppLandingOrchestrationDependencyException);
             }
-            catch (DownloadOrchestrationServiceException downloadOrchestrationServiceException)
+            catch (TppLandingOrchestrationServiceException tppLandingOrchestrationServiceException)
             {
-                return InternalServerError(downloadOrchestrationServiceException);
+                return InternalServerError(tppLandingOrchestrationServiceException);
             }
         }
     }

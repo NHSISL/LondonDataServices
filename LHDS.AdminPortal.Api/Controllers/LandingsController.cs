@@ -4,8 +4,8 @@
 
 using System.Threading.Tasks;
 using System.Web;
-using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
-using LHDS.Core.Services.Orchestrations.Downloads;
+using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
+using LHDS.Core.Services.Orchestrations.EmisLandings;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 #if RELEASE
@@ -18,10 +18,10 @@ namespace LHDS.AdminPortal.Api.Controllers
     [Route("api/[controller]")]
     public class LandingsController : RESTFulController
     {
-        private readonly IDownloadOrchestrationService downloadOrchestrationService;
+        private readonly IEmisLandingOrchestrationService emisLandingOrchestrationService;
 
-        public LandingsController(IDownloadOrchestrationService downloadOrchestrationService) =>
-            this.downloadOrchestrationService = downloadOrchestrationService;
+        public LandingsController(IEmisLandingOrchestrationService emisLandingOrchestrationService) =>
+            this.emisLandingOrchestrationService = emisLandingOrchestrationService;
 
         [HttpGet("{fileName}")]
 #if RELEASE
@@ -31,22 +31,22 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                var returnFilePath = await this.downloadOrchestrationService
+                var returnFilePath = await this.emisLandingOrchestrationService
                     .ProcessAsync(HttpUtility.UrlDecode(fileName));
 
                 return Ok(returnFilePath);
             }
-            catch (DownloadOrchestrationValidationException downloadOrchestrationValidationException)
+            catch (EmisLandingOrchestrationValidationException emisLandingOrchestrationValidationException)
             {
-                return BadRequest(downloadOrchestrationValidationException.InnerException);
+                return BadRequest(emisLandingOrchestrationValidationException.InnerException);
             }
-            catch (DownloadOrchestrationDependencyException downloadOrchestrationDependencyException)
+            catch (EmisLandingOrchestrationDependencyException emisLandingOrchestrationDependencyException)
             {
-                return InternalServerError(downloadOrchestrationDependencyException);
+                return InternalServerError(emisLandingOrchestrationDependencyException);
             }
-            catch (DownloadOrchestrationServiceException downloadOrchestrationServiceException)
+            catch (EmisLandingOrchestrationServiceException emisLandingOrchestrationServiceException)
             {
-                return InternalServerError(downloadOrchestrationServiceException);
+                return InternalServerError(emisLandingOrchestrationServiceException);
             }
         }
     }

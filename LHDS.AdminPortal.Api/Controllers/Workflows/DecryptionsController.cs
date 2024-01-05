@@ -5,7 +5,7 @@
 using System.Threading.Tasks;
 using System.Web;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
-using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
+using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Services.Orchestrations.Decryptions;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
@@ -24,7 +24,6 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
         public DecryptionsController(IDecryptionOrchestrationService decryptionOrchestrationService) =>
             this.decryptionOrchestrationService = decryptionOrchestrationService;
 
-
         [HttpPut()]
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Decryptions")]
@@ -38,17 +37,17 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
 
                 return Ok();
             }
-            catch (DownloadOrchestrationValidationException downloadOrchestrationValidationException)
+            catch (EmisLandingOrchestrationValidationException emisLandingOrchestrationValidationException)
             {
-                return BadRequest(downloadOrchestrationValidationException.InnerException);
+                return BadRequest(emisLandingOrchestrationValidationException.InnerException);
             }
-            catch (DownloadOrchestrationDependencyException downloadOrchestrationDependencyException)
+            catch (EmisLandingOrchestrationDependencyException emisLandingOrchestrationDependencyException)
             {
-                return InternalServerError(downloadOrchestrationDependencyException);
+                return InternalServerError(emisLandingOrchestrationDependencyException);
             }
-            catch (DownloadOrchestrationServiceException downloadOrchestrationServiceException)
+            catch (EmisLandingOrchestrationServiceException emisLandingOrchestrationServiceException)
             {
-                return InternalServerError(downloadOrchestrationServiceException);
+                return InternalServerError(emisLandingOrchestrationServiceException);
             }
         }
 
@@ -65,17 +64,17 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
 
                 return Ok();
             }
-            catch (DownloadOrchestrationValidationException downloadOrchestrationValidationException)
+            catch (EmisLandingOrchestrationValidationException emisLandingOrchestrationValidationException)
             {
-                return BadRequest(downloadOrchestrationValidationException.InnerException);
+                return BadRequest(emisLandingOrchestrationValidationException.InnerException);
             }
-            catch (DownloadOrchestrationDependencyException downloadOrchestrationDependencyException)
+            catch (EmisLandingOrchestrationDependencyException emisLandingOrchestrationDependencyException)
             {
-                return InternalServerError(downloadOrchestrationDependencyException);
+                return InternalServerError(emisLandingOrchestrationDependencyException);
             }
-            catch (DownloadOrchestrationServiceException downloadOrchestrationServiceException)
+            catch (EmisLandingOrchestrationServiceException emisLandingOrchestrationServiceException)
             {
-                return InternalServerError(downloadOrchestrationServiceException);
+                return InternalServerError(emisLandingOrchestrationServiceException);
             }
         }
     }

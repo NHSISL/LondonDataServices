@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
-using LHDS.Core.Models.Foundations.AddressNormalisation.Exceptions;
+using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
 using LHDS.Core.Models.Processings.AddressLoadingAudits.Exceptions;

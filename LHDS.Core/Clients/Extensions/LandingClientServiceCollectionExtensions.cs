@@ -127,7 +127,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddTransient<ISupplierService, SupplierService>();
             services.AddTransient<IDataSetSpecificationService, DataSetSpecificationService>();
-            services.AddSingleton<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
+            services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)

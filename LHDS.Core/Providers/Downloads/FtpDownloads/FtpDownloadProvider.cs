@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Providers.FtpDownloads.Exceptions;
@@ -103,6 +104,7 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
                 }
 
                 client.Connect();
+                Thread.Sleep(500);
 
                 if (!client.IsConnected && attempts > 3)
                 {

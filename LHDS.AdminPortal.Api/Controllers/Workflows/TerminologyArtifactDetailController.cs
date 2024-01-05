@@ -22,7 +22,7 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
         public TerminologyArtifactDetailsController(ITerminologyDetailOrchestrationService terminologyDetailOrchestrationService) =>
             this.terminologyDetailOrchestrationService = terminologyDetailOrchestrationService;
 
-        [HttpPut]
+        [HttpPost]
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.TerminologyArtifacts, ISL.LDS.AdminApi.ReadOnly")]
 #endif

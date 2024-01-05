@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.TerminologyPolls;
@@ -24,6 +26,25 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyPolls
             // then
             actualTerminologyPoll.Should().BeEquivalentTo(expectedTerminologyPoll);
             await this.apiBroker.DeleteTerminologyPollByIdAsync(actualTerminologyPoll.Id);
+        }
+
+        [Fact]
+        public async Task ShouldGetAllTerminologyPollsAsync()
+        {
+            // given
+            List<TerminologyPoll> randomTerminologyPolls = await PostRandomTerminologyPollsAsync();
+            List<TerminologyPoll> expectedTerminologyPolls = randomTerminologyPolls;
+
+            // when
+            List<TerminologyPoll> actualTerminologyPolls = await this.apiBroker.GetAllTerminologyPollsAsync();
+
+            // then
+            foreach (TerminologyPoll expectedTerminologyPoll in expectedTerminologyPolls)
+            {
+                TerminologyPoll actualTerminologyPoll = actualTerminologyPolls.Single(approval => approval.Id == expectedTerminologyPoll.Id);
+                actualTerminologyPoll.Should().BeEquivalentTo(expectedTerminologyPoll);
+                await this.apiBroker.DeleteTerminologyPollByIdAsync(actualTerminologyPoll.Id);
+            }
         }
     }
 }

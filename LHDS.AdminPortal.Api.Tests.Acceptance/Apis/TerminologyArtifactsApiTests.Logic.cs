@@ -46,5 +46,20 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyArtifacts
                 await this.apiBroker.DeleteTerminologyArtifactByIdAsync(actualTerminologyArtifact.Id);
             }
         }
+
+        [Fact]
+        public async Task ShouldGetTerminologyArtifactAsync()
+        {
+            // given
+            TerminologyArtifact randomTerminologyArtifact = await PostRandomTerminologyArtifactAsync();
+            TerminologyArtifact expectedTerminologyArtifact = randomTerminologyArtifact;
+
+            // when
+            TerminologyArtifact actualTerminologyArtifact = await this.apiBroker.GetTerminologyArtifactByIdAsync(randomTerminologyArtifact.Id);
+
+            // then
+            actualTerminologyArtifact.Should().BeEquivalentTo(expectedTerminologyArtifact);
+            await this.apiBroker.DeleteTerminologyArtifactByIdAsync(actualTerminologyArtifact.Id);
+        }
     }
 }

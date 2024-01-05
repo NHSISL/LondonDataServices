@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.TerminologyPolls
@@ -5,9 +9,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.TerminologyPolls
     public class TerminologyPoll
     {
         public Guid Id { get; set; }
-
-        // TODO:  Add your properties here
-
+        public string ResourceType { get; set; } = string.Empty;
+        public DateTimeOffset LastPoll { get; set; }
         public string CreatedBy { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public string UpdatedBy { get; set; }

@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             var expectepOrchestrationValidationException =
                 new TppLandingOrchestrationValidationException(
-                    message: "TPP Orchestration validation errors occured, please try again.",
+                    message: "TPP landing orchestration validation errors occured, please try again.",
                     innerException: nullTppDocumentException);
 
             // when
@@ -63,7 +63,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             var invalidArgumentException =
                 new InvalidArgumentTppLandingOrchestrationException(
-                    message: "Invalid TPP orchestration argument(s), please correct the errors and try again.");
+                    message: "Invalid TPP landing orchestration argument(s), please correct the errors and try again.");
 
             invalidArgumentException.AddData(
                key: "FileName",
@@ -71,7 +71,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             var expectedTppOrchestrationValidationException =
                 new TppLandingOrchestrationValidationException(
-                    message: "TPP Orchestration validation errors occured, please try again.",
+                    message: "TPP landing orchestration validation errors occured, please try again.",
                     innerException: invalidArgumentException);
 
             // when

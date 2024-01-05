@@ -13,7 +13,7 @@ using RESTFulSense.Controllers;
 using Microsoft.AspNetCore.Authorization;
 #endif
 
-namespace LHDS.AdminPortal.Api.Controllers
+namespace LHDS.AdminPortal.Api.Controllers.Workflows
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -24,6 +24,35 @@ namespace LHDS.AdminPortal.Api.Controllers
         public DecryptionsController(IDecryptionOrchestrationService decryptionOrchestrationService) =>
             this.decryptionOrchestrationService = decryptionOrchestrationService;
 
+
+        [HttpPut()]
+#if RELEASE
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.Decryptions")]
+#endif
+        public async ValueTask<ActionResult<IngestionTracking>> DecryptDocumentAsync(
+            [FromBody] string fileName)
+        {
+            try
+            {
+                await decryptionOrchestrationService.DecryptAsync(HttpUtility.UrlDecode(fileName));
+
+                return Ok();
+            }
+            catch (DownloadOrchestrationValidationException downloadOrchestrationValidationException)
+            {
+                return BadRequest(downloadOrchestrationValidationException.InnerException);
+            }
+            catch (DownloadOrchestrationDependencyException downloadOrchestrationDependencyException)
+            {
+                return InternalServerError(downloadOrchestrationDependencyException);
+            }
+            catch (DownloadOrchestrationServiceException downloadOrchestrationServiceException)
+            {
+                return InternalServerError(downloadOrchestrationServiceException);
+            }
+        }
+
+        // TODO: Remove this method in a seperate PR and update UI to use the above method
         [HttpGet("{fileName}")]
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
@@ -32,7 +61,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                await this.decryptionOrchestrationService.DecryptAsync(HttpUtility.UrlDecode(fileName));
+                await decryptionOrchestrationService.DecryptAsync(HttpUtility.UrlDecode(fileName));
 
                 return Ok();
             }

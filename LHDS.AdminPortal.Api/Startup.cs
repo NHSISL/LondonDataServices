@@ -44,6 +44,7 @@ using LHDS.Core.Services.Foundations.PdsAudits;
 using LHDS.Core.Services.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
+using LHDS.Core.Services.Foundations.TerminologyPolls;
 using LHDS.Core.Services.Orchestrations.Downloads;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
@@ -215,6 +216,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IObjectColumnService, ObjectColumnService>();
             services.AddTransient<IDataSetService, DataSetService>();
             services.AddTransient<ITerminologyArtifactService, TerminologyArtifactService>();
+            services.AddTransient<ITerminologyPollService, TerminologyPollService>();
 
             var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
             ValidateBlobStorageSettings(blobStorageSettings);

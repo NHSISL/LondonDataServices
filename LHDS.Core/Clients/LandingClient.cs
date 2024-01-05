@@ -6,18 +6,18 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.LandingClient.Exceptions;
 using LHDS.Core.Models.Orchestrations.Decryptions.Exceptions;
-using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
-using LHDS.Core.Services.Orchestrations.Downloads;
+using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
+using LHDS.Core.Services.Orchestrations.EmisLandings;
 using Xeptions;
 
 namespace LHDS.Core.Clients
 {
     public class LandingClient : ILandingClient
     {
-        private readonly IDownloadOrchestrationService downloadOrchestrationService;
+        private readonly IEmisLandingOrchestrationService downloadOrchestrationService;
 
         public LandingClient(
-            IDownloadOrchestrationService downloadOrchestrationService)
+            IEmisLandingOrchestrationService downloadOrchestrationService)
         {
             this.downloadOrchestrationService = downloadOrchestrationService;
         }
@@ -28,30 +28,30 @@ namespace LHDS.Core.Clients
             {
                 return await this.downloadOrchestrationService.ProcessAsync();
             }
-            catch (DownloadOrchestrationValidationException downloadOrchestrationValidationException)
+            catch (EmisLandingOrchestrationValidationException emisLandingOrchestrationValidationException)
             {
                 throw new LandingClientValidationException(
-                    downloadOrchestrationValidationException.InnerException as Xeption);
+                    emisLandingOrchestrationValidationException.InnerException as Xeption);
             }
-            catch (DownloadOrchestrationDependencyValidationException
-                downloadOrchestrationDependencyValidationException)
+            catch (EmisLandingOrchestrationDependencyValidationException
+                emisLandingOrchestrationDependencyValidationException)
             {
                 throw new LandingClientValidationException(
-                    downloadOrchestrationDependencyValidationException.InnerException as Xeption);
+                    emisLandingOrchestrationDependencyValidationException.InnerException as Xeption);
             }
-            catch (DownloadOrchestrationDependencyException
-                downloadOrchestrationDependencyException)
+            catch (EmisLandingOrchestrationDependencyException
+                emisLandingOrchestrationDependencyException)
             {
                 throw new LandingClientDependencyException(
                     message: "Landing client dependency error occurred, contact support.",
-                    innerException: downloadOrchestrationDependencyException.InnerException as Xeption);
+                    innerException: emisLandingOrchestrationDependencyException.InnerException as Xeption);
             }
-            catch (DownloadOrchestrationServiceException
-                downloadOrchestrationServiceException)
+            catch (EmisLandingOrchestrationServiceException
+                emisLandingOrchestrationServiceException)
             {
                 throw new LandingClientServiceException(
                     message: "Landing client service error occurred, fix errors and try again.",
-                    innerException: downloadOrchestrationServiceException.InnerException as Xeption);
+                    innerException: emisLandingOrchestrationServiceException.InnerException as Xeption);
             }
         }
 
@@ -66,23 +66,23 @@ namespace LHDS.Core.Clients
                 throw new LandingClientValidationException(
                     downloadOrchestrationValidationException.InnerException as Xeption);
             }
-            catch (DownloadOrchestrationDependencyValidationException
-                downloadOrchestrationDependencyValidationException)
+            catch (EmisLandingOrchestrationDependencyValidationException
+                emisLandingOrchestrationDependencyValidationException)
             {
                 throw new LandingClientValidationException(
-                    downloadOrchestrationDependencyValidationException.InnerException as Xeption);
+                    emisLandingOrchestrationDependencyValidationException.InnerException as Xeption);
             }
-            catch (DownloadOrchestrationDependencyException downloadOrchestrationDependencyException)
+            catch (EmisLandingOrchestrationDependencyException emisLandingOrchestrationDependencyException)
             {
                 throw new LandingClientDependencyException(
                     message: "Landing client dependency error occurred, contact support.",
-                    innerException: downloadOrchestrationDependencyException.InnerException as Xeption);
+                    innerException: emisLandingOrchestrationDependencyException.InnerException as Xeption);
             }
-            catch (DownloadOrchestrationServiceException downloadOrchestrationServiceException)
+            catch (EmisLandingOrchestrationServiceException emisLandingOrchestrationServiceException)
             {
                 throw new LandingClientServiceException(
                     message: "Landing client service error occurred, fix errors and try again.",
-                    innerException: downloadOrchestrationServiceException.InnerException as Xeption);
+                    innerException: emisLandingOrchestrationServiceException.InnerException as Xeption);
             }
         }
     }

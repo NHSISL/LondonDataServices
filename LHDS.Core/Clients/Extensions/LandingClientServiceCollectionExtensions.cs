@@ -73,7 +73,7 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddProviders(IServiceCollection services)
         {
-            services.AddTransient<IDownloadAbstractProvider, DownloadAbstractProvider>();
+            services.AddTransient<IDownloadAbstractionProvider, DownloadAbstractionProvider>();
         }
 
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration, bool acceptanceTest)

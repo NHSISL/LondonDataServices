@@ -11,9 +11,9 @@ namespace LHDS.Core.Brokers.Downloads
 {
     public class DownloadBroker : IDownloadBroker
     {
-        private readonly IDownloadAbstractProvider downloadAbstractProvider;
+        private readonly IDownloadAbstractionProvider downloadAbstractProvider;
 
-        public DownloadBroker(IDownloadAbstractProvider downloadAbstractProvider)
+        public DownloadBroker(IDownloadAbstractionProvider downloadAbstractProvider)
         {
             this.downloadAbstractProvider = downloadAbstractProvider;
         }

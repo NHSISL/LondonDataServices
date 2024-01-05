@@ -8,11 +8,11 @@ using LHDS.Core.Models.Foundations.Documents;
 
 namespace LHDS.Core.Providers.Downloads
 {
-    public class DownloadAbstractProvider : IDownloadAbstractProvider
+    public class DownloadAbstractionProvider : IDownloadAbstractionProvider
     {
         private readonly IDownloadProvider provider;
 
-        public DownloadAbstractProvider(IDownloadProvider provider)
+        public DownloadAbstractionProvider(IDownloadProvider provider)
         {
             this.provider = provider;
         }

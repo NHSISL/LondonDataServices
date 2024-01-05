@@ -8,7 +8,7 @@ using LHDS.Core.Models.Foundations.Documents;
 
 namespace LHDS.Core.Providers.Downloads
 {
-    public interface IDownloadAbstractProvider
+    public interface IDownloadAbstractionProvider
     {
         ValueTask<List<Document>> GetListOfDocumentsToProcessAsync();
         ValueTask<Document> GetDocumentByFileNameAsync(string fileName);

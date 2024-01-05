@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             var expectedDependencyException =
                 new TppLandingOrchestrationDependencyValidationException(
-                    message: "TPP Orchestration dependency validation error occurred, fix the errors and try again.",
+                    message: "TPP landing orchestration dependency validation error occurred, fix the errors and try again.",
                     dependancyValidationException.InnerException as Xeption);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
@@ -67,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             var expectedDependencyException =
                 new TppLandingOrchestrationDependencyException(
-                    message: "TPP Orchestration dependency error occurred, fix the errors and try again.",
+                    message: "TPP landing orchestration dependency error occurred, fix the errors and try again.",
                     innerException: dependancyException.InnerException as Xeption);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>
@@ -110,12 +110,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TppLandings
 
             var failedTppOrchestrationServiceException =
                 new FailedTppLandingOrchestrationServiceException(
-                    message: "Failed TPP orchestration service occurred, please contact support",
+                    message: "Failed TPP landing orchestration service occurred, please contact support",
                     serviceException);
 
             var expectedTppOrchestrationServiceException =
                 new TppLandingOrchestrationServiceException(
-                    message: "TPP Orchestration service error occurred, contact support.",
+                    message: "TPP landing orchestration service error occurred, contact support.",
                     failedTppOrchestrationServiceException);
 
             this.ingestionTrackingProcessingServiceMock.Setup(service =>

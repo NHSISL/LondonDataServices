@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
@@ -39,6 +40,26 @@ namespace LHDS.AdminPortal.Api.Controllers
                when (terminologyPollDependencyValidationException.InnerException is AlreadyExistsTerminologyPollException)
             {
                 return Conflict(terminologyPollDependencyValidationException.InnerException);
+            }
+            catch (TerminologyPollDependencyException terminologyPollDependencyException)
+            {
+                return InternalServerError(terminologyPollDependencyException);
+            }
+            catch (TerminologyPollServiceException terminologyPollServiceException)
+            {
+                return InternalServerError(terminologyPollServiceException);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult<IQueryable<TerminologyPoll>> GetAllTerminologyPolls()
+        {
+            try
+            {
+                IQueryable<TerminologyPoll> retrievedTerminologyPolls =
+                    this.terminologyPollService.RetrieveAllTerminologyPolls();
+
+                return Ok(retrievedTerminologyPolls);
             }
             catch (TerminologyPollDependencyException terminologyPollDependencyException)
             {

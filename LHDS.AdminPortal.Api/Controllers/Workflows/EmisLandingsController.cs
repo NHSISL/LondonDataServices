@@ -24,7 +24,7 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
 
         [HttpPut]
 #if RELEASE
-[Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.EmisLandings")]
+[Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.EmisLandings")]
 #endif
         public async ValueTask<ActionResult<string>> ProcessDocuments()
         {
@@ -51,7 +51,7 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
 
         [HttpPut]
 #if RELEASE
-[Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.LandingClient")]
+[Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.EmisLandings")]
 #endif
         public async ValueTask<ActionResult<string>> ProcessDocumentByFileNameAsync([FromBody] string fileName)
         {

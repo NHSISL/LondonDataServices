@@ -25,7 +25,7 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
 
         [HttpPut]
 #if RELEASE
-[Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.TppLandings")]
+[Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.TppLandings")]
 #endif
         public async ValueTask<ActionResult<string>> ProcessDocuments()
         {
@@ -52,7 +52,7 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
 
         [HttpPut]
 #if RELEASE
-[Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.LandingClient")]
+[Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.TppLandings")]
 #endif
         public async ValueTask<ActionResult<string>> ProcessDocumentByFileNameAsync([FromBody] string fileName)
         {
@@ -60,34 +60,6 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
             {
                 var returnFilePath = await downloadOrchestrationService
                     .ProcessAsync(fileName);
-
-                return Ok(returnFilePath);
-            }
-            catch (DownloadOrchestrationValidationException downloadOrchestrationValidationException)
-            {
-                return BadRequest(downloadOrchestrationValidationException.InnerException);
-            }
-            catch (DownloadOrchestrationDependencyException downloadOrchestrationDependencyException)
-            {
-                return InternalServerError(downloadOrchestrationDependencyException);
-            }
-            catch (DownloadOrchestrationServiceException downloadOrchestrationServiceException)
-            {
-                return InternalServerError(downloadOrchestrationServiceException);
-            }
-        }
-
-
-        [HttpGet("{fileName}")]
-#if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
-#endif
-        public async ValueTask<ActionResult<string>> GetLandingDocumentByFileNameAsync(string fileName)
-        {
-            try
-            {
-                var returnFilePath = await downloadOrchestrationService
-                    .ProcessAsync(HttpUtility.UrlDecode(fileName));
 
                 return Ok(returnFilePath);
             }

@@ -27,14 +27,14 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
 
         [HttpPut()]
 #if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.Decryptions")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Decryptions")]
 #endif
         public async ValueTask<ActionResult<IngestionTracking>> DecryptDocumentAsync(
             [FromBody] string fileName)
         {
             try
             {
-                await decryptionOrchestrationService.DecryptAsync(HttpUtility.UrlDecode(fileName));
+                await decryptionOrchestrationService.DecryptAsync(fileName);
 
                 return Ok();
             }

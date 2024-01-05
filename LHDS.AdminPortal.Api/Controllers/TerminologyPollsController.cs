@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,34 @@ namespace LHDS.AdminPortal.Api.Controllers
                     this.terminologyPollService.RetrieveAllTerminologyPolls();
 
                 return Ok(retrievedTerminologyPolls);
+            }
+            catch (TerminologyPollDependencyException terminologyPollDependencyException)
+            {
+                return InternalServerError(terminologyPollDependencyException);
+            }
+            catch (TerminologyPollServiceException terminologyPollServiceException)
+            {
+                return InternalServerError(terminologyPollServiceException);
+            }
+        }
+
+        [HttpGet("{terminologyPollId}")]
+        public async ValueTask<ActionResult<TerminologyPoll>> GetTerminologyPollByIdAsync(Guid terminologyPollId)
+        {
+            try
+            {
+                TerminologyPoll terminologyPoll = await this.terminologyPollService.RetrieveTerminologyPollByIdAsync(terminologyPollId);
+
+                return Ok(terminologyPoll);
+            }
+            catch (TerminologyPollValidationException terminologyPollValidationException)
+                when (terminologyPollValidationException.InnerException is NotFoundTerminologyPollException)
+            {
+                return NotFound(terminologyPollValidationException.InnerException);
+            }
+            catch (TerminologyPollValidationException terminologyPollValidationException)
+            {
+                return BadRequest(terminologyPollValidationException.InnerException);
             }
             catch (TerminologyPollDependencyException terminologyPollDependencyException)
             {

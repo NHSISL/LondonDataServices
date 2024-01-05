@@ -19,6 +19,24 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyArtifacts
         private int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
+        private static DateTimeOffset GetRandomDateTime() =>
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static TerminologyArtifact UpdateTerminologyArtifactWithRandomValues(TerminologyArtifact inputTerminologyArtifact)
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            var filler = new Filler<TerminologyArtifact>();
+
+            filler.Setup()
+                .OnProperty(terminologyArtifact => terminologyArtifact.Id).Use(inputTerminologyArtifact.Id)
+                .OnType<DateTimeOffset>().Use(GetRandomDateTime())
+                .OnProperty(terminologyArtifact => terminologyArtifact.CreatedDate).Use(inputTerminologyArtifact.CreatedDate)
+                .OnProperty(terminologyArtifact => terminologyArtifact.CreatedBy).Use(inputTerminologyArtifact.CreatedBy)
+                .OnProperty(terminologyArtifact => terminologyArtifact.UpdatedDate).Use(now);
+
+            return filler.Create();
+        }
+
         private async ValueTask<TerminologyArtifact> PostRandomTerminologyArtifactAsync()
         {
             TerminologyArtifact randomTerminologyArtifact = CreateRandomTerminologyArtifact();

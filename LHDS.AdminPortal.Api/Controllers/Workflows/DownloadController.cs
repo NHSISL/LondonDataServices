@@ -14,7 +14,7 @@ using RESTFulSense.Controllers;
 using Microsoft.AspNetCore.Authorization;
 #endif
 
-namespace LHDS.AdminPortal.Api.Controllers
+namespace LHDS.AdminPortal.Api.Controllers.Workflows
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -33,14 +33,14 @@ namespace LHDS.AdminPortal.Api.Controllers
         [EnableQuery(PageSize = 5000)]
 #endif
 #if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.Downloads, ISL.LDS.AdminApi.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
 #endif
         public async ValueTask<ActionResult<List<Document>>> Get()
         {
             try
             {
                 List<Document> retrievedDocuments =
-                    await this.downloadService.RetrieveListOfDocumentsToProcessAsync();
+                    await downloadService.RetrieveListOfDocumentsToProcessAsync();
 
                 return Ok(retrievedDocuments);
             }
@@ -56,13 +56,13 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [HttpGet("{fileName}")]
 #if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.Downloads, ISL.LDS.AdminApi.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
 #endif
         public async ValueTask<ActionResult<Document>> RetrieveDownloadByFileNameAsync(string fileName)
         {
             try
             {
-                Document document = await this.downloadService.RetrieveDownloadByFileNameAsync(fileName);
+                Document document = await downloadService.RetrieveDownloadByFileNameAsync(fileName);
 
                 return Ok(document);
             }

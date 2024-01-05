@@ -28,6 +28,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
             return response.Items;
         }
 
+        public async ValueTask<List<DataSetSpecification>> FindtDataSetSpecificationByIdAsync(
+            Guid dataSetSpecificationId) =>
+                await this.apiFactoryClient.GetContentAsync<List<DataSetSpecification>>(
+                    $"{dataSetSpecificationsRelativeUrl}/?$filter=Id eq {dataSetSpecificationId}");
+
         public async ValueTask<DataSetSpecification> GetDataSetSpecificationByIdAsync(Guid dataSetSpecificationId) =>
             await this.apiFactoryClient.GetContentAsync<DataSetSpecification>(
                 $"{dataSetSpecificationsRelativeUrl}/{dataSetSpecificationId}");

@@ -4,6 +4,7 @@ using LHDS.Core.Brokers.Storages.Sql;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,13 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LHDS.Core.Migrations
 {
     [DbContext(typeof(StorageBroker))]
-    partial class StorageBrokerModelSnapshot : ModelSnapshot
+    [Migration("20231115143724_UpdatedDataSet")]
+    partial class UpdatedDataSet
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "7.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -354,28 +357,6 @@ namespace LHDS.Core.Migrations
                                     .HasPeriodEnd("PeriodEnd")
                                     .HasColumnName("PeriodEnd");
                             }));
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("e8ebce80-e619-40ca-b45f-9c3ac0328143"),
-                            ActiveFrom = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            ActiveTo = new DateTimeOffset(new DateTime(2123, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            CreatedBy = "System",
-                            CreatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            DataSetId = new Guid("6a62313a-7442-462e-b6e8-dec541ddd0ba"),
-                            DateImplemented = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            DateReleased = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            EntityChangeSynchronisation = "",
-                            IsActive = true,
-                            IsMultiAuthorPerBatch = true,
-                            IsPublished = true,
-                            Notes = "This is a test dataset specification",
-                            OurSpecificationVersion = "1.0",
-                            SupplierSpecificationVersion = "7.0",
-                            UpdatedBy = "System",
-                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        });
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSets.DataSet", b =>
@@ -424,9 +405,7 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsNationallyCollected")
                         .ValueGeneratedOnAdd()
@@ -616,11 +595,6 @@ namespace LHDS.Core.Migrations
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("DecryptedFileSha256Hash")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
-
                     b.Property<int>("DecryptedFileSize")
                         .HasColumnType("int");
 
@@ -628,11 +602,6 @@ namespace LHDS.Core.Migrations
                         .IsRequired()
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("EncryptedFileSha256Hash")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
 
                     b.Property<int>("EncryptedFileSize")
                         .HasColumnType("int");
@@ -1036,12 +1005,6 @@ namespace LHDS.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("CanDecryptIngestionTracking")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("CanDownloadIngestionTracking")
-                        .HasColumnType("bit");
-
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -1072,9 +1035,6 @@ namespace LHDS.Core.Migrations
                     b.Property<DateTimeOffset>("UpdatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<bool>("canRelandIngestionTracking")
-                        .HasColumnType("bit");
-
                     b.HasKey("Id");
 
                     b.ToTable("Suppliers", "Configuration");
@@ -1083,16 +1043,13 @@ namespace LHDS.Core.Migrations
                         new
                         {
                             Id = new Guid("67680f17-9d0c-4474-8b35-56ca8f9df1f6"),
-                            CanDecryptIngestionTracking = false,
-                            CanDownloadIngestionTracking = false,
                             CreatedBy = "System",
                             CreatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Description = "Emis Supplier",
                             FriendlyName = "EMIS",
                             Name = "EMIS",
                             UpdatedBy = "System",
-                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            canRelandIngestionTracking = false
+                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
                         });
                 });
 
@@ -1183,7 +1140,7 @@ namespace LHDS.Core.Migrations
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTimeOffset>("LastPoll")
+                    b.Property<DateTimeOffset?>("LastPoll")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("ResourceType")

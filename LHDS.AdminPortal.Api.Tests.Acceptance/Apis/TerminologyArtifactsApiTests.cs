@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -29,6 +33,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyArtifacts
 
             filler.Setup()
                 .OnProperty(terminologyArtifact => terminologyArtifact.Id).Use(inputTerminologyArtifact.Id)
+                .OnType<DateTimeOffset?>().Use(GetRandomDateTime())
                 .OnType<DateTimeOffset>().Use(GetRandomDateTime())
                 .OnProperty(terminologyArtifact => terminologyArtifact.CreatedDate).Use(inputTerminologyArtifact.CreatedDate)
                 .OnProperty(terminologyArtifact => terminologyArtifact.CreatedBy).Use(inputTerminologyArtifact.CreatedBy)
@@ -69,6 +74,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyArtifacts
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
                 .OnProperty(terminologyArtifact => terminologyArtifact.CreatedDate).Use(now)
                 .OnProperty(terminologyArtifact => terminologyArtifact.CreatedBy).Use(user)
                 .OnProperty(terminologyArtifact => terminologyArtifact.UpdatedDate).Use(now)

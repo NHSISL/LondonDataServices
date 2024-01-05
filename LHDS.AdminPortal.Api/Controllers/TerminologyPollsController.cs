@@ -1,11 +1,15 @@
+// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.TerminologyPolls;
+using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
+using LHDS.Core.Services.Foundations.TerminologyPolls;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
-using LHDS.AdminPortal.Api.Models.Foundations.TerminologyPolls;
-using LHDS.AdminPortal.Api.Models.Foundations.TerminologyPolls.Exceptions;
-using LHDS.AdminPortal.Api.Services.Foundations.TerminologyPolls;
 
 namespace LHDS.AdminPortal.Api.Controllers
 {

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.TerminologyArtifacts;
@@ -24,6 +26,25 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyArtifacts
             // then
             actualTerminologyArtifact.Should().BeEquivalentTo(expectedTerminologyArtifact);
             await this.apiBroker.DeleteTerminologyArtifactByIdAsync(actualTerminologyArtifact.Id);
+        }
+
+        [Fact]
+        public async Task ShouldGetAllTerminologyArtifactsAsync()
+        {
+            // given
+            List<TerminologyArtifact> randomTerminologyArtifacts = await PostRandomTerminologyArtifactsAsync();
+            List<TerminologyArtifact> expectedTerminologyArtifacts = randomTerminologyArtifacts;
+
+            // when
+            List<TerminologyArtifact> actualTerminologyArtifacts = await this.apiBroker.GetAllTerminologyArtifactsAsync();
+
+            // then
+            foreach (TerminologyArtifact expectedTerminologyArtifact in expectedTerminologyArtifacts)
+            {
+                TerminologyArtifact actualTerminologyArtifact = actualTerminologyArtifacts.Single(approval => approval.Id == expectedTerminologyArtifact.Id);
+                actualTerminologyArtifact.Should().BeEquivalentTo(expectedTerminologyArtifact);
+                await this.apiBroker.DeleteTerminologyArtifactByIdAsync(actualTerminologyArtifact.Id);
+            }
         }
     }
 }

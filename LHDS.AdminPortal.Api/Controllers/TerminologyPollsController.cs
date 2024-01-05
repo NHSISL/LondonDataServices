@@ -138,5 +138,43 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(terminologyPollServiceException);
             }
         }
+
+        [HttpDelete("{terminologyPollId}")]
+        public async ValueTask<ActionResult<TerminologyPoll>> DeleteTerminologyPollByIdAsync(Guid terminologyPollId)
+        {
+            try
+            {
+                TerminologyPoll deletedTerminologyPoll =
+                    await this.terminologyPollService.RemoveTerminologyPollByIdAsync(terminologyPollId);
+
+                return Ok(deletedTerminologyPoll);
+            }
+            catch (TerminologyPollValidationException terminologyPollValidationException)
+                when (terminologyPollValidationException.InnerException is NotFoundTerminologyPollException)
+            {
+                return NotFound(terminologyPollValidationException.InnerException);
+            }
+            catch (TerminologyPollValidationException terminologyPollValidationException)
+            {
+                return BadRequest(terminologyPollValidationException.InnerException);
+            }
+            catch (TerminologyPollDependencyValidationException terminologyPollDependencyValidationException)
+                when (terminologyPollDependencyValidationException.InnerException is LockedTerminologyPollException)
+            {
+                return Locked(terminologyPollDependencyValidationException.InnerException);
+            }
+            catch (TerminologyPollDependencyValidationException terminologyPollDependencyValidationException)
+            {
+                return BadRequest(terminologyPollDependencyValidationException);
+            }
+            catch (TerminologyPollDependencyException terminologyPollDependencyException)
+            {
+                return InternalServerError(terminologyPollDependencyException);
+            }
+            catch (TerminologyPollServiceException terminologyPollServiceException)
+            {
+                return InternalServerError(terminologyPollServiceException);
+            }
+        }
     }
 }

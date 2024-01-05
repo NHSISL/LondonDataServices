@@ -99,5 +99,44 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(terminologyPollServiceException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<TerminologyPoll>> PutTerminologyPollAsync(TerminologyPoll terminologyPoll)
+        {
+            try
+            {
+                TerminologyPoll modifiedTerminologyPoll =
+                    await this.terminologyPollService.ModifyTerminologyPollAsync(terminologyPoll);
+
+                return Ok(modifiedTerminologyPoll);
+            }
+            catch (TerminologyPollValidationException terminologyPollValidationException)
+                when (terminologyPollValidationException.InnerException is NotFoundTerminologyPollException)
+            {
+                return NotFound(terminologyPollValidationException.InnerException);
+            }
+            catch (TerminologyPollValidationException terminologyPollValidationException)
+            {
+                return BadRequest(terminologyPollValidationException.InnerException);
+            }
+            catch (TerminologyPollDependencyValidationException terminologyPollValidationException)
+                when (terminologyPollValidationException.InnerException is InvalidTerminologyPollReferenceException)
+            {
+                return FailedDependency(terminologyPollValidationException.InnerException);
+            }
+            catch (TerminologyPollDependencyValidationException terminologyPollDependencyValidationException)
+               when (terminologyPollDependencyValidationException.InnerException is AlreadyExistsTerminologyPollException)
+            {
+                return Conflict(terminologyPollDependencyValidationException.InnerException);
+            }
+            catch (TerminologyPollDependencyException terminologyPollDependencyException)
+            {
+                return InternalServerError(terminologyPollDependencyException);
+            }
+            catch (TerminologyPollServiceException terminologyPollServiceException)
+            {
+                return InternalServerError(terminologyPollServiceException);
+            }
+        }
     }
 }

@@ -19,6 +19,24 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyPolls
         private int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
+        private static DateTimeOffset GetRandomDateTime() =>
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static TerminologyPoll UpdateTerminologyPollWithRandomValues(TerminologyPoll inputTerminologyPoll)
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            var filler = new Filler<TerminologyPoll>();
+
+            filler.Setup()
+                .OnProperty(terminologyPoll => terminologyPoll.Id).Use(inputTerminologyPoll.Id)
+                .OnType<DateTimeOffset>().Use(GetRandomDateTime())
+                .OnProperty(terminologyPoll => terminologyPoll.CreatedDate).Use(inputTerminologyPoll.CreatedDate)
+                .OnProperty(terminologyPoll => terminologyPoll.CreatedBy).Use(inputTerminologyPoll.CreatedBy)
+                .OnProperty(terminologyPoll => terminologyPoll.UpdatedDate).Use(now);
+
+            return filler.Create();
+        }
+
         private async ValueTask<TerminologyPoll> PostRandomTerminologyPollAsync()
         {
             TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll();

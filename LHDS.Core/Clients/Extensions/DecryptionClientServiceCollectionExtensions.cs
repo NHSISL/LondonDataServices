@@ -84,7 +84,7 @@ namespace LHDS.Core.Clients.Extensions
 
             ValidateCryptographyProviderSettings(gpgCryptographyProviderSettings);
             services.AddSingleton<IGpgCryptographyProviderSettings>(gpgCryptographyProviderSettings);
-            services.AddTransient<IDownloadAbstractProvider, DownloadAbstractProvider>();
+            services.AddTransient<IDownloadAbstractionProvider, DownloadAbstractionProvider>();
             services.AddTransient<ICryptographyAbstractProvider, CryptographyAbstractProvider>();
             services.AddTransient<ICryptographyProvider, GpgCryptographyProvider>();
         }

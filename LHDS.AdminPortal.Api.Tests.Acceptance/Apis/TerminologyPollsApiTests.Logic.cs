@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using RESTFulSense.Exceptions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.TerminologyPolls;
 using Xunit;
 
@@ -76,6 +77,28 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyPolls
             // then
             actualTerminologyPoll.Should().BeEquivalentTo(modifiedTerminologyPoll);
             await this.apiBroker.DeleteTerminologyPollByIdAsync(actualTerminologyPoll.Id);
+        }
+
+        [Fact]
+        public async Task ShouldDeleteTerminologyPollAsync()
+        {
+            // given
+            TerminologyPoll randomTerminologyPoll = await PostRandomTerminologyPollAsync();
+            TerminologyPoll inputTerminologyPoll = randomTerminologyPoll;
+            TerminologyPoll expectedTerminologyPoll = inputTerminologyPoll;
+
+            // when
+            TerminologyPoll deletedTerminologyPoll =
+                await this.apiBroker.DeleteTerminologyPollByIdAsync(inputTerminologyPoll.Id);
+
+            ValueTask<TerminologyPoll> getTerminologyPollbyIdTask =
+                this.apiBroker.GetTerminologyPollByIdAsync(inputTerminologyPoll.Id);
+
+            // then
+            deletedTerminologyPoll.Should().BeEquivalentTo(expectedTerminologyPoll);
+
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
+                getTerminologyPollbyIdTask.AsTask());
         }
     }
 }

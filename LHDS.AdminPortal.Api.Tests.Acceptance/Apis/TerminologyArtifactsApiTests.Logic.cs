@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using RESTFulSense.Exceptions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.TerminologyArtifacts;
 using Xunit;
 
@@ -76,6 +77,28 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyArtifacts
             // then
             actualTerminologyArtifact.Should().BeEquivalentTo(modifiedTerminologyArtifact);
             await this.apiBroker.DeleteTerminologyArtifactByIdAsync(actualTerminologyArtifact.Id);
+        }
+
+        [Fact]
+        public async Task ShouldDeleteTerminologyArtifactAsync()
+        {
+            // given
+            TerminologyArtifact randomTerminologyArtifact = await PostRandomTerminologyArtifactAsync();
+            TerminologyArtifact inputTerminologyArtifact = randomTerminologyArtifact;
+            TerminologyArtifact expectedTerminologyArtifact = inputTerminologyArtifact;
+
+            // when
+            TerminologyArtifact deletedTerminologyArtifact =
+                await this.apiBroker.DeleteTerminologyArtifactByIdAsync(inputTerminologyArtifact.Id);
+
+            ValueTask<TerminologyArtifact> getTerminologyArtifactbyIdTask =
+                this.apiBroker.GetTerminologyArtifactByIdAsync(inputTerminologyArtifact.Id);
+
+            // then
+            deletedTerminologyArtifact.Should().BeEquivalentTo(expectedTerminologyArtifact);
+
+            await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
+                getTerminologyArtifactbyIdTask.AsTask());
         }
     }
 }

@@ -46,5 +46,20 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.TerminologyPolls
                 await this.apiBroker.DeleteTerminologyPollByIdAsync(actualTerminologyPoll.Id);
             }
         }
+
+        [Fact]
+        public async Task ShouldGetTerminologyPollAsync()
+        {
+            // given
+            TerminologyPoll randomTerminologyPoll = await PostRandomTerminologyPollAsync();
+            TerminologyPoll expectedTerminologyPoll = randomTerminologyPoll;
+
+            // when
+            TerminologyPoll actualTerminologyPoll = await this.apiBroker.GetTerminologyPollByIdAsync(randomTerminologyPoll.Id);
+
+            // then
+            actualTerminologyPoll.Should().BeEquivalentTo(expectedTerminologyPoll);
+            await this.apiBroker.DeleteTerminologyPollByIdAsync(actualTerminologyPoll.Id);
+        }
     }
 }

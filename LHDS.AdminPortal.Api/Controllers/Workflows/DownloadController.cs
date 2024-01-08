@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
@@ -54,7 +55,7 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
             }
         }
 
-        [HttpGet("{fileName}")]
+        [HttpPost("{fileName}")]
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Downloads, ISL.LDS.AdminApi.ReadOnly")]
 #endif
@@ -62,7 +63,8 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
         {
             try
             {
-                Document document = await downloadService.RetrieveDownloadByFileNameAsync(fileName);
+                string decodedFileName = WebUtility.UrlDecode(fileName);
+                Document document = await downloadService.RetrieveDownloadByFileNameAsync(decodedFileName);
 
                 return Ok(document);
             }

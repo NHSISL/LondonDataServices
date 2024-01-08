@@ -13,7 +13,6 @@ using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Documents;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
-using LHDS.Core.Models.Foundations.Documents;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
@@ -27,7 +26,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             {
                 //Given
                 List<Document> retrievedDocuments =
-                    await this.apiBroker.downloadService.RetrieveListOfDocumentsToProcessAsync();
+                    await this.apiBroker.GetListOfDocumentsToProcessAsync();
 
                 byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
                 byte[] encryptedData = await this.apiBroker.cryptographyProvider.EncryptAsync(documentData);
@@ -74,7 +73,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             {
                 //Given
                 List<Document> retrievedDocuments =
-                    await this.apiBroker.downloadService.RetrieveListOfDocumentsToProcessAsync();
+                    await this.apiBroker.GetListOfDocumentsToProcessAsync();
 
                 byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
                 byte[] encryptedData = await this.apiBroker.cryptographyProvider.EncryptAsync(documentData);

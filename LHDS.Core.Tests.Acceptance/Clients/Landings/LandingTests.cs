@@ -4,8 +4,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Downloads;
 using LHDS.Core.Brokers.Storages.Blobs;
@@ -83,7 +83,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             this.dataSetService = serviceProvider.GetService<IDataSetService>();
             this.dataSetSpecificationService = serviceProvider.GetService<IDataSetSpecificationService>();
 
-            this.dataSetSpecificationProcessingService = 
+            this.dataSetSpecificationProcessingService =
                 serviceProvider.GetService<IDataSetSpecificationProcessingService>();
 
             this.auditService = serviceProvider.GetService<IIngestionTrackingAuditService>();
@@ -99,7 +99,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         {
             string filename = GetRandomString();
 
-            for (int i = 0; i< 6; i++)
+            for (int i = 0; i < 6; i++)
             {
                 filename = $"{filename}_{GetRandomString(10)}";
             }
@@ -107,8 +107,8 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             return filename;
         }
 
-    private static string GetRandomString(int length) =>
-           new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
+        private static string GetRandomString(int length) =>
+               new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
         private static int GetRandomNumber(int min = 2, int max = 10) =>
             new IntRange(min, max).GetValue();
@@ -170,7 +170,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
         }
 
         private static Supplier CreateRandomSupplier(Guid supplierId, DateTimeOffset dateTimeOffset) =>
-            CreateSupplierFiller(supplierId ,dateTimeOffset).Create();
+            CreateSupplierFiller(supplierId, dateTimeOffset).Create();
 
         private static Filler<Supplier> CreateSupplierFiller(Guid supplierId, DateTimeOffset dateTimeOffset)
         {

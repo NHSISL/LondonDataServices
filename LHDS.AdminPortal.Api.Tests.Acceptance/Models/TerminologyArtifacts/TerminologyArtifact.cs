@@ -9,8 +9,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Models.TerminologyArtifacts
     public class TerminologyArtifact
     {
         public Guid Id { get; set; }
-        public string FullUrl { get; set; }
-        public string ResourceType { get; set; }
+        public string FullUrl { get; set; } = string.Empty;
+        public string ResourceType { get; set; } = string.Empty;
         public string? Version { get; set; }
         public string? Name { get; set; }
         public string? Title { get; set; }

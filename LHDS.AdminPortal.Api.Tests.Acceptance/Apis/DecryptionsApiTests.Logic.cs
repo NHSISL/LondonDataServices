@@ -9,7 +9,6 @@ using FluentAssertions;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Documents;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
-using LHDS.Core.Models.Foundations.Documents;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
@@ -42,7 +41,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
                 FileName = inputFileName
             };
 
-            await this.apiBroker.documentService.AddDocumentAsync(document, container: encryptedFileContainer);
+            await this.apiBroker.PostDocumentAsync(document);
 
             //When
             await this.apiBroker.GetDocumentByFileNameToDecryptAsync(

@@ -29,7 +29,7 @@
 	  <PackageReference Include="RESTFulSense" Version="2.16.0" />
 	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 	  <PackageReference Include="Xeption" Version="2.6.0" />
-	  <PackageReference Include="xunit.extensibility.core" Version="2.6.4" />
+	  <PackageReference Include="xunit.extensibility.core" Version="2.6.5" />
   </ItemGroup>
 
   <ItemGroup>

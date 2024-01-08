@@ -49,5 +49,31 @@ namespace LHDS.AdminPortal.Api.Controllers
                 return InternalServerError(optOutOrchestrationServiceException);
             }
         }
+
+        [HttpGet]
+        public async ValueTask<ActionResult<string>> RetrieveOptOutStatusAsync([FromBody] byte[] optOutFile, 
+            [FromBody] string fileName)
+        {
+            try
+            {
+                string optOutStatus = await this.optOutOrchestrationService.RetrieveOptOutStatusAsync(
+                    optOutFile, 
+                    fileName);
+
+                return Ok(optOutStatus);
+            }
+            catch (OptOutOrchestrationValidationException optOutOrchestrationValidationException)
+            {
+                return BadRequest(optOutOrchestrationValidationException.InnerException);
+            }
+            catch (OptOutOrchestrationDependencyException optOutOrchestrationDependencyException)
+            {
+                return InternalServerError(optOutOrchestrationDependencyException);
+            }
+            catch (OptOutOrchestrationServiceException optOutOrchestrationServiceException)
+            {
+                return InternalServerError(optOutOrchestrationServiceException);
+            }
+        }
     }
 }

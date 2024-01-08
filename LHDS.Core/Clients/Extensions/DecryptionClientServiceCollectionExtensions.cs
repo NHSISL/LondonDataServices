@@ -20,7 +20,7 @@ using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
-using LHDS.Core.Models.Orchestrations.Downloads;
+using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Cryptography.Gpg;
 using LHDS.Core.Providers.Downloads;
@@ -84,7 +84,7 @@ namespace LHDS.Core.Clients.Extensions
 
             ValidateCryptographyProviderSettings(gpgCryptographyProviderSettings);
             services.AddSingleton<IGpgCryptographyProviderSettings>(gpgCryptographyProviderSettings);
-            services.AddTransient<IDownloadAbstractProvider, DownloadAbstractProvider>();
+            services.AddTransient<IDownloadAbstractionProvider, DownloadAbstractionProvider>();
             services.AddTransient<ICryptographyAbstractProvider, CryptographyAbstractProvider>();
             services.AddTransient<ICryptographyProvider, GpgCryptographyProvider>();
         }

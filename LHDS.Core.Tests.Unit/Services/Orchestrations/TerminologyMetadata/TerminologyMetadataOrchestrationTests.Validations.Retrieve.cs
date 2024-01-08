@@ -6,7 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
-using LHDS.Core.Models.Orchestrations.TerminologyMedata.Exceptions;
+using LHDS.Core.Models.Orchestrations.TerminologyMetadatas.Exceptions;
 using Moq;
 using Xunit;
 
@@ -42,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
             ValueTask retrieveTerminologyMetadataTask =
                 this.terminologyMetadataOrchestrationService.RetrieveArtifactMetadataAsync(inputString);
 
-            TerminologyMetadataOrchestrationValidationException 
+            TerminologyMetadataOrchestrationValidationException
                 actualTerminologyMetadataOrchestrationValidationException =
                     await Assert.ThrowsAsync<TerminologyMetadataOrchestrationValidationException>(() =>
                         retrieveTerminologyMetadataTask.AsTask());
@@ -110,7 +110,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.TerminologyMetadata
                 .BeEquivalentTo(expectedTerminologyMetadataOrchestrationValidationException);
 
             this.terminologyPollProcessingServiceMock.Verify(service =>
-                service.RetrieveOrAddTerminologyPollAsync(resourceType), 
+                service.RetrieveOrAddTerminologyPollAsync(resourceType),
                     Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>

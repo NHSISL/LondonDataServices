@@ -5,9 +5,7 @@
 using System;
 using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Foundations.AddressNormalisation.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
-using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Processings.AddressNormalisations;
 using Moq;

@@ -1,6 +1,6 @@
 import { Guid } from 'guid-typescript';
 
-export class AuditView {
+export class IngestionTrackingAuditView {
     public id: Guid;
     public ingestionTrackingId: string;
     public message: string;

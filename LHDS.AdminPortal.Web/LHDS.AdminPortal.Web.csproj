@@ -39,9 +39,9 @@
   <ItemGroup>
     <TypeScriptCompile Remove="ClientApp\cypress.config.ts" />
     <TypeScriptCompile Remove="ClientApp\src\App.test.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.audits.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.documents.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.features.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ingestionTrackingAudits.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ingestionTrackings.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.optout.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.pds.ts" />
@@ -49,8 +49,6 @@
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.terminologyArtifacts.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\apiBroker.ts" />
     <TypeScriptCompile Remove="ClientApp\src\brokers\toastBroker.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\audit\auditRow.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\components\audit\auditRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\bases\ingestionTrackingTable.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Breadcrumb\BreadCrumbBase.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\bases\layouts\Content\ContentBase.tsx" />
@@ -89,6 +87,8 @@
     <TypeScriptCompile Remove="ClientApp\src\components\dataTypes\dataTypeValidations.tsx" />
     <TypeScriptCompile Remove="clientapp\src\components\FeatureSwitch.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\HeaderBar.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTrackingAudit\ingestionTrackingAuditRow.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\ingestionTrackingAudit\ingestionTrackingAuditRowView.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetail.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetailCard.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\ingestionTracking\ingestionTrackingDetailCardView.tsx" />
@@ -149,12 +149,12 @@
     <TypeScriptCompile Remove="ClientApp\src\hooks\validationMessages.ts" />
     <TypeScriptCompile Remove="ClientApp\src\hooks\validationProcessor.ts" />
     <TypeScriptCompile Remove="ClientApp\src\index.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\models\audits\audit.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\dataSetSpecifications\dataSetSpecification.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\dataSets\dataSet.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\dataTypes\dataType.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\documents\document.ts" />
     <TypeScriptCompile Remove="clientapp\src\models\features\feature.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\ingestionTrackingAudits\ingestionTrackingAudits.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\ingestionTrackings\ingestionTracking.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\ingestionTrackings\ingestionTrackingHomeView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\objectColumns\objectColumn.ts" />
@@ -165,11 +165,11 @@
     <TypeScriptCompile Remove="ClientApp\src\models\suppliers\supplier.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\terminologyArtifacts\terminologyArtifact.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\terminologyArtifacts\terminologyArtifactHomeView.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\models\views\components\audit\auditView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\dataSetSpecifications\dataSetSpecificationView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\dataSets\dataSetView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\dataTypes\dataTypeView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\documents\documentView.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\models\views\components\ingestionTrackingAudit\ingestionTrackingAuditView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\ingestionTracking\ingestionTrackingView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\lookups\lookupView.ts" />
     <TypeScriptCompile Remove="ClientApp\src\models\views\components\objectColumns\objectColumnView.ts" />
@@ -195,9 +195,9 @@
     <TypeScriptCompile Remove="ClientApp\src\pages\PdsUpload.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\terminologyArtifactDetailPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\pages\terminologyArtifactPage.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\services\foundations\auditService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\documentService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\featureService.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\services\foundations\ingestionTrackingAuditService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\ingestionTrackingService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\optoutService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\services\foundations\pdsService.ts" />

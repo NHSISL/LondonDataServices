@@ -1,24 +1,24 @@
 import React, { FunctionComponent } from "react";
 import TableBase from "../bases/components/Table/TableBase";
 import TableBaseTbody from "../bases/components/Table/TableBase.Tbody";
-import AuditRow from "./auditRow";
-import { auditViewService } from "../../services/views/auditViewService";
+import IngestionTrackingAuditRow from "./ingestionTrackingAuditRow";
+import { ingestionTrackingAuditViewService } from "../../services/views/IngestionTrackingAudits/ingestionTrackingAuditViewService";
 import TableBaseRow from "../bases/components/Table/TableBase.Row";
 import TableBaseData from "../bases/components/Table/TableBase.Data";
 import TableBaseThead from "../bases/components/Table/TableBase.Thead";
-import { AuditView } from "../../models/views/components/audit/auditView";
+import { IngestionTrackingAuditView } from "../../models/views/components/ingestionTrackingAudit/ingestionTrackingAuditView";
 
-interface AuditTableProps {
+interface IngestionTrackingAuditTableProps {
     ingestionTrackingId: string;
 }
 
-const AuditTable: FunctionComponent<AuditTableProps> = (props) => {
+const IngestionTrackingAuditTable: FunctionComponent<IngestionTrackingAuditTableProps> = (props) => {
     const {
         ingestionTrackingId
     } = props;
 
     const { mappedAudits: auditsRetrieved } =
-        auditViewService.useGetAllAudits(ingestionTrackingId);
+        ingestionTrackingAuditViewService.useGetAllAudits(ingestionTrackingId);
 
     return (
         <div>
@@ -30,11 +30,11 @@ const AuditTable: FunctionComponent<AuditTableProps> = (props) => {
                     </TableBaseRow>
                 </TableBaseThead>
                 <TableBaseTbody>
-                    {auditsRetrieved?.map((audit: AuditView) =>
+                    {auditsRetrieved?.map((ingestionTrackingAudit: IngestionTrackingAuditView) =>
 
-                        <AuditRow
-                            key={audit.id?.toString()}
-                            audit={audit}
+                        <IngestionTrackingAuditRow
+                            key={ingestionTrackingAudit.id?.toString()}
+                            ingestionTrackingAudit={ingestionTrackingAudit}
                         />)}
 
                 </TableBaseTbody>
@@ -42,4 +42,4 @@ const AuditTable: FunctionComponent<AuditTableProps> = (props) => {
         </div>
     );
 }
-export default AuditTable;
+export default IngestionTrackingAuditTable;

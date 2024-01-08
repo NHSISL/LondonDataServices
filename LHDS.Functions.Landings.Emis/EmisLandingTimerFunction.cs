@@ -8,7 +8,6 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using RESTFulSense.Clients;
 
 namespace LHDS.Functions.Landings.Emis
 {

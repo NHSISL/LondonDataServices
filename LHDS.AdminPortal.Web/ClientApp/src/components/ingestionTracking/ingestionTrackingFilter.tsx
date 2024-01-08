@@ -24,9 +24,6 @@ const IngestionFilterModal: FunctionComponent<FilterModalProps> = (props) => {
     let { mappedSuppliers: suppliersRetrieved } = lookupViewService.useGetSupplierList("");
     const [supplier, setSupplier] = useState<SupplierView>(new SupplierView(Guid.create()));
 
-    //const { errors, processApiErrors, enableValidationMessages, validate } =
-    //    useValidation(supplierErrors, supplierValidations, supplier);
-
     const handleFilterClick = () => {
         onAddFilter(supplier);
         onClose();

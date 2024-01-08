@@ -36,9 +36,9 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
 
                 return Ok(returnFilePath);
             }
-            catch (TppLandingOrchestrationValidationException TppLandingOrchestrationValidationException)
+            catch (TppLandingOrchestrationValidationException tppLandingOrchestrationValidationException)
             {
-                return BadRequest(TppLandingOrchestrationValidationException.InnerException);
+                return BadRequest(tppLandingOrchestrationValidationException.InnerException);
             }
             catch (TppLandingOrchestrationDependencyException tppLandingOrchestrationDependencyException)
             {

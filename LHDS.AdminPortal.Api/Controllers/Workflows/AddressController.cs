@@ -33,7 +33,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         {
             try
             {
-                List<Address>  addresses = await this.addressCoordinationService.ProcessData(data);
+                List<Address> addresses = await this.addressCoordinationService.ProcessData(data);
 
                 return Ok(addresses);
             }

@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace LHDS.AdminPortal.Api.Controllers
 {
     [ApiController]
-    [Route("api/workflow/[controller]")]
+    [Route("api/workflows/[controller]")]
     public class AddressController : RESTFulController
     {
         private readonly IAddressCoordinationService addressCoordinationService;

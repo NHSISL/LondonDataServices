@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
@@ -86,6 +87,30 @@ namespace LHDS.AdminPortal.Api.Controllers
                     await this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
                 return Ok(meshMessage);
+            }
+            catch (OptOutOrchestrationValidationException optOutOrchestrationValidationException)
+            {
+                return BadRequest(optOutOrchestrationValidationException.InnerException);
+            }
+            catch (OptOutOrchestrationDependencyException optOutOrchestrationDependencyException)
+            {
+                return InternalServerError(optOutOrchestrationDependencyException);
+            }
+            catch (OptOutOrchestrationServiceException optOutOrchestrationServiceException)
+            {
+                return InternalServerError(optOutOrchestrationServiceException);
+            }
+        }
+
+        [HttpGet]
+        public async ValueTask<ActionResult<List<MeshMessage>>> RetrieveUpdatedMeshConsentStatusesChangesAsync()
+        {
+            try
+            {
+                List<MeshMessage> retrievedMeshMessages =
+                    await this.optOutOrchestrationService.RetrieveUpdatedMeshConsentStatusesChangesAsync();
+
+                return Ok(retrievedMeshMessages);
             }
             catch (OptOutOrchestrationValidationException optOutOrchestrationValidationException)
             {

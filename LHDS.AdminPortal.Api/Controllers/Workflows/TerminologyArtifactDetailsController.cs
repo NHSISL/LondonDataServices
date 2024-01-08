@@ -27,7 +27,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 #if RELEASE
             [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.ReadOnly")]
 #endif
-        public async ValueTask<ActionResult> RetrieveArtifactDetailsAsync()
+        public async ValueTask<ActionResult> ProcessArtifactDetailsAsync()
         {
             try
             {

@@ -26,7 +26,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         public async ValueTask<List<IngestionTracking>> GetAllIngestionTrackingsAsync()
         {
             OdataResponse<IngestionTracking> response =
-                await this.apiFactoryClient.GetContentAsync<OdataResponse<IngestionTracking>>($"{ingestionTrackingsRelativeOdataUrl}/");
+                await this.apiFactoryClient
+                    .GetContentAsync<OdataResponse<IngestionTracking>>($"{ingestionTrackingsRelativeOdataUrl}/");
 
             return response.Items;
         }

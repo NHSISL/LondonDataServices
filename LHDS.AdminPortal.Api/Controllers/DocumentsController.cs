@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Services.Foundations.Documents;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
@@ -31,7 +32,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [HttpGet("{fileName}")]
 #if RELEASE
-        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
 #endif
         public async ValueTask<ActionResult<Document>> GetDownloadLinkAsync(string fileName)
         {
@@ -41,6 +42,64 @@ namespace LHDS.AdminPortal.Api.Controllers
                     .GetDownloadLinkAsync(WebUtility.UrlDecode(fileName), blobContainers.EmisLanding);
 
                 return Ok(document);
+            }
+            catch (DocumentValidationException documentValidationException)
+                when (documentValidationException.InnerException is NotFoundDocumentException)
+            {
+                return NotFound(documentValidationException.InnerException);
+            }
+            catch (DocumentValidationException documentValidationException)
+            {
+                return BadRequest(documentValidationException.InnerException);
+            }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                return InternalServerError(documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                return InternalServerError(documentServiceException);
+            }
+        }
+
+        [HttpPost]
+#if RELEASE
+[Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Documents")]
+#endif
+        public async ValueTask<ActionResult> ProcessDocumentByFileNameAsync([FromBody] Document document)
+        {
+            try
+            {
+                await documentService.AddDocumentAsync(document, blobContainers.EmisLanding);
+
+                return Ok();
+            }
+            catch (EmisLandingOrchestrationValidationException emisLandingOrchestrationValidationException)
+            {
+                return BadRequest(emisLandingOrchestrationValidationException.InnerException);
+            }
+            catch (EmisLandingOrchestrationDependencyException emisLandingOrchestrationDependencyException)
+            {
+                return InternalServerError(emisLandingOrchestrationDependencyException);
+            }
+            catch (EmisLandingOrchestrationServiceException emisLandingOrchestrationServiceException)
+            {
+                return InternalServerError(emisLandingOrchestrationServiceException);
+            }
+        }
+
+        [HttpDelete("{ingestionTrackingId}")]
+#if RELEASE
+[Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Documents")]
+#endif
+        public async ValueTask<ActionResult> DeleteDocumentByIdAsync(string fileName)
+        {
+            try
+            {
+                await this.documentService
+                    .RemoveDocumentByFileNameAsync(WebUtility.UrlDecode(fileName), blobContainers.EmisLanding);
+
+                return Ok();
             }
             catch (DocumentValidationException documentValidationException)
                 when (documentValidationException.InnerException is NotFoundDocumentException)

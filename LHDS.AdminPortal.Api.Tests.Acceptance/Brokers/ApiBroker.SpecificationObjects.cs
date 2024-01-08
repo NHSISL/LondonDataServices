@@ -22,7 +22,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         public async ValueTask<List<SpecificationObject>> GetAllSpecificationObjectsAsync()
         {
             OdataResponse<SpecificationObject> response =
-                await this.apiFactoryClient.GetContentAsync<OdataResponse<SpecificationObject>>($"{specificationObjectsRelativeOdataUrl}/");
+                await this.apiFactoryClient.GetContentAsync<OdataResponse<SpecificationObject>>(
+                    $"{specificationObjectsRelativeOdataUrl}/");
 
             return response.Items;
         }

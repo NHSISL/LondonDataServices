@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
 using LHDS.Core.Services.Orchestrations.EmisLandings;
@@ -26,13 +27,13 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
 #if RELEASE
 [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.EmisLandings")]
 #endif
-        public async ValueTask<ActionResult<string>> ProcessDocuments()
+        public async ValueTask<ActionResult<List<string>>> ProcessDocuments()
         {
             try
             {
-                var returnFilePath = await emisLandingOrchestrationService.ProcessAsync();
+                var returnFilePaths = await emisLandingOrchestrationService.ProcessAsync();
 
-                return Ok(returnFilePath);
+                return Ok(returnFilePaths);
             }
             catch (EmisLandingOrchestrationValidationException emisLandingOrchestrationValidationException)
             {

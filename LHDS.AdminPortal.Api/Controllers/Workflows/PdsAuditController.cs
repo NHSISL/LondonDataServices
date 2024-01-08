@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace LHDS.AdminPortal.Api.Controllers.Workflows
 {
     [ApiController]
-    [Route("api/workflow/[controller]")]
+    [Route("api/workflows/[controller]")]
     public class PdsAuditController : RESTFulController
     {
         private readonly IPdsOrchestrationService pdsOrchestrationService;
@@ -53,7 +53,7 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
 #if RELEASE
 [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Pds")]
 #endif
-        [Route("api/workflow/[controller]/file")]
+        [Route("api/workflows/[controller]/file")]
         public async ValueTask<ActionResult<PdsAudit>> PickupFileAndSendToMesh([FromBody] MeshFileModel meshFileModel)
         {
             try

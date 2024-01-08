@@ -8,6 +8,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Clients;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using RESTFulSense.Clients;
 
 namespace LHDS.Functions.Landings.Emis
 {
@@ -37,6 +38,10 @@ namespace LHDS.Functions.Landings.Emis
             {
                 Task.Run(async () =>
                 {
+                    var apiClient = new RESTFulApiClient();
+                    api
+
+
                     await this.landingClient.ProcessAsync();
                 }).Wait();
             }

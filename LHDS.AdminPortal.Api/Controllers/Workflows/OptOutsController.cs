@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using LHDS.Core.Models.Orchestrations.TerminologyDetails.Exceptions;
 using LHDS.Core.Services.Orchestrations.OptOuts;
@@ -61,6 +62,30 @@ namespace LHDS.AdminPortal.Api.Controllers
                     fileName);
 
                 return Ok(optOutStatus);
+            }
+            catch (OptOutOrchestrationValidationException optOutOrchestrationValidationException)
+            {
+                return BadRequest(optOutOrchestrationValidationException.InnerException);
+            }
+            catch (OptOutOrchestrationDependencyException optOutOrchestrationDependencyException)
+            {
+                return InternalServerError(optOutOrchestrationDependencyException);
+            }
+            catch (OptOutOrchestrationServiceException optOutOrchestrationServiceException)
+            {
+                return InternalServerError(optOutOrchestrationServiceException);
+            }
+        }
+
+        [HttpPost]
+        public async ValueTask<ActionResult<MeshMessage>> PushExpiredOptOutsToMeshForRenewalAsync()
+        {
+            try
+            {
+                MeshMessage meshMessage = 
+                    await this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
+
+                return Ok(meshMessage);
             }
             catch (OptOutOrchestrationValidationException optOutOrchestrationValidationException)
             {

@@ -7,9 +7,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Controllers.OptOuts;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
-using LHDS.Core.Models.Orchestrations.TerminologyDetails.Exceptions;
 using LHDS.Core.Services.Orchestrations.OptOuts;
-using LHDS.Core.Services.Orchestrations.TerminologyDetails;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 #if RELEASE
@@ -61,7 +59,7 @@ namespace LHDS.AdminPortal.Api.Controllers
             try
             {
                 string optOutStatus = await this.optOutOrchestrationService.RetrieveOptOutStatusAsync(
-                    optOutFileModel.OptOutFile, 
+                    optOutFileModel.OptOutFile,
                     optOutFileModel.FileName);
 
                 return Ok(optOutStatus);
@@ -81,11 +79,12 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpPost]
+        [Route("api/workflows/[controller]/PushExpiredOptOuts")]
         public async ValueTask<ActionResult<MeshMessage>> PushExpiredOptOutsToMeshForRenewalAsync()
         {
             try
             {
-                MeshMessage meshMessage = 
+                MeshMessage meshMessage =
                     await this.optOutOrchestrationService.PushExpiredOptOutsToMeshForRenewalAsync();
 
                 return Ok(meshMessage);
@@ -104,8 +103,9 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [HttpGet]
-        public async ValueTask<ActionResult<List<MeshMessage>>> RetrieveUpdatedMeshConsentStatusesChangesAsync()
+        [HttpPost]
+        [Route("api/workflows/[controller]/ProcessUpdatedMeshConsentStatuses")]
+        public async ValueTask<ActionResult<List<MeshMessage>>> ProcessUpdatedMeshConsentStatuses()
         {
             try
             {

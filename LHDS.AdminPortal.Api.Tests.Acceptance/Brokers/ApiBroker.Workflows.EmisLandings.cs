@@ -11,8 +11,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
     {
         private const string emisLandingsRelativeUrl = "api/workflows/emislandings";
 
-        public async ValueTask<List<string>> PostProcessDocumentsAsync() =>
-            await this.apiFactoryClient.PostContentAsync(emisLandingsRelativeUrl, new List<string>());
+        public async ValueTask<List<string>> GetProcessDocumentsAsync() =>
+            await this.apiFactoryClient.GetContentAsync<List<string>>(emisLandingsRelativeUrl);
 
         public async ValueTask<string> PostProcessDocumentByFileNameAsyncAsync(string filenName) =>
             await this.apiFactoryClient.PostContentAsync(emisLandingsRelativeUrl, filenName);

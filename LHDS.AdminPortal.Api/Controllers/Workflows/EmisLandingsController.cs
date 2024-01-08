@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace LHDS.AdminPortal.Api.Controllers.Workflows
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/workflows/[controller]")]
     public class EmisLandingsController : RESTFulController
     {
         private readonly IEmisLandingOrchestrationService emisLandingOrchestrationService;
@@ -23,7 +23,7 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
         public EmisLandingsController(IEmisLandingOrchestrationService emisLandingOrchestrationService) =>
             this.emisLandingOrchestrationService = emisLandingOrchestrationService;
 
-        [HttpPost]
+        [HttpGet]
 #if RELEASE
 [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.EmisLandings")]
 #endif

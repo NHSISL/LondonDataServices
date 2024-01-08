@@ -17,7 +17,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Workflows
     {
         private readonly ApiBroker apiBroker;
 
-        EmisLandingsApiTests(ApiBroker apiBroker) =>
+        public EmisLandingsApiTests(ApiBroker apiBroker) =>
             this.apiBroker = apiBroker;
 
         private static string GetRandomString() =>

@@ -41,7 +41,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Workflows
             await this.apiBroker.PostDataSetSpecificationAsync(activeDataSetSpecification);
 
             //When
-            var actualStringList = await this.apiBroker.PostProcessDocumentsAsync();
+            var actualStringList = await this.apiBroker.GetProcessDocumentsAsync();
 
             //Then
             foreach (var actualFile in actualStringList)

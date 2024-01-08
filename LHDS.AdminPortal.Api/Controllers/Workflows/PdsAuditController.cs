@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LHDS.AdminPortal.Api.Models.Controllers.Workflows.PdsAudits;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Orchestrations.Pds.Exceptions;
 using LHDS.Core.Services.Orchestrations.Pds;
@@ -52,11 +53,14 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
 #if RELEASE
 [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Pds")]
 #endif
-        public async ValueTask<ActionResult<PdsAudit>> PickupFileAndSendToMesh(byte[] pdsFile, string fileName)
+        [Route("api/workflow/[controller]/file")]
+        public async ValueTask<ActionResult<PdsAudit>> PickupFileAndSendToMesh([FromBody] MeshFileModel meshFileModel)
         {
             try
             {
-                return await this.pdsOrchestrationService.PickupFileAndSendToMesh(pdsFile, fileName);
+                return await this.pdsOrchestrationService.PickupFileAndSendToMesh(
+                    meshFileModel.PdsFile,
+                    meshFileModel.FileName);
             }
             catch (PdsOrchestrationValidationException pdsOrchestrationValidationException)
             {
@@ -76,7 +80,7 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
 #if RELEASE
 [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.AdminApi.Workflows.Pds")]
 #endif
-        public async ValueTask<ActionResult<List<PdsAudit>>> RetreiveMessagesFromMeshAndUpdateStorage()
+        public async ValueTask<ActionResult<List<PdsAudit>>> ProcessMeshMessages()
         {
             try
             {

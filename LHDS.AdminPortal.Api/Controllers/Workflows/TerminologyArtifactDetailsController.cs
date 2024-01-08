@@ -3,8 +3,6 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
-using System.Web;
-using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
 using LHDS.Core.Models.Orchestrations.TerminologyDetails.Exceptions;
 using LHDS.Core.Services.Orchestrations.TerminologyDetails;
 using Microsoft.AspNetCore.Mvc;
@@ -21,13 +19,13 @@ namespace LHDS.AdminPortal.Api.Controllers
     {
         private readonly ITerminologyDetailOrchestrationService terminologyDetailOrchestrationService;
 
-        public TerminologyArtifactDetailsController(ITerminologyDetailOrchestrationService 
+        public TerminologyArtifactDetailsController(ITerminologyDetailOrchestrationService
                 terminologyDetailOrchestrationService) =>
             this.terminologyDetailOrchestrationService = terminologyDetailOrchestrationService;
 
-        [HttpPut]
+        [HttpPost]
 #if RELEASE
-            [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
+            [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.ReadOnly")]
 #endif
         public async ValueTask<ActionResult> RetrieveArtifactDetailsAsync()
         {
@@ -37,17 +35,17 @@ namespace LHDS.AdminPortal.Api.Controllers
 
                 return Ok();
             }
-            catch (TerminologyDetailOrchestrationDependencyException downloadOrchestrationValidationException)
+            catch (TerminologyDetailOrchestrationValidationException terminologyDetailOrchestrationValidationException)
             {
-                return BadRequest(downloadOrchestrationValidationException.InnerException);
+                return BadRequest(terminologyDetailOrchestrationValidationException.InnerException);
             }
-            catch (DownloadOrchestrationDependencyException downloadOrchestrationDependencyException)
+            catch (TerminologyDetailOrchestrationDependencyException terminologyDetailOrchestrationDependencyException)
             {
-                return InternalServerError(downloadOrchestrationDependencyException);
+                return InternalServerError(terminologyDetailOrchestrationDependencyException);
             }
-            catch (DownloadOrchestrationServiceException downloadOrchestrationServiceException)
+            catch (TerminologyDetailOrchestrationServiceException terminologyDetailOrchestrationServiceException)
             {
-                return InternalServerError(downloadOrchestrationServiceException);
+                return InternalServerError(terminologyDetailOrchestrationServiceException);
             }
         }
     }

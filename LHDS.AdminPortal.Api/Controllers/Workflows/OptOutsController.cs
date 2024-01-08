@@ -27,7 +27,7 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [HttpGet]
 #if RELEASE
-            [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.ReadOnly")]
+        [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, ISL.LDS.AdminApi.ReadOnly")]
 #endif
         public async ValueTask<ActionResult<bool>> ValidateMailboxAccessAsync()
         {
@@ -53,8 +53,8 @@ namespace LHDS.AdminPortal.Api.Controllers
 
         [HttpGet]
         [Route("api/workflows/[controller]/file")]
-        public async ValueTask<ActionResult<string>> RetrieveOptOutStatusAsync([FromBody] OptOutFileModel optOutFileModel)
-
+        public async ValueTask<ActionResult<string>> RetrieveOptOutStatusAsync(
+            [FromBody] OptOutFileModel optOutFileModel)
         {
             try
             {

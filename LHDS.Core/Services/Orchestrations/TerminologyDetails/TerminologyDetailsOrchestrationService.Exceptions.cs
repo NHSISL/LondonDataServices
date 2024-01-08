@@ -4,7 +4,6 @@
 
 using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Orchestrations.Downloads.Exceptions;
 using LHDS.Core.Models.Orchestrations.TerminologyDetails.Exceptions;
 using LHDS.Core.Models.Processings.Documents.Exceptions;
 using LHDS.Core.Models.Processings.Ontologies.Exceptions;

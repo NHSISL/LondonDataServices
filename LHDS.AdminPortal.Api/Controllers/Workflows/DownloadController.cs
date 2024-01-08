@@ -44,13 +44,13 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
 
                 return Ok(retrievedDocuments);
             }
-            catch (DocumentDependencyException dataSetDependencyException)
+            catch (DocumentDependencyException documentDependencyException)
             {
-                return InternalServerError(dataSetDependencyException);
+                return InternalServerError(documentDependencyException);
             }
-            catch (DocumentServiceException downloadServiceException)
+            catch (DocumentServiceException documentServiceException)
             {
-                return InternalServerError(downloadServiceException);
+                return InternalServerError(documentServiceException);
             }
         }
 
@@ -66,22 +66,22 @@ namespace LHDS.AdminPortal.Api.Controllers.Workflows
 
                 return Ok(document);
             }
-            catch (DocumentValidationException dataSetValidationException)
-                when (dataSetValidationException.InnerException is NotFoundDocumentException)
+            catch (DocumentValidationException documentValidationException)
+                when (documentValidationException.InnerException is NotFoundDocumentException)
             {
-                return NotFound(dataSetValidationException.InnerException);
+                return NotFound(documentValidationException.InnerException);
             }
-            catch (DocumentValidationException dataSetValidationException)
+            catch (DocumentValidationException documentValidationException)
             {
-                return BadRequest(dataSetValidationException.InnerException);
+                return BadRequest(documentValidationException.InnerException);
             }
-            catch (DocumentDependencyException dataSetDependencyException)
+            catch (DocumentDependencyException documentDependencyException)
             {
-                return InternalServerError(dataSetDependencyException);
+                return InternalServerError(documentDependencyException);
             }
-            catch (DocumentServiceException downloadServiceException)
+            catch (DocumentServiceException documentServiceException)
             {
-                return InternalServerError(downloadServiceException);
+                return InternalServerError(documentServiceException);
             }
         }
     }

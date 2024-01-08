@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Controllers.OptOuts;
 using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Orchestrations.OptOuts.Exceptions;
 using LHDS.Core.Models.Orchestrations.TerminologyDetails.Exceptions;
@@ -53,14 +54,15 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpGet]
-        public async ValueTask<ActionResult<string>> RetrieveOptOutStatusAsync([FromBody] byte[] optOutFile, 
-            [FromBody] string fileName)
+        [Route("api/workflows/[controller]/file")]
+        public async ValueTask<ActionResult<string>> RetrieveOptOutStatusAsync([FromBody] OptOutFileModel optOutFileModel)
+
         {
             try
             {
                 string optOutStatus = await this.optOutOrchestrationService.RetrieveOptOutStatusAsync(
-                    optOutFile, 
-                    fileName);
+                    optOutFileModel.OptOutFile, 
+                    optOutFileModel.FileName);
 
                 return Ok(optOutStatus);
             }

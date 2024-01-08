@@ -38,10 +38,6 @@ namespace LHDS.Functions.Landings.Emis
             {
                 Task.Run(async () =>
                 {
-                    var apiClient = new RESTFulApiClient();
-                    api
-
-
                     await this.landingClient.ProcessAsync();
                 }).Wait();
             }

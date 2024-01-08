@@ -36,7 +36,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Workflows
             };
 
             List<Document> documents = new List<Document> { document };
-
             await this.apiBroker.PostSupplierAsync(landingSupplier);
             await this.apiBroker.PostDataSetAsync(activeDataSet);
             await this.apiBroker.PostDataSetSpecificationAsync(activeDataSetSpecification);

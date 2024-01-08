@@ -28,7 +28,9 @@ const Submenu: React.FC<SubmenuProps> = ({ items, allowedRoles }) => {
             <SecuredComponents allowedRoles={allowedRoles}>
                 <>
                     <div onClick={toggleSubmenu} className="text-white pe-auto">
-                        {items.label} {showSubmenu ? <FontAwesomeIcon icon={faCaretUp} className="ps-2" /> : <FontAwesomeIcon icon={faCaretDown} className="ps-2" />}
+                        {items.label} {showSubmenu
+                            ? <FontAwesomeIcon icon={faCaretUp} className="ps-2" />
+                            : <FontAwesomeIcon icon={faCaretDown} className="ps-2" />}
                     </div>
                     {showSubmenu && (
                         <ul className="">

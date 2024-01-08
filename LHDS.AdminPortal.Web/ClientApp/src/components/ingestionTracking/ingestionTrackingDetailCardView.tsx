@@ -36,9 +36,7 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
                 <GridBase size="Two-Third">
                     <CardBase>
                         <CardBaseBody>
-                            <CardBaseTitle>
-                                Details
-                            </CardBaseTitle>
+                            <CardBaseTitle>Details</CardBaseTitle>
                             <CardBaseContent>
                                 <SummaryListBase>
                                     <SummaryListBaseRow>
@@ -47,11 +45,15 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
                                     </SummaryListBaseRow>
                                     <SummaryListBaseRow>
                                         <SummaryListBaseKey>Encrypted File Name</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{ingestionTracking.encryptedFileName}</SummaryListBaseValue>
+                                        <SummaryListBaseValue>
+                                            {ingestionTracking.encryptedFileName}
+                                        </SummaryListBaseValue>
                                     </SummaryListBaseRow>
                                     <SummaryListBaseRow>
                                         <SummaryListBaseKey>Decrypted File Name</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{ingestionTracking.decryptedFileName}</SummaryListBaseValue>
+                                        <SummaryListBaseValue>
+                                            {ingestionTracking.decryptedFileName}
+                                        </SummaryListBaseValue>
                                     </SummaryListBaseRow>
                                     <SummaryListBaseRow>
                                         <SummaryListBaseKey>Decrypted</SummaryListBaseKey>
@@ -62,7 +64,8 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
                                     </SummaryListBaseRow>
                                     <SummaryListBaseRow>
                                         <SummaryListBaseKey>Last Seen</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{moment(ingestionTracking.lastSeen?.toString()).format("Do-MMM-yyyy HH:mm")}
+                                        <SummaryListBaseValue>
+                                            {moment(ingestionTracking.lastSeen?.toString()).format("Do-MMM-yyyy HH:mm")}
                                         </SummaryListBaseValue>
                                     </SummaryListBaseRow>
                                     <SummaryListBaseRow>
@@ -78,11 +81,15 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
                                     </SummaryListBaseRow>
                                     <SummaryListBaseRow>
                                         <SummaryListBaseKey>Encrypted File Size</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{ingestionTracking.encryptedFileSize}</SummaryListBaseValue>
+                                        <SummaryListBaseValue>
+                                            {ingestionTracking.encryptedFileSize}
+                                        </SummaryListBaseValue>
                                     </SummaryListBaseRow>
                                     <SummaryListBaseRow>
                                         <SummaryListBaseKey>Decrypted File Size</SummaryListBaseKey>
-                                        <SummaryListBaseValue>{ingestionTracking.decryptedFileSize}</SummaryListBaseValue>
+                                        <SummaryListBaseValue>
+                                            {ingestionTracking.decryptedFileSize}
+                                        </SummaryListBaseValue>
                                     </SummaryListBaseRow>
                                     <SummaryListBaseRow>
                                         <SummaryListBaseKey>Created Date</SummaryListBaseKey>
@@ -97,7 +104,6 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
                                         </SummaryListBaseValue>
                                     </SummaryListBaseRow>
                                 </SummaryListBase>
-
                             </CardBaseContent>
                         </CardBaseBody>
                     </CardBase>
@@ -112,8 +118,6 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
                                         Actions
                                     </CardBaseTitle>
                                     <CardBaseContent>
-
-
                                         <ul className="ps-0 mb-4">
                                             <li>
                                                 <span>1</span> Re-Encrypt
@@ -128,12 +132,18 @@ const IngestionTrackingDetailCardView: FunctionComponent<IngestionTrackingDetail
                                                 <p>Use this option to download a successfully decrypted file.</p>
                                             </li>
                                         </ul>
-                                        <ButtonBase onClick={() => onReLand(ingestionTracking)} add>&nbsp;Re-Land</ButtonBase>&nbsp;
-                                        <ButtonBase onClick={() => onReDecrypt(ingestionTracking)} add>&nbsp;Re-Decrypt</ButtonBase>&nbsp;
+
+                                        <ButtonBase onClick={() => onReLand(ingestionTracking)} add>
+                                            &nbsp;Re-Land
+                                        </ButtonBase>&nbsp;
+
+                                        <ButtonBase onClick={() => onReDecrypt(ingestionTracking)} add>
+                                            &nbsp;Re-Decrypt
+                                        </ButtonBase>&nbsp;
+
                                         <ButtonBase onClick={() => onDownload(ingestionTracking)} add>
                                             <FontAwesomeIcon icon={faFileDownload} />&nbsp;Download
                                         </ButtonBase>&nbsp;
-
 
                                     </CardBaseContent>
                                 </CardBaseBody>

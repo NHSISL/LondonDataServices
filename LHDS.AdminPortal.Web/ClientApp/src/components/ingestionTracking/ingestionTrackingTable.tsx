@@ -25,9 +25,7 @@ type IngestionTrackingTableProps = {};
 const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (props) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
-
     const [debouncedSupplierTerm, setDebouncedSupplierTerm] = useState<string>("");
-
     const [showSpinner, setShowSpinner] = useState(false);
     const [showModal, setShowModal] = useState(false);
 

@@ -25,9 +25,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             try
             {
                 //Given
-                List<Document> retrievedDocuments =
-                    await this.apiBroker.downloadService.RetrieveListOfDocumentsToProcessAsync();
-
+                List<Document> retrievedDocuments = await this.apiBroker.RetrieveListOfDocumentsToProcessAsync();
                 byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
                 byte[] encryptedData = await this.apiBroker.cryptographyProvider.EncryptAsync(documentData);
                 Document retrievedDocument = retrievedDocuments[0];
@@ -72,8 +70,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             try
             {
                 //Given
-                List<Document> retrievedDocuments =
-                    await this.apiBroker.downloadService.RetrieveListOfDocumentsToProcessAsync();
+                List<Document> retrievedDocuments = await this.apiBroker.RetrieveListOfDocumentsToProcessAsync();
 
                 byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
                 byte[] encryptedData = await this.apiBroker.cryptographyProvider.EncryptAsync(documentData);

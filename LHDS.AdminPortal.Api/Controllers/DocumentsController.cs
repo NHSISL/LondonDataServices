@@ -5,6 +5,7 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using LHDS.AdminPortal.Api.Models.Controllers.Documents;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 using LHDS.Core.Models.Foundations.Documents;
@@ -32,11 +33,11 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpPost]
-        public async ValueTask<ActionResult> PostDataSetAsync(Document document, string container)
+        public async ValueTask<ActionResult> PostDataSetAsync(DocumentsModel documentsModel)
         {
             try
             {
-                await this.documentService.AddDocumentAsync(document, container);
+                await this.documentService.AddDocumentAsync(documentsModel.Document, documentsModel.Container);
 
                 return Ok();
             }
@@ -91,15 +92,15 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [HttpDelete("{fileName}")]
-        public async ValueTask<ActionResult<Document>> RetrieveDocumentByFileNameAsync(
-            string fileName, 
-            string container)
+        [HttpDelete("{documentsFileModel}")]
+        public async ValueTask<ActionResult<Document>> RetrieveDocumentByFileNameAsync(DocumentsFileModel 
+            documentsFileModel)
         {
             try
             {
                 Document document =
-                    await this.documentService.RetrieveDocumentByFileNameAsync(fileName, container);
+                    await this.documentService.RetrieveDocumentByFileNameAsync(documentsFileModel.FileName, 
+                    documentsFileModel.Container);
 
                 return Ok(document);
             }

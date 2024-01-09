@@ -93,16 +93,15 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpDelete("{documentsFileModel}")]
-        public async ValueTask<ActionResult<Document>> RetrieveDocumentByFileNameAsync(DocumentsFileModel 
+        public async ValueTask<ActionResult<Document>> Remove(DocumentsFileModel 
             documentsFileModel)
         {
             try
             {
-                Document document =
-                    await this.documentService.RetrieveDocumentByFileNameAsync(documentsFileModel.FileName, 
+                await this.documentService.RemoveDocumentByFileNameAsync(documentsFileModel.FileName, 
                     documentsFileModel.Container);
 
-                return Ok(document);
+                return Ok();
             }
             catch (DocumentValidationException documentValidationException)
                 when (documentValidationException.InnerException is NotFoundDocumentException)

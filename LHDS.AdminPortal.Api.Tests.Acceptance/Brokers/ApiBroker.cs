@@ -4,6 +4,7 @@
 
 using System.Net.Http;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
+using LHDS.Core.Models.Orchestrations.OptOuts;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Cryptography.Gpg;
 using LHDS.Core.Services.Foundations.Downloads;
@@ -22,6 +23,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         internal IDownloadService downloadService;
         internal ICryptographyProvider cryptographyProvider;
         internal IConfiguration configuration;
+        internal OptOutConfiguration optOutConfiguration;
         internal LandingConfiguration landingConfiguration;
 
         public ApiBroker()
@@ -36,6 +38,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 
             this.configuration = this.webApplicationFactory.Services.GetService<IConfiguration>();
             this.landingConfiguration = this.webApplicationFactory.Services.GetService<LandingConfiguration>();
+            this.optOutConfiguration = this.webApplicationFactory.Services.GetService<OptOutConfiguration>();
         }
     }
 }

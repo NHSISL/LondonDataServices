@@ -51,7 +51,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                        Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();
-            this.decryptionServiceMock.VerifyNoOtherCalls();
+            this.cryptographyServiceMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
             this.auditServiceMock.VerifyNoOtherCalls();

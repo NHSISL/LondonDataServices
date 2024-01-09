@@ -4,11 +4,11 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Foundations.Decryptions.Exceptions
+namespace LHDS.Core.Models.Foundations.Cryptographies.Exceptions
 {
-    public class DecryptionDependencyValidationException : Xeption
+    public class CryptographyValidationException : Xeption
     {
-        public DecryptionDependencyValidationException(string message, Xeption innerException)
+        public CryptographyValidationException(string message, Xeption innerException)
             : base(message, innerException)
         { }
     }

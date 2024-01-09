@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace LHDS.Core.Brokers.Decryptions
 {
-    public interface IDecryptionBroker
+    public interface ICryptographyBroker
     {
+        ValueTask<byte[]> EncryptAsync(byte[] data);
         ValueTask<byte[]> DecryptAsync(byte[] data);
     }
 }

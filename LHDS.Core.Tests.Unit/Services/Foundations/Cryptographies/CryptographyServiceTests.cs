@@ -5,36 +5,28 @@
 using System;
 using System.Linq.Expressions;
 using System.Text;
-using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Decryptions;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages.Sql;
-using LHDS.Core.Services.Foundations.Decryptions;
+using LHDS.Core.Services.Foundations.Cryptographies;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.Decryptions
+namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
 {
-    public partial class DecryptionServiceTests
+    public partial class CryptographyServiceTests
     {
-        private readonly Mock<IDecryptionBroker> decryptionBrokerMock;
-        private readonly Mock<IStorageBroker> storageBrokerMock;
-        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ICryptographyBroker> cryptographyBroker;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
-        private readonly IDecryptionService decryptionService;
+        private readonly ICryptographyService cryptographyService;
 
-        public DecryptionServiceTests()
+        public CryptographyServiceTests()
         {
-            this.decryptionBrokerMock = new Mock<IDecryptionBroker>();
-            this.storageBrokerMock = new Mock<IStorageBroker>();
-            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.cryptographyBroker = new Mock<ICryptographyBroker>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
 
-            this.decryptionService = new DecryptionService(
-                decryptionBroker: this.decryptionBrokerMock.Object,
-                storageBroker: this.storageBrokerMock.Object,
-                dateTimeBroker: this.dateTimeBrokerMock.Object,
+            this.cryptographyService = new CryptographyService(
+                cryptographyBroker: this.cryptographyBroker.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
@@ -47,7 +39,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decryptions
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
-        public byte[] CreateRandomDecryption()
+        public byte[] CreateRandomData()
         {
             string randomMessage = GetRandomMessage();
             return Encoding.ASCII.GetBytes(randomMessage);

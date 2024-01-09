@@ -5,49 +5,49 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Decryptions.Exceptions;
+using LHDS.Core.Models.Foundations.Cryptographies.Exceptions;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.Decryptions
+namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
 {
-    public partial class DecryptionServiceTests
+    public partial class CryptographyServiceTests
     {
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAndLogItAsync()
+        public async Task ShouldThrowServiceExceptionOnEncryptfServiceErrorOccursAndLogItAsync()
         {
             // given
-            byte[] someId = CreateRandomDecryption();
+            byte[] someId = CreateRandomData();
             var serviceException = new Exception();
 
             var failedDecryptionServiceException =
-                new FailedDecryptionServiceException(
-                    message: "Failed decryption service occurred, please contact support", 
+                new FailedCryptographyServiceException(
+                    message: "Failed cryptography service occurred, please contact support",
                     innerException: serviceException);
 
             var expectedDecryptionServiceException =
-                new DecryptionServiceException(
-                    message: "Decryption service error occurred, contact support.",
+                new CryptographyServiceException(
+                    message: "Cryptography service error occurred, contact support.",
                     innerException: failedDecryptionServiceException);
 
-            this.decryptionBrokerMock.Setup(broker =>
-                broker.DecryptAsync(It.IsAny<byte[]>()))
+            this.cryptographyBroker.Setup(broker =>
+                broker.EncryptAsync(It.IsAny<byte[]>()))
                     .ThrowsAsync(serviceException);
 
             // when
             Task<byte[]> decryptTask =
-                this.decryptionService.DecryptAsync(someId);
+                this.cryptographyService.EncryptAsync(someId);
 
-            DecryptionServiceException actualDecryptionServiceException =
-                await Assert.ThrowsAsync<DecryptionServiceException>(async () =>
+            CryptographyServiceException actualDecryptionServiceException =
+                await Assert.ThrowsAsync<CryptographyServiceException>(async () =>
                     await decryptTask);
 
             // then
             actualDecryptionServiceException.Should()
                 .BeEquivalentTo(expectedDecryptionServiceException);
 
-            this.decryptionBrokerMock.Verify(broker =>
-                broker.DecryptAsync(It.IsAny<byte[]>()),
+            this.cryptographyBroker.Verify(broker =>
+                broker.EncryptAsync(It.IsAny<byte[]>()),
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
@@ -55,9 +55,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decryptions
                    expectedDecryptionServiceException))),
                         Times.Once);
 
-            this.decryptionBrokerMock.VerifyNoOtherCalls();
+            this.cryptographyBroker.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -62,20 +62,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
 
             await DeleteAuditRecordsAsync(randomIngestionTracking);
 
-            DocumentsFileModel encyptedDocumentsFileModel = new DocumentsFileModel
-            {
-                FileName = decryptedIngestionTracking.EncryptedFileName,
-                Container = encryptedFileContainer
-            };
+            await this.apiBroker.DeleteDocumentByFileNameAsync(fileName: decryptedIngestionTracking.EncryptedFileName, 
+                container: encryptedFileContainer);
 
-            DocumentsFileModel decryptedDocumentsFileModel = new DocumentsFileModel
-            {
-                FileName = decryptedIngestionTracking.DecryptedFileName,
-                Container = decryptedFileContainer
-            };
+            await this.apiBroker.DeleteDocumentByFileNameAsync(fileName: decryptedIngestionTracking.DecryptedFileName,
+                container: decryptedFileContainer);
 
-            await this.apiBroker.DeleteDocumentByFileNameAsync(encyptedDocumentsFileModel);
-            await this.apiBroker.DeleteDocumentByFileNameAsync(decryptedDocumentsFileModel);
             await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }

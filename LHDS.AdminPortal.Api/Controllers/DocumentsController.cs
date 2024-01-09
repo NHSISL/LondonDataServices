@@ -2,9 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Services.Foundations.Documents;
@@ -29,6 +31,34 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.blobContainers = blobContainers;
         }
 
+        [HttpPost]
+        public async ValueTask<ActionResult> PostDataSetAsync(Document document, string container)
+        {
+            try
+            {
+                await this.documentService.AddDocumentAsync(document, container);
+
+                return Ok();
+            }
+            catch (DocumentValidationException documentValidationException)
+            {
+                return BadRequest(documentValidationException.InnerException);
+            }
+            catch (DocumentDependencyValidationException documentDependencyValidationException)
+                when (documentDependencyValidationException.InnerException is InvalidDataSetReferenceException)
+            {
+                return FailedDependency(documentDependencyValidationException.InnerException);
+            }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                return InternalServerError(documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                return InternalServerError(documentServiceException);
+            }
+        }
+
         [HttpGet("{fileName}")]
 #if RELEASE
         [Authorize(Roles = "ISL.LDS.AdminApi.Administrators, lhds.Api.IngestionTracking, ISL.LDS.AdminApi.ReadOnly")]
@@ -39,6 +69,37 @@ namespace LHDS.AdminPortal.Api.Controllers
             {
                 string document = await this.documentService
                     .GetDownloadLinkAsync(WebUtility.UrlDecode(fileName), blobContainers.EmisLanding);
+
+                return Ok(document);
+            }
+            catch (DocumentValidationException documentValidationException)
+                when (documentValidationException.InnerException is NotFoundDocumentException)
+            {
+                return NotFound(documentValidationException.InnerException);
+            }
+            catch (DocumentValidationException documentValidationException)
+            {
+                return BadRequest(documentValidationException.InnerException);
+            }
+            catch (DocumentDependencyException documentDependencyException)
+            {
+                return InternalServerError(documentDependencyException);
+            }
+            catch (DocumentServiceException documentServiceException)
+            {
+                return InternalServerError(documentServiceException);
+            }
+        }
+
+        [HttpDelete("{fileName}")]
+        public async ValueTask<ActionResult<Document>> RetrieveDocumentByFileNameAsync(
+            string fileName, 
+            string container)
+        {
+            try
+            {
+                Document document =
+                    await this.documentService.RetrieveDocumentByFileNameAsync(fileName, container);
 
                 return Ok(document);
             }

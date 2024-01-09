@@ -20,7 +20,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         private readonly WebApplicationFactory<Startup> webApplicationFactory;
         private readonly HttpClient httpClient;
         private readonly IRESTFulApiFactoryClient apiFactoryClient;
-        internal IDocumentService documentService;
+        //internal IDocumentService documentService;
         internal IDownloadService downloadService;
         internal ICryptographyProvider cryptographyProvider;
         internal IConfiguration configuration;
@@ -30,7 +30,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         {
             this.webApplicationFactory = new WebApplicationFactory<Startup>();
 
-            this.documentService = (DocumentService)webApplicationFactory.Services.GetService<IDocumentService>();
+            //this.documentService = (DocumentService)webApplicationFactory.Services.GetService<IDocumentService>();
             this.downloadService = (DownloadService)webApplicationFactory.Services.GetService<IDownloadService>();
 
             this.httpClient = this.webApplicationFactory.CreateClient();

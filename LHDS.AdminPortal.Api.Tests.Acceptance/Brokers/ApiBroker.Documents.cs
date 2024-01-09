@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using System.Web;
 using LHDS.AdminPortal.Api.Models.Controllers.Documents;
 using LHDS.Core.Models.Foundations.Documents;
 
@@ -16,6 +17,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
             await this.apiFactoryClient.PostContentAsync(documentsRelativeUrl, documentsModel);
 
         public async ValueTask<Document> DeleteDocumentByFileNameAsync(string fileName, string container) =>
-            await this.apiFactoryClient.DeleteContentAsync<Document>($"{documentsRelativeUrl}/{container}/{fileName}");
+            await this.apiFactoryClient
+                .DeleteContentAsync<Document>($"{documentsRelativeUrl}/{container}/{HttpUtility.UrlEncode(fileName)}");
     }
 }

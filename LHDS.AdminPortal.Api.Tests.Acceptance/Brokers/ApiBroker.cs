@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Net.Http;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Cryptography.Gpg;
@@ -25,14 +26,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         internal ICryptographyProvider cryptographyProvider;
         internal IConfiguration configuration;
         internal LandingConfiguration landingConfiguration;
+        internal BlobContainers blobContainers;
 
         public ApiBroker()
         {
             this.webApplicationFactory = new WebApplicationFactory<Startup>();
-
             this.documentService = (DocumentService)webApplicationFactory.Services.GetService<IDocumentService>();
             this.downloadService = (DownloadService)webApplicationFactory.Services.GetService<IDownloadService>();
-
             this.httpClient = this.webApplicationFactory.CreateClient();
             this.apiFactoryClient = new RESTFulApiFactoryClient(this.httpClient);
 
@@ -41,6 +41,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
 
             this.configuration = this.webApplicationFactory.Services.GetService<IConfiguration>();
             this.landingConfiguration = this.webApplicationFactory.Services.GetService<LandingConfiguration>();
+            this.blobContainers = this.webApplicationFactory.Services.GetService<BlobContainers>();
         }
     }
 }

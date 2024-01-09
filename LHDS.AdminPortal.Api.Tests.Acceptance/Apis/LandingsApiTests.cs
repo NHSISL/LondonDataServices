@@ -19,8 +19,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
     public partial class LandingsApiTests
     {
         private readonly ApiBroker apiBroker;
-        private readonly string encryptedFolder;
-        private readonly string decryptedFolder;
         private readonly Guid supplierId;
         private readonly Guid dataSetId;
         private readonly Guid dataSetSpecificationId;
@@ -34,8 +32,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             this.supplierId = this.apiBroker.landingConfiguration.LandingSupplierId;
             this.dataSetId = Guid.Parse("6a62313a-7442-462e-b6e8-dec541ddd0ba");
             this.dataSetSpecificationId = Guid.Parse("e8ebce80-e619-40ca-b45f-9c3ac0328143");
-            this.encryptedFolder = this.apiBroker.landingConfiguration.EncryptedFolder;
-            this.decryptedFolder = this.apiBroker.landingConfiguration.DecryptedFolder;
             this.output = output;
         }
 

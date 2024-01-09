@@ -19,7 +19,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 {
     public partial class LandingsApiTests
     {
-        [Fact(Skip = "Ftp Down")]
+        [Fact]
         public async Task ShouldLandDocumentByFileNameForExistingIngestionTrackingAsync()
         {
             try
@@ -33,8 +33,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 Document retrievedDocument = retrievedDocuments[0];
                 retrievedDocument.DocumentData = encryptedData;
                 Supplier randomSupplier = await PostRandomSupplierAsync();
-                string encryptedFilePath = encryptedFolder;
-                string decryptedFilePath = decryptedFolder;
+                string encryptedFilePath = this.apiBroker.landingConfiguration.EncryptedFolder;
+                string decryptedFilePath = this.apiBroker.landingConfiguration.DecryptedFolder;
                 await CleanupTask(retrievedDocument.FileName);
 
                 IngestionTracking randomIngestionTracking =
@@ -43,6 +43,16 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                         retrievedDocument.FileName,
                         encryptedFilePath,
                         decryptedFilePath);
+
+                var setupDocument = new Document
+                {
+                    FileName = encryptedFilePath + retrievedDocument.FileName,
+                    DocumentData = retrievedDocument.DocumentData,
+                    SHA256Hash = retrievedDocument.SHA256Hash
+                };
+
+                await this.apiBroker.documentService.AddDocumentAsync(
+                    setupDocument, this.apiBroker.blobContainers.EmisLanding);
 
                 IngestionTracking inputIngestionTracking = randomIngestionTracking;
                 IngestionTracking expectedIngestionTracking = inputIngestionTracking;
@@ -66,7 +76,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             }
         }
 
-        [Fact(Skip = "Ftp Down")]
+        [Fact]
         public async Task ShouldLandDocumentByFileNameForNewIngestionTrackingAsync()
         {
             try
@@ -79,7 +89,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 byte[] encryptedData = await this.apiBroker.cryptographyProvider.EncryptAsync(documentData);
                 Document retrievedDocument = retrievedDocuments[1];
                 retrievedDocument.DocumentData = encryptedData;
-                string decryptedFilePath = decryptedFolder;
+                string decryptedFilePath = this.apiBroker.landingConfiguration.DecryptedFolder;
                 await CleanupTask(retrievedDocument.FileName);
                 bool hasExisitingSupplier = (await this.apiBroker.FindSupplierByIdAsync(supplierId)).Any();
                 bool hasExisitingDataSet = (await this.apiBroker.FindDataSetByIdAsync(dataSetId)).Any();

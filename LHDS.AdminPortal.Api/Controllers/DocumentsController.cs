@@ -92,12 +92,13 @@ namespace LHDS.AdminPortal.Api.Controllers
             }
         }
 
-        [HttpDelete("{container}/{filename}")]
-        public async ValueTask<ActionResult<Document>> RemoveDocumentByFileNameAsync(string filename, string container) 
+        [HttpDelete("{container}/{fileName}")]
+        public async ValueTask<ActionResult<Document>> RemoveDocumentByFileNameAsync(string fileName, string container) 
         {
             try
             {
-                await this.documentService.RemoveDocumentByFileNameAsync(filename, container);
+                string decodedFileName = WebUtility.UrlDecode(fileName);
+                await this.documentService.RemoveDocumentByFileNameAsync(fileName, container);
 
                 return Ok();
             }

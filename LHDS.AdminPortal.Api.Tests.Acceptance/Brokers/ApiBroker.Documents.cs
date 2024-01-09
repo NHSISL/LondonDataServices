@@ -15,7 +15,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         public async ValueTask PostDocumentAsync(DocumentsModel documentsModel) =>
             await this.apiFactoryClient.PostContentAsync(documentsRelativeUrl, documentsModel);
 
-        public async ValueTask<Document> DeleteDocumentByFileNameAsync(DocumentsFileModel documentsFileModel) =>
-            await this.apiFactoryClient.DeleteContentAsync<Document>($"{documentsRelativeUrl}/{documentsFileModel}");
+        public async ValueTask<Document> DeleteDocumentByFileNameAsync(string fileName, string container) =>
+            await this.apiFactoryClient.DeleteContentAsync<Document>($"{documentsRelativeUrl}/{container}/{fileName}");
     }
 }

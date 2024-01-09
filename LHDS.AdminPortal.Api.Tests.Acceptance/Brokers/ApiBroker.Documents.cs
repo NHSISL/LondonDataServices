@@ -13,6 +13,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
     public partial class ApiBroker
     {
         private const string documentsRelativeUrl = "api/documents";
+        
         public async ValueTask PostDocumentAsync(DocumentsModel documentsModel) =>
             await this.apiFactoryClient.PostContentAsync(documentsRelativeUrl, documentsModel);
 

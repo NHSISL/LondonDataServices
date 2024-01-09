@@ -3,7 +3,9 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Services.Foundations.Downloads;
@@ -14,7 +16,7 @@ using RESTFulSense.Controllers;
 using Microsoft.AspNetCore.Authorization;
 #endif
 
-namespace LHDS.AdminPortal.Api.Controllers.Workflows
+namespace LHDS.AdminPortal.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

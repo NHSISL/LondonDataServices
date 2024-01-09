@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using FluentAssertions;
+using LHDS.AdminPortal.Api.Models.Controllers.Documents;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
 using LHDS.Core.Models.Foundations.Documents;
@@ -41,7 +42,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
                 FileName = inputFileName
             };
 
-            await this.apiBroker.documentService.AddDocumentAsync(document, container: encryptedFileContainer);
+            DocumentsModel documentsModel = new DocumentsModel
+            {
+                Document = document,
+                Container = encryptedFileContainer
+            };
+
+            await this.apiBroker.PostDocumentAsync(documentsModel);
 
             //When
             await this.apiBroker.GetDocumentByFileNameToDecryptAsync(
@@ -55,11 +62,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis
 
             await DeleteAuditRecordsAsync(randomIngestionTracking);
 
-            await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(
-                filename: decryptedIngestionTracking.EncryptedFileName, container: encryptedFileContainer);
+            await this.apiBroker.DeleteDocumentByFileNameAsync(
+                fileName: decryptedIngestionTracking.EncryptedFileName,
+                container: encryptedFileContainer);
 
-            await this.apiBroker.documentService.RemoveDocumentByFileNameAsync(
-                filename: decryptedIngestionTracking.DecryptedFileName, container: decryptedFileContainer);
+            await this.apiBroker.DeleteDocumentByFileNameAsync(
+                fileName: decryptedIngestionTracking.DecryptedFileName,
+                container: decryptedFileContainer);
 
             await this.apiBroker.DeleteIngestionTrackingByIdAsync(randomIngestionTracking.Id);
             await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);

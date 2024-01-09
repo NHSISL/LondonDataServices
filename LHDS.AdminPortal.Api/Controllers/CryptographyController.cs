@@ -4,7 +4,7 @@
 
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Cryptographies.Exceptions;
-using LHDS.Core.Providers.Cryptography;
+using LHDS.Core.Services.Foundations.Cryptographies;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 #if RELEASE
@@ -17,19 +17,19 @@ namespace LHDS.AdminPortal.Api.Controllers
     [Route("api/[controller]")]
     public class CryptographyController : RESTFulController
     {
-        private readonly ICryptographyProvider cryptographyProvider;
+        private readonly ICryptographyService cryptographyService;
 
-        public CryptographyController(ICryptographyProvider cryptographyProvider) =>
-            this.cryptographyProvider = cryptographyProvider;
+        public CryptographyController(ICryptographyService cryptographyService) =>
+            this.cryptographyService = cryptographyService;
 
         [HttpPost]
-        [Route("api/[controller]/encrypt")]
+        [Route("encrypt")]
         public async ValueTask<ActionResult<byte[]>> PostCryptographEncryptyAsync([FromBody] byte[] data)
         {
             try
             {
                 byte[] encryptedData =
-                    await this.cryptographyProvider.EncryptAsync(data);
+                    await this.cryptographyService.EncryptAsync(data);
 
                 return Created(encryptedData);
             }
@@ -52,13 +52,13 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpPost]
-        [Route("api/[controller]/decrypt")]
+        [Route("decrypt")]
         public async ValueTask<ActionResult<byte[]>> PostCryptographyDecryptAsync([FromBody] byte[] data)
         {
             try
             {
                 byte[] encryptedData =
-                    await this.cryptographyProvider.DecryptAsync(data);
+                    await this.cryptographyService.DecryptAsync(data);
 
                 return Created(encryptedData);
             }

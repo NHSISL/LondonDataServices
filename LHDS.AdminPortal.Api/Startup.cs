@@ -32,6 +32,7 @@ using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Providers.Downloads.Extensions;
+using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.DataTypes;
@@ -203,6 +204,7 @@ namespace LHDS.AdminPortal.Api
 
         private static void AddFoundationServices(IServiceCollection services, IConfiguration configuration)
         {
+            services.AddTransient<ICryptographyService, CryptographyService>();
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddTransient<ISupplierService, SupplierService>();
             services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();

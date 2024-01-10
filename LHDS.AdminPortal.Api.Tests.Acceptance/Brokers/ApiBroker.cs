@@ -7,7 +7,6 @@ using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Models.Orchestrations.OptOuts;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Cryptography.Gpg;
-using LHDS.Core.Services.Foundations.Downloads;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +19,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         private readonly WebApplicationFactory<Startup> webApplicationFactory;
         private readonly HttpClient httpClient;
         private readonly IRESTFulApiFactoryClient apiFactoryClient;
-        internal IDownloadService downloadService;
         internal ICryptographyProvider cryptographyProvider;
         internal IConfiguration configuration;
         internal OptOutConfiguration optOutConfiguration;
@@ -29,7 +27,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         public ApiBroker()
         {
             this.webApplicationFactory = new WebApplicationFactory<Startup>();
-            this.downloadService = (DownloadService)webApplicationFactory.Services.GetService<IDownloadService>();
             this.httpClient = this.webApplicationFactory.CreateClient();
             this.apiFactoryClient = new RESTFulApiFactoryClient(this.httpClient);
 

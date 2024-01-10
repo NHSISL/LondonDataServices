@@ -1,7 +1,7 @@
 import { Guid } from "guid-typescript";
 import React, { FunctionComponent} from "react";
 import TerminologyArtifactDetailCard from "./terminologyArtifactDetailCard";
-import { terminologyArtifactViewService } from "../../services/views/terminologyArtifacts/terminologyArtifactViewService";
+import { terminologyArtifactViewService } from "../../services/views/TerminologyArtifacts/terminologyArtifactViewService";
 import { TerminologyArtifactView } from "../../models/views/components/terminologyArtifacts/terminologyArtifactsView";
 
 interface TerminologyArtifactDetailProps {

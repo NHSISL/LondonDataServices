@@ -5,6 +5,7 @@
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Models.Controllers.Documents;
 using LHDS.Core.Models.Foundations.Documents;
+using RESTFulSense.Exceptions;
 using Xunit;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
@@ -32,6 +33,37 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
             await this.apiBroker.DeleteDocumentByFileNameAsync(
                 fileName: inputDocument.FileName,
                 container: documentsModel.Container);
+        }
+
+        [Fact]
+        public async Task ShouldDeleteDocumentByFileNameAsyncAsync()
+        {
+            // given
+            Document randomDocument = CreateRandomDocument();
+            Document inputDocument = randomDocument;
+            Document expectedDocument = inputDocument;
+
+            DocumentsModel documentsModel = new DocumentsModel
+            {
+                Document = inputDocument,
+                Container = GetRandomString()
+            };
+
+            await this.apiBroker.PostDocumentAsync(documentsModel);
+
+            // when
+            await this.apiBroker.DeleteDocumentByFileNameAsync(
+                fileName:inputDocument.FileName, 
+                container: documentsModel.Container);
+
+            ValueTask deleteDocumentByFileNameTask =
+                this.apiBroker.DeleteDocumentByFileNameAsync(
+                    fileName: inputDocument.FileName,
+                    container: documentsModel.Container);
+
+            // then
+            await Assert.ThrowsAsync<HttpResponseInternalServerErrorException>(() =>
+                deleteDocumentByFileNameTask.AsTask());
         }
     }
 }

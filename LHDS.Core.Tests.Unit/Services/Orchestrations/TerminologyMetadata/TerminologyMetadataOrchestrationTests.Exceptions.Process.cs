@@ -5,7 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Orchestrations.TerminologyMetadata.Exceptions;
+using LHDS.Core.Models.Orchestrations.TerminologyMetadatas.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;

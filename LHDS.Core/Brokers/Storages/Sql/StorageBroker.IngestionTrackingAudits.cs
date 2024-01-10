@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace LHDS.Core.Brokers.Storages.Sql
 {
@@ -15,59 +14,23 @@ namespace LHDS.Core.Brokers.Storages.Sql
     {
         public DbSet<IngestionTrackingAudit> IngestionTrackingAudits { get; set; }
 
-        public async ValueTask<IngestionTrackingAudit> InsertIngestionTrackingAuditAsync(IngestionTrackingAudit ingestionTrackingAudit)
-        {
-            using var broker =
-                new StorageBroker(this.configuration);
+        public async ValueTask<IngestionTrackingAudit> InsertIngestionTrackingAuditAsync(
+            IngestionTrackingAudit ingestionTrackingAudit) =>
+                await InsertAsync(ingestionTrackingAudit);
 
-            EntityEntry<IngestionTrackingAudit> ingestionTrackingAuditEntityEntry =
-                await broker.IngestionTrackingAudits.AddAsync(ingestionTrackingAudit);
+        public IQueryable<IngestionTrackingAudit> SelectAllIngestionTrackingAudits() =>
+            ReadAll<IngestionTrackingAudit>();
 
-            await broker.SaveChangesAsync();
+        public async ValueTask<IngestionTrackingAudit> SelectIngestionTrackingAuditByIdAsync(
+            Guid ingestionTrackingAuditId) =>
+                await ReadAsync<IngestionTrackingAudit>(ingestionTrackingAuditId);
 
-            return ingestionTrackingAuditEntityEntry.Entity;
-        }
+        public async ValueTask<IngestionTrackingAudit> UpdateIngestionTrackingAuditAsync(
+            IngestionTrackingAudit ingestionTrackingAudit) =>
+                await UpdateAsync(ingestionTrackingAudit);
 
-        public IQueryable<IngestionTrackingAudit> SelectAllIngestionTrackingAudits()
-        {
-            using var broker =
-                new StorageBroker(this.configuration);
-
-            return broker.IngestionTrackingAudits;
-        }
-
-        public async ValueTask<IngestionTrackingAudit> SelectIngestionTrackingAuditByIdAsync(Guid ingestionTrackingAuditId)
-        {
-            using var broker =
-                new StorageBroker(this.configuration);
-
-            return await broker.IngestionTrackingAudits.FindAsync(ingestionTrackingAuditId);
-        }
-
-        public async ValueTask<IngestionTrackingAudit> UpdateIngestionTrackingAuditAsync(IngestionTrackingAudit ingestionTrackingAudit)
-        {
-            using var broker =
-                new StorageBroker(this.configuration);
-
-            EntityEntry<IngestionTrackingAudit> ingestionTrackingAuditEntityEntry =
-                broker.IngestionTrackingAudits.Update(ingestionTrackingAudit);
-
-            await broker.SaveChangesAsync();
-
-            return ingestionTrackingAuditEntityEntry.Entity;
-        }
-
-        public async ValueTask<IngestionTrackingAudit> DeleteIngestionTrackingAuditAsync(IngestionTrackingAudit ingestionTrackingAudit)
-        {
-            using var broker =
-                new StorageBroker(this.configuration);
-
-            EntityEntry<IngestionTrackingAudit> ingestionTrackingAuditEntityEntry =
-                broker.IngestionTrackingAudits.Remove(ingestionTrackingAudit);
-
-            await broker.SaveChangesAsync();
-
-            return ingestionTrackingAuditEntityEntry.Entity;
-        }
+        public async ValueTask<IngestionTrackingAudit> DeleteIngestionTrackingAuditAsync(
+            IngestionTrackingAudit ingestionTrackingAudit) =>
+                await DeleteAsync(ingestionTrackingAudit);
     }
 }

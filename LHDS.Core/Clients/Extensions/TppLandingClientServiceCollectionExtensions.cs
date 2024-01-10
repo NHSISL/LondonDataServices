@@ -18,7 +18,7 @@ using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
-using LHDS.Core.Models.Orchestrations.Downloads;
+using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
@@ -26,9 +26,11 @@ using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.Tpp;
+using LHDS.Core.Services.Orchestrations.TppLandings;
 using LHDS.Core.Services.Processings.DataSets;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
+using LHDS.Core.Services.Processings.IngestionTrackingAudits;
 using LHDS.Core.Services.Processings.IngestionTrackings;
 using LHDS.Core.Services.Processings.OptOuts;
 using Microsoft.Extensions.Configuration;
@@ -131,7 +133,7 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddOrchestrations(IServiceCollection services)
         {
-            services.AddTransient<ITppOrchestrationService, TppOrchestrationService>();
+            services.AddTransient<ITppLandingOrchestrationService, TppLandingOrchestrationService>();
         }
 
         private static void AddClients(IServiceCollection services)

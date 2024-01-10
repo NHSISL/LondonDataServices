@@ -354,6 +354,28 @@ namespace LHDS.Core.Migrations
                                     .HasPeriodEnd("PeriodEnd")
                                     .HasColumnName("PeriodEnd");
                             }));
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("e8ebce80-e619-40ca-b45f-9c3ac0328143"),
+                            ActiveFrom = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            ActiveTo = new DateTimeOffset(new DateTime(2123, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "System",
+                            CreatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DataSetId = new Guid("6a62313a-7442-462e-b6e8-dec541ddd0ba"),
+                            DateImplemented = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DateReleased = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            EntityChangeSynchronisation = "",
+                            IsActive = true,
+                            IsMultiAuthorPerBatch = true,
+                            IsPublished = true,
+                            Notes = "This is a test dataset specification",
+                            OurSpecificationVersion = "1.0",
+                            SupplierSpecificationVersion = "7.0",
+                            UpdatedBy = "System",
+                            UpdatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                        });
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSets.DataSet", b =>
@@ -463,13 +485,15 @@ namespace LHDS.Core.Migrations
                         new
                         {
                             Id = new Guid("6a62313a-7442-462e-b6e8-dec541ddd0ba"),
+                            ActiveFrom = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            ActiveTo = new DateTimeOffset(new DateTime(2123, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             CollectedBy = "EMIS",
                             CreatedBy = "System",
                             CreatedDate = new DateTimeOffset(new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            DataSetAliases = "",
+                            DataSetAliases = "PrimaryCareEMISDEV",
                             DataSetAuthor = "EMISDEV",
                             DataSetName = "PrimaryCareEMISDEV",
-                            DataSourceType = "",
+                            DataSourceType = "PrimaryCareEMISDEV",
                             IsActive = true,
                             IsNationallyCollected = false,
                             IsNationallySpecified = false,

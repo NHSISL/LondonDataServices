@@ -146,12 +146,12 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.IngestionTrackings
 
         private async Task DeleteAuditRecordsAsync(IngestionTracking inputIngestionTracking)
         {
-            var inputIngestionTrackingAudits = this.apiBroker.ingestionTrackingAuditService.RetrieveAllIngestionTrackingAudits()
-                .Where(inputIngestionTrackingAudit => inputIngestionTrackingAudit.IngestionTrackingId == inputIngestionTracking.Id);
+            var ingestionTrackingAudits = await this.apiBroker
+                .FindIngestionTrackingAuditByIngestionTrackingIdAsync(inputIngestionTracking.Id);
 
-            foreach (var inputIngestionTrackingAudit in inputIngestionTrackingAudits)
+            foreach (var ingestionTrackingAudit in ingestionTrackingAudits)
             {
-                await this.apiBroker.DeleteIngestionTrackingAuditByIdAsync(inputIngestionTrackingAudit.Id);
+                await this.apiBroker.DeleteIngestionTrackingAuditByIdAsync(ingestionTrackingAudit.Id);
             }
         }
     }

@@ -6,18 +6,18 @@ using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.TppLandingClient.Exceptions;
 using LHDS.Core.Models.Foundations.Documents;
-using LHDS.Core.Models.Orchestrations.Tpp.Exceptions;
-using LHDS.Core.Services.Orchestrations.Tpp;
+using LHDS.Core.Models.Orchestrations.TppLandings.Exceptions;
+using LHDS.Core.Services.Orchestrations.TppLandings;
 using Xeptions;
 
 namespace LHDS.Core.Clients
 {
     public class TppLandingClient : ITppLandingClient
     {
-        private readonly ITppOrchestrationService tppOrchestrationService;
+        private readonly ITppLandingOrchestrationService tppOrchestrationService;
 
         public TppLandingClient(
-            ITppOrchestrationService tppOrchestrationService)
+            ITppLandingOrchestrationService tppOrchestrationService)
         {
             this.tppOrchestrationService = tppOrchestrationService;
         }
@@ -28,28 +28,28 @@ namespace LHDS.Core.Clients
             {
                 return await this.tppOrchestrationService.ProcessAsync(fileName);
             }
-            catch (TppOrchestrationValidationException tppOrchestrationValidationException)
+            catch (TppLandingOrchestrationValidationException tppOrchestrationValidationException)
             {
                 throw new TppLandingClientValidationException(
-                    message: "TPP Landing client dependency validation error occurred, contact support.",
+                    message: "TPP landing client dependency validation error occurred, contact support.",
                     tppOrchestrationValidationException.InnerException as Xeption);
             }
-            catch (TppOrchestrationDependencyValidationException tppOrchestrationDependencyValidationException)
+            catch (TppLandingOrchestrationDependencyValidationException tppOrchestrationDependencyValidationException)
             {
                 throw new TppLandingClientValidationException(
-                    message: "TPP Landing client dependency validation error occurred, contact support.",
+                    message: "TPP landing client dependency validation error occurred, contact support.",
                     innerException: tppOrchestrationDependencyValidationException.InnerException as Xeption);
             }
-            catch (TppOrchestrationDependencyException tppOrchestrationDependencyException)
+            catch (TppLandingOrchestrationDependencyException tppOrchestrationDependencyException)
             {
                 throw new TppLandingClientDependencyException(
-                    message: "TPP Landing client dependency error occurred, contact support.",
+                    message: "TPP landing client dependency error occurred, contact support.",
                     innerException: tppOrchestrationDependencyException.InnerException as Xeption);
             }
-            catch (TppOrchestrationServiceException tppOrchestrationServiceException)
+            catch (TppLandingOrchestrationServiceException tppOrchestrationServiceException)
             {
                 throw new TppLandingClientServiceException(
-                    message: "TPP Landing client service error occurred, fix errors and try again.",
+                    message: "TPP landing client service error occurred, fix errors and try again.",
                     innerException: tppOrchestrationServiceException.InnerException as Xeption);
             }
         }

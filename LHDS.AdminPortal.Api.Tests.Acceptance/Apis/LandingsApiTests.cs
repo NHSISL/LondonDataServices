@@ -3,16 +3,15 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Brokers;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.Suppliers;
-using LHDS.Core.Models.Orchestrations.Downloads;
 using Tynamix.ObjectFiller;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
 {
@@ -23,14 +22,21 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
         private readonly string encryptedFolder;
         private readonly string decryptedFolder;
         private readonly Guid supplierId;
+        private readonly Guid dataSetId;
+        private readonly Guid dataSetSpecificationId;
+        private readonly ITestOutputHelper output;
 
         public LandingsApiTests(
-            ApiBroker apiBroker)
+            ApiBroker apiBroker,
+            ITestOutputHelper output)
         {
             this.apiBroker = apiBroker;
             this.supplierId = this.apiBroker.landingConfiguration.LandingSupplierId;
+            this.dataSetId = Guid.Parse("6a62313a-7442-462e-b6e8-dec541ddd0ba");
+            this.dataSetSpecificationId = Guid.Parse("e8ebce80-e619-40ca-b45f-9c3ac0328143");
             this.encryptedFolder = this.apiBroker.landingConfiguration.EncryptedFolder;
             this.decryptedFolder = this.apiBroker.landingConfiguration.DecryptedFolder;
+            this.output = output;
         }
 
         private static int GetRandomNumber() =>
@@ -127,6 +133,89 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             await this.apiBroker.PostSupplierAsync(landingsSupplier);
 
             return landingsSupplier;
+        }
+
+        private async ValueTask<DataSetSpecification> PostDataSetSpecificationAsync(Guid dataSetSpecificationId, Guid dataSetId)
+        {
+            var now = DateTimeOffset.UtcNow;
+
+            var dataSetSpecification = new DataSetSpecification
+            {
+                Id = dataSetSpecificationId,
+                DataSetId = dataSetId,
+                SupplierSpecificationVersion = "7.0",
+                OurSpecificationVersion = "1.0",
+                Notes = "This is a test dataset specification",
+                IsMultiAuthorPerBatch = true,
+                EntityChangeSynchronisation = "",
+                DateReleased = new DateTime(year: 2023, month: 1, day: 1, hour: 0, minute: 0, second: 0),
+                DateImplemented = new DateTime(year: 2023, month: 1, day: 1, hour: 0, minute: 0, second: 0),
+                DateSuperseded = null,
+                IsPublished = true,
+                PresededById = null,
+                SupersededById = null,
+                CreatedBy = "System",
+                CreatedDate = new DateTime(year: 2023, month: 1, day: 1, hour: 0, minute: 0, second: 0),
+                UpdatedBy = "System",
+                UpdatedDate = new DateTime(year: 2023, month: 1, day: 1, hour: 0, minute: 0, second: 0),
+                ActiveFrom = new DateTime(year: 2023, month: 1, day: 1, hour: 0, minute: 0, second: 0),
+                ActiveTo = new DateTime(year: 2123, month: 1, day: 1, hour: 0, minute: 0, second: 0),
+                IsActive = true,
+            };
+
+            await this.apiBroker.PostDataSetSpecificationAsync(dataSetSpecification);
+
+            return dataSetSpecification;
+        }
+
+        private async ValueTask<DataSet> PostDataSetAsync(Guid supplierId, Guid dataSetId)
+        {
+            var now = DateTimeOffset.UtcNow;
+
+            DataSet dataSet = new DataSet
+            {
+                Id = dataSetId,
+                SupplierId = supplierId,
+                DataSetName = "PrimaryCareEMISDEV",
+                DataSetAliases = "PrimaryCareEMISDEV",
+                DataSetAuthor = "EMISDEV",
+                SpecifiedBy = "EMIS",
+                IsNationallySpecified = false,
+                CollectedBy = "EMIS",
+                IsNationallyCollected = false,
+                DataSourceType = "PrimaryCareEMISDEV",
+                CreatedBy = "System",
+                CreatedDate = now,
+                UpdatedBy = "System",
+                UpdatedDate = now,
+                ActiveFrom = now.AddDays(-1),
+                ActiveTo = now.AddYears(100),
+                IsActive = true,
+            };
+
+            await this.apiBroker.PostDataSetAsync(dataSet);
+
+            return dataSet;
+        }
+
+        private static DataSet CreateDataSet(Guid supplierId) =>
+            CreateDataSetFiller(supplierId).Create();
+
+        private static Filler<DataSet> CreateDataSetFiller(Guid supplierId)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<DataSet>();
+            var now = DateTimeOffset.UtcNow;
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(now)
+                .OnType<DateTimeOffset?>().Use(now)
+                .OnProperty(dataSet => dataSet.SupplierId).Use(supplierId)
+                .OnProperty(dataSet => dataSet.CreatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.UpdatedBy).Use(user)
+                .OnProperty(dataSet => dataSet.ActiveTo).Use(now.AddDays(GetRandomNumber()));
+
+            return filler;
         }
 
         private static Supplier CreateLandingSupplier(Guid supplierId) =>

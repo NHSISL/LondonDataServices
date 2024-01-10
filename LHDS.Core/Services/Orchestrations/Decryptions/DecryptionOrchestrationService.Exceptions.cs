@@ -4,7 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Decryptions.Exceptions;
+using LHDS.Core.Models.Foundations.Cryptographies.Exceptions;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
@@ -40,11 +40,11 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             {
                 throw CreateAndLogDependencyValidationException(documentDependencyValidationException);
             }
-            catch (DecryptionValidationException DecryptionValidationException)
+            catch (CryptographyValidationException DecryptionValidationException)
             {
                 throw CreateAndLogDependencyValidationException(DecryptionValidationException);
             }
-            catch (DecryptionDependencyValidationException DecryptionDependencyValidationException)
+            catch (CryptographyDependencyValidationException DecryptionDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(DecryptionDependencyValidationException);
             }
@@ -72,11 +72,11 @@ namespace LHDS.Core.Services.Orchestrations.Decryptions
             {
                 throw CreateAndLogDependencyException(documentServiceException);
             }
-            catch (DecryptionDependencyException decryptionDependencyException)
+            catch (CryptographyDependencyException decryptionDependencyException)
             {
                 throw CreateAndLogDependencyException(decryptionDependencyException);
             }
-            catch (DecryptionServiceException decryptionServiceException)
+            catch (CryptographyServiceException decryptionServiceException)
             {
                 throw CreateAndLogDependencyException(decryptionServiceException);
             }

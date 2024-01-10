@@ -4,12 +4,9 @@
 
 using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.AddressNormalisation.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
-using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
-using LHDS.Core.Models.Processings.Documents.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Processings.AddressNormalisations
@@ -24,8 +21,8 @@ namespace LHDS.Core.Services.Processings.AddressNormalisations
             {
                 return await returningAddressNormalisationFunction();
             }
-                catch (InvalidArgumentAddressNormalisationProcessingException
-            invalidArgumentAddressNormalisationProcessingException)
+            catch (InvalidArgumentAddressNormalisationProcessingException
+        invalidArgumentAddressNormalisationProcessingException)
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressNormalisationProcessingException);
             }

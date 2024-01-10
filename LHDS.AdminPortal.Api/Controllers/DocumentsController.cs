@@ -33,7 +33,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpPost]
-        public async ValueTask<ActionResult> PostDataSetAsync([FromBody] DocumentsModel documentsModel)
+        public async ValueTask<ActionResult> PostDocumentAsync([FromBody] DocumentsModel documentsModel)
         {
             try
             {

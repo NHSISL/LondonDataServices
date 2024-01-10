@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.AdminPortal.Api.Models.Controllers.Documents;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSets;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.DataSetSpecifications;
 using LHDS.AdminPortal.Api.Tests.Acceptance.Models.IngestionTrackings;
@@ -49,8 +50,13 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                     SHA256Hash = retrievedDocument.SHA256Hash
                 };
 
-                await this.apiBroker.documentService.AddDocumentAsync(
-                    setupDocument, this.apiBroker.blobContainers.EmisLanding);
+                var setupDocumentsModel = new DocumentsModel
+                {
+                    Document = setupDocument,
+                    Container = this.apiBroker.blobContainers.EmisLanding
+                };
+
+                await this.apiBroker.PostDocumentAsync(setupDocumentsModel);
 
                 IngestionTracking inputIngestionTracking = randomIngestionTracking;
                 IngestionTracking expectedIngestionTracking = inputIngestionTracking;

@@ -55,7 +55,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     It.IsAny<string>()))
                         .ReturnsAsync(encryptedDocument);
 
-            this.decryptionServiceMock.Setup(service =>
+            this.cryptographyServiceMock.Setup(service =>
                 service.DecryptAsync(encryptedDocument.DocumentData))
                     .ReturnsAsync(randomDecryptedBytes);
 
@@ -93,7 +93,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     It.IsAny<string>()),
                         Times.Once);
 
-            this.decryptionServiceMock.Verify(service =>
+            this.cryptographyServiceMock.Verify(service =>
                 service.DecryptAsync(encryptedDocument.DocumentData),
                     Times.Once);
 

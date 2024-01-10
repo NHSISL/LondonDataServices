@@ -27,7 +27,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
                 //Given
                 List<Document> retrievedDocuments = await this.apiBroker.RetrieveListOfDocumentsToProcessAsync();
                 byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
-                byte[] encryptedData = await this.apiBroker.cryptographyProvider.EncryptAsync(documentData);
+                byte[] encryptedData = await this.apiBroker.PostEncryptDataAsync(documentData);
                 Document retrievedDocument = retrievedDocuments[0];
                 retrievedDocument.DocumentData = encryptedData;
                 Supplier randomSupplier = await PostRandomSupplierAsync();
@@ -71,9 +71,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Landings
             {
                 //Given
                 List<Document> retrievedDocuments = await this.apiBroker.RetrieveListOfDocumentsToProcessAsync();
-
                 byte[] documentData = Encoding.ASCII.GetBytes(GetRandomString());
-                byte[] encryptedData = await this.apiBroker.cryptographyProvider.EncryptAsync(documentData);
+                byte[] encryptedData = await this.apiBroker.PostEncryptDataAsync(documentData);
                 Document retrievedDocument = retrievedDocuments[1];
                 retrievedDocument.DocumentData = encryptedData;
                 string decryptedFilePath = decryptedFolder;

@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
-using LHDS.Core.Models.Foundations.Decryptions.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.AddressParsers

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import { SecuredComponents, SecuredLink } from './Links';
 import securityPoints from '../SecurityMatrix';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,16 +7,21 @@ import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
 interface SubmenuItem {
     icon: string;
     label: string;
-    allowedRoles: string[]; // Replace 'string' with the actual type of 'allowedRoles'
+    allowedRoles: string[];
     links: { to: string; label: string }[];
 }
 
 interface SubmenuProps {
     items: SubmenuItem;
-    allowedRoles: string[]; // Replace 'string' with the actual type of 'allowedRoles'
+    allowedRoles: string[];
 }
 
-const Submenu: React.FC<SubmenuProps> = ({ items, allowedRoles }) => {
+const Submenu: FunctionComponent<SubmenuProps> = (props) => {
+    const {
+        items,
+        allowedRoles
+    } = props;
+
     const [showSubmenu, setShowSubmenu] = useState(false);
 
     const toggleSubmenu = () => {
@@ -24,7 +29,7 @@ const Submenu: React.FC<SubmenuProps> = ({ items, allowedRoles }) => {
     };
 
     return (
-        <li style={{cursor: "pointer"}} className={`pe-auto ${showSubmenu ? 'submenu-open' : ''}`}>
+        <li style={{ cursor: "pointer" }} className={`pe-auto ${showSubmenu ? 'submenu-open' : ''}`}>
             <SecuredComponents allowedRoles={allowedRoles}>
                 <>
                     <div onClick={toggleSubmenu} className="text-white pe-auto">
@@ -47,12 +52,12 @@ const Submenu: React.FC<SubmenuProps> = ({ items, allowedRoles }) => {
     );
 };
 
-export const NavigationBar: React.FC = () => {
+export const NavigationBar: FunctionComponent = () => {
     const submenuItems: SubmenuItem[] = [
         {
             icon: 'address',
             label: 'Opt-Out',
-            allowedRoles: securityPoints.optOut.view,
+            allowedRoles: [...securityPoints.optOut.view, 'securityPoints.admin.view'],
             links: [
                 { to: '/optOutSearch', label: 'Search Opt-Out' },
                 securityPoints.optOut.upload && { to: '/optOutUpload', label: 'Upload Opt-Out' },
@@ -61,7 +66,7 @@ export const NavigationBar: React.FC = () => {
         {
             icon: 'address',
             label: 'Demographic Search',
-            allowedRoles: securityPoints.optOut.view,
+            allowedRoles: securityPoints.pds.view,
             links: [
                 { to: '/pds', label: 'Search Pds Audit' },
                 securityPoints.pds.upload && { to: '/pdsUpload', label: 'Pds Upload' },
@@ -82,8 +87,8 @@ export const NavigationBar: React.FC = () => {
     return (
         <>
             <ul className="sidebar-nav">
-                <br />
-                <li className="">
+
+                <li className="mt-4">
                     <SecuredLink icon="faHome" to="/">Home</SecuredLink>
                 </li>
 

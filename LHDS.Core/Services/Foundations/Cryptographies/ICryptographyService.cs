@@ -4,10 +4,11 @@
 
 using System.Threading.Tasks;
 
-namespace LHDS.Core.Services.Foundations.Decryptions
+namespace LHDS.Core.Services.Foundations.Cryptographies
 {
-    public interface IDecryptionService
+    public interface ICryptographyService
     {
+        Task<byte[]> EncryptAsync(byte[] data);
         Task<byte[]> DecryptAsync(byte[] data);
     }
 }

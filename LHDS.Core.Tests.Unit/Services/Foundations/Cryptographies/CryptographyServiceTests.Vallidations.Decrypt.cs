@@ -4,13 +4,13 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Decryptions.Exceptions;
+using LHDS.Core.Models.Foundations.Cryptographies.Exceptions;
 using Moq;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Foundations.Decryptions
+namespace LHDS.Core.Tests.Unit.Services.Foundations.Cryptographies
 {
-    public partial class DecryptionServiceTests
+    public partial class CryptographyServiceTests
     {
         [Fact]
         public async Task ShouldThrowValidationExceptionOnDecryptIfDecryptionIsNullAndLogItAsync()
@@ -19,19 +19,19 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decryptions
             byte[] nullDecryption = null;
 
             var nullDecryptionException =
-                new NullDecryptionException(message: "Decryption is null.");
+                new NullCryptographyException(message: "Data is null.");
 
             var expectedDecryptionValidationException =
-                new DecryptionValidationException(
-                    message: "Decryption validation errors occurred, please try again.",
+                new CryptographyValidationException(
+                    message: "Cryptography validation errors occurred, please try again.",
                     innerException: nullDecryptionException);
 
             // when
             Task<byte[]> decryptTask =
-                this.decryptionService.DecryptAsync(nullDecryption);
+                this.cryptographyService.DecryptAsync(nullDecryption);
 
-            DecryptionValidationException actualDecryptionValidationException =
-                await Assert.ThrowsAsync<DecryptionValidationException>(async () =>
+            CryptographyValidationException actualDecryptionValidationException =
+                await Assert.ThrowsAsync<CryptographyValidationException>(async () =>
                     await decryptTask);
 
             // then
@@ -44,8 +44,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Decryptions
                         Times.Once);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.cryptographyBroker.VerifyNoOtherCalls();
         }
     }
 }

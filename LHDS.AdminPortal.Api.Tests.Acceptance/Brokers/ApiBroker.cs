@@ -5,10 +5,6 @@
 using System.Net.Http;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Orchestrations.EmisLandings;
-using LHDS.Core.Providers.Cryptography;
-using LHDS.Core.Providers.Cryptography.Gpg;
-using LHDS.Core.Services.Foundations.Documents;
-using LHDS.Core.Services.Foundations.Downloads;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,9 +17,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         private readonly WebApplicationFactory<Startup> webApplicationFactory;
         private readonly HttpClient httpClient;
         private readonly IRESTFulApiFactoryClient apiFactoryClient;
-        internal IDocumentService documentService;
-        internal IDownloadService downloadService;
-        internal ICryptographyProvider cryptographyProvider;
         internal IConfiguration configuration;
         internal LandingConfiguration landingConfiguration;
         internal BlobContainers blobContainers;
@@ -31,14 +24,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         public ApiBroker()
         {
             this.webApplicationFactory = new WebApplicationFactory<Startup>();
-            this.documentService = (DocumentService)webApplicationFactory.Services.GetService<IDocumentService>();
-            this.downloadService = (DownloadService)webApplicationFactory.Services.GetService<IDownloadService>();
             this.httpClient = this.webApplicationFactory.CreateClient();
             this.apiFactoryClient = new RESTFulApiFactoryClient(this.httpClient);
-
-            this.cryptographyProvider =
-                (GpgCryptographyProvider)webApplicationFactory.Services.GetService<ICryptographyProvider>();
-
             this.configuration = this.webApplicationFactory.Services.GetService<IConfiguration>();
             this.landingConfiguration = this.webApplicationFactory.Services.GetService<LandingConfiguration>();
             this.blobContainers = this.webApplicationFactory.Services.GetService<BlobContainers>();

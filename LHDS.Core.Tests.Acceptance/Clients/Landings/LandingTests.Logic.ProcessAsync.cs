@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
 {
     public partial class LandingTests
     {
-        [Fact(Skip = "Ftp Down")]
+        [Fact]
         public async Task ShouldProcessNewDocumentsAsync()
         {
             //Given
@@ -112,7 +112,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
             this.blobStorageBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact(Skip = "Ftp Down")]
+        [Fact]
         public async Task ShouldNotProcessExistingDocumentsAsync()
         {
             //Given

@@ -10,8 +10,8 @@ export class IngestionTrackingAuditView {
         id: Guid,
         ingestionTrackingId: string,
         message: string,
-        createdDate: Date,
-    ) {
+        createdDate: Date) 
+    {
         this.id = id ;
         this.ingestionTrackingId = ingestionTrackingId;
         this.message = message || "";

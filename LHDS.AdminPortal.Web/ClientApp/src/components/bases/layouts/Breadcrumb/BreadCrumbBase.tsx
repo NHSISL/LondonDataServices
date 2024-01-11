@@ -26,4 +26,3 @@ const BreadCrumbBase: FunctionComponent<BreadCrumbBaseProps> = (props) => {
 }
 
 export default BreadCrumbBase
-

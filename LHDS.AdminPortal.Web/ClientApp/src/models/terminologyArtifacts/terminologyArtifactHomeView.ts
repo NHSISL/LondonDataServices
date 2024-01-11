@@ -30,8 +30,8 @@ export class TerminologyArtifactHomeView {
         createdBy?: string,
         createdDate?: Date,
         updatedBy?: string,
-        updatedDate?: Date,
-    ) {
+        updatedDate?: Date) 
+    {
         this.id = id;
         this.fullUrl = fullUrl;
         this.resourceType = resourceType;

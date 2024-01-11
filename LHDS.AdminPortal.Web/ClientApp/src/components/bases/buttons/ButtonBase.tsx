@@ -34,26 +34,27 @@ const ButtonBase: FunctionComponent<ButtonBaseProps> = (
         className,
         ...rest
     }
-) => {
-    return (
-        <Button style={{marginRight: "3px"} }
-            id={id}
-            title={title}
-            onClick={onClick}
-            className={classNames(
-                { 'nhsuk-buttonBlue': add },
-                { 'nhsuk-buttonBlue': edit },
-                { 'nhsuk-buttonRed': remove },
-                { 'nhsuk-buttonGrey': cancel },
-                { 'nhsuk-buttonGreen': view },
-                className,
-            )}
-            {...rest}
-        >
-            {children}
-          </Button >
-    );
-}
+) => 
+    {
+        return (
+            <Button style={{marginRight: "3px"} }
+                id={id}
+                title={title}
+                onClick={onClick}
+                className={classNames(
+                    { 'nhsuk-buttonBlue': add },
+                    { 'nhsuk-buttonBlue': edit },
+                    { 'nhsuk-buttonRed': remove },
+                    { 'nhsuk-buttonGrey': cancel },
+                    { 'nhsuk-buttonGreen': view },
+                    className,
+                )}
+                {...rest}
+            >
+                {children}
+            </Button >
+        );
+    }
 
 ButtonBase.defaultProps = {
     type: 'submit',

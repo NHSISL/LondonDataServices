@@ -15,4 +15,3 @@ const FooterBase: FunctionComponent<FooterBaseProps> = (props) => {
 }
 
 export default FooterBase
-

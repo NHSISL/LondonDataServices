@@ -17,4 +17,5 @@ const IngestionTrackingAuditRow: FunctionComponent<IngestionTrackingAuditRowProp
             ingestionTrackingAudit={ ingestionTrackingAudit } />
     );
 }
+
 export default IngestionTrackingAuditRow;

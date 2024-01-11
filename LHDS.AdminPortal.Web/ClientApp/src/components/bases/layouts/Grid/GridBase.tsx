@@ -25,4 +25,3 @@ const GridBase: FunctionComponent<GridBaseProps> = (props) => {
 }
 
 export default GridBase
-

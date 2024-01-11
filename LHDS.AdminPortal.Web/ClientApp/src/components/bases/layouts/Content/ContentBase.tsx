@@ -21,4 +21,3 @@ const ContentBase: FunctionComponent<ContentBaseProps> = (props) => {
 }
 
 export default ContentBase
-

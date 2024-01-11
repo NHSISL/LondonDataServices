@@ -26,4 +26,5 @@ const IngestionTrackingAuditRowView: FunctionComponent<IngestionTrackingAuditRow
         </>
     );
 }
+
 export default IngestionTrackingAuditRowView;

@@ -15,4 +15,3 @@ const SidebarBaseNav: FunctionComponent<SidebarBaseNavProps> = (props) => {
 }
 
 export default SidebarBaseNav
-

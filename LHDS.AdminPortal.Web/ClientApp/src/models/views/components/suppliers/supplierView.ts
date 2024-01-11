@@ -28,9 +28,8 @@ export class SupplierView {
         createdBy?: string,
         createdDate?: Date,
         updatedBy?: string,
-        updatedDate?: Date,
-
-    ) {
+        updatedDate?: Date) 
+    {
         this.id = id;
         this.name = name || "";
         this.friendlyName = friendlyName || "";

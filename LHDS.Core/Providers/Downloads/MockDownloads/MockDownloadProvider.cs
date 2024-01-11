@@ -14,7 +14,7 @@ using Renci.SshNet;
 
 namespace LHDS.Core.Providers.Downloads.FtpDownloads
 {
-    public class FtpDownloadProvider : IDownloadProvider
+    public class MockDownloadProvider : IDownloadProvider
     {
         private readonly Renci.SshNet.SftpClient client;
         private readonly IFtpDownloadProviderSettings ftpDownloadProviderSettings;
@@ -23,22 +23,15 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
         public string Name { get; private set; }
         public bool IsMock { get; private set; }
 
-        public FtpDownloadProvider(IFtpDownloadProviderSettings ftpDownloadProviderSettings)
+        public MockDownloadProvider()
         {
 
-            this.Name = "FtpDownloadProvider";
-            this.ftpDownloadProviderSettings = ftpDownloadProviderSettings;
-            client = new SftpClient(GetConnectionInfo(ftpDownloadProviderSettings));
+            this.Name = "MockDownloadProvider";
+            this.IsMock = true;
         }
 
         public async ValueTask<Document> GetDocumentByFileNameAsync(string fileName)
         {
-            this.EnsureClientIsConnected();
-
-            var attrs = client.GetAttributes(fileName);
-            MemoryStream stream = new MemoryStream();
-            this.client.DownloadFile(fileName, stream);
-            byte[] data = stream.ToArray();
 
             var document = new Document()
             {

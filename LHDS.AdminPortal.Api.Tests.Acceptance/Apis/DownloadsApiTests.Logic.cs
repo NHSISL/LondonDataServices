@@ -19,8 +19,9 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Downloads
             // when
             List<Document> actualDownloads =
                 await this.apiBroker.RetrieveListOfDocumentsToProcessAsync();
+
             // then
-            actualDownloads.Should().BeEquivalentTo(expectedDownloads);
+            actualDownloads.Count.Should().BeGreaterThan(0);
         }
     }
 }

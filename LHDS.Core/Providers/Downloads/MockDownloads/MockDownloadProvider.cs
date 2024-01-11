@@ -9,8 +9,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
-using LHDS.Core.Models.Providers.FtpDownloads.Exceptions;
 using Renci.SshNet;
+using Tynamix.ObjectFiller;
+using LHDS.Core.Models.Providers.FtpDownloads.Exceptions;
+using System.Text;
 
 namespace LHDS.Core.Providers.Downloads.FtpDownloads
 {
@@ -19,19 +21,22 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
         private readonly Renci.SshNet.SftpClient client;
         private readonly IFtpDownloadProviderSettings ftpDownloadProviderSettings;
 
-
         public string Name { get; private set; }
         public bool IsMock { get; private set; }
 
         public MockDownloadProvider()
         {
-
             this.Name = "MockDownloadProvider";
             this.IsMock = true;
         }
 
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
+
         public async ValueTask<Document> GetDocumentByFileNameAsync(string fileName)
         {
+            string randomString = GetRandomString();
+            byte[] data = Encoding.ASCII.GetBytes(randomString);
 
             var document = new Document()
             {

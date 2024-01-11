@@ -68,18 +68,18 @@ export const UserProfile = (): ReactElement => {
         </Modal>
 
         <div style={{ textAlign: "end" }}>
-        <AuthenticatedTemplate>
-            <DropdownButton 
-                title={getName()}>
-                <Dropdown.Item onClick={openModal}>My Profile</Dropdown.Item>
-                <Dropdown.Item onClick={() => instance.logoutRedirect({ postLogoutRedirectUri: "/" })}>Logout</Dropdown.Item>
-            </DropdownButton>
-        </AuthenticatedTemplate>
-        <UnauthenticatedTemplate>
-            <ButtonBase onClick={() => instance.loginRedirect(loginRequest)} add>
-                Login
-            </ButtonBase>
+            <AuthenticatedTemplate>
+                <DropdownButton 
+                    title={getName()}>
+                    <Dropdown.Item onClick={openModal}>My Profile</Dropdown.Item>
+                    <Dropdown.Item onClick={() => instance.logoutRedirect({ postLogoutRedirectUri: "/" })}>Logout</Dropdown.Item>
+                </DropdownButton>
+            </AuthenticatedTemplate>
+            <UnauthenticatedTemplate>
+                <ButtonBase onClick={() => instance.loginRedirect(loginRequest)} add>
+                    Login
+                </ButtonBase>
             </UnauthenticatedTemplate>
-            </div>
+        </div>
     </div>;
 }

@@ -19,9 +19,11 @@ export const TerminologyArtifactDetailPage = () => {
                         currentLink="Terminology Artifacts Detail">
                     </BreadCrumbBase>
 
-                    {terminologyArtifactId &&
-                        <TerminologyArtifactDetail terminologyArtifactId={terminologyArtifactId} />
+                    {
+                        terminologyArtifactId &&
+                            <TerminologyArtifactDetail terminologyArtifactId={terminologyArtifactId} />
                     }
+                    
                     <br />
                 </main>
             </div>

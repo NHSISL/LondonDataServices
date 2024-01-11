@@ -92,7 +92,6 @@ export const SecuredLink = ({ to, children, icon, allowedRoles = [], deniedRoles
 
 }
 
-
 export const SecuredComponents = ({ children, allowedRoles = [], deniedRoles = [] }: SecuredComponentsParameters): ReactElement => {
     const { accounts } = useMsal();
     const isAuthenticated = useIsAuthenticated();

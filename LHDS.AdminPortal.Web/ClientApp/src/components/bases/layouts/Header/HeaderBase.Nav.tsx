@@ -17,4 +17,3 @@ const HeaderBaseNav: FunctionComponent<HeaderBaseNavProps> = (props) => {
 }
 
 export default HeaderBaseNav
-

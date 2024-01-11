@@ -48,4 +48,5 @@ const TerminologyArtifactDetailCard: FunctionComponent<TerminologyArtifactDetail
         </div>
     );
 }
+
 export default TerminologyArtifactDetailCard;

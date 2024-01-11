@@ -16,7 +16,8 @@ type TerminologyArtifactHomeViewServiceResponse = {
 
 export const TerminologyArtifactHomeViewService = {
     useGetAllTerminologyArtifacts: (searchTerm?: string): TerminologyArtifactHomeViewServiceResponse => {
-        try {
+        try 
+        {
             let query = `?$orderby=createdDate`;
 
             if (searchTerm) {
@@ -70,7 +71,8 @@ export const TerminologyArtifactHomeViewService = {
                 data: response.data,
                 refetch: response.refetch
             };
-        } catch (err) {
+        } catch (err) 
+        {
             throw err;
         }
     },

@@ -15,4 +15,3 @@ const SidebarBase: FunctionComponent<SidebarBaseProps> = (props) => {
 }
 
 export default SidebarBase
-

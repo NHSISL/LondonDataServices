@@ -56,4 +56,5 @@ class TerminologyArtifactBroker {
             .then(result => new TerminologyArtifact(result.data));
     }
 }
+
 export default TerminologyArtifactBroker;

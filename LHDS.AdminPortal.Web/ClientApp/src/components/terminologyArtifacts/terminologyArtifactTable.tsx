@@ -32,9 +32,7 @@ const TerminologyArtifactTable: FunctionComponent<TerminologyArtifactTableProps>
         hasNextPage,
         data,
         refetch
-    } = TerminologyArtifactHomeViewService.useGetAllTerminologyArtifacts(
-        debouncedTerm
-    );
+    } = TerminologyArtifactHomeViewService.useGetAllTerminologyArtifacts(debouncedTerm);
 
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);

@@ -104,4 +104,5 @@ const TerminologyArtifactDetailCardView: FunctionComponent<TerminologyArtifactDe
         </>
     );
 }
+
 export default TerminologyArtifactDetailCardView;

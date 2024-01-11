@@ -52,6 +52,7 @@ const SupplierRowAdd: FunctionComponent<SupplierRowAddProps> = (props) => {
 
     return (
         <TableBaseRow>
+            
             <TableBaseData>
                 <TextInputBase
                     id="name"
@@ -73,6 +74,7 @@ const SupplierRowAdd: FunctionComponent<SupplierRowAddProps> = (props) => {
                     rows={3}
                 />
             </TableBaseData>
+
             <TableBaseData>
                 <TextInputBase
                     id="friendlyName"
@@ -107,6 +109,7 @@ const SupplierRowAdd: FunctionComponent<SupplierRowAddProps> = (props) => {
                 <ButtonBase onClick={() => onCancel()} cancel>Cancel</ButtonBase>&nbsp;
                 <ButtonBase onClick={() => handleSave()} disabled={errors.hasErrors} add>Add</ButtonBase>
             </TableBaseData>
+
         </TableBaseRow>
     );
 }

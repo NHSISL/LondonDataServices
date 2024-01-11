@@ -35,4 +35,5 @@ const TerminologyArtifactDetail: FunctionComponent<TerminologyArtifactDetailProp
         </div>
     );
 }
+
 export default TerminologyArtifactDetail;

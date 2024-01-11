@@ -42,4 +42,5 @@ const IngestionTrackingAuditTable: FunctionComponent<IngestionTrackingAuditTable
         </div>
     );
 }
+
 export default IngestionTrackingAuditTable;

@@ -15,4 +15,3 @@ const HeaderBase: FunctionComponent<HeaderBaseProps> = (props) => {
 }
 
 export default HeaderBase
-

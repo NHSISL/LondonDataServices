@@ -34,12 +34,14 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
 
     return (
         <TableBaseRow>
+            
             <TableBaseData>
                 <div className="p-2 rounded al text-center">
                     {ingestionTracking.supplier?.name}
 
                 </div>
             </TableBaseData>
+
             <TableBaseData>
                 FileName: {trimString(ingestionTracking.fileName)}
                 <br />
@@ -57,10 +59,12 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
                 Record Count: {ingestionTracking.recordCount} &nbsp;
 
             </TableBaseData>
+
             <TableBaseData>
                 <strong>Created Date: </strong><br />
                 {moment(ingestionTracking.createdDate?.toString()).format("Do-MMM-yyyy HH:mm")}
             </TableBaseData>
+
             <TableBaseData>
                 <Dropdown>
                     <Dropdown.Toggle as={ButtonBase} variant="secondary" id="actions-dropdown" edit>
@@ -89,6 +93,7 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
                     </Dropdown.Menu>
                 </Dropdown>
             </TableBaseData>
+
             <TableBaseData>
                 <Link to={`/ingestionTrackingDetail/${ingestionTracking.id}`}>
                     <ButtonBase onClick={() => { }} add>
@@ -96,6 +101,7 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
                     </ButtonBase>
                 </Link>
             </TableBaseData>
+            
         </TableBaseRow>
     );
 }

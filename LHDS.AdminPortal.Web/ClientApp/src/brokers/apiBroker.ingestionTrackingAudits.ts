@@ -13,4 +13,5 @@ class IngestionTrackingAuditBroker {
             .then(result => result.data.map((ingestionTrackingAudit: any) => new IngestionTrackingAudit(ingestionTrackingAudit)));
     }
 }
+
 export default IngestionTrackingAuditBroker;

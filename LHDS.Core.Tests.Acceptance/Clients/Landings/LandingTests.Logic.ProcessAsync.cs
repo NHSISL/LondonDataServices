@@ -95,7 +95,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Landings
                     broker.InsertFileAsync(
                         ingestionTracking.EncryptedFileName,
                         It.IsAny<Stream>(),
-                         It.IsAny<string>()),
+                        It.IsAny<string>()),
                             Times.Once());
             }
 

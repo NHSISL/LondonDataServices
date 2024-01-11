@@ -187,7 +187,7 @@ namespace LHDS.AdminPortal.Api
         private static void AddProviders(IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IDownloadAbstractionProvider, DownloadAbstractionProvider>();
-            services.AddTransient<IDownloadProvider, MockDownloadProvider>();
+            //services.AddTransient<IDownloadProvider, MockDownloadProvider>();
         }
 
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration)

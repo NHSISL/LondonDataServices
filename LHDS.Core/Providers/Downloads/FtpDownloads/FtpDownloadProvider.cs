@@ -18,8 +18,6 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
     {
         private readonly Renci.SshNet.SftpClient client;
         private readonly IFtpDownloadProviderSettings ftpDownloadProviderSettings;
-
-
         public string Name { get; private set; }
         public bool IsMock { get; private set; }
 

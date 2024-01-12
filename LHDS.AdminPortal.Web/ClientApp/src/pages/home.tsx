@@ -1,7 +1,7 @@
 import React from 'react';
 import { PublicLink, SecuredComponents } from '../components/links';
 import { useIsAuthenticated } from '@azure/msal-react';
-import { FeatureSwitch } from '../components/accessControl/FeatureSwitch';
+import { FeatureSwitch } from '../components/accessControl/featureSwitch';
 import { FeatureDefinitions } from '../featureDefinitions';
 import securityPoints from '../securityMatrix';
 import CardBase from '../components/bases/components/Card/CardBase';

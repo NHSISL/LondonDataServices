@@ -13,7 +13,7 @@ import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import { Button, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRefresh } from "@fortawesome/free-solid-svg-icons";
-import { dataSetViewService } from "../../services/views/DataSets/dataSetViewService";
+import { dataSetViewService } from "../../services/views/dataSets/dataSetViewService";
 import { DataSetView } from "../../models/views/components/dataSets/dataSetView";
 import DataSetRow from "./dataSetRowView";
 import TableBaseThead from "../bases/components/Table/TableBase.Thead";

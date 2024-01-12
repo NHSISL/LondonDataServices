@@ -2,17 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
+using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
-using Renci.SshNet;
 using Tynamix.ObjectFiller;
-using LHDS.Core.Models.Providers.FtpDownloads.Exceptions;
-using System.Text;
 
 namespace LHDS.Core.Providers.Downloads.FtpDownloads
 {
@@ -33,6 +27,9 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
+        private static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 10).GetValue();
+
         public async ValueTask<Document> GetDocumentByFileNameAsync(string fileName)
         {
             string randomString = GetRandomString();
@@ -49,107 +46,29 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
 
         public async ValueTask<List<Document>> GetListOfDocumentsToProcessAsync()
         {
-            this.EnsureClientIsConnected();
+            List<Document> documents = new List<Document>();
 
-            return await this.GetListOfDocumentsToProcessAsync(
-                path: ftpDownloadProviderSettings.FtpRootFolder,
-                includeSubDirectories: ftpDownloadProviderSettings.IncludeSubDirectories);
+            for (int i = 0; i < GetRandomNumber(); i++)
+            {
+                Document document = await GetRandomDocumentAsync();
+                documents.Add(document);
+            }
+
+            return documents;
         }
 
-        private async ValueTask<List<Document>> GetListOfDocumentsToProcessAsync(
-            string path,
-            bool includeSubDirectories)
+        private async ValueTask<Document> GetRandomDocumentAsync()
         {
-            var documents = new List<Document>();
+            string randomString = GetRandomString();
+            byte[] data = Encoding.ASCII.GetBytes(randomString);
 
-            var currDir = path == "/" ? this.client.WorkingDirectory : path;
-            var files = this.client.ListDirectory(currDir).ToList();
-
-            if (!includeSubDirectories)
+            Document document = new Document()
             {
-                return files.Select(x => new Document { FileName = x.FullName }).ToList();
-            }
+                FileName = GetRandomString(),
+                DocumentData = data
+            };
 
-            foreach (var remotefile in files)
-            {
-                if (remotefile.Name == "." || remotefile.Name == "..")
-                {
-                    continue;
-                }
-
-                if (remotefile.IsDirectory)
-                {
-                    var items = await this.GetListOfDocumentsToProcessAsync(
-                        path: remotefile.FullName,
-                        includeSubDirectories);
-
-                    documents.AddRange(items);
-                }
-                else
-                {
-                    documents.Add(new Document { FileName = remotefile.FullName });
-                }
-            }
-
-            return await ValueTask.FromResult(documents);
-        }
-
-        private void EnsureClientIsConnected()
-        {
-            var attempts = 0;
-
-            while (true)
-            {
-                attempts++;
-
-                if (client.IsConnected)
-                {
-                    return;
-                }
-
-                client.Connect();
-                Thread.Sleep(500);
-
-                if (!client.IsConnected && attempts > 3)
-                {
-                    throw new FailedToConnectSftpClientException();
-                }
-            }
-        }
-
-        private ConnectionInfo GetConnectionInfo(IFtpDownloadProviderSettings ftpDownloadProviderSettings)
-        {
-            List<AuthenticationMethod> methods = new();
-
-            if (ftpDownloadProviderSettings.FtpPassword != null)
-            {
-                methods.Add(new PasswordAuthenticationMethod(
-                    username: ftpDownloadProviderSettings.FtpUserName,
-                    password: ftpDownloadProviderSettings.FtpPassword));
-            }
-
-            if (ftpDownloadProviderSettings.FtpKey != null && ftpDownloadProviderSettings.FtpPassPhrase != null)
-            {
-                var pkf = GetKeyFromB64(ftpDownloadProviderSettings.FtpKey, ftpDownloadProviderSettings.FtpPassPhrase);
-                methods.Add(new PrivateKeyAuthenticationMethod(ftpDownloadProviderSettings.FtpUserName, pkf));
-            }
-
-            return new ConnectionInfo(
-                                    ftpDownloadProviderSettings.FtpServer,
-                                    ftpDownloadProviderSettings.FtpPort,
-                                    ftpDownloadProviderSettings.FtpUserName,
-                                    methods.ToArray());
-        }
-
-        private PrivateKeyFile GetKeyFromB64(string encodedKey, string passPhrase)
-        {
-            byte[] bytes = Convert.FromBase64String(encodedKey);
-
-            using (MemoryStream stream = new(bytes))
-            {
-                var privateKeyFile = new PrivateKeyFile(stream, passPhrase);
-                return privateKeyFile;
-            }
+            return document;
         }
     }
 }

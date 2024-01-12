@@ -20,6 +20,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Downloads
             List<Document> actualDownloads =
                 await this.apiBroker.RetrieveListOfDocumentsToProcessAsync();
 
+            List<Document> checkDownloads = actualDownloads;
+
             // then
             actualDownloads.Count.Should().BeGreaterThan(0);
         }

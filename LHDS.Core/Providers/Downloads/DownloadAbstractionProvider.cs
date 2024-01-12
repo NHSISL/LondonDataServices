@@ -3,7 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Configuration;using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
 using Microsoft.Extensions.Configuration;

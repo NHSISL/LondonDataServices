@@ -36,4 +36,10 @@
     <ProjectReference Include="..\LHDS.Core\LHDS.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="local.appsettings.json" Condition="Exists('local.appsettings.json')">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

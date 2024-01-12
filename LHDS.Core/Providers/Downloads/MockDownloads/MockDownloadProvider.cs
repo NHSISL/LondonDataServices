@@ -48,7 +48,7 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
         {
             List<Document> documents = new List<Document>();
 
-            for (int i = 0; i < GetRandomNumber(); i++)
+            for (int i = 0; i < 1; i++)
             {
                 Document document = await GetRandomDocumentAsync();
                 documents.Add(document);

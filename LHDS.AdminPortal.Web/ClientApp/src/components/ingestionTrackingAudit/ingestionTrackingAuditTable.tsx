@@ -2,7 +2,7 @@ import React, { FunctionComponent } from "react";
 import TableBase from "../bases/components/Table/TableBase";
 import TableBaseTbody from "../bases/components/Table/TableBase.Tbody";
 import IngestionTrackingAuditRow from "./ingestionTrackingAuditRow";
-import { ingestionTrackingAuditViewService } from "../../services/views/IngestionTrackingAudits/ingestionTrackingAuditViewService";
+import { ingestionTrackingAuditViewService } from "../../services/views/ingestionTrackingAudits/ingestionTrackingAuditViewService";
 import TableBaseRow from "../bases/components/Table/TableBase.Row";
 import TableBaseData from "../bases/components/Table/TableBase.Data";
 import TableBaseThead from "../bases/components/Table/TableBase.Thead";

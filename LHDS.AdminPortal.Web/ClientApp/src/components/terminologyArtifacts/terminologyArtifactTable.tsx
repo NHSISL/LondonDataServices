@@ -15,7 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase, faRefresh } from "@fortawesome/free-solid-svg-icons";
 import TerminologyArtifactRow from "./terminologyArtifactRow";
 import { TerminologyArtifact } from "../../models/terminologyArtifacts/terminologyArtifact";
-import { TerminologyArtifactHomeViewService } from "../../services/views/TerminologyArtifacts/terminologyArtifactHomeViewService";
+import { TerminologyArtifactHomeViewService } from "../../services/views/terminologyArtifacts/terminologyArtifactHomeViewService";
 
 type TerminologyArtifactTableProps = {};
 

@@ -20,7 +20,7 @@ import { SecuredComponents } from "../links";
 import { Link } from "react-router-dom";
 import ButtonBase from "../bases/buttons/ButtonBase";
 import securityPoints from "../../securityMatrix";
-import { dataSetSpecificationViewService } from "../../services/views/DataSetSpecification/dataSetSpecificationViewService";
+import { dataSetSpecificationViewService } from "../../services/views/dataSetSpecification/dataSetSpecificationViewService";
 import DataSetSpecificationRow from "./dataSetSpecificationRow";
 import { DataSetSpecificationView } from "../../models/views/components/dataSetSpecifications/dataSetSpecificationView";
 

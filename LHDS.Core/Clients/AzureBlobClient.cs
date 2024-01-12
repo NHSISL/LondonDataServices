@@ -7,6 +7,7 @@ namespace LHDS.Core.Clients
     using System;
     using System.IO;
     using System.Threading.Tasks;
+    using System.Web;
     using Azure.Storage.Blobs;
     using Azure.Storage.Blobs.Models;
     using Azure.Storage.Sas;
@@ -72,7 +73,9 @@ namespace LHDS.Core.Clients
         public async ValueTask DeleteFileAsync(string fileName, string container)
         {
             loggingBroker.LogInformation(fileName);
-            var blobClient = blobServiceClient.GetBlobContainerClient(container).GetBlobClient(fileName);
+            var blobClient = blobServiceClient.GetBlobContainerClient(container)
+                .GetBlobClient(HttpUtility.UrlDecode(fileName));
+
             await blobClient.DeleteAsync(DeleteSnapshotsOption.None);
         }
 

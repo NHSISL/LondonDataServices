@@ -11,8 +11,7 @@ import ButtonBase from '../components/bases/buttons/ButtonBase';
 export const HomeUnAuthorised = () => {
     const { instance } = useMsal();
 
-    return 
-    (
+    return (
         <>
             <div className="container center max-width-400 min-height-600 vh-100">
                 

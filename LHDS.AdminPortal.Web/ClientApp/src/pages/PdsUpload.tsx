@@ -3,7 +3,7 @@ import 'nhsuk-frontend/dist/nhsuk.min'
 import 'nhsuk-frontend/packages/polyfills';
 import { Container } from 'nhsuk-react-components'
 import PdsUploadDetail from "../components/pds/upload/pdsUploadDetail";
-import { PageLayout } from '../components/PageLayout';
+import { PageLayout } from '../components/pageLayout';
 
 export const PdsUpload = () => {
     return <PageLayout>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { UserProfile } from './UserProfile';
+import { UserProfile } from './userProfile';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 export const HeaderBar = () => {

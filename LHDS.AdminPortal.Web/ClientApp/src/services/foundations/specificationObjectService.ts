@@ -1,7 +1,7 @@
 import { useMsal } from "@azure/msal-react";
 import { Guid } from "guid-typescript";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "react-query";
-import SpecificationObjectBroker from "../../brokers/apiBroker.specificationobjects";
+import SpecificationObjectBroker from "../../brokers/apiBroker.specificationObjects";
 import { SpecificationObject } from "../../models/specificationObjects/specificationObject";
 
 export const specificationObjectService = {

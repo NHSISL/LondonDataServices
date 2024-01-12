@@ -3,9 +3,9 @@ import 'nhsuk-frontend/dist/nhsuk.min'
 import 'nhsuk-frontend/packages/polyfills';
 import { Container } from 'nhsuk-react-components'
 import SpecificationObjectDetail from "../../components/specificationObjects/specificationObjectDetail";
-import BreadCrumbBase from "../../components/bases/layouts/Breadcrumb/BreadCrumbBase";
+import BreadCrumbBase from "../../components/bases/layouts/BreadCrumb/BreadCrumbBase";
 import { useParams } from "react-router-dom";
-import { PageLayout } from "../../components/PageLayout";
+import { PageLayout } from "../../components/pageLayout";
 
 export const SpecificationObjectPage = () => {
 

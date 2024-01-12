@@ -1,14 +1,14 @@
 import React from 'react';
-import { PublicLink, SecuredComponents } from '../components/Links';
+import { PublicLink, SecuredComponents } from '../components/links';
 import { useIsAuthenticated } from '@azure/msal-react';
 import { FeatureSwitch } from '../components/accessControl/FeatureSwitch';
 import { FeatureDefinitions } from '../featureDefinitions';
-import securityPoints from '../SecurityMatrix';
+import securityPoints from '../securityMatrix';
 import CardBase from '../components/bases/components/Card/CardBase';
 import CardBaseContent from '../components/bases/components/Card/CardBase.Content';
 import CardBaseBody from '../components/bases/components/Card/CardBase.Body';
 import { HomeUnAuthorised } from './homeUnAuth';
-import { PageLayout } from '../components/PageLayout';
+import { PageLayout } from '../components/pageLayout';
 
 export const Home = () => {
     const isAuthenticated = useIsAuthenticated();

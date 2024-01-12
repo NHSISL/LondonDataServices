@@ -3,8 +3,10 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
+using Microsoft.Extensions.Configuration;
 
 namespace LHDS.Core.Providers.Downloads
 {
@@ -12,9 +14,10 @@ namespace LHDS.Core.Providers.Downloads
     {
         private readonly IDownloadProvider provider;
 
-        public DownloadAbstractionProvider(IDownloadProvider provider)
+        public DownloadAbstractionProvider(IEnumerable<IDownloadProvider> providers, IConfiguration config)
         {
-            this.provider = provider;
+            bool isMock = config.GetValue<bool>("IsMock");
+            provider = providers.First(provider => provider.IsMock == isMock);
         }
 
         public async ValueTask<List<Document>> GetListOfDocumentsToProcessAsync() =>

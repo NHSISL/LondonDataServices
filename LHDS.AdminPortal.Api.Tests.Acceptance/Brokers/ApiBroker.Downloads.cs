@@ -13,6 +13,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
         private const string downloadsRelativeUrl = "api/downloads";
 
         public async ValueTask<List<Document>> RetrieveListOfDocumentsToProcessAsync() =>
-            await this.apiFactoryClient.GetContentAsync<List<Document>>(documentsRelativeUrl);
+            await this.apiFactoryClient.GetContentAsync<List<Document>>(downloadsRelativeUrl);
     }
 }

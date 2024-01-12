@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
+using LHDS.Core.Models.Foundations.Downloads.Exceptions;
 using LHDS.Core.Services.Foundations.Downloads;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -44,11 +45,11 @@ namespace LHDS.AdminPortal.Api.Controllers
 
                 return Ok(retrievedDocuments);
             }
-            catch (DocumentDependencyException dataSetDependencyException)
+            catch (DownloadDependencyException downloadDependencyException)
             {
-                return InternalServerError(dataSetDependencyException);
+                return InternalServerError(downloadDependencyException);
             }
-            catch (DocumentServiceException downloadServiceException)
+            catch (DownloadServiceException downloadServiceException)
             {
                 return InternalServerError(downloadServiceException);
             }
@@ -66,20 +67,20 @@ namespace LHDS.AdminPortal.Api.Controllers
 
                 return Ok(document);
             }
-            catch (DocumentValidationException dataSetValidationException)
-                when (dataSetValidationException.InnerException is NotFoundDocumentException)
+            catch (DownloadValidationException downloadValidationException)
+                when (downloadValidationException.InnerException is NotFoundDocumentException)
             {
-                return NotFound(dataSetValidationException.InnerException);
+                return NotFound(downloadValidationException.InnerException);
             }
-            catch (DocumentValidationException dataSetValidationException)
+            catch (DownloadValidationException dataSetValidationException)
             {
                 return BadRequest(dataSetValidationException.InnerException);
             }
-            catch (DocumentDependencyException dataSetDependencyException)
+            catch (DownloadDependencyException downloadDependencyException)
             {
-                return InternalServerError(dataSetDependencyException);
+                return InternalServerError(downloadDependencyException);
             }
-            catch (DocumentServiceException downloadServiceException)
+            catch (DownloadServiceException downloadServiceException)
             {
                 return InternalServerError(downloadServiceException);
             }

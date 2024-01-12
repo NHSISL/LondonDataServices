@@ -12,7 +12,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Downloads
 {
     public partial class DownloadsApiTests
     {
-
         [Fact]
         public async Task ShouldRetrieveListOfDocumentsToProcessAsync()
         {

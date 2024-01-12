@@ -4,7 +4,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
+using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.Suppliers;
 using Xunit;
 
@@ -12,7 +16,7 @@ namespace LHDS.Core.Tests.Integration.Landings
 {
     public partial class LandingTests
     {
-        [Fact]
+        [ReleaseCandidateFact]
         public async Task ShouldLandFilesAsync()
         {
             try
@@ -25,30 +29,30 @@ namespace LHDS.Core.Tests.Integration.Landings
                 List<string> files = await landingClient.ProcessAsync();
 
                 // then
-                //files.Should().NotBeNull();
+                files.Should().NotBeNull();
 
-                //foreach (var file in files)
-                //{
-                //    IngestionTracking ingestionTracking =
-                //        ingestionTrackingService.RetrieveAllIngestionTrackings()
-                //            .FirstOrDefault(item => item.DecryptedFileName == file);
+                foreach (var file in files)
+                {
+                    IngestionTracking ingestionTracking =
+                        ingestionTrackingService.RetrieveAllIngestionTrackings()
+                            .FirstOrDefault(item => item.DecryptedFileName == file);
 
-                //    ingestionTracking.Should().NotBeNull();
+                    ingestionTracking.Should().NotBeNull();
 
-                //    List<IngestionTrackingAudit> audits = auditService.RetrieveAllIngestionTrackingAudits()
-                //        .Where(item => item.IngestionTrackingId == ingestionTracking.Id).ToList();
+                    List<IngestionTrackingAudit> audits = auditService.RetrieveAllIngestionTrackingAudits()
+                        .Where(item => item.IngestionTrackingId == ingestionTracking.Id).ToList();
 
-                //    foreach (IngestionTrackingAudit item in audits)
-                //    {
-                //        await auditService.RemoveIngestionTrackingAuditByIdAsync(item.Id);
-                //    }
+                    foreach (IngestionTrackingAudit item in audits)
+                    {
+                        await auditService.RemoveIngestionTrackingAuditByIdAsync(item.Id);
+                    }
 
-                //    await ingestionTrackingService
-                //        .RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
+                    await ingestionTrackingService
+                        .RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
 
-                //    await blobStorageBroker.DeleteFileAsync(
-                //        fileName: ingestionTracking.EncryptedFileName, container: encryptedFileContainer);
-                //}
+                    await blobStorageBroker.DeleteFileAsync(
+                        fileName: ingestionTracking.EncryptedFileName, container: encryptedFileContainer);
+                }
             }
             catch (Exception ex)
             {

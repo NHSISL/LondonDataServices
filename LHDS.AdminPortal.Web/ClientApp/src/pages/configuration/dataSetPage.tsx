@@ -1,8 +1,8 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import DataSetDetail from "../../components/dataSets/dataSetDetail";
-import BreadCrumbBase from "../../components/bases/layouts/Breadcrumb/BreadCrumbBase";
-import { PageLayout } from "../../components/PageLayout";
+import BreadCrumbBase from "../../components/bases/layouts/BreadCrumb/BreadCrumbBase";
+import { PageLayout } from "../../components/pageLayout";
 
 export const DataSetPage = () => {
 

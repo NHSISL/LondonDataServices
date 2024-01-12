@@ -3,7 +3,7 @@ import 'nhsuk-frontend/dist/nhsuk.min'
 import 'nhsuk-frontend/packages/polyfills';
 import { Container } from 'nhsuk-react-components'
 import DataTypeTable from "../../components/dataTypes/dataTypeTable";
-import { PageLayout } from "../../components/PageLayout";
+import { PageLayout } from "../../components/pageLayout";
 
 export const DataTypesPage = () => {
     return <PageLayout>

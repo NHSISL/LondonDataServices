@@ -3,7 +3,7 @@ import 'nhsuk-frontend/dist/nhsuk.min'
 import 'nhsuk-frontend/packages/polyfills';
 import { Container } from 'nhsuk-react-components'
 import PdsTable from "../components/pds/search/pdsTable";
-import { PageLayout } from '../components/PageLayout';
+import { PageLayout } from '../components/pageLayout';
 
 export const PdsSearch = () => {
     return <PageLayout>

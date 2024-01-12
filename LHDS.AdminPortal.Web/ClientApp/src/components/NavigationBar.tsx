@@ -1,8 +1,8 @@
 import React, { FunctionComponent, useState } from 'react';
-import { SecuredComponents, SecuredLink } from './Links';
-import securityPoints from '../SecurityMatrix';
+import securityPoints from '../securityMatrix';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
+import { SecuredComponents, SecuredLink } from './links';
 
 interface SubmenuItem {
     icon: string;

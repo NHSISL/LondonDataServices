@@ -1,6 +1,6 @@
 import React from "react";
 import IngestionTrackingTable from "../components/ingestionTracking/ingestionTrackingTable";
-import { PageLayout } from '../components/PageLayout';
+import { PageLayout } from '../components/pageLayout';
 
 export const IngestionTrackingHomepage = () => {
     return <PageLayout>

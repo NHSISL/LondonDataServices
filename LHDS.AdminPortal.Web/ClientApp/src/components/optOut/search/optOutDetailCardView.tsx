@@ -7,8 +7,8 @@ import SummaryListBaseKey from "../../bases/components/SummaryList/SummaryListBa
 import SummaryListBaseRow from "../../bases/components/SummaryList/SummaryListBase.Row";
 import SummaryListBaseValue from "../../bases/components/SummaryList/SummaryListBase.Value";
 import { Guid } from "guid-typescript";
-import securityPoints from "../../../SecurityMatrix";
-import { SecuredComponents } from "../../Links";
+import securityPoints from "../../../securityMatrix";
+import { SecuredComponents } from "../../links";
 
 interface OptOutDetailCardViewProps {
     optOuts: OptOutView | undefined;

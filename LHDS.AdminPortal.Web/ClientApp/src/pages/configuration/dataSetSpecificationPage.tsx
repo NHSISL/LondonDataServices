@@ -4,8 +4,8 @@ import 'nhsuk-frontend/packages/polyfills';
 import { Container } from 'nhsuk-react-components'
 import { useParams } from "react-router-dom";
 import DataSetSpecificationDetail from "../../components/dataSetSpecifications/dataSetSpecificationDetail";
-import BreadCrumbBase from "../../components/bases/layouts/Breadcrumb/BreadCrumbBase";
-import { PageLayout } from "../../components/PageLayout";
+import BreadCrumbBase from "../../components/bases/layouts/BreadCrumb/BreadCrumbBase";
+import { PageLayout } from "../../components/pageLayout";
 
 export const DataSetSpecificationPage = () => {
 

@@ -4,7 +4,7 @@ import 'nhsuk-frontend/packages/polyfills';
 import { Container } from 'nhsuk-react-components'
 import { useParams } from "react-router-dom";
 import ObjectColumnDetail from "../../components/objectColumns/objectColumnDetail";
-import BreadCrumbBase from "../../components/bases/layouts/Breadcrumb/BreadCrumbBase";
+import BreadCrumbBase from "../../components/bases/layouts/BreadCrumb/BreadCrumbBase";
 
 export const ObjectColumnPage = () => {
 

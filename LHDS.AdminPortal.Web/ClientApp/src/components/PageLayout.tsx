@@ -1,12 +1,12 @@
 import React, { ReactElement, useEffect } from "react";
 import '../styles/base.scss';
-import { NavigationBar } from "./NavigationBar";
-import { BaseFooter } from "./BaseFooter";
+import { NavigationBar } from "./navigationBar";
+import { BaseFooter } from "./baseFooter";
 import SidebarBase from "./bases/layouts/Sidebar/SidebarBase";
 import SidebarBaseNav from "./bases/layouts/Sidebar/SidebarBase.Nav";
 import HeaderBase from "./bases/layouts/Header/HeaderBase";
 import HeaderBaseNav from "./bases/layouts/Header/HeaderBase.Nav";
-import { HeaderBar } from "./HeaderBar";
+import { HeaderBar } from "./headerBar";
 import ContentBase from "./bases/layouts/Content/ContentBase";
 import FooterBase from "./bases/layouts/Footer/FooterBase";
 

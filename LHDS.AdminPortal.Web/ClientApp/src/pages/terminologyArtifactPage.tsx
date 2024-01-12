@@ -1,5 +1,5 @@
 import React from "react"
-import { PageLayout } from '../components/PageLayout';
+import { PageLayout } from '../components/pageLayout';
 import TerminologyArtifactTable from "../components/terminologyArtifacts/terminologyArtifactTable";
 
 export const TerminologyArtifactPage = () => {

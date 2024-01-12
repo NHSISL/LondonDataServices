@@ -52,7 +52,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
             await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
-            //await this.supplierService.RemoveSupplierByIdAsync(landingSupplier.Id);
 
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(
                 randomDocument.FileName,
@@ -114,7 +113,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
             await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
-            //await this.supplierService.RemoveSupplierByIdAsync(landingSupplier.Id);
 
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(
                 randomDocument.FileName,
@@ -175,7 +173,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.TppLandings
             await this.dataSetSpecificationService.RemoveDataSetSpecificationByIdAsync(activeDataSetSpecification.Id);
             await this.dataSetService.RemoveDataSetByIdAsync(activeDataSet.Id);
             await this.ingestionTrackingService.RemoveIngestionTrackingByIdAsync(ingestionTracking.Id);
-            //await this.supplierService.RemoveSupplierByIdAsync(landingSupplier.Id);
 
             await this.documentProcessingService.RemoveDocumentByFileNameAsync(
                 randomDocument.FileName,

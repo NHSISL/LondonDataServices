@@ -4,6 +4,7 @@
 
 using System;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Models.Controllers.Documents;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
@@ -31,6 +32,36 @@ namespace LHDS.AdminPortal.Api.Controllers
             this.documentService = documentService;
             this.blobContainers = blobContainers;
         }
+
+        [HttpGet]
+        public async ValueTask<ActionResult> Get()
+        {
+            try
+            {
+                Document doc = new Document
+                {
+                    DocumentData = Encoding.UTF8.GetBytes("Hello world!"),
+                    FileName = $"test-{DateTime.Now.ToString("yyyyHHmmss")}.txt"
+                };
+
+                await this.documentService.AddDocumentAsync(doc, "emislanding");
+
+                return Ok();
+            }
+            catch (DataSetDependencyException dataSetDependencyException)
+            {
+                Console.WriteLine(dataSetDependencyException.Message);
+
+                return InternalServerError(dataSetDependencyException);
+            }
+            catch (DataSetServiceException dataSetServiceException)
+            {
+                Console.WriteLine(dataSetServiceException.Message);
+
+                return InternalServerError(dataSetServiceException);
+            }
+        }
+
 
         [HttpPost]
         public async ValueTask<ActionResult> PostDocumentAsync([FromBody] DocumentsModel documentsModel)
@@ -93,7 +124,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpDelete("{container}/{fileName}")]
-        public async ValueTask<ActionResult<Document>> RemoveDocumentByFileNameAsync(string fileName, string container) 
+        public async ValueTask<ActionResult<Document>> RemoveDocumentByFileNameAsync(string fileName, string container)
         {
             try
             {

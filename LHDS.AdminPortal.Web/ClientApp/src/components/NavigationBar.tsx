@@ -1,56 +1,113 @@
-import React from 'react';
-import { Container, Form, Nav, Navbar, NavDropdown } from "react-bootstrap";
-import { SecuredComponents, SecuredLink } from './Links';
-import securityPoints from '../SecurityMatrix';
+import React, { FunctionComponent, useState } from 'react';
+import securityPoints from '../securityMatrix';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
+import { SecuredComponents, SecuredLink } from './links';
 
-export const NavigationBar = () => {
+interface SubmenuItem {
+    icon: string;
+    label: string;
+    allowedRoles: string[];
+    links: { to: string; label: string }[];
+}
+
+interface SubmenuProps {
+    items: SubmenuItem;
+    allowedRoles: string[];
+}
+
+const Submenu: FunctionComponent<SubmenuProps> = (props) => {
+    const {
+        items,
+        allowedRoles
+    } = props;
+
+    const [showSubmenu, setShowSubmenu] = useState(false);
+
+    const toggleSubmenu = () => {
+        setShowSubmenu(!showSubmenu);
+    };
+
+    return (
+        <li style={{ cursor: "pointer" }} className={`pe-auto ${showSubmenu ? 'submenu-open' : ''}`}>
+            <SecuredComponents allowedRoles={allowedRoles}>
+                <>
+                    <div onClick={toggleSubmenu} className="text-white pe-auto">
+                        {items.label} {showSubmenu
+                            ? <FontAwesomeIcon icon={faCaretUp} className="ps-2" />
+                            : <FontAwesomeIcon icon={faCaretDown} className="ps-2" />}
+                    </div>
+                    {showSubmenu && (
+                        <ul className="">
+                            {items.links.map((link, index) => (
+                                <li key={index} className="nav-item">
+                                    <SecuredLink icon="" to={link.to}>{link.label}</SecuredLink>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </>
+            </SecuredComponents>
+        </li>
+    );
+};
+
+export const NavigationBar: FunctionComponent = () => {
+    const submenuItems: SubmenuItem[] = [
+        {
+            icon: 'address',
+            label: 'Opt-Out',
+            allowedRoles: [...securityPoints.optOut.view, 'securityPoints.admin.view'],
+            links: [
+                { to: '/optOutSearch', label: 'Search Opt-Out' },
+                securityPoints.optOut.upload && { to: '/optOutUpload', label: 'Upload Opt-Out' },
+            ].filter(Boolean) as { to: string; label: string }[],
+        },
+        {
+            icon: 'address',
+            label: 'Demographic Search',
+            allowedRoles: securityPoints.pds.view,
+            links: [
+                { to: '/pds', label: 'Search Pds Audit' },
+                securityPoints.pds.upload && { to: '/pdsUpload', label: 'Pds Upload' },
+            ].filter(Boolean) as { to: string; label: string }[],
+        },
+        {
+            icon: 'config',
+            label: 'Configuration',
+            allowedRoles: securityPoints.configuration.view,
+            links: [
+                { icon: 'ingestion', to: '/configuration/suppliers', label: 'Suppliers' },
+                { icon: 'ingestion', to: '/configuration/dataTypes', label: 'Data Types' },
+                { icon: 'ingestion', to: '/configuration/dataSets', label: 'Data Sets' },
+            ].filter(Boolean) as { to: string; label: string }[],
+        },
+    ];
+
     return (
         <>
-            <Navbar style={{ backgroundColor: "#005eb8" }}>
-                <Container className="nhsuk-width-container" style={{ backgroundColor: "#005eb8" }}>
-                    <Navbar.Brand href="#"></Navbar.Brand>
-                    <Navbar.Toggle aria-controls="navbarScroll" />
-                    <Navbar.Collapse id="navbarScroll">
-                        <Nav className="me-auto my-2 my-lg-0" style={{ maxHeight: '100px' }} navbarScroll>
-                            <SecuredLink to="/">Home</SecuredLink>
+            <ul className="sidebar-nav">
 
-                            <SecuredComponents allowedRoles={securityPoints.ingestionTracking.view}>
-                                <SecuredLink to="/ingestionTracking">Ingestion Tracking</SecuredLink>
-                            </SecuredComponents>
+                <li className="mt-4">
+                    <SecuredLink icon="faHome" to="/">Home</SecuredLink>
+                </li>
 
-                            <SecuredComponents allowedRoles={securityPoints.optOut.view}>
-                                <NavDropdown title="OptOut" id="optout-dropdown" className="text-white">
-                                    <SecuredLink to="/optOutSearch">Search Opt-Out</SecuredLink>
+                <li className="">
+                    <SecuredComponents allowedRoles={securityPoints.ingestionTracking.view}>
+                        <SecuredLink icon="ingestion" to="/ingestionTracking">Ingestion Tracking</SecuredLink>
+                    </SecuredComponents>
+                </li>
 
-                                    <SecuredComponents allowedRoles={securityPoints.optOut.upload}>
-                                        <SecuredLink to="/optOutUpload">Upload Opt-Out</SecuredLink>
-                                    </SecuredComponents>
-                                </NavDropdown>
+                {submenuItems.map((item, index) => (
+                    <Submenu key={index} items={item} allowedRoles={item.allowedRoles} />
+                ))}
 
-                            </SecuredComponents>
-                            <SecuredComponents allowedRoles={securityPoints.pds.view}>
-                                <NavDropdown title="Pds" id="pds-dropdown" className="text-white">
-                                    <SecuredLink to="/pds">Search Pds Audit</SecuredLink>
-                                    <SecuredComponents allowedRoles={securityPoints.pds.upload}>
-                                        <SecuredLink to="/pdsUpload">Pds Upload</SecuredLink>
-                                    </SecuredComponents>
-                                </NavDropdown>
-                            </SecuredComponents>
-
-                        </Nav>
-                        <Nav className="ms-auto">
-                            <Form className="d-flex">
-                                <SecuredComponents allowedRoles={securityPoints.configuration.view}>
-                                    <SecuredLink to="/configuration">Configuration</SecuredLink>
-                                </SecuredComponents>
-                            </Form>
-                        </Nav>
-                    </Navbar.Collapse>
-                </Container>
-            </Navbar>
-
-
-
+                <li className="">
+                    <SecuredComponents allowedRoles={securityPoints.terminologyArtifact.view}>
+                        <SecuredLink icon="" to="/terminologyArtifact">Terminology Artifacts</SecuredLink>
+                    </SecuredComponents>
+                </li>
+            </ul>
         </>
     );
 };

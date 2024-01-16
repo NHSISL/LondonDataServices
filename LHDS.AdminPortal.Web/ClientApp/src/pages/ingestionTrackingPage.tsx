@@ -1,34 +1,30 @@
 import React from "react"
-import { Link, useParams } from 'react-router-dom';
-import 'nhsuk-frontend/dist/nhsuk.min'
-import 'nhsuk-frontend/packages/polyfills';
-import { Container } from 'nhsuk-react-components'
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { useParams } from 'react-router-dom';
 import IngestionTrackingDetail from "../components/ingestionTracking/ingestionTrackingDetail";
+import BreadCrumbBase from "../components/bases/layouts/BreadCrumb/BreadCrumbBase";
+import { PageLayout } from '../components/pageLayout';
 
 export const IngestionTrackingPage = () => {
 
     const { ingestionTrackingId } = useParams();
 
-    return <div>
-        <section >
-            <Container>
-                <main id="maincontent" className="NELTopPadding" role="main">
+    return <PageLayout>
+        <section>
+            <div className="container-fluid">
+                <main role="main">
 
-                    <Link to={'/ingestionTracking'}>
-                        <FontAwesomeIcon icon={faChevronLeft} size="1x" />Back to Suppliers Data
-                    </Link>
+                    <BreadCrumbBase
+                        link="/ingestionTracking"
+                        backLink="Ingestion Trackings"
+                        currentLink="Ingestion Tracking Detail">
+                    </BreadCrumbBase>
+
                     {ingestionTrackingId &&
                         <IngestionTrackingDetail ingestionTrackingId={ingestionTrackingId} />
                     }
                     <br />
-
-                    {/*{ingestionTrackingId  && (*/}
-                    {/*    <AuditTable ingestionTrackingId={ingestionTrackingId} />*/}
-                    {/*)}*/}
                 </main>
-            </Container>
+            </div>
         </section>
-    </div>
+    </PageLayout>
 }

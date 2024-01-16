@@ -15,7 +15,7 @@ import TableBaseTbody from "../bases/components/Table/TableBase.Tbody";
 import DataTypeRowNew from "./dataTypeRowNew";
 import DataTypeRowAdd from "./dataTypeRowAdd";
 import DataTypeRow from "./dataTypeRow";
-import { dataTypeViewService } from "../../services/views/DataTypes/dataTypeViewService";
+import { dataTypeViewService } from "../../services/views/dataTypes/dataTypeViewService";
 
 type DataTypeTableProps = {
     allowedToAdd: boolean;

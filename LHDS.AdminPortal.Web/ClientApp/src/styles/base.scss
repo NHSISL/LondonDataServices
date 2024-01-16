@@ -1,114 +1,94 @@
-@import "./node_modules/nhsuk-frontend/packages/nhsuk";
+@import url('color-theme.scss');
 
-#navbarScroll > div > div > a {color:white;}
-
-td, tr, thead, tbody, table, th, body {
-    font-size: 18px;
-    vertical-align:middle;
+.text-hero {
+    color: var( --hero-color);
+    font-weight:lighter;
 }
 
-.NELTopPadding {
-    padding-top: 20px;
+.navBtn {
+    margin: 10px 0 0 10px;
+    padding: 10px;
 }
 
-.middle{vertical-align: middle}
+.nav-link { padding: 0; }
 
-.linkCustom {
-    color: #005eb8;
-    font-size: 18px;
-    font-weight: 600;
-    padding: 0 0 4px;
+.submenu {
+    display: none;
+    border-left: 1px solid #ccc;
+    margin-left: 26px;
+    list-style: none;
 }
 
-#maincontent > div > div > div > div.undefined.cardBaseContent > label {
-    margin-bottom: 0px !important;
+.submenu.active {
+    display: block;
 }
 
-.nhsuk-width-container {
-    max-width:80% !important;
-    }
+li{ list-style-type:none; }
 
-@mixin buttonShape {
-    font-weight: 400;
-    font-size: 16px;
-    font-size: 1rem;
-    line-height: 1.5;
-    margin-bottom: 20px;
-    -webkit-appearance: none;
-    border: 2px solid transparent;
-    border-radius: 4px;
-    box-sizing: border-box;
+hr {
+    color: #cccccc;
+    background: var( --light-background);
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+a.linkVisited:visited {
+    color: #fff !important;
+    text-decoration:none;
+}
+
+.center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 50px);
+    
+}
+
+.max-width-400 {
+    max-width: 500px;
+}
+
+.min-height-600{min-height: 600px;}
+
+
+/* Add this to your CSS file or styles section */
+.filter-modal {
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    min-width:500px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border: solid 3px black;
+    outline: 3px solid rgb(253, 229, 59);
+}
+
+.AddRowBackground {
+    background: #e9ecef;
+}
+
+.nhsuk-select {
+    min-width: 235px;
+}
+
+.logo-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.copyright {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 12px;
     color: #ffffff;
-    cursor: pointer;
-    display: inline-block;
-    font-weight: 600;
-    margin-top: 0;
-    padding: 12px 16px;
-    position: relative;
-    text-align: center;
-    vertical-align: top;
-    width: auto;
 }
-// Blue NHS Sizws Button
-.nhsuk-buttonBlue {
-    @include buttonShape;
-    background-color: #005eb8;
-    box-shadow: 0 4px 0 #010e58;
-}
-
-.nhsuk-buttonBlue:hover {
-    background-color: #0d6efd;
-}
-// Green NHS Sizws Button
-.nhsuk-buttonGreen {
-    @include buttonShape;
-    background-color: #007f3b;
-    box-shadow: 0 4px 0 #00401e;
-}
-
-.nhsuk-buttonGreen:hover {
-    background-color: #768692;
-}
-// Red NHS Sizws Button
-.nhsuk-buttonRed {
-    @include buttonShape;
-    background-color: #dc3545;
-    box-shadow: 0 4px 0 #6f1e26;
-}
-
-.nhsuk-buttonRed:hover {
-    background-color: #ea2134;
-}
-
-.nhsuk-buttonGrey {
-    @include buttonShape;
-    background-color: grey;
-    box-shadow: 0 4px 0 #211e1e;
-}
-
-.nhsuk-buttonGrey:hover {
-    background-color: #9c9797;
-}
-
-.nhsuk-buttonPrimary {
-    @include buttonShape;
-    background-color: #005eb8;
-    box-shadow: 0 4px 0 #0d6efd;
-}
-
-#navbarScroll > div > div.nav-item.show.dropdown > div > div:nth-child(1) > a,
-#navbarScroll > div > div.nav-item.show.dropdown > div > div:nth-child(2) > a {
-    color: #000 !important;
-}
-
-
-@media (min-width: 40.0625em) {th, td {
-    padding-top: 15px;
-    padding-bottom: 0px;
-    ;
-}
-
-}
-
-
-.nhsuk-form-group{width:90%;}

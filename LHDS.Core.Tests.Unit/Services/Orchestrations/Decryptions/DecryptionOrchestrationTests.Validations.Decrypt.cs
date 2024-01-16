@@ -34,7 +34,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             var invalidDecryptionOrchestrationService = new DecryptionOrchestrationService(
                 documentService: documentServiceMock.Object,
-                decryptionService: decryptionServiceMock.Object,
+                cryptographyService: cryptographyServiceMock.Object,
                 ingestionTrackingService: ingestionTrackingServiceMock.Object,
                 auditService: auditServiceMock.Object,
                 blobContainers: invalidBlobContainers,

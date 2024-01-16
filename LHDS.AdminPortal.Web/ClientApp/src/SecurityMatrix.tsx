@@ -27,6 +27,9 @@ const securityPoints = {
         delete: ["ISL.LDS.AdminSpa.Administrators"],
         edit: ["ISL.LDS.AdminSpa.Administrators"],
     },
+    terminologyArtifact: {
+        view: ["ISL.LDS.AdminSpa.TerminologyArtifact", "ISL.LDS.AdminSpa.Administrators", "ISL.LDS.AdminSpa.ReadOnly"]
+    },
 }
 
 export default securityPoints

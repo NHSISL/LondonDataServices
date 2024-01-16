@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Providers.FtpDownloads.Exceptions;
@@ -17,9 +18,13 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
     {
         private readonly Renci.SshNet.SftpClient client;
         private readonly IFtpDownloadProviderSettings ftpDownloadProviderSettings;
+        public string Name { get; private set; }
+        public bool IsMock { get; private set; }
 
         public FtpDownloadProvider(IFtpDownloadProviderSettings ftpDownloadProviderSettings)
         {
+
+            this.Name = "FtpDownloadProvider";
             this.ftpDownloadProviderSettings = ftpDownloadProviderSettings;
             client = new SftpClient(GetConnectionInfo(ftpDownloadProviderSettings));
         }
@@ -103,6 +108,7 @@ namespace LHDS.Core.Providers.Downloads.FtpDownloads
                 }
 
                 client.Connect();
+                Thread.Sleep(500);
 
                 if (!client.IsConnected && attempts > 3)
                 {

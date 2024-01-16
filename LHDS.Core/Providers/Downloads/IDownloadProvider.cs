@@ -10,6 +10,8 @@ namespace LHDS.Core.Providers.Downloads
 {
     public interface IDownloadProvider
     {
+        string Name { get; }
+        bool IsMock { get; }
         ValueTask<List<Document>> GetListOfDocumentsToProcessAsync();
         ValueTask<Document> GetDocumentByFileNameAsync(string fileName);
     }

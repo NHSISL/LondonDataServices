@@ -9,13 +9,13 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
-using LHDS.Core.Models.Foundations.Decryptions.Exceptions;
+using LHDS.Core.Models.Foundations.Cryptographies.Exceptions;
 using LHDS.Core.Models.Foundations.Documents;
 using LHDS.Core.Models.Foundations.Documents.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.IngestionTrackings;
 using LHDS.Core.Models.Foundations.IngestionTrackings.Exceptions;
-using LHDS.Core.Services.Foundations.Decryptions;
+using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
@@ -30,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
     public partial class DecryptionOrchestrationTests
     {
         private readonly Mock<IDocumentService> documentServiceMock;
-        private readonly Mock<IDecryptionService> decryptionServiceMock;
+        private readonly Mock<ICryptographyService> cryptographyServiceMock;
         private readonly Mock<IIngestionTrackingService> ingestionTrackingServiceMock;
         private readonly Mock<IIngestionTrackingAuditService> auditServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
@@ -43,7 +43,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
         public DecryptionOrchestrationTests()
         {
             documentServiceMock = new Mock<IDocumentService>();
-            decryptionServiceMock = new Mock<IDecryptionService>();
+            cryptographyServiceMock = new Mock<ICryptographyService>();
             ingestionTrackingServiceMock = new Mock<IIngestionTrackingService>();
             auditServiceMock = new Mock<IIngestionTrackingAuditService>();
             loggingBrokerMock = new Mock<ILoggingBroker>();
@@ -58,7 +58,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             this.decryptionOrchestrationService = new DecryptionOrchestrationService(
                 documentService: documentServiceMock.Object,
-                decryptionService: decryptionServiceMock.Object,
+                cryptographyService: cryptographyServiceMock.Object,
                 ingestionTrackingService: ingestionTrackingServiceMock.Object,
                 auditService: auditServiceMock.Object,
                 blobContainers,
@@ -128,12 +128,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     message: "Document dependency validation occurred, please try again.",
                     innerException),
 
-                new DecryptionValidationException(
-                    message: "Decryption validation errors occurred, please try again.",
+                new CryptographyValidationException(
+                    message: "Cryptography validation errors occurred, please try again.",
                     innerException),
 
-                new DecryptionDependencyValidationException(
-                    message: "Decryption dependency validation occurred, please try again.",
+                new CryptographyDependencyValidationException(
+                    message: "Cryptography dependency validation occurred, please try again.",
                     innerException),
 
                 new IngestionTrackingValidationException(
@@ -170,12 +170,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                     message: "Document service error occurred, contact support.",
                     innerException),
 
-                new DecryptionDependencyException(
-                    message: "Decryption dependency error occurred, contact support.",
+                new CryptographyDependencyException(
+                    message: "Cryptography dependency error occurred, contact support.",
                     innerException),
 
-                new DecryptionServiceException(
-                    message: "Decryption service error occurred, contact support.",
+                new CryptographyServiceException(
+                    message: "Cryptography service error occurred, contact support.",
                     innerException),
 
                 new IngestionTrackingDependencyException(

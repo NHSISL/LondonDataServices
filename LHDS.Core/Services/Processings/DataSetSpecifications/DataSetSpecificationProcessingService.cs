@@ -100,8 +100,7 @@ namespace LHDS.Core.Services.Processings.DataSetSpecifications
 
                 List<DataSetSpecification> result = this.dataSetSpecificationService.RetrieveAllDataSetSpecifications()
                     .Include(specification => specification.DataSet)
-                    .Where(specification =>
-                        specification.DataSet.SupplierId == supplierId
+                    .Where(specification => specification.DataSet.SupplierId == supplierId
                         && specification.DataSet.IsActive == true
                         && specification.IsActive == true).ToList();
 

@@ -16,11 +16,11 @@ import { faRefresh } from "@fortawesome/free-solid-svg-icons";
 import TableBaseThead from "../bases/components/Table/TableBase.Thead";
 import TableBaseRow from "../bases/components/Table/TableBase.Row";
 import TableBaseData from "../bases/components/Table/TableBase.Data";
-import { SecuredComponents } from "../Links";
+import { SecuredComponents } from "../links";
 import { Link } from "react-router-dom";
 import ButtonBase from "../bases/buttons/ButtonBase";
-import securityPoints from "../../SecurityMatrix";
-import { dataSetSpecificationViewService } from "../../services/views/DataSetSpecification/dataSetSpecificationViewService";
+import securityPoints from "../../securityMatrix";
+import { dataSetSpecificationViewService } from "../../services/views/dataSetSpecification/dataSetSpecificationViewService";
 import DataSetSpecificationRow from "./dataSetSpecificationRow";
 import { DataSetSpecificationView } from "../../models/views/components/dataSetSpecifications/dataSetSpecificationView";
 

@@ -13,7 +13,7 @@ using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Ontologies;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
-using LHDS.Core.Models.Orchestrations.TerminologyMedata;
+using LHDS.Core.Models.Orchestrations.TerminologyMetadatas;
 using LHDS.Core.Models.Processings.Ontologies.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyArtifacts.Exceptions;
 using LHDS.Core.Models.Processings.TerminologyPolls.Exceptions;

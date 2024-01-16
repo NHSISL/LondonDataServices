@@ -8,68 +8,21 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="Brokers\Storages\Sql\Functions\Metadata\Columns_GetBaseMetadata.sql" />
-	  <None Remove="Brokers\Storages\Sql\Functions\Metadata\Objects_GetBaseMetadata.sql" />
-	  <None Remove="Brokers\Storages\Sql\Functions\Metadata\SplitString.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Lds\PrimaryCareEMIS_GetProcessingId.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetBusinessKey.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNames.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNamesTypecasted.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNamesWithDataTypes.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNamesWithDataTypes.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNamesWithVarchar.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetVersionHashElements.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\DataSpecification_ListObjectsToCreate.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Object_GetHeaderFileName.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Object_GetHeaderRow.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\RawContinuum_CreateMainTable.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\RawContinuum_CreateMetadataTable.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\RawContinuum_CreateStoredProcedure.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\RawStaged_CreateHashView.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\RawStaged_CreateTable.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Specification_GetDBName.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Specification_GetObjects.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Typecasted_CreateView - Copy.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Metadata\Typecasted_CreateView.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Lds\Batch_GetBatchID.sql" />
-	  <None Remove="Brokers\Storages\Sql\StoredProcedures\Lds\Batch_UpdateBatchID.sql" />
+	  <Compile Remove="Brokers\Storages\Sql\Views\**" />
+	  <EmbeddedResource Remove="Brokers\Storages\Sql\Views\**" />
+	  <None Remove="Brokers\Storages\Sql\Views\**" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Include="Brokers\Storages\Sql\Functions\Metadata\SplitString.sql" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <EmbeddedResource Include="Brokers\Storages\Sql\Functions\Metadata\Columns_GetBaseMetadata.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\Functions\Metadata\Objects_GetBaseMetadata.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Lds\PrimaryCareEMIS_GetProcessingId.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetBusinessKey.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNames.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNamesTypecasted.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNamesWithDataTypes.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetNamesWithVarchar.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Columns_GetVersionHashElements.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\DataSpecification_ListObjectsToCreate.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Object_GetHeaderFileName.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Object_GetHeaderRow.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\RawContinuum_CreateMainTable.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\RawContinuum_CreateMetadataTable.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\RawContinuum_CreateStoredProcedure.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\RawStaged_CreateHashView.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\RawStaged_CreateTable.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Specification_GetDBName.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Specification_GetObjects.sql" />
 	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\SeedData\MetaData_SeedScript.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Metadata\Typecasted_CreateView.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Lds\Batch_GetBatchID.sql" />
-	  <EmbeddedResource Include="Brokers\Storages\Sql\StoredProcedures\Lds\Batch_UpdateBatchID.sql" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Tynamix.ObjectFiller" Version="1.5.8" />
 		<PackageReference Include="BouncyCastle.Cryptography" Version="2.2.1" />
 		<PackageReference Include="CsvHelper" Version="30.0.1" />
 		<PackageReference Include="EFxceptions" Version="0.4.5" />
-		<PackageReference Include="Hl7.Fhir.R4" Version="5.4.0" />
+		<PackageReference Include="Hl7.Fhir.R4" Version="5.5.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
@@ -78,7 +31,7 @@
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
 		<PackageReference Include="Azure.Storage.Blobs" Version="12.19.1" />
@@ -93,7 +46,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Brokers\Storages\Sql\Views\" />
 	  <Folder Include="Migrations\" />
 	</ItemGroup>
 

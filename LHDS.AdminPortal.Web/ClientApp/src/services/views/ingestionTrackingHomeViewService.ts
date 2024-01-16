@@ -22,12 +22,16 @@ type IngestionTrackingHomeViewServiceResponse = {
 }
 
 export const ingestionTrackingHomeViewService = {
-    useGetAllIngestionTrackings: (searchTerm?: string): IngestionTrackingHomeViewServiceResponse => {
+    useGetAllIngestionTrackings: (searchTerm?: string, supplierId?: string): IngestionTrackingHomeViewServiceResponse => {
         try {
             let query = `?$orderby=createdDate desc&$expand=supplier`;
 
-             if (searchTerm) {
-                query = query + `&$filter=contains(encryptedFileName,'${searchTerm}') or contains(decryptedFileName,'${searchTerm}')`;
+            if (searchTerm) {
+                query = query + `&$filter=contains(fileName,'${searchTerm}') or contains(decryptedFileName,'${searchTerm}')`;
+            }
+
+            if (supplierId) {
+                query = query + `&$filter=supplier/id eq ${supplierId}`;
             }
 
             const response = ingestionTrackingService.useGetAllIngestionTrackingPages(query);

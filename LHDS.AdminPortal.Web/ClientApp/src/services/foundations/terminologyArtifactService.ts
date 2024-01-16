@@ -1,7 +1,7 @@
 import { useMsal } from "@azure/msal-react";
 import { Guid } from "guid-typescript";
-import { useMutation, useQuery, useQueryClient } from "react-query";
-import TerminologyArtifactBroker from "../../brokers/apiBroker.terminologyartifacts";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "react-query";
+import TerminologyArtifactBroker from "../../brokers/apiBroker.terminologyArtifacts";
 import { TerminologyArtifact } from "../../models/terminologyArtifacts/terminologyArtifact";
 
 export const terminologyArtifactService = {
@@ -26,13 +26,30 @@ export const terminologyArtifactService = {
             });
     },
 
-    useGetAlTerminologyArtifacts: (query: string) => {
+    useGetAllTerminologyArtifacts: (query: string) => {
         const terminologyArtifactBroker = new TerminologyArtifactBroker();
 
         return useQuery(
             ["TerminologyArtifactGetAll", { query: query }],
             () => terminologyArtifactBroker.GetAllTerminologyArtifactsAsync(query),
             { staleTime: Infinity });
+    },
+
+    useGetAllTerminologyArtifactsPages: (query: string) => {
+        const terminologyArtifactBroker = new TerminologyArtifactBroker();
+
+        return useInfiniteQuery(
+            ["TerminologyArtifactsGetAll", { query: query }],
+            ({ pageParam }) => {
+                if (!pageParam) {
+                    return terminologyArtifactBroker.GetTerminologyArtifactsFirstPagesAsync(query)
+                }
+                return terminologyArtifactBroker.GetTerminologyArtifactsSubsequentPagesAsync(pageParam)
+            },
+            {
+                getNextPageParam: (lastPage) => lastPage.nextPage,
+                staleTime: Infinity
+            });
     },
 
     useGetTerminologyArtifactById: (id: Guid) => {

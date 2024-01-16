@@ -1,5 +1,5 @@
 import React, { FunctionComponent, ChangeEvent } from "react";
-import { Label, Select } from 'nhsuk-react-components'
+import { Label } from 'nhsuk-react-components'
 import { InputGroup, Form } from "react-bootstrap"
 import { Option } from "../../../models/options/option";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -28,12 +28,11 @@ const SelectInputBase: FunctionComponent<SelectInputBaseProps> = (props) => {
                     {props.prependLabel !== undefined && props.prependLabel.length > 0 && (
                         <InputGroup.Text>{props.prependLabel}</InputGroup.Text>
                     )}
-                    <Select 
+                    <Form.Select 
                         id={props.id}
                         name={props.name}
                         value={props.value}
                         title={props.name}
-                        error={props.error}
                         onChange={props.onChange}
                     >
                         {props.options.length > 0 &&
@@ -44,7 +43,7 @@ const SelectInputBase: FunctionComponent<SelectInputBaseProps> = (props) => {
                                     </option>
                                 );
                             })}
-                    </Select>
+                    </Form.Select>
 
                     {props.appendLabel !== undefined && props.appendLabel.length > 0 && (
                         <InputGroup.Text>{props.appendLabel}</InputGroup.Text>

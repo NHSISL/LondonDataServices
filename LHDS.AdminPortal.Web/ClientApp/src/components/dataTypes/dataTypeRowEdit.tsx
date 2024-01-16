@@ -57,6 +57,7 @@ const DataTypeRowEdit: FunctionComponent<DataTypeRowEditProps> = (props) => {
 
     return (
         <TableBaseRow>
+            
             <TableBaseData>
                 <TextInputBase
                     id="name"
@@ -68,10 +69,14 @@ const DataTypeRowEdit: FunctionComponent<DataTypeRowEditProps> = (props) => {
                     error={errors.name}
                     onChange={handleChange} />
             </TableBaseData>
+            
+            <TableBaseData></TableBaseData>
+            
             <TableBaseData classes="text-end">
                 <ButtonBase onClick={() => handleCancel()} cancel>Cancel</ButtonBase>&nbsp;
                 <ButtonBase onClick={() => handleUpdate()} disabled={errors.hasErrors} edit>Update</ButtonBase>
             </TableBaseData>
+            
         </TableBaseRow>
     );
 }

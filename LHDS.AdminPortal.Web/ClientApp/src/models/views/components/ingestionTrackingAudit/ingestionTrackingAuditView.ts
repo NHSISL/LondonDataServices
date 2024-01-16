@@ -1,6 +1,6 @@
 import { Guid } from 'guid-typescript';
 
-export class AuditView {
+export class IngestionTrackingAuditView {
     public id: Guid;
     public ingestionTrackingId: string;
     public message: string;
@@ -10,8 +10,8 @@ export class AuditView {
         id: Guid,
         ingestionTrackingId: string,
         message: string,
-        createdDate: Date,
-    ) {
+        createdDate: Date) 
+    {
         this.id = id ;
         this.ingestionTrackingId = ingestionTrackingId;
         this.message = message || "";

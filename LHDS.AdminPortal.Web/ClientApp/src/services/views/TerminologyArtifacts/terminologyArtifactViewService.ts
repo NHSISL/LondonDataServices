@@ -18,7 +18,7 @@ export const terminologyArtifactViewService = {
                 query = query + `&$filter=contains(name,'${searchTerm}')`;
             }
 
-            const response = terminologyArtifactService.useGetAlTerminologyArtifacts(query);
+            const response = terminologyArtifactService.useGetAllTerminologyArtifacts(query);
             const [mappedTerminologyArtifacts, setMappedTerminologyArtifacts] = useState<Array<TerminologyArtifactView>>([]);
 
             useEffect(() => {
@@ -56,7 +56,7 @@ export const terminologyArtifactViewService = {
     useGetTerminologyArtifactById: (id: Guid) => {
         try {
             const query = `?$filter=id eq ${id}`
-            const response = terminologyArtifactService.useGetAlTerminologyArtifacts(query);
+            const response = terminologyArtifactService.useGetAllTerminologyArtifacts(query);
             const [mappedTerminologyArtifact, setMappedTerminologyArtifact] = useState<TerminologyArtifactView>();
 
             useEffect(() => {

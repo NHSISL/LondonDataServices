@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 
-namespace LHDS.Core.Services.Processings.IngestionTrackings
+namespace LHDS.Core.Services.Processings.IngestionTrackingAudits
 {
     public interface IIngestionTrackingAuditProcessingService
     {

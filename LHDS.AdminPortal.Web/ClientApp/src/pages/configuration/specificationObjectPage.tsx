@@ -3,21 +3,25 @@ import 'nhsuk-frontend/dist/nhsuk.min'
 import 'nhsuk-frontend/packages/polyfills';
 import { Container } from 'nhsuk-react-components'
 import SpecificationObjectDetail from "../../components/specificationObjects/specificationObjectDetail";
-import { Link, useParams } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import BreadCrumbBase from "../../components/bases/layouts/BreadCrumb/BreadCrumbBase";
+import { useParams } from "react-router-dom";
+import { PageLayout } from "../../components/pageLayout";
 
 export const SpecificationObjectPage = () => {
 
     const { specificationObjectId, dataSetSpecificationId, dataSetId } = useParams();
 
-    return <div>
+    return <PageLayout>
         <section >
             <Container>
                 <main id="maincontent" className="NELTopPadding" role="main">
-                    <Link to={'/configuration/dataSetSpecification/' + specificationObjectId + '/' + dataSetSpecificationId }>
-                        <FontAwesomeIcon icon={faChevronLeft} size="1x" />Back to DataSet Specifications
-                    </Link>
+
+                    <BreadCrumbBase
+                        link={'/configuration/dataSetSpecification/' + specificationObjectId + '/' + dataSetSpecificationId }
+                        backLink="DataSet / DataSet Detail / DataSet Specification"
+                        currentLink="Specification Object">
+                    </BreadCrumbBase>
+
                     <SpecificationObjectDetail
                         dataSetSpecificationId={dataSetSpecificationId}
                         specificationObjectId={specificationObjectId}
@@ -26,5 +30,5 @@ export const SpecificationObjectPage = () => {
                 </main>
             </Container>
         </section>
-    </div>
+    </PageLayout>
 }

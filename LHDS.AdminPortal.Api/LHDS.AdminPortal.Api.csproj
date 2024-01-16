@@ -16,7 +16,7 @@
 	  <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
 	  <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
 	  <PackageReference Include="Microsoft.AspNet.WebPages" Version="3.3.0" />
-	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
+	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
 	  <PackageReference Include="Microsoft.AspNetCore.OData" Version="8.2.3" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0">
@@ -25,15 +25,21 @@
 	  </PackageReference>
 	  <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.1" />
 	  <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
-	  <PackageReference Include="Microsoft.Identity.Web" Version="2.16.0" />
+	  <PackageReference Include="Microsoft.Identity.Web" Version="2.16.1" />
 	  <PackageReference Include="RESTFulSense" Version="2.16.0" />
 	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 	  <PackageReference Include="Xeption" Version="2.6.0" />
-	  <PackageReference Include="xunit.extensibility.core" Version="2.6.4" />
+	  <PackageReference Include="xunit.extensibility.core" Version="2.6.5" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LHDS.Core\LHDS.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="local.appsettings.json" Condition="Exists('local.appsettings.json')">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

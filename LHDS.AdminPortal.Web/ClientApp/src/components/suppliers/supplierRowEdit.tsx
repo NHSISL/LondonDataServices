@@ -8,6 +8,7 @@ import { useValidation } from "../../hooks/useValidation";
 import { supplierErrors } from "./supplierErrors";
 import { supplierValidations } from "./supplierValidations";
 import TextAreaInputBase from "../bases/inputs/TextAreaInputBase";
+import CheckboxBase from "../bases/inputs/CheckboxBase";
 
 interface SupplierRowEditProps {
     supplier: SupplierView;
@@ -59,6 +60,7 @@ const SupplierRowEdit: FunctionComponent<SupplierRowEditProps> = (props) => {
     return (
         <TableBaseRow>
             <TableBaseData>
+
                 <TextInputBase
                     id="name"
                     name="name"
@@ -68,6 +70,9 @@ const SupplierRowEdit: FunctionComponent<SupplierRowEditProps> = (props) => {
                     required={true}
                     error={errors.name}
                     onChange={handleChange} />
+
+                <br />
+
                 <TextInputBase
                     id="friendlyName"
                     name="friendlyName"
@@ -77,6 +82,9 @@ const SupplierRowEdit: FunctionComponent<SupplierRowEditProps> = (props) => {
                     required={true}
                     error={errors.name}
                     onChange={handleChange} />
+
+                <br />
+
                 <TextAreaInputBase
                     id="description"
                     name="description"
@@ -86,8 +94,10 @@ const SupplierRowEdit: FunctionComponent<SupplierRowEditProps> = (props) => {
                     required={true}
                     error={errors.description}
                     onChange={handleChange}
-                    rows={3}
-                />
+                    rows={3} />
+
+                <br />
+
                 <TextInputBase
                     id="landingManualTriggerUrl"
                     name="landingManualTriggerUrl"
@@ -97,6 +107,11 @@ const SupplierRowEdit: FunctionComponent<SupplierRowEditProps> = (props) => {
                     required={true}
                     error={errors.name}
                     onChange={handleChange} />
+
+            </TableBaseData>
+
+            <TableBaseData>
+
                 <TextInputBase
                     id="decryptionManualTriggerUrl"
                     name="decryptionManualTriggerUrl"
@@ -106,7 +121,39 @@ const SupplierRowEdit: FunctionComponent<SupplierRowEditProps> = (props) => {
                     required={true}
                     error={errors.name}
                     onChange={handleChange} />
+
+                <br />
+
+                <CheckboxBase
+                    id="canDecryptIngestionTracking"
+                    name="canDecryptIngestionTracking"
+                    label="Can Decrypt Ingestion Tracking"
+                    checked={editSupplier.canDecryptIngestionTracking === true ? true : false}
+                    error={errors.canDecryptIngestionTracking}
+                    onChange={handleChange} />
+
+                <br />
+
+                <CheckboxBase
+                    id="canDownloadIngestionTracking"
+                    name="canDownloadIngestionTracking"
+                    label="Can Download Ingestion Tracking"
+                    checked={editSupplier.canDownloadIngestionTracking === true ? true : false}
+                    error={errors.canDownloadIngestionTracking}
+                    onChange={handleChange} />
+
+                <br />
+
+                <CheckboxBase
+                    id="canRelandIngestionTracking"
+                    name="canRelandIngestionTracking"
+                    label="Can Reland Ingestion Tracking"
+                    checked={editSupplier.canRelandIngestionTracking === true ? true : false}
+                    error={errors.canRelandIngestionTracking}
+                    onChange={handleChange} />
+
             </TableBaseData>
+
             <TableBaseData classes="text-end">
                 <ButtonBase onClick={() => handleCancel()} cancel>Cancel</ButtonBase>&nbsp;
                 <ButtonBase onClick={() => handleUpdate()} disabled={errors.hasErrors} edit>Update</ButtonBase>

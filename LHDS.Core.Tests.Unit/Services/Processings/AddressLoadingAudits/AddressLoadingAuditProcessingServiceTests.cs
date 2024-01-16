@@ -7,7 +7,6 @@ using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
-using LHDS.Core.Models.Foundations.IngestionTrackingAudits.Exceptions;
 using LHDS.Core.Services.Foundations.AddressLoadingAudits;
 using LHDS.Core.Services.Processings.AddressLoadingAudits;
 using Moq;

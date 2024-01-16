@@ -2,7 +2,7 @@ import React, { FunctionComponent } from "react";
 import ButtonBase from "../bases/buttons/ButtonBase";
 import TableBaseRow from "../bases/components/Table/TableBase.Row";
 import TableBaseData from "../bases/components/Table/TableBase.Data";
-import { SecuredComponents } from "../Links";
+import { SecuredComponents } from "../links";
 import { DataTypeView } from "../../models/views/components/dataTypes/dataTypeView";
 
 interface DataTypeRowViewProps {

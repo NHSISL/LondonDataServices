@@ -19,7 +19,7 @@ using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
-using LHDS.Core.Models.Orchestrations.Downloads;
+using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Providers.Downloads;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.Documents;
@@ -28,9 +28,11 @@ using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackings;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Orchestrations.Downloads;
+using LHDS.Core.Services.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Downloads;
+using LHDS.Core.Services.Processings.IngestionTrackingAudits;
 using LHDS.Core.Services.Processings.IngestionTrackings;
 using LHDS.Core.Services.Processings.OptOuts;
 using Microsoft.Extensions.Configuration;
@@ -73,7 +75,7 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddProviders(IServiceCollection services)
         {
-            services.AddTransient<IDownloadAbstractProvider, DownloadAbstractProvider>();
+            services.AddTransient<IDownloadAbstractionProvider, DownloadAbstractionProvider>();
         }
 
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration, bool acceptanceTest)
@@ -127,7 +129,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddTransient<ISupplierService, SupplierService>();
             services.AddTransient<IDataSetSpecificationService, DataSetSpecificationService>();
-            services.AddSingleton<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
+            services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)
@@ -142,7 +144,7 @@ namespace LHDS.Core.Clients.Extensions
 
         private static void AddOrchestrations(IServiceCollection services)
         {
-            services.AddTransient<IDownloadOrchestrationService, DownloadOrchestrationService>();
+            services.AddTransient<IEmisLandingOrchestrationService, EmisLandingOrchestrationService>();
         }
 
         private static void AddClients(IServiceCollection services)

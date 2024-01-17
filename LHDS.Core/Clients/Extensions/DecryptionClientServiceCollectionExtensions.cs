@@ -13,17 +13,18 @@ using Azure.Storage.Blobs;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Decryptions;
 using LHDS.Core.Brokers.Downloads;
+using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Configurations;
-using LHDS.Core.Models.Orchestrations.Downloads;
+using LHDS.Core.Models.Orchestrations.EmisLandings;
 using LHDS.Core.Providers.Cryptography;
 using LHDS.Core.Providers.Cryptography.Gpg;
 using LHDS.Core.Providers.Downloads;
-using LHDS.Core.Services.Foundations.Decryptions;
+using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.Documents;
 using LHDS.Core.Services.Foundations.Downloads;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
@@ -83,7 +84,7 @@ namespace LHDS.Core.Clients.Extensions
 
             ValidateCryptographyProviderSettings(gpgCryptographyProviderSettings);
             services.AddSingleton<IGpgCryptographyProviderSettings>(gpgCryptographyProviderSettings);
-            services.AddTransient<IDownloadAbstractProvider, DownloadAbstractProvider>();
+            services.AddTransient<IDownloadAbstractionProvider, DownloadAbstractionProvider>();
             services.AddTransient<ICryptographyAbstractProvider, CryptographyAbstractProvider>();
             services.AddTransient<ICryptographyProvider, GpgCryptographyProvider>();
         }
@@ -91,10 +92,11 @@ namespace LHDS.Core.Clients.Extensions
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration, bool acceptanceTest)
         {
             services.AddTransient<IStorageBroker, StorageBroker>();
-            services.AddTransient<IDecryptionBroker, DecryptionBroker>();
+            services.AddTransient<ICryptographyBroker, CryptographyBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<IIdentifierBroker, IdentifierBroker>();
+            services.AddTransient<IHashBroker, HashBroker>();
 
             if (!acceptanceTest)
             {
@@ -133,7 +135,7 @@ namespace LHDS.Core.Clients.Extensions
             services.AddTransient<ISupplierService, SupplierService>();
             services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
             services.AddTransient<IDecryptionOrchestrationService, DecryptionOrchestrationService>();
-            services.AddTransient<IDecryptionService, DecryptionService>();
+            services.AddTransient<ICryptographyService, CryptographyService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services)

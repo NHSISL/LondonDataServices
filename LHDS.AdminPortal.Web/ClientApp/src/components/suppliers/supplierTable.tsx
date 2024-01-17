@@ -5,7 +5,7 @@ import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import SupplierRowNew from "./supplierRowNew";
 import SupplierRowAdd from "./supplierRowAdd";
 import { SupplierView } from "../../models/views/components/suppliers/supplierView";
-import { supplierViewService } from "../../services/views/Suppliers/supplierViewService";
+import { supplierViewService } from "../../services/views/suppliers/supplierViewService";
 import SupplierRow from "./supplierRow";
 import CardBaseContent from "../bases/components/Card/CardBase.Content";
 import CardBaseBody from "../bases/components/Card/CardBase.Body";

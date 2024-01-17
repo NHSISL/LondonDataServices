@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Ontologies;
@@ -45,6 +46,13 @@ namespace LHDS.Core.Services.Processings.Ontologies
 
                  return this.ontologyService.RetrieveAllConceptMapsAsync(relativeUrl);
              });
-    }
 
+        public ValueTask<string> RetrieveArtifactDetailsAsync(string relativeUrl) =>
+            TryCatch(() =>
+            {
+                ValidateArgs(relativeUrl);
+
+                return this.ontologyService.RetrieveArtifactDetailsAsync(relativeUrl);
+            });
+    }
 }

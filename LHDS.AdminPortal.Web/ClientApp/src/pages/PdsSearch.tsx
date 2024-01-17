@@ -3,9 +3,10 @@ import 'nhsuk-frontend/dist/nhsuk.min'
 import 'nhsuk-frontend/packages/polyfills';
 import { Container } from 'nhsuk-react-components'
 import PdsTable from "../components/pds/search/pdsTable";
+import { PageLayout } from '../components/pageLayout';
 
 export const PdsSearch = () => {
-    return <div>
+    return <PageLayout>
         <section >
             <Container>
                 <main id="maincontent" className="NELTopPadding" role="main">
@@ -15,5 +16,5 @@ export const PdsSearch = () => {
                 </main>
             </Container>
         </section>
-    </div>
+    </PageLayout>
 }

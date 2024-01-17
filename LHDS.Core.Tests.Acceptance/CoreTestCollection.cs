@@ -5,7 +5,7 @@
 using LHDS.Core.Tests.Acceptance.Brokers.DependencyBrokers;
 using Xunit;
 
-namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
+namespace LHDS.Core.Tests.Acceptance
 {
     [CollectionDefinition(nameof(CoreTestCollection))]
     public class CoreTestCollection : ICollectionFixture<DependencyBroker>

@@ -34,29 +34,37 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
 
     return (
         <TableBaseRow>
+            
             <TableBaseData>
-                <div
-                    className="text-white p-2 rounded al text-center"
-                    style={{ backgroundColor: ingestionTracking.supplier?.name === 'EMIS' ? '#0984e3' : '#00b894' }}>
+                <div className="p-2 rounded al text-center">
                     {ingestionTracking.supplier?.name}
+
                 </div>
             </TableBaseData>
+
             <TableBaseData>
                 FileName: {trimString(ingestionTracking.fileName)}
                 <br />
-                Decrypted: {ingestionTracking.decrypted ? <FontAwesomeIcon icon={faCheck} className="text-success" />
-                    : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp;
+
+                {ingestionTracking.supplier?.canDecryptIngestionTracking && (
+                    <span>
+                        Decrypted: {ingestionTracking.decrypted ? <FontAwesomeIcon icon={faCheck} className="text-success" />
+                            : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp;
+                    </span>
+                )}
 
                 Deleted: {ingestionTracking.fileDeleted ? <FontAwesomeIcon icon={faCheck} className="text-success" />
 
                     : <FontAwesomeIcon icon={faTimes} className="text-danger" />} &nbsp;
                 Record Count: {ingestionTracking.recordCount} &nbsp;
-                
+
             </TableBaseData>
+
             <TableBaseData>
-                <strong>Created Date: </strong><br/>
+                <strong>Created Date: </strong><br />
                 {moment(ingestionTracking.createdDate?.toString()).format("Do-MMM-yyyy HH:mm")}
             </TableBaseData>
+
             <TableBaseData>
                 <Dropdown>
                     <Dropdown.Toggle as={ButtonBase} variant="secondary" id="actions-dropdown" edit>
@@ -85,6 +93,7 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
                     </Dropdown.Menu>
                 </Dropdown>
             </TableBaseData>
+
             <TableBaseData>
                 <Link to={`/ingestionTrackingDetail/${ingestionTracking.id}`}>
                     <ButtonBase onClick={() => { }} add>
@@ -92,6 +101,7 @@ const IngestionTrackingRow: FunctionComponent<IngestionTrackingRowProps> = (prop
                     </ButtonBase>
                 </Link>
             </TableBaseData>
+            
         </TableBaseRow>
     );
 }

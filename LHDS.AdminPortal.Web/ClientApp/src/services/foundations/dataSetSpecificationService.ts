@@ -1,7 +1,7 @@
 import { useMsal } from "@azure/msal-react";
 import { Guid } from "guid-typescript";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "react-query";
-import DataSetSpecificationBroker from "../../brokers/apiBroker.datasetspecifications";
+import DataSetSpecificationBroker from "../../brokers/apiBroker.datasetSpecifications";
 import { DataSetSpecification } from "../../models/dataSetSpecifications/dataSetSpecification";
 
 export const dataSetSpecificationService = {

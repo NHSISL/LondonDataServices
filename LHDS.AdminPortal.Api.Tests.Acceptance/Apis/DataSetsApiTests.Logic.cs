@@ -32,6 +32,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
 
             // Cleanup
             await this.apiBroker.DeleteDataSetByIdAsync(inputDataSet.Id);
+            await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }
 
         [Fact]
@@ -58,6 +59,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
                 actualDataSet.Should().BeEquivalentTo(expectedDataSet);
                 await this.apiBroker.DeleteDataSetByIdAsync(actualDataSet.Id);
             }
+
+            await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }
 
         [Fact]
@@ -79,6 +82,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
 
             // Cleanup
             await this.apiBroker.DeleteDataSetByIdAsync(inputDataSet.Id);
+            await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }
 
         [Fact]
@@ -100,6 +104,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
 
             // Cleanup
             await this.apiBroker.DeleteDataSetByIdAsync(inputDataSet.Id);
+            await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }
 
         [Fact]
@@ -124,6 +129,8 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.DataSets
 
             await Assert.ThrowsAsync<HttpResponseNotFoundException>(() =>
                 getDataSetbyIdTask.AsTask());
+
+            await this.apiBroker.DeleteSupplierByIdAsync(randomSupplier.Id);
         }
     }
 }

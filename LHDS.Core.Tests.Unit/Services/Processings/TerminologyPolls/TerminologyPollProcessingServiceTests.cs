@@ -5,6 +5,9 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using KellermanSoftware.CompareNetObjects;
+using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.TerminologyPolls;
 using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
@@ -21,16 +24,24 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
     {
         private readonly Mock<ITerminologyPollService> terminologyPollServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
+        private readonly Mock<IIdentifierBroker> identifierBrokerMock;
+        private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly ITerminologyPollProcessingService terminologyPollProcessingService;
+        private readonly ICompareLogic compareLogic;
 
         public TerminologyPollProcessingServiceTests()
         {
             this.terminologyPollServiceMock = new Mock<ITerminologyPollService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
+            this.identifierBrokerMock = new Mock<IIdentifierBroker>();
+            this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            compareLogic = new CompareLogic();
 
             this.terminologyPollProcessingService = new TerminologyPollProcessingService(
                 terminologyPollService: this.terminologyPollServiceMock.Object,
-                loggingBroker: this.loggingBrokerMock.Object);
+                loggingBroker: this.loggingBrokerMock.Object,
+                identifierBroker: identifierBrokerMock.Object,
+                dateTimeBroker: dateTimeBrokerMock.Object);
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
@@ -39,8 +50,33 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
+        private static DateTimeOffset GetRandomDateTimeOffset() =>
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
+
+        private static int GetRandomNegativeNumber() =>
+            -1 * new IntRange(min: 2, max: 10).GetValue();
+
+        private Expression<Func<TerminologyPoll, bool>> SameTerminologyPollAs(
+            TerminologyPoll expectedTerminologyPoll)
+        {
+            return actualTerminologyPoll =>
+                this.compareLogic.Compare(expectedTerminologyPoll, actualTerminologyPoll)
+                    .AreEqual;
+        }
+
+        private static TerminologyPoll CreateRandomModifyTerminologyPoll()
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            TerminologyPoll randomTerminologyPoll = CreateRandomTerminologyPoll();
+
+            randomTerminologyPoll.CreatedDate =
+                randomTerminologyPoll.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomTerminologyPoll;
+        }
 
         private static IQueryable<TerminologyPoll> CreateRandomTerminologyPolls()
         {

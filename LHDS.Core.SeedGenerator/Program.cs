@@ -47,7 +47,7 @@ namespace LHDS.Core.SeedGenerator
                     builder.AddConsole();
                 })
                 .AddSingleton<IConfiguration>(_ => configuration)
-                .AddTransient<IStorageBroker, StorageBroker>()
+                .AddScoped<IStorageBroker, StorageBroker>()
                 .AddTransient<IDateTimeBroker, DateTimeBroker>()
                 .AddTransient<ILoggingBroker, LoggingBroker>()
                 .AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>()

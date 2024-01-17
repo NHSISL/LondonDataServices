@@ -1,7 +1,7 @@
 import { useMsal } from "@azure/msal-react";
 import { Guid } from "guid-typescript";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "react-query";
-import ObjectColumnBroker from "../../brokers/apiBroker.objectcolumns";
+import ObjectColumnBroker from "../../brokers/apiBroker.objectColumns";
 import { ObjectColumn } from "../../models/objectColumns/objectColumn";
 
 export const objectColumnService = {

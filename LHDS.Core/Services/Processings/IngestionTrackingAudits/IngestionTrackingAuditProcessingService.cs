@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.IngestionTrackingAudits;
 using LHDS.Core.Services.Foundations.IngestionTrackingAudits;
+using LHDS.Core.Services.Processings.IngestionTrackingAudits;
 
 namespace LHDS.Core.Services.Processings.IngestionTrackings
 {

@@ -34,12 +34,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
 
             var invalidDecryptionOrchestrationService = new DecryptionOrchestrationService(
                 documentService: documentServiceMock.Object,
-                decryptionService: decryptionServiceMock.Object,
+                cryptographyService: cryptographyServiceMock.Object,
                 ingestionTrackingService: ingestionTrackingServiceMock.Object,
                 auditService: auditServiceMock.Object,
                 blobContainers: invalidBlobContainers,
                 loggingBroker: loggingBrokerMock.Object,
-                dateTimeBroker: dateTimeBrokerMock.Object
+                dateTimeBroker: dateTimeBrokerMock.Object,
+                hashBroker: hashBrokerMock.Object
                 );
 
             // when
@@ -59,9 +60,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                         Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -101,9 +103,10 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.Decryptions
                         Times.Once);
 
             this.documentServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.ingestionTrackingServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

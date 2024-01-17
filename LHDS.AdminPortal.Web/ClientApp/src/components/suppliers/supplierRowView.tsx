@@ -3,7 +3,7 @@ import { SupplierView } from "../../models/views/components/suppliers/supplierVi
 import ButtonBase from "../bases/buttons/ButtonBase";
 import TableBaseRow from "../bases/components/Table/TableBase.Row";
 import TableBaseData from "../bases/components/Table/TableBase.Data";
-import { SecuredComponents } from "../Links";
+import { SecuredComponents } from "../links";
 
 interface SupplierRowViewProps {
     supplier: SupplierView;

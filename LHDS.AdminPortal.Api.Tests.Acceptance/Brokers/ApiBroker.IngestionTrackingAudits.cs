@@ -33,6 +33,11 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
             return response.Items;
         }
 
+        public async ValueTask<List<IngestionTrackingAudit>> FindIngestionTrackingAuditByIngestionTrackingIdAsync(
+            Guid ingestionTrackingId) =>
+                await this.apiFactoryClient.GetContentAsync<List<IngestionTrackingAudit>>(
+                    $"{auditsRelativeUrl}/?$filter=IngestionTrackingId eq {ingestionTrackingId}");
+
         public async ValueTask<IngestionTrackingAudit> PutIngestionTrackingAuditAsync(
             IngestionTrackingAudit ingestionTrackingAudit) =>
                 await this.apiFactoryClient.PutContentAsync(auditsRelativeUrl, ingestionTrackingAudit);

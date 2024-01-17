@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -23,23 +24,23 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             List<OptOut> expectedOptOuts = retrievedOptOuts.ToList();
 
-            this.optOutServiceMock.Setup(service =>
+            optOutServiceMock.Setup(service =>
                 service.RetrieveAllOptOuts())
                     .Returns(retrievedOptOuts);
 
             // when
             IQueryable<OptOut> actualOptOuts =
-                this.optOutProcessingService.RetrieveAllOptOutsAsync();
+                optOutProcessingService.RetrieveAllOptOutsAsync();
 
             // then
             actualOptOuts.Should().BeEquivalentTo(expectedOptOuts);
 
-            this.optOutServiceMock.Verify(service =>
+            optOutServiceMock.Verify(service =>
                 service.RetrieveAllOptOuts(),
                     Times.Once);
 
-            this.optOutServiceMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
+            optOutServiceMock.VerifyNoOtherCalls();
+            loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

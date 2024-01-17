@@ -1,7 +1,7 @@
 import { useMsal } from "@azure/msal-react";
 import { Guid } from "guid-typescript";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "react-query";
-import DataTypeBroker from "../../brokers/apiBroker.datatypes";
+import DataTypeBroker from "../../brokers/apiBroker.dataTypes";
 import { DataType } from "../../models/dataTypes/dataType";
 
 export const dataTypeService = {

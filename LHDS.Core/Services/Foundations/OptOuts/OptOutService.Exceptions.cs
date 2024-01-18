@@ -35,8 +35,9 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             }
             catch (SqlException sqlException)
             {
-                var failedOptOutStorageException =
-                    new FailedOptOutStorageException(sqlException);
+                var failedOptOutStorageException = new FailedOptOutStorageException(
+                    message: "Failed optOut storage error occurred, contact support.", 
+                    innerException: sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedOptOutStorageException);
             }
@@ -68,8 +69,9 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             }
             catch (DbUpdateException databaseUpdateException)
             {
-                var failedOptOutStorageException =
-                    new FailedOptOutStorageException(databaseUpdateException);
+                var failedOptOutStorageException = new FailedOptOutStorageException(
+                    message: "Failed optOut storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedOptOutStorageException);
             }
@@ -91,8 +93,10 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             }
             catch (SqlException sqlException)
             {
-                var failedOptOutStorageException =
-                    new FailedOptOutStorageException(sqlException);
+                var failedOptOutStorageException = new FailedOptOutStorageException(
+                    message: "Failed optOut storage error occurred, contact support.",
+                    innerException: sqlException);
+
                 throw CreateAndLogCriticalDependencyException(failedOptOutStorageException);
             }
             catch (Exception exception)

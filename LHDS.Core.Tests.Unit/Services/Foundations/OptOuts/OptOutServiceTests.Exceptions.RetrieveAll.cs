@@ -23,8 +23,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     message: "Failed optOut storage error occurred, contact support.",
                     innerException: sqlException);
 
-            var expectedOptOutDependencyException =
-                new OptOutDependencyException(failedOptOutStorageException);
+            var expectedOptOutDependencyException = new OptOutDependencyException(
+                message: "OptOut dependency error occurred, contact support.",
+                innerException: failedOptOutStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllOptOuts())

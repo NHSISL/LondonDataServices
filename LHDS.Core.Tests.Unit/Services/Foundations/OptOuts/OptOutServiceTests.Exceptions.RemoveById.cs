@@ -176,8 +176,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 message: "Failed optOut service occurred, please contact support",
                 innerException: serviceException);
 
-            var expectedOptOutServiceException =
-                new OptOutServiceException(failedOptOutServiceException);
+            var expectedOptOutServiceException = new OptOutServiceException(
+                message: "OptOut service error occurred, contact support.",
+                innerException: failedOptOutServiceException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectOptOutByIdAsync(It.IsAny<Guid>()))

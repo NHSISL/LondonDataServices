@@ -1,8 +1,8 @@
 import React from "react"
 import { useParams } from 'react-router-dom';
 import IngestionTrackingDetail from "../components/ingestionTracking/ingestionTrackingDetail";
-import BreadCrumbBase from "../components/bases/layouts/BreadCrumb/BreadCrumbBase";
 import { PageLayout } from '../components/pageLayout';
+import BreadCrumbBase from "../components/bases/layouts/BreadCrumb/BreadCrumbBase";
 
 export const IngestionTrackingPage = () => {
 

@@ -160,7 +160,10 @@ namespace LHDS.Core.Services.Foundations.OptOuts
         private OptOutServiceException CreateAndLogServiceException(
             Xeption exception)
         {
-            var optOutServiceException = new OptOutServiceException(exception);
+            var optOutServiceException = new OptOutServiceException(
+                message: "OptOut service error occurred, contact support.", 
+                innerException: exception);
+
             this.loggingBroker.LogError(optOutServiceException);
 
             return optOutServiceException;

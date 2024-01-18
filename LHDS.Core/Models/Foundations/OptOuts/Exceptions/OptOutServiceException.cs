@@ -9,8 +9,8 @@ namespace LHDS.Core.Models.Foundations.OptOuts.Exceptions
 {
     public class OptOutServiceException : Xeption
     {
-        public OptOutServiceException(Exception innerException)
-            : base(message: "OptOut service error occurred, contact support.", innerException)
+        public OptOutServiceException(string message, Exception innerException)
+            : base(message, innerException)
         { }
     }
 }

@@ -97,7 +97,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     message: "OptOut dependency error occurred, contact support.", 
                     innerException),
 
-                new OptOutServiceException(innerException)
+                new OptOutServiceException(message: "OptOut service error occurred, contact support.", innerException)
             };
         }
 

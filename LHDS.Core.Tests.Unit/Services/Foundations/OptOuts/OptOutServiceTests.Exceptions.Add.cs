@@ -82,8 +82,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     message: "OptOut with the same Id already exists.", 
                     innerException: duplicateKeyException);
 
-            var expectedOptOutDependencyValidationException =
-                new OptOutDependencyValidationException(alreadyExistsOptOutException);
+            var expectedOptOutDependencyValidationException = new OptOutDependencyValidationException(
+                message: "OptOut dependency validation occurred, please try again.", 
+                innerException: alreadyExistsOptOutException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -134,8 +135,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     message: "Invalid optOut reference error occurred.",
                     innerException: foreignKeyConstraintConflictException);
 
-            var expectedOptOutValidationException =
-                new OptOutDependencyValidationException(invalidOptOutReferenceException);
+            var expectedOptOutValidationException = new OptOutDependencyValidationException(
+                message: "OptOut dependency validation occurred, please try again.", 
+                innerException: invalidOptOutReferenceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())

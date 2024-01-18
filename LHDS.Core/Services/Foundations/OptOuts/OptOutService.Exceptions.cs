@@ -136,8 +136,9 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 
         private OptOutDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
         {
-            var optOutDependencyValidationException =
-                new OptOutDependencyValidationException(exception);
+            var optOutDependencyValidationException = new OptOutDependencyValidationException(
+                message: "OptOut dependency validation occurred, please try again.", 
+                innerException: exception);
 
             this.loggingBroker.LogError(optOutDependencyValidationException);
 

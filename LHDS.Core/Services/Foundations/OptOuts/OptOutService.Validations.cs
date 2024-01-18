@@ -94,7 +94,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
         {
             if (optOut is null)
             {
-                throw new NullOptOutException();
+                throw new NullOptOutException(message: "OptOut is null.");
             }
         }
 

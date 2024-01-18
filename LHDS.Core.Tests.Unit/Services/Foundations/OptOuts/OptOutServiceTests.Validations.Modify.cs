@@ -20,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
         {
             // given
             OptOut nullOptOut = null;
-            var nullOptOutException = new NullOptOutException();
+            var nullOptOutException = new NullOptOutException(message: "OptOut is null.");
 
             var expectedOptOutValidationException =
                 new OptOutValidationException(

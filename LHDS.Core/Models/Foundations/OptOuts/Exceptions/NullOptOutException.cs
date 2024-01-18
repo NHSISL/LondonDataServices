@@ -8,8 +8,8 @@ namespace LHDS.Core.Models.Foundations.OptOuts.Exceptions
 {
     public class NullOptOutException : Xeption
     {
-        public NullOptOutException()
-            : base(message: "OptOut is null.")
+        public NullOptOutException(string message)
+            : base(message)
         { }
     }
 }

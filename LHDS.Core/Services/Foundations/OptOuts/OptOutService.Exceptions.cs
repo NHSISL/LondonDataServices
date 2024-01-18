@@ -64,7 +64,9 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var lockedOptOutException = new LockedOptOutException(dbUpdateConcurrencyException);
+                var lockedOptOutException = new LockedOptOutException(
+                    message: "Locked optOut record exception, please try again later", 
+                    innerException: dbUpdateConcurrencyException);
 
                 throw CreateAndLogDependencyValidationException(lockedOptOutException);
             }

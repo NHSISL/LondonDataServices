@@ -231,8 +231,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             OptOut randomOptOut = CreateRandomOptOut();
             var serviceException = new Exception();
 
-            var failedOptOutServiceException =
-                new FailedOptOutServiceException(serviceException);
+            var failedOptOutServiceException = new FailedOptOutServiceException(
+                message: "Failed optOut service occurred, please contact support",
+                innerException: serviceException);
 
             var expectedOptOutServiceException =
                 new OptOutServiceException(failedOptOutServiceException);

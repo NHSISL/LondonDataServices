@@ -75,8 +75,9 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             }
             catch (Exception exception)
             {
-                var failedOptOutServiceException =
-                    new FailedOptOutServiceException(exception);
+                var failedOptOutServiceException = new FailedOptOutServiceException(
+                    message: "Failed optOut service occurred, please contact support", 
+                    innerException: exception);
 
                 throw CreateAndLogServiceException(failedOptOutServiceException);
             }
@@ -96,8 +97,9 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             }
             catch (Exception exception)
             {
-                var failedOptOutServiceException =
-                    new FailedOptOutServiceException(exception);
+                var failedOptOutServiceException = new FailedOptOutServiceException(
+                    message: "Failed optOut service occurred, please contact support", 
+                    innerException: exception);
 
                 throw CreateAndLogServiceException(failedOptOutServiceException);
             }

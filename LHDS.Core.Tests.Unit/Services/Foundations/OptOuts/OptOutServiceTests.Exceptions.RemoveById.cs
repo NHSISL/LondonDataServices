@@ -82,7 +82,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 message: "Locked optOut record exception, please try again later",
                 innerException: databaseUpdateConcurrencyException);
 
-            var expectedOptOutValidationException = new OptOutDependencyValidationException(
+            var expectedOptOutDependencyValidationException = new OptOutDependencyValidationException(
                 message: "OptOut dependency validation occurred, please try again.",
                 innerException: lockedOptOutException);
 

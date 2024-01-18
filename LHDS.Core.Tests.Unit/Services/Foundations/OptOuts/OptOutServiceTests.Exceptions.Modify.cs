@@ -85,8 +85,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     message: "Invalid optOut reference error occurred.",
                     innerException: foreignKeyConstraintConflictException);
 
-            OptOutDependencyValidationException expectedOptOutDependencyValidationException =
-                new OptOutDependencyValidationException(invalidOptOutReferenceException);
+            var expectedOptOutValidationException = new OptOutDependencyValidationException(
+                message: "OptOut dependency validation occurred, please try again.",
+                innerException: invalidOptOutReferenceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -189,8 +190,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 message: "Locked optOut record exception, please try again later",
                 innerException: databaseUpdateConcurrencyException);
 
-            var expectedOptOutDependencyValidationException =
-                new OptOutDependencyValidationException(lockedOptOutException);
+            var expectedOptOutValidationException = new OptOutDependencyValidationException(
+                message: "OptOut dependency validation occurred, please try again.",
+                innerException: lockedOptOutException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())

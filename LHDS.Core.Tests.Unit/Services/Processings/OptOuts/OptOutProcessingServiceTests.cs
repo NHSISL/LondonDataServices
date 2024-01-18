@@ -80,7 +80,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     message: "OptOut validation errors occurred, please try again.",
                     innerException),
 
-                new OptOutDependencyValidationException(innerException)
+                new OptOutDependencyValidationException(
+                    message: "OptOut dependency validation occurred, please try again.", 
+                    innerException)
             };
         }
         public static TheoryData DependencyExceptions()

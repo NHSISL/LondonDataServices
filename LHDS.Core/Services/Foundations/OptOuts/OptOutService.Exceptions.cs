@@ -125,7 +125,10 @@ namespace LHDS.Core.Services.Foundations.OptOuts
 
         private OptOutDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
-            var optOutDependencyException = new OptOutDependencyException(exception);
+            var optOutDependencyException = new OptOutDependencyException(
+                message: "OptOut dependency error occurred, contact support.", 
+                innerException: exception);
+
             this.loggingBroker.LogCritical(optOutDependencyException);
 
             return optOutDependencyException;
@@ -144,7 +147,9 @@ namespace LHDS.Core.Services.Foundations.OptOuts
         private OptOutDependencyException CreateAndLogDependencyException(
             Xeption exception)
         {
-            var optOutDependencyException = new OptOutDependencyException(exception);
+            var optOutDependencyException = new OptOutDependencyException(
+                message: "OptOut dependency error occurred, contact support.", 
+                innerException: exception);
 
             this.loggingBroker.LogError(optOutDependencyException);
 

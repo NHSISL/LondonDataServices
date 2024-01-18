@@ -28,8 +28,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     message: "Failed optOut storage error occurred, contact support.",
                     innerException: sqlException);
 
-            var expectedOptOutDependencyException =
-                new OptOutDependencyException(failedOptOutStorageException);
+            var expectedOptOutDependencyException = new OptOutDependencyException(
+                message: "OptOut dependency error occurred, contact support.", 
+                innerException: failedOptOutStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -183,8 +184,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                     message: "Failed optOut storage error occurred, contact support.",
                     innerException: databaseUpdateException);
 
-            var expectedOptOutDependencyException =
-                new OptOutDependencyException(failedOptOutStorageException);
+            var expectedOptOutDependencyException = new OptOutDependencyException(
+                message: "OptOut dependency error occurred, contact support.",
+                innerException: failedOptOutStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())

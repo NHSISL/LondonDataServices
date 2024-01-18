@@ -131,7 +131,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
 
             var invalidOptOutReferenceException = new InvalidOptOutReferenceException(
                     message: "Invalid optOut reference error occurred.",
-                    innerException: foreignKeyConstraintConflictExceptio
+                    innerException: foreignKeyConstraintConflictException);
 
             var expectedOptOutValidationException =
                 new OptOutDependencyValidationException(invalidOptOutReferenceException);

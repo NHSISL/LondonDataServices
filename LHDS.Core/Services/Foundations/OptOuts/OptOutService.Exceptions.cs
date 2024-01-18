@@ -56,8 +56,9 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             }
             catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
-                var invalidOptOutReferenceException =
-                    new InvalidOptOutReferenceException(foreignKeyConstraintConflictException);
+                var invalidOptOutReferenceException = new InvalidOptOutReferenceException(
+                    message: "Invalid optOut reference error occurred.", 
+                    innerException: foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidOptOutReferenceException);
             }

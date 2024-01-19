@@ -31,6 +31,7 @@ using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.Suppliers;
 using LHDS.Core.Providers.Downloads;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Providers.Downloads.Extensions;
 using LHDS.Core.Providers.Downloads.FtpDownloads;
 using LHDS.Core.Services.Foundations.Cryptographies;
@@ -324,6 +325,7 @@ namespace LHDS.AdminPortal.Api
             builder.EntitySet<OptOut>("OptOuts");
             builder.EntitySet<PdsAudit>("PdsAudits");
             builder.EntitySet<Supplier>("Suppliers");
+            builder.EntitySet<TerminologyArtifact>("TerminologyArtifacts");
             builder.EnableLowerCamelCase();
 
             return builder.GetEdmModel();

@@ -5,7 +5,7 @@ import CardBaseBody from "../bases/components/Card/CardBase.Body";
 import CardBaseContent from "../bases/components/Card/CardBase.Content";
 import CardBaseTitle from "../bases/components/Card/CardBase.Title";
 import SupplierDetailCardView from "./ingestionTrackingDetailCardView";
-import AuditTable from "../audit/auditTable";
+import IngestionTrackingAuditTable from "../ingestionTrackingAudit/ingestionTrackingAuditTable";
 
 interface IngestionTrackingDetailCardProps {
     ingestionTracking: IngestionTrackingView;
@@ -56,8 +56,7 @@ const IngestionTrackingDetailCard: FunctionComponent<IngestionTrackingDetailCard
                             onDownload={handleDownload}
                             onReLand={handleReland}
                             onReDecrypt={handlReDecrypt}
-                            onRefresh={handlRefresh}
-                        />
+                            onRefresh={handlRefresh} />
 
                         {children !== undefined && (
                             <>
@@ -75,7 +74,7 @@ const IngestionTrackingDetailCard: FunctionComponent<IngestionTrackingDetailCard
                         Audit
                     </CardBaseTitle>
                     <CardBaseContent>
-                        <AuditTable ingestionTrackingId={ingestionTracking.id}></AuditTable>
+                        <IngestionTrackingAuditTable ingestionTrackingId={ingestionTracking.id}></IngestionTrackingAuditTable>
                     </CardBaseContent>
                 </CardBaseBody>
             </CardBase>

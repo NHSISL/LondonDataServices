@@ -1,4 +1,5 @@
-﻿
+﻿@import url('../../../../styles/color-theme.scss');
+
 .cardBase {
     margin-top: 15px;
     margin-bottom: 10px;
@@ -16,10 +17,10 @@
 
 .cardBaseTitle {
     margin-top: 0;
-    background: #005eb8;
+    background: var( --dark-background);
     color: #fff;
     display: inline-block;
-    left: -32px;
+    left: -33px;
     margin-bottom: 8px;
     margin-right: -24px;
     padding: 8px 24px;
@@ -31,4 +32,17 @@
 
 .cardBaseContent {
     margin-bottom: 0;
+}
+
+.card {
+    border: none;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.table th, .table td {
+    vertical-align: middle;
+}
+
+.mh-200 {
+    min-height: 170px;
 }

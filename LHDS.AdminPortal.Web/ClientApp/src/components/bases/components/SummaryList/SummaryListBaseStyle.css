@@ -8,17 +8,10 @@
     margin-inline-end: 0px;
 }
 
-/*
-@media (min-width: 40.0625em) .dlBase {
-    display: table;
-    table-layout: fixed;
-    width: 100%;
-}*/
-
 .summaryRow {
     display: flex;
     border-bottom: 1px solid #d8dde0;
-    padding:5px;
+    padding:2px;
 }
 
 .summaryListKey {
@@ -29,11 +22,9 @@
 .summaryListValue {
     width: 100%;
     word-wrap: break-word;
-   
     display: table-cell;
     padding-bottom: 8px;
     padding-right: 24px;
-   
     margin: 0;
     vertical-align: top
 }

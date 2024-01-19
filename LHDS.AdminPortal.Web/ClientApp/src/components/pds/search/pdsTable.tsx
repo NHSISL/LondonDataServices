@@ -11,7 +11,7 @@ import TableBase from "../../bases/components/Table/TableBase";
 import TableBaseTbody from "../../bases/components/Table/TableBase.Tbody";
 import InfiniteScrollLoader from "../../bases/pagers/InfiniteScroll.Loader";
 import { SpinnerBase } from "../../bases/spinner/SpinnerBase";
-import { pdsHomeViewService } from "../../../services/views/Pds/pdsHomeViewService";
+import { pdsHomeViewService } from "../../../services/views/pds/pdsHomeViewService";
 import { PdsHomeView } from "../../../models/pds/pdsHomeView";
 import TableBaseThead from "../../bases/components/Table/TableBase.Thead";
 import TableBaseRow from "../../bases/components/Table/TableBase.Row";

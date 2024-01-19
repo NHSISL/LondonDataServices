@@ -14,7 +14,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
 {
     public partial class DocumentsApiTests
     {
-        [Fact(Skip = "Don't process for now")]
+        [Fact]
         public async Task ShouldPostDocumentAsync()
         {
             // Given
@@ -40,19 +40,6 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
             await this.apiBroker.DeleteDocumentByFileNameAsync(
                 fileName: inputDocument.FileName,
                 container: documentsModel.Container);
-        }
-
-
-        [Fact]
-        public async Task DELETE_ShouldPostDocumentAsync()
-        {
-            // Given
-
-            // When
-            await this.apiBroker.GetDocumentAsync();
-
-            // Then
-
         }
     }
 }

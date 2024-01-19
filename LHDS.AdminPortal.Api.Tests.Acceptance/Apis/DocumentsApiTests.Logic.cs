@@ -15,7 +15,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
     public partial class DocumentsApiTests
     {
         [Fact]
-        public async Task ShouldPostDocumentAsync()
+        public async Task ShouldPostAndDeleteDocumentAsync()
         {
             // Given
             var blobStorageSettings = this.apiBroker.configuration

@@ -23,8 +23,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             SqlException sqlException = GetSqlException();
 
             var failedOptOutStorageException = new FailedOptOutStorageException(
-                    message: "Failed optOut storage error occurred, contact support.",
-                    innerException: sqlException);
+                message: "Failed optOut storage error occurred, contact support.",
+                innerException: sqlException);
 
             var expectedOptOutDependencyException = new OptOutDependencyException(
                 message: "OptOut dependency error occurred, contact support.",

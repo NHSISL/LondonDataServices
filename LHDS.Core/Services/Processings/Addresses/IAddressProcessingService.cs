@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
@@ -18,5 +19,6 @@ namespace LHDS.Core.Services.Processings.Addresses
         ValueTask<Address> ModifyOrAddAddressAsync(Address address);
         ValueTask<Address> ModifyAddressAsync(Address address);
         ValueTask<Address> RemoveAddressByIdAsync(Guid addressId);
+        ValueTask<List<Address>> RetrieveAddressByPostCodeAsync(string postCode);
     }
 }

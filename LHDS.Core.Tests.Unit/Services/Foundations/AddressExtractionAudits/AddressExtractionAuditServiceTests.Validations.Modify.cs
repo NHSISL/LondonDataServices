@@ -1,10 +1,14 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using Moq;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
@@ -65,7 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
                 // TODO:  Add default values for your properties i.e. Name = invalidText
             };
 
-            var invalidAddressExtractionAuditException = 
+            var invalidAddressExtractionAuditException =
                 new InvalidAddressExtractionAuditException(
                     message: "Invalid addressExtractionAudit. Please correct the errors and try again.");
 
@@ -141,8 +145,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             AddressExtractionAudit randomAddressExtractionAudit = CreateRandomAddressExtractionAudit(randomDateTimeOffset);
             AddressExtractionAudit invalidAddressExtractionAudit = randomAddressExtractionAudit;
-            
-            var invalidAddressExtractionAuditException = 
+
+            var invalidAddressExtractionAuditException =
                 new InvalidAddressExtractionAuditException(
                     message: "Invalid addressExtractionAudit. Please correct the errors and try again.");
 
@@ -198,7 +202,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             AddressExtractionAudit randomAddressExtractionAudit = CreateRandomAddressExtractionAudit(randomDateTimeOffset);
             randomAddressExtractionAudit.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var invalidAddressExtractionAuditException = 
+            var invalidAddressExtractionAuditException =
                 new InvalidAddressExtractionAuditException(
                     message: "Invalid addressExtractionAudit. Please correct the errors and try again.");
 
@@ -312,8 +316,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             AddressExtractionAudit storageAddressExtractionAudit = invalidAddressExtractionAudit.DeepClone();
             storageAddressExtractionAudit.CreatedDate = storageAddressExtractionAudit.CreatedDate.AddMinutes(randomMinutes);
             storageAddressExtractionAudit.UpdatedDate = storageAddressExtractionAudit.UpdatedDate.AddMinutes(randomMinutes);
-            
-            var invalidAddressExtractionAuditException = 
+
+            var invalidAddressExtractionAuditException =
                 new InvalidAddressExtractionAuditException(
                     message: "Invalid addressExtractionAudit. Please correct the errors and try again.");
 
@@ -375,7 +379,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             invalidAddressExtractionAudit.CreatedBy = Guid.NewGuid().ToString();
             storageAddressExtractionAudit.UpdatedDate = storageAddressExtractionAudit.CreatedDate;
 
-            var invalidAddressExtractionAuditException = 
+            var invalidAddressExtractionAuditException =
                 new InvalidAddressExtractionAuditException(
                     message: "Invalid addressExtractionAudit. Please correct the errors and try again.");
 
@@ -434,7 +438,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             AddressExtractionAudit invalidAddressExtractionAudit = randomAddressExtractionAudit;
             AddressExtractionAudit storageAddressExtractionAudit = randomAddressExtractionAudit.DeepClone();
 
-            var invalidAddressExtractionAuditException = 
+            var invalidAddressExtractionAuditException =
                 new InvalidAddressExtractionAuditException(
                     message: "Invalid addressExtractionAudit. Please correct the errors and try again.");
 

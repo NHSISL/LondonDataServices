@@ -1,12 +1,16 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
@@ -28,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             var expectedAddressDependencyException =
                 new AddressDependencyException(
                     message: "Address dependency error occurred, contact support.",
-                    innerException: failedAddressStorageException); 
+                    innerException: failedAddressStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -132,7 +136,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             var invalidAddressReferenceException =
                 new InvalidAddressReferenceException(
-                    message: "Invalid address reference error occurred.", 
+                    message: "Invalid address reference error occurred.",
                     innerException: foreignKeyConstraintConflictException);
 
             var expectedAddressValidationException =
@@ -191,7 +195,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             var expectedAddressDependencyException =
                 new AddressDependencyException(
                     message: "Address dependency error occurred, contact support.",
-                    innerException: failedAddressStorageException); 
+                    innerException: failedAddressStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -236,7 +240,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 
             var failedAddressServiceException =
                 new FailedAddressServiceException(
-                    message: "Failed address service occurred, please contact support", 
+                    message: "Failed address service occurred, please contact support",
                     innerException: serviceException);
 
             var expectedAddressServiceException =

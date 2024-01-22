@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -66,7 +66,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var lockedDataSetSpecificationException = 
+                var lockedDataSetSpecificationException =
                     new LockedDataSetSpecificationException(
                         message: "Locked dataSetSpecification record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
@@ -112,7 +112,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             {
                 var failedDataSetSpecificationServiceException =
                     new FailedDataSetSpecificationServiceException(
-                        message: "Failed dataSetSpecification service occurred, please contact support", 
+                        message: "Failed dataSetSpecification service occurred, please contact support",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedDataSetSpecificationServiceException);
@@ -136,7 +136,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             var dataSetSpecificationDependencyException =
                 new DataSetSpecificationDependencyException(
                     message: "DataSetSpecification dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(dataSetSpecificationDependencyException);
 
@@ -161,7 +161,7 @@ namespace LHDS.Core.Services.Foundations.DataSetSpecifications
             var dataSetSpecificationDependencyException =
                 new DataSetSpecificationDependencyException(
                     message: "DataSetSpecification dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(dataSetSpecificationDependencyException);
 

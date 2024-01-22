@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -48,7 +48,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
             {
                 var alreadyExistsOptOutException =
                     new AlreadyExistsOptOutException(
-                        message: "OptOut with the same Id already exists.", 
+                        message: "OptOut with the same Id already exists.",
                         innerException: duplicateKeyException);
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsOptOutException);

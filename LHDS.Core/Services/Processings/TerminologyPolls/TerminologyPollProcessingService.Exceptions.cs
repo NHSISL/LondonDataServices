@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -28,7 +28,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             {
                 throw CreateAndLogValidationException(nullTerminologyPollProcessingException);
             }
-            catch (InvalidArgumentTerminologyPollsProcessingException 
+            catch (InvalidArgumentTerminologyPollsProcessingException
                 InvalidArgumentTerminologyPollsProcessingException)
             {
                 throw CreateAndLogValidationException(InvalidArgumentTerminologyPollsProcessingException);

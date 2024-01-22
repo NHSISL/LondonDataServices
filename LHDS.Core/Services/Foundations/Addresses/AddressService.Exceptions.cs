@@ -1,11 +1,15 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.Addresses
@@ -55,14 +59,14 @@ namespace LHDS.Core.Services.Foundations.Addresses
             {
                 var invalidAddressReferenceException =
                     new InvalidAddressReferenceException(
-                        message: "Invalid address reference error occurred.", 
+                        message: "Invalid address reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidAddressReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var lockedAddressException = 
+                var lockedAddressException =
                     new LockedAddressException(
                         message: "Locked address record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
@@ -82,7 +86,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             {
                 var failedAddressServiceException =
                     new FailedAddressServiceException(
-                        message: "Failed address service occurred, please contact support", 
+                        message: "Failed address service occurred, please contact support",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressServiceException);
@@ -108,7 +112,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             {
                 var failedAddressServiceException =
                     new FailedAddressServiceException(
-                        message: "Failed address service occurred, please contact support", 
+                        message: "Failed address service occurred, please contact support",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressServiceException);
@@ -129,10 +133,10 @@ namespace LHDS.Core.Services.Foundations.Addresses
 
         private AddressDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
-            var addressDependencyException = 
+            var addressDependencyException =
                 new AddressDependencyException(
                     message: "Address dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(addressDependencyException);
 
@@ -154,10 +158,10 @@ namespace LHDS.Core.Services.Foundations.Addresses
         private AddressDependencyException CreateAndLogDependencyException(
             Xeption exception)
         {
-            var addressDependencyException = 
+            var addressDependencyException =
                 new AddressDependencyException(
                     message: "Address dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(addressDependencyException);
 
@@ -167,7 +171,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
         private AddressServiceException CreateAndLogServiceException(
             Xeption exception)
         {
-            var addressServiceException = 
+            var addressServiceException =
                 new AddressServiceException(
                     message: "Address service error occurred, contact support.",
                     innerException: exception);

@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -13,6 +13,7 @@ namespace LHDS.Core.Services.Processings.Addresses
     {
         ValueTask<Address> AddAddressAsync(Address address);
         IQueryable<Address> RetrieveAllAddresses();
+        List<Address> RetrieveAllAddressesByPostCode(string postcode);
         ValueTask<Address> RetrieveAddressByIdAsync(Guid addressId);
         ValueTask<Address> RetrieveOrAddAddressAsync(Address address);
         ValueTask<Address> ModifyOrAddAddressAsync(Address address);

@@ -1,8 +1,12 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
-using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
@@ -63,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             var failedDataSetServiceException =
                 new FailedDataSetServiceException(
-                    message: "Failed dataSet service occurred, please contact support", 
+                    message: "Failed dataSet service occurred, please contact support",
                     innerException: serviceException);
 
             var expectedDataSetServiceException =

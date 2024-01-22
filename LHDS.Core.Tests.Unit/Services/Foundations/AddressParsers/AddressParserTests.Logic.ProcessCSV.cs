@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -70,7 +70,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
                     expectedAddresses.Add(address);
                 }
             }
-            
+
             // when
             List<Address> actualAddresses = await this.addressParserService.ProcessCsvAsync(data: inputByteAddressesCsv);
 

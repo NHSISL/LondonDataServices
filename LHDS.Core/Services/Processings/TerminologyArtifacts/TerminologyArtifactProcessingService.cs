@@ -1,16 +1,14 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
-using Microsoft.EntityFrameworkCore;
 
 namespace LHDS.Core.Services.Processings.TerminologyArtifacts
 {

@@ -1,11 +1,15 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
@@ -55,14 +59,14 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
             {
                 var invalidAddressLoadingAuditReferenceException =
                     new InvalidAddressLoadingAuditReferenceException(
-                        message: "Invalid addressLoadingAudit reference error occurred.", 
+                        message: "Invalid addressLoadingAudit reference error occurred.",
                         innerException: foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidAddressLoadingAuditReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var lockedAddressLoadingAuditException = 
+                var lockedAddressLoadingAuditException =
                     new LockedAddressLoadingAuditException(
                         message: "Locked addressLoadingAudit record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
@@ -82,7 +86,7 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
             {
                 var failedAddressLoadingAuditServiceException =
                     new FailedAddressLoadingAuditServiceException(
-                        message: "Failed addressLoadingAudit service occurred, please contact support", 
+                        message: "Failed addressLoadingAudit service occurred, please contact support",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressLoadingAuditServiceException);
@@ -108,7 +112,7 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
             {
                 var failedAddressLoadingAuditServiceException =
                     new FailedAddressLoadingAuditServiceException(
-                        message: "Failed addressLoadingAudit service occurred, please contact support", 
+                        message: "Failed addressLoadingAudit service occurred, please contact support",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressLoadingAuditServiceException);
@@ -129,10 +133,10 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
 
         private AddressLoadingAuditDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
-            var addressLoadingAuditDependencyException = 
+            var addressLoadingAuditDependencyException =
                 new AddressLoadingAuditDependencyException(
                     message: "AddressLoadingAudit dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(addressLoadingAuditDependencyException);
 
@@ -154,10 +158,10 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
         private AddressLoadingAuditDependencyException CreateAndLogDependencyException(
             Xeption exception)
         {
-            var addressLoadingAuditDependencyException = 
+            var addressLoadingAuditDependencyException =
                 new AddressLoadingAuditDependencyException(
                     message: "AddressLoadingAudit dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(addressLoadingAuditDependencyException);
 
@@ -167,7 +171,7 @@ namespace LHDS.Core.Services.Foundations.AddressLoadingAudits
         private AddressLoadingAuditServiceException CreateAndLogServiceException(
             Xeption exception)
         {
-            var addressLoadingAuditServiceException = 
+            var addressLoadingAuditServiceException =
                 new AddressLoadingAuditServiceException(
                     message: "AddressLoadingAudit service error occurred, contact support.",
                     innerException: exception);

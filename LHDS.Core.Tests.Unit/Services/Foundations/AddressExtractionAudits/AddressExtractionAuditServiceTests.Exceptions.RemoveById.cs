@@ -1,11 +1,15 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.AddressExtractionAudits;
+using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using LHDS.Core.Models.Foundations.AddressExtractionAudits;
-using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
@@ -27,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             var expectedAddressExtractionAuditDependencyException =
                 new AddressExtractionAuditDependencyException(
                     message: "AddressExtractionAudit dependency error occurred, contact support.",
-                    innerException: failedAddressExtractionAuditStorageException); 
+                    innerException: failedAddressExtractionAuditStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAddressExtractionAuditByIdAsync(randomAddressExtractionAudit.Id))
@@ -135,7 +139,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             var expectedAddressExtractionAuditDependencyException =
                 new AddressExtractionAuditDependencyException(
                     message: "AddressExtractionAudit dependency error occurred, contact support.",
-                    innerException: failedAddressExtractionAuditStorageException); 
+                    innerException: failedAddressExtractionAuditStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAddressExtractionAuditByIdAsync(It.IsAny<Guid>()))
@@ -176,7 +180,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
 
             var failedAddressExtractionAuditServiceException =
                 new FailedAddressExtractionAuditServiceException(
-                    message: "Failed addressExtractionAudit service occurred, please contact support", 
+                    message: "Failed addressExtractionAudit service occurred, please contact support",
                     innerException: serviceException);
 
             var expectedAddressExtractionAuditServiceException =

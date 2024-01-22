@@ -61,6 +61,9 @@ namespace LHDS.Core.Services.Foundations.Addresses
         public void ValidateAddressId(Guid addressId) =>
             Validate((Rule: IsInvalid(addressId), Parameter: nameof(Address.Id)));
 
+        public void ValidatePostCode(string postCode) =>
+            Validate((Rule: IsInvalid(postCode), Parameter: "postCode"));
+
         private static void ValidateStorageAddress(Address maybeAddress, Guid addressId)
         {
             if (maybeAddress is null)

@@ -13,6 +13,6 @@ namespace LHDS.Core.Services.Foundations.Addresses
         ValueTask<Address> RetrieveAddressByIdAsync(Guid addressId);
         ValueTask<Address> ModifyAddressAsync(Address address);
         ValueTask<Address> RemoveAddressByIdAsync(Guid addressId);
-        List<Address> RetrieveAddressesByPostCode(string postCode);
+        ValueTask<List<Address>> RetrieveAddressesByPostCodeAsync(string postCode);
     }
 }

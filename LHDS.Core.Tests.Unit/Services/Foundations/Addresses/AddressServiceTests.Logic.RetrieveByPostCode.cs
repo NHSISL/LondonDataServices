@@ -5,13 +5,14 @@ using LHDS.Core.Models.Foundations.Addresses;
 using Xunit;
 using System.Collections.Generic;
 using Force.DeepCloner;
+using System.Threading.Tasks;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
 {
     public partial class AddressServiceTests
     {
         [Fact]
-        public void ShouldReturnAddressesByPostCode()
+        public async Task ShouldReturnAddressesByPostCode()
         {
             // given
             List<Address> randomAddresses = CreateRandomAddresses().ToList();
@@ -36,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                     .Returns(storageAddresses);
 
             // when
-            List<Address> actualAddresses = this.addressService.RetrieveAddressesByPostCode(inputPostCode);
+            List<Address> actualAddresses = await this.addressService.RetrieveAddressesByPostCodeAsync(inputPostCode);
 
             // then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);

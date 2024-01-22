@@ -2,5 +2,6 @@ export enum FeatureDefinitions {
     OptOut,
     IngestionTracking,
     IngestionTrackingSearch,
-    Pds
+    Pds,
+    TerminologyArtifact
 }

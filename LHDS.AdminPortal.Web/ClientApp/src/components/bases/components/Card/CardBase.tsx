@@ -9,7 +9,7 @@ interface CardBaseProps {
 
 const CardBase: FunctionComponent<CardBaseProps> = (props) => {
     return (
-        <Card className={props.classes + " cardBase"}>
+        <Card className={props.classes + " cardBase mh-200"}>
             {props.children}
         </Card>
     )

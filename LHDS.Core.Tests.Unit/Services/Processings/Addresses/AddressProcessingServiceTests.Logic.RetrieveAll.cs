@@ -1,11 +1,9 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
-using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Addresses;
 using Moq;
 using Xunit;
@@ -18,25 +16,17 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
         public void ShouldRetrieveAllAddresses()
         {
             // given
-            // given
-            List<Address> randomAddresses = CreateRandomAddresses().ToList();
-            string randomString = GetRandomString();
-            string inputPostCode = randomString;
+            IQueryable<Address> randomAddresses = CreateRandomAddresses();
+            IQueryable<Address> storageAddresses = randomAddresses;
+            IQueryable<Address> expectedAddresses = storageAddresses;
 
-            foreach (var address in randomAddresses)
-            {
-                address.PostCode = inputPostCode;
-            }
-
-            List<Address> expectedAddresses = randomAddresses.DeepClone();
-
-            this.addressServiceMock.Setup(service =>
-                service.RetrieveAddressByPostCodeAsync(inputPostCode))
-                    .ReturnsAsync(expectedAddresses);
+            this.addressServiceMock.Setup(broker =>
+                broker.RetrieveAllAddresses())
+                    .Returns(storageAddresses);
 
             // when
-            List<Address> actualAddresses =
-                await this.addressProcessingService.RetrieveAddressByPostCodeAsync(inputPostCode);
+            IQueryable<Address> actualAddresses =
+                this.addressProcessingService.RetrieveAllAddresses();
 
             // then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);

@@ -76,7 +76,15 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 return await this.storageBroker.DeleteAddressAsync(maybeAddress);
             });
 
-        public async ValueTask<List<Address>> RetrieveAddressByPostCodeAsync(string postCode) =>
-           throw new NotImplementedException();
+        public ValueTask<List<Address>> RetrieveAddressesByPostCodeAsync(string postCode) =>
+            TryCatch(async () =>
+            {
+                ValidatePostCode(postCode);
+
+                List<Address> returnedAddresses =
+                    this.storageBroker.SelectAllAddresses().Where(address => address.PostCode == postCode).ToList();
+
+                return returnedAddresses;
+            });
     }
 }

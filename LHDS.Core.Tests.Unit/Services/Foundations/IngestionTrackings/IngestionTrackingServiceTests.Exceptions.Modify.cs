@@ -1,6 +1,6 @@
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             var failedIngestionTrackingStorageException =
                 new FailedIngestionTrackingStorageException(
-                    message: "Failed ingestion tracking storage error occurred, contact support.",
+                    message: "Failed ingestion tracking storage error occurred, contact support.", 
                     innerException: sqlException);
 
             var expectedIngestionTrackingDependencyException =
@@ -90,7 +90,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             IngestionTrackingDependencyValidationException expectedIngestionTrackingDependencyValidationException =
                 new IngestionTrackingDependencyValidationException(
-                    message: "Ingestion tracking dependency validation occurred, please try again.",
+                    message: "Ingestion tracking dependency validation occurred, please try again.", 
                     innerException: invalidIngestionTrackingReferenceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -139,12 +139,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             var failedIngestionTrackingStorageException =
                 new FailedIngestionTrackingStorageException(
-                    message: "Failed ingestion tracking storage error occurred, contact support.",
+                    message: "Failed ingestion tracking storage error occurred, contact support.", 
                     innerException: databaseUpdateException);
 
             var expectedIngestionTrackingDependencyException =
                 new IngestionTrackingDependencyException(
-                    message: "Failed ingestion tracking storage error occurred, contact support.",
+                    message: "Failed ingestion tracking storage error occurred, contact support.", 
                     innerException: failedIngestionTrackingStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -194,12 +194,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             var lockedIngestionTrackingException =
                 new LockedIngestionTrackingException(
-                    message: "Locked ingestion tracking record exception, please try again later",
+                    message: "Locked ingestion tracking record exception, please try again later", 
                     innerException: databaseUpdateConcurrencyException);
 
             var expectedIngestionTrackingDependencyValidationException =
                 new IngestionTrackingDependencyValidationException(
-                    message: "Ingestion tracking dependency validation occurred, please try again.",
+                    message: "Ingestion tracking dependency validation occurred, please try again.", 
                     innerException: lockedIngestionTrackingException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -249,7 +249,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.IngestionTrackings
 
             var failedIngestionTrackingServiceException =
                 new FailedIngestionTrackingServiceException(
-                    message: "Failed ingestion tracking service occurred, please contact support",
+                    message: "Failed ingestion tracking service occurred, please contact support", 
                     innerException: serviceException);
 
             var expectedIngestionTrackingServiceException =

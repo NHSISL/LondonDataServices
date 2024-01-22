@@ -1,11 +1,12 @@
-﻿// ---------------------------------------------------------
+﻿// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Mesh;
 using LHDS.Core.Models.Foundations.Mesh.Exceptions;
 using Moq;
 using NEL.MESH.Models.Clients.Mesh.Exceptions;
@@ -28,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             var expectedDependencyValidationException =
                 new MeshServiceDependencyValidationException(
-                    message: "Mesh service dependency validation occurred, please try again.",
+                    message: "Mesh service dependency validation occurred, please try again.", 
                     innerException: meshClientValidationException);
 
             this.meshBrokerMock.Setup(broker =>
@@ -73,7 +74,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             var expectedDependencyException =
                 new MeshServiceDependencyException(
-                    message: "Mesh service dependency error occurred, contact support.",
+                    message: "Mesh service dependency error occurred, contact support.", 
                     innerException: meshClientDependencyException);
 
             this.meshBrokerMock.Setup(broker =>
@@ -111,12 +112,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             var failedMeshServiceException =
                new FailedMeshServiceException(
-                   message: "Failed mesh service occurred, please contact support",
+                   message: "Failed mesh service occurred, please contact support", 
                    innerException: serviceException);
 
             var expectedMeshServiceException =
                new MeshServiceException(
-                   message: "Mesh service error occurred, contact support.",
+                   message: "Mesh service error occurred, contact support.", 
                    innerException: failedMeshServiceException);
 
             this.meshBrokerMock.Setup(broker =>

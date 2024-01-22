@@ -1,13 +1,11 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
-using System.Linq;
+using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.TerminologyPolls;
 using Moq;
+using LHDS.Core.Models.Foundations.TerminologyPolls;
 using Xunit;
+using System.Linq;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
 {
@@ -18,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.TerminologyPolls
         {
             // given
             IQueryable<TerminologyPoll> randomTerminologyPolls = CreateRandomTerminologyPolls();
-            IQueryable<TerminologyPoll> outputTerminologyPolls = randomTerminologyPolls;
+            IQueryable<TerminologyPoll> outputTerminologyPolls= randomTerminologyPolls;
             IQueryable<TerminologyPoll> expectedTerminologyPolls = outputTerminologyPolls.DeepClone();
 
             this.terminologyPollServiceMock.Setup(service =>

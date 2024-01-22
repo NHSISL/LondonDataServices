@@ -1,13 +1,15 @@
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System;
 using System.Collections;
 using System.Linq.Expressions;
 using LHDS.Core.Brokers.AddressNormalisations;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
+using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
 using Moq;
 using NEL.LibPostalClient.Models.Clients.LibPostal.Exceptions;

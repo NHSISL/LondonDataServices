@@ -1,16 +1,12 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.DataSets;
-using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using LHDS.Core.Models.Foundations.DataSets;
+using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
@@ -32,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             var expectedDataSetDependencyException =
                 new DataSetDependencyException(
                     message: "DataSet dependency error occurred, contact support.",
-                    innerException: failedDataSetStorageException);
+                    innerException: failedDataSetStorageException); 
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -85,7 +81,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             var invalidDataSetReferenceException =
                 new InvalidDataSetReferenceException(
-                    message: "Invalid dataSet reference error occurred.",
+                    message: "Invalid dataSet reference error occurred.", 
                     innerException: foreignKeyConstraintConflictException);
 
             DataSetDependencyValidationException expectedDataSetDependencyValidationException =
@@ -145,7 +141,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
             var expectedDataSetDependencyException =
                 new DataSetDependencyException(
                     message: "DataSet dependency error occurred, contact support.",
-                    innerException: failedDataSetStorageException);
+                    innerException: failedDataSetStorageException); 
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -249,7 +245,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSets
 
             var failedDataSetServiceException =
                 new FailedDataSetServiceException(
-                    message: "Failed dataSet service occurred, please contact support",
+                    message: "Failed dataSet service occurred, please contact support", 
                     innerException: serviceException);
 
             var expectedDataSetServiceException =

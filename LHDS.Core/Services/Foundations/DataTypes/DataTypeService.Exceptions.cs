@@ -1,15 +1,11 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
-using LHDS.Core.Models.Foundations.DataTypes;
-using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using LHDS.Core.Models.Foundations.DataTypes;
+using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.DataTypes
@@ -59,14 +55,14 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             {
                 var invalidDataTypeReferenceException =
                     new InvalidDataTypeReferenceException(
-                        message: "Invalid dataType reference error occurred.",
+                        message: "Invalid dataType reference error occurred.", 
                         innerException: foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidDataTypeReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var lockedDataTypeException =
+                var lockedDataTypeException = 
                     new LockedDataTypeException(
                         message: "Locked dataType record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
@@ -86,7 +82,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             {
                 var failedDataTypeServiceException =
                     new FailedDataTypeServiceException(
-                        message: "Failed dataType service occurred, please contact support",
+                        message: "Failed dataType service occurred, please contact support", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedDataTypeServiceException);
@@ -112,7 +108,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
             {
                 var failedDataTypeServiceException =
                     new FailedDataTypeServiceException(
-                        message: "Failed dataType service occurred, please contact support",
+                        message: "Failed dataType service occurred, please contact support", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedDataTypeServiceException);
@@ -133,10 +129,10 @@ namespace LHDS.Core.Services.Foundations.DataTypes
 
         private DataTypeDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
-            var dataTypeDependencyException =
+            var dataTypeDependencyException = 
                 new DataTypeDependencyException(
                     message: "DataType dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(dataTypeDependencyException);
 
@@ -158,10 +154,10 @@ namespace LHDS.Core.Services.Foundations.DataTypes
         private DataTypeDependencyException CreateAndLogDependencyException(
             Xeption exception)
         {
-            var dataTypeDependencyException =
+            var dataTypeDependencyException = 
                 new DataTypeDependencyException(
                     message: "DataType dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(dataTypeDependencyException);
 
@@ -171,7 +167,7 @@ namespace LHDS.Core.Services.Foundations.DataTypes
         private DataTypeServiceException CreateAndLogServiceException(
             Xeption exception)
         {
-            var dataTypeServiceException =
+            var dataTypeServiceException = 
                 new DataTypeServiceException(
                     message: "DataType service error occurred, contact support.",
                     innerException: exception);

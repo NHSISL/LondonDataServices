@@ -1,6 +1,6 @@
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System;
 using System.Linq;
@@ -76,7 +76,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.SpecificationObjects
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(now)
 
-                .OnProperty(SpecificationObject =>
+                .OnProperty(SpecificationObject => 
                     SpecificationObject.DataSetSpecificationId).Use(dataSetSpecificationId)
 
                 .OnProperty(SpecificationObject => SpecificationObject.CreatedBy).Use(user)

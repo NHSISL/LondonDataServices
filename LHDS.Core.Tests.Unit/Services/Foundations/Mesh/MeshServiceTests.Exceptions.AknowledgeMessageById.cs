@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------
+﻿// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -14,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
     public partial class MeshServiceTests
     {
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnAknowledgeMessageByIdIfServiceErrorOccursAndLogItAsync()
+public async Task ShouldThrowServiceExceptionOnAknowledgeMessageByIdIfServiceErrorOccursAndLogItAsync()
         {
             // given
             string messageId = GetRandomString();
@@ -22,12 +22,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
 
             var failedMeshServiceException =
                new FailedMeshServiceException(
-                   message: "Failed mesh service occurred, please contact support",
+                   message: "Failed mesh service occurred, please contact support", 
                    innerException: serviceException);
 
             var expectedMeshServiceException =
                new MeshServiceException(
-                   message: "Mesh service error occurred, contact support.",
+                   message: "Mesh service error occurred, contact support.", 
                    innerException: failedMeshServiceException);
 
             this.meshBrokerMock.Setup(broker =>

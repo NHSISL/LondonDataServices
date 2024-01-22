@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------
+﻿// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -35,7 +35,7 @@ namespace LHDS.Core.Services.Foundations.Documents
             catch (RequestFailedException requestFailedException)
             {
                 var failedRequestException = new FailedDocumentRequestException(
-                    message: "Failed document request occurred, please contact support",
+                    message: "Failed document request occurred, please contact support", 
                     innerException: requestFailedException);
 
                 throw CreateAndLogDependencyException(failedRequestException);
@@ -77,7 +77,7 @@ namespace LHDS.Core.Services.Foundations.Documents
             catch (RequestFailedException requestFailedException)
             {
                 var failedRequestException = new FailedDocumentRequestException(
-                    message: "Failed document request occurred, please contact support",
+                    message: "Failed document request occurred, please contact support", 
                     innerException: requestFailedException);
 
                 throw CreateAndLogDependencyException(failedRequestException);
@@ -106,7 +106,7 @@ namespace LHDS.Core.Services.Foundations.Documents
             catch (RequestFailedException requestFailedException)
             {
                 var failedRequestException = new FailedDocumentRequestException(
-                    message: "Failed document request occurred, please contact support",
+                    message: "Failed document request occurred, please contact support", 
                     innerException: requestFailedException);
 
                 throw CreateAndLogDependencyException(failedRequestException);
@@ -137,7 +137,7 @@ namespace LHDS.Core.Services.Foundations.Documents
         private DocumentDependencyException CreateAndLogDependencyException(Xeption exception)
         {
             var documentDependencyException = new DocumentDependencyException(
-                message: "Document dependency error occurred, contact support.",
+                message: "Document dependency error occurred, contact support.", 
                 innerException: exception);
 
             this.loggingBroker.LogError(documentDependencyException);
@@ -149,7 +149,7 @@ namespace LHDS.Core.Services.Foundations.Documents
         {
             var documentDependencyValidationException =
                 new DocumentDependencyValidationException(
-                    message: "Document dependency validation occurred, please try again.",
+                    message: "Document dependency validation occurred, please try again.", 
                     innerException: exception);
 
             this.loggingBroker.LogError(documentDependencyValidationException);

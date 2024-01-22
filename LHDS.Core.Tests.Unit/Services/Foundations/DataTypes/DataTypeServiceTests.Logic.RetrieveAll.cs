@@ -1,11 +1,7 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System.Linq;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.DataTypes;
 using Moq;
+using LHDS.Core.Models.Foundations.DataTypes;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes

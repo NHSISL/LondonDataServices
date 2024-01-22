@@ -1,7 +1,8 @@
-﻿// ---------------------------------------------------------
+﻿// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
+using LHDS.Core.Models.Foundations.Ontologies.Exceptions;
 using LHDS.Core.Models.Processings.Ontologies.Exceptions;
 
 namespace LHDS.Core.Services.Processings.Ontologies

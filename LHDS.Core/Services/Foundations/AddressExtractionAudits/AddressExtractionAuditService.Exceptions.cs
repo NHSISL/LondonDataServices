@@ -1,15 +1,11 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
-using LHDS.Core.Models.Foundations.AddressExtractionAudits;
-using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using LHDS.Core.Models.Foundations.AddressExtractionAudits;
+using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
@@ -59,14 +55,14 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
             {
                 var invalidAddressExtractionAuditReferenceException =
                     new InvalidAddressExtractionAuditReferenceException(
-                        message: "Invalid addressExtractionAudit reference error occurred.",
+                        message: "Invalid addressExtractionAudit reference error occurred.", 
                         innerException: foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidAddressExtractionAuditReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var lockedAddressExtractionAuditException =
+                var lockedAddressExtractionAuditException = 
                     new LockedAddressExtractionAuditException(
                         message: "Locked addressExtractionAudit record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
@@ -86,7 +82,7 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
             {
                 var failedAddressExtractionAuditServiceException =
                     new FailedAddressExtractionAuditServiceException(
-                        message: "Failed addressExtractionAudit service occurred, please contact support",
+                        message: "Failed addressExtractionAudit service occurred, please contact support", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressExtractionAuditServiceException);
@@ -112,7 +108,7 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
             {
                 var failedAddressExtractionAuditServiceException =
                     new FailedAddressExtractionAuditServiceException(
-                        message: "Failed addressExtractionAudit service occurred, please contact support",
+                        message: "Failed addressExtractionAudit service occurred, please contact support", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressExtractionAuditServiceException);
@@ -133,10 +129,10 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
 
         private AddressExtractionAuditDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
-            var addressExtractionAuditDependencyException =
+            var addressExtractionAuditDependencyException = 
                 new AddressExtractionAuditDependencyException(
                     message: "AddressExtractionAudit dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(addressExtractionAuditDependencyException);
 
@@ -158,10 +154,10 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
         private AddressExtractionAuditDependencyException CreateAndLogDependencyException(
             Xeption exception)
         {
-            var addressExtractionAuditDependencyException =
+            var addressExtractionAuditDependencyException = 
                 new AddressExtractionAuditDependencyException(
                     message: "AddressExtractionAudit dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(addressExtractionAuditDependencyException);
 
@@ -171,7 +167,7 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
         private AddressExtractionAuditServiceException CreateAndLogServiceException(
             Xeption exception)
         {
-            var addressExtractionAuditServiceException =
+            var addressExtractionAuditServiceException = 
                 new AddressExtractionAuditServiceException(
                     message: "AddressExtractionAudit service error occurred, contact support.",
                     innerException: exception);

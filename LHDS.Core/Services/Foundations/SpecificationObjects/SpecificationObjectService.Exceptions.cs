@@ -1,15 +1,11 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
-using LHDS.Core.Models.Foundations.SpecificationObjects;
-using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
+using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.SpecificationObjects
@@ -59,14 +55,14 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             {
                 var invalidSpecificationObjectReferenceException =
                     new InvalidSpecificationObjectReferenceException(
-                        message: "Invalid specificationObject reference error occurred.",
+                        message: "Invalid specificationObject reference error occurred.", 
                         innerException: foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidSpecificationObjectReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var lockedSpecificationObjectException =
+                var lockedSpecificationObjectException = 
                     new LockedSpecificationObjectException(
                         message: "Locked specificationObject record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
@@ -86,7 +82,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             {
                 var failedSpecificationObjectServiceException =
                     new FailedSpecificationObjectServiceException(
-                        message: "Failed specificationObject service occurred, please contact support",
+                        message: "Failed specificationObject service occurred, please contact support", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedSpecificationObjectServiceException);
@@ -112,7 +108,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
             {
                 var failedSpecificationObjectServiceException =
                     new FailedSpecificationObjectServiceException(
-                        message: "Failed specificationObject service occurred, please contact support",
+                        message: "Failed specificationObject service occurred, please contact support", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedSpecificationObjectServiceException);
@@ -133,10 +129,10 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
 
         private SpecificationObjectDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
-            var specificationObjectDependencyException =
+            var specificationObjectDependencyException = 
                 new SpecificationObjectDependencyException(
                     message: "SpecificationObject dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(specificationObjectDependencyException);
 
@@ -158,10 +154,10 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
         private SpecificationObjectDependencyException CreateAndLogDependencyException(
             Xeption exception)
         {
-            var specificationObjectDependencyException =
+            var specificationObjectDependencyException = 
                 new SpecificationObjectDependencyException(
                     message: "SpecificationObject dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(specificationObjectDependencyException);
 
@@ -171,7 +167,7 @@ namespace LHDS.Core.Services.Foundations.SpecificationObjects
         private SpecificationObjectServiceException CreateAndLogServiceException(
             Xeption exception)
         {
-            var specificationObjectServiceException =
+            var specificationObjectServiceException = 
                 new SpecificationObjectServiceException(
                     message: "SpecificationObject service error occurred, contact support.",
                     innerException: exception);

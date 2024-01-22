@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------
+﻿// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -130,7 +130,7 @@ namespace LHDS.Core.Services.Processings.CsvMappers
         private CsvMapperProcessingServiceException CreateAndLogServiceException(Xeption exception)
         {
             var csvMapperProcessingServiceException = new CsvMapperProcessingServiceException(
-                message: "Csv Mapper processing service error occurred, contact support.",
+                message: "Csv Mapper processing service error occurred, contact support.", 
                 exception);
 
             this.loggingBroker.LogError(csvMapperProcessingServiceException);

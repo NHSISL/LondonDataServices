@@ -1,8 +1,9 @@
-﻿// ---------------------------------------------------------
+﻿// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.OptOuts;
@@ -53,7 +54,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
         }
 
         [Fact]
-        public async Task
+        public async Task 
             ShouldThrowValidationExceptionsOnConsolidateChangesIfConsentedItemsProcessingListIsNullAndLogItAsync()
         {
             // given

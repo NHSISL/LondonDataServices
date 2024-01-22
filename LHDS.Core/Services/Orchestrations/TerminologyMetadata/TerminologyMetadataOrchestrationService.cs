@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------
+﻿// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -59,9 +59,9 @@ namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
                 relativeUrl = relativeUrl.Replace("{{resourceType}}", resourceType);
                 relativeUrl = relativeUrl.Replace("{{datestamp}}", retrievedTerminologyPoll.LastPoll.ToString());
 
-                DateTimeOffset currentDateTimeOffset =
+                DateTimeOffset currentDateTimeOffset = 
                     this.dateTimeBroker.GetCurrentDateTimeOffset();
-
+                    
                 await ProcessArtifacts(relativeUrl);
                 retrievedTerminologyPoll.LastPoll = currentDateTimeOffset;
                 await this.terminologyPollProcessingService.ModifyTerminologyPollAsync(retrievedTerminologyPoll);

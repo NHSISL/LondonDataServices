@@ -1,13 +1,9 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Moq;
 using LHDS.Core.Models.Foundations.ObjectColumns;
 using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
-using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
@@ -20,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ObjectColumns
             // given
             var invalidObjectColumnId = Guid.Empty;
 
-            var invalidObjectColumnException =
+            var invalidObjectColumnException = 
                 new InvalidObjectColumnException(
                     message: "Invalid objectColumn. Please correct the errors and try again.");
 

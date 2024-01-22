@@ -1,18 +1,14 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
+using Microsoft.Data.SqlClient;
+using Moq;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Sql;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Services.Foundations.Addresses;
-using Microsoft.Data.SqlClient;
-using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;

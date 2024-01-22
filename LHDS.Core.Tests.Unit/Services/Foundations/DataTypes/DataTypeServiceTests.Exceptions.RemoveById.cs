@@ -1,15 +1,11 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.DataTypes;
-using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using LHDS.Core.Models.Foundations.DataTypes;
+using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
@@ -31,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             var expectedDataTypeDependencyException =
                 new DataTypeDependencyException(
                     message: "DataType dependency error occurred, contact support.",
-                    innerException: failedDataTypeStorageException);
+                    innerException: failedDataTypeStorageException); 
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectDataTypeByIdAsync(randomDataType.Id))
@@ -139,7 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             var expectedDataTypeDependencyException =
                 new DataTypeDependencyException(
                     message: "DataType dependency error occurred, contact support.",
-                    innerException: failedDataTypeStorageException);
+                    innerException: failedDataTypeStorageException); 
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectDataTypeByIdAsync(It.IsAny<Guid>()))
@@ -180,7 +176,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
 
             var failedDataTypeServiceException =
                 new FailedDataTypeServiceException(
-                    message: "Failed dataType service occurred, please contact support",
+                    message: "Failed dataType service occurred, please contact support", 
                     innerException: serviceException);
 
             var expectedDataTypeServiceException =

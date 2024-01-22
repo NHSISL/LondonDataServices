@@ -1,8 +1,9 @@
-﻿// ---------------------------------------------------------
+﻿// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;

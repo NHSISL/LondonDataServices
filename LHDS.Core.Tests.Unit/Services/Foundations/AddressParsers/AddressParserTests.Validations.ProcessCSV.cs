@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------
+﻿// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -29,7 +29,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
                     innerException: invalidArgumentAddressParserException);
 
             // when
-            ValueTask<List<Address>> processCSVAddressTask =
+            ValueTask<List<Address>> processCSVAddressTask = 
                 this.addressParserService.ProcessCsvAsync(nullAddresses);
 
             AddressParserValidationException actualAddressParserValidationException =

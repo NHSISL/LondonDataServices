@@ -1,14 +1,10 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.AddressExtractionAudits;
-using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
+using LHDS.Core.Models.Foundations.AddressExtractionAudits;
+using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
@@ -71,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
 
             var failedAddressExtractionAuditServiceException =
                 new FailedAddressExtractionAuditServiceException(
-                    message: "Failed addressExtractionAudit service occurred, please contact support",
+                    message: "Failed addressExtractionAudit service occurred, please contact support", 
                     innerException: serviceException);
 
             var expectedAddressExtractionAuditServiceException =

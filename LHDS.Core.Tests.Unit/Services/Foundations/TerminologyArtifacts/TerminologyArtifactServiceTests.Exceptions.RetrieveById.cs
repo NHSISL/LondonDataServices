@@ -1,14 +1,10 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.TerminologyArtifacts;
-using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
@@ -71,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
 
             var failedTerminologyArtifactServiceException =
                 new FailedTerminologyArtifactServiceException(
-                    message: "Failed terminologyArtifact service occurred, please contact support",
+                    message: "Failed terminologyArtifact service occurred, please contact support", 
                     innerException: serviceException);
 
             var expectedTerminologyArtifactServiceException =

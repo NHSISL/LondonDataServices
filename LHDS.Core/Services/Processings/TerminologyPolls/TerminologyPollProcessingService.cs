@@ -1,9 +1,11 @@
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
@@ -75,7 +77,7 @@ namespace LHDS.Core.Services.Processings.TerminologyPolls
             {
                 ValidateResourceType(resourceType);
 
-                IQueryable<TerminologyPoll> allTerminologyPolls =
+                IQueryable<TerminologyPoll> allTerminologyPolls = 
                     this.terminologyPollService.RetrieveAllTerminologyPolls();
 
                 TerminologyPoll maybeTerminologyPoll = allTerminologyPolls

@@ -1,14 +1,10 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.DataSetSpecifications;
-using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
+using LHDS.Core.Models.Foundations.DataSetSpecifications;
+using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
@@ -71,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
 
             var failedDataSetSpecificationServiceException =
                 new FailedDataSetSpecificationServiceException(
-                    message: "Failed dataSetSpecification service occurred, please contact support",
+                    message: "Failed dataSetSpecification service occurred, please contact support", 
                     innerException: serviceException);
 
             var expectedDataSetSpecificationServiceException =

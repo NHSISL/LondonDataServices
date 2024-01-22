@@ -1,16 +1,12 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.TerminologyPolls;
-using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using LHDS.Core.Models.Foundations.TerminologyPolls;
+using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
@@ -32,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             var expectedTerminologyPollDependencyException =
                 new TerminologyPollDependencyException(
                     message: "TerminologyPoll dependency error occurred, contact support.",
-                    innerException: failedTerminologyPollStorageException);
+                    innerException: failedTerminologyPollStorageException); 
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -85,7 +81,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             var invalidTerminologyPollReferenceException =
                 new InvalidTerminologyPollReferenceException(
-                    message: "Invalid terminologyPoll reference error occurred.",
+                    message: "Invalid terminologyPoll reference error occurred.", 
                     innerException: foreignKeyConstraintConflictException);
 
             TerminologyPollDependencyValidationException expectedTerminologyPollDependencyValidationException =
@@ -145,7 +141,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
             var expectedTerminologyPollDependencyException =
                 new TerminologyPollDependencyException(
                     message: "TerminologyPoll dependency error occurred, contact support.",
-                    innerException: failedTerminologyPollStorageException);
+                    innerException: failedTerminologyPollStorageException); 
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -249,7 +245,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             var failedTerminologyPollServiceException =
                 new FailedTerminologyPollServiceException(
-                    message: "Failed terminologyPoll service occurred, please contact support",
+                    message: "Failed terminologyPoll service occurred, please contact support", 
                     innerException: serviceException);
 
             var expectedTerminologyPollServiceException =

@@ -1,6 +1,6 @@
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -24,7 +24,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Downloads
 
             var failedDownloadServiceException =
                 new FailedDownloadServiceException(
-                    message: "Failed download service occurred, please contact support",
+                    message: "Failed download service occurred, please contact support", 
                     innerException: serviceException);
 
             var expectedDownloadServiceException =

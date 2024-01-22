@@ -1,16 +1,25 @@
-﻿// ---------------------------------------------------------
+﻿// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Enumeration;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
+using LHDS.Core.Clients;
 using LHDS.Core.Models.Foundations.OptOuts;
 using Moq;
 using NEL.MESH.Clients.Mailboxes;
 using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
+using Xunit.Sdk;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
 {
@@ -24,7 +33,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             int randomNumber = GetRandomNumber();
             List<string> messageIds = new List<string> { messageId };
 
-            List<OptOut> outputOptOuts =
+            List<OptOut> outputOptOuts = 
                 CreateRandomOptOuts(randomNumber, this.dateTimeBroker.GetCurrentDateTimeOffset());
 
             string mexWorkflowId = this.optOutConfiguration.WorkflowId;
@@ -33,12 +42,12 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
             var optOutStringList = new StringBuilder();
 
             outputOptOuts
-                .ForEach(optOut =>
+                .ForEach(optOut => 
                     optOutStringList.AppendLine($"{optOut.UniqueReference},{optOut.NhsNumber},{optOut.Status},,"));
 
             byte[] fileContent = Encoding.ASCII.GetBytes(optOutStringList.ToString());
 
-            foreach (OptOut optOut in outputOptOuts)
+            foreach(OptOut optOut in outputOptOuts)
             {
                 await this.optOutService.AddOptOutAsync(optOut);
             }
@@ -58,7 +67,7 @@ namespace LHDS.Core.Tests.Acceptance.Clients.OptOuts
                     mexTo,
                     mexWorkflowId,
                     It.IsAny<byte[]>(),
-                    "",
+                    "", 
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     "",

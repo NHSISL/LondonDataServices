@@ -1,13 +1,9 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using Moq;
+using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.AddressLoadingAudits
@@ -29,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressLoadingAudits
                     .ReturnsAsync(storageAddressLoadingAudit);
 
             // when
-            AddressLoadingAudit actualAddressLoadingAudit =
+            AddressLoadingAudit actualAddressLoadingAudit = 
                 await this.addressLoadingAuditProcessingService.AddAddressLoadingAuditAsync(inputAddressLoadingAudit);
 
             // then

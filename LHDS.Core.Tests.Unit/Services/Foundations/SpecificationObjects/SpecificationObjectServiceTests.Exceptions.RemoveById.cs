@@ -1,15 +1,11 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.SpecificationObjects;
-using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
+using LHDS.Core.Models.Foundations.SpecificationObjects.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
@@ -31,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             var expectedSpecificationObjectDependencyException =
                 new SpecificationObjectDependencyException(
                     message: "SpecificationObject dependency error occurred, contact support.",
-                    innerException: failedSpecificationObjectStorageException);
+                    innerException: failedSpecificationObjectStorageException); 
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectSpecificationObjectByIdAsync(randomSpecificationObject.Id))
@@ -139,7 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
             var expectedSpecificationObjectDependencyException =
                 new SpecificationObjectDependencyException(
                     message: "SpecificationObject dependency error occurred, contact support.",
-                    innerException: failedSpecificationObjectStorageException);
+                    innerException: failedSpecificationObjectStorageException); 
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectSpecificationObjectByIdAsync(It.IsAny<Guid>()))
@@ -180,7 +176,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects
 
             var failedSpecificationObjectServiceException =
                 new FailedSpecificationObjectServiceException(
-                    message: "Failed specificationObject service occurred, please contact support",
+                    message: "Failed specificationObject service occurred, please contact support", 
                     innerException: serviceException);
 
             var expectedSpecificationObjectServiceException =

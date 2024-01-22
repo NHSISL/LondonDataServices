@@ -19,15 +19,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
         public async Task ShouldRetrieveAddressByPostCodeAsync()
         {
             //given
-            List<Address> randomAddresses = CreateRandomAddresses().ToList();
             string randomString = GetRandomString();
             string inputPostCode = randomString;
-
-            foreach (var address in randomAddresses)
-            {
-                address.PostCode = inputPostCode;
-            }
-
+            List<Address> randomAddresses = CreateRandomAddresses().ToList();
             List<Address> expectedAddresses = randomAddresses.DeepClone();
 
             this.addressServiceMock.Setup(service =>

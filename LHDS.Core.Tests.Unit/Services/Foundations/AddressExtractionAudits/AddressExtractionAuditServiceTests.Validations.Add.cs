@@ -1,13 +1,9 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Moq;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
-using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
@@ -139,7 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressExtractionAudits
             invalidAddressExtractionAudit.UpdatedDate =
                 invalidAddressExtractionAudit.CreatedDate.AddDays(randomNumber);
 
-            var invalidAddressExtractionAuditException =
+            var invalidAddressExtractionAuditException = 
                 new InvalidAddressExtractionAuditException(
                     message: "Invalid addressExtractionAudit. Please correct the errors and try again.");
 

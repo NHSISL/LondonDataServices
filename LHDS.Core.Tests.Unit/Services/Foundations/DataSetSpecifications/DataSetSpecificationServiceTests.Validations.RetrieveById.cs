@@ -1,13 +1,9 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Moq;
 using LHDS.Core.Models.Foundations.DataSetSpecifications;
 using LHDS.Core.Models.Foundations.DataSetSpecifications.Exceptions;
-using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
@@ -20,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataSetSpecifications
             // given
             var invalidDataSetSpecificationId = Guid.Empty;
 
-            var invalidDataSetSpecificationException =
+            var invalidDataSetSpecificationException = 
                 new InvalidDataSetSpecificationException(
                     message: "Invalid dataSetSpecification. Please correct the errors and try again.");
 

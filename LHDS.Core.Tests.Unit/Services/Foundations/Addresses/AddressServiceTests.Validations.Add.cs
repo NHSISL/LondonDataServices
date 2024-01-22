@@ -1,13 +1,9 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Moq;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
-using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
@@ -139,7 +135,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             invalidAddress.UpdatedDate =
                 invalidAddress.CreatedDate.AddDays(randomNumber);
 
-            var invalidAddressException =
+            var invalidAddressException = 
                 new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again.");
 

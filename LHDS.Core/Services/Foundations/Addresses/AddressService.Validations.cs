@@ -1,7 +1,3 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
@@ -176,7 +172,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidAddressException =
+            var invalidAddressException = 
                 new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again.");
 

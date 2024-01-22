@@ -1,6 +1,6 @@
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
@@ -26,12 +26,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             var failedSupplierStorageException =
                 new FailedSupplierStorageException(
-                    message: "Failed supplier storage error occurred, contact support.",
+                    message: "Failed supplier storage error occurred, contact support.", 
                     innerException: sqlException);
 
             var expectedSupplierDependencyException =
                 new SupplierDependencyException(
-                    message: "Supplier dependency error occurred, contact support.",
+                    message: "Supplier dependency error occurred, contact support.", 
                     innerException: failedSupplierStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -85,12 +85,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             var invalidSupplierReferenceException =
                 new InvalidSupplierReferenceException(
-                    message: "Invalid supplier reference error occurred.",
+                    message: "Invalid supplier reference error occurred.", 
                     innerException: foreignKeyConstraintConflictException);
 
             SupplierDependencyValidationException expectedSupplierDependencyValidationException =
                 new SupplierDependencyValidationException(
-                    message: "Supplier dependency error occurred, contact support.",
+                    message: "Supplier dependency error occurred, contact support.", 
                     innerException: invalidSupplierReferenceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -139,12 +139,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             var failedSupplierStorageException =
                 new FailedSupplierStorageException(
-                    message: "Failed supplier storage error occurred, contact support.",
+                    message: "Failed supplier storage error occurred, contact support.", 
                     innerException: databaseUpdateException);
 
             var expectedSupplierDependencyException =
                 new SupplierDependencyException(
-                    message: "Supplier dependency error occurred, contact support.",
+                    message: "Supplier dependency error occurred, contact support.", 
                     innerException: failedSupplierStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -194,12 +194,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             var lockedSupplierException =
                 new LockedSupplierException(
-                    message: "Locked supplier record exception, please try again later",
+                    message: "Locked supplier record exception, please try again later", 
                     innerException: databaseUpdateConcurrencyException);
 
             var expectedSupplierDependencyValidationException =
                 new SupplierDependencyValidationException(
-                    message: "Supplier dependency error occurred, contact support.",
+                    message: "Supplier dependency error occurred, contact support.", 
                     innerException: lockedSupplierException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -249,12 +249,12 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Suppliers
 
             var failedSupplierServiceException =
                 new FailedSupplierServiceException(
-                    message: "Failed supplier service occurred, please contact support",
+                    message: "Failed supplier service occurred, please contact support", 
                     innerException: serviceException);
 
             var expectedSupplierServiceException =
                 new SupplierServiceException(
-                    message: "Supplier service error occurred, contact support.",
+                    message: "Supplier service error occurred, contact support.", 
                     innerException: failedSupplierServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>

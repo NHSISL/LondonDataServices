@@ -1,7 +1,3 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using Xeptions;
 
 namespace LHDS.Core.Models.Foundations.DataSets.Exceptions
@@ -9,7 +5,7 @@ namespace LHDS.Core.Models.Foundations.DataSets.Exceptions
     public class DataSetValidationException : Xeption
     {
         public DataSetValidationException(string message, Xeption innerException)
-            : base(message, innerException)
+            : base(message,innerException)
         { }
     }
 }

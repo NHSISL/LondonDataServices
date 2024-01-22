@@ -1,6 +1,6 @@
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System.Text;
 using System.Threading.Tasks;
@@ -66,7 +66,7 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
 
             // when
             await this.apiBroker.DeleteDocumentByFileNameAsync(
-                fileName: inputDocument.FileName,
+                fileName:inputDocument.FileName, 
                 container: documentsModel.Container);
 
             ValueTask deleteDocumentByFileNameTask =

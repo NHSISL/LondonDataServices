@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------
+﻿// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -30,8 +30,8 @@ using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.Suppliers;
-using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Providers.Downloads;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Providers.Downloads.Extensions;
 using LHDS.Core.Providers.Downloads.FtpDownloads;
 using LHDS.Core.Services.Foundations.Cryptographies;

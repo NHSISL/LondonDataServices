@@ -1,14 +1,10 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
+using Moq;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
-using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
@@ -69,7 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
                 // TODO:  Add default values for your properties i.e. Name = invalidText
             };
 
-            var invalidAddressLoadingAuditException =
+            var invalidAddressLoadingAuditException = 
                 new InvalidAddressLoadingAuditException(
                     message: "Invalid addressLoadingAudit. Please correct the errors and try again.");
 
@@ -145,8 +141,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             AddressLoadingAudit randomAddressLoadingAudit = CreateRandomAddressLoadingAudit(randomDateTimeOffset);
             AddressLoadingAudit invalidAddressLoadingAudit = randomAddressLoadingAudit;
-
-            var invalidAddressLoadingAuditException =
+            
+            var invalidAddressLoadingAuditException = 
                 new InvalidAddressLoadingAuditException(
                     message: "Invalid addressLoadingAudit. Please correct the errors and try again.");
 
@@ -202,7 +198,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
             AddressLoadingAudit randomAddressLoadingAudit = CreateRandomAddressLoadingAudit(randomDateTimeOffset);
             randomAddressLoadingAudit.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var invalidAddressLoadingAuditException =
+            var invalidAddressLoadingAuditException = 
                 new InvalidAddressLoadingAuditException(
                     message: "Invalid addressLoadingAudit. Please correct the errors and try again.");
 
@@ -316,8 +312,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
             AddressLoadingAudit storageAddressLoadingAudit = invalidAddressLoadingAudit.DeepClone();
             storageAddressLoadingAudit.CreatedDate = storageAddressLoadingAudit.CreatedDate.AddMinutes(randomMinutes);
             storageAddressLoadingAudit.UpdatedDate = storageAddressLoadingAudit.UpdatedDate.AddMinutes(randomMinutes);
-
-            var invalidAddressLoadingAuditException =
+            
+            var invalidAddressLoadingAuditException = 
                 new InvalidAddressLoadingAuditException(
                     message: "Invalid addressLoadingAudit. Please correct the errors and try again.");
 
@@ -379,7 +375,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
             invalidAddressLoadingAudit.CreatedBy = Guid.NewGuid().ToString();
             storageAddressLoadingAudit.UpdatedDate = storageAddressLoadingAudit.CreatedDate;
 
-            var invalidAddressLoadingAuditException =
+            var invalidAddressLoadingAuditException = 
                 new InvalidAddressLoadingAuditException(
                     message: "Invalid addressLoadingAudit. Please correct the errors and try again.");
 
@@ -438,7 +434,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
             AddressLoadingAudit invalidAddressLoadingAudit = randomAddressLoadingAudit;
             AddressLoadingAudit storageAddressLoadingAudit = randomAddressLoadingAudit.DeepClone();
 
-            var invalidAddressLoadingAuditException =
+            var invalidAddressLoadingAuditException = 
                 new InvalidAddressLoadingAuditException(
                     message: "Invalid addressLoadingAudit. Please correct the errors and try again.");
 

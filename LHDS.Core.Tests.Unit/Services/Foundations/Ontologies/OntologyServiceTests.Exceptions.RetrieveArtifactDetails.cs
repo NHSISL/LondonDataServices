@@ -1,10 +1,11 @@
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.Ontologies;
 using LHDS.Core.Models.Foundations.Ontologies.Exceptions;
 using Moq;
 using Xunit;

@@ -1,8 +1,9 @@
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Services.Foundations.AddressNormalisations;
 using Xunit;

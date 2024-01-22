@@ -1,13 +1,9 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.Addresses;
 using Moq;
+using LHDS.Core.Models.Foundations.Addresses;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses

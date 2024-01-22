@@ -1,6 +1,6 @@
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -26,9 +26,9 @@ namespace LHDS.Core.Services.Foundations.AddressParsers
             {
                 ValidateAddressParserOnProcessCSV(data);
                 this.loggingBroker.LogInformation("Data validation complete.");
-
+                
                 return await Task.Run(() =>
-                {
+                { 
                     string stringData = Encoding.UTF8.GetString(data);
                     List<string> recods = stringData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
                     List<Address> returnedAddresses = new List<Address>();

@@ -1,14 +1,10 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.TerminologyPolls;
-using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using Microsoft.Data.SqlClient;
 using Moq;
+using LHDS.Core.Models.Foundations.TerminologyPolls;
+using LHDS.Core.Models.Foundations.TerminologyPolls.Exceptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
@@ -71,7 +67,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyPolls
 
             var failedTerminologyPollServiceException =
                 new FailedTerminologyPollServiceException(
-                    message: "Failed terminologyPoll service occurred, please contact support",
+                    message: "Failed terminologyPoll service occurred, please contact support", 
                     innerException: serviceException);
 
             var expectedTerminologyPollServiceException =

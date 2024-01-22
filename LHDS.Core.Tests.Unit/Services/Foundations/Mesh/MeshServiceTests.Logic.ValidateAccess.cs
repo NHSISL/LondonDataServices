@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------
+﻿// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Mesh
             this.meshBrokerMock.Setup(broker =>
                 broker.HandshakeAsync())
                     .ReturnsAsync(outputValidationResult);
-
+            
             // when
             bool actualMeshValidationResult =
                 await this.meshService.ValidateMailboxAccessAsync();

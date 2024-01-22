@@ -1,12 +1,8 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using LHDS.Core.Models.Foundations.SpecificationObjects;
 using Moq;
+using LHDS.Core.Models.Foundations.SpecificationObjects;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.SpecificationObjects

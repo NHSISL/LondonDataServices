@@ -1,15 +1,11 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
-using LHDS.Core.Models.Foundations.DataSets;
-using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using LHDS.Core.Models.Foundations.DataSets;
+using LHDS.Core.Models.Foundations.DataSets.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.DataSets
@@ -59,14 +55,14 @@ namespace LHDS.Core.Services.Foundations.DataSets
             {
                 var invalidDataSetReferenceException =
                     new InvalidDataSetReferenceException(
-                        message: "Invalid dataSet reference error occurred.",
+                        message: "Invalid dataSet reference error occurred.", 
                         innerException: foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidDataSetReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var lockedDataSetException =
+                var lockedDataSetException = 
                     new LockedDataSetException(
                         message: "Locked dataSet record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
@@ -86,7 +82,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
             {
                 var failedDataSetServiceException =
                     new FailedDataSetServiceException(
-                        message: "Failed dataSet service occurred, please contact support",
+                        message: "Failed dataSet service occurred, please contact support", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedDataSetServiceException);
@@ -112,7 +108,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
             {
                 var failedDataSetServiceException =
                     new FailedDataSetServiceException(
-                        message: "Failed dataSet service occurred, please contact support",
+                        message: "Failed dataSet service occurred, please contact support", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedDataSetServiceException);
@@ -133,10 +129,10 @@ namespace LHDS.Core.Services.Foundations.DataSets
 
         private DataSetDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
-            var dataSetDependencyException =
+            var dataSetDependencyException = 
                 new DataSetDependencyException(
                     message: "DataSet dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(dataSetDependencyException);
 
@@ -158,10 +154,10 @@ namespace LHDS.Core.Services.Foundations.DataSets
         private DataSetDependencyException CreateAndLogDependencyException(
             Xeption exception)
         {
-            var dataSetDependencyException =
+            var dataSetDependencyException = 
                 new DataSetDependencyException(
                     message: "DataSet dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(dataSetDependencyException);
 
@@ -171,7 +167,7 @@ namespace LHDS.Core.Services.Foundations.DataSets
         private DataSetServiceException CreateAndLogServiceException(
             Xeption exception)
         {
-            var dataSetServiceException =
+            var dataSetServiceException = 
                 new DataSetServiceException(
                     message: "DataSet service error occurred, contact support.",
                     innerException: exception);

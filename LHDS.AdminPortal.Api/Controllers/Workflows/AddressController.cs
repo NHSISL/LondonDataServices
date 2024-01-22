@@ -1,11 +1,12 @@
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Coordinations.AddressCoordinations.Exceptions;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Orchestrations.TerminologyDetails.Exceptions;
 using LHDS.Core.Services.Coordinations.AddressCoordinations;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;

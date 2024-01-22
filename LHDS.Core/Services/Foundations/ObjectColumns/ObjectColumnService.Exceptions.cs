@@ -1,15 +1,11 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
-using LHDS.Core.Models.Foundations.ObjectColumns;
-using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using LHDS.Core.Models.Foundations.ObjectColumns;
+using LHDS.Core.Models.Foundations.ObjectColumns.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Foundations.ObjectColumns
@@ -59,14 +55,14 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             {
                 var invalidObjectColumnReferenceException =
                     new InvalidObjectColumnReferenceException(
-                        message: "Invalid objectColumn reference error occurred.",
+                        message: "Invalid objectColumn reference error occurred.", 
                         innerException: foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidObjectColumnReferenceException);
             }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
-                var lockedObjectColumnException =
+                var lockedObjectColumnException = 
                     new LockedObjectColumnException(
                         message: "Locked objectColumn record exception, please try again later",
                         innerException: dbUpdateConcurrencyException);
@@ -86,7 +82,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             {
                 var failedObjectColumnServiceException =
                     new FailedObjectColumnServiceException(
-                        message: "Failed objectColumn service occurred, please contact support",
+                        message: "Failed objectColumn service occurred, please contact support", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedObjectColumnServiceException);
@@ -112,7 +108,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
             {
                 var failedObjectColumnServiceException =
                     new FailedObjectColumnServiceException(
-                        message: "Failed objectColumn service occurred, please contact support",
+                        message: "Failed objectColumn service occurred, please contact support", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedObjectColumnServiceException);
@@ -133,10 +129,10 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
 
         private ObjectColumnDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
         {
-            var objectColumnDependencyException =
+            var objectColumnDependencyException = 
                 new ObjectColumnDependencyException(
                     message: "ObjectColumn dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(objectColumnDependencyException);
 
@@ -158,10 +154,10 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         private ObjectColumnDependencyException CreateAndLogDependencyException(
             Xeption exception)
         {
-            var objectColumnDependencyException =
+            var objectColumnDependencyException = 
                 new ObjectColumnDependencyException(
                     message: "ObjectColumn dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(objectColumnDependencyException);
 
@@ -171,7 +167,7 @@ namespace LHDS.Core.Services.Foundations.ObjectColumns
         private ObjectColumnServiceException CreateAndLogServiceException(
             Xeption exception)
         {
-            var objectColumnServiceException =
+            var objectColumnServiceException = 
                 new ObjectColumnServiceException(
                     message: "ObjectColumn service error occurred, contact support.",
                     innerException: exception);

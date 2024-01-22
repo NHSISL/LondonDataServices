@@ -1,7 +1,4 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
+using System;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
 

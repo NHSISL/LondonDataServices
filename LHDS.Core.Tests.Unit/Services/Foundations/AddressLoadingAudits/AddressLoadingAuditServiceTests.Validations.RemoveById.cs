@@ -1,13 +1,9 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Moq;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
-using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
@@ -20,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressLoadingAudits
             // given
             Guid invalidAddressLoadingAuditId = Guid.Empty;
 
-            var invalidAddressLoadingAuditException =
+            var invalidAddressLoadingAuditException = 
                 new InvalidAddressLoadingAuditException(
                     message: "Invalid addressLoadingAudit. Please correct the errors and try again.");
 

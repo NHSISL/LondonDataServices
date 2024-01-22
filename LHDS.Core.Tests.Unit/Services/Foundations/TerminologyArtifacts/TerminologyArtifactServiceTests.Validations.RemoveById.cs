@@ -1,13 +1,9 @@
-// ---------------------------------------------------------
-// Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
-
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Moq;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts.Exceptions;
-using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
@@ -20,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.TerminologyArtifacts
             // given
             Guid invalidTerminologyArtifactId = Guid.Empty;
 
-            var invalidTerminologyArtifactException =
+            var invalidTerminologyArtifactException = 
                 new InvalidTerminologyArtifactException(
                     message: "Invalid terminologyArtifact. Please correct the errors and try again.");
 

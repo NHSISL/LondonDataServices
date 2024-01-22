@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Addresses;
@@ -15,10 +16,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
     public partial class AddressProcessingServiceTests
     {
         [Fact]
-        public void ShouldRetrieveAllAddresses()
+        public async Task ShouldRetrieveAddressByPostCodeAsync()
         {
-            // given
-            // given
+            //given
             List<Address> randomAddresses = CreateRandomAddresses().ToList();
             string randomString = GetRandomString();
             string inputPostCode = randomString;
@@ -41,8 +41,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
             // then
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);
 
-            this.addressServiceMock.Verify(broker =>
-                broker.RetrieveAllAddresses(),
+            this.addressServiceMock.Verify(service =>
+                service.RetrieveAddressByPostCodeAsync(inputPostCode),
                     Times.Once);
 
             this.addressServiceMock.VerifyNoOtherCalls();

@@ -88,6 +88,6 @@ namespace LHDS.Core.Services.Processings.Addresses
             });
 
         public async ValueTask<List<Address>> RetrieveAddressByPostCodeAsync(string postCode) =>
-            throw new NotImplementedException();
+            await this.addressService.RetrieveAddressByPostCodeAsync(postCode);
     }
 }

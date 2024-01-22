@@ -110,7 +110,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             {
                 var failedAddressServiceException =
                     new FailedAddressServiceException(
-                        message: "Failed address service occurred, please contact support", 
+                        message: "Failed address service occurred, please contact support",
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressServiceException);
@@ -126,6 +126,24 @@ namespace LHDS.Core.Services.Foundations.Addresses
             catch (InvalidAddressException invalidAddressException)
             {
                 throw CreateAndLogValidationException(invalidAddressException);
+            }
+            catch (SqlException sqlException)
+            {
+                var failedAddressStorageException =
+                    new FailedAddressStorageException(
+                        message: "Failed address storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedAddressStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressServiceException =
+                    new FailedAddressServiceException(
+                        message: "Failed address service occurred, please contact support",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressServiceException);
             }
         }
 

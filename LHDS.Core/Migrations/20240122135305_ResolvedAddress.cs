@@ -1,4 +1,8 @@
-﻿using System;
+﻿// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -11,15 +15,6 @@ namespace LHDS.Core.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Batch",
-                schema: "LDS")
-                .Annotation("SqlServer:IsTemporal", true)
-                .Annotation("SqlServer:TemporalHistoryTableName", "BatchHistory")
-                .Annotation("SqlServer:TemporalHistoryTableSchema", "LDS")
-                .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
-                .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart");
-
             migrationBuilder.CreateTable(
                 name: "ResolvedAddresses",
                 columns: table => new
@@ -48,79 +43,6 @@ namespace LHDS.Core.Migrations
         {
             migrationBuilder.DropTable(
                 name: "ResolvedAddresses");
-
-            migrationBuilder.EnsureSchema(
-                name: "LDS");
-
-            migrationBuilder.CreateTable(
-                name: "Batch",
-                schema: "LDS",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                        .Annotation("SqlServer:IsTemporal", true)
-                        .Annotation("SqlServer:TemporalHistoryTableName", "BatchHistory")
-                        .Annotation("SqlServer:TemporalHistoryTableSchema", "LDS")
-                        .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
-                        .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
-                    BusinessKey = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
-                        .Annotation("SqlServer:IsTemporal", true)
-                        .Annotation("SqlServer:TemporalHistoryTableName", "BatchHistory")
-                        .Annotation("SqlServer:TemporalHistoryTableSchema", "LDS")
-                        .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
-                        .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
-                    EndDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
-                        .Annotation("SqlServer:IsTemporal", true)
-                        .Annotation("SqlServer:TemporalHistoryTableName", "BatchHistory")
-                        .Annotation("SqlServer:TemporalHistoryTableSchema", "LDS")
-                        .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
-                        .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
-                    ErrorMessage = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                        .Annotation("SqlServer:IsTemporal", true)
-                        .Annotation("SqlServer:TemporalHistoryTableName", "BatchHistory")
-                        .Annotation("SqlServer:TemporalHistoryTableSchema", "LDS")
-                        .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
-                        .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
-                    PeriodEnd = table.Column<DateTime>(type: "datetime2", nullable: false)
-                        .Annotation("SqlServer:IsTemporal", true)
-                        .Annotation("SqlServer:TemporalHistoryTableName", "BatchHistory")
-                        .Annotation("SqlServer:TemporalHistoryTableSchema", "LDS")
-                        .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
-                        .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
-                    PeriodStart = table.Column<DateTime>(type: "datetime2", nullable: false)
-                        .Annotation("SqlServer:IsTemporal", true)
-                        .Annotation("SqlServer:TemporalHistoryTableName", "BatchHistory")
-                        .Annotation("SqlServer:TemporalHistoryTableSchema", "LDS")
-                        .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
-                        .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
-                    SourceSystem = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
-                        .Annotation("SqlServer:IsTemporal", true)
-                        .Annotation("SqlServer:TemporalHistoryTableName", "BatchHistory")
-                        .Annotation("SqlServer:TemporalHistoryTableSchema", "LDS")
-                        .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
-                        .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
-                    StartDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
-                        .Annotation("SqlServer:IsTemporal", true)
-                        .Annotation("SqlServer:TemporalHistoryTableName", "BatchHistory")
-                        .Annotation("SqlServer:TemporalHistoryTableSchema", "LDS")
-                        .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
-                        .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart"),
-                    Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
-                        .Annotation("SqlServer:IsTemporal", true)
-                        .Annotation("SqlServer:TemporalHistoryTableName", "BatchHistory")
-                        .Annotation("SqlServer:TemporalHistoryTableSchema", "LDS")
-                        .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
-                        .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Batch", x => x.Id);
-                })
-                .Annotation("SqlServer:IsTemporal", true)
-                .Annotation("SqlServer:TemporalHistoryTableName", "BatchHistory")
-                .Annotation("SqlServer:TemporalHistoryTableSchema", "LDS")
-                .Annotation("SqlServer:TemporalPeriodEndColumnName", "PeriodEnd")
-                .Annotation("SqlServer:TemporalPeriodStartColumnName", "PeriodStart");
         }
     }
 }

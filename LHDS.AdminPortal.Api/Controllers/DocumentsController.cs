@@ -1,8 +1,7 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
-using System;
 using System.Net;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Models.Controllers.Documents;
@@ -93,7 +92,7 @@ namespace LHDS.AdminPortal.Api.Controllers
         }
 
         [HttpDelete("{container}/{fileName}")]
-        public async ValueTask<ActionResult> RemoveDocumentByFileNameAsync(string fileName, string container) 
+        public async ValueTask<ActionResult> RemoveDocumentByFileNameAsync(string fileName, string container)
         {
             try
             {

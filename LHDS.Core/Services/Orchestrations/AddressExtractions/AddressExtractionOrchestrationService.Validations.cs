@@ -1,9 +1,7 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
-using System.IO;
-using System.IO.Compression;
 using LHDS.Core.Models.Orchestrations.AddressExtractions.Exceptions;
 
 namespace LHDS.Core.Services.Orchestrations.AddressExtractions

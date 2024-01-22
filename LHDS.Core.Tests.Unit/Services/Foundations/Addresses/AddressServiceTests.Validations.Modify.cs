@@ -1,10 +1,14 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using Moq;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
@@ -65,7 +69,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
                 // TODO:  Add default values for your properties i.e. Name = invalidText
             };
 
-            var invalidAddressException = 
+            var invalidAddressException =
                 new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again.");
 
@@ -141,8 +145,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Address randomAddress = CreateRandomAddress(randomDateTimeOffset);
             Address invalidAddress = randomAddress;
-            
-            var invalidAddressException = 
+
+            var invalidAddressException =
                 new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again.");
 
@@ -198,7 +202,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             Address randomAddress = CreateRandomAddress(randomDateTimeOffset);
             randomAddress.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var invalidAddressException = 
+            var invalidAddressException =
                 new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again.");
 
@@ -312,8 +316,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             Address storageAddress = invalidAddress.DeepClone();
             storageAddress.CreatedDate = storageAddress.CreatedDate.AddMinutes(randomMinutes);
             storageAddress.UpdatedDate = storageAddress.UpdatedDate.AddMinutes(randomMinutes);
-            
-            var invalidAddressException = 
+
+            var invalidAddressException =
                 new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again.");
 
@@ -375,7 +379,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             invalidAddress.CreatedBy = Guid.NewGuid().ToString();
             storageAddress.UpdatedDate = storageAddress.CreatedDate;
 
-            var invalidAddressException = 
+            var invalidAddressException =
                 new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again.");
 
@@ -434,7 +438,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             Address invalidAddress = randomAddress;
             Address storageAddress = randomAddress.DeepClone();
 
-            var invalidAddressException = 
+            var invalidAddressException =
                 new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again.");
 

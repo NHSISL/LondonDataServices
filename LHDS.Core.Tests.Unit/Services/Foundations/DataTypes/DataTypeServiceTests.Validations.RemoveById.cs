@@ -1,9 +1,13 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.DataTypes;
 using LHDS.Core.Models.Foundations.DataTypes.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
@@ -16,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.DataTypes
             // given
             Guid invalidDataTypeId = Guid.Empty;
 
-            var invalidDataTypeException = 
+            var invalidDataTypeException =
                 new InvalidDataTypeException(
                     message: "Invalid dataType. Please correct the errors and try again.");
 

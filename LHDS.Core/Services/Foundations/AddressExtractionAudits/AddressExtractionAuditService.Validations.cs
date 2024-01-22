@@ -1,3 +1,7 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits;
 using LHDS.Core.Models.Foundations.AddressExtractionAudits.Exceptions;
@@ -172,7 +176,7 @@ namespace LHDS.Core.Services.Foundations.AddressExtractionAudits
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidAddressExtractionAuditException = 
+            var invalidAddressExtractionAuditException =
                 new InvalidAddressExtractionAuditException(
                     message: "Invalid addressExtractionAudit. Please correct the errors and try again.");
 

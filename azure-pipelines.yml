@@ -417,7 +417,7 @@ steps:
     condition: ne(variables['Build.Reason'], 'PullRequest')  
     displayName: 'Archive files - Tpp Function'
     inputs:
-      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_tpp_emis_func'
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output_tpp_func'
       includeRootFolder: false
       archiveType: zip
       archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_tpp_func.zip

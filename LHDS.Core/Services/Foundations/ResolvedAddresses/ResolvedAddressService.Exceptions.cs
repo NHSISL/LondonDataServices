@@ -19,6 +19,10 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 throw CreateAndLogValidationException(nullResolvedAddressException);
             }
+            catch (InvalidResolvedAddressException invalidResolvedAddressException)
+            {
+                throw CreateAndLogValidationException(invalidResolvedAddressException);
+            }
         }
 
         private ResolvedAddressValidationException CreateAndLogValidationException(Xeption exception)

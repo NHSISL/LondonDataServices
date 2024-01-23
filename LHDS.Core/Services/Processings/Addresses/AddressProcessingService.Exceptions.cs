@@ -104,6 +104,31 @@ namespace LHDS.Core.Services.Processings.Addresses
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressProcessingException);
             }
+            catch (AddressValidationException addressValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressValidationException);
+            }
+            catch (AddressDependencyValidationException addressDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressDependencyValidationException);
+            }
+            catch (AddressDependencyException addressDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressDependencyException);
+            }
+            catch (AddressServiceException addressServiceException)
+            {
+                throw CreateAndLogDependencyException(addressServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressProcessingServiceException =
+                    new FailedAddressProcessingServiceException(
+                        message: "Failed Address processing service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressProcessingServiceException);
+            }
         }
 
         private AddressProcessingValidationException CreateAndLogValidationException(Xeption exception)

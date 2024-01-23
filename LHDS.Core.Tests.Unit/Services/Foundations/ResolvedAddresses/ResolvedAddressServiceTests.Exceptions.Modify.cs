@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -58,6 +59,64 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateResolvedAddressAsync(randomResolvedAddress),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            ResolvedAddress someResolvedAddress = CreateRandomResolvedAddress();
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidResolvedAddressReferenceException =
+                new InvalidResolvedAddressReferenceException(
+                    message: "Invalid resolvedAddress reference error occurred.", 
+                    innerException: foreignKeyConstraintConflictException);
+
+            ResolvedAddressDependencyValidationException expectedResolvedAddressDependencyValidationException =
+                new ResolvedAddressDependencyValidationException(
+                    message: "ResolvedAddress dependency validation occurred, please try again.",
+                    innerException: invalidResolvedAddressReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<ResolvedAddress> modifyResolvedAddressTask =
+                this.resolvedAddressService.ModifyResolvedAddressAsync(someResolvedAddress);
+
+            ResolvedAddressDependencyValidationException actualResolvedAddressDependencyValidationException =
+                await Assert.ThrowsAsync<ResolvedAddressDependencyValidationException>(
+                    modifyResolvedAddressTask.AsTask);
+
+            // then
+            actualResolvedAddressDependencyValidationException.Should()
+                .BeEquivalentTo(expectedResolvedAddressDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectResolvedAddressByIdAsync(someResolvedAddress.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(expectedResolvedAddressDependencyValidationException))),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateResolvedAddressAsync(someResolvedAddress),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

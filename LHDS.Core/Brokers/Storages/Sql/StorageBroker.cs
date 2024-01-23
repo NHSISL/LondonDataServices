@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------
+﻿// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------
+// ---------------------------------------------------------------
 
 using System.Linq;
 using System.Threading.Tasks;
@@ -40,7 +40,6 @@ namespace LHDS.Core.Brokers.Storages.Sql
             AddOptOutConfigurations(modelBuilder);
             AddObjectColumnConfigurations(modelBuilder);
             AddPdsAuditConfigurations(modelBuilder);
-            AddResolvedAddressConfigurations(modelBuilder);
             AddSpecificationObjectConfigurations(modelBuilder);
             AddTerminologyArtifactConfigurations(modelBuilder);
             AddTerminologyPollConfigurations(modelBuilder);

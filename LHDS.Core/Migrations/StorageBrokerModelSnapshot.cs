@@ -189,6 +189,62 @@ namespace LHDS.Core.Migrations
                     b.ToTable("Address", "UPRN");
                 });
 
+            modelBuilder.Entity("LHDS.Core.Models.Foundations.Batches.Batch", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BusinessKey")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTimeOffset?>("EndDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("PeriodEnd")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("PeriodEnd");
+
+                    b.Property<DateTime>("PeriodStart")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("PeriodStart");
+
+                    b.Property<string>("SourceSystem")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTimeOffset>("StartDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Batch", "LDS");
+
+                    b.ToTable(tb => tb.IsTemporal(ttb =>
+                            {
+                                ttb.UseHistoryTable("BatchHistory", "LDS");
+                                ttb
+                                    .HasPeriodStart("PeriodStart")
+                                    .HasColumnName("PeriodStart");
+                                ttb
+                                    .HasPeriodEnd("PeriodEnd")
+                                    .HasColumnName("PeriodEnd");
+                            }));
+                });
+
             modelBuilder.Entity("LHDS.Core.Models.Foundations.DataSetSpecifications.DataSetSpecification", b =>
                 {
                     b.Property<Guid>("Id")
@@ -877,52 +933,6 @@ namespace LHDS.Core.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Pds", "Patient");
-                });
-
-            modelBuilder.Entity("LHDS.Core.Models.Foundations.ResolvedAddresses.ResolvedAddress", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<bool>("IsMatched")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("JsonPostalAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("MatchAlgorithmEnum")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PostCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PostalAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UPRN")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UPSN")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("UpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ResolvedAddresses");
                 });
 
             modelBuilder.Entity("LHDS.Core.Models.Foundations.SpecificationObjects.SpecificationObject", b =>

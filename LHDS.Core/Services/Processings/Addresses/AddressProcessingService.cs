@@ -87,7 +87,12 @@ namespace LHDS.Core.Services.Processings.Addresses
                 return await this.addressService.RemoveAddressByIdAsync(addressId);
             });
 
-        public async ValueTask<List<Address>> RetrieveAddressByPostCodeAsync(string postCode) =>
-            await this.addressService.RetrieveAddressByPostCodeAsync(postCode);
+        public ValueTask<List<Address>> RetrieveAddressByPostCodeAsync(string postCode) =>
+            TryCatch(async () =>
+            {
+                ValidatePostCode(postCode);
+
+                return await this.addressService.RetrieveAddressesByPostCodeAsync(postCode);
+            });
     }
 }

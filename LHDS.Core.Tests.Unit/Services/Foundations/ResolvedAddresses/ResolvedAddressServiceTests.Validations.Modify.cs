@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -65,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             var invalidResolvedAddressException = 
                 new InvalidResolvedAddressException(
-                        message: "Invalid resolvedAddress. Please correct the errors and try again.");
+                    message: "Invalid resolvedAddress. Please correct the errors and try again.");
 
             invalidResolvedAddressException.AddData(
                 key: nameof(ResolvedAddress.Id),
@@ -116,6 +117,51 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(randomDateTimeOffset);
+            ResolvedAddress invalidResolvedAddress = randomResolvedAddress;
+            var invalidResolvedAddressException = 
+                new InvalidResolvedAddressException(
+                    message: "Invalid resolvedAddress. Please correct the errors and try again.");
+
+            invalidResolvedAddressException.AddData(
+                key: nameof(ResolvedAddress.UpdatedDate),
+                values: $"Date is the same as {nameof(ResolvedAddress.CreatedDate)}");
+
+            var expectedResolvedAddressValidationException =
+                new ResolvedAddressValidationException(
+                    message: "ResolvedAddress validation errors occurred, please try again.",
+                    innerException: invalidResolvedAddressException);
+
+            // when
+            ValueTask<ResolvedAddress> modifyResolvedAddressTask =
+                this.resolvedAddressService.ModifyResolvedAddressAsync(invalidResolvedAddress);
+
+            ResolvedAddressValidationException actualResolvedAddressValidationException =
+                await Assert.ThrowsAsync<ResolvedAddressValidationException>(
+                    modifyResolvedAddressTask.AsTask);
+
+            // then
+            actualResolvedAddressValidationException.Should().BeEquivalentTo(expectedResolvedAddressValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedResolvedAddressValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

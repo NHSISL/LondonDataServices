@@ -26,11 +26,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
         {
             return new TheoryData<string>
             {
-                "A,A A,A",
-                "A, A A, A",
-                "A, A  A, A",
-                " A , A A , A",
-                "A, A A, A "
+                "A,'A A',A",
+                "A,' A A', A",
+                "A, 'A  A', A",
+                " A , 'A A ', A",
+                " A , 'A    A' , A",
+                "A, 'A A', A "
             };
         }
 

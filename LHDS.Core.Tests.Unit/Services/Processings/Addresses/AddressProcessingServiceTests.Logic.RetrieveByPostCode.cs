@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
             List<Address> expectedAddresses = randomAddresses.DeepClone();
 
             this.addressServiceMock.Setup(service =>
-                service.RetrieveAddressByPostCodeAsync(inputPostCode))
+                service.RetrieveAddressesByPostCodeAsync(inputPostCode))
                     .ReturnsAsync(expectedAddresses);
 
             // when
@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
             actualAddresses.Should().BeEquivalentTo(expectedAddresses);
 
             this.addressServiceMock.Verify(service =>
-                service.RetrieveAddressByPostCodeAsync(inputPostCode),
+                service.RetrieveAddressesByPostCodeAsync(inputPostCode),
                     Times.Once);
 
             this.addressServiceMock.VerifyNoOtherCalls();

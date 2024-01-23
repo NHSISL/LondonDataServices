@@ -7,7 +7,7 @@ using LHDS.Core.Brokers.Loggings;
 
 namespace LHDS.Core.Services.Processings.AddressMatchers
 {
-    internal class AddressMatcherProcessingService : IAddressMatcherProcessingService
+    public partial class AddressMatcherProcessingService : IAddressMatcherProcessingService
     {
         private readonly ILoggingBroker loggingBroker;
 
@@ -16,8 +16,8 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             this.loggingBroker = loggingBroker;
         }
 
-
-        public string CleanAddress(string address)
+        public string CleanAddress(string address) =>
+            TryCatch(() =>
         {
             var cleanAddress = address.ToLower().Trim();
             var punctuationPattern = @"\s[,.!?-]|[,.!?;:'""](?![ ])";
@@ -44,7 +44,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             } while (cleanAddress != previousAddress);
 
             return cleanAddress;
-        }
+        });
 
         public string ExtractPostCode(string address) =>
             throw new System.NotImplementedException();

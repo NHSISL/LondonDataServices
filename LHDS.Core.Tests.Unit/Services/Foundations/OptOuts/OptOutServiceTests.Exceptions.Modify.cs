@@ -82,8 +82,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
                 new ForeignKeyConstraintConflictException(exceptionMessage);
 
             var invalidOptOutReferenceException = new InvalidOptOutReferenceException(
-                    message: "Invalid optOut reference error occurred.",
-                    innerException: foreignKeyConstraintConflictException);
+                message: "Invalid optOut reference error occurred.",
+                innerException: foreignKeyConstraintConflictException);
 
             var expectedOptOutDependencyValidationException = new OptOutDependencyValidationException(
                 message: "OptOut dependency validation occurred, please try again.",
@@ -134,8 +134,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             var databaseUpdateException = new DbUpdateException();
 
             var failedOptOutStorageException = new FailedOptOutStorageException(
-                    message: "Failed optOut storage error occurred, contact support.",
-                    innerException: databaseUpdateException);
+                message: "Failed optOut storage error occurred, contact support.",
+                innerException: databaseUpdateException);
 
             var expectedOptOutDependencyException = new OptOutDependencyException(
                 message: "OptOut dependency error occurred, contact support.",

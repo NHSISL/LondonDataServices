@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -86,6 +87,57 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             invalidResolvedAddressException.AddData(
                 key: nameof(ResolvedAddress.UpdatedBy),
                 values: "Text is required");
+
+            var expectedResolvedAddressValidationException =
+                new ResolvedAddressValidationException(
+                    message: "ResolvedAddress validation errors occurred, please try again.",
+                    innerException: invalidResolvedAddressException);
+
+            // when
+            ValueTask<ResolvedAddress> addResolvedAddressTask =
+                this.resolvedAddressService.AddResolvedAddressAsync(invalidResolvedAddress);
+
+            ResolvedAddressValidationException actualResolvedAddressValidationException =
+                await Assert.ThrowsAsync<ResolvedAddressValidationException>(
+                    addResolvedAddressTask.AsTask);
+
+            // then
+            actualResolvedAddressValidationException.Should()
+                .BeEquivalentTo(expectedResolvedAddressValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedResolvedAddressValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateDatesIsNotSameAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNumber();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(randomDateTimeOffset);
+            ResolvedAddress invalidResolvedAddress = randomResolvedAddress;
+
+            invalidResolvedAddress.UpdatedDate =
+                invalidResolvedAddress.CreatedDate.AddDays(randomNumber);
+
+            var invalidResolvedAddressException = 
+                new InvalidResolvedAddressException(
+                    message: "Invalid resolvedAddress. Please correct the errors and try again.");
+
+            invalidResolvedAddressException.AddData(
+                key: nameof(ResolvedAddress.UpdatedDate),
+                values: $"Date is not the same as {nameof(ResolvedAddress.CreatedDate)}");
 
             var expectedResolvedAddressValidationException =
                 new ResolvedAddressValidationException(

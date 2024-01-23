@@ -29,10 +29,21 @@ namespace LHDS.Core.Services.Processings.Addresses
                 message: "Invalid argument(s). Please correct the errors and try again.",
                 (Rule: IsInvalid(addressId), Parameter: nameof(Address.Id)));
 
+        public void ValidatePostCode(string postCode) =>
+            Validate<InvalidArgumentAddressProcessingException>(
+                message: "Invalid argument(s). Please correct the errors and try again.",
+                (Rule: IsInvalid(postCode), Parameter: "postCode"));
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
             Message = "Id is required"
+        };
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = String.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
         };
 
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)

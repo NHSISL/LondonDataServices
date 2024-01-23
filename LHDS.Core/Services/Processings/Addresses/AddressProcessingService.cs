@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
@@ -84,6 +85,14 @@ namespace LHDS.Core.Services.Processings.Addresses
                 ValidateAddressId(addressId);
 
                 return await this.addressService.RemoveAddressByIdAsync(addressId);
+            });
+
+        public ValueTask<List<Address>> RetrieveAddressByPostCodeAsync(string postCode) =>
+            TryCatch(async () =>
+            {
+                ValidatePostCode(postCode);
+
+                return await this.addressService.RetrieveAddressesByPostCodeAsync(postCode);
             });
     }
 }

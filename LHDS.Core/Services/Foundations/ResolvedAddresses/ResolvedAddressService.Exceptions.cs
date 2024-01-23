@@ -91,6 +91,15 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
                 throw CreateAndLogCriticalDependencyException(failedResolvedAddressStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedResolvedAddressServiceException =
+                    new FailedResolvedAddressServiceException(
+                        message: "Failed resolvedAddress service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedResolvedAddressServiceException);
+            }
         }
 
         private ResolvedAddressValidationException CreateAndLogValidationException(Xeption exception)

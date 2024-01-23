@@ -43,6 +43,15 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsResolvedAddressException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidResolvedAddressReferenceException =
+                    new InvalidResolvedAddressReferenceException(
+                        message: "Invalid resolvedAddress reference error occurred.", 
+                        innerException: foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidResolvedAddressReferenceException);
+            }
         }
 
         private ResolvedAddressValidationException CreateAndLogValidationException(Xeption exception)
@@ -62,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             var resolvedAddressDependencyException = 
                 new ResolvedAddressDependencyException(
                     message: "ResolvedAddress dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(resolvedAddressDependencyException);
 

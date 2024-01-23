@@ -3,10 +3,11 @@
 // ---------------------------------------------------------
 
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Services.Foundations.AddressMatchers;
 
 namespace LHDS.Core.Services.Processings.AddressMatchers
 {
-    internal class AddressMatcherProcessingService : IAddressMatcher
+    internal class AddressMatcherProcessingService : IAddressMatcherProcessingService
     {
         private readonly ILoggingBroker loggingBroker;
 

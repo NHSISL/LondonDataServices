@@ -4,7 +4,7 @@
 
 namespace LHDS.Core.Services.Foundations.AddressMatchers
 {
-    internal interface IAddressMatcher
+    internal interface IAddressMatcherProcessingService
     {
         string CleanAddress(string address);
         string ExtractPostCode(string address);

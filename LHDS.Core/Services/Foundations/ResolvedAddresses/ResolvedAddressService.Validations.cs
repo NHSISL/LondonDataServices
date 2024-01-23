@@ -77,6 +77,16 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             }
         }
 
+        private static void ValidateAgainstStorageResolvedAddressOnModify(ResolvedAddress inputResolvedAddress, ResolvedAddress storageResolvedAddress)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputResolvedAddress.CreatedDate,
+                    secondDate: storageResolvedAddress.CreatedDate,
+                    secondDateName: nameof(ResolvedAddress.CreatedDate)),
+                Parameter: nameof(ResolvedAddress.CreatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

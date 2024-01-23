@@ -60,6 +60,15 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
                 throw CreateAndLogDependencyValidationException(invalidResolvedAddressReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedResolvedAddressException = 
+                    new LockedResolvedAddressException(
+                        message: "Locked resolvedAddress record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedResolvedAddressException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedResolvedAddressStorageException =
@@ -123,7 +132,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             var resolvedAddressDependencyException = 
                 new ResolvedAddressDependencyException(
                     message: "ResolvedAddress dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(resolvedAddressDependencyException);
 
@@ -148,7 +157,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             var resolvedAddressDependencyException = 
                 new ResolvedAddressDependencyException(
                     message: "ResolvedAddress dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(resolvedAddressDependencyException);
 

@@ -53,7 +53,9 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                     firstDate: resolvedAddress.UpdatedDate,
                     secondDate: resolvedAddress.CreatedDate,
                     secondDateName: nameof(ResolvedAddress.CreatedDate)),
-                Parameter: nameof(ResolvedAddress.UpdatedDate)));
+                Parameter: nameof(ResolvedAddress.UpdatedDate)),
+
+                (Rule: IsNotRecent(resolvedAddress.UpdatedDate), Parameter: nameof(resolvedAddress.UpdatedDate)));
         }
 
         public void ValidateResolvedAddressId(Guid resolvedAddressId) =>

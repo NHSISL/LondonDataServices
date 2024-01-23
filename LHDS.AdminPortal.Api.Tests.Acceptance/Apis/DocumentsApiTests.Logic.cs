@@ -2,9 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Text;
 using System.Threading.Tasks;
 using LHDS.AdminPortal.Api.Models.Controllers.Documents;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.Documents;
+using Microsoft.Extensions.Configuration;
 using RESTFulSense.Exceptions;
 using Xunit;
 
@@ -16,14 +19,19 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
         public async Task ShouldPostDocumentAsync()
         {
             // Given
-            Document randomDocument = CreateRandomDocument();
-            Document inputDocument = randomDocument;
-            Document expectedDocument = inputDocument;
+            var blobStorageSettings = this.apiBroker.configuration
+                .GetSection("blobStorage").Get<BlobStorageSettings>();
+
+            Document inputDocument = new Document
+            {
+                DocumentData = Encoding.UTF8.GetBytes(GetRandomString()),
+                FileName = $"{GetRandomString()}.txt"
+            };
 
             DocumentsModel documentsModel = new DocumentsModel
             {
                 Document = inputDocument,
-                Container = GetRandomString()
+                Container = blobStorageSettings.BlobContainers.EmisLanding
             };
 
             // When
@@ -39,14 +47,19 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Apis.Documents
         public async Task ShouldDeleteDocumentByFileNameAsyncAsync()
         {
             // given
-            Document randomDocument = CreateRandomDocument();
-            Document inputDocument = randomDocument;
-            Document expectedDocument = inputDocument;
+            var blobStorageSettings = this.apiBroker.configuration
+                .GetSection("blobStorage").Get<BlobStorageSettings>();
+
+            Document inputDocument = new Document
+            {
+                DocumentData = Encoding.UTF8.GetBytes(GetRandomString()),
+                FileName = $"{GetRandomString()}.txt"
+            };
 
             DocumentsModel documentsModel = new DocumentsModel
             {
                 Document = inputDocument,
-                Container = GetRandomString()
+                Container = blobStorageSettings.BlobContainers.EmisLanding
             };
 
             await this.apiBroker.PostDocumentAsync(documentsModel);

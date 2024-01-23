@@ -35,7 +35,15 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         public IQueryable<ResolvedAddress> RetrieveAllResolvedAddresses() =>
             TryCatch(() => this.storageBroker.SelectAllResolvedAddresses());
 
-        public async ValueTask<ResolvedAddress> RetrieveResolvedAddressByIdAsync(Guid resolvedAddressId) =>
-            await this.storageBroker.SelectResolvedAddressByIdAsync(resolvedAddressId);
+        public ValueTask<ResolvedAddress> RetrieveResolvedAddressByIdAsync(Guid resolvedAddressId) =>
+            TryCatch(async () =>
+            {
+                ValidateResolvedAddressId(resolvedAddressId);
+
+                ResolvedAddress maybeResolvedAddress = await this.storageBroker
+                    .SelectResolvedAddressByIdAsync(resolvedAddressId);
+
+                return maybeResolvedAddress;
+            });
     }
 }

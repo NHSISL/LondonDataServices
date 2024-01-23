@@ -80,7 +80,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
                     message: "OptOut validation errors occurred, please try again.",
                     innerException),
 
-                new OptOutDependencyValidationException(innerException)
+                new OptOutDependencyValidationException(
+                    message: "OptOut dependency validation occurred, please try again.", 
+                    innerException)
             };
         }
         public static TheoryData DependencyExceptions()
@@ -91,8 +93,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.OptOuts
 
             return new TheoryData<Xeption>
             {
-                new OptOutDependencyException(innerException),
-                new OptOutServiceException(innerException)
+                new OptOutDependencyException(
+                    message: "OptOut dependency error occurred, contact support.", 
+                    innerException),
+
+                new OptOutServiceException(message: "OptOut service error occurred, contact support.", innerException)
             };
         }
 

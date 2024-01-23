@@ -9,8 +9,8 @@ namespace LHDS.Core.Models.Foundations.OptOuts.Exceptions
 {
     public class NotFoundOptOutException : Xeption
     {
-        public NotFoundOptOutException(Guid optOutId)
-            : base(message: $"Couldn't find optOut with optOutId: {optOutId}.")
+        public NotFoundOptOutException(string message)
+            : base(message)
         { }
     }
 }

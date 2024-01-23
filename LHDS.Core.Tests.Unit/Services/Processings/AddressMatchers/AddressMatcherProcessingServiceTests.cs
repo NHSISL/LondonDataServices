@@ -3,10 +3,12 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Services.Processings.AddressMatchers;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
@@ -47,6 +49,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
-
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+           actualException => actualException.SameExceptionAs(expectedException);
     }
 }

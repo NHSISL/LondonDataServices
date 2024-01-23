@@ -4,13 +4,13 @@
 
 using LHDS.Core.Brokers.Loggings;
 
-namespace LHDS.Core.Services.Foundations.AddressMatchers
+namespace LHDS.Core.Services.Processings.AddressMatchers
 {
-    internal class AddressMatcher : IAddressMatcher
+    internal class AddressMatcherProcessingService : IAddressMatcherProcessingService
     {
         private readonly ILoggingBroker loggingBroker;
 
-        public AddressMatcher(ILoggingBroker loggingBroker)
+        public AddressMatcherProcessingService(ILoggingBroker loggingBroker)
         {
             this.loggingBroker = loggingBroker;
         }

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -33,5 +34,8 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
         public IQueryable<ResolvedAddress> RetrieveAllResolvedAddresses() =>
             TryCatch(() => this.storageBroker.SelectAllResolvedAddresses());
+
+        public ValueTask<ResolvedAddress> RetrieveResolvedAddressByIdAsync(Guid resolvedAddressId) =>
+            throw new NotImplementedException();
     }
 }

@@ -40,6 +40,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
             AddOptOutConfigurations(modelBuilder);
             AddObjectColumnConfigurations(modelBuilder);
             AddPdsAuditConfigurations(modelBuilder);
+            AddResolvedAddressConfigurations(modelBuilder);
             AddSpecificationObjectConfigurations(modelBuilder);
             AddTerminologyArtifactConfigurations(modelBuilder);
             AddTerminologyPollConfigurations(modelBuilder);

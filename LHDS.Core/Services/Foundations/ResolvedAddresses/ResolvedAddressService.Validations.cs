@@ -35,6 +35,11 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 (Rule: IsNotRecent(resolvedAddress.CreatedDate), Parameter: nameof(ResolvedAddress.CreatedDate)));
         }
 
+        private void ValidateResolvedAddressOnModify(ResolvedAddress resolvedAddress)
+        {
+            ValidateResolvedAddressIsNotNull(resolvedAddress);
+        }
+
         public void ValidateResolvedAddressId(Guid resolvedAddressId) =>
             Validate((Rule: IsInvalid(resolvedAddressId), Parameter: nameof(ResolvedAddress.Id)));
 
@@ -89,7 +94,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
-
+        
         private static dynamic IsNotSame(
            string first,
            string second,

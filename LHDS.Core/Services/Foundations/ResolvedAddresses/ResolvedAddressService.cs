@@ -48,7 +48,12 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 return maybeResolvedAddress;
             });
 
-        public async ValueTask<ResolvedAddress> ModifyResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
-            await this.storageBroker.UpdateResolvedAddressAsync(resolvedAddress);
+        public ValueTask<ResolvedAddress> ModifyResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
+            TryCatch(async () =>
+            {
+                ValidateResolvedAddressOnModify(resolvedAddress);
+
+                return await this.storageBroker.UpdateResolvedAddressAsync(resolvedAddress);
+            });
     }
 }

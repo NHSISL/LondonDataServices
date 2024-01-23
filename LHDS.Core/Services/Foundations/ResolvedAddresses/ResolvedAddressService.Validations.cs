@@ -35,6 +35,9 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 (Rule: IsNotRecent(resolvedAddress.CreatedDate), Parameter: nameof(ResolvedAddress.CreatedDate)));
         }
 
+        public void ValidateResolvedAddressId(Guid resolvedAddressId) =>
+            Validate((Rule: IsInvalid(resolvedAddressId), Parameter: nameof(ResolvedAddress.Id)));
+
         private static void ValidateResolvedAddressIsNotNull(ResolvedAddress resolvedAddress)
         {
             if (resolvedAddress is null)

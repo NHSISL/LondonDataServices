@@ -28,6 +28,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
+                broker.SelectResolvedAddressByIdAsync(resolvedAddressId))
+                    .ReturnsAsync(storageResolvedAddress);
+
+            this.storageBrokerMock.Setup(broker =>
                 broker.UpdateResolvedAddressAsync(inputResolvedAddress))
                     .ReturnsAsync(updatedResolvedAddress);
 
@@ -43,12 +47,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
+                broker.SelectResolvedAddressByIdAsync(inputResolvedAddress.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
                 broker.UpdateResolvedAddressAsync(inputResolvedAddress),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

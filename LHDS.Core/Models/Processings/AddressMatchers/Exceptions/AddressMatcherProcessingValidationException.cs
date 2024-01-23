@@ -6,10 +6,10 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Processings.AddressMatchers.Exceptions
 {
-    public class InvalidArgumentAddressMatcherException : Xeption
+    public class AddressMatcherProcessingValidationException : Xeption
     {
-        public InvalidArgumentAddressMatcherException(string message)
-            : base(message)
+        public AddressMatcherProcessingValidationException(string message, Xeption innerException)
+            : base(message,innerException)
         { }
     }
 }

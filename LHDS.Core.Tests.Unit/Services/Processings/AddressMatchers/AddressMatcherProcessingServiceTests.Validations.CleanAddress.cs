@@ -24,24 +24,25 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
             string address = invalidText;
 
             var invalidArgumentAddressMatcherException =
-                new InvalidArgumentAddressMatcherException(
-                    message: "Invalid Address Matcher argument(s), please correct the errors and try again.");
+                new InvalidArgumentAddressMatcherProcessingException(
+                    message: "Invalid address matcher processing argument(s), " +
+                    "please correct the errors and try again.");
 
             invalidArgumentAddressMatcherException.AddData(
                 key: "address",
                 values: "Text is required");
 
             var expectedAddressMatcherValidationException =
-                new AddressMatcherValidationException(
-                    message: "Address matcher validation errors occurred, please try again.",
+                new AddressMatcherProcessingValidationException(
+                    message: "Address matcher processing validation errors occurred, please try again.",
                     innerException: invalidArgumentAddressMatcherException);
 
             // when
             Action cleanAddressAction = () =>
                 addressMatcherProcessingService.CleanAddress(address);
 
-            AddressMatcherValidationException actualAddressMatcherValidationException =
-                Assert.Throws<AddressMatcherValidationException>(cleanAddressAction);
+            AddressMatcherProcessingValidationException actualAddressMatcherValidationException =
+                Assert.Throws<AddressMatcherProcessingValidationException>(cleanAddressAction);
 
             // then
             actualAddressMatcherValidationException.Should()

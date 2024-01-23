@@ -1,59 +1,62 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages.Sql;
+using FluentAssertions;
+using Force.DeepCloner;
+using Moq;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using Xunit;
 
-namespace LHDS.Core.Services.Foundations.ResolvedAddresses
+namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 {
-    public partial class ResolvedAddressService : IResolvedAddressService
+    public partial class ResolvedAddressServiceTests
     {
-        private readonly IStorageBroker storageBroker;
-        private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ILoggingBroker loggingBroker;
-
-        public ResolvedAddressService(
-            IStorageBroker storageBroker,
-            IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker)
+        [Fact]
+        public async Task ShouldModifyResolvedAddressAsync()
         {
-            this.storageBroker = storageBroker;
-            this.dateTimeBroker = dateTimeBroker;
-            this.loggingBroker = loggingBroker;
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ResolvedAddress randomResolvedAddress = CreateRandomModifyResolvedAddress(randomDateTimeOffset);
+            ResolvedAddress inputResolvedAddress = randomResolvedAddress;
+            ResolvedAddress storageResolvedAddress = inputResolvedAddress.DeepClone();
+            storageResolvedAddress.UpdatedDate = randomResolvedAddress.CreatedDate;
+            ResolvedAddress updatedResolvedAddress = inputResolvedAddress;
+            ResolvedAddress expectedResolvedAddress = updatedResolvedAddress.DeepClone();
+            Guid resolvedAddressId = inputResolvedAddress.Id;
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectResolvedAddressByIdAsync(resolvedAddressId))
+                    .ReturnsAsync(storageResolvedAddress);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.UpdateResolvedAddressAsync(inputResolvedAddress))
+                    .ReturnsAsync(updatedResolvedAddress);
+
+            // when
+            ResolvedAddress actualResolvedAddress =
+                await this.resolvedAddressService.ModifyResolvedAddressAsync(inputResolvedAddress);
+
+            // then
+            actualResolvedAddress.Should().BeEquivalentTo(expectedResolvedAddress);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectResolvedAddressByIdAsync(inputResolvedAddress.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateResolvedAddressAsync(inputResolvedAddress),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
-
-        public ValueTask<ResolvedAddress> AddResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
-            TryCatch(async () =>
-            {
-                ValidateResolvedAddressOnAdd(resolvedAddress);
-
-                return await this.storageBroker.InsertResolvedAddressAsync(resolvedAddress);
-            });
-
-        public IQueryable<ResolvedAddress> RetrieveAllResolvedAddresses() =>
-            TryCatch(() => this.storageBroker.SelectAllResolvedAddresses());
-
-        public ValueTask<ResolvedAddress> RetrieveResolvedAddressByIdAsync(Guid resolvedAddressId) =>
-            TryCatch(async () =>
-            {
-                ValidateResolvedAddressId(resolvedAddressId);
-
-                ResolvedAddress maybeResolvedAddress = await this.storageBroker
-                    .SelectResolvedAddressByIdAsync(resolvedAddressId);
-
-                ValidateStorageResolvedAddress(maybeResolvedAddress, resolvedAddressId);
-
-                return maybeResolvedAddress;
-            });
-
-        public ValueTask<ResolvedAddress> ModifyResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
-            TryCatch(async () =>
-            {
-                ValidateResolvedAddressOnModify(resolvedAddress);
-
-                return await this.storageBroker.UpdateResolvedAddressAsync(resolvedAddress);
-            });
     }
 }

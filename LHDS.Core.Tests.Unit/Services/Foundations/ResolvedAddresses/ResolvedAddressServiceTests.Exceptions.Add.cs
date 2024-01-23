@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
@@ -151,7 +152,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 await Assert.ThrowsAsync<ResolvedAddressDependencyValidationException>(
                     addResolvedAddressTask.AsTask);
 
-            actualResolvedAddressDependencyValidationException.Should().BeEquivalentTo(expectedResolvedAddressValidationException);
+            actualResolvedAddressDependencyValidationException.Should()
+                .BeEquivalentTo(expectedResolvedAddressValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -169,6 +171,59 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnAddIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            ResolvedAddress someResolvedAddress = CreateRandomResolvedAddress();
+
+            var databaseUpdateException =
+                new DbUpdateException();
+
+            var failedResolvedAddressStorageException =
+                new FailedResolvedAddressStorageException(
+                    message: "Failed resolvedAddress storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+            var expectedResolvedAddressDependencyException =
+                new ResolvedAddressDependencyException(
+                    message: "ResolvedAddress dependency error occurred, contact support.",
+                    innerException: failedResolvedAddressStorageException); 
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<ResolvedAddress> addResolvedAddressTask =
+                this.resolvedAddressService.AddResolvedAddressAsync(someResolvedAddress);
+
+            ResolvedAddressDependencyException actualResolvedAddressDependencyException =
+                await Assert.ThrowsAsync<ResolvedAddressDependencyException>(
+                    addResolvedAddressTask.AsTask);
+
+            // then
+            actualResolvedAddressDependencyException.Should()
+                .BeEquivalentTo(expectedResolvedAddressDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedResolvedAddressDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

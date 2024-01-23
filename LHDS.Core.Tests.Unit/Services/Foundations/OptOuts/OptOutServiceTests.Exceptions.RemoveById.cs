@@ -23,11 +23,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             OptOut randomOptOut = CreateRandomOptOut();
             SqlException sqlException = GetSqlException();
 
-            var failedOptOutStorageException =
-                new FailedOptOutStorageException(sqlException);
+            var failedOptOutStorageException = new FailedOptOutStorageException(
+                message: "Failed optOut storage error occurred, contact support.",
+                innerException: sqlException);
 
-            var expectedOptOutDependencyException =
-                new OptOutDependencyException(failedOptOutStorageException);
+            var expectedOptOutDependencyException = new OptOutDependencyException(
+                message: "OptOut dependency error occurred, contact support.",
+                innerException: failedOptOutStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectOptOutByIdAsync(randomOptOut.Id))
@@ -76,11 +78,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             var databaseUpdateConcurrencyException =
                 new DbUpdateConcurrencyException();
 
-            var lockedOptOutException =
-                new LockedOptOutException(databaseUpdateConcurrencyException);
+            var lockedOptOutException = new LockedOptOutException(
+                message: "Locked optOut record exception, please try again later",
+                innerException: databaseUpdateConcurrencyException);
 
-            var expectedOptOutDependencyValidationException =
-                new OptOutDependencyValidationException(lockedOptOutException);
+            var expectedOptOutDependencyValidationException = new OptOutDependencyValidationException(
+                message: "OptOut dependency validation occurred, please try again.",
+                innerException: lockedOptOutException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectOptOutByIdAsync(It.IsAny<Guid>()))
@@ -123,11 +127,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             Guid someOptOutId = Guid.NewGuid();
             SqlException sqlException = GetSqlException();
 
-            var failedOptOutStorageException =
-                new FailedOptOutStorageException(sqlException);
+            var failedOptOutStorageException = new FailedOptOutStorageException(
+                message: "Failed optOut storage error occurred, contact support.",
+                innerException: sqlException);
 
-            var expectedOptOutDependencyException =
-                new OptOutDependencyException(failedOptOutStorageException);
+            var expectedOptOutDependencyException = new OptOutDependencyException(
+                message: "OptOut dependency error occurred, contact support.",
+                innerException: failedOptOutStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectOptOutByIdAsync(It.IsAny<Guid>()))
@@ -166,11 +172,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             Guid someOptOutId = Guid.NewGuid();
             var serviceException = new Exception();
 
-            var failedOptOutServiceException =
-                new FailedOptOutServiceException(serviceException);
+            var failedOptOutServiceException = new FailedOptOutServiceException(
+                message: "Failed optOut service occurred, please contact support",
+                innerException: serviceException);
 
-            var expectedOptOutServiceException =
-                new OptOutServiceException(failedOptOutServiceException);
+            var expectedOptOutServiceException = new OptOutServiceException(
+                message: "OptOut service error occurred, contact support.",
+                innerException: failedOptOutServiceException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectOptOutByIdAsync(It.IsAny<Guid>()))

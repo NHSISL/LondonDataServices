@@ -86,7 +86,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
         {
             if (maybeOptOut is null)
             {
-                throw new NotFoundOptOutException(optOutId);
+                throw new NotFoundOptOutException(message: $"Couldn't find optOut with optOutId: {optOutId}.");
             }
         }
 
@@ -94,7 +94,7 @@ namespace LHDS.Core.Services.Foundations.OptOuts
         {
             if (optOut is null)
             {
-                throw new NullOptOutException();
+                throw new NullOptOutException(message: "OptOut is null.");
             }
         }
 

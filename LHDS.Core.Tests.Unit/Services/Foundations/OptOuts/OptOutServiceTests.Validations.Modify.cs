@@ -20,7 +20,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
         {
             // given
             OptOut nullOptOut = null;
-            var nullOptOutException = new NullOptOutException();
+            var nullOptOutException = new NullOptOutException(message: "OptOut is null.");
 
             var expectedOptOutValidationException =
                 new OptOutValidationException(
@@ -404,8 +404,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             OptOut nonExistOptOut = randomOptOut;
             OptOut nullOptOut = null;
 
-            var notFoundOptOutException =
-                new NotFoundOptOutException(nonExistOptOut.Id);
+            var notFoundOptOutException = 
+                new NotFoundOptOutException(message: $"Couldn't find optOut with optOutId: {nonExistOptOut.Id}.");
 
             var expectedOptOutValidationException =
                 new OptOutValidationException(

@@ -24,11 +24,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             OptOut randomOptOut = CreateRandomOptOut();
             SqlException sqlException = GetSqlException();
 
-            var failedOptOutStorageException =
-                new FailedOptOutStorageException(sqlException);
+            var failedOptOutStorageException = new FailedOptOutStorageException(
+                message: "Failed optOut storage error occurred, contact support.",
+                innerException: sqlException);
 
-            var expectedOptOutDependencyException =
-                new OptOutDependencyException(failedOptOutStorageException);
+            var expectedOptOutDependencyException = new OptOutDependencyException(
+                message: "OptOut dependency error occurred, contact support.",
+                innerException: failedOptOutStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -79,11 +81,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             var foreignKeyConstraintConflictException =
                 new ForeignKeyConstraintConflictException(exceptionMessage);
 
-            var invalidOptOutReferenceException =
-                new InvalidOptOutReferenceException(foreignKeyConstraintConflictException);
+            var invalidOptOutReferenceException = new InvalidOptOutReferenceException(
+                message: "Invalid optOut reference error occurred.",
+                innerException: foreignKeyConstraintConflictException);
 
-            OptOutDependencyValidationException expectedOptOutDependencyValidationException =
-                new OptOutDependencyValidationException(invalidOptOutReferenceException);
+            var expectedOptOutDependencyValidationException = new OptOutDependencyValidationException(
+                message: "OptOut dependency validation occurred, please try again.",
+                innerException: invalidOptOutReferenceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -129,11 +133,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             OptOut randomOptOut = CreateRandomOptOut();
             var databaseUpdateException = new DbUpdateException();
 
-            var failedOptOutStorageException =
-                new FailedOptOutStorageException(databaseUpdateException);
+            var failedOptOutStorageException = new FailedOptOutStorageException(
+                message: "Failed optOut storage error occurred, contact support.",
+                innerException: databaseUpdateException);
 
-            var expectedOptOutDependencyException =
-                new OptOutDependencyException(failedOptOutStorageException);
+            var expectedOptOutDependencyException = new OptOutDependencyException(
+                message: "OptOut dependency error occurred, contact support.",
+                innerException: failedOptOutStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -180,11 +186,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             OptOut randomOptOut = CreateRandomOptOut();
             var databaseUpdateConcurrencyException = new DbUpdateConcurrencyException();
 
-            var lockedOptOutException =
-                new LockedOptOutException(databaseUpdateConcurrencyException);
+            var lockedOptOutException = new LockedOptOutException(
+                message: "Locked optOut record exception, please try again later",
+                innerException: databaseUpdateConcurrencyException);
 
-            var expectedOptOutDependencyValidationException =
-                new OptOutDependencyValidationException(lockedOptOutException);
+            var expectedOptOutDependencyValidationException = new OptOutDependencyValidationException(
+                message: "OptOut dependency validation occurred, please try again.",
+                innerException: lockedOptOutException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -231,11 +239,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.OptOuts
             OptOut randomOptOut = CreateRandomOptOut();
             var serviceException = new Exception();
 
-            var failedOptOutServiceException =
-                new FailedOptOutServiceException(serviceException);
+            var failedOptOutServiceException = new FailedOptOutServiceException(
+                message: "Failed optOut service occurred, please contact support",
+                innerException: serviceException);
 
-            var expectedOptOutServiceException =
-                new OptOutServiceException(failedOptOutServiceException);
+            var expectedOptOutServiceException = new OptOutServiceException(
+                message: "OptOut service error occurred, contact support.",
+                innerException: failedOptOutServiceException);
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())

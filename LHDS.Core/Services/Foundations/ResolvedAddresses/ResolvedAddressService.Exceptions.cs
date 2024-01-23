@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
     public partial class ResolvedAddressService
     {
         private delegate ValueTask<ResolvedAddress> ReturningResolvedAddressFunction();
+        private delegate IQueryable<ResolvedAddress> ReturningResolvedAddressesFunction();
 
         private async ValueTask<ResolvedAddress> TryCatch(ReturningResolvedAddressFunction returningResolvedAddressFunction)
         {
@@ -74,6 +76,23 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             }
         }
 
+        private IQueryable<ResolvedAddress> TryCatch(ReturningResolvedAddressesFunction returningResolvedAddressesFunction)
+        {
+            try
+            {
+                return returningResolvedAddressesFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedResolvedAddressStorageException =
+                    new FailedResolvedAddressStorageException(
+                        message: "Failed resolvedAddress storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedResolvedAddressStorageException);
+            }
+        }
+
         private ResolvedAddressValidationException CreateAndLogValidationException(Xeption exception)
         {
             var resolvedAddressValidationException =
@@ -91,7 +110,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             var resolvedAddressDependencyException = 
                 new ResolvedAddressDependencyException(
                     message: "ResolvedAddress dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(resolvedAddressDependencyException);
 
@@ -116,7 +135,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             var resolvedAddressDependencyException = 
                 new ResolvedAddressDependencyException(
                     message: "ResolvedAddress dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(resolvedAddressDependencyException);
 

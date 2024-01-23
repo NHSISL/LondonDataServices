@@ -119,5 +119,52 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveWhenSqlExceptionOccursAndLogItAsync()
+        {
+            // given
+            Guid someResolvedAddressId = Guid.NewGuid();
+            SqlException sqlException = GetSqlException();
+
+            var failedResolvedAddressStorageException =
+                new FailedResolvedAddressStorageException(
+                    message: "Failed resolvedAddress storage error occurred, contact support.",
+                    innerException: sqlException);
+
+            var expectedResolvedAddressDependencyException =
+                new ResolvedAddressDependencyException(
+                    message: "ResolvedAddress dependency error occurred, contact support.",
+                    innerException: failedResolvedAddressStorageException); 
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectResolvedAddressByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(sqlException);
+
+            // when
+            ValueTask<ResolvedAddress> deleteResolvedAddressTask =
+                this.resolvedAddressService.RemoveResolvedAddressByIdAsync(someResolvedAddressId);
+
+            ResolvedAddressDependencyException actualResolvedAddressDependencyException =
+                await Assert.ThrowsAsync<ResolvedAddressDependencyException>(
+                    deleteResolvedAddressTask.AsTask);
+
+            // then
+            actualResolvedAddressDependencyException.Should()
+                .BeEquivalentTo(expectedResolvedAddressDependencyException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectResolvedAddressByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedResolvedAddressDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

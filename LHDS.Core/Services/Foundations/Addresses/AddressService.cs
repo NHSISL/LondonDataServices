@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -74,17 +73,6 @@ namespace LHDS.Core.Services.Foundations.Addresses
                 ValidateStorageAddress(maybeAddress, addressId);
 
                 return await this.storageBroker.DeleteAddressAsync(maybeAddress);
-            });
-
-        public ValueTask<List<Address>> RetrieveAddressesByPostCodeAsync(string postCode) =>
-            TryCatch(async () =>
-            {
-                ValidatePostCode(postCode);
-
-                List<Address> returnedAddresses =
-                    this.storageBroker.SelectAllAddresses().Where(address => address.PostCode == postCode).ToList();
-
-                return returnedAddresses;
             });
     }
 }

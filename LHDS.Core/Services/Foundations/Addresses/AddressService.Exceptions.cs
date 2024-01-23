@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using Xeptions;
-using System.Collections.Generic;
 
 namespace LHDS.Core.Services.Foundations.Addresses
 {
@@ -15,7 +14,6 @@ namespace LHDS.Core.Services.Foundations.Addresses
     {
         private delegate ValueTask<Address> ReturningAddressFunction();
         private delegate IQueryable<Address> ReturningAddressesFunction();
-        private delegate ValueTask<List<Address>> ReturningAddressListFunction();
 
         private async ValueTask<Address> TryCatch(ReturningAddressFunction returningAddressFunction)
         {
@@ -110,37 +108,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
             {
                 var failedAddressServiceException =
                     new FailedAddressServiceException(
-                        message: "Failed address service occurred, please contact support",
-                        innerException: exception);
-
-                throw CreateAndLogServiceException(failedAddressServiceException);
-            }
-        }
-
-        private async ValueTask<List<Address>> TryCatch(ReturningAddressListFunction returningAddressListFunction)
-        {
-            try
-            {
-                return await returningAddressListFunction();
-            }
-            catch (InvalidAddressException invalidAddressException)
-            {
-                throw CreateAndLogValidationException(invalidAddressException);
-            }
-            catch (SqlException sqlException)
-            {
-                var failedAddressStorageException =
-                    new FailedAddressStorageException(
-                        message: "Failed address storage error occurred, contact support.",
-                        innerException: sqlException);
-
-                throw CreateAndLogCriticalDependencyException(failedAddressStorageException);
-            }
-            catch (Exception exception)
-            {
-                var failedAddressServiceException =
-                    new FailedAddressServiceException(
-                        message: "Failed address service occurred, please contact support",
+                        message: "Failed address service occurred, please contact support", 
                         innerException: exception);
 
                 throw CreateAndLogServiceException(failedAddressServiceException);

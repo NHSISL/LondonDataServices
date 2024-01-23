@@ -7,7 +7,7 @@ using LHDS.Core.Models.Bases;
 
 namespace LHDS.Core.Models.Foundations.ResolvedAddresses
 {
-    public class ResolvedAddress : IKey, IAudit
+    internal class ResolvedAddress : IKey, IAudit
     {
         public Guid Id { get; set; }
         public string? UPRN { get; set; }

@@ -57,5 +57,52 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedResolvedAddressServiceException =
+                new FailedResolvedAddressServiceException(
+                    message: "Failed resolvedAddress service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedResolvedAddressServiceException =
+                new ResolvedAddressServiceException(
+                    message: "ResolvedAddress service error occurred, contact support.",
+                    innerException: failedResolvedAddressServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectResolvedAddressByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<ResolvedAddress> retrieveResolvedAddressByIdTask =
+                this.resolvedAddressService.RetrieveResolvedAddressByIdAsync(someId);
+
+            ResolvedAddressServiceException actualResolvedAddressServiceException =
+                await Assert.ThrowsAsync<ResolvedAddressServiceException>(
+                    retrieveResolvedAddressByIdTask.AsTask);
+
+            // then
+            actualResolvedAddressServiceException.Should()
+                .BeEquivalentTo(expectedResolvedAddressServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectResolvedAddressByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedResolvedAddressServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

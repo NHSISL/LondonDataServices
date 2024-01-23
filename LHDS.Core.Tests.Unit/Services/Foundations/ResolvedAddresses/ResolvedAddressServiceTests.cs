@@ -64,6 +64,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static ResolvedAddress CreateRandomModifyResolvedAddress(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(dateTimeOffset);
+
+            randomResolvedAddress.CreatedDate =
+                randomResolvedAddress.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomResolvedAddress;
+        }
+
         private static IQueryable<ResolvedAddress> CreateRandomResolvedAddresses()
         {
             return CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())

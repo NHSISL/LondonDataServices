@@ -10,5 +10,6 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         ValueTask<ResolvedAddress> AddResolvedAddressAsync(ResolvedAddress resolvedAddress);
         IQueryable<ResolvedAddress> RetrieveAllResolvedAddresses();
         ValueTask<ResolvedAddress> RetrieveResolvedAddressByIdAsync(Guid resolvedAddressId);
+        ValueTask<ResolvedAddress> ModifyResolvedAddressAsync(ResolvedAddress resolvedAddress);
     }
 }

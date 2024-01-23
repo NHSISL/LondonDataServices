@@ -24,7 +24,13 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                     firstDate: resolvedAddress.UpdatedDate,
                     secondDate: resolvedAddress.CreatedDate,
                     secondDateName: nameof(ResolvedAddress.CreatedDate)),
-                Parameter: nameof(ResolvedAddress.UpdatedDate)));
+                Parameter: nameof(ResolvedAddress.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    firstId: resolvedAddress.UpdatedBy,
+                    secondId: resolvedAddress.CreatedBy,
+                    secondIdName: nameof(ResolvedAddress.CreatedBy)),
+                Parameter: nameof(ResolvedAddress.UpdatedBy)));
         }
 
         private static void ValidateResolvedAddressIsNotNull(ResolvedAddress resolvedAddress)
@@ -61,6 +67,24 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 Condition = firstDate != secondDate,
                 Message = $"Date is not the same as {secondDateName}"
             };
+
+        private static dynamic IsNotSame(
+            Guid firstId,
+            Guid secondId,
+            string secondIdName) => new
+            {
+                Condition = firstId != secondId,
+                Message = $"Id is not the same as {secondIdName}"
+            };
+
+        private static dynamic IsNotSame(
+           string first,
+           string second,
+           string secondName) => new
+           {
+               Condition = first != second,
+               Message = $"Text is not the same as {secondName}"
+           };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
@@ -33,6 +34,15 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
                 throw CreateAndLogCriticalDependencyException(failedResolvedAddressStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsResolvedAddressException =
+                    new AlreadyExistsResolvedAddressException(
+                        message: "ResolvedAddress with the same Id already exists.",
+                        innerException: duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsResolvedAddressException);
+            }
         }
 
         private ResolvedAddressValidationException CreateAndLogValidationException(Xeption exception)
@@ -57,6 +67,18 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             this.loggingBroker.LogCritical(resolvedAddressDependencyException);
 
             return resolvedAddressDependencyException;
+        }
+
+        private ResolvedAddressDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var resolvedAddressDependencyValidationException =
+                new ResolvedAddressDependencyValidationException(
+                    message: "ResolvedAddress dependency validation occurred, please try again.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(resolvedAddressDependencyValidationException);
+
+            return resolvedAddressDependencyValidationException;
         }
     }
 }

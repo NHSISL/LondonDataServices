@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -57,10 +58,19 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             {
                 var failedResolvedAddressStorageException =
                     new FailedResolvedAddressStorageException(
-                    message: "Failed resolvedAddress storage error occurred, contact support.",
-                    innerException: databaseUpdateException);
+                        message: "Failed resolvedAddress storage error occurred, contact support.",
+                        innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedResolvedAddressStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedResolvedAddressServiceException =
+                    new FailedResolvedAddressServiceException(
+                        message: "Failed resolvedAddress service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedResolvedAddressServiceException);
             }
         }
 
@@ -111,6 +121,19 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             this.loggingBroker.LogError(resolvedAddressDependencyException);
 
             return resolvedAddressDependencyException;
+        }
+
+        private ResolvedAddressServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var resolvedAddressServiceException = 
+                new ResolvedAddressServiceException(
+                    message: "ResolvedAddress service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(resolvedAddressServiceException);
+
+            return resolvedAddressServiceException;
         }
     }
 }

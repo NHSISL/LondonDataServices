@@ -23,7 +23,5 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
             // then
             actualAddress.Should().BeEquivalentTo(expectedCleanedAddress);
         }
-
-
     }
 }

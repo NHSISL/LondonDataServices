@@ -29,8 +29,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                 "A,AA,A",
                 "A, A A, A",
                 "A, A  A, A",
-                " A , A , A",
-                "A, A, A "
+                " A , AA , A",
+                "A, AA, A "
             };
         }
 

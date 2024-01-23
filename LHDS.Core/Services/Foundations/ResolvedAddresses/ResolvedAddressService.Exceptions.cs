@@ -38,6 +38,10 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
                 throw CreateAndLogCriticalDependencyException(failedResolvedAddressStorageException);
             }
+            catch (NotFoundResolvedAddressException notFoundResolvedAddressException)
+            {
+                throw CreateAndLogValidationException(notFoundResolvedAddressException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsResolvedAddressException =

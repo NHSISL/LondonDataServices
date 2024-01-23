@@ -62,7 +62,12 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 return await this.storageBroker.UpdateResolvedAddressAsync(resolvedAddress);
             });
 
-        public ValueTask<ResolvedAddress> RemoveResolvedAddressByIdAsync(Guid resolvedAddressId) =>
-            throw new NotImplementedException();
+        public async ValueTask<ResolvedAddress> RemoveResolvedAddressByIdAsync(Guid resolvedAddressId)
+        {
+            ResolvedAddress maybeResolvedAddress = await this.storageBroker
+                    .SelectResolvedAddressByIdAsync(resolvedAddressId);
+
+            return await this.storageBroker.DeleteResolvedAddressAsync(maybeResolvedAddress);
+        }
     }
 }

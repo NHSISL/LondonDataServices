@@ -27,10 +27,12 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 Parameter: nameof(ResolvedAddress.UpdatedDate)),
 
                 (Rule: IsNotSame(
-                    firstId: resolvedAddress.UpdatedBy,
-                    secondId: resolvedAddress.CreatedBy,
-                    secondIdName: nameof(ResolvedAddress.CreatedBy)),
-                Parameter: nameof(ResolvedAddress.UpdatedBy)));
+                    first: resolvedAddress.UpdatedBy,
+                    second: resolvedAddress.CreatedBy,
+                    secondName: nameof(ResolvedAddress.CreatedBy)),
+                Parameter: nameof(ResolvedAddress.UpdatedBy)),
+
+                (Rule: IsNotRecent(resolvedAddress.CreatedDate), Parameter: nameof(ResolvedAddress.CreatedDate)));
         }
 
         private static void ValidateResolvedAddressIsNotNull(ResolvedAddress resolvedAddress)
@@ -85,6 +87,23 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                Condition = first != second,
                Message = $"Text is not the same as {secondName}"
            };
+
+        private dynamic IsNotRecent(DateTimeOffset date) => new
+        {
+            Condition = IsDateNotRecent(date),
+            Message = "Date is not recent"
+        };
+
+        private bool IsDateNotRecent(DateTimeOffset date)
+        {
+            DateTimeOffset currentDateTime =
+                this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+            TimeSpan timeDifference = currentDateTime.Subtract(date);
+            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+
+            return timeDifference.Duration() > oneMinute;
+        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -25,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             var expectedResolvedAddressDependencyException =
                 new ResolvedAddressDependencyException(
                     message: "ResolvedAddress dependency error occurred, contact support.",
-                    innerException: failedResolvedAddressStorageException);
+                    innerException: failedResolvedAddressStorageException);             
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -54,6 +55,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
                     expectedResolvedAddressDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfResolvedAddressAlreadyExsitsAndLogItAsync()
+        {
+            // given
+            ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress();
+            ResolvedAddress alreadyExistsResolvedAddress = randomResolvedAddress;
+            string randomMessage = GetRandomString();
+
+            var duplicateKeyException =
+                new DuplicateKeyException(randomMessage);
+
+            var alreadyExistsResolvedAddressException =
+                new AlreadyExistsResolvedAddressException(
+                    message: "ResolvedAddress with the same Id already exists.",
+                    innerException: duplicateKeyException);
+
+            var expectedResolvedAddressDependencyValidationException =
+                new ResolvedAddressDependencyValidationException(
+                    message: "ResolvedAddress dependency validation occurred, please try again.",
+                    innerException: alreadyExistsResolvedAddressException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(duplicateKeyException);
+
+            // when
+            ValueTask<ResolvedAddress> addResolvedAddressTask =
+                this.resolvedAddressService.AddResolvedAddressAsync(alreadyExistsResolvedAddress);
+
+            // then
+            ResolvedAddressDependencyValidationException actualResolvedAddressDependencyValidationException =
+                await Assert.ThrowsAsync<ResolvedAddressDependencyValidationException>(
+                    addResolvedAddressTask.AsTask);
+
+            actualResolvedAddressDependencyValidationException.Should()
+                .BeEquivalentTo(expectedResolvedAddressDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertResolvedAddressAsync(It.IsAny<ResolvedAddress>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedResolvedAddressDependencyValidationException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

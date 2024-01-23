@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             });
 
         public IQueryable<ResolvedAddress> RetrieveAllResolvedAddresses() =>
-            throw new System.NotImplementedException();
+            this.storageBroker.SelectAllResolvedAddresses();
     }
 }

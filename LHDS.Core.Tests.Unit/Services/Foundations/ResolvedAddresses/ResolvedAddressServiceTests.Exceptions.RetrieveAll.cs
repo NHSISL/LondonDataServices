@@ -23,7 +23,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             var expectedResolvedAddressDependencyException =
                 new ResolvedAddressDependencyException(
                     message: "ResolvedAddress dependency error occurred, contact support.",
-                    innerException: failedResolvedAddressStorageException); 
+                    innerException: failedResolvedAddressStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllResolvedAddresses())
@@ -52,6 +52,51 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomString();
+            var serviceException = new Exception(exceptionMessage);
+
+            var failedResolvedAddressServiceException =
+                new FailedResolvedAddressServiceException(
+                    message: "Failed resolvedAddress service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedResolvedAddressServiceException =
+                new ResolvedAddressServiceException(
+                    message: "ResolvedAddress service error occurred, contact support.",
+                    innerException: failedResolvedAddressServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllResolvedAddresses())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllResolvedAddressesAction = () =>
+                this.resolvedAddressService.RetrieveAllResolvedAddresses();
+
+            ResolvedAddressServiceException actualResolvedAddressServiceException =
+                Assert.Throws<ResolvedAddressServiceException>(retrieveAllResolvedAddressesAction);
+
+            // then
+            actualResolvedAddressServiceException.Should()
+                .BeEquivalentTo(expectedResolvedAddressServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllResolvedAddresses(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedResolvedAddressServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -1,10 +1,14 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using Moq;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
@@ -60,24 +64,15 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         public async Task ShouldThrowValidationExceptionOnModifyIfResolvedAddressIsInvalidAndLogItAsync(string invalidText)
         {
             // given 
-            var invalidResolvedAddress = new ResolvedAddress
-            {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
-            };
+            var invalidResolvedAddress = new ResolvedAddress();
 
-            var invalidResolvedAddressException = 
+            var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
                     message: "Invalid resolvedAddress. Please correct the errors and try again.");
 
             invalidResolvedAddressException.AddData(
                 key: nameof(ResolvedAddress.Id),
                 values: "Id is required");
-
-            //invalidResolvedAddressException.AddData(
-            //    key: nameof(ResolvedAddress.Name),
-            //    values: "Text is required");
-
-            // TODO: Add or remove data here to suit the validation needs for the ResolvedAddress model
 
             invalidResolvedAddressException.AddData(
                 key: nameof(ResolvedAddress.CreatedDate),
@@ -141,8 +136,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(randomDateTimeOffset);
             ResolvedAddress invalidResolvedAddress = randomResolvedAddress;
-            
-            var invalidResolvedAddressException = 
+
+            var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
                     message: "Invalid resolvedAddress. Please correct the errors and try again.");
 
@@ -198,7 +193,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(randomDateTimeOffset);
             randomResolvedAddress.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var invalidResolvedAddressException = 
+            var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
                     message: "Invalid resolvedAddress. Please correct the errors and try again.");
 
@@ -312,8 +307,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             ResolvedAddress storageResolvedAddress = invalidResolvedAddress.DeepClone();
             storageResolvedAddress.CreatedDate = storageResolvedAddress.CreatedDate.AddMinutes(randomMinutes);
             storageResolvedAddress.UpdatedDate = storageResolvedAddress.UpdatedDate.AddMinutes(randomMinutes);
-            
-            var invalidResolvedAddressException = 
+
+            var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
                     message: "Invalid resolvedAddress. Please correct the errors and try again.");
 
@@ -375,7 +370,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             invalidResolvedAddress.CreatedBy = Guid.NewGuid().ToString();
             storageResolvedAddress.UpdatedDate = storageResolvedAddress.CreatedDate;
 
-            var invalidResolvedAddressException = 
+            var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
                     message: "Invalid resolvedAddress. Please correct the errors and try again.");
 
@@ -434,7 +429,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             ResolvedAddress invalidResolvedAddress = randomResolvedAddress;
             ResolvedAddress storageResolvedAddress = randomResolvedAddress.DeepClone();
 
-            var invalidResolvedAddressException = 
+            var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
                     message: "Invalid resolvedAddress. Please correct the errors and try again.");
 

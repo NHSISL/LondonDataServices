@@ -1,9 +1,13 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
@@ -53,10 +57,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
         public async Task ShouldThrowValidationExceptionOnAddIfResolvedAddressIsInvalidAndLogItAsync(string invalidText)
         {
             // given
-            var invalidResolvedAddress = new ResolvedAddress
-            {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
-            };
+            var invalidResolvedAddress = new ResolvedAddress();
 
             var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
@@ -65,12 +66,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             invalidResolvedAddressException.AddData(
                 key: nameof(ResolvedAddress.Id),
                 values: "Id is required");
-
-            //invalidResolvedAddressException.AddData(
-            //    key: nameof(ResolvedAddress.Name),
-            //    values: "Text is required");
-
-            // TODO: Add or remove data here to suit the validation needs for the ResolvedAddress model
 
             invalidResolvedAddressException.AddData(
                 key: nameof(ResolvedAddress.CreatedDate),
@@ -135,7 +130,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             invalidResolvedAddress.UpdatedDate =
                 invalidResolvedAddress.CreatedDate.AddDays(randomNumber);
 
-            var invalidResolvedAddressException = 
+            var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
                     message: "Invalid resolvedAddress. Please correct the errors and try again.");
 

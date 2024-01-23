@@ -1,3 +1,7 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
@@ -12,9 +16,6 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
             Validate(
                 (Rule: IsInvalid(resolvedAddress.Id), Parameter: nameof(ResolvedAddress.Id)),
-
-                // TODO: Add any other required validation rules
-
                 (Rule: IsInvalid(resolvedAddress.CreatedDate), Parameter: nameof(ResolvedAddress.CreatedDate)),
                 (Rule: IsInvalid(resolvedAddress.CreatedBy), Parameter: nameof(ResolvedAddress.CreatedBy)),
                 (Rule: IsInvalid(resolvedAddress.UpdatedDate), Parameter: nameof(ResolvedAddress.UpdatedDate)),
@@ -41,9 +42,6 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
             Validate(
                 (Rule: IsInvalid(resolvedAddress.Id), Parameter: nameof(ResolvedAddress.Id)),
-
-                // TODO: Add any other required validation rules
-
                 (Rule: IsInvalid(resolvedAddress.CreatedDate), Parameter: nameof(ResolvedAddress.CreatedDate)),
                 (Rule: IsInvalid(resolvedAddress.CreatedBy), Parameter: nameof(ResolvedAddress.CreatedBy)),
                 (Rule: IsInvalid(resolvedAddress.UpdatedDate), Parameter: nameof(ResolvedAddress.UpdatedDate)),
@@ -172,7 +170,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidResolvedAddressException = 
+            var invalidResolvedAddressException =
                 new InvalidResolvedAddressException(
                     message: "Invalid resolvedAddress. Please correct the errors and try again.");
 

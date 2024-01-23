@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -224,6 +225,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedResolvedAddressDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateResolvedAddressAsync(randomResolvedAddress),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnModifyIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress();
+            var serviceException = new Exception();
+
+            var failedResolvedAddressServiceException =
+                new FailedResolvedAddressServiceException(
+                    message: "Failed resolvedAddress service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedResolvedAddressServiceException =
+                new ResolvedAddressServiceException(
+                    message: "ResolvedAddress service error occurred, contact support.",
+                    innerException: failedResolvedAddressServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<ResolvedAddress> modifyResolvedAddressTask =
+                this.resolvedAddressService.ModifyResolvedAddressAsync(randomResolvedAddress);
+
+            ResolvedAddressServiceException actualResolvedAddressServiceException =
+                await Assert.ThrowsAsync<ResolvedAddressServiceException>(
+                    modifyResolvedAddressTask.AsTask);
+
+            // then
+            actualResolvedAddressServiceException.Should()
+                .BeEquivalentTo(expectedResolvedAddressServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectResolvedAddressByIdAsync(randomResolvedAddress.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedResolvedAddressServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

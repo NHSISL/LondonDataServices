@@ -184,9 +184,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                 broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -198,8 +198,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
             ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress(randomDateTimeOffset);
             randomResolvedAddress.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var invalidResolvedAddressException =
-                new InvalidResolvedAddressException();
+            var invalidResolvedAddressException = 
+                new InvalidResolvedAddressException(
+                    message: "Invalid resolvedAddress. Please correct the errors and try again.");
 
             invalidResolvedAddressException.AddData(
                 key: nameof(ResolvedAddress.UpdatedDate),
@@ -294,8 +295,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                     expectedResolvedAddressValidationException))),
                         Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -358,8 +359,69 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
                    expectedResolvedAddressValidationException))),
                        Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfCreatedUserDontMacthStorageAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ResolvedAddress randomResolvedAddress = CreateRandomModifyResolvedAddress(randomDateTimeOffset);
+            ResolvedAddress invalidResolvedAddress = randomResolvedAddress.DeepClone();
+            ResolvedAddress storageResolvedAddress = invalidResolvedAddress.DeepClone();
+            invalidResolvedAddress.CreatedBy = Guid.NewGuid().ToString();
+            storageResolvedAddress.UpdatedDate = storageResolvedAddress.CreatedDate;
+
+            var invalidResolvedAddressException = 
+                new InvalidResolvedAddressException(
+                    message: "Invalid resolvedAddress. Please correct the errors and try again.");
+
+            invalidResolvedAddressException.AddData(
+                key: nameof(ResolvedAddress.CreatedBy),
+                values: $"Text is not the same as {nameof(ResolvedAddress.CreatedBy)}");
+
+            var expectedResolvedAddressValidationException =
+                new ResolvedAddressValidationException(
+                    message: "ResolvedAddress validation errors occurred, please try again.",
+                    innerException: invalidResolvedAddressException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id))
+                .ReturnsAsync(storageResolvedAddress);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<ResolvedAddress> modifyResolvedAddressTask =
+                this.resolvedAddressService.ModifyResolvedAddressAsync(invalidResolvedAddress);
+
+            ResolvedAddressValidationException actualResolvedAddressValidationException =
+                await Assert.ThrowsAsync<ResolvedAddressValidationException>(
+                    modifyResolvedAddressTask.AsTask);
+
+            // then
+            actualResolvedAddressValidationException.Should().BeEquivalentTo(expectedResolvedAddressValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectResolvedAddressByIdAsync(invalidResolvedAddress.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedResolvedAddressValidationException))),
+                       Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

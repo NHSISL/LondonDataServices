@@ -15,7 +15,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
         {
             // given
             string uncleanedAddress = uncleanedAddressString;
-            string expectedCleanedAddress = "a, a a, a";
+            string expectedCleanedAddress = "a, 'a a', a";
 
             // when
             string actualAddress = this.addressMatcherProcessingService.CleanAddress(uncleanedAddress);

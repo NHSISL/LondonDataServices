@@ -22,7 +22,12 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<ResolvedAddress> AddResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
-            await this.storageBroker.InsertResolvedAddressAsync(resolvedAddress);
+        public ValueTask<ResolvedAddress> AddResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
+            TryCatch(async () =>
+            {
+                ValidateResolvedAddressOnAdd(resolvedAddress);
+
+                return await this.storageBroker.InsertResolvedAddressAsync(resolvedAddress);
+            });
     }
 }

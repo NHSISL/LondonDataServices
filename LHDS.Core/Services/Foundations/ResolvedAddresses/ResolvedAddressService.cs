@@ -70,6 +70,8 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                 ResolvedAddress maybeResolvedAddress = await this.storageBroker
                     .SelectResolvedAddressByIdAsync(resolvedAddressId);
 
+                ValidateStorageResolvedAddress(maybeResolvedAddress, resolvedAddressId);
+
                 return await this.storageBroker.DeleteResolvedAddressAsync(maybeResolvedAddress);
             });
     }

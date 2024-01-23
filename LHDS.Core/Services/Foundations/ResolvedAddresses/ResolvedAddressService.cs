@@ -35,7 +35,7 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
         public IQueryable<ResolvedAddress> RetrieveAllResolvedAddresses() =>
             TryCatch(() => this.storageBroker.SelectAllResolvedAddresses());
 
-        public ValueTask<ResolvedAddress> RetrieveResolvedAddressByIdAsync(Guid resolvedAddressId) =>
-            throw new NotImplementedException();
+        public async ValueTask<ResolvedAddress> RetrieveResolvedAddressByIdAsync(Guid resolvedAddressId) =>
+            await this.storageBroker.SelectResolvedAddressByIdAsync(resolvedAddressId);
     }
 }

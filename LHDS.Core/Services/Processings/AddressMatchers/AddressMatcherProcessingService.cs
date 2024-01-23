@@ -18,33 +18,34 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
 
         public string CleanAddress(string address) =>
             TryCatch(() =>
-        {
-            var cleanAddress = address.ToLower().Trim();
-            var punctuationPattern = @"\s[,.!?-]|[,.!?;:'""](?![ ])";
-            var regexPunctuation = new Regex(punctuationPattern, RegexOptions.Compiled);
-            var regexSpaces = new Regex(@"[ ]{2,}", RegexOptions.Compiled);
-            string previousAddress;
-
-            do
             {
-                previousAddress = cleanAddress;
+                ValidateAddress(address);
+                var cleanAddress = address.ToLower().Trim();
+                var punctuationPattern = @"\s[,.!?-]|[,.!?;:'""](?![ ])";
+                var regexPunctuation = new Regex(punctuationPattern, RegexOptions.Compiled);
+                var regexSpaces = new Regex(@"[ ]{2,}", RegexOptions.Compiled);
+                string previousAddress;
 
-                cleanAddress = regexPunctuation.Replace(cleanAddress, match =>
+                do
                 {
-                    if (match.Value.StartsWith(" "))
+                    previousAddress = cleanAddress;
+
+                    cleanAddress = regexPunctuation.Replace(cleanAddress, match =>
                     {
-                        return match.Value.TrimStart();
-                    }
+                        if (match.Value.StartsWith(" "))
+                        {
+                            return match.Value.TrimStart();
+                        }
 
-                    return match.Value + " ";
-                });
+                        return match.Value + " ";
+                    });
 
-                cleanAddress = regexSpaces.Replace(cleanAddress, " ");
+                    cleanAddress = regexSpaces.Replace(cleanAddress, " ");
 
-            } while (cleanAddress != previousAddress);
+                } while (cleanAddress != previousAddress);
 
-            return cleanAddress;
-        });
+                return cleanAddress;
+            });
 
         public string ExtractPostCode(string address) =>
             throw new System.NotImplementedException();

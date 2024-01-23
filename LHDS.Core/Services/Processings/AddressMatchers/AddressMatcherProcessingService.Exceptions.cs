@@ -28,7 +28,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
         {
             var addressMatcherProcessingValidationException =
                 new AddressMatcherProcessingValidationException(
-                    message: "Address matcher processing validation error occurred, please try again.",
+                    message: "Address matcher processing validation errors occurred, please try again.",
                     innerException: exception);
 
             this.loggingBroker.LogError(addressMatcherProcessingValidationException);

@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
@@ -117,6 +118,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateResolvedAddressAsync(someResolvedAddress),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnModifyIfDatabaseUpdateExceptionOccursAndLogItAsync()
+        {
+            // given
+            ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress();
+            var databaseUpdateException = new DbUpdateException();
+
+            var failedResolvedAddressStorageException =
+                new FailedResolvedAddressStorageException(
+                    message: "Failed resolvedAddress storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+            var expectedResolvedAddressDependencyException =
+                new ResolvedAddressDependencyException(
+                    message: "ResolvedAddress dependency error occurred, contact support.",
+                    innerException: failedResolvedAddressStorageException); 
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<ResolvedAddress> modifyResolvedAddressTask =
+                this.resolvedAddressService.ModifyResolvedAddressAsync(randomResolvedAddress);
+
+            ResolvedAddressDependencyException actualResolvedAddressDependencyException =
+                await Assert.ThrowsAsync<ResolvedAddressDependencyException>(
+                    modifyResolvedAddressTask.AsTask);
+
+            // then
+            actualResolvedAddressDependencyException.Should()
+                .BeEquivalentTo(expectedResolvedAddressDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectResolvedAddressByIdAsync(randomResolvedAddress.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedResolvedAddressDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateResolvedAddressAsync(randomResolvedAddress),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

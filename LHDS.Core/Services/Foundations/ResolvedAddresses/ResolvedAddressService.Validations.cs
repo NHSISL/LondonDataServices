@@ -84,7 +84,13 @@ namespace LHDS.Core.Services.Foundations.ResolvedAddresses
                     firstDate: inputResolvedAddress.CreatedDate,
                     secondDate: storageResolvedAddress.CreatedDate,
                     secondDateName: nameof(ResolvedAddress.CreatedDate)),
-                Parameter: nameof(ResolvedAddress.CreatedDate)));
+                Parameter: nameof(ResolvedAddress.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    first: inputResolvedAddress.CreatedBy,
+                    second: storageResolvedAddress.CreatedBy,
+                    secondName: nameof(ResolvedAddress.CreatedBy)),
+                Parameter: nameof(ResolvedAddress.CreatedBy)));
         }
 
         private static dynamic IsInvalid(Guid id) => new

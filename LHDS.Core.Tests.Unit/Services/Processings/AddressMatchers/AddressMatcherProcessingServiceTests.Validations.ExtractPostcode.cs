@@ -95,5 +95,42 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [InlineData("123 Main Street, London, United Kingdom")]
+        [InlineData("123 Hayes Street, London, United Kingdom")]
+        public async Task ShouldThrowValidationExceptionOnExtractPostcodeIfReturnedNoPostcodeAndLogItAsync(
+           string duplicateAddresse)
+        {
+            // given
+            string cleanedAddress = duplicateAddresse;
+
+            var postCodeNotFoundAddressMatcherProcessingServiceException =
+                new PostCodeNotFoundAddressMatcherProcessingServiceException(
+                    message: "No Postcodes found validation error occurred, please try again.");
+
+            var expectedAddressMatcherValidationException =
+                new AddressMatcherProcessingValidationException(
+                    message: "Address matcher processing validation errors occurred, please try again.",
+                    innerException: postCodeNotFoundAddressMatcherProcessingServiceException);
+
+            // when
+            Action extractPostcodeAction = () =>
+                addressMatcherProcessingService.ExtractPostCode(cleanedAddress);
+
+            AddressMatcherProcessingValidationException actualAddressMatcherValidationException =
+                Assert.Throws<AddressMatcherProcessingValidationException>(extractPostcodeAction);
+
+            // then
+            actualAddressMatcherValidationException.Should()
+                .BeEquivalentTo(expectedAddressMatcherValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressMatcherValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

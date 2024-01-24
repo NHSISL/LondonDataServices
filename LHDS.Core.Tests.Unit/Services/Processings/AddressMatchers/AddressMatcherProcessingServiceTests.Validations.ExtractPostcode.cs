@@ -86,6 +86,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                 .BeEquivalentTo(expectedAddressMatcherValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
+                broker.LogNothing(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedAddressMatcherValidationException))),
                         Times.Once);
@@ -121,6 +125,10 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
             // then
             actualAddressMatcherValidationException.Should()
                 .BeEquivalentTo(expectedAddressMatcherValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogNothing(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

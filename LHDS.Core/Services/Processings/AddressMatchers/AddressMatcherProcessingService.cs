@@ -60,7 +60,6 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
                 ValidateMatches(matches);
                 string extractedPostCode = matches[0].Groups[1].Value;
                 
-
                 return extractedPostCode;
             });
     }

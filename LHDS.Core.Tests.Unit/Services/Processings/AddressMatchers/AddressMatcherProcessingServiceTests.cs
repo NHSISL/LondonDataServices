@@ -66,6 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                     {"BT1 2YZ, 303 Pine Road, Belfast, Northern Ireland", "BT1 2YZ"},
                     {"123 Christo Street, London, IP39WF, United Kingdom", "IP39WF"},
                     {"123 Christo Street, London, IP3 9WF, United Kingdom", "IP3 9WF"},
+                    {"123 Main Street, London, CR2 0HG, CR2 0HG, United Kingdom" , "CR2 0HG"},
                     {"123 Christo Street, London, W1A 1AA, United Kingdom, Additional Info, Longer Street Name, More Details, Extended Address Information, Extra Information, Additional Details, Longer City Name, Extended Street Name, More Information, Extra Details", "W1A 1AA"}
                 };
         }

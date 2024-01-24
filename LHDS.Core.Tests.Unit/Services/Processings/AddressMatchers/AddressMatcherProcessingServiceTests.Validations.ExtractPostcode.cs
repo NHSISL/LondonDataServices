@@ -59,7 +59,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
         [Theory]
         [InlineData("123 Main Street, London, W1A 1AA, W2 2BB, United Kingdom")]
         [InlineData("123 Main Street, London, CR2 1AA, W2 2BB, United Kingdom")]
-        [InlineData("123 Main Street, London, CR2 0HG, CR2 0HG, United Kingdom")]
         public async Task ShouldThrowValidationExceptionOnExtractPostcodeIfReturnedGreaterThanOneAndLogItAsync(
             string duplicateAddresse)
         {

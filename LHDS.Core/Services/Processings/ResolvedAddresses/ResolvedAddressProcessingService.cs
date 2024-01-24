@@ -29,18 +29,18 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
             {
                 ValidateResolvedAddress(resolvedAddress);
 
-                return await this.resolvedAddressService.AddResolvedAddressAsync(resolvedAddress);
+                return await resolvedAddressService.AddResolvedAddressAsync(resolvedAddress);
             });
 
         public IQueryable<ResolvedAddress> RetrieveAllResolvedAddresses() =>
-            TryCatch(() => this.resolvedAddressService.RetrieveAllResolvedAddresses());
+            TryCatch(() => resolvedAddressService.RetrieveAllResolvedAddresses());
 
         public ValueTask<ResolvedAddress> RetrieveResolvedAddressByIdAsync(Guid resolvedAddressId) =>
             TryCatch(async () =>
             {
                 ValidateResolvedAddressId(resolvedAddressId);
 
-                return await this.resolvedAddressService.RetrieveResolvedAddressByIdAsync(resolvedAddressId);
+                return await resolvedAddressService.RetrieveResolvedAddressByIdAsync(resolvedAddressId);
             });
 
         public ValueTask<ResolvedAddress> RetrieveOrAddResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
@@ -48,8 +48,8 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
             {
                 ValidateResolvedAddress(resolvedAddress);
 
-                return await this.resolvedAddressService.RetrieveResolvedAddressByIdAsync(resolvedAddress.Id) ??
-                    await this.resolvedAddressService.AddResolvedAddressAsync(resolvedAddress);
+                return await resolvedAddressService.RetrieveResolvedAddressByIdAsync(resolvedAddress.Id) ??
+                    await resolvedAddressService.AddResolvedAddressAsync(resolvedAddress);
             });
 
         public ValueTask<ResolvedAddress> ModifyOrAddResolvedAddressAsync(ResolvedAddress resolvedAddress) =>
@@ -57,15 +57,15 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
             {
                 ValidateResolvedAddress(resolvedAddress);
                 ValidateResolvedAddressId(resolvedAddress.Id);
-                var maybeResolvedAddress = await this.resolvedAddressService.RetrieveResolvedAddressByIdAsync(resolvedAddress.Id);
+                var maybeResolvedAddress = await resolvedAddressService.RetrieveResolvedAddressByIdAsync(resolvedAddress.Id);
 
                 if (maybeResolvedAddress != null)
                 {
-                    return await this.resolvedAddressService.ModifyResolvedAddressAsync(resolvedAddress);
+                    return await resolvedAddressService.ModifyResolvedAddressAsync(resolvedAddress);
                 }
                 else
                 {
-                    return await this.resolvedAddressService.AddResolvedAddressAsync(resolvedAddress);
+                    return await resolvedAddressService.AddResolvedAddressAsync(resolvedAddress);
                 }
             });
 
@@ -74,7 +74,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
             {
                 ValidateResolvedAddress(resolvedAddress);
 
-                return await this.resolvedAddressService.ModifyResolvedAddressAsync(resolvedAddress);
+                return await resolvedAddressService.ModifyResolvedAddressAsync(resolvedAddress);
             });
 
         public ValueTask<ResolvedAddress> RemoveResolvedAddressByIdAsync(Guid resolvedAddressId) =>
@@ -82,10 +82,17 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
             {
                 ValidateResolvedAddressId(resolvedAddressId);
 
-                return await this.resolvedAddressService.RemoveResolvedAddressByIdAsync(resolvedAddressId);
+                return await resolvedAddressService.RemoveResolvedAddressByIdAsync(resolvedAddressId);
             });
 
-        public ValueTask<bool> IsExactMatchForResolvedAddressAsync(string address) =>
-            throw new NotImplementedException();
+        public async ValueTask<bool> IsExactMatchForResolvedAddressAsync(string address)
+        {
+            bool result = this.resolvedAddressService.RetrieveAllResolvedAddresses()
+                .Any(resolvedAddress => resolvedAddress.PostalAddress
+                    .Equals(address, StringComparison.InvariantCultureIgnoreCase));
+
+            return await ValueTask.FromResult(result);
+        }
+
     }
 }

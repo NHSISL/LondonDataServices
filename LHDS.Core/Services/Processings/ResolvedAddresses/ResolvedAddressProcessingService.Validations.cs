@@ -1,0 +1,56 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
+using System;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Processings.ResolvedAddresses.Exceptions;
+using Xeptions;
+
+namespace LHDS.Core.Services.Processings.ResolvedAddresses
+{
+    public partial class ResolvedAddressProcessingService : IResolvedAddressProcessingService
+    {
+        private void ValidateResolvedAddress(ResolvedAddress resolvedAddress)
+        {
+            ValidateResolvedAddressIsNotNull(resolvedAddress);
+        }
+
+        private static void ValidateResolvedAddressIsNotNull(ResolvedAddress resolvedAddress)
+        {
+            if (resolvedAddress is null)
+            {
+                throw new NullResolvedAddressProcessingException(message: "ResolvedAddress is null.");
+            }
+        }
+
+        public void ValidateResolvedAddressId(Guid resolvedAddressId) =>
+            Validate<InvalidArgumentResolvedAddressProcessingException>(
+                message: "Invalid argument(s). Please correct the errors and try again.",
+                (Rule: IsInvalid(resolvedAddressId), Parameter: nameof(ResolvedAddress.Id)));
+
+        private static dynamic IsInvalid(Guid id) => new
+        {
+            Condition = id == Guid.Empty,
+            Message = "Id is required"
+        };
+
+        private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
+            where T : Xeption
+        {
+            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
+
+            foreach ((dynamic rule, string parameter) in validations)
+            {
+                if (rule.Condition)
+                {
+                    invalidDataException.UpsertDataList(
+                        key: parameter,
+                        value: rule.Message);
+                }
+            }
+
+            invalidDataException.ThrowIfContainsErrors();
+        }
+    }
+}

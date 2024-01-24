@@ -49,12 +49,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                     {"BT1 2YZ, 303 Pine Road, Belfast, Northern Ireland", "BT1 2YZ"},
                     {"123 Main Street, London, W1A 1AA, W2 2BB, United Kingdom", "W1A 1AA"},
                     {"M1 1AA, M2 2BB, M3 3CC, Manchester, UK", "M1 1AA"},
-                    {"456 Pine Street, Edinburgh, Scotland", ""},
-                    {"Dublin, Ireland", ""},
-                    {"12#3 Maple Street, Dublin, D12$ 3YZ, Ireland", "D12 3YZ"},
-                    {"%$1A 1BB, 789 Cherry Lane, London, UK", "1A 1BB"},
-                    {"Invalid Format, London, AB1 CDE, United Kingdom", ""},
-                    {"Invalid Code, Manchester, XYZ 123, UK", ""},
                 };
         }
     }

@@ -85,14 +85,17 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
                 return await resolvedAddressService.RemoveResolvedAddressByIdAsync(resolvedAddressId);
             });
 
-        public async ValueTask<bool> IsExactMatchForResolvedAddressAsync(string address)
-        {
-            bool result = this.resolvedAddressService.RetrieveAllResolvedAddresses()
-                .Any(resolvedAddress => resolvedAddress.PostalAddress
-                    .Equals(address, StringComparison.InvariantCultureIgnoreCase));
+        public ValueTask<bool> IsExactMatchForResolvedAddressAsync(string address) =>
+            TryCatch(async () =>
+            {
+                ValidateAddress(address);
 
-            return await ValueTask.FromResult(result);
-        }
+                bool result = this.resolvedAddressService.RetrieveAllResolvedAddresses()
+                    .Any(resolvedAddress => resolvedAddress.PostalAddress
+                        .Equals(address, StringComparison.InvariantCultureIgnoreCase));
+
+                return await ValueTask.FromResult(result);
+            });
 
     }
 }

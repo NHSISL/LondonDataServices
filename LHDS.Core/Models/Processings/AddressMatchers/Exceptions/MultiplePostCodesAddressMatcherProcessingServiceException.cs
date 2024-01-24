@@ -4,11 +4,11 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Processings.AddressMatcher.Exceptions
+namespace LHDS.Core.Models.Processings.AddressMatchers.Exceptions
 {
-    public class PostCodeNotFoundAddressMatcherProcessingServiceException : Xeption
+    public class MultiplePostCodesAddressMatcherProcessingServiceException : Xeption
     {
-        public PostCodeNotFoundAddressMatcherProcessingServiceException(string message)
+        public MultiplePostCodesAddressMatcherProcessingServiceException(string message)
              : base(message)
         { }
     }

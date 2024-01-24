@@ -3,12 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Processings.AddressMatcher.Exceptions;
+using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
 using Moq;
 using Xunit;
 
@@ -67,7 +64,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
         {
             // given
             string cleanedAddress = duplicateAddresse;
-                
+
             var multiplePostCodesAddressMatcherProcessingServiceException =
                 new MultiplePostCodesAddressMatcherProcessingServiceException(
                     message: "Multiple Postcodes validation error occurred, please try again.");

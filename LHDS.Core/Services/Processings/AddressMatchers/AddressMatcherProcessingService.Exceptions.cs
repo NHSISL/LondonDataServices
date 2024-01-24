@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System;
-using LHDS.Core.Models.Processings.AddressMatcher.Exceptions;
 using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
 using Xeptions;
 
@@ -11,13 +10,13 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
 {
     public partial class AddressMatcherProcessingService : IAddressMatcherProcessingService
     {
-        private delegate string ReturningExtractPostcodeFunction();
+        private delegate string ReturningStringFunction();
 
-        private string TryCatch(ReturningExtractPostcodeFunction returningExtractPostcodeFunction)
+        private string TryCatch(ReturningStringFunction returningStringFunction)
         {
             try
             {
-                return returningExtractPostcodeFunction();
+                return returningStringFunction();
             }
             catch (InvalidArgumentAddressMatcherProcessingException invalidArgumentAddressMatcherProcessingException)
             {
@@ -41,7 +40,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
                 throw CreateAndLogServiceException(failedAddressMatcherProcessingServiceException);
             }
         }
-        
+
         private AddressMatcherProcessingValidationException CreateAndLogValidationException(Xeption exception)
         {
             var addressMatcherProcessingValidationException =

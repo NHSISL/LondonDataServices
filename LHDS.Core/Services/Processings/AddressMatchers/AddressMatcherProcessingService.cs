@@ -19,7 +19,36 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
         }
 
         public string CleanAddress(string address) =>
-            throw new System.NotImplementedException();
+            TryCatch(() =>
+            {
+                ValidateAddress(address);
+                this.loggingBroker.LogNothing();
+                var cleanAddress = address.ToLower().Trim();
+                var punctuationPattern = @"\s[,.!?-]|[,.!?;:'""](?![ ])";
+                var regexPunctuation = new Regex(punctuationPattern, RegexOptions.Compiled);
+                var regexSpaces = new Regex(@"[ ]{2,}", RegexOptions.Compiled);
+                string previousAddress;
+
+                do
+                {
+                    previousAddress = cleanAddress;
+
+                    cleanAddress = regexPunctuation.Replace(cleanAddress, match =>
+                    {
+                        if (match.Value.StartsWith(" ") || match.Value.EndsWith(" "))
+                        {
+                            return match.Value.Trim();
+                        }
+
+                        return match.Value + " ";
+                    });
+
+                    cleanAddress = regexSpaces.Replace(cleanAddress, " ");
+
+                } while (cleanAddress != previousAddress);
+
+                return cleanAddress;
+            });
 
         public string ExtractPostCode(string address) =>
             TryCatch(() =>

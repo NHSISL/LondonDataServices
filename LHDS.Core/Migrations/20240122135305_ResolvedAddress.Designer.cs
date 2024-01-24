@@ -13,7 +13,7 @@ namespace LHDS.Core.Migrations
 {
     [DbContext(typeof(StorageBroker))]
     [Migration("20240122135305_ResolvedAddress")]
-    partial class ResolvedAddress
+    partial class AddResolvedAddress
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

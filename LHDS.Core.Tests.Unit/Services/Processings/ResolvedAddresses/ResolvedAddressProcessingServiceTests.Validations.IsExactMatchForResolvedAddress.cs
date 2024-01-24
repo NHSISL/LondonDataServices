@@ -26,8 +26,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     message: "Invalid argument(s). Please correct the errors and try again.");
 
             invalidArgumentResolvedAddressProcessingException.AddData(
-                key: "Id",
-                values: "Id is required");
+                key: "Address",
+                values: "Text is required");
 
             var expectedResolvedAddressProcessingValidationException =
                 new ResolvedAddressProcessingValidationException(

@@ -16,6 +16,13 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
             ValidateResolvedAddressIsNotNull(resolvedAddress);
         }
 
+        private void ValidateAddress(string address)
+        {
+            Validate<InvalidArgumentResolvedAddressProcessingException>(
+                message: "Invalid argument(s). Please correct the errors and try again.",
+                (Rule: IsInvalid(address), Parameter: "Address"));
+        }
+
         private static void ValidateResolvedAddressIsNotNull(ResolvedAddress resolvedAddress)
         {
             if (resolvedAddress is null)
@@ -33,6 +40,12 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
         {
             Condition = id == Guid.Empty,
             Message = "Id is required"
+        };
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = String.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
         };
 
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)

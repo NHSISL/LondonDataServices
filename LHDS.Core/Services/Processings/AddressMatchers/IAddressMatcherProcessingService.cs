@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-namespace LHDS.Core.Services.Foundations.AddressMatchers
+namespace LHDS.Core.Services.Processings.AddressMatchers
 {
     internal interface IAddressMatcherProcessingService
     {

@@ -3,6 +3,8 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Text.RegularExpressions;
+using LHDS.Core.Models.Processings.Addresses.Exceptions;
 using LHDS.Core.Models.Processings.AddressMatcher.Exceptions;
 using Xeptions;
 
@@ -16,6 +18,15 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
                 message: "Invalid address matcher processing argument(s), please correct the errors and try again.",
                 (Rule: IsInvalid(address), Parameter: "address"));
 
+        private void ValidateMultiplePostCodes(MatchCollection matches)
+        {
+            if (matches.Count > 1)
+            {
+                throw new MultiplePostCodesAddressMatcherProcessingServiceException(
+                    message: "Multiple Postcodes validation error occurred, please try again.");
+            }
+        }
+
         private static dynamic IsInvalid(string text) => new
         {
             Condition = String.IsNullOrWhiteSpace(text),
@@ -23,7 +34,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
         };
 
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
-            where T : Xeption
+             where T : Xeption
         {
             var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
 

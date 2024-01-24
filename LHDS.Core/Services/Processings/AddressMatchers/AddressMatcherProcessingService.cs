@@ -27,7 +27,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
                 ValidateAddress(address);
                 string pattern = @"\b([A-Z]{1,2}\d{1,2}[A-Z]?\s*\d[A-Z]{2})\b";
                 MatchCollection matches = Regex.Matches(address, pattern);
-
+                ValidateMultiplePostCodes(matches);
                 string extractedPostCode = matches[0].Groups[1].Value;
 
                 return extractedPostCode;

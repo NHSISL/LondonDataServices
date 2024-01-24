@@ -58,3 +58,4 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
           actualException => actualException.SameExceptionAs(expectedException);
     }
 }
+

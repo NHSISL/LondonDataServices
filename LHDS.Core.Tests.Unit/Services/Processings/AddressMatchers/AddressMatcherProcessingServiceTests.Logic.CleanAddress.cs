@@ -23,5 +23,21 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
             // then
             actualAddress.Should().BeEquivalentTo(expectedCleanedAddress);
         }
+
+        [Fact]
+        public void ShouldCleanRandomAddress()
+        {
+            // given
+            int randomNumber = GetRandomNumber();
+            string randomUncleanedAddress = GetRandomSpacedString(randomNumber);
+            string inputAddress = randomUncleanedAddress;
+            string expectedCleanedAddress = "a, a a, a";
+
+            // when
+            string actualAddress = this.addressMatcherProcessingService.CleanAddress(inputAddress);
+
+            // then
+            actualAddress.Should().BeEquivalentTo(expectedCleanedAddress);
+        }
     }
 }

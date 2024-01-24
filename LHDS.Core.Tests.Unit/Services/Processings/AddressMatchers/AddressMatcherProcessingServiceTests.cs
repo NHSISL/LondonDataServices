@@ -5,12 +5,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Services.Processings.AddressMatchers;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
@@ -51,5 +53,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                     {"M1 1AA, M2 2BB, M3 3CC, Manchester, UK", "M1 1AA"},
                 };
         }
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+          actualException => actualException.SameExceptionAs(expectedException);
     }
 }

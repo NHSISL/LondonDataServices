@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
+using LHDS.Core.Models.Processings.AddressMatcher.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Processings.Addresses

@@ -2,6 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using LHDS.Core.Models.Processings.Addresses.Exceptions;
+using System;
 using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
 using Xeptions;
 
@@ -21,7 +23,15 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressMatcherProcessingException);
             }
+            catch (Exception exception)
+            {
+                var failedAddressMatcherProcessingServiceException =
+                    new FailedAddressMatcherProcessingServiceException(
+                        message: "Failed address matcher processing service error occurred, please contact support.",
+                        innerException: exception);
 
+                throw CreateAndLogServiceException(failedAddressMatcherProcessingServiceException);
+            }
         }
 
         private AddressMatcherProcessingValidationException CreateAndLogValidationException(Xeption exception)
@@ -34,6 +44,18 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             this.loggingBroker.LogError(addressMatcherProcessingValidationException);
 
             return addressMatcherProcessingValidationException;
+        }
+
+        private AddressMatcherProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var addressMatcherProcessingServiceException = new
+                AddressMatcherProcessingServiceException(
+                    message: "Address matcher processing service error occurred, please contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(addressMatcherProcessingServiceException);
+
+            return addressMatcherProcessingServiceException;
         }
     }
 }

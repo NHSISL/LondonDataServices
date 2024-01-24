@@ -20,6 +20,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             TryCatch(() =>
             {
                 ValidateAddress(address);
+                this.loggingBroker.LogNothing();
                 var cleanAddress = address.ToLower().Trim();
                 var punctuationPattern = @"\s[,.!?-]|[,.!?;:'""](?![ ])";
                 var regexPunctuation = new Regex(punctuationPattern, RegexOptions.Compiled);

@@ -4,7 +4,6 @@
 
 using System;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
 using Moq;
 using Xunit;
@@ -23,12 +22,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
 
             var failedAddressMatcherProcessingServiceException =
                 new FailedAddressMatcherProcessingServiceException(
-                    message: "Failed address matcher processing service error occurred, please contact support",
+                    message: "Failed address matcher processing service error occurred, please contact support.",
                     innerException: serviceException);
 
             var expectedAddressMatcherProcessingServiceException =
                 new AddressMatcherProcessingServiceException(
-                    message: "Address matcher processing service error occurred, contact support.",
+                    message: "Address matcher processing service error occurred, please contact support.",
                     innerException: failedAddressMatcherProcessingServiceException);
 
             this.loggingBrokerMock.Setup(broker =>
@@ -38,8 +37,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
             // when
             Action cleanAddressAction = () => this.addressMatcherProcessingService.CleanAddress(address);
 
-            AddressServiceException actualAddressMatcherProcessingServiceException =
-                Assert.Throws<AddressServiceException>(cleanAddressAction);
+            AddressMatcherProcessingServiceException actualAddressMatcherProcessingServiceException =
+                Assert.Throws<AddressMatcherProcessingServiceException>(cleanAddressAction);
 
             // then
             actualAddressMatcherProcessingServiceException.Should()

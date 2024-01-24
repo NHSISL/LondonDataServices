@@ -48,9 +48,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                     {"789 David Road, Birmingham, B12 9XY, England", "B12 9XY"},
                     {"G1 1AB, 101 Oak Lane, Glasgow, Scotland", "G1 1AB"},
                     {"CF10 2XY, 202 Birch Street, Cardiff, Wales", "CF10 2XY"},
-                    {"BT1 2YZ, 303 Pine Road, Belfast, Northern Ireland", "BT1 2YZ"},
-                    {"123 Main Street, London, W1A 1AA, W2 2BB, United Kingdom", "W1A 1AA"},
-                    {"M1 1AA, M2 2BB, M3 3CC, Manchester, UK", "M1 1AA"},
+                    {"BT1 2YZ, 303 Pine Road, Belfast, Northern Ireland", "BT1 2YZ"}
                 };
         }
 

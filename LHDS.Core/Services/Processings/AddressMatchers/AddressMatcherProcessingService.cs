@@ -3,6 +3,8 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using CsvHelper;
 using LHDS.Core.Brokers.Loggings;
@@ -56,7 +58,14 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
                 ValidateAddress(address);
                 this.loggingBroker.LogNothing();
                 string pattern = @"\b([A-Z]{1,2}\d{1,2}[A-Z]?\s*\d[A-Z]{2})\b";
-                MatchCollection matches = Regex.Matches(address, pattern);
+                HashSet<string> uniqueMatches = new HashSet<string>();
+
+                foreach (Match match in Regex.Matches(address, pattern))
+                {
+                    uniqueMatches.Add(match.Value);
+                }
+
+                MatchCollection matches = Regex.Matches(string.Join(" ", uniqueMatches), pattern);
                 ValidateMatches(matches);
                 string extractedPostCode = matches[0].Groups[1].Value;
                 

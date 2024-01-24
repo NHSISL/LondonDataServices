@@ -25,6 +25,10 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             {
                 throw CreateAndLogValidationException(multiplePostCodesAddressMatcherProcessingServiceException);
             }
+            catch (PostCodeNotFoundAddressMatcherProcessingServiceException postCodeNotFoundAddressMatcherProcessingServiceException)
+            {
+                throw CreateAndLogValidationException(postCodeNotFoundAddressMatcherProcessingServiceException);
+            }
         }
         
         private AddressMatcherProcessingValidationException CreateAndLogValidationException(Xeption exception)

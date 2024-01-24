@@ -29,9 +29,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
         {
             // given
             int randomNumber = GetRandomNumber();
-            string randomUncleanedAddress = GetRandomSpacedString(randomNumber);
-            string inputAddress = randomUncleanedAddress;
-            string expectedCleanedAddress = "a, a a, a";
+            string randomCleanAddress = GetRandomCleanAddressString(randomNumber);
+            string expectedCleanedAddress = randomCleanAddress;
+            string inputAddress = GetAddSpacesToString(randomCleanAddress);
 
             // when
             string actualAddress = this.addressMatcherProcessingService.CleanAddress(inputAddress);

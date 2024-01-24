@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq.Expressions;
+using System.Text;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Services.Processings.AddressMatchers;
 using Moq;
@@ -47,29 +48,56 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
         private static string GetRandomString(int length) =>
             new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
-        private static string GetRandomSeparator()
+        public static string GetRandomCleanAddressString(int wordCount)
         {
-            string[] separators = { " ", "  ", "   ", ",", ", ", " ,", " , " };
-            return separators[random.Next(separators.Length)];
-        }
-
-        public static string GetRandomSpacedString(int wordCount)
-        {
-            string result = string.Empty;
-            result += new string(' ', GetRandomNumber());
+            StringBuilder stringBuilder = new StringBuilder();
 
             for (int i = 0; i < wordCount; i++)
             {
-                result += GetRandomString();
+                stringBuilder.Append(GetRandomString());
+
+                if (i < wordCount - 1 && random.NextDouble() < 0.5)
+                {
+                    stringBuilder.Append(',');
+                }
+
                 if (i < wordCount - 1)
                 {
-                    result += GetRandomSeparator();
+                    stringBuilder.Append(' ');
                 }
             }
 
-            result += new string(' ', GetRandomNumber());
+            return stringBuilder.ToString().Trim();
+        }
 
-            return result;
+        public static string GetAddSpacesToString(string input)
+        {
+            StringBuilder modifiedString = new StringBuilder();
+            for (int i = 0; i < input.Length; i++)
+            {
+                char currentChar = input[i];
+
+                if (currentChar == ' ' || currentChar == ',')
+                {
+                    if (random.NextDouble() < 0.5)
+                    {
+                        modifiedString.Append(' ', GetRandomNumber());
+                    }
+
+                    modifiedString.Append(currentChar);
+
+                    if (random.NextDouble() < 0.5)
+                    {
+                        modifiedString.Append(' ', GetRandomNumber());
+                    }
+                }
+                else
+                {
+                    modifiedString.Append(currentChar);
+                }
+            }
+
+            return modifiedString.ToString();
         }
 
         private static int GetRandomNumber() =>

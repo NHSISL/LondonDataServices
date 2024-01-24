@@ -26,7 +26,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
                 throw CreateAndLogValidationException(multiplePostCodesAddressMatcherProcessingServiceException);
             }
         }
-
+        
         private AddressMatcherProcessingValidationException CreateAndLogValidationException(Xeption exception)
         {
             var addressMatcherProcessingValidationException =

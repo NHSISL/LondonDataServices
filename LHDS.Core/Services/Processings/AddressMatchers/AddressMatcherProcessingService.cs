@@ -54,6 +54,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             TryCatch(() =>
             {
                 ValidateAddress(address);
+                this.loggingBroker.LogNothing();
                 string pattern = @"\b([A-Z]{1,2}\d{1,2}[A-Z]?\s*\d[A-Z]{2})\b";
                 MatchCollection matches = Regex.Matches(address, pattern);
                 ValidateMatches(matches);

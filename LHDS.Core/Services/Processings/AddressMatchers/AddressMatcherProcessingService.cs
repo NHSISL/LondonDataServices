@@ -33,9 +33,9 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
 
                     cleanAddress = regexPunctuation.Replace(cleanAddress, match =>
                     {
-                        if (match.Value.StartsWith(" "))
+                        if (match.Value.StartsWith(" ") || match.Value.EndsWith(" "))
                         {
-                            return match.Value.TrimStart();
+                            return match.Value.Trim();
                         }
 
                         return match.Value + " ";

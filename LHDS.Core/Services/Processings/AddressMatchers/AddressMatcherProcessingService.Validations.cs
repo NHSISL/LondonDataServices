@@ -1,14 +1,11 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
-using System.Numerics;
 using System.Text.RegularExpressions;
-using LHDS.Core.Models.Processings.Addresses.Exceptions;
-using LHDS.Core.Models.Processings.AddressMatcher.Exceptions;
+using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
 using Xeptions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace LHDS.Core.Services.Processings.AddressMatchers
 {
@@ -51,7 +48,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
         };
 
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
-             where T : Xeption
+            where T : Xeption
         {
             var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
 

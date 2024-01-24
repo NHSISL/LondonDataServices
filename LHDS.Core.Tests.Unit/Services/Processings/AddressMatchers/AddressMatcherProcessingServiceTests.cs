@@ -27,6 +27,21 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
             addressMatcherProcessingService = new AddressMatcherProcessingService(
                 loggingBroker: loggingBrokerMock.Object);
         }
+
+        public static TheoryData UncleanedAddressString()
+        {
+            return new TheoryData<string>
+            {
+                "A,A A,A",
+                "A, A A, A",
+                "A, A  A, A",
+                " A , A A , A",
+                " A , A    A , A",
+                "A, A A, A ",
+                "  A  ,  A   A  ,  A  "
+            };
+        }
+
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
@@ -53,7 +68,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
         }
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
-          actualException => actualException.SameExceptionAs(expectedException);
+           actualException => actualException.SameExceptionAs(expectedException);
     }
 }
 

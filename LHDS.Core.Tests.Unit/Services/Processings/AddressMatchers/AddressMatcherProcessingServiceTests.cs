@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                 "A, A  A, A",
                 " A , A A , A",
                 " A , A    A , A",
-                "A, A A, A "
+                "A, A A, A ",
                 "  A  ,  A   A  ,  A  "
             };
         }

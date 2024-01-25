@@ -1,3 +1,7 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
@@ -12,9 +16,6 @@ namespace LHDS.Core.Services.Foundations.Addresses
 
             Validate(
                 (Rule: IsInvalid(address.Id), Parameter: nameof(Address.Id)),
-
-                // TODO: Add any other required validation rules
-
                 (Rule: IsInvalid(address.CreatedDate), Parameter: nameof(Address.CreatedDate)),
                 (Rule: IsInvalid(address.CreatedBy), Parameter: nameof(Address.CreatedBy)),
                 (Rule: IsInvalid(address.UpdatedDate), Parameter: nameof(Address.UpdatedDate)),
@@ -41,9 +42,6 @@ namespace LHDS.Core.Services.Foundations.Addresses
 
             Validate(
                 (Rule: IsInvalid(address.Id), Parameter: nameof(Address.Id)),
-
-                // TODO: Add any other required validation rules
-
                 (Rule: IsInvalid(address.CreatedDate), Parameter: nameof(Address.CreatedDate)),
                 (Rule: IsInvalid(address.CreatedBy), Parameter: nameof(Address.CreatedBy)),
                 (Rule: IsInvalid(address.UpdatedDate), Parameter: nameof(Address.UpdatedDate)),
@@ -175,7 +173,7 @@ namespace LHDS.Core.Services.Foundations.Addresses
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidAddressException = 
+            var invalidAddressException =
                 new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again.");
 

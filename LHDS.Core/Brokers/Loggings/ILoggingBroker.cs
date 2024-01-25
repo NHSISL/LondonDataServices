@@ -14,6 +14,5 @@ namespace LHDS.Core.Brokers.Loggings
         void LogWarning(string message);
         void LogError(Exception exception);
         void LogCritical(Exception exception);
-        void LogNothing();
     }
 }

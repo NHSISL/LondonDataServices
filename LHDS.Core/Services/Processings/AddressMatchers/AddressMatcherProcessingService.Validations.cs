@@ -11,8 +11,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
 {
     public partial class AddressMatcherProcessingService : IAddressMatcherProcessingService
     {
-
-        public void ValidateAddress(string address) =>
+        virtual internal void ValidateAddress(string address) =>
             Validate<InvalidArgumentAddressMatcherProcessingException>(
                 message: "Invalid address matcher processing argument(s), please correct the errors and try again.",
                 (Rule: IsInvalid(address), Parameter: "address"));

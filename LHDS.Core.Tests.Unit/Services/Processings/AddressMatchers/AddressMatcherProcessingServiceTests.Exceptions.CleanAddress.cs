@@ -5,6 +5,7 @@
 using System;
 using FluentAssertions;
 using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
+using LHDS.Core.Services.Processings.AddressMatchers;
 using Moq;
 using Xunit;
 
@@ -16,9 +17,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
         public void ShouldThrowServiceExceptionOnCleanAddressIfServiceErrorOccursAndLogItAsync()
         {
             // given
+            var mock = new Mock<AddressMatcherProcessingService>(loggingBrokerMock.Object) { CallBase = true };
             string address = GetRandomString();
             string exceptionMessage = GetRandomString();
             var serviceException = new Exception(exceptionMessage);
+            mock.Setup(x => x.ValidateAddress(It.IsAny<string>())).Throws(serviceException);
+            AddressMatcherProcessingService addressMatcherProcessingService = mock.Object;
 
             var failedAddressMatcherProcessingServiceException =
                 new FailedAddressMatcherProcessingServiceException(
@@ -30,12 +34,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                     message: "Address matcher processing service error occurred, please contact support.",
                     innerException: failedAddressMatcherProcessingServiceException);
 
-            this.loggingBrokerMock.Setup(broker =>
-                broker.LogNothing()).
-                    Throws(serviceException);
-
             // when
-            Action cleanAddressAction = () => this.addressMatcherProcessingService.CleanAddress(address);
+            Action cleanAddressAction = () => addressMatcherProcessingService.CleanAddress(address);
 
             AddressMatcherProcessingServiceException actualAddressMatcherProcessingServiceException =
                 Assert.Throws<AddressMatcherProcessingServiceException>(cleanAddressAction);
@@ -43,10 +43,6 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
             // then
             actualAddressMatcherProcessingServiceException.Should()
                 .BeEquivalentTo(expectedAddressMatcherProcessingServiceException);
-
-            this.loggingBrokerMock.Verify(broker =>
-                broker.LogNothing(),
-                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

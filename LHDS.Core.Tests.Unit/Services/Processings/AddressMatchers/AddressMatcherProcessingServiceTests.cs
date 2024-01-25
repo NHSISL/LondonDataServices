@@ -50,7 +50,25 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        public static TheoryData<string, string> CleanedAddressTestData()
+        {
+            return new TheoryData<string, string>
+                {
+                    {"123 Christo Street, London, W1A 1AA, United Kingdom", "W1A 1AA"},
+                    {"Manchester, M2 3YZ, 456 Park Avenue, UK", "M2 3YZ"},
+                    {"789 David Road, Birmingham, B12 9XY, England", "B12 9XY"},
+                    {"G1 1AB, 101 Oak Lane, Glasgow, Scotland", "G1 1AB"},
+                    {"CF10 2XY, 202 Birch Street, Cardiff, Wales", "CF10 2XY"},
+                    {"BT1 2YZ, 303 Pine Road, Belfast, Northern Ireland", "BT1 2YZ"},
+                    {"123 Christo Street, London, IP39WF, United Kingdom", "IP39WF"},
+                    {"123 Christo Street, London, IP3 9WF, United Kingdom", "IP3 9WF"},
+                    {"123 Main Street, London, CR2 0HG, CR2 0HG, United Kingdom" , "CR2 0HG"},
+                    {"123 Christo Street, London, W1A 1AA, United Kingdom, Additional Info, Longer Street Name, More Details, Extended Address Information, Extra Information, Additional Details, Longer City Name, Extended Street Name, More Information, Extra Details", "W1A 1AA"}
+                };
+        }
+
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
            actualException => actualException.SameExceptionAs(expectedException);
     }
 }
+

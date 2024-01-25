@@ -32,7 +32,5 @@ namespace LHDS.Core.Brokers.Loggings
 
         public void LogCritical(Exception exception) =>
             this.logger.LogCritical(exception, $"{exception.Message} {exception.GetValidationSummary()}");
-
-        public void LogNothing() { }
     }
 }

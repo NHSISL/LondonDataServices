@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using LHDS.Core.Brokers.Loggings;
 
@@ -20,7 +21,6 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             TryCatch(() =>
             {
                 ValidateAddress(address);
-                this.loggingBroker.LogNothing();
                 var cleanAddress = address.ToLower().Trim();
                 var punctuationPattern = @"\s[,.!?-]|[,.!?;:'""](?![ ])";
                 var regexPunctuation = new Regex(punctuationPattern, RegexOptions.Compiled);
@@ -49,6 +49,22 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             });
 
         public string ExtractPostCode(string address) =>
-            throw new System.NotImplementedException();
+            TryCatch(() =>
+            {
+                ValidateAddress(address);
+                string pattern = @"\b([A-Z]{1,2}\d{1,2}[A-Z]?\s*\d[A-Z]{2})\b";
+                HashSet<string> uniqueMatches = new HashSet<string>();
+
+                foreach (Match match in Regex.Matches(address, pattern))
+                {
+                    uniqueMatches.Add(match.Value);
+                }
+
+                MatchCollection matches = Regex.Matches(string.Join(" ", uniqueMatches), pattern);
+                ValidateMatches(matches);
+                string extractedPostCode = matches[0].Groups[1].Value;
+                
+                return extractedPostCode;
+            });
     }
 }

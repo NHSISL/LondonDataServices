@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using LHDS.Core.Models.Processings.Addresses.Exceptions;
 using System;
 using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
 using Xeptions;
@@ -11,17 +10,25 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
 {
     public partial class AddressMatcherProcessingService : IAddressMatcherProcessingService
     {
-        private delegate string ReturningCleanedAddressFunction();
+        private delegate string ReturningStringFunction();
 
-        private string TryCatch(ReturningCleanedAddressFunction returningCleanedAddressFunction)
+        private string TryCatch(ReturningStringFunction returningStringFunction)
         {
             try
             {
-                return returningCleanedAddressFunction();
+                return returningStringFunction();
             }
             catch (InvalidArgumentAddressMatcherProcessingException invalidArgumentAddressMatcherProcessingException)
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressMatcherProcessingException);
+            }
+            catch (MultiplePostCodesAddressMatcherProcessingServiceException multiplePostCodesAddressMatcherProcessingServiceException)
+            {
+                throw CreateAndLogValidationException(multiplePostCodesAddressMatcherProcessingServiceException);
+            }
+            catch (PostCodeNotFoundAddressMatcherProcessingServiceException postCodeNotFoundAddressMatcherProcessingServiceException)
+            {
+                throw CreateAndLogValidationException(postCodeNotFoundAddressMatcherProcessingServiceException);
             }
             catch (Exception exception)
             {

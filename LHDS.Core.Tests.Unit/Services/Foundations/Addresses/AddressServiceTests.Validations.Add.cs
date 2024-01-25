@@ -1,9 +1,13 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
@@ -55,7 +59,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             // given
             var invalidAddress = new Address
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                UPRN = invalidText,
+                UPSN = invalidText,
+                OrganisationName = invalidText,
+                DepartmentName = invalidText,
+                SubBuildingName = invalidText,
+                BuildingName = invalidText,
+                BuildingNumber = invalidText,
+                DependentThoroughfare = invalidText,
+                Thoroughfare = invalidText,
+                DoubleDependentLocality = invalidText,
+                DependentLocality = invalidText,
+                PostTown = invalidText,
+                PostCode = invalidText,
+                PostalAddress = invalidText,
+                JsonPostalAddress = invalidText
             };
 
             var invalidAddressException =
@@ -65,12 +83,6 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             invalidAddressException.AddData(
                 key: nameof(Address.Id),
                 values: "Id is required");
-
-            //invalidAddressException.AddData(
-            //    key: nameof(Address.Name),
-            //    values: "Text is required");
-
-            // TODO: Add or remove data here to suit the validation needs for the Address model
 
             invalidAddressException.AddData(
                 key: nameof(Address.CreatedDate),
@@ -135,7 +147,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             invalidAddress.UpdatedDate =
                 invalidAddress.CreatedDate.AddDays(randomNumber);
 
-            var invalidAddressException = 
+            var invalidAddressException =
                 new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again.");
 

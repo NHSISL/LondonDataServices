@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LHDS.Core.Migrations
 {
     /// <inheritdoc />
-    public partial class ResolvedAddress : Migration
+    public partial class AddResolvedAddress : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

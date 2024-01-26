@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Text.RegularExpressions;
 using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
 using Xeptions;
 
@@ -10,11 +11,34 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
 {
     public partial class AddressMatcherProcessingService : IAddressMatcherProcessingService
     {
-
-        public void ValidateAddress(string address) =>
+        virtual internal void ValidateAddress(string address) =>
             Validate<InvalidArgumentAddressMatcherProcessingException>(
                 message: "Invalid address matcher processing argument(s), please correct the errors and try again.",
                 (Rule: IsInvalid(address), Parameter: "address"));
+
+        private void ValidateMatches(MatchCollection matches)
+        {
+            ValidateMultiplePostCodes(matches);
+            ValidateNoPostCodesFound(matches);
+        }
+
+        private void ValidateMultiplePostCodes(MatchCollection matches)
+        {
+            if (matches.Count > 1)
+            {
+                throw new MultiplePostCodesAddressMatcherProcessingServiceException(
+                    message: "Multiple Postcodes validation error occurred, please try again.");
+            }
+        }
+
+        private void ValidateNoPostCodesFound(MatchCollection matches)
+        {
+            if (matches.Count == 0)
+            {
+                throw new PostCodeNotFoundAddressMatcherProcessingServiceException(
+                message: "No Postcodes found validation error occurred, please try again.");
+            }
+        }
 
         private static dynamic IsInvalid(string text) => new
         {

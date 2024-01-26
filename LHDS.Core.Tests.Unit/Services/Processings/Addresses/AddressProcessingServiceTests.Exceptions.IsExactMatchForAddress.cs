@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
@@ -87,6 +88,51 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
             loggingBrokerMock.Verify(broker =>
                  broker.LogError(It.Is(SameExceptionAs(
                      expectedAddressProcessingDependencyException))),
+                         Times.Once);
+
+            addressServiceMock.VerifyNoOtherCalls();
+            loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnIsExactMacthIfServiceErrorOccursAsync()
+        {
+            // given
+            string someAddress = GetRandomString();
+
+            var serviceException = new Exception();
+
+            var failedAddressProcessingServiceException =
+                new FailedAddressProcessingServiceException(
+                    message: "Failed Address processing service error occurred, contact support.",
+                    innerException: serviceException);
+
+            var expectedAddressProcessingServiveException =
+                new AddressProcessingServiceException(
+                    message: "Address processing service error occurred, contact support.",
+                    innerException: failedAddressProcessingServiceException);
+
+            addressServiceMock.Setup(service =>
+                service.RetrieveAllAddresses())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<bool> isMatchTask = this.addressProcessingService
+                .IsExactMatchForAddressAsync(addressToMacth: someAddress);
+
+            AddressProcessingServiceException actualException =
+                await Assert.ThrowsAsync<AddressProcessingServiceException>(isMatchTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedAddressProcessingServiveException);
+
+            addressServiceMock.Verify(service =>
+                service.RetrieveAllAddresses(),
+                    Times.Once);
+
+            loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedAddressProcessingServiveException))),
                          Times.Once);
 
             addressServiceMock.VerifyNoOtherCalls();

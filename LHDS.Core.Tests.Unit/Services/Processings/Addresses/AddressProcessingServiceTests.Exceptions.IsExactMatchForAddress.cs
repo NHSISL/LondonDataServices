@@ -52,5 +52,45 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
             addressServiceMock.VerifyNoOtherCalls();
             loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnIsExactMacthIfDependencyErrorOccursAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            string someAddress = GetRandomString();
+
+            var expectedAddressProcessingDependencyException =
+                new AddressProcessingDependencyException(
+                    message: "Address processing dependency error occurred, please try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            addressServiceMock.Setup(service =>
+                service.RetrieveAllAddresses())
+                    .Throws(dependencyException);
+
+            // when
+            ValueTask<bool> isMatchTask = this.addressProcessingService
+                .IsExactMatchForAddressAsync(addressToMacth: someAddress);
+
+            AddressProcessingDependencyException actualException =
+                await Assert.ThrowsAsync<AddressProcessingDependencyException>(isMatchTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedAddressProcessingDependencyException);
+
+            addressServiceMock.Verify(service =>
+                service.RetrieveAllAddresses(),
+                    Times.Once);
+
+            loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedAddressProcessingDependencyException))),
+                         Times.Once);
+
+            addressServiceMock.VerifyNoOtherCalls();
+            loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

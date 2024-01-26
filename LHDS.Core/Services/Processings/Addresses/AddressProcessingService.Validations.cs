@@ -16,6 +16,13 @@ namespace LHDS.Core.Services.Processings.Addresses
             ValidateAddressIsNotNull(address);
         }
 
+        private void ValidateAddress(string address)
+        {
+            Validate<InvalidArgumentAddressProcessingException>(
+                message: "Invalid argument(s). Please correct the errors and try again.",
+                (Rule: IsInvalid(address), Parameter: "Address"));
+        }
+
         private static void ValidateAddressIsNotNull(Address address)
         {
             if (address is null)

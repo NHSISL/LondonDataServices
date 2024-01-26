@@ -6,10 +6,10 @@ using Xeptions;
 
 namespace LHDS.Core.Models.Processings.AddressMatchers.Exceptions
 {
-    public class AddressMatcherProcessingValidationException : Xeption
+    public class PostCodeNotFoundAddressMatcherProcessingServiceException : Xeption
     {
-        public AddressMatcherProcessingValidationException(string message, Xeption innerException)
-            : base(message, innerException)
+        public PostCodeNotFoundAddressMatcherProcessingServiceException(string message)
+             : base(message)
         { }
     }
 }

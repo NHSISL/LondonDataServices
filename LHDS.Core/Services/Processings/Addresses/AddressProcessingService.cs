@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -94,5 +94,8 @@ namespace LHDS.Core.Services.Processings.Addresses
 
                 return await this.addressService.RetrieveAddressesByPostCodeAsync(postCode);
             });
+
+        public ValueTask<bool> IsExactMatchForAddressAsync(string address) =>
+            throw new NotImplementedException();
     }
 }

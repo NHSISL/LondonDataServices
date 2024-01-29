@@ -6,7 +6,6 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Brokers.Storages.Blobs;
 using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using Moq;
 using Xunit;

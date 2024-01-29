@@ -22,7 +22,6 @@ namespace LHDS.Core.Tests.Acceptance.Clients.Terminologies
         public async System.Threading.Tasks.Task ShouldRetrievePagedArtifactMetadataAsync(string inputResourceType)
         {
             //Given
-            //DateTimeOffset randomDateTimeOffset = this.dateTimeBroker.GetCurrentDateTimeOffset();
             string resourceType = inputResourceType;
             string nextPageUrl = "";
             List<dynamic> randomArtifactProperties = CreateRandomArtifactProperties(resourceType);

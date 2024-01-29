@@ -146,7 +146,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                         }
                     },
                     5,
-                    false
+                    true
                 },
                 {
                     new List<KeyValuePair<string, string>>
@@ -175,6 +175,62 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                     },
                     2,
                     true
+                },
+                {
+                    new List<KeyValuePair<string, string>>
+                    {
+                        new KeyValuePair<string, string>("house_number", "10"),
+                        new KeyValuePair<string, string>("road", "downing str"),
+                        new KeyValuePair<string, string>("city_district", "westminster"),
+                        new KeyValuePair<string, string>("city", "london"),
+                        new KeyValuePair<string, string>("postcode", "sw1a2aa"),
+                        new KeyValuePair<string, string>("country", "uk")
+                    },
+                    new HashSet<AddressMatch> {
+                        new AddressMatch
+                        {
+                            PostalAddress = "1 sw1a2aa",
+                            JsonPostalAddress = "[{\"Key\":\"house_number\",\"Value\":\"1\"}," +
+                                "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}]",
+                            AddressComponents = new List<KeyValuePair<string, string>>
+                            {
+                                new KeyValuePair<string, string>("house_number", "1"),
+                                new KeyValuePair<string, string>("postcode", "sw1a2aa"),
+                            },
+                            UPRN = GetRandomString(),
+                            UPSN = GetRandomString(),
+                        }
+                    },
+                    1,
+                    false
+                },
+                {
+                    new List<KeyValuePair<string, string>>
+                    {
+                        new KeyValuePair<string, string>("house_number", "10"),
+                        new KeyValuePair<string, string>("road", "downing str"),
+                        new KeyValuePair<string, string>("city_district", "westminster"),
+                        new KeyValuePair<string, string>("city", "london"),
+                        new KeyValuePair<string, string>("postcode", "sw1a2aa"),
+                        new KeyValuePair<string, string>("country", "uk")
+                    },
+                    new HashSet<AddressMatch> {
+                        new AddressMatch
+                        {
+                            PostalAddress = "10 sw1a2ab",
+                            JsonPostalAddress = "[{\"Key\":\"house_number\",\"Value\":\"1\"}," +
+                                "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}]",
+                            AddressComponents = new List<KeyValuePair<string, string>>
+                            {
+                                new KeyValuePair<string, string>("house_number", "10"),
+                                new KeyValuePair<string, string>("postcode", "sw1a2ab"),
+                            },
+                            UPRN = GetRandomString(),
+                            UPSN = GetRandomString(),
+                        }
+                    },
+                    1,
+                    false
                 },
             };
 

@@ -4,8 +4,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Force.DeepCloner;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Processings.AddressMatchers;
 
@@ -71,8 +73,52 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             });
 
         public async ValueTask<HashSet<AddressMatch>> CalculateMacthingAddressComponents(
-            IList<KeyValuePair<string, string>> incomingAddress,
-            HashSet<AddressMatch> possibleAddresses) =>
-                throw new NotImplementedException();
+            IList<KeyValuePair<string, string>> incomingAddressComponents,
+            HashSet<AddressMatch> possibleAddresses)
+        {
+            HashSet<AddressMatch> matchedAddresses = new HashSet<AddressMatch>();
+
+            foreach (var address in possibleAddresses)
+            {
+                AddressMatch addressMatch = address.DeepClone();
+                var possibleAddressComponents = address.AddressComponents;
+
+                addressMatch.MatchedComponents = incomingAddressComponents
+                    .Intersect(possibleAddressComponents).Count();
+
+                addressMatch.MatchingCoreComponents =
+                    CheckMatchingCorePairs(incomingAddressComponents, possibleAddressComponents);
+
+                matchedAddresses.Add(addressMatch);
+            }
+
+            return matchedAddresses;
+        }
+
+        private static bool CheckMatchingCorePairs(
+            IList<KeyValuePair<string, string>> incomingAddressComponents,
+            IList<KeyValuePair<string, string>> possibleAddressComponents)
+        {
+            bool hasHouseNumber1 = incomingAddressComponents.Any(kv => kv.Key == "house_number");
+            bool hasHouseNumber2 = possibleAddressComponents.Any(kv => kv.Key == "house_number");
+
+            if (hasHouseNumber1 || hasHouseNumber2)
+            {
+                bool matchOnHouseNumberAndPostCode = hasHouseNumber1 && hasHouseNumber2 &&
+                    incomingAddressComponents.Any(kv => kv.Key == "house_number" &&
+                        possibleAddressComponents.Any(kv2 => kv2.Key == "house_number" && kv2.Value == kv.Value)) &&
+                            incomingAddressComponents.Any(kv => kv.Key == "postcode" && possibleAddressComponents
+                                .Any(kv2 => kv2.Key == "postcode" && kv2.Value == kv.Value));
+
+                return matchOnHouseNumberAndPostCode;
+            }
+            else
+            {
+                bool matchOnPostcode = incomingAddressComponents.Any(kv => kv.Key == "postcode" &&
+                    possibleAddressComponents.Any(kv2 => kv2.Key == "postcode" && kv2.Value == kv.Value));
+
+                return matchOnPostcode;
+            }
+        }
     }
 }

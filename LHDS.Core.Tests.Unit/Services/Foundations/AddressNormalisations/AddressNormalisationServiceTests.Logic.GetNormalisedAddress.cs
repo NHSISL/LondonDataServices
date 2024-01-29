@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Linq;
@@ -55,7 +55,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressNormalisations
                 new AddressNormalisation
                 {
                     PostalAddress = expandedAddress[0],
-                    JsonPostalAddress = jsonAddress
+                    JsonPostalAddress = jsonAddress,
+                    AddressComponents = parsedAddress
                 };
 
             // when

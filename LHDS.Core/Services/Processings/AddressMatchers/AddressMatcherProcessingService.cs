@@ -2,9 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Processings.AddressMatchers;
 
 namespace LHDS.Core.Services.Processings.AddressMatchers
 {
@@ -63,8 +66,13 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
                 MatchCollection matches = Regex.Matches(string.Join(" ", uniqueMatches), pattern);
                 ValidateMatches(matches);
                 string extractedPostCode = matches[0].Groups[1].Value;
-                
+
                 return extractedPostCode;
             });
+
+        public async ValueTask<HashSet<AddressMatch>> CalculateMacthingAddressComponents(
+            IList<KeyValuePair<string, string>> incomingAddress,
+            HashSet<AddressMatch> possibleAddresses) =>
+                throw new NotImplementedException();
     }
 }

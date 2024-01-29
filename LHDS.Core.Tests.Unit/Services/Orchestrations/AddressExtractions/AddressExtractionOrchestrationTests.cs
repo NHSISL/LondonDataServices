@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
         private readonly ICompareLogic compareLogic;
-        private readonly IAddressExtractionOrchestrationService addressExtractionOrchestrationService;
+        private readonly IAddressExtractionOrchestrationService addressNormalisationOrchestrationService;
         private readonly ITestOutputHelper output;
 
         public AddressExctractionOrchestrationServiceTests(ITestOutputHelper output)
@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             this.compareLogic = new CompareLogic();
             this.output = output;
 
-            this.addressExtractionOrchestrationService = new AddressExtractionOrchestrationService(
+            this.addressNormalisationOrchestrationService = new AddressExtractionOrchestrationService(
                 addressParserService: addressParserServiceMock.Object,
                 addressExtractionAuditService: addressExtractionAuditServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,

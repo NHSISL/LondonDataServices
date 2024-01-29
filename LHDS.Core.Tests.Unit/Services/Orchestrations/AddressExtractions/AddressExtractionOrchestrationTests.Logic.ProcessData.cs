@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             List<Address> expectedAddresses = outputAddresses.DeepClone();
 
             // When
-            List<Address> actualAddresses = await this.addressExtractionOrchestrationService
+            List<Address> actualAddresses = await this.addressNormalisationOrchestrationService
                 .ProcessDataAsync(inputData);
 
             // Then
@@ -89,7 +89,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
             List<Address> expectedAddresses = outputAddresses.DeepClone();
 
             // When
-            List<Address> actualAddresses = await this.addressExtractionOrchestrationService
+            List<Address> actualAddresses = await this.addressNormalisationOrchestrationService
                 .ProcessDataAsync(inputData);
 
             // Then

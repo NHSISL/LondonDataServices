@@ -20,7 +20,7 @@
 	<ItemGroup>
 		<PackageReference Include="Tynamix.ObjectFiller" Version="1.5.8" />
 		<PackageReference Include="BouncyCastle.Cryptography" Version="2.2.1" />
-		<PackageReference Include="CsvHelper" Version="30.0.1" />
+		<PackageReference Include="CsvHelper" Version="30.1.0" />
 		<PackageReference Include="EFxceptions" Version="0.4.5" />
 		<PackageReference Include="Hl7.Fhir.R4" Version="5.5.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />

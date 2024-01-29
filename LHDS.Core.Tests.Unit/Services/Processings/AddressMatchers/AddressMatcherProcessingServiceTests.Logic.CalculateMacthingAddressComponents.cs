@@ -17,14 +17,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
         [MemberData(nameof(AddressToMatch))]
         public async Task ShouldCalculateMacthingAddressComponents(
             List<KeyValuePair<string, string>> inputAddress,
-            AddressMatch potentialMatch,
+            HashSet<AddressMatch> potentialMatches,
             int matchedComponents,
             bool matchingCoreComponents
             )
         {
             // given
             List<KeyValuePair<string, string>> incomingAddress = inputAddress;
-            HashSet<AddressMatch> possibleAddresses = new HashSet<AddressMatch> { potentialMatch };
+            HashSet<AddressMatch> possibleAddresses = potentialMatches;
 
             // when
             HashSet<AddressMatch> actualAddressMatches = await addressMatcherProcessingService

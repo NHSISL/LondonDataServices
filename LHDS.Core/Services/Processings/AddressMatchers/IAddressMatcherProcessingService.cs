@@ -14,7 +14,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
         string ExtractPostCode(string address);
 
         ValueTask<HashSet<AddressMatch>> CalculateMacthingAddressComponents(
-            IList<KeyValuePair<string, string>> incomingAddress,
+            IList<KeyValuePair<string, string>> incomingAddressComponents,
             HashSet<AddressMatch> possibleAddresses);
     }
 }

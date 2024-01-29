@@ -16,6 +16,7 @@ namespace LHDS.Core.Services.Processings.Addresses
     public partial class AddressProcessingService : IAddressProcessingService
     {
         private delegate ValueTask<Address> ReturningAddressProcessingFunction();
+        private delegate ValueTask<bool> ReturningBooleanProcessingFunction();
         private delegate IQueryable<Address> ReturningAddressesFunction();
         private delegate ValueTask<List<Address>> ReturningAddressListFunction();
 
@@ -29,6 +30,44 @@ namespace LHDS.Core.Services.Processings.Addresses
             catch (NullAddressProcessingException nullAddressException)
             {
                 throw CreateAndLogValidationException(nullAddressException);
+            }
+            catch (InvalidArgumentAddressProcessingException invalidArgumentAddressProcessingException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentAddressProcessingException);
+            }
+            catch (AddressValidationException addressValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressValidationException);
+            }
+            catch (AddressDependencyValidationException addressDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressDependencyValidationException);
+            }
+            catch (AddressDependencyException addressDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressDependencyException);
+            }
+            catch (AddressServiceException addressServiceException)
+            {
+                throw CreateAndLogDependencyException(addressServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressProcessingServiceException =
+                    new FailedAddressProcessingServiceException(
+                        message: "Failed Address processing service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressProcessingServiceException);
+            }
+        }
+
+        private async ValueTask<bool> TryCatch(
+            ReturningBooleanProcessingFunction returningBooleanProcessingFunction)
+        {
+            try
+            {
+                return await returningBooleanProcessingFunction();
             }
             catch (InvalidArgumentAddressProcessingException invalidArgumentAddressProcessingException)
             {

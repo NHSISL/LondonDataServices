@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressExtractions
 
             // when
             ValueTask<List<Address>> processDataTask =
-                this.addressExtractionOrchestrationService.ProcessDataAsync(someData);
+                this.addressNormalisationOrchestrationService.ProcessDataAsync(someData);
 
             AddressExtractionValidationOrchestrationException actualException =
                 await Assert.ThrowsAsync<AddressExtractionValidationOrchestrationException>(processDataTask.AsTask);

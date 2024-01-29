@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { Guid } from 'guid-typescript';
 import { DataSetSpecificationView } from "../../models/views/components/dataSetSpecifications/dataSetSpecificationView";
-import { dataSetSpecificationViewService } from "../../services/views/DataSetSpecification/dataSetSpecificationViewService";
+import { dataSetSpecificationViewService } from "../../services/views/dataSetSpecification/dataSetSpecificationViewService";
 import DataSetSpecificationDetailCard from "./dataSetSpecificationDetailCard";
 import SpecificationObjectTable from "../specificationObjects/specificationObjectTable";
 

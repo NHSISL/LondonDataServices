@@ -1,8 +1,9 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
@@ -16,6 +17,7 @@ namespace LHDS.Core.Services.Processings.Addresses
     {
         private delegate ValueTask<Address> ReturningAddressProcessingFunction();
         private delegate IQueryable<Address> ReturningAddressesFunction();
+        private delegate ValueTask<List<Address>> ReturningAddressListFunction();
 
         private async ValueTask<Address> TryCatch(
             ReturningAddressProcessingFunction returningAddressProcessingFunction)
@@ -92,6 +94,42 @@ namespace LHDS.Core.Services.Processings.Addresses
             }
         }
 
+        private async ValueTask<List<Address>> TryCatch(ReturningAddressListFunction returningAddressListFunction)
+        {
+            try
+            {
+                return await returningAddressListFunction();
+            }
+            catch (InvalidArgumentAddressProcessingException invalidArgumentAddressProcessingException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentAddressProcessingException);
+            }
+            catch (AddressValidationException addressValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressValidationException);
+            }
+            catch (AddressDependencyValidationException addressDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressDependencyValidationException);
+            }
+            catch (AddressDependencyException addressDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressDependencyException);
+            }
+            catch (AddressServiceException addressServiceException)
+            {
+                throw CreateAndLogDependencyException(addressServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressProcessingServiceException =
+                    new FailedAddressProcessingServiceException(
+                        message: "Failed Address processing service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressProcessingServiceException);
+            }
+        }
 
         private AddressProcessingValidationException CreateAndLogValidationException(Xeption exception)
         {

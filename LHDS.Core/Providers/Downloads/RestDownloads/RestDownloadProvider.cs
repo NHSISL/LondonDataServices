@@ -11,6 +11,15 @@ namespace LHDS.Core.Providers.Downloads.RestDownloads
 {
     public class RestDownloadProvider : IDownloadProvider
     {
+        public RestDownloadProvider()
+        {
+            Name = "RestDownloadProvider";
+            IsMock = false;
+        }
+
+        public string Name { get; private set; }
+        public bool IsMock { get; private set; }
+
         public ValueTask<Document> GetDocumentByFileNameAsync(string fileName) =>
             throw new NotImplementedException();
 

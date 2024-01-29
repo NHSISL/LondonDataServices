@@ -5,8 +5,7 @@
 using System.Threading.Tasks;
 using LHDS.Core.Models.Clients.TerminologyClient.Exceptions;
 using LHDS.Core.Models.Orchestrations.TerminologyDetails.Exceptions;
-using LHDS.Core.Models.Orchestrations.TerminologyMedata.Exceptions;
-using LHDS.Core.Models.Orchestrations.TerminologyMetadata.Exceptions;
+using LHDS.Core.Models.Orchestrations.TerminologyMetadatas.Exceptions;
 using LHDS.Core.Services.Orchestrations.TerminologyDetails;
 using LHDS.Core.Services.Orchestrations.TerminologyMetadata;
 using Xeptions;

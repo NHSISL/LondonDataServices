@@ -2,7 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using LHDS.Core.Models.Orchestrations.TerminologyMedata.Exceptions;
+using LHDS.Core.Models.Orchestrations.TerminologyMetadatas.Exceptions;
 
 namespace LHDS.Core.Services.Orchestrations.TerminologyMetadata
 {

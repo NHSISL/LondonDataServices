@@ -1,0 +1,220 @@
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System.Threading.Tasks;
+using FluentAssertions;
+using LHDS.Core.Models.Brokers.Storages.Blobs;
+using LHDS.Core.Models.Orchestrations.EmisLandings;
+using LHDS.Core.Models.Orchestrations.EmisLandings.Exceptions;
+using LHDS.Core.Services.Orchestrations.Downloads;
+using Moq;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Orchestrations.EmisLandings
+{
+    public partial class EmisLandingOrchestrationTests
+    {
+        [Fact]
+        public async Task ShouldThrowValidationExceptionIfConfigurationIsNullAndLogItAsync()
+        {
+            // given
+            string randomFileName = GetRandomString();
+            string inputFileName = randomFileName;
+            LandingConfiguration invalidLandingConfiguration = null;
+
+            var invalidDownloadOrchestrationService = new EmisLandingOrchestrationService(
+                documentProcessingService: documentProcessingServiceMock.Object,
+                downloadProcessingService: downloadProcessingServiceMock.Object,
+                ingestionTrackingProcessingService: ingestionTrackingProcessingServiceMock.Object,
+                auditService: auditServiceMock.Object,
+                dataSetSpecificationProcessingService: dataSetSpecificationProcessingServiceMock.Object,
+                blobContainers,
+                loggingBroker: loggingBrokerMock.Object,
+                dateTimeBroker: dateTimeBrokerMock.Object,
+                identifierBroker: identifierBrokerMock.Object,
+                hashBroker: hashBrokerMock.Object,
+                landingConfiguration: invalidLandingConfiguration);
+
+            var nullLandingConfigurationDownloadOrchestrationException =
+                new NullLandingConfigurationEmisLandingOrchestrationException(
+                    message: "Null landing configuration download orchestration exception, " +
+                        "please correct the errors and try again.");
+
+            var expectedEmisLandingOrchestrationValidationException =
+                new EmisLandingOrchestrationValidationException(
+                    message: "EMIS landing orchestration validation errors occurred, please try again.",
+                    innerException: nullLandingConfigurationDownloadOrchestrationException);
+
+            // when
+            ValueTask<string> processTask = invalidDownloadOrchestrationService.ProcessAsync(inputFileName);
+
+            EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
+                await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);
+
+            // then
+            actualEmisLandingOrchestrationValidationException.Should()
+                .BeEquivalentTo(expectedEmisLandingOrchestrationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedEmisLandingOrchestrationValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionIfBlobContainersIsNullAndLogItAsync()
+        {
+            // given
+            string randomFileName = GetRandomString();
+            string inputFileName = randomFileName;
+            BlobContainers invalidBlobContainers = null;
+
+            var invalidDownloadOrchestrationService = new EmisLandingOrchestrationService(
+                documentProcessingService: documentProcessingServiceMock.Object,
+                downloadProcessingService: downloadProcessingServiceMock.Object,
+                ingestionTrackingProcessingService: ingestionTrackingProcessingServiceMock.Object,
+                auditService: auditServiceMock.Object,
+                dataSetSpecificationProcessingService: dataSetSpecificationProcessingServiceMock.Object,
+                blobContainers: invalidBlobContainers,
+                loggingBroker: loggingBrokerMock.Object,
+                dateTimeBroker: dateTimeBrokerMock.Object,
+                identifierBroker: identifierBrokerMock.Object,
+                hashBroker: hashBrokerMock.Object,
+                landingConfiguration: landingConfiguration);
+
+            var nullBlobContainersEmisLandingOrchestrationException =
+                new NullBlobContainersEmisLandingOrchestrationException(
+                    message: "Null blob container download orchestration exception, " +
+                        "please correct the errors and try again.");
+
+            var expectedEmisLandingOrchestrationValidationException =
+                new EmisLandingOrchestrationValidationException(
+                    message: "EMIS landing orchestration validation errors occurred, please try again.",
+                    innerException: nullBlobContainersEmisLandingOrchestrationException);
+
+            // when
+            ValueTask<string> DownloadTask = invalidDownloadOrchestrationService.ProcessAsync(inputFileName);
+
+            EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
+                await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(DownloadTask.AsTask);
+
+            // then
+            actualEmisLandingOrchestrationValidationException.Should()
+                .BeEquivalentTo(expectedEmisLandingOrchestrationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedEmisLandingOrchestrationValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnDownloadIfFileNameIsNullAndLogItAsync(string invalidText)
+        {
+            // given
+            var invalidArgumentEmisLandingOrchestrationException =
+                new InvalidArgumentEmisLandingOrchestrationException(
+                    message: "Invalid EMIS landing orchestration argument(s), please correct the errors and try again.");
+
+            invalidArgumentEmisLandingOrchestrationException.AddData(
+               key: "FileName",
+               values: "Text is required");
+
+            var expectedDownloadOrchestrationValidationException =
+                new EmisLandingOrchestrationValidationException(
+                    message: "EMIS landing orchestration validation errors occurred, please try again.",
+                    innerException: invalidArgumentEmisLandingOrchestrationException);
+
+            // when
+            ValueTask<string> processTask =
+                this.emisLandingOrchestrationService.ProcessAsync(invalidText);
+
+            EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
+                await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);
+
+            // then
+            actualEmisLandingOrchestrationValidationException.Should()
+                .BeEquivalentTo(expectedDownloadOrchestrationValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedDownloadOrchestrationValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldNotProcessNamedDocumentsIfDownloadIsNullAsync()
+        {
+            // given
+            string randomFileName = GetRandomString();
+            string inputFileName = randomFileName;
+
+            var notFoundEmisLandingOrchestrationException =
+                new NotFoundEmisLandingOrchestrationException(
+                message: $"Couldn't find download with file name: {inputFileName}.");
+
+            var expectedEmisLandingOrchestrationValidationException =
+                new EmisLandingOrchestrationValidationException(
+                    message: "EMIS landing orchestration validation errors occurred, please try again.",
+                    innerException: notFoundEmisLandingOrchestrationException);
+
+            this.downloadProcessingServiceMock.Setup(service =>
+                  service.RetrieveDownloadByFileNameAsync(inputFileName))
+                      .Returns(null);
+
+            // when
+            ValueTask<string> processTask = this.emisLandingOrchestrationService.ProcessAsync(inputFileName);
+
+            EmisLandingOrchestrationValidationException actualEmisLandingOrchestrationValidationException =
+                await Assert.ThrowsAsync<EmisLandingOrchestrationValidationException>(processTask.AsTask);
+
+            // then
+            actualEmisLandingOrchestrationValidationException.Should()
+                .BeEquivalentTo(expectedEmisLandingOrchestrationValidationException);
+
+            this.downloadProcessingServiceMock.Verify(service =>
+                service.RetrieveDownloadByFileNameAsync(inputFileName),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedEmisLandingOrchestrationValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.ingestionTrackingProcessingServiceMock.VerifyNoOtherCalls();
+            this.downloadProcessingServiceMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.dataSetSpecificationProcessingServiceMock.VerifyNoOtherCalls();
+            this.documentProcessingServiceMock.VerifyNoOtherCalls();
+            this.hashBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

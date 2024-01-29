@@ -11,6 +11,7 @@ using Azure.Core.Pipeline;
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using LHDS.Core.Brokers.DateTimes;
+using LHDS.Core.Brokers.Hashing;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Brokers.Storages.Blobs;
@@ -29,7 +30,11 @@ using LHDS.Core.Models.Foundations.OptOuts;
 using LHDS.Core.Models.Foundations.PdsAudits;
 using LHDS.Core.Models.Foundations.SpecificationObjects;
 using LHDS.Core.Models.Foundations.Suppliers;
+using LHDS.Core.Providers.Downloads;
+using LHDS.Core.Models.Foundations.TerminologyArtifacts;
 using LHDS.Core.Providers.Downloads.Extensions;
+using LHDS.Core.Providers.Downloads.FtpDownloads;
+using LHDS.Core.Services.Foundations.Cryptographies;
 using LHDS.Core.Services.Foundations.DataSets;
 using LHDS.Core.Services.Foundations.DataSetSpecifications;
 using LHDS.Core.Services.Foundations.DataTypes;
@@ -42,10 +47,13 @@ using LHDS.Core.Services.Foundations.PdsAudits;
 using LHDS.Core.Services.Foundations.SpecificationObjects;
 using LHDS.Core.Services.Foundations.Suppliers;
 using LHDS.Core.Services.Foundations.TerminologyArtifacts;
+using LHDS.Core.Services.Foundations.TerminologyPolls;
 using LHDS.Core.Services.Orchestrations.Downloads;
+using LHDS.Core.Services.Orchestrations.EmisLandings;
 using LHDS.Core.Services.Processings.DataSetSpecifications;
 using LHDS.Core.Services.Processings.Documents;
 using LHDS.Core.Services.Processings.Downloads;
+using LHDS.Core.Services.Processings.IngestionTrackingAudits;
 using LHDS.Core.Services.Processings.IngestionTrackings;
 using LHDS.Core.Services.Processings.OptOuts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -118,6 +126,7 @@ namespace LHDS.AdminPortal.Api
             });
 
             services.AddDbContext<StorageBroker>();
+            AddProviders(services, this.Configuration);
             AddBrokers(services, this.Configuration);
             AddFoundationServices(services, this.Configuration);
             AddOrchestrationServices(services, this.Configuration);
@@ -176,6 +185,12 @@ namespace LHDS.AdminPortal.Api
             });
         }
 
+        private static void AddProviders(IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddTransient<IDownloadAbstractionProvider, DownloadAbstractionProvider>();
+            services.AddTransient<IDownloadProvider, MockDownloadProvider>();
+        }
+
         private static void AddBrokers(IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<IConfiguration>(_ => configuration);
@@ -184,11 +199,13 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<ILoggingBroker, LoggingBroker>();
             services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<IBlobStorageBroker, BlobStorageBroker>();
+            services.AddTransient<IHashBroker, HashBroker>();
             services.AddTransient<IAzureBlobClient, AzureBlobClient>();
         }
 
         private static void AddFoundationServices(IServiceCollection services, IConfiguration configuration)
         {
+            services.AddTransient<ICryptographyService, CryptographyService>();
             services.AddTransient<IIngestionTrackingService, IngestionTrackingService>();
             services.AddTransient<ISupplierService, SupplierService>();
             services.AddTransient<IIngestionTrackingAuditService, IngestionTrackingAuditService>();
@@ -202,6 +219,7 @@ namespace LHDS.AdminPortal.Api
             services.AddTransient<IObjectColumnService, ObjectColumnService>();
             services.AddTransient<IDataSetService, DataSetService>();
             services.AddTransient<ITerminologyArtifactService, TerminologyArtifactService>();
+            services.AddTransient<ITerminologyPollService, TerminologyPollService>();
 
             var blobStorageSettings = configuration.GetSection("blobStorage").Get<BlobStorageSettings>();
             ValidateBlobStorageSettings(blobStorageSettings);
@@ -279,7 +297,7 @@ namespace LHDS.AdminPortal.Api
 
         private static void AddOrchestrationServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddTransient<IDownloadOrchestrationService, DownloadOrchestrationService>();
+            services.AddTransient<IEmisLandingOrchestrationService, EmisLandingOrchestrationService>();
         }
 
         private static void AddProcessingServices(IServiceCollection services, IConfiguration configuration)
@@ -307,6 +325,7 @@ namespace LHDS.AdminPortal.Api
             builder.EntitySet<OptOut>("OptOuts");
             builder.EntitySet<PdsAudit>("PdsAudits");
             builder.EntitySet<Supplier>("Suppliers");
+            builder.EntitySet<TerminologyArtifact>("TerminologyArtifacts");
             builder.EnableLowerCamelCase();
 
             return builder.GetEdmModel();

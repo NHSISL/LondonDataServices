@@ -14,16 +14,20 @@ import InfiniteScrollLoader from "../bases/pagers/InfiniteScroll.Loader";
 import { SpinnerBase } from "../bases/spinner/SpinnerBase";
 import IngestionTrackingRow from "./ingestionTrackingRow";
 import { IngestionTracking } from "../../models/ingestionTrackings/ingestionTracking";
-import { Button, Col, Row } from "react-bootstrap";
+import { Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRefresh } from "@fortawesome/free-solid-svg-icons";
+import { faDatabase, faFilter, faRefresh } from "@fortawesome/free-solid-svg-icons";
+import IngestionFilterModal from "./ingestionTrackingFilter"; 
+import { SupplierView } from "../../models/views/components/suppliers/supplierView";
 
 type IngestionTrackingTableProps = {};
 
 const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (props) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [debouncedTerm, setDebouncedTerm] = useState<string>("");
+    const [debouncedSupplierTerm, setDebouncedSupplierTerm] = useState<string>("");
     const [showSpinner, setShowSpinner] = useState(false);
+    const [showModal, setShowModal] = useState(false);
 
     const {
         mappedIngestionTrackings: ingestionTrackingsRetrieved,
@@ -34,7 +38,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         data,
         refetch
     } = ingestionTrackingHomeViewService.useGetAllIngestionTrackings(
-        debouncedTerm
+        debouncedTerm, debouncedSupplierTerm
     );
 
     const handleSearchChange = (value: string) => {
@@ -46,6 +50,14 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         () =>
             debounce((value: string) => {
                 setDebouncedTerm(value);
+            }, 500),
+        []
+    );
+
+    const handleSupplierDebounce = useMemo(
+        () =>
+            debounce((value: string) => {
+                setDebouncedSupplierTerm(value);
             }, 500),
         []
     );
@@ -91,6 +103,12 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         });
     };
 
+    const handleFilter = (supplier: SupplierView) => {
+        //alert(supplier.id);
+        setSearchTerm(debouncedTerm);
+        handleSupplierDebounce(supplier.id.toString());
+    };
+
     const hasNoMorePages = () => {
         return !isLoading && data?.pages.at(-1)?.nextPage === undefined;
     };
@@ -109,36 +127,39 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
         <div className="infiniteScrollContainer">
             <CardBase>
                 <CardBaseBody>
-                    <CardBaseTitle>Ingestion Tracking</CardBaseTitle>
+                    <CardBaseTitle> <FontAwesomeIcon icon={faDatabase} className="me-2" /> Ingestion Tracking</CardBaseTitle>
                     <CardBaseContent>
                         <InfiniteScroll loading={isLoading || showSpinner} hasNextPage={hasNextPage || false} loadMore={fetchNextPage}>
                             <Row>
-                                <Col>&nbsp;</Col>
-                                <Col style={{ textAlign: "right" }}>
+                                <div className="input-group mb-3">
+                                    <SearchBase
+                                        id="search"
+                                        value={searchTerm}
+                                        placeholder="Search for ingestion data..."
+                                        onChange={(e) => {handleSearchChange(e.currentTarget.value)}} />
+
+                                    <div className="input-group-append">
+                                        <button
+                                            className="btn btn-outline-secondary"
+                                            id="filterButton"
+                                            onClick={() => setShowModal(true)}>
+
+                                            <FontAwesomeIcon icon={faFilter}/> Filter
+                                        </button>
+                                    </div>
+
                                     {showSpinner ? (
                                         <SpinnerBase />
                                     ) : (
-                                        <Button variant="light">
-                                            <FontAwesomeIcon icon={faRefresh} onClick={refreshData} />
-                                        </Button>
+                                        <div className="input-group-append">
+                                                <button className="btn btn-outline-secondary" id="refreshButton" onClick={refreshData}>
+                                                <FontAwesomeIcon icon={faRefresh} /> Refresh
+                                            </button>
+                                        </div>
                                     )}
-                                </Col>
-                            </Row>
-                            <Row>
-                                <div className="filter-container">
-                                    <div className="filter-item">
-                                        <SearchBase
-                                            id="search"
-                                            label="Search IngestionTrackings"
-                                            value={searchTerm}
-                                            onChange={(e) => {
-                                                handleSearchChange(e.currentTarget.value);
-                                            }}
-                                        />
-                                    </div>
                                 </div>
                             </Row>
-                            <TableBase>
+                            <TableBase classes="table-bordered">
                                 <TableBaseTbody>
                                     {isLoading || showSpinner ? (
                                         <tr>
@@ -161,7 +182,7 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                                                 )
                                             )}
                                             <tr>
-                                                <td colSpan={3} className="text-center">
+                                                <td colSpan={5} className="text-center">
                                                     <InfiniteScrollLoader
                                                         loading={isLoading || isFetchingNextPage}
                                                         spinner={<SpinnerBase />}
@@ -178,7 +199,11 @@ const IngestionTrackingTable: FunctionComponent<IngestionTrackingTableProps> = (
                     </CardBaseContent>
                 </CardBaseBody>
             </CardBase>
-        </div>
+            {
+                showModal && (
+                    <IngestionFilterModal onClose={() => setShowModal(false)} onAddFilter={handleFilter} />
+                )}
+        </div >
     );
 };
 

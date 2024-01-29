@@ -1,0 +1,53 @@
+using System;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Force.DeepCloner;
+using Moq;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using Xunit;
+
+namespace LHDS.Core.Tests.Unit.Services.Foundations.ResolvedAddresses
+{
+    public partial class ResolvedAddressServiceTests
+    {
+        [Fact]
+        public async Task ShouldRemoveResolvedAddressByIdAsync()
+        {
+            // given
+            Guid randomId = Guid.NewGuid();
+            Guid inputResolvedAddressId = randomId;
+            ResolvedAddress randomResolvedAddress = CreateRandomResolvedAddress();
+            ResolvedAddress storageResolvedAddress = randomResolvedAddress;
+            ResolvedAddress expectedInputResolvedAddress = storageResolvedAddress;
+            ResolvedAddress deletedResolvedAddress = expectedInputResolvedAddress;
+            ResolvedAddress expectedResolvedAddress = deletedResolvedAddress.DeepClone();
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectResolvedAddressByIdAsync(inputResolvedAddressId))
+                    .ReturnsAsync(storageResolvedAddress);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.DeleteResolvedAddressAsync(expectedInputResolvedAddress))
+                    .ReturnsAsync(deletedResolvedAddress);
+
+            // when
+            ResolvedAddress actualResolvedAddress = await this.resolvedAddressService
+                .RemoveResolvedAddressByIdAsync(inputResolvedAddressId);
+
+            // then
+            actualResolvedAddress.Should().BeEquivalentTo(expectedResolvedAddress);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectResolvedAddressByIdAsync(inputResolvedAddressId),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.DeleteResolvedAddressAsync(expectedInputResolvedAddress),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+    }
+}

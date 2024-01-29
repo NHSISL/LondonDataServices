@@ -1,10 +1,14 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using Moq;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.Addresses.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
@@ -62,22 +66,30 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             // given 
             var invalidAddress = new Address
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                UPRN = invalidText,
+                UPSN = invalidText,
+                OrganisationName = invalidText,
+                DepartmentName = invalidText,
+                SubBuildingName = invalidText,
+                BuildingName = invalidText,
+                BuildingNumber = invalidText,
+                DependentThoroughfare = invalidText,
+                Thoroughfare = invalidText,
+                DoubleDependentLocality = invalidText,
+                DependentLocality = invalidText,
+                PostTown = invalidText,
+                PostCode = invalidText,
+                PostalAddress = invalidText,
+                JsonPostalAddress = invalidText
             };
 
-            var invalidAddressException = 
+            var invalidAddressException =
                 new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again.");
 
             invalidAddressException.AddData(
                 key: nameof(Address.Id),
                 values: "Id is required");
-
-            //invalidAddressException.AddData(
-            //    key: nameof(Address.Name),
-            //    values: "Text is required");
-
-            // TODO: Add or remove data here to suit the validation needs for the Address model
 
             invalidAddressException.AddData(
                 key: nameof(Address.CreatedDate),
@@ -141,8 +153,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             Address randomAddress = CreateRandomAddress(randomDateTimeOffset);
             Address invalidAddress = randomAddress;
-            
-            var invalidAddressException = 
+
+            var invalidAddressException =
                 new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again.");
 
@@ -198,7 +210,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             Address randomAddress = CreateRandomAddress(randomDateTimeOffset);
             randomAddress.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var invalidAddressException = 
+            var invalidAddressException =
                 new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again.");
 
@@ -312,8 +324,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             Address storageAddress = invalidAddress.DeepClone();
             storageAddress.CreatedDate = storageAddress.CreatedDate.AddMinutes(randomMinutes);
             storageAddress.UpdatedDate = storageAddress.UpdatedDate.AddMinutes(randomMinutes);
-            
-            var invalidAddressException = 
+
+            var invalidAddressException =
                 new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again.");
 
@@ -375,7 +387,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             invalidAddress.CreatedBy = Guid.NewGuid().ToString();
             storageAddress.UpdatedDate = storageAddress.CreatedDate;
 
-            var invalidAddressException = 
+            var invalidAddressException =
                 new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again.");
 
@@ -434,7 +446,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.Addresses
             Address invalidAddress = randomAddress;
             Address storageAddress = randomAddress.DeepClone();
 
-            var invalidAddressException = 
+            var invalidAddressException =
                 new InvalidAddressException(
                     message: "Invalid address. Please correct the errors and try again.");
 

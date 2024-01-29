@@ -26,6 +26,10 @@ namespace LHDS.AdminPortal.Api.Tests.Acceptance.Brokers
             return response.Items;
         }
 
+        public async ValueTask<List<DataSet>> FindDataSetByIdAsync(Guid dataSetId) =>
+              await this.apiFactoryClient.GetContentAsync<List<DataSet>>(
+                  $"{dataSetsRelativeUrl}/?$filter=Id eq {dataSetId}");
+
         public async ValueTask<DataSet> GetDataSetByIdAsync(Guid dataSetId) =>
             await this.apiFactoryClient.GetContentAsync<DataSet>($"{dataSetsRelativeUrl}/{dataSetId}");
 

@@ -39,7 +39,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressParsers
                     await processCSVAddressTask);
 
             // then
-            actualAddressParserProcessingValidationException.Should().BeEquivalentTo(expectedAddressParserProcessingValidationException);
+            actualAddressParserProcessingValidationException.Should()
+                .BeEquivalentTo(expectedAddressParserProcessingValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
 using Moq;
 using Xunit;
@@ -29,7 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
                     innerException: invalidArgumentAddressParserException);
 
             // when
-            ValueTask<List<Address>> processCSVAddressTask = 
+            ValueTask<List<Address>> processCSVAddressTask =
                 this.addressParserService.ProcessCsvAsync(nullAddresses);
 
             AddressParserValidationException actualAddressParserValidationException =
@@ -38,6 +39,49 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressParsers
 
             // then
             actualAddressParserValidationException.Should().BeEquivalentTo(expectedAddressParserValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedAddressParserValidationException))),
+                        Times.Once);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnProcessCsvIfDataIsInvalidAndLogItAsync(
+            string invalidText)
+        {
+            // given
+            string invalidAddress = invalidText;
+
+            var invalidArgumentAddressParserException =
+                new InvalidArgumentAddressParserException(
+                    message: "Invalid argument. Please correct the errors and try again.");
+
+            invalidArgumentAddressParserException.AddData(
+                key: "data",
+                values: "Text is required");
+
+            var expectedAddressParserValidationException =
+                new AddressParserValidationException(
+                    message: "Address parser validation errors occurred, please try again.",
+                    innerException: invalidArgumentAddressParserException);
+
+            // when
+            ValueTask<List<Address>> processCSVAddressTask =
+                this.addressParserService.ProcessCsvAsync(invalidAddress);
+
+            AddressParserValidationException actualAddressParserValidationException =
+                await Assert.ThrowsAsync<AddressParserValidationException>(async () =>
+                    await processCSVAddressTask);
+
+            // then
+            actualAddressParserValidationException.Should()
+                .BeEquivalentTo(expectedAddressParserValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

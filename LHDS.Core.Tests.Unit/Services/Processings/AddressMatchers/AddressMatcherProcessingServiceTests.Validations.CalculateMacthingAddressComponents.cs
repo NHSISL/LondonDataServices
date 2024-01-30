@@ -42,14 +42,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                     innerException: invalidArgumentAddressMatcherException);
 
             // when
-            ValueTask<HashSet<AddressMatch>> calculateMacthingAddressComponentsAction =
+            ValueTask<HashSet<AddressMatch>> calculateMacthingAddressComponentsTask =
                 addressMatcherProcessingService.CalculateMacthingAddressComponents(
                     incomingAddressComponents: invalidIncomingAddressComponents,
                     possibleAddresses: invalidPossibleAddresses);
 
             AddressMatcherProcessingValidationException actualAddressMatcherValidationException =
                 await Assert.ThrowsAsync<AddressMatcherProcessingValidationException>(
-                    calculateMacthingAddressComponentsAction.AsTask);
+                    calculateMacthingAddressComponentsTask.AsTask);
 
             // then
             actualAddressMatcherValidationException.Should()

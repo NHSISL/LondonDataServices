@@ -2,9 +2,14 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Force.DeepCloner;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.AddressMatchers;
 
 namespace LHDS.Core.Services.Processings.AddressMatchers
 {
@@ -63,8 +68,63 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
                 MatchCollection matches = Regex.Matches(string.Join(" ", uniqueMatches), pattern);
                 ValidateMatches(matches);
                 string extractedPostCode = matches[0].Groups[1].Value;
-                
+
                 return extractedPostCode;
             });
+
+        public ValueTask<HashSet<AddressMatch>> CalculateMacthingAddressComponents(
+            IList<KeyValuePair<string, string>> incomingAddressComponents,
+            HashSet<AddressMatch> possibleAddresses) =>
+            TryCatch(async () =>
+            {
+                ValidateCalculateArguments(incomingAddressComponents, possibleAddresses);
+
+                HashSet<AddressMatch> matchedAddresses = new HashSet<AddressMatch>();
+
+                foreach (var address in possibleAddresses)
+                {
+                    await Task.Run(() =>
+                    {
+                        AddressMatch addressMatch = address.DeepClone();
+                        var possibleAddressComponents = address.AddressComponents;
+
+                        addressMatch.MatchedComponents = incomingAddressComponents
+                            .Intersect(possibleAddressComponents).Count();
+
+                        addressMatch.MatchingCoreComponents =
+                            CheckMatchingCorePairs(incomingAddressComponents, possibleAddressComponents);
+
+                        matchedAddresses.Add(addressMatch);
+                    });
+                }
+
+                return matchedAddresses;
+            });
+
+        private static bool CheckMatchingCorePairs(
+            IList<KeyValuePair<string, string>> incomingAddressComponents,
+            IList<KeyValuePair<string, string>> possibleAddressComponents)
+        {
+            bool hasHouseNumber1 = incomingAddressComponents.Any(kv => kv.Key == "house_number");
+            bool hasHouseNumber2 = possibleAddressComponents.Any(kv => kv.Key == "house_number");
+
+            if (hasHouseNumber1 || hasHouseNumber2)
+            {
+                bool matchOnHouseNumberAndPostCode = hasHouseNumber1 && hasHouseNumber2 &&
+                    incomingAddressComponents.Any(kv => kv.Key == "house_number" &&
+                        possibleAddressComponents.Any(kv2 => kv2.Key == "house_number" && kv2.Value == kv.Value)) &&
+                            incomingAddressComponents.Any(kv => kv.Key == "postcode" && possibleAddressComponents
+                                .Any(kv2 => kv2.Key == "postcode" && kv2.Value == kv.Value));
+
+                return matchOnHouseNumberAndPostCode;
+            }
+            else
+            {
+                bool matchOnPostcode = incomingAddressComponents.Any(kv => kv.Key == "postcode" &&
+                    possibleAddressComponents.Any(kv2 => kv2.Key == "postcode" && kv2.Value == kv.Value));
+
+                return matchOnPostcode;
+            }
+        }
     }
 }

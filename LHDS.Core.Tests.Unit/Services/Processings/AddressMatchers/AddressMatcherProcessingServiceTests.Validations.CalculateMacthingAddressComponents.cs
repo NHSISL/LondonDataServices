@@ -2,9 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
-using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Foundations.AddressMatchers;
 using LHDS.Core.Models.Foundations.AddressMatchers.Exceptions;
 using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
 using Moq;
@@ -14,15 +15,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
 {
     public partial class AddressMatcherProcessingServiceTests
     {
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnCleanAddressIfArgsIsInvalidAndLogItAsync(
-            string invalidText)
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnCalculateMacthingAddressIfArgsIsInvalidAndLogItAsync()
         {
             // given
-            string address = invalidText;
+            List<KeyValuePair<string, string>> invalidIncomingAddressComponents =
+                new List<KeyValuePair<string, string>>();
+
+            HashSet<AddressMatch> invalidPossibleAddresses = new HashSet<AddressMatch>();
 
             var invalidArgumentAddressMatcherException =
                 new InvalidArgumentAddressMatcherProcessingException(
@@ -30,8 +30,12 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                     "please correct the errors and try again.");
 
             invalidArgumentAddressMatcherException.AddData(
-                key: "address",
-                values: "Text is required");
+                key: "IncomingAddressComponents",
+                values: "Values is required");
+
+            invalidArgumentAddressMatcherException.AddData(
+                key: "PossibleAddresses",
+                values: "Values is required");
 
             var expectedAddressMatcherValidationException =
                 new AddressMatcherProcessingValidationException(
@@ -39,11 +43,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                     innerException: invalidArgumentAddressMatcherException);
 
             // when
-            Action cleanAddressAction = () =>
-                addressMatcherProcessingService.CleanAddress(address);
+            ValueTask<HashSet<AddressMatch>> calculateMacthingAddressComponentsTask =
+                addressMatcherProcessingService.CalculateMacthingAddressComponents(
+                    incomingAddressComponents: invalidIncomingAddressComponents,
+                    possibleAddresses: invalidPossibleAddresses);
 
             AddressMatcherProcessingValidationException actualAddressMatcherValidationException =
-                Assert.Throws<AddressMatcherProcessingValidationException>(cleanAddressAction);
+                await Assert.ThrowsAsync<AddressMatcherProcessingValidationException>(
+                    calculateMacthingAddressComponentsTask.AsTask);
 
             // then
             actualAddressMatcherValidationException.Should()

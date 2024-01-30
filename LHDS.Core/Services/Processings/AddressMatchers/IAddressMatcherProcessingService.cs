@@ -2,11 +2,19 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.AddressMatchers;
+
 namespace LHDS.Core.Services.Processings.AddressMatchers
 {
     public interface IAddressMatcherProcessingService
     {
         string CleanAddress(string address);
         string ExtractPostCode(string address);
+
+        ValueTask<HashSet<AddressMatch>> CalculateMacthingAddressComponents(
+            IList<KeyValuePair<string, string>> incomingAddressComponents,
+            HashSet<AddressMatch> possibleAddresses);
     }
 }

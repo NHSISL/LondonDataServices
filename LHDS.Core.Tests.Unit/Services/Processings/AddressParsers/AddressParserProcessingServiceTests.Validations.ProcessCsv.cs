@@ -7,10 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
-using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
 using LHDS.Core.Models.Processings.AddressParsers.Exceptions;
-using LHDS.Core.Services.Processings.AddressMatchers;
 using Moq;
 using Xunit;
 
@@ -30,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressParsers
 
             var invalidArgumentAddressParserProcessingException =
                 new InvalidArgumentAddressParserProcessingException(
-                    message: "Invalid address parser processing argument(s), " + "please correct the errors and try again.");
+                    message: "Invalid address parser processing argument, please correct the errors and try again.");
 
             invalidArgumentAddressParserProcessingException.AddData(
                 key: "address",

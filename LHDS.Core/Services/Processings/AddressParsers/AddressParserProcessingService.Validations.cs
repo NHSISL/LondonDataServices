@@ -13,7 +13,7 @@ namespace LHDS.Core.Services.Processings.AddressParsers
         public void ValidateAddressParserArgs(string address)
         {
             Validate<InvalidArgumentAddressParserProcessingException>(
-                message: "Invalid address parser processing argument. Please correct the errors and try again.",
+                message: "Invalid address parser processing argument, please correct the errors and try again.",
                 (Rule: IsInvalid(address), Parameter: "address"));
         }
 

@@ -105,12 +105,12 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             IList<KeyValuePair<string, string>> incomingAddressComponents,
             IList<KeyValuePair<string, string>> possibleAddressComponents)
         {
-            bool hasHouseNumber1 = incomingAddressComponents.Any(kv => kv.Key == "house_number");
-            bool hasHouseNumber2 = possibleAddressComponents.Any(kv => kv.Key == "house_number");
+            bool incomingHasHouseNumber = incomingAddressComponents.Any(kv => kv.Key == "house_number");
+            bool possibleAddressHasHouseNumber = possibleAddressComponents.Any(kv => kv.Key == "house_number");
 
-            if (hasHouseNumber1 || hasHouseNumber2)
+            if (incomingHasHouseNumber || possibleAddressHasHouseNumber)
             {
-                bool matchOnHouseNumberAndPostCode = hasHouseNumber1 && hasHouseNumber2 &&
+                bool matchOnHouseNumberAndPostCode = incomingHasHouseNumber && possibleAddressHasHouseNumber &&
                     incomingAddressComponents.Any(kv => kv.Key == "house_number" &&
                         possibleAddressComponents.Any(kv2 => kv2.Key == "house_number" && kv2.Value == kv.Value)) &&
                             incomingAddressComponents.Any(kv => kv.Key == "postcode" && possibleAddressComponents

@@ -25,13 +25,16 @@ namespace LHDS.Core.Services.Processings.AddressParsers
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<List<Address>> ProcessCsvAsync(byte[] data)
-        {
-            List<Address> parsedAddress =
-                  await this.addressParserService.ProcessCsvAsync(data);
+        public ValueTask<List<Address>> ProcessCsvAsync(byte[] data) =>
+            TryCatch(async () =>
+            {
+                ValidateAddressParserOnProcessCSV(data);
 
-            return parsedAddress;
-        }
+                List<Address> parsedAddress =
+                    await this.addressParserService.ProcessCsvAsync(data);
+
+                return parsedAddress;
+            });
 
         public ValueTask<List<Address>> ProcessCsvAsync(string data) =>
             TryCatch(async () =>

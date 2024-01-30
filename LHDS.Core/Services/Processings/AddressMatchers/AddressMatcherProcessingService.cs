@@ -72,28 +72,34 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
                 return extractedPostCode;
             });
 
-        public async ValueTask<HashSet<AddressMatch>> CalculateMacthingAddressComponents(
+        public ValueTask<HashSet<AddressMatch>> CalculateMacthingAddressComponents(
             IList<KeyValuePair<string, string>> incomingAddressComponents,
-            HashSet<AddressMatch> possibleAddresses)
-        {
-            HashSet<AddressMatch> matchedAddresses = new HashSet<AddressMatch>();
-
-            foreach (var address in possibleAddresses)
+            HashSet<AddressMatch> possibleAddresses) =>
+            TryCatch(async () =>
             {
-                AddressMatch addressMatch = address.DeepClone();
-                var possibleAddressComponents = address.AddressComponents;
+                ValidateCalculateArguments(incomingAddressComponents, possibleAddresses);
 
-                addressMatch.MatchedComponents = incomingAddressComponents
-                    .Intersect(possibleAddressComponents).Count();
+                HashSet<AddressMatch> matchedAddresses = new HashSet<AddressMatch>();
 
-                addressMatch.MatchingCoreComponents =
-                    CheckMatchingCorePairs(incomingAddressComponents, possibleAddressComponents);
+                foreach (var address in possibleAddresses)
+                {
+                    await Task.Run(() =>
+                    {
+                        AddressMatch addressMatch = address.DeepClone();
+                        var possibleAddressComponents = address.AddressComponents;
 
-                matchedAddresses.Add(addressMatch);
-            }
+                        addressMatch.MatchedComponents = incomingAddressComponents
+                            .Intersect(possibleAddressComponents).Count();
 
-            return matchedAddresses;
-        }
+                        addressMatch.MatchingCoreComponents =
+                            CheckMatchingCorePairs(incomingAddressComponents, possibleAddressComponents);
+
+                        matchedAddresses.Add(addressMatch);
+                    });
+                }
+
+                return matchedAddresses;
+            });
 
         private static bool CheckMatchingCorePairs(
             IList<KeyValuePair<string, string>> incomingAddressComponents,

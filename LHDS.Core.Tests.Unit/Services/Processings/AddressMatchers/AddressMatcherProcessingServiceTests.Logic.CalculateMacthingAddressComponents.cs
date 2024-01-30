@@ -19,8 +19,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
             List<KeyValuePair<string, string>> inputAddress,
             HashSet<AddressMatch> potentialMatches,
             int matchedComponents,
-            bool matchingCoreComponents
-            )
+            bool matchingCoreComponents)
         {
             // given
             List<KeyValuePair<string, string>> incomingAddress = inputAddress;

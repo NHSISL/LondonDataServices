@@ -3,6 +3,9 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using LHDS.Core.Models.Processings.AddressMatchers;
 using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
 using Xeptions;
 
@@ -11,6 +14,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
     public partial class AddressMatcherProcessingService : IAddressMatcherProcessingService
     {
         private delegate string ReturningStringFunction();
+        private delegate ValueTask<HashSet<AddressMatch>> ReturningAddressMatchHashSetFunction();
 
         private string TryCatch(ReturningStringFunction returningStringFunction)
         {
@@ -29,6 +33,28 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             catch (PostCodeNotFoundAddressMatcherProcessingServiceException postCodeNotFoundAddressMatcherProcessingServiceException)
             {
                 throw CreateAndLogValidationException(postCodeNotFoundAddressMatcherProcessingServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressMatcherProcessingServiceException =
+                    new FailedAddressMatcherProcessingServiceException(
+                        message: "Failed address matcher processing service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressMatcherProcessingServiceException);
+            }
+        }
+
+        private async ValueTask<HashSet<AddressMatch>> TryCatch(
+            ReturningAddressMatchHashSetFunction returningAddressMatchHashSetFunction)
+        {
+            try
+            {
+                return await returningAddressMatchHashSetFunction();
+            }
+            catch (InvalidArgumentAddressMatcherProcessingException invalidArgumentAddressMatcherProcessingException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentAddressMatcherProcessingException);
             }
             catch (Exception exception)
             {

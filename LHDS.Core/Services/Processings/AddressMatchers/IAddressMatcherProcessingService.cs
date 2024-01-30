@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Processings.AddressMatchers;
+using LHDS.Core.Models.Foundations.AddressMatchers;
 
 namespace LHDS.Core.Services.Processings.AddressMatchers
 {

@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using LHDS.Core.Models.Foundations.AddressMatchers;
 using LHDS.Core.Models.Foundations.AddressMatchers.Exceptions;
 using Xeptions;
@@ -23,6 +24,15 @@ namespace LHDS.Core.Services.Foundations.AddressMatchers
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressMatcherException);
             }
+            catch (Exception exception)
+            {
+                var failedAddressMatcherServiceException =
+                    new FailedAddressMatcherServiceException(
+                        message: "Failed address matcher service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressMatcherServiceException);
+            }
         }
 
         private AddressMatcherValidationException CreateAndLogValidationException(Xeption exception)
@@ -35,6 +45,18 @@ namespace LHDS.Core.Services.Foundations.AddressMatchers
             this.loggingBroker.LogError(addressMatcherValidationException);
 
             return addressMatcherValidationException;
+        }
+
+        private AddressMatcherServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var addressMatcherServiceException = new
+                AddressMatcherServiceException(
+                    message: "Address matcher service error occurred, please contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(addressMatcherServiceException);
+
+            return addressMatcherServiceException;
         }
     }
 }

@@ -29,14 +29,14 @@ namespace LHDS.Core.Services.Processings.AddressParsers
             throw new NotImplementedException();
 
         public ValueTask<List<Address>> ProcessCsvAsync(string data) =>
-        TryCatch(async () =>
-        {
-            ValidateAddressParserArgs(data);
+            TryCatch(async () =>
+            {
+                ValidateAddressParserArgs(data);
 
-            List<Address> parsedAddress =
-                await this.addressParserService.ProcessCsvAsync(data);
+                List<Address> parsedAddress =
+                    await this.addressParserService.ProcessCsvAsync(data);
 
-            return parsedAddress;
-        });
+                return parsedAddress;
+            });
     }
 }

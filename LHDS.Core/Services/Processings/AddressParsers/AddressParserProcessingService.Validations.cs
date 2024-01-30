@@ -10,7 +10,7 @@ namespace LHDS.Core.Services.Processings.AddressParsers
 {
     public partial class AddressParserProcessingService
     {
-        public void ValidateAddressParserArgs(string address)
+        virtual internal void ValidateAddressParserArgs(string address)
         {
             Validate<InvalidArgumentAddressParserProcessingException>(
                 message: "Invalid address parser processing argument, please correct the errors and try again.",

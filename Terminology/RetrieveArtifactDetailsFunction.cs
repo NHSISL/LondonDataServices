@@ -26,22 +26,19 @@ namespace Terminology
         }
 
         [FunctionName("RetrieveArtifactDetailsFunction")]
-        public void Run([TimerTrigger("0 */15 * * * *")] MyInformation myTimer)
-        {
-            this.loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
+       public async ValueTask Run([TimerTrigger("0 */15 * * * *")] MyInformation myTimer)  
+        {  
+            this.loggingBroker.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");  
 
-            try
-            {
-                Task.Run(async () =>
-                {
-                    await terminologyClient.RetrieveArtifactDetailsAsync();
-                }).Wait();
-            }
-            catch (Exception ex)
-            {
-                this.loggingBroker.LogError(ex);
-                throw;
-            }
+            try  
+            {  
+                await terminologyClient.RetrieveArtifactDetailsAsync();  
+            }  
+            catch (Exception ex)  
+            {  
+                this.loggingBroker.LogError(ex);  
+                throw;  
+            }  
         }
     }
 }

@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressParsers
     public partial class AddressParserProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldGetParsedAddressByByte()
+        public async Task ShouldGetParsedAddressByString()
         {
             // Given
             var randomAddress = GetRandomString();

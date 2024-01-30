@@ -25,8 +25,13 @@ namespace LHDS.Core.Services.Processings.AddressParsers
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<List<Address>> ProcessCsvAsync(byte[] data) =>
-            throw new NotImplementedException();
+        public async ValueTask<List<Address>> ProcessCsvAsync(byte[] data)
+        {
+            List<Address> parsedAddress =
+                  await this.addressParserService.ProcessCsvAsync(data);
+
+            return parsedAddress;
+        }
 
         public ValueTask<List<Address>> ProcessCsvAsync(string data) =>
             TryCatch(async () =>

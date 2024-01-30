@@ -3,10 +3,15 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Services.Foundations.AddressParsers;
 using LHDS.Core.Services.Processings.AddressParsers;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -15,7 +20,9 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressParsers
 {
     public partial class AddressParserProcessingServiceTests
     {
-        private readonly Mock<IAddressParserService> addressParserServiceMock;
+        private readonly Mock<IAddressParserService> addressParserServiceMock =
+            new Mock<IAddressParserService>();
+
         private readonly Mock<ILoggingBroker> loggingBrokerMock = new Mock<ILoggingBroker>();
         private readonly IAddressParserProcessingService addressParserProcessingService;
 

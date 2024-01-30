@@ -17,6 +17,7 @@ using LHDS.Core.Services.Foundations.AddressParsers;
 using LHDS.Core.Services.Orchestrations.AddressNormalisations;
 using LHDS.Core.Services.Processings.AddressLoadingAudits;
 using LHDS.Core.Services.Processings.AddressNormalisations;
+using LHDS.Core.Services.Processings.AddressParsers;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Tynamix.ObjectFiller;
@@ -27,7 +28,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
 {
     public partial class AddressNormalisationOrchestrationServiceTests
     {
-        private readonly Mock<IAddressParserService> addressParserServiceMock;
+        private readonly Mock<IAddressParserProcessingService> addressParserProcessingServiceMock;
         private readonly Mock<IAddressNormalisationProcessingService> addressNormalisationProcessingServiceMock;
         private readonly Mock<IAddressLoadingAuditProcessingService> addressLoadingAuditProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
@@ -39,7 +40,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
 
         public AddressNormalisationOrchestrationServiceTests(ITestOutputHelper output)
         {
-            this.addressParserServiceMock = new Mock<IAddressParserService>();
+            this.addressParserProcessingServiceMock = new Mock<IAddressParserProcessingService>();
             this.addressNormalisationProcessingServiceMock = new Mock<IAddressNormalisationProcessingService>();
             this.addressLoadingAuditProcessingServiceMock = new Mock<IAddressLoadingAuditProcessingService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
@@ -49,7 +50,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
             this.output = output;
 
             this.addressNormalisationOrchestrationService = new AddressNormalisationOrchestrationService(
-                addressParserService: addressParserServiceMock.Object,
+                addressParserProcessingService: addressParserProcessingServiceMock.Object,
                 addressNormalisationProcessingService: addressNormalisationProcessingServiceMock.Object,
                 addressLoadingAuditProcessingService: addressLoadingAuditProcessingServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,

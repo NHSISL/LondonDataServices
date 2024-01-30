@@ -23,8 +23,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressParsers
         private readonly Mock<IAddressParserService> addressParserServiceMock =
             new Mock<IAddressParserService>();
 
-        private readonly Mock<ILoggingBroker> loggingBrokerMock = new Mock<ILoggingBroker>();
         private readonly IAddressParserProcessingService addressParserProcessingService;
+        private readonly Mock<ILoggingBroker> loggingBrokerMock = new Mock<ILoggingBroker>();
 
         public AddressParserProcessingServiceTests()
         {

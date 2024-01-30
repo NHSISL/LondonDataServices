@@ -2,9 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
 using LHDS.Core.Models.Processings.AddressParsers.Exceptions;
 using Xeptions;
 
@@ -24,6 +26,15 @@ namespace LHDS.Core.Services.Processings.AddressParsers
             {
                 throw CreateAndLogValidationException(invalidArgumentAddressParserProcessingException);
             }
+            catch (Exception exception)
+            {
+                var failedAddressParserProcessingServiceException =
+                    new FailedAddressParserProcessingServiceException(
+                        message: "Failed address parser processing service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressParserProcessingServiceException);
+            }
         }
 
         private AddressParserProcessingValidationException CreateAndLogValidationException(Xeption exception)
@@ -36,6 +47,18 @@ namespace LHDS.Core.Services.Processings.AddressParsers
             this.loggingBroker.LogError(addressParserProcessingProcessingValidationException);
 
             return addressParserProcessingProcessingValidationException;
+        }
+
+        private AddressParserProcessingServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var addressParserProcessingServiceException = new
+                AddressParserProcessingServiceException(
+                    message: "Address parser processing service error occurred, please contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(addressParserProcessingServiceException);
+
+            return addressParserProcessingServiceException;
         }
     }
 }

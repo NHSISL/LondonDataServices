@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.AddressMatchers;
 
@@ -18,7 +19,20 @@ namespace LHDS.Core.Services.Foundations.AddressMatchers
             this.loggingBroker = loggingBroker;
         }
 
-        public BestMatchEnum CheckForBestMatch(HashSet<AddressMatch> macthedAddresses) =>
-            throw new NotImplementedException();
+        public BestMatchEnum CheckForBestMatch(HashSet<AddressMatch> macthedAddresses)
+        {
+            int matchedCount = macthedAddresses.ToList()
+                .Where(x => x.MatchingCoreComponents)
+                    .OrderByDescending(x => x.MatchedComponents).Count();
+
+            BestMatchEnum result = matchedCount switch
+            {
+                0 => BestMatchEnum.None,
+                1 => BestMatchEnum.Single,
+                _ => BestMatchEnum.Multiple
+            };
+
+            return result;
+        }
     }
 }

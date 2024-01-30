@@ -6,10 +6,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.Addresses;
 
-namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
+namespace LHDS.Core.Services.Processings.AddressParsers
 {
-    public interface IAddressNormalisationOrchestrationService
+    public interface IAddressParserProcessingService
     {
-        public ValueTask<List<Address>> ProcessDataAsync(string data);
+        ValueTask<List<Address>> ProcessCsvAsync(byte[] data);
+        ValueTask<List<Address>> ProcessCsvAsync(string data);
     }
 }

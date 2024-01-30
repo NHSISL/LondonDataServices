@@ -12,12 +12,13 @@ using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Services.Foundations.AddressParsers;
 using LHDS.Core.Services.Processings.AddressLoadingAudits;
 using LHDS.Core.Services.Processings.AddressNormalisations;
+using LHDS.Core.Services.Processings.AddressParsers;
 
 namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
 {
     public partial class AddressNormalisationOrchestrationService : IAddressNormalisationOrchestrationService
     {
-        private readonly IAddressParserService addressParserService;
+        private readonly IAddressParserProcessingService addressParserProcessingService;
         private readonly IAddressNormalisationProcessingService addressNormalisationProcessingService;
         private readonly IAddressLoadingAuditProcessingService addressLoadingAuditProcessingService;
         private readonly ILoggingBroker loggingBroker;
@@ -25,14 +26,14 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
         private readonly IIdentifierBroker identifierBroker;
 
         public AddressNormalisationOrchestrationService(
-            IAddressParserService addressParserService,
+            IAddressParserProcessingService addressParserProcessingService,
             IAddressNormalisationProcessingService addressNormalisationProcessingService,
             IAddressLoadingAuditProcessingService addressLoadingAuditProcessingService,
             ILoggingBroker loggingBroker,
             IDateTimeBroker dateTimeBroker,
             IIdentifierBroker identifierBroker)
         {
-            this.addressParserService = addressParserService;
+            this.addressParserProcessingService = addressParserProcessingService;
             this.addressNormalisationProcessingService = addressNormalisationProcessingService;
             this.addressLoadingAuditProcessingService = addressLoadingAuditProcessingService;
             this.loggingBroker = loggingBroker;

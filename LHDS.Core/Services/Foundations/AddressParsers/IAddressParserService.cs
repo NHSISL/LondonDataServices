@@ -11,5 +11,6 @@ namespace LHDS.Core.Services.Foundations.AddressParsers
     public interface IAddressParserService
     {
         ValueTask<List<Address>> ProcessCsvAsync(byte[] data);
+        ValueTask<List<Address>> ProcessCsvAsync(string data);
     }
 }

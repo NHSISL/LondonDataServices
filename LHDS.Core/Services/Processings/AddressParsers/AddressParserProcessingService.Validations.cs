@@ -2,25 +2,25 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using System;
 using LHDS.Core.Models.Foundations.AddressParsers.Exceptions;
+using LHDS.Core.Models.Processings.AddressParsers.Exceptions;
 using Xeptions;
 
-namespace LHDS.Core.Services.Foundations.AddressParsers
+namespace LHDS.Core.Services.Processings.AddressParsers
 {
-    public partial class AddressParserService
+    public partial class AddressParserProcessingService
     {
         virtual internal void ValidateAddressParserOnProcessCSV(byte[] data)
         {
             ValidateAddressParserIsNotNull(data);
         }
 
-        virtual internal void ValidateAddressParserOnProcessCSV(string data)
+        virtual internal void ValidateAddressParserArgs(string address)
         {
-            Validate<InvalidArgumentAddressParserException>(
-                message: "Invalid argument. Please correct the errors and try again.",
-                    (Rule: IsInvalid(data), Parameter: "data"));
+            Validate<InvalidArgumentAddressParserProcessingException>(
+                message: "Invalid address parser processing argument, please correct the errors and try again.",
+                (Rule: IsInvalid(address), Parameter: "address"));
         }
 
         private static dynamic IsInvalid(string text) => new
@@ -33,12 +33,12 @@ namespace LHDS.Core.Services.Foundations.AddressParsers
         {
             if (data is null)
             {
-                throw new InvalidArgumentAddressParserException(message: "Address parser is null.");
+                throw new InvalidArgumentAddressParserProcessingException(message: "Address parser is null.");
             }
         }
 
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
-             where T : Xeption
+            where T : Xeption
         {
             var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
 

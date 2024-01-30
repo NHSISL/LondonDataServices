@@ -40,7 +40,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
             this.identifierBroker = identifierBroker;
         }
 
-        public ValueTask<List<Address>> ProcessDataAsync(byte[] data) =>
+        public ValueTask<List<Address>> ProcessDataAsync(string data) =>
             throw new NotImplementedException();
     }
 }

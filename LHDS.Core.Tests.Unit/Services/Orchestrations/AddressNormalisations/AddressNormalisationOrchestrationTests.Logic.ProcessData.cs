@@ -10,6 +10,8 @@ using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
+using Moq;
+using Renci.SshNet.Common;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
@@ -21,7 +23,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
         //{
         //    // Given
         //    DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-        //    byte[] inputData = Encoding.UTF8.GetBytes(GetRandomString());
+        //    string inputData = GetRandomString();
+
         //    ValueTask<List<Address>> randomAddresses = CreateRandomAddressesAsync();
 
         //    // Address Normalisation
@@ -41,7 +44,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
         //    };
 
         //    var expectedNormalisedAddress = addressNormalisation.DeepClone();
-
         //    AddressLoadingAudit randomAddressLoadingAudit = CreateRandomAddressLoadingAudit(randomDateTimeOffset);
         //    AddressLoadingAudit inputAddressLoadingAudit = randomAddressLoadingAudit;
         //    AddressLoadingAudit storageAddressLoadingAudit = inputAddressLoadingAudit;
@@ -51,17 +53,17 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
         //       broker.GetCurrentDateTimeOffset())
         //           .Returns(randomDateTimeOffset);
 
-        //    this.addressParserServiceMock.Setup(processing =>
-        //       processing.ProcessCsvAsync(inputData)
-        //            .ReturnsAsync(randomAddresses));
+        //    //this.addressParserServiceMock.Setup(processing =>
+        //    //   processing.ProcessCsvAsync(inputData))
+        //    //        .ReturnsAsync(randomAddresses);
 
         //    this.addressNormalisationProcessingServiceMock.Setup(processing =>
-        //       processing.GetNormalisedAddress(inputAddress)
-        //            .ReturnsAsync(addressNormalisation));
+        //       processing.GetNormalisedAddress(inputAddress))
+        //            .ReturnsAsync(addressNormalisation);
 
         //    this.addressLoadingAuditProcessingServiceMock.Setup(processing =>
-        //      processing.AddAddressLoadingAuditAsync(inputAddressLoadingAudit)
-        //           .ReturnsAsync(storageAddressLoadingAudit));
+        //      processing.AddAddressLoadingAuditAsync(inputAddressLoadingAudit))
+        //           .ReturnsAsync(storageAddressLoadingAudit);
 
         //    // When
         //    List<Address> actualAddresses = await this.addressNormalisationOrchestrationService
@@ -70,7 +72,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
         //    // Then
 
         //    this.addressParserServiceMock.VerifyNoOtherCalls();
-       // }
+        //}
     }
 }
 

@@ -2,13 +2,13 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressNormalisations;
-using LHDS.Core.Services.Foundations.AddressNormalisations;
 using LHDS.Core.Services.Foundations.AddressParsers;
+using Microsoft.Identity.Client;
 
 namespace LHDS.Core.Services.Processings.AddressParsers
 {
@@ -25,10 +25,15 @@ namespace LHDS.Core.Services.Processings.AddressParsers
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<List<Address>> ProcessCsvAsync(byte[] data) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<List<Address>> ProcessCsvAsync(byte[] data) =>
+            throw new NotImplementedException();
 
-        public ValueTask<List<Address>> ProcessCsvAsync(string data) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<List<Address>> ProcessCsvAsync(string data)
+        {
+            List<Address> parsedAddress =
+                await this.addressParserService.ProcessCsvAsync(data);
+
+            return parsedAddress;
+        }
     }
 }

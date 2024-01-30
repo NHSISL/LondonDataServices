@@ -10,7 +10,7 @@ using LHDS.Core.Models.Foundations.AddressMatchers;
 
 namespace LHDS.Core.Services.Foundations.AddressMatchers
 {
-    public class AddressMatcherService : IAddressMatcherService
+    public partial class AddressMatcherService : IAddressMatcherService
     {
         private readonly ILoggingBroker loggingBroker;
 
@@ -19,20 +19,23 @@ namespace LHDS.Core.Services.Foundations.AddressMatchers
             this.loggingBroker = loggingBroker;
         }
 
-        public BestMatchEnum CheckForBestMatch(HashSet<AddressMatch> macthedAddresses)
-        {
-            int matchedCount = macthedAddresses.ToList()
-                .Where(x => x.MatchingCoreComponents)
-                    .OrderByDescending(x => x.MatchedComponents).Count();
-
-            BestMatchEnum result = matchedCount switch
+        public BestMatchEnum CheckForBestMatch(HashSet<AddressMatch> macthedAddresses) =>
+            TryCatch(() =>
             {
-                0 => BestMatchEnum.None,
-                1 => BestMatchEnum.Single,
-                _ => BestMatchEnum.Multiple
-            };
+                ValidateCheckForBestMatchArguments(macthedAddresses);
 
-            return result;
-        }
+                int matchedCount = macthedAddresses.ToList()
+                    .Where(x => x.MatchingCoreComponents)
+                        .OrderByDescending(x => x.MatchedComponents).Count();
+
+                BestMatchEnum result = matchedCount switch
+                {
+                    0 => BestMatchEnum.None,
+                    1 => BestMatchEnum.Single,
+                    _ => BestMatchEnum.Multiple
+                };
+
+                return result;
+            });
     }
 }

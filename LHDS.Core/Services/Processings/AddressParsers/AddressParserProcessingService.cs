@@ -30,6 +30,8 @@ namespace LHDS.Core.Services.Processings.AddressParsers
 
         public async ValueTask<List<Address>> ProcessCsvAsync(string data)
         {
+            ValidateAddressParserArgs(data);
+
             List<Address> parsedAddress =
                 await this.addressParserService.ProcessCsvAsync(data);
 

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using LHDS.Core.Models.Foundations.AddressMatchers;
 using LHDS.Core.Models.Foundations.AddressMatchers.Exceptions;
 using Xeptions;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.AddressMatchers
     public partial class AddressMatcherService
     {
         private delegate BestMatchEnum ReturningBestMatchEnumFunction();
+        private delegate IList<KeyValuePair<string, string>> ReturningKeyValuePairListFunction();
 
         private BestMatchEnum TryCatch(
             ReturningBestMatchEnumFunction returningBestMatchEnumFunction)
@@ -19,6 +21,28 @@ namespace LHDS.Core.Services.Foundations.AddressMatchers
             try
             {
                 return returningBestMatchEnumFunction();
+            }
+            catch (InvalidArgumentAddressMatcherException invalidArgumentAddressMatcherException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentAddressMatcherException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressMatcherServiceException =
+                    new FailedAddressMatcherServiceException(
+                        message: "Failed address matcher service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressMatcherServiceException);
+            }
+        }
+
+        private IList<KeyValuePair<string, string>> TryCatch(
+            ReturningKeyValuePairListFunction returningKeyValuePairListFunction)
+        {
+            try
+            {
+                return returningKeyValuePairListFunction();
             }
             catch (InvalidArgumentAddressMatcherException invalidArgumentAddressMatcherException)
             {

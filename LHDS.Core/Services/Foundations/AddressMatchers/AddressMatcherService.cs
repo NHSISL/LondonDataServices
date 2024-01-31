@@ -37,5 +37,17 @@ namespace LHDS.Core.Services.Foundations.AddressMatchers
 
                 return result;
             });
+
+        public IList<KeyValuePair<string, string>> RemoveNonDigitCharactersFromHouseNumber(
+            IList<KeyValuePair<string, string>> addressComponents) =>
+                throw new NotImplementedException();
+
+        public IList<KeyValuePair<string, string>> TurnAddressIntoAppartment(
+            IList<KeyValuePair<string, string>> addressComponents) =>
+               throw new NotImplementedException();
+
+        public IList<KeyValuePair<string, string>> TurnAddressIntoFlat(
+            IList<KeyValuePair<string, string>> addressComponents) =>
+               throw new NotImplementedException();
     }
 }

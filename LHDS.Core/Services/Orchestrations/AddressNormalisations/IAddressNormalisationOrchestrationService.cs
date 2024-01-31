@@ -4,12 +4,12 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.AddressNormalisations;
 
 namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
 {
     public interface IAddressNormalisationOrchestrationService
     {
-        public ValueTask<List<Address>> ProcessDataAsync(string data);
+        public ValueTask<List<AddressNormalisation>> ProcessDataAsync(string data);
     }
 }

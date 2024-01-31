@@ -2,16 +2,15 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Force.DeepCloner;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using Moq;
-using Renci.SshNet.Common;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
@@ -22,72 +21,97 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
         public async Task ShouldProcessFileAndNormaliseAndLogAsync()
         {
             // Given
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             string inputData = GetRandomString();
+            List<Address> randomAddresses = CreateRandomAddresses().ToList();
+            List<Address> inputAddresses = randomAddresses.DeepClone();
 
-            ValueTask<List<Address>> randomAddresses = CreateRandomAddressesAsync();
+            List<Address> processedAddresses =
+                new List<Address>();
 
-            // Address Normalisation
-            var randomAddress = GetRandomString();
-            string inputAddress = randomAddress;
+            this.addressParserProcessingServiceMock.Setup(processing =>
+              processing.ProcessCsvAsync(inputData))
+                   .ReturnsAsync(randomAddresses);
 
-            AddressNormalisation addressNormalisation = new AddressNormalisation
+            foreach (Address address in inputAddresses)
             {
-                PostalAddress = GetRandomString(),
-                JsonPostalAddress = GetRandomString(),
-                AddressComponents = new List<KeyValuePair<string, string>>
+                AddressNormalisation addressNormalisation = new AddressNormalisation
+                {
+                    PostalAddress = GetRandomString(),
+                    JsonPostalAddress = GetRandomString(),
+                    AddressComponents = new List<KeyValuePair<string, string>>
                     {
                         new KeyValuePair<string, string>("Street", GetRandomString()),
                         new KeyValuePair<string, string>("City", GetRandomString()),
                         new KeyValuePair<string, string>("PostCode", GetRandomString()),
                     }
-            };
+                };
 
-            var expectedNormalisedAddress = addressNormalisation.DeepClone();
-            AddressLoadingAudit randomAddressLoadingAudit = CreateRandomAddressLoadingAudit(randomDateTimeOffset);
-            AddressLoadingAudit inputAddressLoadingAudit = randomAddressLoadingAudit;
-            AddressLoadingAudit storageAddressLoadingAudit = inputAddressLoadingAudit;
-            AddressLoadingAudit expectedAddressLoadingAudit = storageAddressLoadingAudit.DeepClone();
+                List<string> addressList = new List<string> {
+                    address.OrganisationName,
+                    address.DepartmentName,
+                    address.SubBuildingName,
+                    address.BuildingName,
+                    address.BuildingNumber,
+                    address.DependentThoroughfare,
+                    address.Thoroughfare,
+                    address.DoubleDependentLocality,
+                    address.DependentLocality,
+                    address.PostTown,
+                    address.PostCode
+                };
 
-            this.dateTimeBrokerMock.Setup(broker =>
-               broker.GetCurrentDateTimeOffset())
-                   .Returns(randomDateTimeOffset);
+                var stringAddress = string.Join("", addressList.Where(s => !string.IsNullOrEmpty(s)));
 
-            this.addressParserProcessingServiceMock.Setup(processing =>
-               processing.ProcessCsvAsync(inputData))
-                    .Returns(randomAddresses);
+                this.addressNormalisationProcessingServiceMock.Setup(service =>
+                    service.GetNormalisedAddress(stringAddress))
+                        .ReturnsAsync(addressNormalisation);
 
-            this.addressNormalisationProcessingServiceMock.Setup(processing =>
-               processing.GetNormalisedAddress(inputAddress))
-                    .ReturnsAsync(addressNormalisation);
+                processedAddresses.Add(address);
+            }
 
-            this.addressLoadingAuditProcessingServiceMock.Setup(processing =>
-              processing.AddAddressLoadingAuditAsync(inputAddressLoadingAudit))
-                   .ReturnsAsync(storageAddressLoadingAudit);
+            List<Address> expectedAddress = processedAddresses.DeepClone();
 
-            // When
-            List<Address> actualAddresses = 
-                await this.addressNormalisationOrchestrationService.ProcessDataAsync(inputData);
+            // Where
+            List<AddressNormalisation> actualAddresses =
+                 await this.addressNormalisationOrchestrationService.ProcessDataAsync(inputData);
 
             // Then
+            actualAddresses.Should().HaveCount(expectedAddress.Count);
 
             this.addressParserProcessingServiceMock.Verify(processing =>
                    processing.ProcessCsvAsync(It.IsAny<string>()),
                        Times.Once);
 
-            this.addressNormalisationProcessingServiceMock.Verify(processing =>
-                  processing.GetNormalisedAddress(It.IsAny<string>()),
-                      Times.Once);
+            foreach (Address address in inputAddresses)
+            {
+                List<string> addressList = new List<string> {
+                    address.OrganisationName,
+                    address.DepartmentName,
+                    address.SubBuildingName,
+                    address.BuildingName,
+                    address.BuildingNumber,
+                    address.DependentThoroughfare,
+                    address.Thoroughfare,
+                    address.DoubleDependentLocality,
+                    address.DependentLocality,
+                    address.PostTown,
+                    address.PostCode
+                };
 
-            this.addressLoadingAuditProcessingServiceMock.Verify(processing =>
-                  processing.AddAddressLoadingAuditAsync(inputAddressLoadingAudit),
-                      Times.Once);
+                var stringAddress = string.Join("", addressList.Where(s => !string.IsNullOrEmpty(s)));
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+                this.addressNormalisationProcessingServiceMock.Verify(service =>
+                    service.GetNormalisedAddress(stringAddress),
+                        Times.Once());
+            }
+
+            this.addressLoadingAuditProcessingServiceMock.Verify(service =>
+                service.AddAddressLoadingAuditAsync(It.IsAny<AddressLoadingAudit>()),
+                    Times.Exactly(inputAddresses.Count));
+
             this.addressParserProcessingServiceMock.VerifyNoOtherCalls();
             this.addressNormalisationProcessingServiceMock.VerifyNoOtherCalls();
             this.addressLoadingAuditProcessingServiceMock.VerifyNoOtherCalls();
         }
     }
 }
-

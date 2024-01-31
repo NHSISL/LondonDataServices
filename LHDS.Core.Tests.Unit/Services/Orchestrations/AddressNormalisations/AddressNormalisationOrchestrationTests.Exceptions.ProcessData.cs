@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Orchestrations.AddressNormalisations.Exceptions;
+using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
 using Moq;
 using Xeptions;
 using Xunit;
@@ -60,5 +61,47 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyOnGetNormalisedAddressIfDependencyErrorOccursAndLogItAsync(
+            Xeption dependencyException)
+        {
+            // given
+            var randomAddress = GetRandomString();
+            string inputAddress = randomAddress;
+            var randomMessage = GetRandomString();
+
+            var expectedAddressNormalisationOrchestrationDependencyException =
+                new AddressNormalisationProcessingDependencyException(
+                    message: "Address normalisation processing dependency error occurred, please try again.",
+                    innerException: dependencyException.InnerException as Xeption);
+
+            this.addressParserProcessingServiceMock.Setup(processing =>
+               processing.ProcessCsvAsync(It.IsAny<string>()))
+                   .Throws(dependencyException);
+
+            // when
+            ValueTask<List<AddressNormalisation>> actualAddressesTask =
+                this.addressNormalisationOrchestrationService.ProcessDataAsync(inputAddress);
+
+            AddressNormalisationOrchestrationDependencyException actualException =
+                await Assert.ThrowsAsync<AddressNormalisationOrchestrationDependencyException>(
+                    actualAddressesTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedAddressNormalisationOrchestrationDependencyException);
+
+            this.addressParserProcessingServiceMock.Verify(processing =>
+                processing.ProcessCsvAsync(It.IsAny<string>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedAddressNormalisationOrchestrationDependencyException))),
+                         Times.Once);
+
+            this.addressParserProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

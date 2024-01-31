@@ -127,7 +127,22 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
                     innerException)
             };
         }
+        public static TheoryData DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
 
+            return new TheoryData<Xeption>
+            {
+                new AddressNormalisationDependencyException(
+                    message: "Address normalisation dependency error occurred, contact support.",
+                    innerException),
 
+                new AddressNormalisationServiceException(
+                    message: "Address normalisation service error occurred, contact support.",
+                    innerException)
+            };
+        }
     }
 }

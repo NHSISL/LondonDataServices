@@ -44,6 +44,15 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
             {
                 throw CreateAndLogDependencyException(addressNormalisationServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedAddressNormalisationOrchestrationServiceException =
+                    new FailedAddressNormalisationOrchestrationServiceException(
+                        message: "Failed address normalisation orchestration service error occurred, contact support.",
+                        exception);
+
+                throw CreateAndLogServiceException(failedAddressNormalisationOrchestrationServiceException);
+            }
         }
 
         private AddressNormalisationOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
@@ -82,6 +91,18 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
             this.loggingBroker.LogError(addressNormalisationOrchestrationDependencyException);
 
             throw addressNormalisationOrchestrationDependencyException;
+        }
+
+        private AddressNormalisationOrchestrationServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var addressNormalisationOrchestrationServiceException = new
+                AddressNormalisationOrchestrationServiceException(
+                message: "Address normalisation orchestration service error occurred, contact support.",
+                innerException: exception);
+
+            this.loggingBroker.LogError(addressNormalisationOrchestrationServiceException);
+
+            return addressNormalisationOrchestrationServiceException;
         }
     }
 }

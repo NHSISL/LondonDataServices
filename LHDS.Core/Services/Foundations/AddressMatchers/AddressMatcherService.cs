@@ -41,32 +41,35 @@ namespace LHDS.Core.Services.Foundations.AddressMatchers
             });
 
         public IList<KeyValuePair<string, string>> RemoveNonDigitCharactersFromHouseNumber(
-            IList<KeyValuePair<string, string>> addressComponents)
-        {
-            if (!addressComponents.Any(x => x.Key == "house_number"))
+            IList<KeyValuePair<string, string>> addressComponents) =>
+            TryCatch(() =>
             {
-                return addressComponents;
-            }
+                ValidateAddressComponents(addressComponents);
 
-            var alteredAddressComponents = addressComponents.DeepClone();
-            var houseNumberKeyValuePair = alteredAddressComponents.FirstOrDefault(x => x.Key == "house_number");
-            var houseNumber = houseNumberKeyValuePair.Value;
-            var rx = new Regex(@"\D");
-            var matches = rx.Matches(houseNumber);
-
-            if (matches.Count > 0)
-            {
-                foreach (var match in matches.ToList())
+                if (!addressComponents.Any(x => x.Key == "house_number"))
                 {
-                    houseNumber = houseNumber.Replace(match.Value, "");
+                    return addressComponents;
                 }
-            };
 
-            alteredAddressComponents.Remove(houseNumberKeyValuePair);
-            alteredAddressComponents.Add(new KeyValuePair<string, string>("house_number", houseNumber));
+                var alteredAddressComponents = addressComponents.DeepClone();
+                var houseNumberKeyValuePair = alteredAddressComponents.FirstOrDefault(x => x.Key == "house_number");
+                var houseNumber = houseNumberKeyValuePair.Value;
+                var rx = new Regex(@"\D");
+                var matches = rx.Matches(houseNumber);
 
-            return alteredAddressComponents;
-        }
+                if (matches.Count > 0)
+                {
+                    foreach (var match in matches.ToList())
+                    {
+                        houseNumber = houseNumber.Replace(match.Value, "");
+                    }
+                };
+
+                alteredAddressComponents.Remove(houseNumberKeyValuePair);
+                alteredAddressComponents.Add(new KeyValuePair<string, string>("house_number", houseNumber));
+
+                return alteredAddressComponents;
+            });
 
         public IList<KeyValuePair<string, string>> TurnAddressIntoAppartment(
             IList<KeyValuePair<string, string>> addressComponents) =>

@@ -52,45 +52,59 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
                     await this.addressParserProcessingService.ProcessCsvAsync(data);
 
                 List<AddressNormalisation> processedNormalisedAddresses = new List<AddressNormalisation>();
+                List<Exception> exceptions = new List<Exception>();
 
                 foreach (var address in parsedAddress)
                 {
-                    List<string> addressList = new List<string> {
-                    address.OrganisationName,
-                    address.DepartmentName,
-                    address.SubBuildingName,
-                    address.BuildingName,
-                    address.BuildingNumber,
-                    address.DependentThoroughfare,
-                    address.Thoroughfare,
-                    address.DoubleDependentLocality,
-                    address.DependentLocality,
-                    address.PostTown,
-                    address.PostCode
-                };
-
-                    var stringAddress = string.Join("", addressList.Where(s => !string.IsNullOrEmpty(s)));
-
-                    AddressNormalisation normalisedAddress =
-                        await this.addressNormalisationProcessingService.GetNormalisedAddress(stringAddress);
-
-                    processedNormalisedAddresses.Add(normalisedAddress);
-
-                    var addressLoadingAudit = new AddressLoadingAudit
+                    try
                     {
-                        Id = Guid.NewGuid(),
-                        CorrelationId = Guid.NewGuid(),
-                        FileName = "",
-                        Message = "Normalised Adderess",
-                        MessageId = "",
-                        CreatedBy = "System",
-                        UpdatedBy = "System",
-                        UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                        CreatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                    };
+                        List<string> addressList = new List<string> {
+                            address.OrganisationName,
+                            address.DepartmentName,
+                            address.SubBuildingName,
+                            address.BuildingName,
+                            address.BuildingNumber,
+                            address.DependentThoroughfare,
+                            address.Thoroughfare,
+                            address.DoubleDependentLocality,
+                            address.DependentLocality,
+                            address.PostTown,
+                            address.PostCode
+                        };
 
-                    await this.addressLoadingAuditProcessingService
-                        .AddAddressLoadingAuditAsync(addressLoadingAudit);
+                        var stringAddress = string.Join("", addressList.Where(s => !string.IsNullOrEmpty(s)));
+
+                        AddressNormalisation normalisedAddress =
+                            await this.addressNormalisationProcessingService.GetNormalisedAddress(stringAddress);
+
+                        processedNormalisedAddresses.Add(normalisedAddress);
+
+                        var addressLoadingAudit = new AddressLoadingAudit
+                        {
+                            Id = Guid.NewGuid(),
+                            CorrelationId = Guid.NewGuid(),
+                            FileName = "",
+                            Message = "Normalised Address",
+                            MessageId = "",
+                            CreatedBy = "System",
+                            UpdatedBy = "System",
+                            UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                            CreatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                        };
+
+                        await this.addressLoadingAuditProcessingService
+                            .AddAddressLoadingAuditAsync(addressLoadingAudit);
+                    }
+                    catch (Exception ex)
+                    {
+                        this.loggingBroker.LogError(ex);
+                        exceptions.Add(ex);
+                    }
+                }
+
+                if (exceptions.Any())
+                {
+                    throw new AggregateException("One or more records failed processing.", exceptions);
                 }
 
                 return processedNormalisedAddresses;

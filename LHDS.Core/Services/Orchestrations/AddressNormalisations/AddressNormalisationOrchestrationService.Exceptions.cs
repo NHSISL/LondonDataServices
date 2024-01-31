@@ -31,6 +31,10 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
             {
                 throw CreateAndLogDependencyValidationException(addressNormalisationValidationException);
             }
+             catch (AddressNormalisationDependencyValidationException addressNormalisationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
+            }
         }
 
         private AddressNormalisationOrchestrationValidationException CreateAndLogValidationException(Xeption exception)

@@ -114,7 +114,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
 
             var failedAddressNormalisationOrchestrationServiceException =
                 new FailedAddressNormalisationOrchestrationServiceException(
-                    message: "Failed address orchestration processing service error occurred, contact support.",
+                    message: "Failed address normalisation orchestration service error occurred, contact support.",
                     innerException: serviceException);
 
             var expectedAddressNormalisationOrchestrationServiveException =

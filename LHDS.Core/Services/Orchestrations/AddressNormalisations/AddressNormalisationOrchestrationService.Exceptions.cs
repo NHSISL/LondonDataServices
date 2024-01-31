@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressNormalisations.Exceptions;
+using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
 using Xeptions;
 
 namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
@@ -35,6 +36,14 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
             {
                 throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
             }
+            catch (AddressNormalisationDependencyException addressNormalisationDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressNormalisationDependencyException);
+            }
+            catch (AddressNormalisationServiceException addressNormalisationServiceException)
+            {
+                throw CreateAndLogDependencyException(addressNormalisationServiceException);
+            }
         }
 
         private AddressNormalisationOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
@@ -60,6 +69,19 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
             this.loggingBroker.LogError(addressNormalisationOrchestrationDependencyValidationException);
 
             return addressNormalisationOrchestrationDependencyValidationException;
+        }
+
+        private AddressNormalisationOrchestrationDependencyException
+            CreateAndLogDependencyException(Xeption exception)
+        {
+            var addressNormalisationOrchestrationDependencyException =
+                new AddressNormalisationOrchestrationDependencyException(
+                    message: "Address normalisation orchestration dependency error occurred, please try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(addressNormalisationOrchestrationDependencyException);
+
+            throw addressNormalisationOrchestrationDependencyException;
         }
     }
 }

@@ -72,8 +72,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
             var randomMessage = GetRandomString();
 
             var expectedAddressNormalisationOrchestrationDependencyException =
-                new AddressNormalisationProcessingDependencyException(
-                    message: "Address normalisation processing dependency error occurred, please try again.",
+                new AddressNormalisationOrchestrationDependencyException(
+                    message: "Address normalisation orchestration dependency error occurred, please try again.",
                     innerException: dependencyException.InnerException as Xeption);
 
             this.addressParserProcessingServiceMock.Setup(processing =>

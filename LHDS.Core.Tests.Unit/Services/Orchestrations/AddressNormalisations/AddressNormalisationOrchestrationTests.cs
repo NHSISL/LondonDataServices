@@ -70,16 +70,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
 
-        private static async ValueTask<List<Address>> CreateRandomAddressesAsync()
+        private static IQueryable<Address> CreateRandomAddresses()
         {
-            var dateTimeOffset = GetRandomDateTimeOffset();
-            var count = GetRandomNumber();
-
-            var filler = CreateAddressFiller(dateTimeOffset);
-            var addresses = filler.Create(count).AsQueryable();
-
-            return await addresses.ToListAsync();
+            return CreateAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
         }
+
+        private static Address CreateRandomAddress(DateTimeOffset dateTimeOffset) =>
+            CreateAddressFiller(dateTimeOffset).Create();
 
         private static Filler<Address> CreateAddressFiller(DateTimeOffset dateTimeOffset)
         {

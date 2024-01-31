@@ -43,18 +43,19 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
             this.identifierBroker = identifierBroker;
         }
 
-        public async ValueTask<List<AddressNormalisation>> ProcessDataAsync(string data)
-        {
-            ValidateAddressNormalisationArgs(data);
-
-            List<Address> parsedAddress =
-                await this.addressParserProcessingService.ProcessCsvAsync(data);
-
-            List<AddressNormalisation> processedNormalisedAddresses = new List<AddressNormalisation>();
-
-            foreach (var address in parsedAddress)
+        public ValueTask<List<AddressNormalisation>> ProcessDataAsync(string data) =>
+            TryCatch(async () =>
             {
-                List<string> addressList = new List<string> {
+                ValidateAddressNormalisationArgs(data);
+
+                List<Address> parsedAddress =
+                    await this.addressParserProcessingService.ProcessCsvAsync(data);
+
+                List<AddressNormalisation> processedNormalisedAddresses = new List<AddressNormalisation>();
+
+                foreach (var address in parsedAddress)
+                {
+                    List<string> addressList = new List<string> {
                     address.OrganisationName,
                     address.DepartmentName,
                     address.SubBuildingName,
@@ -68,31 +69,31 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
                     address.PostCode
                 };
 
-                var stringAddress = string.Join("", addressList.Where(s => !string.IsNullOrEmpty(s)));
+                    var stringAddress = string.Join("", addressList.Where(s => !string.IsNullOrEmpty(s)));
 
-                AddressNormalisation normalisedAddress =
-                    await this.addressNormalisationProcessingService.GetNormalisedAddress(stringAddress);
+                    AddressNormalisation normalisedAddress =
+                        await this.addressNormalisationProcessingService.GetNormalisedAddress(stringAddress);
 
-                processedNormalisedAddresses.Add(normalisedAddress);
+                    processedNormalisedAddresses.Add(normalisedAddress);
 
-                var addressLoadingAudit = new AddressLoadingAudit
-                {
-                    Id = Guid.NewGuid(),
-                    CorrelationId = Guid.NewGuid(),
-                    FileName = "",
-                    Message = "Normalised Adderess",
-                    MessageId = "",
-                    CreatedBy = "System",
-                    UpdatedBy = "System",
-                    UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                    CreatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                };
+                    var addressLoadingAudit = new AddressLoadingAudit
+                    {
+                        Id = Guid.NewGuid(),
+                        CorrelationId = Guid.NewGuid(),
+                        FileName = "",
+                        Message = "Normalised Adderess",
+                        MessageId = "",
+                        CreatedBy = "System",
+                        UpdatedBy = "System",
+                        UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                        CreatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                    };
 
-                await this.addressLoadingAuditProcessingService
-                    .AddAddressLoadingAuditAsync(addressLoadingAudit);
-            }
+                    await this.addressLoadingAuditProcessingService
+                        .AddAddressLoadingAuditAsync(addressLoadingAudit);
+                }
 
-            return processedNormalisedAddresses;
-        }
+                return processedNormalisedAddresses;
+            });
     }
 }

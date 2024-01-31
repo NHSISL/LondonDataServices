@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Processings.AddressMatchers;
+using LHDS.Core.Models.Foundations.AddressMatchers;
 using LHDS.Core.Services.Processings.AddressMatchers;
 using Moq;
 using Tynamix.ObjectFiller;

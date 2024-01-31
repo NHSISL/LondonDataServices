@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Force.DeepCloner;
 using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Models.Processings.AddressMatchers;
+using LHDS.Core.Models.Foundations.AddressMatchers;
 
 namespace LHDS.Core.Services.Processings.AddressMatchers
 {

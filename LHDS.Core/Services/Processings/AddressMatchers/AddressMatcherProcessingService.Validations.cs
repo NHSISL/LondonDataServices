@@ -5,7 +5,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using LHDS.Core.Models.Processings.AddressMatchers;
+using LHDS.Core.Models.Foundations.AddressMatchers;
+using LHDS.Core.Models.Foundations.AddressMatchers.Exceptions;
 using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
 using Xeptions;
 

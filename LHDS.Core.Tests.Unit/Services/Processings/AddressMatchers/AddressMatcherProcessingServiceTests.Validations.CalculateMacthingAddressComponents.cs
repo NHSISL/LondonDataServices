@@ -45,8 +45,8 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
             // when
             ValueTask<HashSet<AddressMatch>> calculateMacthingAddressComponentsTask =
                 addressMatcherProcessingService.CalculateMacthingAddressComponents(
-                    incomingAddressComponents: invalidIncomingAddressComponents,
-                    possibleAddresses: invalidPossibleAddresses);
+                    addressComponents: invalidIncomingAddressComponents,
+                    possibleAddressMatches: invalidPossibleAddresses);
 
             AddressMatcherProcessingValidationException actualAddressMatcherValidationException =
                 await Assert.ThrowsAsync<AddressMatcherProcessingValidationException>(

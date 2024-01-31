@@ -5,6 +5,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using Force.DeepCloner;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.AddressMatchers;
 
@@ -37,5 +39,44 @@ namespace LHDS.Core.Services.Foundations.AddressMatchers
 
                 return result;
             });
+
+        public IList<KeyValuePair<string, string>> RemoveNonDigitCharactersFromHouseNumber(
+            IList<KeyValuePair<string, string>> addressComponents) =>
+            TryCatch(() =>
+            {
+                ValidateAddressComponents(addressComponents);
+
+                if (!addressComponents.Any(x => x.Key == "house_number"))
+                {
+                    return addressComponents;
+                }
+
+                var alteredAddressComponents = addressComponents.DeepClone();
+                var houseNumberKeyValuePair = alteredAddressComponents.FirstOrDefault(x => x.Key == "house_number");
+                var houseNumber = houseNumberKeyValuePair.Value;
+                var rx = new Regex(@"\D");
+                var matches = rx.Matches(houseNumber);
+
+                if (matches.Count > 0)
+                {
+                    foreach (var match in matches.ToList())
+                    {
+                        houseNumber = houseNumber.Replace(match.Value, "");
+                    }
+                };
+
+                alteredAddressComponents.Remove(houseNumberKeyValuePair);
+                alteredAddressComponents.Add(new KeyValuePair<string, string>("house_number", houseNumber));
+
+                return alteredAddressComponents;
+            });
+
+        public IList<KeyValuePair<string, string>> TurnAddressIntoAppartment(
+            IList<KeyValuePair<string, string>> addressComponents) =>
+               throw new NotImplementedException();
+
+        public IList<KeyValuePair<string, string>> TurnAddressIntoFlat(
+            IList<KeyValuePair<string, string>> addressComponents) =>
+               throw new NotImplementedException();
     }
 }

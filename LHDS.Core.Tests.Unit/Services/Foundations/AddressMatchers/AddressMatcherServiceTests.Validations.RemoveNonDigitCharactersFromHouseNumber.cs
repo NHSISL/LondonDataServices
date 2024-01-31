@@ -25,7 +25,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressMatchers
                     "please correct the errors and try again.");
 
             invalidArgumentAddressMatcherException.AddData(
-                key: "MatchedAddresses",
+                key: "AddressComponents",
                 values: "Values is required");
 
             var expectedAddressMatcherValidationException =

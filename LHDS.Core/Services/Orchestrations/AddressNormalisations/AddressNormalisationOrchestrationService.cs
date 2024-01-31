@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
@@ -46,7 +45,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
 
         public async ValueTask<List<AddressNormalisation>> ProcessDataAsync(string data)
         {
-            //validate string arg
+            ValidateAddressNormalisationArgs(data);
 
             List<Address> parsedAddress =
                 await this.addressParserProcessingService.ProcessCsvAsync(data);

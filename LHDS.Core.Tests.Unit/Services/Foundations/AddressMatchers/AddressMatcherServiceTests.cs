@@ -28,6 +28,58 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressMatchers
             this.addressMatcherService = new AddressMatcherService(loggingBroker: loggingBrokerMock.Object);
         }
 
+        public static TheoryData<List<KeyValuePair<string, string>>> HouseNumbersWithCharacters()
+        {
+            return new TheoryData<List<KeyValuePair<string, string>>>
+            {
+                new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>("house_number", "10"),
+                    new KeyValuePair<string, string>("road", "Downing Street"),
+                    new KeyValuePair<string, string>("suburb", "Westminster"),
+                    new KeyValuePair<string, string>("city", "London"),
+                    new KeyValuePair<string, string>("postcode", "SW1A2AA"),
+                    new KeyValuePair<string, string>("country", "United Kingdom")
+                },
+                new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>("house_number", "10 A"),
+                    new KeyValuePair<string, string>("road", "Downing Street"),
+                    new KeyValuePair<string, string>("suburb", "Westminster"),
+                    new KeyValuePair<string, string>("city", "London"),
+                    new KeyValuePair<string, string>("postcode", "SW1A2AA"),
+                    new KeyValuePair<string, string>("country", "United Kingdom")
+                },
+                new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>("house_number", "10 ABC"),
+                    new KeyValuePair<string, string>("road", "Downing Street"),
+                    new KeyValuePair<string, string>("suburb", "Westminster"),
+                    new KeyValuePair<string, string>("city", "London"),
+                    new KeyValuePair<string, string>("postcode", "SW1A2AA"),
+                    new KeyValuePair<string, string>("country", "United Kingdom")
+                },
+                new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>("house_number", "10A"),
+                    new KeyValuePair<string, string>("road", "Downing Street"),
+                    new KeyValuePair<string, string>("suburb", "Westminster"),
+                    new KeyValuePair<string, string>("city", "London"),
+                    new KeyValuePair<string, string>("postcode", "SW1A2AA"),
+                    new KeyValuePair<string, string>("country", "United Kingdom")
+                },
+                new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>("house_number", "10ABC"),
+                    new KeyValuePair<string, string>("road", "Downing Street"),
+                    new KeyValuePair<string, string>("suburb", "Westminster"),
+                    new KeyValuePair<string, string>("city", "London"),
+                    new KeyValuePair<string, string>("postcode", "SW1A2AA"),
+                    new KeyValuePair<string, string>("country", "United Kingdom")
+                }
+            };
+        }
+
         public static TheoryData CheckForBestMatch()
         {
             return new TheoryData<HashSet<AddressMatch>, BestMatchEnum>

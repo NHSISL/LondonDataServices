@@ -103,5 +103,51 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
             this.addressParserProcessingServiceMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnGetNormalisedAddressIfServiceErrorOccursAsync()
+        {
+            // given
+            var randomAddress = GetRandomString();
+            string inputAddress = randomAddress;
+            var serviceException = new Exception();
+
+            var failedAddressNormalisationOrchestrationServiceException =
+                new FailedAddressNormalisationOrchestrationServiceException(
+                    message: "Failed address orchestration processing service error occurred, contact support.",
+                    innerException: serviceException);
+
+            var expectedAddressNormalisationOrchestrationServiveException =
+                new AddressNormalisationOrchestrationServiceException(
+                    message: "Address normalisation orchestration service error occurred, contact support.",
+                    innerException: failedAddressNormalisationOrchestrationServiceException);
+
+            this.addressParserProcessingServiceMock.Setup(processing =>
+               processing.ProcessCsvAsync(It.IsAny<string>()))
+                    .Throws(serviceException);
+
+            // when;
+            ValueTask<List<AddressNormalisation>> actualAddressesTask =
+               this.addressNormalisationOrchestrationService.ProcessDataAsync(inputAddress);
+
+            AddressNormalisationOrchestrationServiceException actualException =
+                await Assert.ThrowsAsync<AddressNormalisationOrchestrationServiceException>(
+                    actualAddressesTask.AsTask);
+
+            // then
+            actualException.Should().BeEquivalentTo(expectedAddressNormalisationOrchestrationServiveException);
+
+            this.addressParserProcessingServiceMock.Verify(processing =>
+                 processing.ProcessCsvAsync(It.IsAny<string>()),
+                     Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                 broker.LogError(It.Is(SameExceptionAs(
+                     expectedAddressNormalisationOrchestrationServiveException))),
+                         Times.Once);
+
+            this.addressParserProcessingServiceMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

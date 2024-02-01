@@ -13,21 +13,24 @@ using LHDS.Core.Brokers.Identifiers;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressLoadingAudits;
+using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Services.Foundations.AddressParsers;
 using LHDS.Core.Services.Orchestrations.AddressNormalisations;
 using LHDS.Core.Services.Processings.AddressLoadingAudits;
 using LHDS.Core.Services.Processings.AddressNormalisations;
+using LHDS.Core.Services.Processings.AddressParsers;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
 {
     public partial class AddressNormalisationOrchestrationServiceTests
     {
-        private readonly Mock<IAddressParserService> addressParserServiceMock;
+        private readonly Mock<IAddressParserProcessingService> addressParserProcessingServiceMock;
         private readonly Mock<IAddressNormalisationProcessingService> addressNormalisationProcessingServiceMock;
         private readonly Mock<IAddressLoadingAuditProcessingService> addressLoadingAuditProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
@@ -39,7 +42,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
 
         public AddressNormalisationOrchestrationServiceTests(ITestOutputHelper output)
         {
-            this.addressParserServiceMock = new Mock<IAddressParserService>();
+            this.addressParserProcessingServiceMock = new Mock<IAddressParserProcessingService>();
             this.addressNormalisationProcessingServiceMock = new Mock<IAddressNormalisationProcessingService>();
             this.addressLoadingAuditProcessingServiceMock = new Mock<IAddressLoadingAuditProcessingService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
@@ -49,7 +52,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
             this.output = output;
 
             this.addressNormalisationOrchestrationService = new AddressNormalisationOrchestrationService(
-                addressParserService: addressParserServiceMock.Object,
+                addressParserProcessingService: addressParserProcessingServiceMock.Object,
                 addressNormalisationProcessingService: addressNormalisationProcessingServiceMock.Object,
                 addressLoadingAuditProcessingService: addressLoadingAuditProcessingServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
@@ -69,15 +72,42 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
 
-        private static async ValueTask<List<Address>> CreateRandomAddressesAsync()
+        private static IQueryable<Address> CreateRandomAddresses()
         {
-            var dateTimeOffset = GetRandomDateTimeOffset();
-            var count = GetRandomNumber();
+            return CreateAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
 
-            var filler = CreateAddressFiller(dateTimeOffset);
-            var addresses = filler.Create(count).AsQueryable();
+        private static Address CreateRandomAddress(DateTimeOffset dateTimeOffset) =>
+            CreateAddressFiller(dateTimeOffset).Create();
 
-            return await addresses.ToListAsync();
+        static List<KeyValuePair<string, string>> GenerateKeyValuePairList(int count)
+        {
+            List<KeyValuePair<string, string>> keyValuePairList = new List<KeyValuePair<string, string>>();
+            for (int i = 0; i < count; i++)
+            {
+                keyValuePairList.Add(new KeyValuePair<string, string>(GetRandomString(), GetRandomString()));
+            }
+            return keyValuePairList;
+        }
+
+        private string GenerateStringAddress(Address address)
+        {
+            List<string> addressList = new List<string> {
+            address.OrganisationName,
+            address.DepartmentName,
+            address.SubBuildingName,
+            address.BuildingName,
+            address.BuildingNumber,
+            address.DependentThoroughfare,
+            address.Thoroughfare,
+            address.DoubleDependentLocality,
+            address.DependentLocality,
+            address.PostTown,
+            address.PostCode};
+
+            return string.Join("", addressList.Where(s => !string.IsNullOrEmpty(s)));
         }
 
         private static Filler<Address> CreateAddressFiller(DateTimeOffset dateTimeOffset)
@@ -107,6 +137,40 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
                 .OnProperty(addressLoadingAudit => addressLoadingAudit.UpdatedBy).Use(user);
 
             return filler;
+        }
+        public static TheoryData DependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new AddressNormalisationValidationException(
+                    message: "Address Normalisation validation errors occured, please try again",
+                    innerException),
+
+                new AddressNormalisationDependencyValidationException(
+                    message: "Address Normalisation dependency validation occurred, please try again.",
+                    innerException)
+            };
+        }
+        public static TheoryData DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new AddressNormalisationDependencyException(
+                    message: "Address normalisation dependency error occurred, contact support.",
+                    innerException),
+
+                new AddressNormalisationServiceException(
+                    message: "Address normalisation service error occurred, contact support.",
+                    innerException)
+            };
         }
     }
 }

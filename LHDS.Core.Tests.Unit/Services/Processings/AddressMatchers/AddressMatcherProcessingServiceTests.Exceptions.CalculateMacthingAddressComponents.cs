@@ -47,7 +47,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
 
             // when
             ValueTask<HashSet<AddressMatch>> calculateMacthingAddressComponentsTask =
-                addressMatcherProcessingService.CalculateMacthingAddressComponents(
+                addressMatcherProcessingService.CalculateMatchingAddressComponents(
                     addressComponents: someIncomingAddressComponents,
                     possibleAddressMatches: somePossibleAddresses);
 

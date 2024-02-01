@@ -3,11 +3,15 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.AddressNormalisations;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Orchestrations.AddressResolvings;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.AddressMatchers;
@@ -58,5 +62,66 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
           actualException => actualException.SameExceptionAs(expectedException);
 
+        private static List<Address> CreateRandomAddressList()
+        {
+            return CreateAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .ToList();
+        }
+
+        private static Address CreateRandomAddress() =>
+            CreateAddressFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+
+        private static Address CreateRandomAddress(DateTimeOffset dateTimeOffset) =>
+            CreateAddressFiller(dateTimeOffset).Create();
+
+        private static Filler<Address> CreateAddressFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<Address>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(address => address.CreatedBy).Use(user)
+                .OnProperty(address => address.UpdatedBy).Use(user);
+
+            return filler;
+        }
+
+        private static AddressNormalisation CreateRandomAddressNormalisation() =>
+           CreateAddressNormalisationFiller().Create();
+
+        private static Filler<AddressNormalisation> CreateAddressNormalisationFiller()
+        {
+            var filler = new Filler<AddressNormalisation>();
+
+            return filler;
+        }
+
+        private static IQueryable<ResolvedAddress> CreateRandomResolvedAddresses()
+        {
+            return CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
+
+        private static ResolvedAddress CreateRandomResolvedAddress() =>
+            CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
+
+        private static ResolvedAddress CreateRandomResolvedAddress(DateTimeOffset dateTimeOffset) =>
+            CreateResolvedAddressFiller(dateTimeOffset).Create();
+
+        private static Filler<ResolvedAddress> CreateResolvedAddressFiller(DateTimeOffset dateTimeOffset)
+        {
+            string user = Guid.NewGuid().ToString();
+            var filler = new Filler<ResolvedAddress>();
+
+            filler.Setup()
+                .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(resolvedAddress => resolvedAddress.CreatedBy).Use(user)
+                .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
+
+            return filler;
+        }
     }
 }

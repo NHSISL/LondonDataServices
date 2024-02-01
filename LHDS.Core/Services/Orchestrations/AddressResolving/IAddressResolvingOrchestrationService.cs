@@ -3,12 +3,13 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
 
 namespace LHDS.Core.Services.Orchestrations.AddressResolvings
 {
     public interface IAddressResolvingOrchestrationService
     {
-        ValueTask<ResolvedAddress> ProcessAsync(string normalisedAddress);
+        ValueTask<AddressNormalisation> ResolvedAddressAsync(AddressNormalisation normalisedAddress);
     }
 }

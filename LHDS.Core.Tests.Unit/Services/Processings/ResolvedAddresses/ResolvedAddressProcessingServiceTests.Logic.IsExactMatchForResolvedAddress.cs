@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -28,11 +29,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     .Returns(storageResolvedAddresses);
 
             // When
-            bool actualResult = await this.resolvedAddressProcessingService
+            (bool IsMatched, Guid? ItemId) actualResult = await this.resolvedAddressProcessingService
                 .IsExactMatchForResolvedAddressAsync(inputAddress);
 
             // Then
-            actualResult.Should().Be(expectedResult);
+            actualResult.IsMatched.Should().Be(expectedResult);
 
             this.resolvedAddressServiceMock.Verify(service =>
                 service.RetrieveAllResolvedAddresses(),

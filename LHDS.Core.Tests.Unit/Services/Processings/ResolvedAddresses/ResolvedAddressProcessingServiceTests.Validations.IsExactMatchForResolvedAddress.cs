@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Processings.ResolvedAddresses.Exceptions;
@@ -35,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     innerException: invalidArgumentResolvedAddressProcessingException);
 
             // when
-            ValueTask<bool> isMatchTask = this.resolvedAddressProcessingService
+            ValueTask<(bool IsMatched, Guid? ItemId)> isMatchTask = this.resolvedAddressProcessingService
                 .IsExactMatchForResolvedAddressAsync(address: invalidAddress);
 
             ResolvedAddressProcessingValidationException actualResolvedAddressProcessingValidationException =

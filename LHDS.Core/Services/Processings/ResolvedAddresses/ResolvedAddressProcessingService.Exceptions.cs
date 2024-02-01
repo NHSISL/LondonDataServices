@@ -15,7 +15,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
     public partial class ResolvedAddressProcessingService : IResolvedAddressProcessingService
     {
         private delegate ValueTask<ResolvedAddress> ReturningResolvedAddressProcessingFunction();
-        private delegate ValueTask<bool> ReturningBooleanProcessingFunction();
+        private delegate ValueTask<(bool, Guid?)> ReturningBooleanProcessingFunction();
         private delegate IQueryable<ResolvedAddress> ReturningResolvedAddressesFunction();
 
         private async ValueTask<ResolvedAddress> TryCatch(
@@ -60,7 +60,7 @@ namespace LHDS.Core.Services.Processings.ResolvedAddresses
             }
         }
 
-        private async ValueTask<bool> TryCatch(
+        private async ValueTask<(bool, Guid?)> TryCatch(
             ReturningBooleanProcessingFunction returningBooleanProcessingFunction)
         {
             try

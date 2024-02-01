@@ -9,6 +9,7 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.AddressMatchers;
 using LHDS.Core.Services.Processings.ResolvedAddresses;
@@ -37,7 +38,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressResolvings
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public ValueTask<List<Address>> ProcessAsync(List<AddressNormalisation> addressNormalisation) =>
+        public ValueTask<ResolvedAddress> ProcessAsync(string normalisedAddress) =>
             throw new NotImplementedException();
     }
 }

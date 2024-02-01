@@ -15,9 +15,48 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
 {
     public partial class AddressNormalisationOrchestrationService
     {
-        private delegate ValueTask<List<AddressNormalisation>> ReturningAddressNormalisationFunction();
+        private delegate ValueTask<List<AddressNormalisation>> ReturningAddressNormalisationListFunction();
+        private delegate ValueTask<AddressNormalisation> ReturningAddressNormalisationFunction();
 
         private async ValueTask<List<AddressNormalisation>> TryCatch(
+            ReturningAddressNormalisationListFunction returningAddressNormalisationListFunction)
+        {
+            try
+            {
+                return await returningAddressNormalisationListFunction();
+            }
+            catch (InvalidArgumentAddressNormalisationOrchestrationException invalidArgumentAddressNormalisationOrchestrationException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentAddressNormalisationOrchestrationException);
+            }
+            catch (AddressNormalisationValidationException addressNormalisationValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressNormalisationValidationException);
+            }
+             catch (AddressNormalisationDependencyValidationException addressNormalisationDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
+            }
+            catch (AddressNormalisationDependencyException addressNormalisationDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressNormalisationDependencyException);
+            }
+            catch (AddressNormalisationServiceException addressNormalisationServiceException)
+            {
+                throw CreateAndLogDependencyException(addressNormalisationServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressNormalisationOrchestrationServiceException =
+                    new FailedAddressNormalisationOrchestrationServiceException(
+                        message: "Failed address normalisation orchestration service error occurred, contact support.",
+                        exception);
+
+                throw CreateAndLogServiceException(failedAddressNormalisationOrchestrationServiceException);
+            }
+        }
+
+        private async ValueTask<AddressNormalisation> TryCatch(
             ReturningAddressNormalisationFunction returningAddressNormalisationFunction)
         {
             try
@@ -32,7 +71,7 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
             {
                 throw CreateAndLogDependencyValidationException(addressNormalisationValidationException);
             }
-             catch (AddressNormalisationDependencyValidationException addressNormalisationDependencyValidationException)
+            catch (AddressNormalisationDependencyValidationException addressNormalisationDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(addressNormalisationDependencyValidationException);
             }

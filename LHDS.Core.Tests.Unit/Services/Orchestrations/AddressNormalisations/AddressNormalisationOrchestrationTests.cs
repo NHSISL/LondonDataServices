@@ -92,6 +92,24 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
             return keyValuePairList;
         }
 
+        private string GenerateStringAddress(Address address)
+        {
+            List<string> addressList = new List<string> {
+            address.OrganisationName,
+            address.DepartmentName,
+            address.SubBuildingName,
+            address.BuildingName,
+            address.BuildingNumber,
+            address.DependentThoroughfare,
+            address.Thoroughfare,
+            address.DoubleDependentLocality,
+            address.DependentLocality,
+            address.PostTown,
+            address.PostCode};
+
+            return string.Join("", addressList.Where(s => !string.IsNullOrEmpty(s)));
+        }
+
         private static Filler<Address> CreateAddressFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();

@@ -41,21 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
                     AddressComponents = GenerateKeyValuePairList(GetRandomNumber())
                 };
 
-                List<string> addressList = new List<string> {
-                    address.OrganisationName,
-                    address.DepartmentName,
-                    address.SubBuildingName,
-                    address.BuildingName,
-                    address.BuildingNumber,
-                    address.DependentThoroughfare,
-                    address.Thoroughfare,
-                    address.DoubleDependentLocality,
-                    address.DependentLocality,
-                    address.PostTown,
-                    address.PostCode
-                };
-
-                var stringAddress = string.Join("", addressList.Where(s => !string.IsNullOrEmpty(s)));
+                string stringAddress = GenerateStringAddress(address);
 
                 this.addressNormalisationProcessingServiceMock.Setup(service =>
                     service.GetNormalisedAddress(stringAddress))
@@ -79,21 +65,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
 
             foreach (Address address in inputAddresses)
             {
-                List<string> addressList = new List<string> {
-                    address.OrganisationName,
-                    address.DepartmentName,
-                    address.SubBuildingName,
-                    address.BuildingName,
-                    address.BuildingNumber,
-                    address.DependentThoroughfare,
-                    address.Thoroughfare,
-                    address.DoubleDependentLocality,
-                    address.DependentLocality,
-                    address.PostTown,
-                    address.PostCode
-                };
-
-                var stringAddress = string.Join("", addressList.Where(s => !string.IsNullOrEmpty(s)));
+                string stringAddress = GenerateStringAddress(address);
 
                 this.addressNormalisationProcessingServiceMock.Verify(service =>
                     service.GetNormalisedAddress(stringAddress),

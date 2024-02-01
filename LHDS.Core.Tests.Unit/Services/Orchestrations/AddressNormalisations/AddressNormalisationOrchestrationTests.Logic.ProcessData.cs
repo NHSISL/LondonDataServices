@@ -38,12 +38,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
                 {
                     PostalAddress = GetRandomString(),
                     JsonPostalAddress = GetRandomString(),
-                    AddressComponents = new List<KeyValuePair<string, string>>
-                    {
-                        new KeyValuePair<string, string>("Street", GetRandomString()),
-                        new KeyValuePair<string, string>("City", GetRandomString()),
-                        new KeyValuePair<string, string>("PostCode", GetRandomString()),
-                    }
+                    AddressComponents = GenerateKeyValuePairList(GetRandomNumber())
                 };
 
                 List<string> addressList = new List<string> {

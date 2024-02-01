@@ -82,6 +82,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressNormalisations
         private static Address CreateRandomAddress(DateTimeOffset dateTimeOffset) =>
             CreateAddressFiller(dateTimeOffset).Create();
 
+        static List<KeyValuePair<string, string>> GenerateKeyValuePairList(int count)
+        {
+            List<KeyValuePair<string, string>> keyValuePairList = new List<KeyValuePair<string, string>>();
+            for (int i = 0; i < count; i++)
+            {
+                keyValuePairList.Add(new KeyValuePair<string, string>(GetRandomString(), GetRandomString()));
+            }
+            return keyValuePairList;
+        }
+
         private static Filler<Address> CreateAddressFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();

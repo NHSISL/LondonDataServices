@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
 
             // when
             HashSet<AddressMatch> actualAddressMatches = await addressMatcherProcessingService
-                .CalculateMacthingAddressComponents(incomingAddress, possibleAddresses);
+                .CalculateMatchingAddressComponents(incomingAddress, possibleAddresses);
 
             AddressMatch actualAddressMatch = actualAddressMatches.First();
 

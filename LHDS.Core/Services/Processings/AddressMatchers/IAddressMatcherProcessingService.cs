@@ -13,8 +13,10 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
         string CleanAddress(string address);
         string ExtractPostCode(string address);
 
-        ValueTask<HashSet<AddressMatch>> CalculateMacthingAddressComponents(
+        ValueTask<HashSet<AddressMatch>> CalculateMatchingAddressComponents(
             IList<KeyValuePair<string, string>> addressComponents,
             HashSet<AddressMatch> possibleAddressMatches);
+
+        ValueTask<AddressMatch?> FindBestMatch(HashSet<AddressMatch> possibleAddressMatches);
     }
 }

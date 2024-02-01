@@ -72,7 +72,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
                 return extractedPostCode;
             });
 
-        public ValueTask<HashSet<AddressMatch>> CalculateMacthingAddressComponents(
+        public ValueTask<HashSet<AddressMatch>> CalculateMatchingAddressComponents(
             IList<KeyValuePair<string, string>> addressComponents,
             HashSet<AddressMatch> possibleAddressMatches) =>
             TryCatch(async () =>
@@ -126,5 +126,8 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
                 return matchOnPostcode;
             }
         }
+
+        public ValueTask<AddressMatch?> FindBestMatch(HashSet<AddressMatch> possibleAddressMatches) =>
+            throw new NotImplementedException();
     }
 }

@@ -73,26 +73,26 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             });
 
         public ValueTask<HashSet<AddressMatch>> CalculateMacthingAddressComponents(
-            IList<KeyValuePair<string, string>> incomingAddressComponents,
-            HashSet<AddressMatch> possibleAddresses) =>
+            IList<KeyValuePair<string, string>> addressComponents,
+            HashSet<AddressMatch> possibleAddressMatches) =>
             TryCatch(async () =>
             {
-                ValidateCalculateArguments(incomingAddressComponents, possibleAddresses);
+                ValidateCalculateArguments(addressComponents, possibleAddressMatches);
 
                 HashSet<AddressMatch> matchedAddresses = new HashSet<AddressMatch>();
 
-                foreach (var address in possibleAddresses)
+                foreach (var address in possibleAddressMatches)
                 {
                     await Task.Run(() =>
                     {
                         AddressMatch addressMatch = address.DeepClone();
                         var possibleAddressComponents = address.AddressComponents;
 
-                        addressMatch.MatchedComponents = incomingAddressComponents
+                        addressMatch.MatchedComponents = addressComponents
                             .Intersect(possibleAddressComponents).Count();
 
                         addressMatch.MatchingCoreComponents =
-                            CheckMatchingCorePairs(incomingAddressComponents, possibleAddressComponents);
+                            CheckMatchingCorePairs(addressComponents, possibleAddressComponents);
 
                         matchedAddresses.Add(addressMatch);
                     });
@@ -105,12 +105,12 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             IList<KeyValuePair<string, string>> incomingAddressComponents,
             IList<KeyValuePair<string, string>> possibleAddressComponents)
         {
-            bool hasHouseNumber1 = incomingAddressComponents.Any(kv => kv.Key == "house_number");
-            bool hasHouseNumber2 = possibleAddressComponents.Any(kv => kv.Key == "house_number");
+            bool incomingHasHouseNumber = incomingAddressComponents.Any(kv => kv.Key == "house_number");
+            bool possibleAddressHasHouseNumber = possibleAddressComponents.Any(kv => kv.Key == "house_number");
 
-            if (hasHouseNumber1 || hasHouseNumber2)
+            if (incomingHasHouseNumber || possibleAddressHasHouseNumber)
             {
-                bool matchOnHouseNumberAndPostCode = hasHouseNumber1 && hasHouseNumber2 &&
+                bool matchOnHouseNumberAndPostCode = incomingHasHouseNumber && possibleAddressHasHouseNumber &&
                     incomingAddressComponents.Any(kv => kv.Key == "house_number" &&
                         possibleAddressComponents.Any(kv2 => kv2.Key == "house_number" && kv2.Value == kv.Value)) &&
                             incomingAddressComponents.Any(kv => kv.Key == "postcode" && possibleAddressComponents

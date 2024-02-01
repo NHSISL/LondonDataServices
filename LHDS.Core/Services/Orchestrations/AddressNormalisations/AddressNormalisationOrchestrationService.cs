@@ -58,42 +58,48 @@ namespace LHDS.Core.Services.Orchestrations.AddressNormalisations
                 {
                     try
                     {
-                        List<string> addressList = new List<string> {
-                            address.OrganisationName,
-                            address.DepartmentName,
-                            address.SubBuildingName,
-                            address.BuildingName,
-                            address.BuildingNumber,
-                            address.DependentThoroughfare,
-                            address.Thoroughfare,
-                            address.DoubleDependentLocality,
-                            address.DependentLocality,
-                            address.PostTown,
-                            address.PostCode
-                        };
+                        var normalisedAddress = await TryCatch(async () =>
+                        {
+                            List<string> addressList = new List<string> 
+                            {
+                                address.OrganisationName,
+                                address.DepartmentName,
+                                address.SubBuildingName,
+                                address.BuildingName,
+                                address.BuildingNumber,
+                                address.DependentThoroughfare,
+                                address.Thoroughfare,
+                                address.DoubleDependentLocality,
+                                address.DependentLocality,
+                                address.PostTown,
+                                address.PostCode
+                            };
 
-                        var stringAddress = string.Join("", addressList.Where(s => !string.IsNullOrEmpty(s)));
+                            var stringAddress = string.Join("", addressList.Where(s => !string.IsNullOrEmpty(s)));
 
-                        AddressNormalisation normalisedAddress =
-                            await this.addressNormalisationProcessingService.GetNormalisedAddress(stringAddress);
+                            AddressNormalisation normalisedAddress =
+                                await this.addressNormalisationProcessingService.GetNormalisedAddress(stringAddress);
+
+                            var addressLoadingAudit = new AddressLoadingAudit
+                            {
+                                Id = Guid.NewGuid(),
+                                CorrelationId = Guid.NewGuid(),
+                                FileName = "",
+                                Message = "Normalised Address",
+                                MessageId = "",
+                                CreatedBy = "System",
+                                UpdatedBy = "System",
+                                UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                                CreatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
+                            };
+
+                            await this.addressLoadingAuditProcessingService
+                                .AddAddressLoadingAuditAsync(addressLoadingAudit);
+
+                            return normalisedAddress;
+                        });
 
                         processedNormalisedAddresses.Add(normalisedAddress);
-
-                        var addressLoadingAudit = new AddressLoadingAudit
-                        {
-                            Id = Guid.NewGuid(),
-                            CorrelationId = Guid.NewGuid(),
-                            FileName = "",
-                            Message = "Normalised Address",
-                            MessageId = "",
-                            CreatedBy = "System",
-                            UpdatedBy = "System",
-                            UpdatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                            CreatedDate = this.dateTimeBroker.GetCurrentDateTimeOffset(),
-                        };
-
-                        await this.addressLoadingAuditProcessingService
-                            .AddAddressLoadingAuditAsync(addressLoadingAudit);
                     }
                     catch (Exception ex)
                     {

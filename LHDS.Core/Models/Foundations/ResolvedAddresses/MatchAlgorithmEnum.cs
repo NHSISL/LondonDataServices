@@ -8,13 +8,13 @@ namespace LHDS.Core.Models.Foundations.ResolvedAddresses
 {
     public enum MatchAlgorithmEnum
     {
+        [Parameter(Value = "Human")]
+        Human = 0,
+
         [Parameter(Value = "Exact")]
-        Exact,
+        Exact = 1,
 
         [Parameter(Value = "Best match")]
-        BestMatch,
-
-        [Parameter(Value = "Human")]
-        Human
+        BestMatch = 2,
     }
 }

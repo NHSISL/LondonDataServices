@@ -10,5 +10,14 @@ namespace LHDS.Core.Services.Foundations.AddressMatchers
     public interface IAddressMatcherService
     {
         BestMatchEnum CheckForBestMatch(HashSet<AddressMatch> macthedAddresses);
+
+        IList<KeyValuePair<string, string>> RemoveNonDigitCharactersFromHouseNumber(
+            IList<KeyValuePair<string, string>> addressComponents);
+
+        IList<KeyValuePair<string, string>> TurnAddressIntoFlat(
+            IList<KeyValuePair<string, string>> addressComponents);
+
+        IList<KeyValuePair<string, string>> TurnAddressIntoAppartment(
+            IList<KeyValuePair<string, string>> addressComponents);
     }
 }

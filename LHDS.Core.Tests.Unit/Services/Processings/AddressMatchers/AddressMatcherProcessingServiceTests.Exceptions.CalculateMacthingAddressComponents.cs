@@ -8,8 +8,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.AddressMatchers;
 using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
-using LHDS.Core.Services.Processings.AddressMatchers;
-using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
@@ -21,19 +19,46 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
         {
             // given
             List<KeyValuePair<string, string>> someIncomingAddressComponents =
-                new List<KeyValuePair<string, string>>();
+                new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>("house_number", "10"),
+                    new KeyValuePair<string, string>("road", "downing str"),
+                    new KeyValuePair<string, string>("city_district", "westminster"),
+                    new KeyValuePair<string, string>("city", "london"),
+                    new KeyValuePair<string, string>("postcode", "sw1a2aa"),
+                    new KeyValuePair<string, string>("country", "uk")
+                };
 
-            HashSet<AddressMatch> somePossibleAddresses = new HashSet<AddressMatch>();
+            HashSet<AddressMatch> somePossibleAddresses = new HashSet<AddressMatch>
+            {
+                new AddressMatch
+                {
+                    PostalAddress = "10 downing str westminster london sw1a2aa uk",
+                    JsonPostalAddress = "[{\"Key\":\"house_number\",\"Value\":\"10\"}," +
+                        "{\"Key\":\"road\",\"Value\":\"downing str\"}," +
+                        "{\"Key\":\"city_district\",\"Value\":\"westminster\"}," +
+                        "{\"Key\":\"city\",\"Value\":\"london\"}," +
+                        "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}," +
+                        "{\"Key\":\"country\",\"Value\":\"uk\"}]",
+                    AddressComponents = new List<KeyValuePair<string, string>>
+                    {
+                        new KeyValuePair<string, string>("house_number", "10"),
+                        new KeyValuePair<string, string>("road", "downing str"),
+                        new KeyValuePair<string, string>("city_district", "westminster"),
+                        new KeyValuePair<string, string>("city", "london"),
+                        new KeyValuePair<string, string>("postcode", "sw1a2aa"),
+                        new KeyValuePair<string, string>("country", "uk")
+                    },
+                    UPRN = GetRandomString(),
+                    UPSN = GetRandomString(),
+                }
+            };
 
-            var mock = new Mock<AddressMatcherProcessingService>(loggingBrokerMock.Object) { CallBase = true };
             var serviceException = new Exception();
 
-            mock.Setup(x => x.ValidateCalculateArguments(
-                It.IsAny<IList<KeyValuePair<string, string>>>(),
-                It.IsAny<HashSet<AddressMatch>>()))
+            addressMatcherServiceMock.Setup(x => x.CalculateMacthingAddressComponents(
+                someIncomingAddressComponents, somePossibleAddresses))
                     .Throws(serviceException);
-
-            AddressMatcherProcessingService addressMatcherProcessingService = mock.Object;
 
             var failedAddressMatcherProcessingServiceException =
                 new FailedAddressMatcherProcessingServiceException(

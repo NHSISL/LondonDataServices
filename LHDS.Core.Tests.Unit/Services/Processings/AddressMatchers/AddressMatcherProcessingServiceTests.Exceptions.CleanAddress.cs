@@ -17,7 +17,11 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
         public void ShouldThrowServiceExceptionOnCleanAddressIfServiceErrorOccursAndLogItAsync()
         {
             // given
-            var mock = new Mock<AddressMatcherProcessingService>(loggingBrokerMock.Object) { CallBase = true };
+            var mock = new Mock<AddressMatcherProcessingService>(
+                addressMatcherServiceMock.Object,
+                loggingBrokerMock.Object)
+            { CallBase = true };
+
             string address = GetRandomString();
             string exceptionMessage = GetRandomString();
             var serviceException = new Exception(exceptionMessage);

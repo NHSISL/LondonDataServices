@@ -11,6 +11,10 @@ namespace LHDS.Core.Services.Foundations.AddressMatchers
     {
         BestMatchEnum CheckForBestMatch(HashSet<AddressMatch> macthedAddresses);
 
+        HashSet<AddressMatch> CalculateMacthingAddressComponents(
+            IList<KeyValuePair<string, string>> addressComponents,
+            HashSet<AddressMatch> possibleAddressMatches);
+
         IList<KeyValuePair<string, string>> RemoveNonDigitCharactersFromHouseNumber(
             IList<KeyValuePair<string, string>> addressComponents);
 

@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using LHDS.Core.Models.Foundations.AddressMatchers;
-using LHDS.Core.Models.Foundations.AddressMatchers.Exceptions;
 using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
 using Xeptions;
 
@@ -18,7 +17,6 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             Validate<InvalidArgumentAddressMatcherProcessingException>(
                 message: "Invalid address matcher processing argument(s), please correct the errors and try again.",
                 (Rule: IsInvalid(address), Parameter: "address"));
-
 
         virtual internal void ValidateCalculateArguments(
             IList<KeyValuePair<string, string>> incomingAddressComponents,

@@ -16,5 +16,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
         ValueTask<HashSet<AddressMatch>> CalculateMacthingAddressComponents(
             IList<KeyValuePair<string, string>> addressComponents,
             HashSet<AddressMatch> possibleAddressMatches);
+
+        ValueTask<AddressMatch> FindBestMacth(HashSet<AddressMatch> matchedAddresses);
     }
 }

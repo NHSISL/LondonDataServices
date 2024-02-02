@@ -14,6 +14,7 @@ namespace LHDS.Core.Services.Foundations.AddressMatchers
     {
         private delegate BestMatchEnum ReturningBestMatchEnumFunction();
         private delegate IList<KeyValuePair<string, string>> ReturningKeyValuePairListFunction();
+        private delegate HashSet<AddressMatch> ReturningAddressMatchHashSetFunction();
 
         private BestMatchEnum TryCatch(
             ReturningBestMatchEnumFunction returningBestMatchEnumFunction)
@@ -58,6 +59,29 @@ namespace LHDS.Core.Services.Foundations.AddressMatchers
                 throw CreateAndLogServiceException(failedAddressMatcherServiceException);
             }
         }
+
+        private HashSet<AddressMatch> TryCatch(
+            ReturningAddressMatchHashSetFunction returningAddressMatchHashSetFunction)
+        {
+            try
+            {
+                return returningAddressMatchHashSetFunction();
+            }
+            catch (InvalidArgumentAddressMatcherException invalidArgumentAddressMatcherException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentAddressMatcherException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressMatcherServiceException =
+                    new FailedAddressMatcherServiceException(
+                        message: "Failed address matcher service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressMatcherServiceException);
+            }
+        }
+
 
         private AddressMatcherValidationException CreateAndLogValidationException(Xeption exception)
         {

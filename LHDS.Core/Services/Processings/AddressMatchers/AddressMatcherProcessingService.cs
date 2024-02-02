@@ -7,18 +7,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Force.DeepCloner;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.AddressMatchers;
+using LHDS.Core.Services.Foundations.AddressMatchers;
 
 namespace LHDS.Core.Services.Processings.AddressMatchers
 {
     public partial class AddressMatcherProcessingService : IAddressMatcherProcessingService
     {
         private readonly ILoggingBroker loggingBroker;
+        private readonly IAddressMatcherService addressMatcherService;
 
-        public AddressMatcherProcessingService(ILoggingBroker loggingBroker)
+        public AddressMatcherProcessingService(
+            IAddressMatcherService addressMatcherService,
+            ILoggingBroker loggingBroker)
         {
+            this.addressMatcherService = addressMatcherService;
             this.loggingBroker = loggingBroker;
         }
 
@@ -79,52 +83,25 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             {
                 ValidateCalculateArguments(addressComponents, possibleAddressMatches);
 
-                HashSet<AddressMatch> matchedAddresses = new HashSet<AddressMatch>();
-
-                foreach (var address in possibleAddressMatches)
-                {
-                    await Task.Run(() =>
-                    {
-                        AddressMatch addressMatch = address.DeepClone();
-                        var possibleAddressComponents = address.AddressComponents;
-
-                        addressMatch.MatchedComponents = addressComponents
-                            .Intersect(possibleAddressComponents).Count();
-
-                        addressMatch.MatchingCoreComponents =
-                            CheckMatchingCorePairs(addressComponents, possibleAddressComponents);
-
-                        matchedAddresses.Add(addressMatch);
-                    });
-                }
-
-                return matchedAddresses;
+                return await ValueTask.FromResult(this.addressMatcherService
+                    .CalculateMacthingAddressComponents(addressComponents, possibleAddressMatches));
             });
 
-        private static bool CheckMatchingCorePairs(
-            IList<KeyValuePair<string, string>> incomingAddressComponents,
-            IList<KeyValuePair<string, string>> possibleAddressComponents)
+        public ValueTask<AddressMatch> FindBestMacth(HashSet<AddressMatch> matchedAddresses)
         {
-            bool incomingHasHouseNumber = incomingAddressComponents.Any(kv => kv.Key == "house_number");
-            bool possibleAddressHasHouseNumber = possibleAddressComponents.Any(kv => kv.Key == "house_number");
+            var bestMatch = matchedAddresses.ToList().Where(x => x.MatchingCoreComponents)
+                .OrderByDescending(x => x.MatchedComponents).FirstOrDefault();
 
-            if (incomingHasHouseNumber || possibleAddressHasHouseNumber)
+            if (bestMatch != null)
             {
-                bool matchOnHouseNumberAndPostCode = incomingHasHouseNumber && possibleAddressHasHouseNumber &&
-                    incomingAddressComponents.Any(kv => kv.Key == "house_number" &&
-                        possibleAddressComponents.Any(kv2 => kv2.Key == "house_number" && kv2.Value == kv.Value)) &&
-                            incomingAddressComponents.Any(kv => kv.Key == "postcode" && possibleAddressComponents
-                                .Any(kv2 => kv2.Key == "postcode" && kv2.Value == kv.Value));
+                bestMatch.IsMatched = true;
+                bestMatch.BestMatch = BestMatchEnum.Single;
 
-                return matchOnHouseNumberAndPostCode;
+                return ValueTask.FromResult(bestMatch);
             }
-            else
-            {
-                bool matchOnPostcode = incomingAddressComponents.Any(kv => kv.Key == "postcode" &&
-                    possibleAddressComponents.Any(kv2 => kv2.Key == "postcode" && kv2.Value == kv.Value));
 
-                return matchOnPostcode;
-            }
+            throw new NotImplementedException();
         }
+
     }
 }

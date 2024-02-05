@@ -2,9 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
+using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressResolvings.Exceptions;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
 using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
@@ -67,6 +69,16 @@ namespace LHDS.Core.Services.Orchestrations.AddressResolvings
             {
                 throw CreateAndLogDependencyException(resolvedAddressProcessingServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedAddressResolvingOrchestrationServiceException =
+                    new FailedAddressResolvingOrchestrationServiceException(
+                        message: "Failed address resolving orchestration service error occurred, " +
+                        "please contact support",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressResolvingOrchestrationServiceException);
+            }
         }
         private AddressResolvingOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
@@ -106,6 +118,18 @@ namespace LHDS.Core.Services.Orchestrations.AddressResolvings
             this.loggingBroker.LogError(addressResolvingOrchestrationDependencyException);
 
             throw addressResolvingOrchestrationDependencyException;
+        }
+
+        private AddressResolvingOrchestrationServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var addressResolvingOrchestrationServiceException =
+                new AddressResolvingOrchestrationServiceException(
+                    message: "Address resolving orchestration service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(addressResolvingOrchestrationServiceException);
+
+            return addressResolvingOrchestrationServiceException;
         }
     }
 }

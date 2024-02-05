@@ -228,6 +228,71 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
             return theoryData;
         }
 
+        public static HashSet<AddressMatch> CreateNoBestMatch()
+        {
+            return new HashSet<AddressMatch>
+            {
+                new AddressMatch
+                {
+                    PostalAddress = "10 downing str westminster london sw1a2aa uk",
+                    JsonPostalAddress = "[{\"Key\":\"house_number\",\"Value\":\"10\"}," +
+                        "{\"Key\":\"road\",\"Value\":\"downing str\"}," +
+                        "{\"Key\":\"city_district\",\"Value\":\"westminster\"}," +
+                        "{\"Key\":\"city\",\"Value\":\"london\"}," +
+                        "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}," +
+                        "{\"Key\":\"country\",\"Value\":\"uk\"}]",
+                    AddressComponents = new List<KeyValuePair<string, string>>
+                    {
+                        new KeyValuePair<string, string>("house_number", "10"),
+                        new KeyValuePair<string, string>("road", "downing str"),
+                        new KeyValuePair<string, string>("city_district", "westminster"),
+                        new KeyValuePair<string, string>("city", "london"),
+                        new KeyValuePair<string, string>("postcode", "sw1a2aa"),
+                        new KeyValuePair<string, string>("country", "uk")
+                    },
+                    UPRN = GetRandomString(),
+                    UPSN = GetRandomString(),
+                    MatchingCoreComponents = false,
+                    MatchedComponents = 6,
+                },
+                new AddressMatch
+                {
+                    PostalAddress = "10 downing str london sw1a2aa",
+                    JsonPostalAddress = "[{\"Key\":\"house_number\",\"Value\":\"10\"}," +
+                        "{\"Key\":\"road\",\"Value\":\"downing str\"}," +
+                        "{\"Key\":\"city\",\"Value\":\"london\"}," +
+                        "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}]",
+                    AddressComponents = new List<KeyValuePair<string, string>>
+                    {
+                        new KeyValuePair<string, string>("house_number", "10"),
+                        new KeyValuePair<string, string>("road", "downing str"),
+                        new KeyValuePair<string, string>("city", "london"),
+                        new KeyValuePair<string, string>("postcode", "sw1a2aa"),
+                    },
+                    UPRN = GetRandomString(),
+                    UPSN = GetRandomString(),
+                    MatchingCoreComponents = false,
+                    MatchedComponents = 4,
+                },
+                new AddressMatch
+                {
+                    PostalAddress = "10 sw1a2aa",
+                    JsonPostalAddress = "[{\"Key\":\"house_number\",\"Value\":\"10\"}," +
+                        "{\"Key\":\"road\",\"Value\":\"downing str\"}," +
+                        "{\"Key\":\"postcode\",\"Value\":\"sw1a2aa\"}]",
+                    AddressComponents = new List<KeyValuePair<string, string>>
+                    {
+                        new KeyValuePair<string, string>("house_number", "10"),
+                        new KeyValuePair<string, string>("postcode", "sw1a2aa"),
+                    },
+                    UPRN = GetRandomString(),
+                    UPSN = GetRandomString(),
+                    MatchingCoreComponents = false,
+                    MatchedComponents = 2,
+                }
+           };
+        }
+
         public HashSet<AddressMatch> CreateSingleBestMatch()
         {
             return new HashSet<AddressMatch>
@@ -369,6 +434,19 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                 new KeyValuePair<string, string>("postcode", GetRandomString()),
                 new KeyValuePair<string, string>("country", GetRandomString())
             };
+        }
+
+        public static List<KeyValuePair<string, string>> CreateRandomKeyValuePairList()
+        {
+            int number = GetRandomNumber();
+            List<KeyValuePair<string, string>> randomList = new List<KeyValuePair<string, string>>();
+
+            for (int i = 0; i < number; i++)
+            {
+                randomList.Add(new KeyValuePair<string, string>(GetRandomString(), GetRandomString()));
+            }
+
+            return randomList;
         }
 
         private static string GetRandomString() =>

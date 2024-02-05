@@ -102,48 +102,41 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
                 BestMatchEnum.Single => SingleMatchProcess(matchedAddresses, addressComponents),
                 _ => MultipleMatchProcess(matchedAddresses, addressComponents)
             };
-
-            //var bestMatch = matchedAddresses.ToList().Where(x => x.MatchingCoreComponents)
-            //    .OrderByDescending(x => x.MatchedComponents).FirstOrDefault();
-
-            //if (bestMatch != null)
-            //{
-            //    bestMatch.IsMatched = true;
-            //    bestMatch.BestMatch = BestMatchEnum.Single;
-
-            //    return ValueTask.FromResult(bestMatch);
-            //}
-
-            //IList<KeyValuePair<string, string>> cleanedMatchedAddresses = this.addressMatcherService
-            //    .RemoveNonDigitCharactersFromHouseNumber(addressComponents);
-
-            //var possibleBestMatchOnCleanedAddressses = this.addressMatcherService
-            //    .CalculateMatchingAddressComponents(cleanedMatchedAddresses, matchedAddresses)
-            //    .Where(x => x.MatchingCoreComponents)
-            //    .OrderByDescending(x => x.MatchedComponents)
-            //    .ToList();
-
-            //bool hasSingleWinner = possibleBestMatchOnCleanedAddressses.Count == 1
-            //    || possibleBestMatchOnCleanedAddressses[0].MatchedComponents
-            //        != possibleBestMatchOnCleanedAddressses[1].MatchedComponents;
-
-            //if (hasSingleWinner)
-            //{
-            //    possibleBestMatchOnCleanedAddressses[0].IsMatched = true;
-            //    possibleBestMatchOnCleanedAddressses[0].BestMatch = BestMatchEnum.Multiple;
-
-            //    return ValueTask.FromResult(possibleBestMatchOnCleanedAddressses[0]);
-            //}
-
-            //  TODO: 
-
-
-            throw new NotImplementedException();
         }
 
-        private ValueTask<AddressMatch> MultipleMatchProcess(HashSet<AddressMatch> matchedAddresses, IList<KeyValuePair<string, string>> addressComponents)
+        private ValueTask<AddressMatch> DoNonMatchProcess(
+            HashSet<AddressMatch> matchedAddresses,
+            IList<KeyValuePair<string, string>> addressComponents)
         {
-            throw new NotImplementedException();
+            if (addressComponents.Count() == 0)
+            {
+                return new ValueTask<AddressMatch>(
+                    new AddressMatch
+                    {
+                        IsMatched = false,
+                        BestMatch = BestMatchEnum.None
+                    });
+            }
+
+            IList<KeyValuePair<string, string>> amendedAddressComponents =
+                this.addressMatcherService.RemoveNonDigitCharactersFromHouseNumber(addressComponents);
+
+            HashSet<AddressMatch> reCalculatedMatches = this.addressMatcherService
+                .CalculateMatchingAddressComponents(amendedAddressComponents, matchedAddresses);
+
+            BestMatchEnum matchType = this.addressMatcherService.CheckForBestMatch(reCalculatedMatches);
+
+            if (matchType == BestMatchEnum.Single)
+            {
+                return SingleMatchProcess(reCalculatedMatches, amendedAddressComponents);
+            }
+
+            return new ValueTask<AddressMatch>(
+                new AddressMatch
+                {
+                    IsMatched = false,
+                    BestMatch = BestMatchEnum.None
+                });
         }
 
         private ValueTask<AddressMatch> SingleMatchProcess(
@@ -159,7 +152,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             return ValueTask.FromResult(bestMatch);
         }
 
-        private ValueTask<AddressMatch> DoNonMatchProcess(
+        private ValueTask<AddressMatch> MultipleMatchProcess(
             HashSet<AddressMatch> matchedAddresses,
             IList<KeyValuePair<string, string>> addressComponents)
         {

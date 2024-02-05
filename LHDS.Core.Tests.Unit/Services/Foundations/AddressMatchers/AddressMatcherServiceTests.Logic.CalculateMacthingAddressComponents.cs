@@ -15,7 +15,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressMatchers
     {
         [Theory]
         [MemberData(nameof(AddressToMatch))]
-        public async Task ShouldCalculateMacthingAddressComponents(
+        public async Task ShouldCalculateMatchingAddressComponents(
             List<KeyValuePair<string, string>> inputAddress,
             HashSet<AddressMatch> potentialMatches,
             int matchedComponents,
@@ -27,7 +27,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressMatchers
 
             // when
             HashSet<AddressMatch> actualAddressMatches = addressMatcherService
-                .CalculateMacthingAddressComponents(incomingAddress, possibleAddresses);
+                .CalculateMatchingAddressComponents(incomingAddress, possibleAddresses);
 
             AddressMatch actualAddressMatch = actualAddressMatches.First();
 

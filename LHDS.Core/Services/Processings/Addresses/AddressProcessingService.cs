@@ -95,14 +95,14 @@ namespace LHDS.Core.Services.Processings.Addresses
                 return await this.addressService.RetrieveAddressesByPostCodeAsync(postCode);
             });
 
-        public ValueTask<bool> IsExactMatchForAddressAsync(string addressToMacth) =>
+        public ValueTask<bool> IsExactMatchForAddressAsync(string addressToMatch) =>
             TryCatch(async () =>
             {
-                ValidateAddress(addressToMacth);
+                ValidateAddress(addressToMatch);
 
                 bool result = this.addressService.RetrieveAllAddresses()
                     .Any(address => address.PostalAddress
-                        .Equals(addressToMacth, StringComparison.InvariantCultureIgnoreCase));
+                        .Equals(addressToMatch, StringComparison.InvariantCultureIgnoreCase));
 
                 return await ValueTask.FromResult(result);
             });

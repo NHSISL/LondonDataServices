@@ -14,7 +14,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
     {
         [Theory]
         [MemberData(nameof(AddressToMatch))]
-        public async Task ShouldCalculateMacthingAddressComponents(
+        public async Task ShouldCalculateMatchingAddressComponents(
             List<KeyValuePair<string, string>> inputAddress,
             HashSet<AddressMatch> potentialMatches)
         {
@@ -24,13 +24,13 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
             HashSet<AddressMatch> outputPossibleAddresses = inputPossibleAddresses;
             HashSet<AddressMatch> expectedAddressMatches = outputPossibleAddresses;
 
-            addressMatcherServiceMock.Setup(x => x.CalculateMacthingAddressComponents(
+            addressMatcherServiceMock.Setup(x => x.CalculateMatchingAddressComponents(
                 incomingAddress, inputPossibleAddresses))
                     .Returns(outputPossibleAddresses);
 
             // when
             HashSet<AddressMatch> actualAddressMatches = await addressMatcherProcessingService
-                .CalculateMacthingAddressComponents(incomingAddress, outputPossibleAddresses);
+                .CalculateMatchingAddressComponents(incomingAddress, outputPossibleAddresses);
 
             // then
             actualAddressMatches.Should().BeEquivalentTo(expectedAddressMatches);

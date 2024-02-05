@@ -15,7 +15,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
     public partial class AddressMatcherProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnCalculateMacthesIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnCalculateMatchesIfServiceErrorOccursAsync()
         {
             // given
             List<KeyValuePair<string, string>> someIncomingAddressComponents =
@@ -56,7 +56,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
 
             var serviceException = new Exception();
 
-            addressMatcherServiceMock.Setup(x => x.CalculateMacthingAddressComponents(
+            addressMatcherServiceMock.Setup(x => x.CalculateMatchingAddressComponents(
                 someIncomingAddressComponents, somePossibleAddresses))
                     .Throws(serviceException);
 
@@ -71,14 +71,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                     innerException: failedAddressMatcherProcessingServiceException);
 
             // when
-            ValueTask<HashSet<AddressMatch>> calculateMacthingAddressComponentsTask =
-                addressMatcherProcessingService.CalculateMacthingAddressComponents(
+            ValueTask<HashSet<AddressMatch>> calculateMatchingAddressComponentsTask =
+                addressMatcherProcessingService.CalculateMatchingAddressComponents(
                     addressComponents: someIncomingAddressComponents,
                     possibleAddressMatches: somePossibleAddresses);
 
             AddressMatcherProcessingServiceException actualAddressMatcherProcessingServiceException =
                 await Assert.ThrowsAsync<AddressMatcherProcessingServiceException>(
-                    calculateMacthingAddressComponentsTask.AsTask);
+                    calculateMatchingAddressComponentsTask.AsTask);
 
             // then
             actualAddressMatcherProcessingServiceException.Should()

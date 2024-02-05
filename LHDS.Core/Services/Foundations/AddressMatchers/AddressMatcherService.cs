@@ -21,26 +21,34 @@ namespace LHDS.Core.Services.Foundations.AddressMatchers
             this.loggingBroker = loggingBroker;
         }
 
-        public BestMatchEnum CheckForBestMatch(HashSet<AddressMatch> macthedAddresses) =>
+        public BestMatchEnum CheckForBestMatch(HashSet<AddressMatch> matchedAddresses) =>
             TryCatch(() =>
             {
-                ValidateCheckForBestMatchArguments(macthedAddresses);
+                ValidateCheckForBestMatchArguments(matchedAddresses);
 
-                int matchedCount = macthedAddresses.ToList()
+                var orderedMatches = matchedAddresses
                     .Where(x => x.MatchingCoreComponents)
-                        .OrderByDescending(x => x.MatchedComponents).Count();
+                        .OrderByDescending(x => x.MatchedComponents)
+                            .ToList();
 
-                BestMatchEnum result = matchedCount switch
+                if (orderedMatches.Count() == 0)
                 {
-                    0 => BestMatchEnum.None,
-                    1 => BestMatchEnum.Single,
-                    _ => BestMatchEnum.Multiple
-                };
+                    return BestMatchEnum.None;
+                }
 
-                return result;
+                bool hasSingleWinner = orderedMatches.Count() == 1
+                    || orderedMatches[0].MatchedComponents
+                        != orderedMatches[1].MatchedComponents;
+
+                if (hasSingleWinner)
+                {
+                    return BestMatchEnum.Single;
+                }
+
+                return BestMatchEnum.Multiple;
             });
 
-        public HashSet<AddressMatch> CalculateMacthingAddressComponents(
+        public HashSet<AddressMatch> CalculateMatchingAddressComponents(
             IList<KeyValuePair<string, string>> addressComponents,
             HashSet<AddressMatch> possibleAddressMatches) =>
             TryCatch(() =>
@@ -62,7 +70,8 @@ namespace LHDS.Core.Services.Foundations.AddressMatchers
                     matchedAddresses.Add(addressMatch);
                 }
 
-                return matchedAddresses;
+                return matchedAddresses
+                        .OrderByDescending(x => x.MatchedComponents).ToHashSet();
             });
 
         public IList<KeyValuePair<string, string>> RemoveNonDigitCharactersFromHouseNumber(

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
+using LHDS.Core.Models.Foundations.ResolvedAddresses;
 
 namespace LHDS.Core.Models.Foundations.AddressMatchers
 {
@@ -19,5 +20,7 @@ namespace LHDS.Core.Models.Foundations.AddressMatchers
         public int MatchedComponents { get; set; } = 0;
         public bool MatchingCoreComponents { get; internal set; } = false;
         public bool AllNumbersMatch { get; set; } = false;
+        public BestMatchEnum BestMatch { get; set; } = BestMatchEnum.None;
+        public bool IsMatched { get; set; } = false;
     }
 }

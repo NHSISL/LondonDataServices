@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
+using LHDS.Core.Models.Brokers.Serializations;
 using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
@@ -19,7 +20,6 @@ using LHDS.Core.Services.Processings.ResolvedAddresses;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
-using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
 {
@@ -30,6 +30,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
         private readonly Mock<IResolvedAddressProcessingService> resolvedAddressProcessingServiceMock;
         private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
+        private readonly Mock<ISerializationBroker> serializationBrokerMock;
         private readonly ICompareLogic compareLogic;
         private readonly IAddressResolvingOrchestrationService addressResolvingOrchestrationService;
 
@@ -40,6 +41,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
             this.resolvedAddressProcessingServiceMock = new Mock<IResolvedAddressProcessingService>();
             this.loggingBrokerMock = new Mock<ILoggingBroker>();
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
+            this.serializationBrokerMock = new Mock<ISerializationBroker>();
             this.compareLogic = new CompareLogic();
 
             this.addressResolvingOrchestrationService = new AddressResolvingOrchestrationService(
@@ -47,7 +49,8 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
                 addressMatcherProcessingService: addressMatcherProcessingServiceMock.Object,
                 resolvedAddressProcessingService: resolvedAddressProcessingServiceMock.Object,
                 loggingBroker: loggingBrokerMock.Object,
-                dateTimeBroker: dateTimeBrokerMock.Object);
+                dateTimeBroker: dateTimeBrokerMock.Object,
+                serializationBroker: serializationBrokerMock.Object);
         }
 
         private static string GetRandomString() =>
@@ -69,6 +72,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
                     .ToList();
         }
 
+        private Expression<Func<ResolvedAddress, bool>> SameResolvedAddressAs(
+            ResolvedAddress exprectedResolvedAddress)
+        {
+            return actualResolvedAddress =>
+                this.compareLogic.Compare(exprectedResolvedAddress, actualResolvedAddress)
+                    .AreEqual;
+        }
         private static Address CreateRandomAddress() =>
             CreateAddressFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
@@ -88,21 +98,30 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
             return filler;
         }
 
-        private static AddressNormalisation CreateRandomAddressNormalisation() =>
-           CreateAddressNormalisationFiller().Create();
-
-        private static Filler<AddressNormalisation> CreateAddressNormalisationFiller()
+        public static AddressNormalisation CreateRandomAddressNormalisation()
         {
-            var filler = new Filler<AddressNormalisation>();
-
-            return filler;
+            return new AddressNormalisation
+            {
+                PostalAddress = GetRandomString(),
+                JsonPostalAddress = GetRandomString(),
+                AddressComponents = GetRandomAddressComponents()
+            };
         }
 
-        private static IQueryable<ResolvedAddress> CreateRandomResolvedAddresses()
+        private static IList<KeyValuePair<string, string>> GetRandomAddressComponents()
         {
-            return CreateResolvedAddressFiller(dateTimeOffset: GetRandomDateTimeOffset())
-                .Create(count: GetRandomNumber())
-                    .AsQueryable();
+            int numberOfComponents = GetRandomNumber();
+
+            var components = new List<KeyValuePair<string, string>>();
+
+            for (int i = 0; i < numberOfComponents; i++)
+            {
+                string key = GetRandomString();
+                string value = GetRandomString();
+                components.Add(new KeyValuePair<string, string>(key, value));
+            }
+
+            return components;
         }
 
         private static ResolvedAddress CreateRandomResolvedAddress() =>
@@ -122,6 +141,16 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
                 .OnProperty(resolvedAddress => resolvedAddress.UpdatedBy).Use(user);
 
             return filler;
+        }
+
+        static List<KeyValuePair<string, string>> GenerateKeyValuePairList(int count)
+        {
+            List<KeyValuePair<string, string>> keyValuePairList = new List<KeyValuePair<string, string>>();
+            for (int i = 0; i < count; i++)
+            {
+                keyValuePairList.Add(new KeyValuePair<string, string>(GetRandomString(), GetRandomString()));
+            }
+            return keyValuePairList;
         }
     }
 }

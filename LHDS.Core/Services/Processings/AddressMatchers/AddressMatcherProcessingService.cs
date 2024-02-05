@@ -156,7 +156,12 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             HashSet<AddressMatch> matchedAddresses,
             IList<KeyValuePair<string, string>> addressComponents)
         {
-            throw new NotImplementedException();
+            return new ValueTask<AddressMatch>(
+                new AddressMatch
+                {
+                    IsMatched = false,
+                    BestMatch = BestMatchEnum.Multiple
+                });
         }
     }
 }

@@ -16,7 +16,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
             modelBuilder.Entity<SubscriberAgreement>()
                 .Property(subscriberAgreement => subscriberAgreement.SupplierSharingAgreementShortName)
-                .HasMaxLength(100)
+                .HasMaxLength(128)
                 .IsRequired();
 
             modelBuilder.Entity<SubscriberAgreement>()
@@ -29,7 +29,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
             modelBuilder.Entity<SubscriberAgreement>()
                 .Property(subscriberAgreement => subscriberAgreement.FtpUserName)
-                .HasMaxLength(255)
+                .HasMaxLength(128)
                 .IsRequired();
 
             modelBuilder.Entity<SubscriberAgreement>()

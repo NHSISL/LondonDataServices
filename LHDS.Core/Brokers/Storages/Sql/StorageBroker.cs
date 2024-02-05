@@ -42,6 +42,7 @@ namespace LHDS.Core.Brokers.Storages.Sql
             AddPdsAuditConfigurations(modelBuilder);
             AddResolvedAddressConfigurations(modelBuilder);
             AddSpecificationObjectConfigurations(modelBuilder);
+            AddSubscriberAgreementConfigurations(modelBuilder);
             AddTerminologyArtifactConfigurations(modelBuilder);
             AddTerminologyPollConfigurations(modelBuilder);
 

@@ -49,11 +49,11 @@ namespace LHDS.Core.Brokers.Storages.Sql
 
             modelBuilder.Entity<SubscriberAgreement>()
                 .Property(subscriberAgreement => subscriberAgreement.LastPollStartDate)
-                .IsRequired();
+                .IsRequired(false);
 
             modelBuilder.Entity<SubscriberAgreement>()
                 .Property(subscriberAgreement => subscriberAgreement.LastPollEndDate)
-                .IsRequired();
+                .IsRequired(false);
 
             modelBuilder.Entity<SubscriberAgreement>()
                 .Property(subscriberAgreement => subscriberAgreement.CreatedBy)

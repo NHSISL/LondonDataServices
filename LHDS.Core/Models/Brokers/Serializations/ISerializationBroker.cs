@@ -12,7 +12,7 @@ namespace LHDS.Core.Models.Brokers.Serializations
 {
     public interface ISerializationBroker
     {
-        ValueTask<string> Serialize<T>(T obj);
-        ValueTask<T> Deserialize<T>(string json);
+        string Serialize<T>(T obj);
+        T Deserialize<T>(string json);
     }
 }

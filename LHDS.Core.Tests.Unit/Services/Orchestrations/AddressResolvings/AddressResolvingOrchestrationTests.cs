@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text.Json;
 using KellermanSoftware.CompareNetObjects;
 using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
@@ -108,6 +109,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
             };
         }
 
+        static string GetRandomUKPostcode()
+        {
+            Random random = new Random();
+
+            // Example postcode format: AA1 1AA
+            char[] letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+            int randomLetterIndex1 = random.Next(0, letters.Length);
+            int randomLetterIndex2 = random.Next(0, letters.Length);
+
+            int randomDigit1 = random.Next(0, 10);
+            int randomDigit2 = random.Next(0, 10);
+
+            return $"{letters[randomLetterIndex1]}{letters[randomLetterIndex2]}{randomDigit1} {randomDigit2}{letters[randomLetterIndex1]}{letters[randomLetterIndex2]}";
+        }
+
         private static IList<KeyValuePair<string, string>> GetRandomAddressComponents()
         {
             int numberOfComponents = GetRandomNumber();
@@ -151,6 +167,25 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
                 keyValuePairList.Add(new KeyValuePair<string, string>(GetRandomString(), GetRandomString()));
             }
             return keyValuePairList;
+        }
+
+        static List<KeyValuePair<string, string>> GenerateRandomAddress()
+        {
+            return new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("house_number", GetRandomNumber().ToString()),
+                new KeyValuePair<string, string>("road", GetRandomString()),
+                new KeyValuePair<string, string>("city_district", GetRandomString()),
+                new KeyValuePair<string, string>("city", GetRandomString()),
+                new KeyValuePair<string, string>("postcode", GetRandomString()),
+                new KeyValuePair<string, string>("country", GetRandomString())
+            };
+        }
+
+        static string ConvertToJSONString(List<KeyValuePair<string, string>> keyValuePairs)
+        {
+            var jsonString = JsonSerializer.Serialize(keyValuePairs);
+            return jsonString;
         }
     }
 }

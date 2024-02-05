@@ -17,6 +17,6 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             IList<KeyValuePair<string, string>> addressComponents,
             HashSet<AddressMatch> possibleAddressMatches);
 
-        ValueTask<AddressMatch?> FindBestMatch(HashSet<AddressMatch> possibleAddressMatches);
+        ValueTask<AddressMatch> FindBestMatch(HashSet<AddressMatch> possibleAddressMatches);
     }
 }

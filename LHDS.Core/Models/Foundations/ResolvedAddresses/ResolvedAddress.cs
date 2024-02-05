@@ -4,6 +4,7 @@
 
 using System;
 using LHDS.Core.Models.Bases;
+using LHDS.Core.Models.Foundations.AddressMatchers;
 
 namespace LHDS.Core.Models.Foundations.ResolvedAddresses
 {
@@ -15,7 +16,8 @@ namespace LHDS.Core.Models.Foundations.ResolvedAddresses
         public string? PostCode { get; set; }
         public string? PostalAddress { get; set; }
         public string? JsonPostalAddress { get; set; }
-        public MatchAlgorithmEnum MatchAlgorithmEnum { get; set; }
+        public MatchAlgorithmEnum MatchAlgorithmUsed { get; set; }
+        public BestMatchEnum BestMatchType { get; set; }
         public bool IsMatched { get; set; }
         public string? MatchedWithPostalAddress { get; set; }
         public string? MatchedWithJsonPostalAddress { get; set; }

@@ -127,7 +127,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             }
         }
 
-        public ValueTask<AddressMatch?> FindBestMatch(HashSet<AddressMatch> possibleAddressMatches) =>
+        public ValueTask<AddressMatch> FindBestMatch(HashSet<AddressMatch> possibleAddressMatches) =>
             throw new NotImplementedException();
     }
 }

@@ -189,7 +189,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
             AddressMatch expectedAddressMatch = new AddressMatch
             {
                 IsMatched = false,
-                BestMatch = BestMatchEnum.None
+                BestMatch = BestMatchEnum.Multiple
             };
 
             List<KeyValuePair<string, string>> randomAddressComponents = CreateKeyValuePairList();
@@ -209,6 +209,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
 
             // then
             actualAddressMatch.Should().BeEquivalentTo(expectedAddressMatch);
+
+            this.addressMatcherServiceMock.Verify(service =>
+                service.CalculateMatchingAddressComponents(inputAddressComponents, inputAddressMatches),
+                    Times.Once);
+
+            this.addressMatcherServiceMock.Verify(service =>
+                service.CheckForBestMatch(outputAddressMatches),
+                    Times.Once);
 
             this.addressMatcherServiceMock.VerifyNoOtherCalls();
         }

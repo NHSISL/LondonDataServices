@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LHDS.Core.Migrations
 {
     [DbContext(typeof(StorageBroker))]
-    [Migration("20240205121941_SubscriberAgreement")]
+    [Migration("20240205140231_SubscriberAgreement")]
     partial class SubscriberAgreement
     {
         /// <inheritdoc />
@@ -1071,10 +1071,10 @@ namespace LHDS.Core.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<DateTimeOffset>("LastPollEndDate")
+                    b.Property<DateTimeOffset?>("LastPollEndDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTimeOffset>("LastPollStartDate")
+                    b.Property<DateTimeOffset?>("LastPollStartDate")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<Guid?>("SupplierSharingAgreementGuid")

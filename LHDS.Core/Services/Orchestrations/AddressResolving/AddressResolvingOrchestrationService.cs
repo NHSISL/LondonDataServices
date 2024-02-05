@@ -46,7 +46,6 @@ namespace LHDS.Core.Services.Orchestrations.AddressResolvings
 
         public async ValueTask<AddressNormalisation> ResolvedAddressAsync(AddressNormalisation normalisedAddress)
         {
-
             //Validate incoming
 
             (bool IsMatched, Guid? ItemId) isMatch =

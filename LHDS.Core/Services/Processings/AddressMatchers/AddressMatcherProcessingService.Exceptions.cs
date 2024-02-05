@@ -15,6 +15,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
     {
         private delegate string ReturningStringFunction();
         private delegate ValueTask<HashSet<AddressMatch>> ReturningAddressMatchHashSetFunction();
+        private delegate ValueTask<AddressMatch> ReturningAddressMatchFunction();
 
         private string TryCatch(ReturningStringFunction returningStringFunction)
         {
@@ -51,6 +52,28 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             try
             {
                 return await returningAddressMatchHashSetFunction();
+            }
+            catch (InvalidArgumentAddressMatcherProcessingException invalidArgumentAddressMatcherProcessingException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentAddressMatcherProcessingException);
+            }
+            catch (Exception exception)
+            {
+                var failedAddressMatcherProcessingServiceException =
+                    new FailedAddressMatcherProcessingServiceException(
+                        message: "Failed address matcher processing service error occurred, please contact support.",
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedAddressMatcherProcessingServiceException);
+            }
+        }
+
+        private async ValueTask<AddressMatch> TryCatch(
+            ReturningAddressMatchFunction returningAddressMatchFunction)
+        {
+            try
+            {
+                return await returningAddressMatchFunction();
             }
             catch (InvalidArgumentAddressMatcherProcessingException invalidArgumentAddressMatcherProcessingException)
             {

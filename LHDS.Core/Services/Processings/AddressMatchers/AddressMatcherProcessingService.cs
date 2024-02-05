@@ -89,28 +89,33 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
 
         public ValueTask<AddressMatch> FindBestMatch(
             HashSet<AddressMatch> possibleAddressMatches,
-            IList<KeyValuePair<string, string>> addressComponents)
-        {
-            HashSet<AddressMatch> matchedAddresses = this.addressMatcherService
-                .CalculateMatchingAddressComponents(addressComponents, possibleAddressMatches);
-
-            BestMatchEnum matchType = this.addressMatcherService.CheckForBestMatch(matchedAddresses);
-
-            return matchType switch
+            IList<KeyValuePair<string, string>> addressComponents) =>
+            TryCatch(async () =>
             {
-                BestMatchEnum.None => DoNonMatchProcess(matchedAddresses, addressComponents),
-                BestMatchEnum.Single => SingleMatchProcess(matchedAddresses, addressComponents),
-                _ => MultipleMatchProcess(matchedAddresses, addressComponents)
-            };
-        }
+                ValidateCalculateArguments(addressComponents, possibleAddressMatches);
 
-        private ValueTask<AddressMatch> DoNonMatchProcess(
+                HashSet<AddressMatch> matchedAddresses = this.addressMatcherService
+                    .CalculateMatchingAddressComponents(addressComponents, possibleAddressMatches);
+
+                BestMatchEnum matchType = this.addressMatcherService.CheckForBestMatch(matchedAddresses);
+
+                var result = matchType switch
+                {
+                    BestMatchEnum.None => await DoNonMatchProcess(matchedAddresses, addressComponents),
+                    BestMatchEnum.Single => await SingleMatchProcess(matchedAddresses, addressComponents),
+                    _ => await MultipleMatchProcess(matchedAddresses, addressComponents)
+                };
+
+                return result;
+            });
+
+        private async ValueTask<AddressMatch> DoNonMatchProcess(
             HashSet<AddressMatch> matchedAddresses,
             IList<KeyValuePair<string, string>> addressComponents)
         {
             if (addressComponents.Count() == 0)
             {
-                return new ValueTask<AddressMatch>(
+                return await ValueTask.FromResult(
                     new AddressMatch
                     {
                         IsMatched = false,
@@ -128,10 +133,10 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
 
             if (matchType == BestMatchEnum.Single)
             {
-                return SingleMatchProcess(reCalculatedMatches, amendedAddressComponents);
+                return await SingleMatchProcess(reCalculatedMatches, amendedAddressComponents);
             }
 
-            return new ValueTask<AddressMatch>(
+            return await ValueTask.FromResult(
                 new AddressMatch
                 {
                     IsMatched = false,
@@ -139,7 +144,7 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
                 });
         }
 
-        private ValueTask<AddressMatch> SingleMatchProcess(
+        private async ValueTask<AddressMatch> SingleMatchProcess(
             HashSet<AddressMatch> matchedAddresses,
             IList<KeyValuePair<string, string>> addressComponents)
         {
@@ -149,14 +154,14 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
             bestMatch.IsMatched = true;
             bestMatch.BestMatch = BestMatchEnum.Single;
 
-            return ValueTask.FromResult(bestMatch);
+            return await ValueTask.FromResult(bestMatch);
         }
 
-        private ValueTask<AddressMatch> MultipleMatchProcess(
+        private async ValueTask<AddressMatch> MultipleMatchProcess(
             HashSet<AddressMatch> matchedAddresses,
             IList<KeyValuePair<string, string>> addressComponents)
         {
-            return new ValueTask<AddressMatch>(
+            return await ValueTask.FromResult(
                 new AddressMatch
                 {
                     IsMatched = false,

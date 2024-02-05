@@ -12,19 +12,20 @@ namespace LHDS.Core.Brokers.Storages.Sql
         private static void AddSubscriberAgreementConfigurations(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<SubscriberAgreement>()
-                .ToTable("SharingAgreements", "Configurations");
+                .ToTable("SubscriberAgreements", "Configurations");
 
             modelBuilder.Entity<SubscriberAgreement>()
-                .Property(subscriberAgreement => subscriberAgreement.SupplierSharingAgreementId)
+                .Property(subscriberAgreement => subscriberAgreement.SupplierSharingAgreementShortName)
+                .HasMaxLength(100)
                 .IsRequired();
 
             modelBuilder.Entity<SubscriberAgreement>()
-                .HasIndex(subscriberAgreement => subscriberAgreement.SupplierSharingAgreementId)
+                .HasIndex(subscriberAgreement => subscriberAgreement.SupplierSharingAgreementShortName)
                 .IsUnique();
 
             modelBuilder.Entity<SubscriberAgreement>()
                 .Property(subscriberAgreement => subscriberAgreement.SupplierSharingAgreementGuid)
-                .IsRequired();
+                .IsRequired(false);
 
             modelBuilder.Entity<SubscriberAgreement>()
                 .Property(subscriberAgreement => subscriberAgreement.FtpUserName)
@@ -42,16 +43,16 @@ namespace LHDS.Core.Brokers.Storages.Sql
                 .IsRequired();
 
             modelBuilder.Entity<SubscriberAgreement>()
-                .Property(dataSet => dataSet.IsActive)
+                .Property(subscriberAgreement => subscriberAgreement.IsActive)
                 .HasDefaultValue(false)
                 .IsRequired();
 
             modelBuilder.Entity<SubscriberAgreement>()
-                .Property(dataSet => dataSet.LastPollStartDate)
+                .Property(subscriberAgreement => subscriberAgreement.LastPollStartDate)
                 .IsRequired();
 
             modelBuilder.Entity<SubscriberAgreement>()
-                .Property(dataSet => dataSet.LastPollEndDate)
+                .Property(subscriberAgreement => subscriberAgreement.LastPollEndDate)
                 .IsRequired();
 
             modelBuilder.Entity<SubscriberAgreement>()

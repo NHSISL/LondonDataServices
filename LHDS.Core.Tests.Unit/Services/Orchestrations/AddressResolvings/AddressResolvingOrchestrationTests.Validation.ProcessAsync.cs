@@ -2,12 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Foundations.Addresses;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
-using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressResolvings.Exceptions;
 using Moq;
 using Xunit;
@@ -24,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
 
             var invalidArgumentAddressResolvingOrchestrationException =
                 new InvalidArgumentAddressResolvingOrchestrationException(
-                    message: "Invalid address resolving orchestration argument, " + 
+                    message: "Invalid normalised address resolving orchestration argument, " + 
                         "please correct the errors and try again.");
 
             invalidArgumentAddressResolvingOrchestrationException.AddData(

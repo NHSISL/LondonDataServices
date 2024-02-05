@@ -44,61 +44,63 @@ namespace LHDS.Core.Services.Orchestrations.AddressResolvings
             this.serializationBroker = serializationBroker;
         }
 
-        public async ValueTask<AddressNormalisation> ResolvedAddressAsync(AddressNormalisation normalisedAddress)
-        {
-            //Validate incoming
-
-            (bool IsMatched, Guid? ItemId) isMatch =
-                await resolvedAddressProcessingService.IsExactMatchForResolvedAddressAsync(normalisedAddress.PostalAddress);
-
-            if (isMatch.IsMatched)
+        public ValueTask<AddressNormalisation> ResolvedAddressAsync(AddressNormalisation normalisedAddress) =>
+            TryCatch(async () =>
             {
-                ResolvedAddress resolvedAddress =
-                    await resolvedAddressProcessingService.RetrieveResolvedAddressByIdAsync((Guid)isMatch.ItemId);
 
-                resolvedAddress.IsProcessed = false;
-                resolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
-                await resolvedAddressProcessingService.ModifyResolvedAddressAsync(resolvedAddress);
+                ValidateNormalisedAddress(normalisedAddress);
 
-                return normalisedAddress;
-            }
-            else
-            {
-                string postCode = addressMatcherProcessingService.ExtractPostCode(normalisedAddress.PostalAddress);
+                (bool IsMatched, Guid? ItemId) isMatch =
+                    await resolvedAddressProcessingService.IsExactMatchForResolvedAddressAsync(normalisedAddress.PostalAddress);
 
-                List<Address> addressesByPostCode =
-                    await addressProcessingService.RetrieveAddressByPostCodeAsync(postCode);
-
-                HashSet<AddressMatch> addressesToMatch = addressesByPostCode.Select(address => new AddressMatch
+                if (isMatch.IsMatched)
                 {
-                    PostalAddress = address.PostalAddress,
-                    JsonPostalAddress = address.JsonPostalAddress,
-                    AddressComponents = GetComponents(address.JsonPostalAddress)
-                }).ToHashSet();
+                    ResolvedAddress resolvedAddress =
+                        await resolvedAddressProcessingService.RetrieveResolvedAddressByIdAsync((Guid)isMatch.ItemId);
 
-                AddressMatch matchedAddress =
-                    await addressMatcherProcessingService.FindBestMatch(addressesToMatch);
+                    resolvedAddress.IsProcessed = false;
+                    resolvedAddress.UpdatedDate = dateTimeBroker.GetCurrentDateTimeOffset();
+                    await resolvedAddressProcessingService.ModifyResolvedAddressAsync(resolvedAddress);
 
-                ResolvedAddress finalResolvedAddress = new ResolvedAddress
+                    return normalisedAddress;
+                }
+                else
                 {
-                    UPRN = matchedAddress.UPRN,
-                    UPSN = matchedAddress.UPSN,
-                    PostCode = postCode,
-                    PostalAddress = normalisedAddress.PostalAddress,
-                    JsonPostalAddress = normalisedAddress.JsonPostalAddress,
-                    MatchAlgorithmUsed = (MatchAlgorithmEnum)Enum.Parse(typeof(MatchAlgorithmEnum), ((int)matchedAddress.BestMatch).ToString()),
-                    BestMatchType = matchedAddress.BestMatch,
-                    IsMatched = matchedAddress.IsMatched,
-                    MatchedWithPostalAddress = matchedAddress.PostalAddress,
-                    MatchedWithJsonPostalAddress = matchedAddress.JsonPostalAddress,
-                    IsProcessed = false
-                };
+                    string postCode = addressMatcherProcessingService.ExtractPostCode(normalisedAddress.PostalAddress);
 
-                await resolvedAddressProcessingService.AddResolvedAddressAsync(finalResolvedAddress);
+                    List<Address> addressesByPostCode =
+                        await addressProcessingService.RetrieveAddressByPostCodeAsync(postCode);
 
-                return normalisedAddress;
-            }
-        }
+                    HashSet<AddressMatch> addressesToMatch = addressesByPostCode.Select(address => new AddressMatch
+                    {
+                        PostalAddress = address.PostalAddress,
+                        JsonPostalAddress = address.JsonPostalAddress,
+                        AddressComponents = GetComponents(address.JsonPostalAddress)
+                    }).ToHashSet();
+
+                    AddressMatch matchedAddress =
+                        await addressMatcherProcessingService.FindBestMatch(addressesToMatch);
+
+                    ResolvedAddress finalResolvedAddress = new ResolvedAddress
+                    {
+                        UPRN = matchedAddress.UPRN,
+                        UPSN = matchedAddress.UPSN,
+                        PostCode = postCode,
+                        PostalAddress = normalisedAddress.PostalAddress,
+                        JsonPostalAddress = normalisedAddress.JsonPostalAddress,
+                        MatchAlgorithmUsed = (MatchAlgorithmEnum)Enum.Parse(typeof(MatchAlgorithmEnum), ((int)matchedAddress.BestMatch).ToString()),
+                        BestMatchType = matchedAddress.BestMatch,
+                        IsMatched = matchedAddress.IsMatched,
+                        MatchedWithPostalAddress = matchedAddress.PostalAddress,
+                        MatchedWithJsonPostalAddress = matchedAddress.JsonPostalAddress,
+                        IsProcessed = false
+                    };
+
+                    await resolvedAddressProcessingService.AddResolvedAddressAsync(finalResolvedAddress);
+
+                    return normalisedAddress;
+                }
+            });
 
         private List<KeyValuePair<string, string>> GetComponents(string jsonAddress)
         {

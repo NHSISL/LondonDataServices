@@ -36,11 +36,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressMatchers
                     innerException: invalidArgumentAddressMatcherException);
 
             // when
-            Action calculateMacthingAddressComponentsAction = () =>
-                addressMatcherService.CheckForBestMatch(macthedAddresses: invalidAddresses);
+            Action calculateMatchingAddressComponentsAction = () =>
+                addressMatcherService.CheckForBestMatch(matchedAddresses: invalidAddresses);
 
             AddressMatcherValidationException actualAddressMatcherValidationException =
-                Assert.Throws<AddressMatcherValidationException>(calculateMacthingAddressComponentsAction);
+                Assert.Throws<AddressMatcherValidationException>(calculateMatchingAddressComponentsAction);
 
             // then
             actualAddressMatcherValidationException.Should()

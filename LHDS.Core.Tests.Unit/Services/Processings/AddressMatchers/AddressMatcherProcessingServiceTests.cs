@@ -358,8 +358,21 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
            };
         }
 
+        public static List<KeyValuePair<string, string>> CreateKeyValuePairList()
+        {
+            return new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("house_number", GetRandomNumber().ToString()),
+                new KeyValuePair<string, string>("road", GetRandomString()),
+                new KeyValuePair<string, string>("city_district", GetRandomString()),
+                new KeyValuePair<string, string>("city", GetRandomString()),
+                new KeyValuePair<string, string>("postcode", GetRandomString()),
+                new KeyValuePair<string, string>("country", GetRandomString())
+            };
+        }
+
         private static string GetRandomString() =>
-            new MnemonicString().GetValue();
+                new MnemonicString().GetValue();
 
         private static string GetRandomString(int length) =>
             new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();

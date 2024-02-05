@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressMatchers
 
             // when
             Action checkForBestMatchAction = () =>
-                addressMatcherService.CheckForBestMatch(macthedAddresses: somePossibleAddresses);
+                addressMatcherService.CheckForBestMatch(matchedAddresses: somePossibleAddresses);
 
             AddressMatcherServiceException actualAddressMatcherServiceException =
                 Assert.Throws<AddressMatcherServiceException>(

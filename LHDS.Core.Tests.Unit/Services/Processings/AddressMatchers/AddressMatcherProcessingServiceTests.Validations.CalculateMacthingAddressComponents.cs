@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
     public partial class AddressMatcherProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnCalculateMacthingAddressIfArgsIsInvalidAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnCalculateMatchingAddressIfArgsIsInvalidAndLogItAsync()
         {
             // given
             List<KeyValuePair<string, string>> invalidIncomingAddressComponents =
@@ -43,14 +43,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                     innerException: invalidArgumentAddressMatcherException);
 
             // when
-            ValueTask<HashSet<AddressMatch>> calculateMacthingAddressComponentsTask =
-                addressMatcherProcessingService.CalculateMacthingAddressComponents(
+            ValueTask<HashSet<AddressMatch>> calculateMatchingAddressComponentsTask =
+                addressMatcherProcessingService.CalculateMatchingAddressComponents(
                     addressComponents: invalidIncomingAddressComponents,
                     possibleAddressMatches: invalidPossibleAddresses);
 
             AddressMatcherProcessingValidationException actualAddressMatcherValidationException =
                 await Assert.ThrowsAsync<AddressMatcherProcessingValidationException>(
-                    calculateMacthingAddressComponentsTask.AsTask);
+                    calculateMatchingAddressComponentsTask.AsTask);
 
             // then
             actualAddressMatcherValidationException.Should()

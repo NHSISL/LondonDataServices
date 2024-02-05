@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressMatchers
     public partial class AddressMatcherServiceTests
     {
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnCalculateMacthesIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnCalculateMatchesIfServiceErrorOccursAsync()
         {
             // given
             List<KeyValuePair<string, string>> someIncomingAddressComponents =
@@ -46,14 +46,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressMatchers
                     innerException: failedAddressMatcherServiceException);
 
             // when
-            Action calculateMacthingAddressComponentsAction = () =>
-                addressMatcherService.CalculateMacthingAddressComponents(
+            Action calculateMatchingAddressComponentsAction = () =>
+                addressMatcherService.CalculateMatchingAddressComponents(
                     addressComponents: someIncomingAddressComponents,
                     possibleAddressMatches: somePossibleAddresses);
 
             AddressMatcherServiceException actualAddressMatcherServiceException =
                 Assert.Throws<AddressMatcherServiceException>(
-                    calculateMacthingAddressComponentsAction);
+                    calculateMatchingAddressComponentsAction);
 
             // then
             actualAddressMatcherServiceException.Should()

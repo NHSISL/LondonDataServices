@@ -12,8 +12,16 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Serializations;
 using LHDS.Core.Models.Foundations.Addresses;
+using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
+using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
+using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
+using LHDS.Core.Models.Processings.Addresses.Exceptions;
+using LHDS.Core.Models.Processings.AddressLoadingAudits.Exceptions;
+using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
+using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
+using LHDS.Core.Models.Processings.ResolvedAddresses.Exceptions;
 using LHDS.Core.Services.Orchestrations.AddressResolvings;
 using LHDS.Core.Services.Processings.Addresses;
 using LHDS.Core.Services.Processings.AddressMatchers;
@@ -21,6 +29,7 @@ using LHDS.Core.Services.Processings.ResolvedAddresses;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
 {
@@ -186,6 +195,32 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
         {
             var jsonString = JsonSerializer.Serialize(keyValuePairs);
             return jsonString;
+        }
+
+        public static TheoryData AddressResolvingDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new AddressProcessingValidationException(
+                    message: "Address processing validation errors occurred, please try again.",
+                    innerException),
+
+                new AddressProcessingDependencyValidationException(
+                    message: "Address processing dependency validation occurred, please try again.",
+                    innerException),
+
+                new AddressMatcherProcessingValidationException(
+                    message: "Address matcher processing validation errors occured, please try again",
+                    innerException),
+
+                new ResolvedAddressProcessingDependencyValidationException(
+                    message: "Resolved Address dependency validation occurred, please try again.",
+                    innerException)
+            };
         }
     }
 }

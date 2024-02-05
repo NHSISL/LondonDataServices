@@ -3,15 +3,11 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
-using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
 using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
-using LHDS.Core.Models.Orchestrations.AddressPersistances.Exceptions;
 using LHDS.Core.Models.Orchestrations.AddressResolvings.Exceptions;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
-using LHDS.Core.Models.Processings.AddressLoadingAudits.Exceptions;
 using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
-using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Processings.ResolvedAddresses.Exceptions;
 using Xeptions;
 
@@ -51,6 +47,26 @@ namespace LHDS.Core.Services.Orchestrations.AddressResolvings
             {
                 throw CreateAndLogDependencyValidationException(resolvedAddressProcessingDependencyValidationException);
             }
+            catch (AddressProcessingDependencyException addressProcessingDependencyException)
+            {
+                throw CreateAndLogDependencyException(addressProcessingDependencyException);
+            }
+            catch (AddressProcessingServiceException addressProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(addressProcessingServiceException);
+            }
+            catch (AddressMatcherProcessingServiceException addressMatcherProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(addressMatcherProcessingServiceException);
+            }
+            catch (ResolvedAddressProcessingDependencyException resolvedAddressProcessingDependencyException)
+            {
+                throw CreateAndLogDependencyException(resolvedAddressProcessingDependencyException);
+            }
+            catch (ResolvedAddressProcessingServiceException resolvedAddressProcessingServiceException)
+            {
+                throw CreateAndLogDependencyException(resolvedAddressProcessingServiceException);
+            }
         }
         private AddressResolvingOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
@@ -76,6 +92,20 @@ namespace LHDS.Core.Services.Orchestrations.AddressResolvings
             this.loggingBroker.LogError(addressResolvingOrchestrationDependencyValidationException);
 
             return addressResolvingOrchestrationDependencyValidationException;
+        }
+
+        private AddressResolvingOrchestrationDependencyException
+           CreateAndLogDependencyException(Xeption exception)
+        {
+            var addressResolvingOrchestrationDependencyException =
+                new AddressResolvingOrchestrationDependencyException(
+                    message: "Address resolving orchestration dependency error occurred, " +
+                    "fix the errors and try again.",
+                    innerException: exception.InnerException as Xeption);
+
+            this.loggingBroker.LogError(addressResolvingOrchestrationDependencyException);
+
+            throw addressResolvingOrchestrationDependencyException;
         }
     }
 }

@@ -222,5 +222,31 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
                     innerException)
             };
         }
+
+        public static TheoryData AddressResolvingDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new AddressProcessingDependencyException(
+                    message: "Address processing dependency error occurred, contact support.",
+                    innerException),
+
+                new AddressProcessingServiceException(
+                    message: "Address processing service error occurred, contact support.",
+                    innerException),
+
+                new AddressMatcherProcessingServiceException(
+                    message: "Address Normalisation processing service error occurred, contact support.",
+                    innerException),
+
+                 new ResolvedAddressProcessingDependencyException(
+                    message: "Audit dependency error occurred, contact support.",
+                    innerException),
+            };
+        }
     }
 }

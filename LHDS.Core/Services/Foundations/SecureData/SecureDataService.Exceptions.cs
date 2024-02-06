@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Threading.Tasks;
+using LHDS.Core.Models.Foundations.Addresses.Exceptions;
 using LHDS.Core.Models.Foundations.SecureData;
 using LHDS.Core.Models.Foundations.SecureData.Exceptions;
 using Xeptions;
@@ -22,6 +23,10 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             catch (NullSecureDataException nullSecureDataException)
             {
                 throw CreateAndLogValidationException(nullSecureDataException);
+            }
+            catch (InvalidSecureDataException invalidSecureDataException)
+            {
+                throw CreateAndLogValidationException(invalidSecureDataException);
             }
         }
 

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -57,10 +58,19 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             {
                 var failedSubscriberAgreementStorageException =
                     new FailedSubscriberAgreementStorageException(
-                    message: "Failed subscriberAgreement storage error occurred, contact support.",
-                    innerException: databaseUpdateException);
+                        message: "Failed subscriberAgreement storage error occurred, contact support.",
+                        innerException: databaseUpdateException);
 
                 throw CreateAndLogDependencyException(failedSubscriberAgreementStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedSubscriberAgreementServiceException =
+                    new FailedSubscriberAgreementServiceException(
+                        message: "Failed subscriberAgreement service occurred, please contact support", 
+                        innerException: exception);
+
+                throw CreateAndLogServiceException(failedSubscriberAgreementServiceException);
             }
         }
 
@@ -111,6 +121,19 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             this.loggingBroker.LogError(subscriberAgreementDependencyException);
 
             return subscriberAgreementDependencyException;
+        }
+
+        private SubscriberAgreementServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var subscriberAgreementServiceException = 
+                new SubscriberAgreementServiceException(
+                    message: "SubscriberAgreement service error occurred, contact support.",
+                    innerException: exception);
+
+            this.loggingBroker.LogError(subscriberAgreementServiceException);
+
+            return subscriberAgreementServiceException;
         }
     }
 }

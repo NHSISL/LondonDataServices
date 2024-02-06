@@ -64,6 +64,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static SubscriberAgreement CreateRandomModifySubscriberAgreement(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement(dateTimeOffset);
+
+            randomSubscriberAgreement.CreatedDate =
+                randomSubscriberAgreement.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomSubscriberAgreement;
+        }
+
         private static IQueryable<SubscriberAgreement> CreateRandomSubscriberAgreements()
         {
             return CreateSubscriberAgreementFiller(dateTimeOffset: GetRandomDateTimeOffset())

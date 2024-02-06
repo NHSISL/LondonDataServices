@@ -47,5 +47,8 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
                 return maybeSubscriberAgreement;
             });
+
+        public ValueTask<SubscriberAgreement> ModifySubscriberAgreementAsync(SubscriberAgreement subscriberAgreement) =>
+            throw new NotImplementedException();
     }
 }

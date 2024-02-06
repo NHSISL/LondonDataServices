@@ -10,5 +10,6 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
         ValueTask<SubscriberAgreement> AddSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement);
         IQueryable<SubscriberAgreement> RetrieveAllSubscriberAgreements();
         ValueTask<SubscriberAgreement> RetrieveSubscriberAgreementByIdAsync(Guid subscriberAgreementId);
+        ValueTask<SubscriberAgreement> ModifySubscriberAgreementAsync(SubscriberAgreement subscriberAgreement);
     }
 }

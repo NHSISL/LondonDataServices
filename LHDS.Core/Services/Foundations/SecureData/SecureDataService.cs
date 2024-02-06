@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Threading.Tasks;
+using Azure.Security.KeyVault.Secrets;
 using LHDS.Core.Brokers.KeyVaults;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.SecureData;
@@ -22,9 +23,20 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<SecureData> AddOrModifySecureData(SecureData SecureData) =>
-            throw new System.NotImplementedException();
-            
+        public async ValueTask<SecureData> AddOrModifySecureData(SecureData secureData)
+        {
+            KeyVaultSecret keyVaultSecret = new KeyVaultSecret(name: secureData.Name, value: secureData.Value);
 
+            KeyVaultSecret returnedKeyVaultSecret =
+                await this.secureDataBroker.CreateOrUpdateKeyVaultSecretAsync(keyVaultSecret);
+
+            SecureData returnedSecureData = new SecureData
+            {
+                Name = returnedKeyVaultSecret.Name,
+                Value = returnedKeyVaultSecret.Value,
+            };
+
+            return returnedSecureData;
+        }
     }
 }

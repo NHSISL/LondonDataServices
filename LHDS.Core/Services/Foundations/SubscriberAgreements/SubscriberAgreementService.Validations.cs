@@ -77,6 +77,16 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             }
         }
 
+        private static void ValidateAgainstStorageSubscriberAgreementOnModify(SubscriberAgreement inputSubscriberAgreement, SubscriberAgreement storageSubscriberAgreement)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputSubscriberAgreement.CreatedDate,
+                    secondDate: storageSubscriberAgreement.CreatedDate,
+                    secondDateName: nameof(SubscriberAgreement.CreatedDate)),
+                Parameter: nameof(SubscriberAgreement.CreatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

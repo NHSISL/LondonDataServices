@@ -35,6 +35,9 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                 (Rule: IsNotRecent(subscriberAgreement.CreatedDate), Parameter: nameof(SubscriberAgreement.CreatedDate)));
         }
 
+        public void ValidateSubscriberAgreementId(Guid subscriberAgreementId) =>
+            Validate((Rule: IsInvalid(subscriberAgreementId), Parameter: nameof(SubscriberAgreement.Id)));
+
         private static void ValidateSubscriberAgreementIsNotNull(SubscriberAgreement subscriberAgreement)
         {
             if (subscriberAgreement is null)

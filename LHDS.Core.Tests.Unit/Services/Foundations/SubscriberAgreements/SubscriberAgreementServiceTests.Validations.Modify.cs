@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -65,7 +66,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             var invalidSubscriberAgreementException = 
                 new InvalidSubscriberAgreementException(
-                        message: "Invalid subscriberAgreement. Please correct the errors and try again.");
+                    message: "Invalid subscriberAgreement. Please correct the errors and try again.");
 
             invalidSubscriberAgreementException.AddData(
                 key: nameof(SubscriberAgreement.Id),
@@ -116,6 +117,51 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateSubscriberAgreementAsync(It.IsAny<SubscriberAgreement>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset);
+            SubscriberAgreement invalidSubscriberAgreement = randomSubscriberAgreement;
+            var invalidSubscriberAgreementException = 
+                new InvalidSubscriberAgreementException(
+                    message: "Invalid subscriberAgreement. Please correct the errors and try again.");
+
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.UpdatedDate),
+                values: $"Date is the same as {nameof(SubscriberAgreement.CreatedDate)}");
+
+            var expectedSubscriberAgreementValidationException =
+                new SubscriberAgreementValidationException(
+                    message: "SubscriberAgreement validation errors occurred, please try again.",
+                    innerException: invalidSubscriberAgreementException);
+
+            // when
+            ValueTask<SubscriberAgreement> modifySubscriberAgreementTask =
+                this.subscriberAgreementService.ModifySubscriberAgreementAsync(invalidSubscriberAgreement);
+
+            SubscriberAgreementValidationException actualSubscriberAgreementValidationException =
+                await Assert.ThrowsAsync<SubscriberAgreementValidationException>(
+                    modifySubscriberAgreementTask.AsTask);
+
+            // then
+            actualSubscriberAgreementValidationException.Should().BeEquivalentTo(expectedSubscriberAgreementValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSubscriberAgreementValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSubscriberAgreementByIdAsync(invalidSubscriberAgreement.Id),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();

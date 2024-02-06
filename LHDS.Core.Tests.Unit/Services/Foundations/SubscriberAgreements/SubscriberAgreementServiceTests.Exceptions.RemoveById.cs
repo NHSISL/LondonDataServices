@@ -1,6 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
@@ -58,6 +60,59 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
+                    Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationOnRemoveIfDatabaseUpdateConcurrencyErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someSubscriberAgreementId = Guid.NewGuid();
+
+            var databaseUpdateConcurrencyException =
+                new DbUpdateConcurrencyException();
+
+            var lockedSubscriberAgreementException =
+                new LockedSubscriberAgreementException(
+                    message: "Locked subscriberAgreement record exception, please try again later",
+                    innerException: databaseUpdateConcurrencyException);
+
+            var expectedSubscriberAgreementDependencyValidationException =
+                new SubscriberAgreementDependencyValidationException(
+                    message: "SubscriberAgreement dependency validation occurred, please try again.",
+                    innerException: lockedSubscriberAgreementException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectSubscriberAgreementByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<SubscriberAgreement> removeSubscriberAgreementByIdTask =
+                this.subscriberAgreementService.RemoveSubscriberAgreementByIdAsync(someSubscriberAgreementId);
+
+            SubscriberAgreementDependencyValidationException actualSubscriberAgreementDependencyValidationException =
+                await Assert.ThrowsAsync<SubscriberAgreementDependencyValidationException>(
+                    removeSubscriberAgreementByIdTask.AsTask);
+
+            // then
+            actualSubscriberAgreementDependencyValidationException.Should()
+                .BeEquivalentTo(expectedSubscriberAgreementDependencyValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSubscriberAgreementByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSubscriberAgreementDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.DeleteSubscriberAgreementAsync(It.IsAny<SubscriberAgreement>()),
                     Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();

@@ -112,7 +112,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     modifySubscriberAgreementTask.AsTask);
 
             //then
-            actualSubscriberAgreementValidationException.Should().BeEquivalentTo(expectedSubscriberAgreementValidationException);
+            actualSubscriberAgreementValidationException.Should()
+                .BeEquivalentTo(expectedSubscriberAgreementValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -158,7 +159,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     modifySubscriberAgreementTask.AsTask);
 
             // then
-            actualSubscriberAgreementValidationException.Should().BeEquivalentTo(expectedSubscriberAgreementValidationException);
+            actualSubscriberAgreementValidationException.Should()
+                .BeEquivalentTo(expectedSubscriberAgreementValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -172,6 +174,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsNotRecentAndLogItAsync(int minutes)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset);
+            randomSubscriberAgreement.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
+
+            var invalidSubscriberAgreementException = 
+                new InvalidSubscriberAgreementException(
+                    message: "Invalid subscriberAgreement. Please correct the errors and try again.");
+
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.UpdatedDate),
+                values: "Date is not recent");
+
+            var expectedSubscriberAgreementValidatonException =
+                new SubscriberAgreementValidationException(
+                    message: "SubscriberAgreement validation errors occurred, please try again.",
+                    innerException: invalidSubscriberAgreementException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<SubscriberAgreement> modifySubscriberAgreementTask =
+                this.subscriberAgreementService.ModifySubscriberAgreementAsync(randomSubscriberAgreement);
+
+            SubscriberAgreementValidationException actualSubscriberAgreementValidationException =
+                await Assert.ThrowsAsync<SubscriberAgreementValidationException>(
+                    modifySubscriberAgreementTask.AsTask);
+
+            // then
+            actualSubscriberAgreementValidationException.Should().BeEquivalentTo(expectedSubscriberAgreementValidatonException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSubscriberAgreementValidatonException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSubscriberAgreementByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

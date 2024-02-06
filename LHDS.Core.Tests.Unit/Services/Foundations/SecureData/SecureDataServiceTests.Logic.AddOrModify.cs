@@ -20,11 +20,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
             KeyVaultSecret inputKeyVaultSecret = CreateKeyVaultSecretFromRandomSecret(randomSecret);
             KeyVaultSecret outputKeyVaultSecret = inputKeyVaultSecret.DeepClone();
             SecureData inputSecureData = CreateSecureDataFromRandomSecret(randomSecret);
-            SecureData expectedSecureData = CreateSecureDataFromRandomSecret(randomSecret);
+            SecureData expectedSecureData = inputSecureData.DeepClone();
 
             this.secureDataBrokerMock.Setup(broker =>
-                broker.CreateOrUpdateKeyVaultSecretAsync(inputKeyVaultSecret))
-                    .ReturnsAsync(outputKeyVaultSecret);
+                broker.CreateOrUpdateKeyVaultSecretAsync(It.Is<KeyVaultSecret>(
+                    keyVaultSecret => keyVaultSecret.Name == inputKeyVaultSecret.Name &&
+                    keyVaultSecret.Value == inputKeyVaultSecret.Value)))
+                        .ReturnsAsync(outputKeyVaultSecret);
 
             // when
             SecureData actualSecureData = await this.secureDataService
@@ -34,8 +36,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SecureDatas
             actualSecureData.Should().BeEquivalentTo(expectedSecureData);
 
             this.secureDataBrokerMock.Verify(broker =>
-                broker.CreateOrUpdateKeyVaultSecretAsync(inputKeyVaultSecret),
-                    Times.Once());
+                broker.CreateOrUpdateKeyVaultSecretAsync(It.Is<KeyVaultSecret>(
+                    keyVaultSecret => keyVaultSecret.Name == inputKeyVaultSecret.Name &&
+                    keyVaultSecret.Value == inputKeyVaultSecret.Value)),
+                        Times.Once());
 
             this.secureDataBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();

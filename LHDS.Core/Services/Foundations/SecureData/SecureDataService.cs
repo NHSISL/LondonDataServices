@@ -23,20 +23,22 @@ namespace LHDS.Core.Services.Foundations.SecureDatas
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<SecureData> AddOrModifySecureData(SecureData secureData)
-        {
-            KeyVaultSecret keyVaultSecret = new KeyVaultSecret(name: secureData.Name, value: secureData.Value);
-
-            KeyVaultSecret returnedKeyVaultSecret =
-                await this.secureDataBroker.CreateOrUpdateKeyVaultSecretAsync(keyVaultSecret);
-
-            SecureData returnedSecureData = new SecureData
+        public ValueTask<SecureData> AddOrModifySecureData(SecureData secureData) =>
+            TryCatch(async () =>
             {
-                Name = returnedKeyVaultSecret.Name,
-                Value = returnedKeyVaultSecret.Value,
-            };
+                ValidateSecureDataOnAdd(secureData);
+                KeyVaultSecret keyVaultSecret = new KeyVaultSecret(name: secureData.Name, value: secureData.Value);
 
-            return returnedSecureData;
-        }
+                KeyVaultSecret returnedKeyVaultSecret =
+                    await this.secureDataBroker.CreateOrUpdateKeyVaultSecretAsync(keyVaultSecret);
+
+                SecureData returnedSecureData = new SecureData
+                {
+                    Name = returnedKeyVaultSecret.Name,
+                    Value = returnedKeyVaultSecret.Value,
+                };
+
+                return returnedSecureData;
+            });
     }
 }

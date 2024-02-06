@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LHDS.Core.Brokers.DateTimes;
@@ -33,5 +34,8 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
         public IQueryable<SubscriberAgreement> RetrieveAllSubscriberAgreements() =>
             TryCatch(() => this.storageBroker.SelectAllSubscriberAgreements());
+
+        public ValueTask<SubscriberAgreement> RetrieveSubscriberAgreementByIdAsync(Guid subscriberAgreementId) =>
+            throw new NotImplementedException();
     }
 }

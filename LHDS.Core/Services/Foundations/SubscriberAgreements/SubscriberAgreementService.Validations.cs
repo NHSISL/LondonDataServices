@@ -109,6 +109,10 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
         public void ValidateSubscriberAgreementId(Guid subscriberAgreementId) =>
             Validate((Rule: IsInvalid(subscriberAgreementId), Parameter: nameof(SubscriberAgreement.Id)));
 
+        public void ValidateSubscriberSupplierSharingAgreementGuid(Guid SupplierSharingAgreementGuid) =>
+           Validate((Rule: IsInvalid(SupplierSharingAgreementGuid), Parameter: nameof(
+               SubscriberAgreement.SupplierSharingAgreementGuid)));
+
         private static void ValidateStorageSubscriberAgreement(SubscriberAgreement maybeSubscriberAgreement, Guid subscriberAgreementId)
         {
             if (maybeSubscriberAgreement is null)

@@ -61,5 +61,8 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
                 return await this.storageBroker.UpdateSubscriberAgreementAsync(subscriberAgreement);
             });
+
+        public ValueTask<SubscriberAgreement> RemoveSubscriberAgreementByIdAsync(Guid subscriberAgreementId) =>
+            throw new NotImplementedException();
     }
 }

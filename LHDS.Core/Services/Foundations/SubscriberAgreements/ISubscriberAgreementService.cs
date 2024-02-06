@@ -11,5 +11,6 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
         IQueryable<SubscriberAgreement> RetrieveAllSubscriberAgreements();
         ValueTask<SubscriberAgreement> RetrieveSubscriberAgreementByIdAsync(Guid subscriberAgreementId);
         ValueTask<SubscriberAgreement> ModifySubscriberAgreementAsync(SubscriberAgreement subscriberAgreement);
+        ValueTask<SubscriberAgreement> RemoveSubscriberAgreementByIdAsync(Guid subscriberAgreementId);
     }
 }

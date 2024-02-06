@@ -90,7 +90,13 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                     first: inputSubscriberAgreement.CreatedBy,
                     second: storageSubscriberAgreement.CreatedBy,
                     secondName: nameof(SubscriberAgreement.CreatedBy)),
-                Parameter: nameof(SubscriberAgreement.CreatedBy)));
+                Parameter: nameof(SubscriberAgreement.CreatedBy)),
+
+                (Rule: IsSame(
+                    firstDate: inputSubscriberAgreement.UpdatedDate,
+                    secondDate: storageSubscriberAgreement.UpdatedDate,
+                    secondDateName: nameof(SubscriberAgreement.UpdatedDate)),
+                Parameter: nameof(SubscriberAgreement.UpdatedDate)));
         }
 
         private static dynamic IsInvalid(Guid id) => new

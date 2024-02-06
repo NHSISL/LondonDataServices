@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -224,6 +225,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedSubscriberAgreementDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateSubscriberAgreementAsync(randomSubscriberAgreement),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnModifyIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement();
+            var serviceException = new Exception();
+
+            var failedSubscriberAgreementServiceException =
+                new FailedSubscriberAgreementServiceException(
+                    message: "Failed subscriberAgreement service occurred, please contact support", 
+                    innerException: serviceException);
+
+            var expectedSubscriberAgreementServiceException =
+                new SubscriberAgreementServiceException(
+                    message: "SubscriberAgreement service error occurred, contact support.",
+                    innerException: failedSubscriberAgreementServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<SubscriberAgreement> modifySubscriberAgreementTask =
+                this.subscriberAgreementService.ModifySubscriberAgreementAsync(randomSubscriberAgreement);
+
+            SubscriberAgreementServiceException actualSubscriberAgreementServiceException =
+                await Assert.ThrowsAsync<SubscriberAgreementServiceException>(
+                    modifySubscriberAgreementTask.AsTask);
+
+            // then
+            actualSubscriberAgreementServiceException.Should()
+                .BeEquivalentTo(expectedSubscriberAgreementServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSubscriberAgreementByIdAsync(randomSubscriberAgreement.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSubscriberAgreementServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

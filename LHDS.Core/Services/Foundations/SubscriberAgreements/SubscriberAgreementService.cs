@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             });
 
         public IQueryable<SubscriberAgreement> RetrieveAllSubscriberAgreements() =>
-            this.storageBroker.SelectAllSubscriberAgreements();
+            TryCatch(() => this.storageBroker.SelectAllSubscriberAgreements());
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
     public partial class SubscriberAgreementService
     {
         private delegate ValueTask<SubscriberAgreement> ReturningSubscriberAgreementFunction();
+        private delegate IQueryable<SubscriberAgreement> ReturningSubscriberAgreementsFunction();
 
         private async ValueTask<SubscriberAgreement> TryCatch(ReturningSubscriberAgreementFunction returningSubscriberAgreementFunction)
         {
@@ -74,6 +76,23 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             }
         }
 
+        private IQueryable<SubscriberAgreement> TryCatch(ReturningSubscriberAgreementsFunction returningSubscriberAgreementsFunction)
+        {
+            try
+            {
+                return returningSubscriberAgreementsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedSubscriberAgreementStorageException =
+                    new FailedSubscriberAgreementStorageException(
+                        message: "Failed subscriberAgreement storage error occurred, contact support.",
+                        innerException: sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedSubscriberAgreementStorageException);
+            }
+        }
+
         private SubscriberAgreementValidationException CreateAndLogValidationException(Xeption exception)
         {
             var subscriberAgreementValidationException =
@@ -91,7 +110,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             var subscriberAgreementDependencyException = 
                 new SubscriberAgreementDependencyException(
                     message: "SubscriberAgreement dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogCritical(subscriberAgreementDependencyException);
 
@@ -116,7 +135,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             var subscriberAgreementDependencyException = 
                 new SubscriberAgreementDependencyException(
                     message: "SubscriberAgreement dependency error occurred, contact support.",
-                    innerException: exception); 
+                    innerException: exception);
 
             this.loggingBroker.LogError(subscriberAgreementDependencyException);
 

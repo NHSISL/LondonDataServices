@@ -60,6 +60,15 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
                 throw CreateAndLogDependencyValidationException(invalidSubscriberAgreementReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedSubscriberAgreementException = 
+                    new LockedSubscriberAgreementException(
+                        message: "Locked subscriberAgreement record exception, please try again later",
+                        innerException: dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedSubscriberAgreementException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedSubscriberAgreementStorageException =
@@ -123,7 +132,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             var subscriberAgreementDependencyException = 
                 new SubscriberAgreementDependencyException(
                     message: "SubscriberAgreement dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(subscriberAgreementDependencyException);
 
@@ -148,7 +157,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             var subscriberAgreementDependencyException = 
                 new SubscriberAgreementDependencyException(
                     message: "SubscriberAgreement dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogError(subscriberAgreementDependencyException);
 

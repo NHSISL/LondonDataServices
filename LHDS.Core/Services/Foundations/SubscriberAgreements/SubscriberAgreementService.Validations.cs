@@ -129,6 +129,15 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             }
         }
 
+        private static void ValidateStorageSubscriberAgreementBySupplierSharingAgreementGuid(
+            SubscriberAgreement maybeSubscriberAgreement, Guid SupplierSharingAgreementGuid)
+        {
+            if (maybeSubscriberAgreement is null)
+            {
+                throw new NotFoundSubscriberAgreementException(SupplierSharingAgreementGuid);
+            }
+        }
+
         private static void ValidateAgainstStorageSubscriberAgreementOnModify(SubscriberAgreement inputSubscriberAgreement, SubscriberAgreement storageSubscriberAgreement)
         {
             Validate(

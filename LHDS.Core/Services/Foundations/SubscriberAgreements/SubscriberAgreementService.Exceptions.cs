@@ -19,6 +19,10 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             {
                 throw CreateAndLogValidationException(nullSubscriberAgreementException);
             }
+            catch (InvalidSubscriberAgreementException invalidSubscriberAgreementException)
+            {
+                throw CreateAndLogValidationException(invalidSubscriberAgreementException);
+            }
         }
 
         private SubscriberAgreementValidationException CreateAndLogValidationException(Xeption exception)

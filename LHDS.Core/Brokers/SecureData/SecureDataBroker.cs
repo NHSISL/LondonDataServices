@@ -6,7 +6,7 @@ using System;
 using System.Threading.Tasks;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
-using LHDS.Core.Models.Brokers.SecureData;
+using LHDS.Core.Models.Foundations.SecureData;
 
 namespace LHDS.Core.Brokers.KeyVaults
 {

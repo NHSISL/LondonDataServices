@@ -53,7 +53,9 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                     firstDate: subscriberAgreement.UpdatedDate,
                     secondDate: subscriberAgreement.CreatedDate,
                     secondDateName: nameof(SubscriberAgreement.CreatedDate)),
-                Parameter: nameof(SubscriberAgreement.UpdatedDate)));
+                Parameter: nameof(SubscriberAgreement.UpdatedDate)),
+
+                (Rule: IsNotRecent(subscriberAgreement.UpdatedDate), Parameter: nameof(subscriberAgreement.UpdatedDate)));
         }
 
         public void ValidateSubscriberAgreementId(Guid subscriberAgreementId) =>

@@ -22,7 +22,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<SubscriberAgreement> AddSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<SubscriberAgreement> AddSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement) =>
+            await this.storageBroker.InsertSubscriberAgreementAsync(subscriberAgreement);
     }
 }

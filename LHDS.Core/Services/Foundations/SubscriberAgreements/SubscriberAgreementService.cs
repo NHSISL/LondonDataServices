@@ -35,7 +35,15 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
         public IQueryable<SubscriberAgreement> RetrieveAllSubscriberAgreements() =>
             TryCatch(() => this.storageBroker.SelectAllSubscriberAgreements());
 
-        public async ValueTask<SubscriberAgreement> RetrieveSubscriberAgreementByIdAsync(Guid subscriberAgreementId) =>
-            await this.storageBroker.SelectSubscriberAgreementByIdAsync(subscriberAgreementId);
+        public ValueTask<SubscriberAgreement> RetrieveSubscriberAgreementByIdAsync(Guid subscriberAgreementId) =>
+            TryCatch(async () =>
+            {
+                ValidateSubscriberAgreementId(subscriberAgreementId);
+
+                SubscriberAgreement maybeSubscriberAgreement = await this.storageBroker
+                    .SelectSubscriberAgreementByIdAsync(subscriberAgreementId);
+
+                return maybeSubscriberAgreement;
+            });
     }
 }

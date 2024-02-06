@@ -18,7 +18,13 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                 (Rule: IsInvalid(subscriberAgreement.CreatedDate), Parameter: nameof(SubscriberAgreement.CreatedDate)),
                 (Rule: IsInvalid(subscriberAgreement.CreatedBy), Parameter: nameof(SubscriberAgreement.CreatedBy)),
                 (Rule: IsInvalid(subscriberAgreement.UpdatedDate), Parameter: nameof(SubscriberAgreement.UpdatedDate)),
-                (Rule: IsInvalid(subscriberAgreement.UpdatedBy), Parameter: nameof(SubscriberAgreement.UpdatedBy)));
+                (Rule: IsInvalid(subscriberAgreement.UpdatedBy), Parameter: nameof(SubscriberAgreement.UpdatedBy)),
+
+                (Rule: IsNotSame(
+                    firstDate: subscriberAgreement.UpdatedDate,
+                    secondDate: subscriberAgreement.CreatedDate,
+                    secondDateName: nameof(SubscriberAgreement.CreatedDate)),
+                Parameter: nameof(SubscriberAgreement.UpdatedDate)));
         }
 
         private static void ValidateSubscriberAgreementIsNotNull(SubscriberAgreement subscriberAgreement)
@@ -46,6 +52,15 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsNotSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate != secondDate,
+                Message = $"Date is not the same as {secondDateName}"
+            };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

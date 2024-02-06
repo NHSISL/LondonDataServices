@@ -148,14 +148,17 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
         {
             // given
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-
             SubscriberAgreement invalidSubscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset);
             invalidSubscriberAgreement.SupplierSharingAgreementShortName = GetRandomString(129);
             invalidSubscriberAgreement.FtpUserName = GetRandomString(129);
             invalidSubscriberAgreement.FtpPublicKey = GetRandomString(129);
             invalidSubscriberAgreement.GpgPublicKey = GetRandomString(129);
-            invalidSubscriberAgreement.CreatedBy = GetRandomString(255);
-            invalidSubscriberAgreement.UpdatedBy = GetRandomString(255);
+            invalidSubscriberAgreement.CreatedBy = GetRandomString(256);
+            invalidSubscriberAgreement.UpdatedBy = invalidSubscriberAgreement.CreatedBy;
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
 
             var invalidSubscriberAgreementException =
                 new InvalidSubscriberAgreementException(

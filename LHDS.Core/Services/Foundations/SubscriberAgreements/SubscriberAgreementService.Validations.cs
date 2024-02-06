@@ -28,6 +28,24 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                 (Rule: IsInvalid(subscriberAgreement.UpdatedDate), Parameter: nameof(SubscriberAgreement.UpdatedDate)),
                 (Rule: IsInvalid(subscriberAgreement.UpdatedBy), Parameter: nameof(SubscriberAgreement.UpdatedBy)),
 
+                (Rule: IsInvalidLength(subscriberAgreement.SupplierSharingAgreementShortName, 128),
+                    Parameter: nameof(SubscriberAgreement.SupplierSharingAgreementShortName)),
+
+                (Rule: IsInvalidLength(subscriberAgreement.FtpUserName, 128),
+                    Parameter: nameof(SubscriberAgreement.FtpUserName)),
+
+                (Rule: IsInvalidLength(subscriberAgreement.FtpPublicKey, 128),
+                    Parameter: nameof(SubscriberAgreement.FtpPublicKey)),
+
+                (Rule: IsInvalidLength(subscriberAgreement.GpgPublicKey, 128),
+                    Parameter: nameof(SubscriberAgreement.GpgPublicKey)),
+
+                (Rule: IsInvalidLength(subscriberAgreement.CreatedBy, 255),
+                    Parameter: nameof(SubscriberAgreement.CreatedBy)),
+
+                (Rule: IsInvalidLength(subscriberAgreement.UpdatedBy, 255),
+                    Parameter: nameof(SubscriberAgreement.UpdatedBy)),
+
                 (Rule: IsNotSame(
                     firstDate: subscriberAgreement.UpdatedDate,
                     secondDate: subscriberAgreement.CreatedDate,
@@ -60,6 +78,24 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                 (Rule: IsInvalid(subscriberAgreement.CreatedBy), Parameter: nameof(SubscriberAgreement.CreatedBy)),
                 (Rule: IsInvalid(subscriberAgreement.UpdatedDate), Parameter: nameof(SubscriberAgreement.UpdatedDate)),
                 (Rule: IsInvalid(subscriberAgreement.UpdatedBy), Parameter: nameof(SubscriberAgreement.UpdatedBy)),
+
+                (Rule: IsInvalidLength(subscriberAgreement.SupplierSharingAgreementShortName, 128),
+                    Parameter: nameof(SubscriberAgreement.SupplierSharingAgreementShortName)),
+
+                (Rule: IsInvalidLength(subscriberAgreement.FtpUserName, 128),
+                    Parameter: nameof(SubscriberAgreement.FtpUserName)),
+
+                (Rule: IsInvalidLength(subscriberAgreement.FtpPublicKey, 128),
+                    Parameter: nameof(SubscriberAgreement.FtpPublicKey)),
+
+                (Rule: IsInvalidLength(subscriberAgreement.GpgPublicKey, 128),
+                    Parameter: nameof(SubscriberAgreement.GpgPublicKey)),
+
+                (Rule: IsInvalidLength(subscriberAgreement.CreatedBy, 255),
+                    Parameter: nameof(SubscriberAgreement.CreatedBy)),
+
+                (Rule: IsInvalidLength(subscriberAgreement.UpdatedBy, 255),
+                    Parameter: nameof(SubscriberAgreement.UpdatedBy)),
 
                 (Rule: IsSame(
                     firstDate: subscriberAgreement.UpdatedDate,
@@ -122,6 +158,15 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
         };
+
+        private static dynamic IsInvalidLength(string text, int length) => new
+        {
+            Condition = IsInvalidStringLength(text, length),
+            Message = "Text exceeded length requirement"
+        };
+
+        private static bool IsInvalidStringLength(string text, int length) =>
+            (text ?? string.Empty).Length > length;
 
         private static dynamic IsInvalid(DateTimeOffset date) => new
         {

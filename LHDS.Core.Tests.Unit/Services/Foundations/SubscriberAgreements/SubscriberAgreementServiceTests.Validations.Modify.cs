@@ -20,7 +20,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
         {
             // given
             SubscriberAgreement nullSubscriberAgreement = null;
-            var nullSubscriberAgreementException = new NullSubscriberAgreementException(message: "SubscriberAgreement is null.");
+            var nullSubscriberAgreementException = new NullSubscriberAgreementException(
+                message: "SubscriberAgreement is null.");
 
             var expectedSubscriberAgreementValidationException =
                 new SubscriberAgreementValidationException(
@@ -147,6 +148,86 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateSubscriberAgreementAsync(It.IsAny<SubscriberAgreement>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfSubscriberAgreementIsInvalidLengthsAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            SubscriberAgreement invalidSubscriberAgreement = CreateRandomModifySubscriberAgreement(randomDateTimeOffset);
+            invalidSubscriberAgreement.SupplierSharingAgreementShortName = GetRandomString(129);
+            invalidSubscriberAgreement.FtpUserName = GetRandomString(129);
+            invalidSubscriberAgreement.FtpPublicKey = GetRandomString(129);
+            invalidSubscriberAgreement.GpgPublicKey = GetRandomString(129);
+            invalidSubscriberAgreement.CreatedBy = GetRandomString(256);
+            invalidSubscriberAgreement.UpdatedBy = GetRandomString(256);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            var invalidSubscriberAgreementException =
+                new InvalidSubscriberAgreementException(
+                    message: "Invalid subscriberAgreement. Please correct the errors and try again.");
+
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.SupplierSharingAgreementShortName),
+                values: "Text exceeded length requirement");
+
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.FtpUserName),
+                values: "Text exceeded length requirement");
+
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.FtpPublicKey),
+                values: "Text exceeded length requirement");
+
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.GpgPublicKey),
+                values: "Text exceeded length requirement");
+
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.CreatedBy),
+                values: "Text exceeded length requirement");
+
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.UpdatedBy),
+                values: "Text exceeded length requirement");
+
+            var expectedSubscriberAgreementValidationException =
+                new SubscriberAgreementValidationException(
+                    message: "SubscriberAgreement validation errors occurred, please try again.",
+                    innerException: invalidSubscriberAgreementException);
+
+            // when
+            ValueTask<SubscriberAgreement> addSubscriberAgreementTask =
+                this.subscriberAgreementService.ModifySubscriberAgreementAsync(invalidSubscriberAgreement);
+
+            SubscriberAgreementValidationException actualSubscriberAgreementValidationException =
+                await Assert.ThrowsAsync<SubscriberAgreementValidationException>(() =>
+                    addSubscriberAgreementTask.AsTask());
+
+            // then
+            actualSubscriberAgreementValidationException.Should()
+                .BeEquivalentTo(expectedSubscriberAgreementValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSubscriberAgreementValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertSubscriberAgreementAsync(It.IsAny<SubscriberAgreement>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -425,7 +506,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     modifySubscriberAgreementTask.AsTask);
 
             // then
-            actualSubscriberAgreementValidationException.Should().BeEquivalentTo(expectedSubscriberAgreementValidationException);
+            actualSubscriberAgreementValidationException.Should()
+                .BeEquivalentTo(expectedSubscriberAgreementValidationException);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectSubscriberAgreementByIdAsync(invalidSubscriberAgreement.Id),

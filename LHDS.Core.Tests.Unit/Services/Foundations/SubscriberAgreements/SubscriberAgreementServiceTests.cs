@@ -45,7 +45,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
         private static string GetRandomString(int length) =>
-            new MnemonicString(wordCount: 1, wordMinLength: 2, wordMaxLength: length).GetValue();
+            new MnemonicString(wordCount: 1, wordMinLength: length, wordMaxLength: length).GetValue();
 
         public static TheoryData MinutesBeforeOrAfter()
         {

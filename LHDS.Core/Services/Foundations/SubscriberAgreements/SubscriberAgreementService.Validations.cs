@@ -1,3 +1,7 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
@@ -13,8 +17,12 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             Validate(
                 (Rule: IsInvalid(subscriberAgreement.Id), Parameter: nameof(SubscriberAgreement.Id)),
 
-                // TODO: Add any other required validation rules
+                (Rule: IsInvalid(subscriberAgreement.SupplierSharingAgreementShortName),
+                    Parameter: nameof(SubscriberAgreement.SupplierSharingAgreementShortName)),
 
+                (Rule: IsInvalid(subscriberAgreement.FtpUserName), Parameter: nameof(SubscriberAgreement.FtpUserName)),
+                (Rule: IsInvalid(subscriberAgreement.FtpPublicKey), Parameter: nameof(SubscriberAgreement.FtpPublicKey)),
+                (Rule: IsInvalid(subscriberAgreement.GpgPublicKey), Parameter: nameof(SubscriberAgreement.GpgPublicKey)),
                 (Rule: IsInvalid(subscriberAgreement.CreatedDate), Parameter: nameof(SubscriberAgreement.CreatedDate)),
                 (Rule: IsInvalid(subscriberAgreement.CreatedBy), Parameter: nameof(SubscriberAgreement.CreatedBy)),
                 (Rule: IsInvalid(subscriberAgreement.UpdatedDate), Parameter: nameof(SubscriberAgreement.UpdatedDate)),
@@ -42,8 +50,12 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             Validate(
                 (Rule: IsInvalid(subscriberAgreement.Id), Parameter: nameof(SubscriberAgreement.Id)),
 
-                // TODO: Add any other required validation rules
+                (Rule: IsInvalid(subscriberAgreement.SupplierSharingAgreementShortName),
+                    Parameter: nameof(SubscriberAgreement.SupplierSharingAgreementShortName)),
 
+                (Rule: IsInvalid(subscriberAgreement.FtpUserName), Parameter: nameof(SubscriberAgreement.FtpUserName)),
+                (Rule: IsInvalid(subscriberAgreement.FtpPublicKey), Parameter: nameof(SubscriberAgreement.FtpPublicKey)),
+                (Rule: IsInvalid(subscriberAgreement.GpgPublicKey), Parameter: nameof(SubscriberAgreement.GpgPublicKey)),
                 (Rule: IsInvalid(subscriberAgreement.CreatedDate), Parameter: nameof(SubscriberAgreement.CreatedDate)),
                 (Rule: IsInvalid(subscriberAgreement.CreatedBy), Parameter: nameof(SubscriberAgreement.CreatedBy)),
                 (Rule: IsInvalid(subscriberAgreement.UpdatedDate), Parameter: nameof(SubscriberAgreement.UpdatedDate)),
@@ -172,7 +184,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
-            var invalidSubscriberAgreementException = 
+            var invalidSubscriberAgreementException =
                 new InvalidSubscriberAgreementException(
                     message: "Invalid subscriberAgreement. Please correct the errors and try again.");
 

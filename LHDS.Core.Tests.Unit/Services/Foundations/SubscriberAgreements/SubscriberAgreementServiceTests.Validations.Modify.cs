@@ -1,10 +1,14 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
-using Moq;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
@@ -57,15 +61,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnModifyIfSubscriberAgreementIsInvalidAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnModifyIfSubscriberAgreementIsInvalidAndLogItAsync(
+            string invalidText)
         {
             // given 
             var invalidSubscriberAgreement = new SubscriberAgreement
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                SupplierSharingAgreementShortName = invalidText,
+                FtpUserName = invalidText,
+                FtpPublicKey = invalidText,
+                GpgPublicKey = invalidText,
+                CreatedBy = invalidText,
+                UpdatedBy = invalidText
             };
 
-            var invalidSubscriberAgreementException = 
+            var invalidSubscriberAgreementException =
                 new InvalidSubscriberAgreementException(
                     message: "Invalid subscriberAgreement. Please correct the errors and try again.");
 
@@ -73,11 +83,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 key: nameof(SubscriberAgreement.Id),
                 values: "Id is required");
 
-            //invalidSubscriberAgreementException.AddData(
-            //    key: nameof(SubscriberAgreement.Name),
-            //    values: "Text is required");
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.SupplierSharingAgreementShortName),
+                values: "Text is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the SubscriberAgreement model
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.FtpUserName),
+                values: "Text is required");
+
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.FtpPublicKey),
+                values: "Text is required");
+
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.GpgPublicKey),
+                values: "Text is required");
 
             invalidSubscriberAgreementException.AddData(
                 key: nameof(SubscriberAgreement.CreatedDate),
@@ -141,8 +161,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset);
             SubscriberAgreement invalidSubscriberAgreement = randomSubscriberAgreement;
-            
-            var invalidSubscriberAgreementException = 
+
+            var invalidSubscriberAgreementException =
                 new InvalidSubscriberAgreementException(
                     message: "Invalid subscriberAgreement. Please correct the errors and try again.");
 
@@ -198,7 +218,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset);
             randomSubscriberAgreement.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
 
-            var invalidSubscriberAgreementException = 
+            var invalidSubscriberAgreementException =
                 new InvalidSubscriberAgreementException(
                     message: "Invalid subscriberAgreement. Please correct the errors and try again.");
 
@@ -312,8 +332,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             SubscriberAgreement storageSubscriberAgreement = invalidSubscriberAgreement.DeepClone();
             storageSubscriberAgreement.CreatedDate = storageSubscriberAgreement.CreatedDate.AddMinutes(randomMinutes);
             storageSubscriberAgreement.UpdatedDate = storageSubscriberAgreement.UpdatedDate.AddMinutes(randomMinutes);
-            
-            var invalidSubscriberAgreementException = 
+
+            var invalidSubscriberAgreementException =
                 new InvalidSubscriberAgreementException(
                     message: "Invalid subscriberAgreement. Please correct the errors and try again.");
 
@@ -375,7 +395,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             invalidSubscriberAgreement.CreatedBy = Guid.NewGuid().ToString();
             storageSubscriberAgreement.UpdatedDate = storageSubscriberAgreement.CreatedDate;
 
-            var invalidSubscriberAgreementException = 
+            var invalidSubscriberAgreementException =
                 new InvalidSubscriberAgreementException(
                     message: "Invalid subscriberAgreement. Please correct the errors and try again.");
 
@@ -434,7 +454,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             SubscriberAgreement invalidSubscriberAgreement = randomSubscriberAgreement;
             SubscriberAgreement storageSubscriberAgreement = randomSubscriberAgreement.DeepClone();
 
-            var invalidSubscriberAgreementException = 
+            var invalidSubscriberAgreementException =
                 new InvalidSubscriberAgreementException(
                     message: "Invalid subscriberAgreement. Please correct the errors and try again.");
 

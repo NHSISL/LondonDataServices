@@ -1,9 +1,13 @@
+// ---------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------
+
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
+using Moq;
 using Xunit;
 
 namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
@@ -50,12 +54,18 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnAddIfSubscriberAgreementIsInvalidAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnAddIfSubscriberAgreementIsInvalidAndLogItAsync(
+            string invalidText)
         {
             // given
             var invalidSubscriberAgreement = new SubscriberAgreement
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                SupplierSharingAgreementShortName = invalidText,
+                FtpUserName = invalidText,
+                FtpPublicKey = invalidText,
+                GpgPublicKey = invalidText,
+                CreatedBy = invalidText,
+                UpdatedBy = invalidText
             };
 
             var invalidSubscriberAgreementException =
@@ -66,11 +76,21 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 key: nameof(SubscriberAgreement.Id),
                 values: "Id is required");
 
-            //invalidSubscriberAgreementException.AddData(
-            //    key: nameof(SubscriberAgreement.Name),
-            //    values: "Text is required");
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.SupplierSharingAgreementShortName),
+                values: "Text is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the SubscriberAgreement model
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.FtpUserName),
+                values: "Text is required");
+
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.FtpPublicKey),
+                values: "Text is required");
+
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.GpgPublicKey),
+                values: "Text is required");
 
             invalidSubscriberAgreementException.AddData(
                 key: nameof(SubscriberAgreement.CreatedDate),
@@ -124,6 +144,83 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
         }
 
         [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfSubscriberAgreementIsInvalidLengthsAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+
+            SubscriberAgreement invalidSubscriberAgreement = CreateRandomSubscriberAgreement(randomDateTimeOffset);
+            invalidSubscriberAgreement.SupplierSharingAgreementShortName = GetRandomString(129);
+            invalidSubscriberAgreement.FtpUserName = GetRandomString(129);
+            invalidSubscriberAgreement.FtpPublicKey = GetRandomString(129);
+            invalidSubscriberAgreement.GpgPublicKey = GetRandomString(129);
+            invalidSubscriberAgreement.CreatedBy = GetRandomString(255);
+            invalidSubscriberAgreement.UpdatedBy = GetRandomString(255);
+
+            var invalidSubscriberAgreementException =
+                new InvalidSubscriberAgreementException(
+                    message: "Invalid subscriberAgreement. Please correct the errors and try again.");
+
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.SupplierSharingAgreementShortName),
+                values: "Text exceeded length requirement");
+
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.FtpUserName),
+                values: "Text exceeded length requirement");
+
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.FtpPublicKey),
+                values: "Text exceeded length requirement");
+
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.GpgPublicKey),
+                values: "Text exceeded length requirement");
+
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.CreatedBy),
+                values: "Text exceeded length requirement");
+
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.UpdatedBy),
+                values: "Text exceeded length requirement");
+
+            var expectedSubscriberAgreementValidationException =
+                new SubscriberAgreementValidationException(
+                    message: "SubscriberAgreement validation errors occurred, please try again.",
+                    innerException: invalidSubscriberAgreementException);
+
+            // when
+            ValueTask<SubscriberAgreement> addSubscriberAgreementTask =
+                this.subscriberAgreementService.AddSubscriberAgreementAsync(invalidSubscriberAgreement);
+
+            SubscriberAgreementValidationException actualSubscriberAgreementValidationException =
+                await Assert.ThrowsAsync<SubscriberAgreementValidationException>(() =>
+                    addSubscriberAgreementTask.AsTask());
+
+            // then
+            actualSubscriberAgreementValidationException.Should()
+                .BeEquivalentTo(expectedSubscriberAgreementValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSubscriberAgreementValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertSubscriberAgreementAsync(It.IsAny<SubscriberAgreement>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
         public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateDatesIsNotSameAndLogItAsync()
         {
             // given
@@ -135,7 +232,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             invalidSubscriberAgreement.UpdatedDate =
                 invalidSubscriberAgreement.CreatedDate.AddDays(randomNumber);
 
-            var invalidSubscriberAgreementException = 
+            var invalidSubscriberAgreementException =
                 new InvalidSubscriberAgreementException(
                     message: "Invalid subscriberAgreement. Please correct the errors and try again.");
 

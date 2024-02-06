@@ -37,7 +37,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
 
             ResolvedAddressProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<ResolvedAddressProcessingDependencyValidationException>(
-                    isMacthTask.AsTask);
+                    isMatchTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedResolvedAddressProcessingDependencyValidationException);
@@ -77,7 +77,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                 this.resolvedAddressProcessingService.IsExactMatchForResolvedAddressAsync(someAddress);
 
             ResolvedAddressProcessingDependencyException actualException =
-                await Assert.ThrowsAsync<ResolvedAddressProcessingDependencyException>(isMacthTask.AsTask);
+                await Assert.ThrowsAsync<ResolvedAddressProcessingDependencyException>(isMatchTask.AsTask);
 
             // then
             actualException.Should().BeEquivalentTo(expectedResolvedAddressProcessingDependencyException);

@@ -3,39 +3,37 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.AddressMatchers;
 using Xunit;
 
-namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
+namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressMatchers
 {
-    public partial class AddressMatcherProcessingServiceTests
+    public partial class AddressMatcherServiceTests
     {
         [Theory]
         [MemberData(nameof(AddressToMatch))]
         public async Task ShouldCalculateMatchingAddressComponents(
             List<KeyValuePair<string, string>> inputAddress,
-            HashSet<AddressMatch> potentialMatches)
+            HashSet<AddressMatch> potentialMatches,
+            int matchedComponents,
+            bool matchingCoreComponents)
         {
             // given
             List<KeyValuePair<string, string>> incomingAddress = inputAddress;
-            HashSet<AddressMatch> inputPossibleAddresses = potentialMatches;
-            HashSet<AddressMatch> outputPossibleAddresses = inputPossibleAddresses;
-            HashSet<AddressMatch> expectedAddressMatches = outputPossibleAddresses;
-
-            addressMatcherServiceMock.Setup(x => x.CalculateMatchingAddressComponents(
-                incomingAddress, inputPossibleAddresses))
-                    .Returns(outputPossibleAddresses);
+            HashSet<AddressMatch> possibleAddresses = potentialMatches;
 
             // when
-            HashSet<AddressMatch> actualAddressMatches = await addressMatcherProcessingService
+            HashSet<AddressMatch> actualAddressMatches = addressMatcherService
                 .CalculateMatchingAddressComponents(incomingAddress, possibleAddresses);
 
             AddressMatch actualAddressMatch = actualAddressMatches.First();
 
             // then
-            actualAddressMatches.Should().BeEquivalentTo(expectedAddressMatches);
+            actualAddressMatch.MatchedComponents.Should().Be(matchedComponents);
+            actualAddressMatch.MatchingCoreComponents.Should().Be(matchingCoreComponents);
         }
     }
 }

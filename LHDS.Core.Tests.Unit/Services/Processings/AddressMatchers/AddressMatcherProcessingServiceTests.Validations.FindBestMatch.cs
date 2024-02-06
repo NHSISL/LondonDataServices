@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.AddressMatchers;
-using LHDS.Core.Models.Foundations.AddressMatchers.Exceptions;
 using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
 using Moq;
 using Xunit;
@@ -16,7 +15,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
     public partial class AddressMatcherProcessingServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnCalculateMatchingAddressIfArgsIsInvalidAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnFindBestMatchIfArgsIsInvalidAndLogItAsync()
         {
             // given
             List<KeyValuePair<string, string>> invalidIncomingAddressComponents =
@@ -43,14 +42,14 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
                     innerException: invalidArgumentAddressMatcherException);
 
             // when
-            ValueTask<HashSet<AddressMatch>> calculateMatchingAddressComponentsTask =
-                addressMatcherProcessingService.CalculateMatchingAddressComponents(
-                    addressComponents: invalidIncomingAddressComponents,
-                    possibleAddressMatches: invalidPossibleAddresses);
+            ValueTask<AddressMatch> findBestMatchTask =
+                addressMatcherProcessingService.FindBestMatch(
+                    matchedAddresses: invalidPossibleAddresses,
+                    addressComponents: invalidIncomingAddressComponents);
 
             AddressMatcherProcessingValidationException actualAddressMatcherValidationException =
                 await Assert.ThrowsAsync<AddressMatcherProcessingValidationException>(
-                    calculateMatchingAddressComponentsTask.AsTask);
+                    findBestMatchTask.AsTask);
 
             // then
             actualAddressMatcherValidationException.Should()

@@ -21,7 +21,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressMatchers
 
             // when
             BestMatchEnum actualMatchType = this.addressMatcherService
-                .CheckForBestMatch(macthedAddresses: inputAddresses);
+                .CheckForBestMatch(matchedAddresses: inputAddresses);
 
             // then
             actualMatchType.Should().Be(expectedMatchType);

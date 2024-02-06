@@ -16,7 +16,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
     {
         [Theory]
         [MemberData(nameof(DependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationExceptionOnIsExactMacthIfErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnIsExactMatchIfErrorOccursAndLogItAsync(
             Xeption dependencyValidationException)
         {
             // given
@@ -33,7 +33,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             // when
             ValueTask<bool> isMatchTask = this.addressProcessingService
-                .IsExactMatchForAddressAsync(addressToMacth: someAddress);
+                .IsExactMatchForAddressAsync(addressToMatch: someAddress);
 
             AddressProcessingDependencyValidationException actualException =
                 await Assert.ThrowsAsync<AddressProcessingDependencyValidationException>(isMatchTask.AsTask);
@@ -56,7 +56,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnIsExactMacthIfDependencyErrorOccursAndLogItAsync(
+        public async Task ShouldThrowDependencyExceptionOnIsExactMatchIfDependencyErrorOccursAndLogItAsync(
             Xeption dependencyException)
         {
             // given
@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             // when
             ValueTask<bool> isMatchTask = this.addressProcessingService
-                .IsExactMatchForAddressAsync(addressToMacth: someAddress);
+                .IsExactMatchForAddressAsync(addressToMatch: someAddress);
 
             AddressProcessingDependencyException actualException =
                 await Assert.ThrowsAsync<AddressProcessingDependencyException>(isMatchTask.AsTask);
@@ -95,7 +95,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnIsExactMacthIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnIsExactMatchIfServiceErrorOccursAsync()
         {
             // given
             string someAddress = GetRandomString();
@@ -118,7 +118,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             // when
             ValueTask<bool> isMatchTask = this.addressProcessingService
-                .IsExactMatchForAddressAsync(addressToMacth: someAddress);
+                .IsExactMatchForAddressAsync(addressToMatch: someAddress);
 
             AddressProcessingServiceException actualException =
                 await Assert.ThrowsAsync<AddressProcessingServiceException>(isMatchTask.AsTask);

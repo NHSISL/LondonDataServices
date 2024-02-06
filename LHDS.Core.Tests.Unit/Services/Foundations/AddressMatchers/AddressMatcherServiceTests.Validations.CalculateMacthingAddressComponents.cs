@@ -16,10 +16,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressMatchers
     public partial class AddressMatcherServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnCheckForBestMatchIfArgsIsInvalidAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnCalculateMatchingAddressIfArgsIsInvalidAndLogItAsync()
         {
             // given
-            HashSet<AddressMatch> invalidAddresses = new HashSet<AddressMatch>();
+            List<KeyValuePair<string, string>> invalidIncomingAddressComponents =
+                new List<KeyValuePair<string, string>>();
+
+            HashSet<AddressMatch> invalidPossibleAddresses = new HashSet<AddressMatch>();
 
             var invalidArgumentAddressMatcherException =
                 new InvalidArgumentAddressMatcherException(
@@ -27,7 +30,11 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressMatchers
                     "please correct the errors and try again.");
 
             invalidArgumentAddressMatcherException.AddData(
-                key: "MatchedAddresses",
+                key: "IncomingAddressComponents",
+                values: "Values is required");
+
+            invalidArgumentAddressMatcherException.AddData(
+                key: "PossibleAddresses",
                 values: "Values is required");
 
             var expectedAddressMatcherValidationException =
@@ -37,10 +44,13 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressMatchers
 
             // when
             Action calculateMatchingAddressComponentsAction = () =>
-                addressMatcherService.CheckForBestMatch(matchedAddresses: invalidAddresses);
+                addressMatcherService.CalculateMatchingAddressComponents(
+                    addressComponents: invalidIncomingAddressComponents,
+                    possibleAddressMatches: invalidPossibleAddresses);
 
             AddressMatcherValidationException actualAddressMatcherValidationException =
-                Assert.Throws<AddressMatcherValidationException>(calculateMatchingAddressComponentsAction);
+                Assert.Throws<AddressMatcherValidationException>(
+                    calculateMatchingAddressComponentsAction);
 
             // then
             actualAddressMatcherValidationException.Should()
@@ -55,4 +65,3 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressMatchers
         }
     }
 }
-

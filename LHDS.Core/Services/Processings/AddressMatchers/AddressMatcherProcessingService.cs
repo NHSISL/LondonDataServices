@@ -7,18 +7,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Force.DeepCloner;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Foundations.AddressMatchers;
+using LHDS.Core.Services.Foundations.AddressMatchers;
 
 namespace LHDS.Core.Services.Processings.AddressMatchers
 {
     public partial class AddressMatcherProcessingService : IAddressMatcherProcessingService
     {
         private readonly ILoggingBroker loggingBroker;
+        private readonly IAddressMatcherService addressMatcherService;
 
-        public AddressMatcherProcessingService(ILoggingBroker loggingBroker)
+        public AddressMatcherProcessingService(
+            IAddressMatcherService addressMatcherService,
+            ILoggingBroker loggingBroker)
         {
+            this.addressMatcherService = addressMatcherService;
             this.loggingBroker = loggingBroker;
         }
 
@@ -72,59 +76,97 @@ namespace LHDS.Core.Services.Processings.AddressMatchers
                 return extractedPostCode;
             });
 
-        public ValueTask<HashSet<AddressMatch>> CalculateMacthingAddressComponents(
+        public ValueTask<HashSet<AddressMatch>> CalculateMatchingAddressComponents(
             IList<KeyValuePair<string, string>> addressComponents,
             HashSet<AddressMatch> possibleAddressMatches) =>
             TryCatch(async () =>
             {
                 ValidateCalculateArguments(addressComponents, possibleAddressMatches);
 
-                HashSet<AddressMatch> matchedAddresses = new HashSet<AddressMatch>();
-
-                foreach (var address in possibleAddressMatches)
-                {
-                    await Task.Run(() =>
-                    {
-                        AddressMatch addressMatch = address.DeepClone();
-                        var possibleAddressComponents = address.AddressComponents;
-
-                        addressMatch.MatchedComponents = addressComponents
-                            .Intersect(possibleAddressComponents).Count();
-
-                        addressMatch.MatchingCoreComponents =
-                            CheckMatchingCorePairs(addressComponents, possibleAddressComponents);
-
-                        matchedAddresses.Add(addressMatch);
-                    });
-                }
-
-                return matchedAddresses;
+                return await ValueTask.FromResult(this.addressMatcherService
+                    .CalculateMatchingAddressComponents(addressComponents, possibleAddressMatches));
             });
 
-        private static bool CheckMatchingCorePairs(
-            IList<KeyValuePair<string, string>> incomingAddressComponents,
-            IList<KeyValuePair<string, string>> possibleAddressComponents)
+        public ValueTask<AddressMatch> FindBestMatch(
+            HashSet<AddressMatch> possibleAddressMatches,
+            IList<KeyValuePair<string, string>> addressComponents) =>
+            TryCatch(async () =>
+            {
+                ValidateCalculateArguments(addressComponents, possibleAddressMatches);
+
+                HashSet<AddressMatch> matchedAddresses = this.addressMatcherService
+                    .CalculateMatchingAddressComponents(addressComponents, possibleAddressMatches);
+
+                BestMatchEnum matchType = this.addressMatcherService.CheckForBestMatch(matchedAddresses);
+
+                var result = matchType switch
+                {
+                    BestMatchEnum.None => await DoNonMatchProcess(matchedAddresses, addressComponents),
+                    BestMatchEnum.Single => await SingleMatchProcess(matchedAddresses, addressComponents),
+                    _ => await MultipleMatchProcess(matchedAddresses, addressComponents)
+                };
+
+                return result;
+            });
+
+        private async ValueTask<AddressMatch> DoNonMatchProcess(
+            HashSet<AddressMatch> matchedAddresses,
+            IList<KeyValuePair<string, string>> addressComponents)
         {
-            bool incomingHasHouseNumber = incomingAddressComponents.Any(kv => kv.Key == "house_number");
-            bool possibleAddressHasHouseNumber = possibleAddressComponents.Any(kv => kv.Key == "house_number");
-
-            if (incomingHasHouseNumber || possibleAddressHasHouseNumber)
+            if (addressComponents.Count() == 0)
             {
-                bool matchOnHouseNumberAndPostCode = incomingHasHouseNumber && possibleAddressHasHouseNumber &&
-                    incomingAddressComponents.Any(kv => kv.Key == "house_number" &&
-                        possibleAddressComponents.Any(kv2 => kv2.Key == "house_number" && kv2.Value == kv.Value)) &&
-                            incomingAddressComponents.Any(kv => kv.Key == "postcode" && possibleAddressComponents
-                                .Any(kv2 => kv2.Key == "postcode" && kv2.Value == kv.Value));
-
-                return matchOnHouseNumberAndPostCode;
+                return await ValueTask.FromResult(
+                    new AddressMatch
+                    {
+                        IsMatched = false,
+                        BestMatch = BestMatchEnum.None
+                    });
             }
-            else
+
+            IList<KeyValuePair<string, string>> amendedAddressComponents =
+                this.addressMatcherService.RemoveNonDigitCharactersFromHouseNumber(addressComponents);
+
+            HashSet<AddressMatch> reCalculatedMatches = this.addressMatcherService
+                .CalculateMatchingAddressComponents(amendedAddressComponents, matchedAddresses);
+
+            BestMatchEnum matchType = this.addressMatcherService.CheckForBestMatch(reCalculatedMatches);
+
+            if (matchType == BestMatchEnum.Single)
             {
-                bool matchOnPostcode = incomingAddressComponents.Any(kv => kv.Key == "postcode" &&
-                    possibleAddressComponents.Any(kv2 => kv2.Key == "postcode" && kv2.Value == kv.Value));
-
-                return matchOnPostcode;
+                return await SingleMatchProcess(reCalculatedMatches, amendedAddressComponents);
             }
+
+            return await ValueTask.FromResult(
+                new AddressMatch
+                {
+                    IsMatched = false,
+                    BestMatch = BestMatchEnum.None
+                });
+        }
+
+        private async ValueTask<AddressMatch> SingleMatchProcess(
+            HashSet<AddressMatch> matchedAddresses,
+            IList<KeyValuePair<string, string>> addressComponents)
+        {
+            var bestMatch = matchedAddresses.ToList().Where(x => x.MatchingCoreComponents)
+                .OrderByDescending(x => x.MatchedComponents).First();
+
+            bestMatch.IsMatched = true;
+            bestMatch.BestMatch = BestMatchEnum.Single;
+
+            return await ValueTask.FromResult(bestMatch);
+        }
+
+        private async ValueTask<AddressMatch> MultipleMatchProcess(
+            HashSet<AddressMatch> matchedAddresses,
+            IList<KeyValuePair<string, string>> addressComponents)
+        {
+            return await ValueTask.FromResult(
+                new AddressMatch
+                {
+                    IsMatched = false,
+                    BestMatch = BestMatchEnum.Multiple
+                });
         }
     }
 }

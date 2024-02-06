@@ -36,7 +36,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.Addresses
 
             // when
             ValueTask<bool> isMatchTask = this.addressProcessingService
-                .IsExactMatchForAddressAsync(addressToMacth: invalidAddress);
+                .IsExactMatchForAddressAsync(addressToMatch: invalidAddress);
 
             AddressProcessingValidationException actualAddressProcessingValidationException =
                 await Assert.ThrowsAsync<AddressProcessingValidationException>(isMatchTask.AsTask);

@@ -35,6 +35,11 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                 (Rule: IsNotRecent(subscriberAgreement.CreatedDate), Parameter: nameof(SubscriberAgreement.CreatedDate)));
         }
 
+        private void ValidateSubscriberAgreementOnModify(SubscriberAgreement subscriberAgreement)
+        {
+            ValidateSubscriberAgreementIsNotNull(subscriberAgreement);
+        }
+
         public void ValidateSubscriberAgreementId(Guid subscriberAgreementId) =>
             Validate((Rule: IsInvalid(subscriberAgreementId), Parameter: nameof(SubscriberAgreement.Id)));
 
@@ -89,7 +94,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
-
+        
         private static dynamic IsNotSame(
            string first,
            string second,

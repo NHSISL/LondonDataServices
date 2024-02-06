@@ -48,7 +48,12 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
                 return maybeSubscriberAgreement;
             });
 
-        public async ValueTask<SubscriberAgreement> ModifySubscriberAgreementAsync(SubscriberAgreement subscriberAgreement) =>
-            await this.storageBroker.UpdateSubscriberAgreementAsync(subscriberAgreement);
+        public ValueTask<SubscriberAgreement> ModifySubscriberAgreementAsync(SubscriberAgreement subscriberAgreement) =>
+            TryCatch(async () =>
+            {
+                ValidateSubscriberAgreementOnModify(subscriberAgreement);
+
+                return await this.storageBroker.UpdateSubscriberAgreementAsync(subscriberAgreement);
+            });
     }
 }

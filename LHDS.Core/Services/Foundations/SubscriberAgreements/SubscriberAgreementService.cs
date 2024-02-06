@@ -22,7 +22,12 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<SubscriberAgreement> AddSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement) =>
-            await this.storageBroker.InsertSubscriberAgreementAsync(subscriberAgreement);
+        public ValueTask<SubscriberAgreement> AddSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement) =>
+            TryCatch(async () =>
+            {
+                ValidateSubscriberAgreementOnAdd(subscriberAgreement);
+
+                return await this.storageBroker.InsertSubscriberAgreementAsync(subscriberAgreement);
+            });
     }
 }

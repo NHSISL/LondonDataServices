@@ -32,7 +32,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     .Throws(dependencyValidationException);
 
             // when
-            ValueTask<(bool IsMatched, Guid? ItemId)> isMacthTask =
+            ValueTask<(bool IsMatched, Guid? ItemId)> isMatchTask =
                 this.resolvedAddressProcessingService.IsExactMatchForResolvedAddressAsync(someAddress);
 
             ResolvedAddressProcessingDependencyValidationException actualException =
@@ -73,7 +73,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.ResolvedAddresses
                     .Throws(dependencyException);
 
             // when
-            ValueTask<(bool, Guid?)> isMacthTask =
+            ValueTask<(bool, Guid?)> isMatchTask =
                 this.resolvedAddressProcessingService.IsExactMatchForResolvedAddressAsync(someAddress);
 
             ResolvedAddressProcessingDependencyException actualException =

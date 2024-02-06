@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -12,15 +12,10 @@ using LHDS.Core.Brokers.DateTimes;
 using LHDS.Core.Brokers.Loggings;
 using LHDS.Core.Models.Brokers.Serializations;
 using LHDS.Core.Models.Foundations.Addresses;
-using LHDS.Core.Models.Foundations.AddressLoadingAudits.Exceptions;
 using LHDS.Core.Models.Foundations.AddressNormalisations;
-using LHDS.Core.Models.Foundations.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Foundations.ResolvedAddresses;
-using LHDS.Core.Models.Foundations.ResolvedAddresses.Exceptions;
 using LHDS.Core.Models.Processings.Addresses.Exceptions;
-using LHDS.Core.Models.Processings.AddressLoadingAudits.Exceptions;
 using LHDS.Core.Models.Processings.AddressMatchers.Exceptions;
-using LHDS.Core.Models.Processings.AddressNormalisations.Exceptions;
 using LHDS.Core.Models.Processings.ResolvedAddresses.Exceptions;
 using LHDS.Core.Services.Orchestrations.AddressResolvings;
 using LHDS.Core.Services.Processings.Addresses;
@@ -98,10 +93,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
         private static Filler<Address> CreateAddressFiller(DateTimeOffset dateTimeOffset)
         {
             string user = Guid.NewGuid().ToString();
+            List<KeyValuePair<string, string>> compomnents = GenerateRandomKeyValuePairAddress();
             var filler = new Filler<Address>();
 
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
+                .OnProperty(address => address.PostalAddress).Use(() => ConvertToString(compomnents))
+                .OnProperty(address => address.JsonPostalAddress).Use(() => ConvertToJSONString(compomnents))
                 .OnProperty(address => address.CreatedBy).Use(user)
                 .OnProperty(address => address.UpdatedBy).Use(user);
 
@@ -110,11 +108,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
 
         public static AddressNormalisation CreateRandomAddressNormalisation()
         {
+            List<KeyValuePair<string, string>> components = GenerateRandomKeyValuePairAddress();
+
             return new AddressNormalisation
             {
-                PostalAddress = GetRandomString(),
-                JsonPostalAddress = GetRandomString(),
-                AddressComponents = GetRandomAddressComponents()
+                PostalAddress = ConvertToString(components),
+                JsonPostalAddress = ConvertToJSONString(components),
+                AddressComponents = components
             };
         }
 
@@ -133,7 +133,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
             return $"{letters[randomLetterIndex1]}{letters[randomLetterIndex2]}{randomDigit1} {randomDigit2}{letters[randomLetterIndex1]}{letters[randomLetterIndex2]}";
         }
 
-        private static IList<KeyValuePair<string, string>> GetRandomAddressComponents()
+        private static List<KeyValuePair<string, string>> GetRandomAddressComponents()
         {
             int numberOfComponents = GetRandomNumber();
 
@@ -178,7 +178,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
             return keyValuePairList;
         }
 
-        static List<KeyValuePair<string, string>> GenerateRandomAddress()
+        static List<KeyValuePair<string, string>> GenerateRandomKeyValuePairAddress()
         {
             return new List<KeyValuePair<string, string>>
             {
@@ -197,16 +197,15 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
             return jsonString;
         }
 
-        static string JoinValues(List<KeyValuePair<string, string>> keyValuePairs)
-        {
-            var joinedValues = string.Join(" ", keyValuePairs.Select(kv => kv.Value));
-            return joinedValues;
-        }
-
         public static string ConvertToString(List<KeyValuePair<string, string>> keyValuePairs)
         {
-            // Use LINQ to concatenate values with spaces
             return string.Join(" ", keyValuePairs.Select(kvp => kvp.Value)).Trim();
+        }
+
+        public static List<KeyValuePair<string, string>> ConvertStringToKeyValue(string jsonString)
+        {
+            var components = JsonSerializer.Deserialize<List<KeyValuePair<string, string>>>(jsonString);
+            return components;
         }
 
         public static TheoryData AddressResolvingDependencyValidationExceptions()

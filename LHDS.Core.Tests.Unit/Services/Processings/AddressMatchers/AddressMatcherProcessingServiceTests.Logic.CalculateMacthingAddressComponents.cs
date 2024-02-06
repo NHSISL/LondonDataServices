@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.AddressMatchers;
@@ -30,7 +31,7 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
 
             // when
             HashSet<AddressMatch> actualAddressMatches = await addressMatcherProcessingService
-                .CalculateMatchingAddressComponents(incomingAddress, possibleAddresses);
+                .CalculateMatchingAddressComponents(incomingAddress, inputPossibleAddresses);
 
             AddressMatch actualAddressMatch = actualAddressMatches.First();
 

@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -79,7 +79,9 @@ namespace LHDS.Core.Services.Orchestrations.AddressResolvings
                     }).ToHashSet();
 
                     AddressMatch matchedAddress =
-                        await addressMatcherProcessingService.FindBestMatch(addressesToMatch);
+                        await addressMatcherProcessingService.FindBestMatch(
+                            addressesToMatch,
+                            normalisedAddress.AddressComponents);
 
                     ResolvedAddress finalResolvedAddress = new ResolvedAddress
                     {
@@ -88,7 +90,10 @@ namespace LHDS.Core.Services.Orchestrations.AddressResolvings
                         PostCode = postCode,
                         PostalAddress = normalisedAddress.PostalAddress,
                         JsonPostalAddress = normalisedAddress.JsonPostalAddress,
-                        MatchAlgorithmUsed = (MatchAlgorithmEnum)Enum.Parse(typeof(MatchAlgorithmEnum), ((int)matchedAddress.BestMatch).ToString()),
+
+                        MatchAlgorithmUsed = (MatchAlgorithmEnum)Enum.Parse(typeof(MatchAlgorithmEnum),
+                            ((int)matchedAddress.BestMatch).ToString()),
+
                         BestMatchType = matchedAddress.BestMatch,
                         IsMatched = matchedAddress.IsMatched,
                         MatchedWithPostalAddress = matchedAddress.PostalAddress,
@@ -109,7 +114,10 @@ namespace LHDS.Core.Services.Orchestrations.AddressResolvings
                 return new List<KeyValuePair<string, string>>();
             }
 
-            return this.serializationBroker.Deserialize<Dictionary<string, string>>(jsonAddress).ToList();
+            var deserialized = this.serializationBroker
+                .Deserialize<Dictionary<string, string>>(jsonAddress).ToList();
+
+            return deserialized;
         }
     }
 }

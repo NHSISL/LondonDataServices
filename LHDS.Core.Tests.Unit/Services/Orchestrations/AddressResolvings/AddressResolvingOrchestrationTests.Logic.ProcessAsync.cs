@@ -1,6 +1,6 @@
-﻿// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
-// ---------------------------------------------------------------
+// ---------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -46,7 +46,7 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
                     .ReturnsAsync(storageResolvedAddress);
 
             // When
-            AddressNormalisation actualAddress = 
+            AddressNormalisation actualAddress =
                 await this.addressResolvingOrchestrationService.ResolvedAddressAsync(inputNormalisedAddress);
 
             // Then
@@ -83,12 +83,13 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
             // Given
             List<Address> randomAddresses = CreateRandomAddressList();
             List<Address> storageAddresses = randomAddresses;
+            List<KeyValuePair<string, string>> randomAddressComponents = GenerateRandomKeyValuePairAddress();
 
             HashSet<AddressMatch> addressesToMatch = storageAddresses.Select(address => new AddressMatch
             {
-                PostalAddress = address.PostalAddress,
-                JsonPostalAddress = address.JsonPostalAddress,
-                AddressComponents = GetRandomAddressComponents()
+                PostalAddress = ConvertToString(randomAddressComponents),
+                JsonPostalAddress = ConvertToJSONString(randomAddressComponents),
+                AddressComponents = randomAddressComponents
             }).ToHashSet();
 
             HashSet<AddressMatch> resolvedMatchedAddresses = addressesToMatch.DeepClone();
@@ -134,12 +135,21 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
                 processing.RetrieveAddressByPostCodeAsync(storagePostCode))
                     .ReturnsAsync(storageAddresses);
 
+            foreach (var address in storageAddresses)
+            {
+                var components = ConvertStringToKeyValue(address.JsonPostalAddress);
+
+                this.serializationBrokerMock.Setup(broker =>
+                    broker.Deserialize<IList<KeyValuePair<string, string>>>(address.JsonPostalAddress))
+                        .Returns(components);
+            }
+
             this.addressMatcherProcessingServiceMock.Setup(processing =>
-                processing.FindBestMatch(resolvedMatchedAddresses))
+                processing.FindBestMatch(resolvedMatchedAddresses, inputNormalisedAddress.AddressComponents))
                     .ReturnsAsync(matchedAddress);
 
             // When
-            AddressNormalisation actualAddress = 
+            AddressNormalisation actualAddress =
                 await this.addressResolvingOrchestrationService.ResolvedAddressAsync(inputNormalisedAddress);
 
             // Then
@@ -161,8 +171,12 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
                 processing.RetrieveAddressByPostCodeAsync(storagePostCode),
                     Times.Once);
 
-            this.addressMatcherProcessingServiceMock.Verify(processing => 
-                processing.FindBestMatch(resolvedMatchedAddresses), 
+            this.serializationBrokerMock.Verify(broker =>
+                broker.Deserialize<IList<KeyValuePair<string, string>>>(inputNormalisedAddress.JsonPostalAddress),
+                    Times.Once);
+
+            this.addressMatcherProcessingServiceMock.Verify(processing =>
+                processing.FindBestMatch(resolvedMatchedAddresses, inputNormalisedAddress.AddressComponents),
                     Times.Once);
 
             addressProcessingServiceMock.VerifyNoOtherCalls();

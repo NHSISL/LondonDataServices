@@ -134,10 +134,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
                 processing.RetrieveAddressByPostCodeAsync(storagePostCode))
                     .ReturnsAsync(storageAddresses);
 
-            //this.addressMatcherProcessingServiceMock.Setup(processing =>
-            //    processing.CalculateMatchingAddressComponents(inputNormalisedAddress.AddressComponents, addressesToMatch))
-            //        .ReturnsAsync(resolvedMatchedAddresses);
-
             this.addressMatcherProcessingServiceMock.Setup(processing =>
                 processing.FindBestMatch(resolvedMatchedAddresses))
                     .ReturnsAsync(matchedAddress);
@@ -164,10 +160,6 @@ namespace LHDS.Core.Tests.Unit.Services.Orchestrations.AddressResolvings
             this.addressProcessingServiceMock.Verify(processing =>
                 processing.RetrieveAddressByPostCodeAsync(storagePostCode),
                     Times.Once);
-
-            //this.addressMatcherProcessingServiceMock.Verify(processing =>
-            //    processing.CalculateMatchingAddressComponents(inputNormalisedAddress.AddressComponents, addressesToMatch),
-            //        Times.Once);
 
             this.addressMatcherProcessingServiceMock.Verify(processing => 
                 processing.FindBestMatch(resolvedMatchedAddresses), 

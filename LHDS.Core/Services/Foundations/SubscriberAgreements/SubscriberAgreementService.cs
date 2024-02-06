@@ -32,6 +32,6 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             });
 
         public IQueryable<SubscriberAgreement> RetrieveAllSubscriberAgreements() =>
-            throw new System.NotImplementedException();
+            this.storageBroker.SelectAllSubscriberAgreements();
     }
 }

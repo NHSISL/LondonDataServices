@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
 using Xeptions;
@@ -52,6 +53,15 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
                 throw CreateAndLogDependencyValidationException(invalidSubscriberAgreementReferenceException);
             }
+            catch (DbUpdateException databaseUpdateException)
+            {
+                var failedSubscriberAgreementStorageException =
+                    new FailedSubscriberAgreementStorageException(
+                    message: "Failed subscriberAgreement storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+                throw CreateAndLogDependencyException(failedSubscriberAgreementStorageException);
+            }
         }
 
         private SubscriberAgreementValidationException CreateAndLogValidationException(Xeption exception)
@@ -88,6 +98,19 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             this.loggingBroker.LogError(subscriberAgreementDependencyValidationException);
 
             return subscriberAgreementDependencyValidationException;
+        }
+
+        private SubscriberAgreementDependencyException CreateAndLogDependencyException(
+            Xeption exception)
+        {
+            var subscriberAgreementDependencyException = 
+                new SubscriberAgreementDependencyException(
+                    message: "SubscriberAgreement dependency error occurred, contact support.",
+                    innerException: exception); 
+
+            this.loggingBroker.LogError(subscriberAgreementDependencyException);
+
+            return subscriberAgreementDependencyException;
         }
     }
 }

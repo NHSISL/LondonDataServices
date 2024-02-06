@@ -1,59 +1,62 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using LHDS.Core.Brokers.DateTimes;
-using LHDS.Core.Brokers.Loggings;
-using LHDS.Core.Brokers.Storages.Sql;
+using FluentAssertions;
+using Force.DeepCloner;
+using Moq;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
+using Xunit;
 
-namespace LHDS.Core.Services.Foundations.SubscriberAgreements
+namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 {
-    public partial class SubscriberAgreementService : ISubscriberAgreementService
+    public partial class SubscriberAgreementServiceTests
     {
-        private readonly IStorageBroker storageBroker;
-        private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ILoggingBroker loggingBroker;
-
-        public SubscriberAgreementService(
-            IStorageBroker storageBroker,
-            IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker)
+        [Fact]
+        public async Task ShouldModifySubscriberAgreementAsync()
         {
-            this.storageBroker = storageBroker;
-            this.dateTimeBroker = dateTimeBroker;
-            this.loggingBroker = loggingBroker;
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            SubscriberAgreement randomSubscriberAgreement = CreateRandomModifySubscriberAgreement(randomDateTimeOffset);
+            SubscriberAgreement inputSubscriberAgreement = randomSubscriberAgreement;
+            SubscriberAgreement storageSubscriberAgreement = inputSubscriberAgreement.DeepClone();
+            storageSubscriberAgreement.UpdatedDate = randomSubscriberAgreement.CreatedDate;
+            SubscriberAgreement updatedSubscriberAgreement = inputSubscriberAgreement;
+            SubscriberAgreement expectedSubscriberAgreement = updatedSubscriberAgreement.DeepClone();
+            Guid subscriberAgreementId = inputSubscriberAgreement.Id;
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectSubscriberAgreementByIdAsync(subscriberAgreementId))
+                    .ReturnsAsync(storageSubscriberAgreement);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.UpdateSubscriberAgreementAsync(inputSubscriberAgreement))
+                    .ReturnsAsync(updatedSubscriberAgreement);
+
+            // when
+            SubscriberAgreement actualSubscriberAgreement =
+                await this.subscriberAgreementService.ModifySubscriberAgreementAsync(inputSubscriberAgreement);
+
+            // then
+            actualSubscriberAgreement.Should().BeEquivalentTo(expectedSubscriberAgreement);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateSubscriberAgreementAsync(inputSubscriberAgreement),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
-
-        public ValueTask<SubscriberAgreement> AddSubscriberAgreementAsync(SubscriberAgreement subscriberAgreement) =>
-            TryCatch(async () =>
-            {
-                ValidateSubscriberAgreementOnAdd(subscriberAgreement);
-
-                return await this.storageBroker.InsertSubscriberAgreementAsync(subscriberAgreement);
-            });
-
-        public IQueryable<SubscriberAgreement> RetrieveAllSubscriberAgreements() =>
-            TryCatch(() => this.storageBroker.SelectAllSubscriberAgreements());
-
-        public ValueTask<SubscriberAgreement> RetrieveSubscriberAgreementByIdAsync(Guid subscriberAgreementId) =>
-            TryCatch(async () =>
-            {
-                ValidateSubscriberAgreementId(subscriberAgreementId);
-
-                SubscriberAgreement maybeSubscriberAgreement = await this.storageBroker
-                    .SelectSubscriberAgreementByIdAsync(subscriberAgreementId);
-
-                ValidateStorageSubscriberAgreement(maybeSubscriberAgreement, subscriberAgreementId);
-
-                return maybeSubscriberAgreement;
-            });
-
-        public ValueTask<SubscriberAgreement> ModifySubscriberAgreementAsync(SubscriberAgreement subscriberAgreement) =>
-            TryCatch(async () =>
-            {
-                ValidateSubscriberAgreementOnModify(subscriberAgreement);
-
-                return await this.storageBroker.UpdateSubscriberAgreementAsync(subscriberAgreement);
-            });
     }
 }

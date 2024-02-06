@@ -28,6 +28,10 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
+                broker.SelectSubscriberAgreementByIdAsync(subscriberAgreementId))
+                    .ReturnsAsync(storageSubscriberAgreement);
+
+            this.storageBrokerMock.Setup(broker =>
                 broker.UpdateSubscriberAgreementAsync(inputSubscriberAgreement))
                     .ReturnsAsync(updatedSubscriberAgreement);
 
@@ -43,12 +47,16 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
+                broker.SelectSubscriberAgreementByIdAsync(inputSubscriberAgreement.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
                 broker.UpdateSubscriberAgreementAsync(inputSubscriberAgreement),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

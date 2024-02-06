@@ -38,6 +38,10 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
                 throw CreateAndLogCriticalDependencyException(failedSubscriberAgreementStorageException);
             }
+            catch (NotFoundSubscriberAgreementException notFoundSubscriberAgreementException)
+            {
+                throw CreateAndLogValidationException(notFoundSubscriberAgreementException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsSubscriberAgreementException =

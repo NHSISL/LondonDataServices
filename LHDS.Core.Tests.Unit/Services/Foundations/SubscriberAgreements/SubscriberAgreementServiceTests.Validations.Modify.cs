@@ -184,9 +184,9 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                 broker.SelectSubscriberAgreementByIdAsync(invalidSubscriberAgreement.Id),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -295,8 +295,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                     expectedSubscriberAgreementValidationException))),
                         Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -359,8 +359,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                    expectedSubscriberAgreementValidationException))),
                        Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -420,8 +420,64 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
                    expectedSubscriberAgreementValidationException))),
                        Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfStorageUpdatedDateSameAsUpdatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            SubscriberAgreement randomSubscriberAgreement = CreateRandomModifySubscriberAgreement(randomDateTimeOffset);
+            SubscriberAgreement invalidSubscriberAgreement = randomSubscriberAgreement;
+            SubscriberAgreement storageSubscriberAgreement = randomSubscriberAgreement.DeepClone();
+
+            var invalidSubscriberAgreementException = 
+                new InvalidSubscriberAgreementException(
+                    message: "Invalid subscriberAgreement. Please correct the errors and try again.");
+
+            invalidSubscriberAgreementException.AddData(
+                key: nameof(SubscriberAgreement.UpdatedDate),
+                values: $"Date is the same as {nameof(SubscriberAgreement.UpdatedDate)}");
+
+            var expectedSubscriberAgreementValidationException =
+                new SubscriberAgreementValidationException(
+                    message: "SubscriberAgreement validation errors occurred, please try again.",
+                    innerException: invalidSubscriberAgreementException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectSubscriberAgreementByIdAsync(invalidSubscriberAgreement.Id))
+                .ReturnsAsync(storageSubscriberAgreement);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<SubscriberAgreement> modifySubscriberAgreementTask =
+                this.subscriberAgreementService.ModifySubscriberAgreementAsync(invalidSubscriberAgreement);
+
+            // then
+            await Assert.ThrowsAsync<SubscriberAgreementValidationException>(
+                modifySubscriberAgreementTask.AsTask);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSubscriberAgreementValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSubscriberAgreementByIdAsync(invalidSubscriberAgreement.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }

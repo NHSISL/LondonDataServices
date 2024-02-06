@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using LHDS.Core.Models.Foundations.SubscriberAgreements;
 using LHDS.Core.Models.Foundations.SubscriberAgreements.Exceptions;
@@ -117,6 +118,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateSubscriberAgreementAsync(someSubscriberAgreement),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnModifyIfDatabaseUpdateExceptionOccursAndLogItAsync()
+        {
+            // given
+            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement();
+            var databaseUpdateException = new DbUpdateException();
+
+            var failedSubscriberAgreementStorageException =
+                new FailedSubscriberAgreementStorageException(
+                    message: "Failed subscriberAgreement storage error occurred, contact support.",
+                    innerException: databaseUpdateException);
+
+            var expectedSubscriberAgreementDependencyException =
+                new SubscriberAgreementDependencyException(
+                    message: "SubscriberAgreement dependency error occurred, contact support.",
+                    innerException: failedSubscriberAgreementStorageException); 
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<SubscriberAgreement> modifySubscriberAgreementTask =
+                this.subscriberAgreementService.ModifySubscriberAgreementAsync(randomSubscriberAgreement);
+
+            SubscriberAgreementDependencyException actualSubscriberAgreementDependencyException =
+                await Assert.ThrowsAsync<SubscriberAgreementDependencyException>(
+                    modifySubscriberAgreementTask.AsTask);
+
+            // then
+            actualSubscriberAgreementDependencyException.Should()
+                .BeEquivalentTo(expectedSubscriberAgreementDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectSubscriberAgreementByIdAsync(randomSubscriberAgreement.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSubscriberAgreementDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateSubscriberAgreementAsync(randomSubscriberAgreement),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

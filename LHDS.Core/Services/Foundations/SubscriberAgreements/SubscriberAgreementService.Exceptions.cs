@@ -43,6 +43,15 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsSubscriberAgreementException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidSubscriberAgreementReferenceException =
+                    new InvalidSubscriberAgreementReferenceException(
+                        message: "Invalid subscriberAgreement reference error occurred.", 
+                        innerException: foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidSubscriberAgreementReferenceException);
+            }
         }
 
         private SubscriberAgreementValidationException CreateAndLogValidationException(Xeption exception)
@@ -62,7 +71,7 @@ namespace LHDS.Core.Services.Foundations.SubscriberAgreements
             var subscriberAgreementDependencyException = 
                 new SubscriberAgreementDependencyException(
                     message: "SubscriberAgreement dependency error occurred, contact support.",
-                    innerException: exception);
+                    innerException: exception); 
 
             this.loggingBroker.LogCritical(subscriberAgreementDependencyException);
 

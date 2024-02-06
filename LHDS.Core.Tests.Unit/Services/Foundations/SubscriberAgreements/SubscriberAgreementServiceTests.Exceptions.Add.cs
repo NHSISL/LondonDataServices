@@ -26,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             var expectedSubscriberAgreementDependencyException =
                 new SubscriberAgreementDependencyException(
                     message: "SubscriberAgreement dependency error occurred, contact support.",
-                    innerException: failedSubscriberAgreementStorageException);             
+                    innerException: failedSubscriberAgreementStorageException); 
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -115,6 +115,60 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            SubscriberAgreement someSubscriberAgreement = CreateRandomSubscriberAgreement();
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidSubscriberAgreementReferenceException =
+                new InvalidSubscriberAgreementReferenceException(
+                    message: "Invalid subscriberAgreement reference error occurred.", 
+                    innerException: foreignKeyConstraintConflictException);
+
+            var expectedSubscriberAgreementValidationException =
+                new SubscriberAgreementDependencyValidationException(
+                    message: "SubscriberAgreement dependency validation occurred, please try again.",
+                    innerException: invalidSubscriberAgreementReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<SubscriberAgreement> addSubscriberAgreementTask =
+                this.subscriberAgreementService.AddSubscriberAgreementAsync(someSubscriberAgreement);
+
+            // then
+            SubscriberAgreementDependencyValidationException actualSubscriberAgreementDependencyValidationException =
+                await Assert.ThrowsAsync<SubscriberAgreementDependencyValidationException>(
+                    addSubscriberAgreementTask.AsTask);
+
+            actualSubscriberAgreementDependencyValidationException.Should().BeEquivalentTo(expectedSubscriberAgreementValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSubscriberAgreementValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertSubscriberAgreementAsync(someSubscriberAgreement),
+                    Times.Never());
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

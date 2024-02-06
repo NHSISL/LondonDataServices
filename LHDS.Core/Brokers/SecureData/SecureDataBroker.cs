@@ -20,6 +20,12 @@ namespace LHDS.Core.Brokers.KeyVaults
         }
 
         public async ValueTask<KeyVaultSecret> CreateOrUpdateKeyVaultSecretAsync(SecureData keyVaultSecret) =>
-            this.secretClient.SetSecret(keyVaultSecret.Name, keyVaultSecret.Value);
+            await this.secretClient.SetSecretAsync(keyVaultSecret.Name, keyVaultSecret.Value);
+
+        public async ValueTask<KeyVaultSecret> GetKeyVaultSecretAsync(string secretName) =>
+            await this.secretClient.GetSecretAsync(secretName);
+
+        public async ValueTask DeleteKeyVaultSecretAsync(string secretName) =>
+            await this.secretClient.StartDeleteSecretAsync(secretName);
     }
 }

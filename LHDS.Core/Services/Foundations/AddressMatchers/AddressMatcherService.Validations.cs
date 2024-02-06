@@ -24,6 +24,14 @@ namespace LHDS.Core.Services.Foundations.AddressMatchers
                     message: "Invalid address matcher argument(s), please correct the errors and try again.",
                     (Rule: IsInvalid(addressComponents), Parameter: "AddressComponents"));
 
+        virtual internal void ValidateCalculateArguments(
+            IList<KeyValuePair<string, string>> incomingAddressComponents,
+            HashSet<AddressMatch> possibleAddresses) =>
+                Validate<InvalidArgumentAddressMatcherException>(
+                    message: "Invalid address matcher argument(s), please correct the errors and try again.",
+                    (Rule: IsInvalid(incomingAddressComponents), Parameter: "IncomingAddressComponents"),
+                    (Rule: IsInvalid(possibleAddresses), Parameter: "PossibleAddresses"));
+
         private static dynamic IsInvalid(HashSet<AddressMatch> data) => new
         {
             Condition = data == null || data.Count == 0,

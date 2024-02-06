@@ -17,7 +17,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressMatchers
     public partial class AddressMatcherServiceTests
     {
         [Fact]
-        public async Task ShouldThrowServiceExceptionOnCheckForBestMatchIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionOnCalculateMatchesIfServiceErrorOccursAsync()
         {
             // given
             List<KeyValuePair<string, string>> someIncomingAddressComponents =
@@ -28,7 +28,8 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressMatchers
             var mock = new Mock<AddressMatcherService>(loggingBrokerMock.Object) { CallBase = true };
             var serviceException = new Exception();
 
-            mock.Setup(x => x.ValidateCheckForBestMatchArguments(
+            mock.Setup(x => x.ValidateCalculateArguments(
+                It.IsAny<IList<KeyValuePair<string, string>>>(),
                 It.IsAny<HashSet<AddressMatch>>()))
                     .Throws(serviceException);
 
@@ -45,12 +46,14 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressMatchers
                     innerException: failedAddressMatcherServiceException);
 
             // when
-            Action checkForBestMatchAction = () =>
-                addressMatcherService.CheckForBestMatch(matchedAddresses: somePossibleAddresses);
+            Action calculateMatchingAddressComponentsAction = () =>
+                addressMatcherService.CalculateMatchingAddressComponents(
+                    addressComponents: someIncomingAddressComponents,
+                    possibleAddressMatches: somePossibleAddresses);
 
             AddressMatcherServiceException actualAddressMatcherServiceException =
                 Assert.Throws<AddressMatcherServiceException>(
-                    checkForBestMatchAction);
+                    calculateMatchingAddressComponentsAction);
 
             // then
             actualAddressMatcherServiceException.Should()
@@ -58,4 +61,3 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.AddressMatchers
         }
     }
 }
-

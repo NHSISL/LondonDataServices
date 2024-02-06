@@ -21,23 +21,57 @@ namespace LHDS.Core.Services.Foundations.AddressMatchers
             this.loggingBroker = loggingBroker;
         }
 
-        public BestMatchEnum CheckForBestMatch(HashSet<AddressMatch> macthedAddresses) =>
+        public BestMatchEnum CheckForBestMatch(HashSet<AddressMatch> matchedAddresses) =>
             TryCatch(() =>
             {
-                ValidateCheckForBestMatchArguments(macthedAddresses);
+                ValidateCheckForBestMatchArguments(matchedAddresses);
 
-                int matchedCount = macthedAddresses.ToList()
+                var orderedMatches = matchedAddresses
                     .Where(x => x.MatchingCoreComponents)
-                        .OrderByDescending(x => x.MatchedComponents).Count();
+                        .OrderByDescending(x => x.MatchedComponents)
+                            .ToList();
 
-                BestMatchEnum result = matchedCount switch
+                if (orderedMatches.Count() == 0)
                 {
-                    0 => BestMatchEnum.None,
-                    1 => BestMatchEnum.Single,
-                    _ => BestMatchEnum.Multiple
-                };
+                    return BestMatchEnum.None;
+                }
 
-                return result;
+                bool hasSingleWinner = orderedMatches.Count() == 1
+                    || orderedMatches[0].MatchedComponents
+                        != orderedMatches[1].MatchedComponents;
+
+                if (hasSingleWinner)
+                {
+                    return BestMatchEnum.Single;
+                }
+
+                return BestMatchEnum.Multiple;
+            });
+
+        public HashSet<AddressMatch> CalculateMatchingAddressComponents(
+            IList<KeyValuePair<string, string>> addressComponents,
+            HashSet<AddressMatch> possibleAddressMatches) =>
+            TryCatch(() =>
+            {
+                ValidateCalculateArguments(addressComponents, possibleAddressMatches);
+                HashSet<AddressMatch> matchedAddresses = new HashSet<AddressMatch>();
+
+                foreach (var address in possibleAddressMatches)
+                {
+                    AddressMatch addressMatch = address.DeepClone();
+                    var possibleAddressComponents = address.AddressComponents;
+
+                    addressMatch.MatchedComponents = addressComponents
+                        .Intersect(possibleAddressComponents).Count();
+
+                    addressMatch.MatchingCoreComponents =
+                        CheckMatchingCorePairs(addressComponents, possibleAddressComponents);
+
+                    matchedAddresses.Add(addressMatch);
+                }
+
+                return matchedAddresses
+                        .OrderByDescending(x => x.MatchedComponents).ToHashSet();
             });
 
         public IList<KeyValuePair<string, string>> RemoveNonDigitCharactersFromHouseNumber(
@@ -78,5 +112,32 @@ namespace LHDS.Core.Services.Foundations.AddressMatchers
         public IList<KeyValuePair<string, string>> TurnAddressIntoFlat(
             IList<KeyValuePair<string, string>> addressComponents) =>
                throw new NotImplementedException();
+
+
+        private static bool CheckMatchingCorePairs(
+            IList<KeyValuePair<string, string>> incomingAddressComponents,
+            IList<KeyValuePair<string, string>> possibleAddressComponents)
+        {
+            bool incomingHasHouseNumber = incomingAddressComponents.Any(kv => kv.Key == "house_number");
+            bool possibleAddressHasHouseNumber = possibleAddressComponents.Any(kv => kv.Key == "house_number");
+
+            if (incomingHasHouseNumber || possibleAddressHasHouseNumber)
+            {
+                bool matchOnHouseNumberAndPostCode = incomingHasHouseNumber && possibleAddressHasHouseNumber &&
+                    incomingAddressComponents.Any(kv => kv.Key == "house_number" &&
+                        possibleAddressComponents.Any(kv2 => kv2.Key == "house_number" && kv2.Value == kv.Value)) &&
+                            incomingAddressComponents.Any(kv => kv.Key == "postcode" && possibleAddressComponents
+                                .Any(kv2 => kv2.Key == "postcode" && kv2.Value == kv.Value));
+
+                return matchOnHouseNumberAndPostCode;
+            }
+            else
+            {
+                bool matchOnPostcode = incomingAddressComponents.Any(kv => kv.Key == "postcode" &&
+                    possibleAddressComponents.Any(kv2 => kv2.Key == "postcode" && kv2.Value == kv.Value));
+
+                return matchOnPostcode;
+            }
+        }
     }
 }

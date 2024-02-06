@@ -3,7 +3,6 @@
 // ---------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LHDS.Core.Models.Foundations.AddressMatchers;
@@ -15,25 +14,26 @@ namespace LHDS.Core.Tests.Unit.Services.Processings.AddressMatchers
     {
         [Theory]
         [MemberData(nameof(AddressToMatch))]
-        public async Task ShouldCalculateMacthingAddressComponents(
+        public async Task ShouldCalculateMatchingAddressComponents(
             List<KeyValuePair<string, string>> inputAddress,
-            HashSet<AddressMatch> potentialMatches,
-            int matchedComponents,
-            bool matchingCoreComponents)
+            HashSet<AddressMatch> potentialMatches)
         {
             // given
             List<KeyValuePair<string, string>> incomingAddress = inputAddress;
-            HashSet<AddressMatch> possibleAddresses = potentialMatches;
+            HashSet<AddressMatch> inputPossibleAddresses = potentialMatches;
+            HashSet<AddressMatch> outputPossibleAddresses = inputPossibleAddresses;
+            HashSet<AddressMatch> expectedAddressMatches = outputPossibleAddresses;
+
+            addressMatcherServiceMock.Setup(x => x.CalculateMatchingAddressComponents(
+                incomingAddress, inputPossibleAddresses))
+                    .Returns(outputPossibleAddresses);
 
             // when
             HashSet<AddressMatch> actualAddressMatches = await addressMatcherProcessingService
-                .CalculateMacthingAddressComponents(incomingAddress, possibleAddresses);
-
-            AddressMatch actualAddressMatch = actualAddressMatches.First();
+                .CalculateMatchingAddressComponents(incomingAddress, outputPossibleAddresses);
 
             // then
-            actualAddressMatch.MatchedComponents.Should().Be(matchedComponents);
-            actualAddressMatch.MatchingCoreComponents.Should().Be(matchingCoreComponents);
+            actualAddressMatches.Should().BeEquivalentTo(expectedAddressMatches);
         }
     }
 }

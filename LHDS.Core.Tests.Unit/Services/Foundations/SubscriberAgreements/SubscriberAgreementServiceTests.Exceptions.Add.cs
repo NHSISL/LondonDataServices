@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -25,7 +26,7 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             var expectedSubscriberAgreementDependencyException =
                 new SubscriberAgreementDependencyException(
                     message: "SubscriberAgreement dependency error occurred, contact support.",
-                    innerException: failedSubscriberAgreementStorageException);
+                    innerException: failedSubscriberAgreementStorageException);             
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -54,6 +55,61 @@ namespace LHDS.Core.Tests.Unit.Services.Foundations.SubscriberAgreements
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
                     expectedSubscriberAgreementDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfSubscriberAgreementAlreadyExsitsAndLogItAsync()
+        {
+            // given
+            SubscriberAgreement randomSubscriberAgreement = CreateRandomSubscriberAgreement();
+            SubscriberAgreement alreadyExistsSubscriberAgreement = randomSubscriberAgreement;
+            string randomMessage = GetRandomString();
+
+            var duplicateKeyException =
+                new DuplicateKeyException(randomMessage);
+
+            var alreadyExistsSubscriberAgreementException =
+                new AlreadyExistsSubscriberAgreementException(
+                    message: "SubscriberAgreement with the same Id already exists.",
+                    innerException: duplicateKeyException);
+
+            var expectedSubscriberAgreementDependencyValidationException =
+                new SubscriberAgreementDependencyValidationException(
+                    message: "SubscriberAgreement dependency validation occurred, please try again.",
+                    innerException: alreadyExistsSubscriberAgreementException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(duplicateKeyException);
+
+            // when
+            ValueTask<SubscriberAgreement> addSubscriberAgreementTask =
+                this.subscriberAgreementService.AddSubscriberAgreementAsync(alreadyExistsSubscriberAgreement);
+
+            // then
+            SubscriberAgreementDependencyValidationException actualSubscriberAgreementDependencyValidationException =
+                await Assert.ThrowsAsync<SubscriberAgreementDependencyValidationException>(
+                    addSubscriberAgreementTask.AsTask);
+
+            actualSubscriberAgreementDependencyValidationException.Should()
+                .BeEquivalentTo(expectedSubscriberAgreementDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertSubscriberAgreementAsync(It.IsAny<SubscriberAgreement>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedSubscriberAgreementDependencyValidationException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

@@ -11,5 +11,7 @@ namespace LHDS.Core.Brokers.KeyVaults
     public interface ISecureDataBroker
     {
         ValueTask<KeyVaultSecret> CreateOrUpdateKeyVaultSecretAsync(SecureData secureData);
+        ValueTask<KeyVaultSecret> GetKeyVaultSecretAsync(string secretName);
+        ValueTask DeleteKeyVaultSecretAsync(string secretName);
     }
 }
